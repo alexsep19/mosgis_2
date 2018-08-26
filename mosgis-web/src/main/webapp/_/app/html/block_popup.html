@@ -1,0 +1,180 @@
+<span
+	data-popup-width=805
+	data-popup-height=420
+	data-popup-title='Блок жилого дома'
+>
+
+	<style>
+
+        label[data-block-name=block_popup] {
+        	width: 170px;
+        	margin-right: 10px;
+        }
+
+        td[align=right] label[data-block-name=block_popup] {
+        	width: 170px;
+        	margin-right: 10px;
+        	margin-left: 28px;
+        }
+
+        input[data-block-name=block_popup] {
+        	width: 560px !important;
+        }
+
+        input[data-block-name=block_popup].short {
+        	width: 160px !important;
+        }
+
+		div[data-block-name=block_popup] .w2ui-input[disabled] {
+			background-image:none;
+			background-color:#f1f1f1!important;
+			color:#777!important
+		}
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:365px; margin:8px 0 0 0;">
+
+        <div class="w2ui-page page-0">
+
+        	<table width=743 border=0 cellpadding=0 cellspacing=0>
+
+        		<tr>
+        			<td>
+
+						<div class="w2ui-field">
+							<label>Категория</label>
+							<div>
+								<input name=is_nrs class=short>
+							</div>
+						</div>
+
+        			</td>
+        			<td align=right>
+
+						<div class="w2ui-field">
+							<label>Общая площадь, м&sup2;</label>
+							<div>
+								<input name=totalarea maxlength=26 class=short>
+							</div>
+						</div>
+
+        			</td>
+        		</tr>
+
+        		<tr>
+        			<td>
+
+						<div class="w2ui-field">
+							<label>Номер блока</label>
+							<div>
+								<input name=blocknum maxlength=255 class=short>
+							</div>
+						</div>
+
+        			</td>
+        			<td align=right>
+
+						<div class="w2ui-field">
+							<label>Жилая площадь, м&sup2;</label>
+							<div>
+								<input name=grossarea maxlength=26 class=short>
+							</div>
+						</div>
+
+        			</td>
+        		</tr>
+
+
+        		<tr>
+        			<td>
+
+						<div class="w2ui-field">
+							<label>Кадастровый номер</label>
+							<div>
+								<input name=cadastralnumber class=short>
+							</div>
+						</div>
+
+        			</td>
+        			<td align=right>
+
+						<div class="w2ui-field">
+							<label>Количество проживающих</label>
+							<div>
+								<input name=f_20125 class=short>
+							</div>
+						</div>
+
+        			</td>
+        		</tr>
+
+        		<tr>
+        			<td>
+
+						<div class="w2ui-field">
+							<label>Характеристика</label>
+							<div>
+								<input name=code_vc_nsi_30 class=short>
+							</div>
+						</div>
+
+        			</td>
+        			<td align=right>
+
+						<div class="w2ui-field">
+							<label>Количество комнат</label>
+							<div>
+								<input name=f_20002 class=short>
+							</div>
+						</div>
+
+        			</td>
+        		</tr>
+
+        	</table>
+
+            <div class="w2ui-field">
+                <label title="Группы домохозяйств, относительно состава семьи">Состав семьи</label>
+                <div>
+                	<input name=f_20061>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label title="Группы домохозяйств, относительно количества зарегистрированных граждан">К-во зарегистрированных</label>
+                <div>
+                	<input name=f_20059>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label title="Направление использования тепловой энергии на нужды отопления">Направление исп. тепла</label>
+                <div>
+                	<input name=f_20054>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label title="Направления использования газа">Направление исп. газа</label>
+                <div>
+                	<input name=f_20053>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label title="Наличие электрооборудования">Наличие э/оборудования</label>
+                <div>
+                	<input name=f_20056>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>

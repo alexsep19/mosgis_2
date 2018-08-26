@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<weblogic-ejb-jar 
+    xmlns="http://xmlns.oracle.com/weblogic/weblogic-ejb-jar" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="
+        http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd 
+        http://xmlns.oracle.com/weblogic/weblogic-ejb-jar http://xmlns.oracle.com/weblogic/weblogic-ejb-jar/1.6/weblogic-ejb-jar.xsd">
+
+    <weblogic-enterprise-bean>        
+        <ejb-name>InOpenDataMDB</ejb-name>        
+        <transaction-descriptor>
+            <trans-timeout-seconds>36000</trans-timeout-seconds>
+        </transaction-descriptor>        
+    </weblogic-enterprise-bean>
+
+    <weblogic-enterprise-bean>        
+        <ejb-name>InFiasMDB</ejb-name>        
+        <transaction-descriptor>
+            <trans-timeout-seconds>36000</trans-timeout-seconds>
+        </transaction-descriptor>        
+    </weblogic-enterprise-bean>
+    
+    <weblogic-enterprise-bean>        
+        <ejb-name>InRdHousesMDB</ejb-name>        
+        <transaction-descriptor>
+            <trans-timeout-seconds>36000</trans-timeout-seconds>
+        </transaction-descriptor>        
+    </weblogic-enterprise-bean>
+    <weblogic-enterprise-bean>        
+        <ejb-name>InRdHouseMDB</ejb-name>        
+        <transaction-descriptor>
+            <trans-timeout-seconds>36000</trans-timeout-seconds>
+        </transaction-descriptor>        
+    </weblogic-enterprise-bean>
+    
+    <weblogic-enterprise-bean>        
+        <ejb-name>GisPollExportNsiItem</ejb-name>        
+        <transaction-descriptor>
+            <trans-timeout-seconds>36000</trans-timeout-seconds>
+        </transaction-descriptor>        
+    </weblogic-enterprise-bean>
+
+</weblogic-ejb-jar>

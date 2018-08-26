@@ -1,0 +1,132 @@
+@import "nav";
+@import "w2ui";
+@import "css/sprite";
+
+.invisible {
+	display: none;
+}
+
+.clickable {
+	cursor: pointer;
+}
+
+body {
+	margin: 0;
+	height: 100%;
+	min-height: 100%;
+	min-width:100%;
+	display: flex;	
+	flex-direction: column;
+	
+	font-family: Arial, sans-serif;
+	font-size: 11px;
+	
+	input:not([type=button]):not([type=submit]).w2ui-input:disabled, textarea.w2ui-input:disabled, input:not([type=button]):not([type=submit]).w2ui-input[readonly], textarea.w2ui-input[readonly] {
+		background-color: white;
+	}
+	
+	& > main {
+	
+		flex: 1;	
+		flex-direction: column;
+
+		header {		
+			@h: 40px;
+			height: @h;
+			line-height: @h;
+		}
+
+		article {
+			flex: 1;
+		}
+		
+		margin: 0 0 0 0;
+
+	}
+        
+        & > pre {
+            margin: 0 15px 15px 15px;
+            font-family: Consolas, Courier;
+            font-size: 12pt;
+            line-height: 120%;
+        }
+        
+        & > header {
+            text-align: center;
+            font-size: 20pt;
+            margin: 10px 20px;
+        }            
+
+}
+
+span.anchor {
+	cursor: pointer;
+}
+
+td.w2ui-grid-data[data-ref] > div:not(:empty) {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+
+table.annul {
+
+	margin-top:0px;
+	margin-left:30px;
+	color:#666;
+	
+	tr {	
+		height: 30px;
+	}
+
+	th {
+		text-align: left;
+		color: #ff3300;
+		text-decoration: underline;
+	}
+
+	td {
+	
+		padding-right: 50px;
+		
+		&:first-child {
+			text-align: right;
+			padding-right: 10px;
+			width: 100px;		
+		}
+		
+	}
+
+}
+
+table.sync {
+
+	margin-top:0px;
+	margin-left:30px;
+	color:#666;
+	
+	tr {	
+		height: 30px;
+	}
+
+	th {
+		text-align: left;
+		color: #ff3300;
+		text-decoration: underline;
+	}
+
+	td {
+	
+		padding-right: 50px;
+		
+		&:first-child {
+			text-align: right;
+			padding-right: 10px;
+			width: 1px;
+			white-space:nowrap;			
+		}
+		
+	}
+
+}

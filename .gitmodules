@@ -1,0 +1,9 @@
+[submodule "mosgis-web/src/main/webapp/_/libs/elu"]
+	path = mosgis-web/src/main/webapp/_/libs/elu
+	url = https://github.com/do-/elu.js.git
+[submodule "mosgis-web/src/main/webapp/_/libs/elu_w2ui"]
+	path = mosgis-web/src/main/webapp/_/libs/elu_w2ui
+	url = https://github.com/do-/elu_w2ui.git
+[submodule "mosgis-ejb/src/main/java/ru/eludia/base"]
+	path = mosgis-ejb/src/main/java/ru/eludia/base
+	url = https://github.com/do-/ru_eludia_base.git

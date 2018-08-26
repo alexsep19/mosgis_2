@@ -1,0 +1,116 @@
+<span
+	data-popup-width=505
+	data-popup-height=510
+	data-popup-title='Добавить лифт'
+>
+
+	<style>
+
+        		label[data-block-name=lift_new] {
+        			width: 250px;
+        			margin-right: 10px;
+        		}
+
+        		input[data-block-name=lift_new] {
+        			width: 180px !important;
+        		}
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:455px; margin:8px 0 0 0;">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Номер подъезда</label>
+                <div>
+                	<input name=uuid_entrance>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Тип лифта</label>
+                <div>
+                	<input name=code_vc_nsi_192>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Заводской номер</label>
+                <div>
+                	<input name=factorynum>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Инвентарный номер</label>
+                <div>
+                	<input name=f_20007>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Грузоподъемность, кг</label>
+                <div>
+                	<input name=f_20165>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Год ввода в эксплуатацию</label>
+                <div>
+                	<input name=f_20164 maxlength=4>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Нормативный срок службы</label>
+                <div>
+                	<input name=f_20166>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Предельный срок эксплуатации</label>
+                <div>
+                	<input name=operatinglimit maxlength=4>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Физический износ, лет</label>
+                <div>
+                	<input name=f_20151>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Год проведения последнего капремонта</label>
+                <div>
+                	<input name=f_20124>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Дата прекращения</label>
+                <div>
+                	<input name=terminationdate placeholder="">
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Причина аннулирования</label>
+                <div>
+                	<input name=annulmentinfo maxlength=250>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>

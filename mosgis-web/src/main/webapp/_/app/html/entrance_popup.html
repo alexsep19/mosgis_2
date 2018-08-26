@@ -1,0 +1,53 @@
+<span
+	data-popup-width=405
+	data-popup-height=220
+	data-popup-title='Редактировать подъезд'
+>
+
+	<style>
+
+        		label[data-block-name=entrance_popup] {
+        			width: 210px;
+        			margin-right: 10px;
+        		}
+
+        		input[data-block-name=entrance_popup] {
+        			width: 80px !important;
+        		}
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:170px; margin:8px 0 0 0;">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Номер подъезда</label>
+                <div>
+                	<input name=entrancenum maxlength=255>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Количество этажей</label>
+                <div>
+                	<input name=storeyscount maxlength=2>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Год постройки</label>
+                <div>
+                	<input name=creationyear >
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>

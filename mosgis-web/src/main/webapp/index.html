@@ -1,0 +1,41 @@
+<html>
+	<head>
+                <meta charset="UTF-8">
+		<title>Интеграционный модуль</title>
+		<base href="/">
+		<noscript>
+			<meta http-equiv="refresh" content="0; url=/_unmaintainable_browser/">
+		</noscript>
+		<script>
+
+//			window.alarm = setTimeout (function () {window.location.href='/_unmaintainable_browser/'} , 1000);
+
+			window.autoExec = function () {};
+
+			var ver = '1.0.4583';
+
+			sessionStorage.setItem ('staticRoot', '/mosgis/__' + ver.replace (/\./g, '_'));
+			sessionStorage.setItem ('dynamicRoot', '/mosgis/_rest');
+
+			(function () {
+
+				var r = sessionStorage.getItem ('staticRoot')
+
+				function el (name, attr) {
+					var t = document.createElement (name)
+					for (var i in attr) t.setAttribute (i, attr [i])
+					return t
+				}
+
+				function ahead (e) {document.head.appendChild (e)}
+
+				ahead (el ('link',   {href: r + '/libs/w2ui/w2ui-1.5.rc1.min.css', rel: 'stylesheet', type: 'text/css'}))
+				ahead (el ('link',   {href: r + '/libs/mosgis/mosgis.css', rel: 'stylesheet', type: 'text/css'}))
+				ahead (el ('script', {src:  r + '/libs/requirejs/require.js', 'data-main': r + '/app/js/_.js'}))
+
+			})()
+
+		</script>
+	</head>
+	<body onLoad="window.autoExec ()"></body>
+</html>

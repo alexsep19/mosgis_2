@@ -1,0 +1,62 @@
+<span
+	data-popup-width=920
+	data-popup-height=370
+	data-popup-title='Работа / услуга организации'
+>
+
+	<style>
+
+        label[data-block-name=org_work_popup] {
+        	width: 180px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=org_work_popup] {
+        	width: 335px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:310px; margin:8px 0 0 0;">
+
+        <div class="w2ui-page page-0">
+
+
+            <div class="w2ui-field">
+                <label>Название работы/услуги</label>
+                <div>
+                	<input name=workname maxlength=500>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Вид работ</label>
+                <div>
+                	<input name=code_vc_nsi_56>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Единица измерения</label>
+                <div>
+                	<input name=stringdimensionunit>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Обязательные работы,<br>обеспечивающие надлежащее<br>содержание МКД</label>
+                <div>
+                	<div id=required_services_container style="margin:5px 0 0 60px;width:670px;height:125px;" />
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>

@@ -1,0 +1,88 @@
+<span
+	data-popup-width=805
+	data-popup-height=385
+	data-popup-title='Нежилое помещение'
+>
+
+	<style>
+
+        		label[data-block-name=premise_nonresidental_popup] {
+        			width: 170px;
+        			margin-right: 10px;
+        		}
+
+        		input[data-block-name=premise_nonresidental_popup] {
+        			width: 560px !important;
+        		}
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:330px; margin:8px 0 0 0;">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Номер помещения</label>
+                <div>
+                	<input name=premisesnum maxlength=255>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Кадастровый номер</label>
+                <div>
+                	<input name=cadastralnumber>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Общее имущество?</label>
+                <div>
+                	<input name=iscommonproperty>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Назначение</label>
+                <div>
+                	<input name=f_20003>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Общая площадь, м&sup2;</label>
+                <div>
+                	<input name=totalarea maxlength=26>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label title="Направление использования тепловой энергии на нужды отопления">Направление исп. тепла</label>
+                <div>
+                	<input name=f_20054>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label title="Направления использования газа">Направление исп. газа</label>
+                <div>
+                	<input name=f_20053>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label title="Наличие электрооборудования">Наличие э/оборудования</label>
+                <div>
+                	<input name=f_20056>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>

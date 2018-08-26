@@ -1,0 +1,59 @@
+<span
+	data-popup-width=500
+	data-popup-height=265
+	data-popup-title='Учётная запись'
+>
+
+	<style>
+
+        label[data-block-name=voc_user_popup] {
+        	width: 100px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=voc_user_popup] {
+        	width: 300px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:210px; margin:8px 0 0 0;">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Фамилия</label>
+                <div>
+                	<input name=f>
+                </div>
+            </div>
+            <div class="w2ui-field">
+                <label>Имя</label>
+                <div>
+                	<input name=i>
+                </div>
+            </div>
+            <div class="w2ui-field">
+                <label>Отчество</label>
+                <div>
+                	<input name=o>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Login</label>
+                <div>
+                	<input name=login>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+			<button class=w2ui-btn name=set_password data-on=uuid>Установить пароль</button>
+        </div>
+
+	</div>
+
+</span>

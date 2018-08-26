@@ -1,0 +1,6 @@
+/mosgis-api/target/
+/mosgis-ejb/target/
+/mosgis-web/target/
+/mosgis-ear/target/
+/mosgis-web/node_modules/
+nb-configuration.xml

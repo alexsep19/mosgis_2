@@ -1,0 +1,64 @@
+@status-color-neutral: #eeeeff;
+@status-color-ok: #44A858;
+@status-color-warning: #ffff99;
+@status-color-fail: #ffcccc;
+@status-color-created: #ddffdd;
+
+.w2ui-field {
+
+	> div {
+
+	    color: #666;
+
+	    > article {
+		margin-top: 4px;
+		display: inline-block;
+	    }
+
+	}
+	
+}
+
+.w2ui-page {
+
+	header {
+		font-family: Arial Narrow;
+		font-size: 26px;
+		color:#332;
+	}
+	
+	header:last-child {
+		margin-bottom: -10px;
+	}
+	
+}
+
+.w2ui-grid .w2ui-grid-body .w2ui-grid-records table {
+
+	tr.status_notice td[data-status] {
+		background-color: @status-color-neutral;
+	}
+
+	tr.status_created td[data-status] {
+		background-color: @status-color-created;
+	}		
+
+	tr.status_fail td[data-status] {
+		background-color: @status-color-fail;
+	}
+
+	tr.status_warning td[data-status] {
+		background-color: @status-color-warning;
+	}
+
+	tr.status_deleted td[data-status] {
+		background-color: @status-color-fail;
+		text-decoration: line-through;
+	}
+
+}
+
+div.w2ui-tabs div.w2ui-tab.active {
+	background-color: #eef5eb;
+	font-weight: bold;
+}

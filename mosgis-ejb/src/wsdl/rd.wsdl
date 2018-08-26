@@ -1,0 +1,1497 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="WS" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://tempuri.org/" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing">
+  <wsdl:types>
+    <xs:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:import namespace="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+      <xs:import namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+      <xs:import namespace="http://schemas.datacontract.org/2004/07/DMWSClasses"/>
+      <xs:import namespace="http://schemas.datacontract.org/2004/07/"/>
+      <xs:import namespace="http://schemas.datacontract.org/2004/07/AspectSystems.DM.Core.Entities"/>
+      <xs:element name="AddOrUpdateOwnObject">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="obj" nillable="true" type="q1:OwnObjectService" xmlns:q1="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="AddOrUpdateOwnObjectResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="AddOrUpdateOwnObjectResult" nillable="true" type="q2:OwnObjectService" xmlns:q2="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="UpdateObjectProperties">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="props" nillable="true" type="q3:ArrayOfObjectPropertyService" xmlns:q3="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+            <xs:element minOccurs="0" name="objectModelID" type="xs:int"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="UpdateObjectPropertiesResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="UpdateObjectPropertiesResult" nillable="true" type="q4:ArrayOfObjectPropertyService" xmlns:q4="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="UpdateOwnObjectList">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="dynamicObjects" nillable="true" type="q5:ArrayOfOwnObjectService" xmlns:q5="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="UpdateOwnObjectListResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="UpdateOwnObjectListResult" nillable="true" type="q6:ArrayOfOwnObjectService" xmlns:q6="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="DeleteOwnObject">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="obj" nillable="true" type="q7:OwnObjectService" xmlns:q7="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="DeleteOwnObjectResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="DeleteOwnObjectResult" type="xs:boolean"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="AddFileOwnObject">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="obj" nillable="true" type="q8:OwnObjectService" xmlns:q8="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+            <xs:element minOccurs="0" name="fileGuid" nillable="true" type="xs:string"/>
+            <xs:element minOccurs="0" name="CompanyID" type="xs:int"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="AddFileOwnObjectResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="AddFileOwnObjectResult" nillable="true" type="q9:OwnObjectService" xmlns:q9="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="AddConnection">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="fromName" nillable="true" type="xs:string"/>
+            <xs:element minOccurs="0" name="fromModelID" type="xs:int"/>
+            <xs:element minOccurs="0" name="toName" nillable="true" type="xs:string"/>
+            <xs:element minOccurs="0" name="toModelID" type="xs:int"/>
+            <xs:element minOccurs="0" name="connModelID" type="xs:int"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="AddConnectionResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="AddConnectionResult" type="xs:boolean"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="AddConnectionID">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="modelId" type="xs:int"/>
+            <xs:element minOccurs="0" name="sourceId" type="xs:int"/>
+            <xs:element minOccurs="0" name="sourceModelId" type="xs:int"/>
+            <xs:element minOccurs="0" name="targetId" type="xs:int"/>
+            <xs:element minOccurs="0" name="targetModelId" type="xs:int"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="AddConnectionIDResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="AddConnectionIDResult" nillable="true" type="q10:DynamicObjectConnection" xmlns:q10="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetObjectsByParentID">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="objectModelID" type="xs:int"/>
+            <xs:element minOccurs="0" name="parentObjectID" type="xs:int"/>
+            <xs:element minOccurs="0" name="withProp" type="xs:boolean"/>
+            <xs:element minOccurs="0" name="propertyCondition" nillable="true" type="xs:string"/>
+            <xs:element minOccurs="0" name="isCaseSensitive" type="xs:boolean"/>
+            <xs:element minOccurs="0" name="sortFields" nillable="true" type="q11:ArrayOfSortField" xmlns:q11="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetObjectsByParentIDResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="GetObjectsByParentIDResult" nillable="true" type="q12:ArrayOfOwnObjectService" xmlns:q12="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetObjectsByModel">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="modelID" type="xs:int"/>
+            <xs:element minOccurs="0" name="withProp" type="xs:boolean"/>
+            <xs:element minOccurs="0" name="propertyCondition" nillable="true" type="xs:string"/>
+            <xs:element minOccurs="0" name="isCaseSensitive" type="xs:boolean"/>
+            <xs:element minOccurs="0" name="sortFields" nillable="true" type="q13:ArrayOfSortField" xmlns:q13="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetObjectsByModelResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="GetObjectsByModelResult" nillable="true" type="q14:ArrayOfOwnObjectService" xmlns:q14="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetCrossConnectionObjectsByModel">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="objects" nillable="true" type="q15:ArrayOfOwnObjectService" xmlns:q15="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+            <xs:element minOccurs="0" name="crossObjectModelId" type="xs:int"/>
+            <xs:element minOccurs="0" name="withProp" type="xs:boolean"/>
+            <xs:element minOccurs="0" name="crossPropertyCondition" nillable="true" type="xs:string"/>
+            <xs:element minOccurs="0" name="isCaseSensitive" type="xs:boolean"/>
+            <xs:element minOccurs="0" name="sortFields" nillable="true" type="q16:ArrayOfSortField" xmlns:q16="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetCrossConnectionObjectsByModelResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="GetCrossConnectionObjectsByModelResult" nillable="true" type="q17:ArrayOfOwnObjectService" xmlns:q17="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetObjectsByChainObjectsAndModel">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="beginObject" nillable="true" type="q18:OwnObjectService" xmlns:q18="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+            <xs:element minOccurs="0" name="chainObjectModelIDs" nillable="true" type="q19:ArrayOfint" xmlns:q19="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+            <xs:element minOccurs="0" name="purposeObjectModelId" type="xs:int"/>
+            <xs:element minOccurs="0" name="withProp" type="xs:boolean"/>
+            <xs:element minOccurs="0" name="crossPropertyCondition" nillable="true" type="xs:string"/>
+            <xs:element minOccurs="0" name="isCaseSensitive" type="xs:boolean"/>
+            <xs:element minOccurs="0" name="sortFields" nillable="true" type="q20:ArrayOfSortField" xmlns:q20="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetObjectsByChainObjectsAndModelResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="GetObjectsByChainObjectsAndModelResult" nillable="true" type="q21:ArrayOfOwnObjectService" xmlns:q21="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetObjectByObjectID">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="objID" type="xs:int"/>
+            <xs:element minOccurs="0" name="modelID" type="xs:int"/>
+            <xs:element minOccurs="0" name="withProp" type="xs:boolean"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetObjectByObjectIDResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="GetObjectByObjectIDResult" nillable="true" type="q22:OwnObjectService" xmlns:q22="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetObjectByParentID">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="objectModelID" type="xs:int"/>
+            <xs:element minOccurs="0" name="objectName" nillable="true" type="xs:string"/>
+            <xs:element minOccurs="0" name="parentObjectID" type="xs:int"/>
+            <xs:element minOccurs="0" name="withProp" type="xs:boolean"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetObjectByParentIDResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="GetObjectByParentIDResult" nillable="true" type="q23:OwnObjectService" xmlns:q23="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetAllModelsTreeByRootId">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="rootId" type="xs:int"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetAllModelsTreeByRootIdResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="GetAllModelsTreeByRootIdResult" nillable="true" type="q24:ArrayOfOwnObjectModelService" xmlns:q24="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetAllModelsWithPropsTreeByRootId">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="rootId" type="xs:int"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetAllModelsWithPropsTreeByRootIdResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="GetAllModelsWithPropsTreeByRootIdResult" nillable="true" type="q25:ArrayOfOwnObjectModelService" xmlns:q25="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetAllModelConnections">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="modelId" type="xs:int"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetAllModelConnectionsResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="GetAllModelConnectionsResult" nillable="true" type="q26:ArrayOfConnectionModelService" xmlns:q26="http://schemas.datacontract.org/2004/07/DMWSClasses"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetModelProperties">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="modelId" type="xs:int"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetModelPropertiesResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="GetModelPropertiesResult" nillable="true" type="q27:ArrayOfObjectPropertyModelService" xmlns:q27="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetObjectHistory">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="objectId" type="xs:int"/>
+            <xs:element minOccurs="0" name="modelId" type="xs:int"/>
+            <xs:element minOccurs="0" name="changedProperties" nillable="true" type="q28:ArrayOfstring" xmlns:q28="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+            <xs:element minOccurs="0" name="propertiesForView" nillable="true" type="q29:ArrayOfstring" xmlns:q29="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetObjectHistoryResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="GetObjectHistoryResult" nillable="true" type="q30:ArrayOfOwnObjectService" xmlns:q30="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetLinkConnectionObjectsByObjectId">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="objectId" type="xs:int"/>
+            <xs:element minOccurs="0" name="modelID" type="xs:int"/>
+            <xs:element minOccurs="0" name="connModelID" type="xs:int"/>
+            <xs:element minOccurs="0" name="linkID" type="xs:int"/>
+            <xs:element minOccurs="0" name="withProp" type="xs:boolean"/>
+            <xs:element minOccurs="0" name="propertyCondition" nillable="true" type="xs:string"/>
+            <xs:element minOccurs="0" name="isCaseSensitive" type="xs:boolean"/>
+            <xs:element minOccurs="0" name="sortFields" nillable="true" type="q31:ArrayOfSortField" xmlns:q31="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetLinkConnectionObjectsByObjectIdResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="GetLinkConnectionObjectsByObjectIdResult" nillable="true" type="q32:ArrayOfOwnObjectService" xmlns:q32="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="FindObjectsByMaskOfName">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="modelId" type="xs:int"/>
+            <xs:element minOccurs="0" name="lexems" nillable="true" type="q33:ArrayOfstring" xmlns:q33="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+            <xs:element minOccurs="0" name="isWithProperties" type="xs:boolean"/>
+            <xs:element minOccurs="0" name="startIndex" type="xs:int"/>
+            <xs:element minOccurs="0" name="countOfObjects" type="xs:int"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="FindObjectsByMaskOfNameResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="FindObjectsByMaskOfNameResult" nillable="true" type="q34:ArrayOfOwnObjectService" xmlns:q34="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetPDF">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="text" nillable="true" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetPDFResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="GetPDFResult" nillable="true" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetReportXLS">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="reportName" nillable="true" type="xs:string"/>
+            <xs:element minOccurs="0" name="objs" nillable="true" type="q35:ArrayOfOwnObjectService" xmlns:q35="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetReportXLSResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="GetReportXLSResult" nillable="true" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="ExecuteQueryWithTemplateToFile">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="query" nillable="true" type="xs:string"/>
+            <xs:element minOccurs="0" name="templateName" nillable="true" type="xs:string"/>
+            <xs:element minOccurs="0" name="arguments" nillable="true" type="q36:ArrayOfKeyValueOfstringstring" xmlns:q36="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="ExecuteQueryWithTemplateToFileResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="ExecuteQueryWithTemplateToFileResult" nillable="true" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="ExecuteQueryToFile">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="query" nillable="true" type="xs:string"/>
+            <xs:element minOccurs="0" name="columns" nillable="true" type="q37:ArrayOfstring" xmlns:q37="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+            <xs:element minOccurs="0" name="isIncludeColumns" type="xs:boolean"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="ExecuteQueryToFileResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="ExecuteQueryToFileResult" nillable="true" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="SendEMail">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="adress" nillable="true" type="xs:string"/>
+            <xs:element minOccurs="0" name="messageFrom" nillable="true" type="xs:string"/>
+            <xs:element minOccurs="0" name="messageSubject" nillable="true" type="xs:string"/>
+            <xs:element minOccurs="0" name="messageText" nillable="true" type="xs:string"/>
+            <xs:element minOccurs="0" name="files" nillable="true" type="q38:ArrayOfKeyValueOfstringstring" xmlns:q38="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="SendEMailResponse">
+        <xs:complexType>
+          <xs:sequence/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetFileById">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="fileId" type="xs:int"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetFileByIdResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="GetFileByIdResult" nillable="true" type="q39:FileResult" xmlns:q39="http://schemas.datacontract.org/2004/07/"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetSqlQueryByName">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetSqlQueryByNameResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="GetSqlQueryByNameResult" nillable="true" type="q40:SqlQuery" xmlns:q40="http://schemas.datacontract.org/2004/07/DMWSClasses"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="CopyFile">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="source" nillable="true" type="xs:string"/>
+            <xs:element minOccurs="0" name="receiver" nillable="true" type="xs:string"/>
+            <xs:element minOccurs="0" name="isCopy" type="xs:boolean"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="CopyFileResponse">
+        <xs:complexType>
+          <xs:sequence/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="SaveFileInStorage">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="objectId" type="xs:int"/>
+            <xs:element minOccurs="0" name="companyId" type="xs:int"/>
+            <xs:element minOccurs="0" name="fileData" nillable="true" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="SaveFileInStorageResponse">
+        <xs:complexType>
+          <xs:sequence/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="AddOrUpdateModelConnection">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="modelConnection" nillable="true" type="q41:ConnectionModelService" xmlns:q41="http://schemas.datacontract.org/2004/07/DMWSClasses"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="AddOrUpdateModelConnectionResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="AddOrUpdateModelConnectionResult" nillable="true" type="q42:ConnectionModelService" xmlns:q42="http://schemas.datacontract.org/2004/07/DMWSClasses"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="RemoveModelConnection">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="modelConnection" nillable="true" type="q43:ConnectionModelService" xmlns:q43="http://schemas.datacontract.org/2004/07/DMWSClasses"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="RemoveModelConnectionResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="RemoveModelConnectionResult" nillable="true" type="q44:ConnectionModelService" xmlns:q44="http://schemas.datacontract.org/2004/07/DMWSClasses"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="MoveFileFromTempToZip">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="sourceFileName" nillable="true" type="xs:string"/>
+            <xs:element minOccurs="0" name="zipFileName" nillable="true" type="xs:string"/>
+            <xs:element minOccurs="0" name="targetFileName" nillable="true" type="xs:string"/>
+            <xs:element minOccurs="0" name="path" nillable="true" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="MoveFileFromTempToZipResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="MoveFileFromTempToZipResult" nillable="true" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="AddFileToObjectZip">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="dynamicObject" nillable="true" type="q45:OwnObjectService" xmlns:q45="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+            <xs:element minOccurs="0" name="fileName" nillable="true" type="xs:string"/>
+            <xs:element minOccurs="0" name="companyId" type="xs:int"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="AddFileToObjectZipResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="AddFileToObjectZipResult" nillable="true" type="q46:OwnObjectService" xmlns:q46="http://schemas.datacontract.org/2004/07/DMWSNewLife"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Get731CompaniesRating">
+        <xs:complexType>
+          <xs:sequence/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Get731CompaniesRatingResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="Get731CompaniesRatingResult" nillable="true" type="q47:ArrayOfCompanyRating" xmlns:q47="http://schemas.datacontract.org/2004/07/AspectSystems.DM.Core.Entities"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetAllCompaniesNotConcludedAgreement">
+        <xs:complexType>
+          <xs:sequence/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetAllCompaniesNotConcludedAgreementResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="GetAllCompaniesNotConcludedAgreementResult" nillable="true" type="q48:ArrayOfCompanyInfo" xmlns:q48="http://schemas.datacontract.org/2004/07/AspectSystems.DM.Core.Entities"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
+    <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://schemas.microsoft.com/2003/10/Serialization/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://schemas.microsoft.com/2003/10/Serialization/">
+      <xs:element name="anyType" nillable="true" type="xs:anyType"/>
+      <xs:element name="anyURI" nillable="true" type="xs:anyURI"/>
+      <xs:element name="base64Binary" nillable="true" type="xs:base64Binary"/>
+      <xs:element name="boolean" nillable="true" type="xs:boolean"/>
+      <xs:element name="byte" nillable="true" type="xs:byte"/>
+      <xs:element name="dateTime" nillable="true" type="xs:dateTime"/>
+      <xs:element name="decimal" nillable="true" type="xs:decimal"/>
+      <xs:element name="double" nillable="true" type="xs:double"/>
+      <xs:element name="float" nillable="true" type="xs:float"/>
+      <xs:element name="int" nillable="true" type="xs:int"/>
+      <xs:element name="long" nillable="true" type="xs:long"/>
+      <xs:element name="QName" nillable="true" type="xs:QName"/>
+      <xs:element name="short" nillable="true" type="xs:short"/>
+      <xs:element name="string" nillable="true" type="xs:string"/>
+      <xs:element name="unsignedByte" nillable="true" type="xs:unsignedByte"/>
+      <xs:element name="unsignedInt" nillable="true" type="xs:unsignedInt"/>
+      <xs:element name="unsignedLong" nillable="true" type="xs:unsignedLong"/>
+      <xs:element name="unsignedShort" nillable="true" type="xs:unsignedShort"/>
+      <xs:element name="char" nillable="true" type="tns:char"/>
+      <xs:simpleType name="char">
+        <xs:restriction base="xs:int"/>
+      </xs:simpleType>
+      <xs:element name="duration" nillable="true" type="tns:duration"/>
+      <xs:simpleType name="duration">
+        <xs:restriction base="xs:duration">
+          <xs:pattern value="\-?P(\d*D)?(T(\d*H)?(\d*M)?(\d*(\.\d*)?S)?)?"/>
+          <xs:minInclusive value="-P10675199DT2H48M5.4775808S"/>
+          <xs:maxInclusive value="P10675199DT2H48M5.4775807S"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:element name="guid" nillable="true" type="tns:guid"/>
+      <xs:simpleType name="guid">
+        <xs:restriction base="xs:string">
+          <xs:pattern value="[\da-fA-F]{8}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{12}"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:attribute name="FactoryType" type="xs:QName"/>
+      <xs:attribute name="Id" type="xs:ID"/>
+      <xs:attribute name="Ref" type="xs:IDREF"/>
+    </xs:schema>
+    <xs:schema elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/DMWSNewLife" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://schemas.datacontract.org/2004/07/DMWSNewLife">
+      <xs:complexType name="OwnObjectService">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ID" type="xs:int"/>
+          <xs:element minOccurs="0" name="ModelName" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="Model_ID" type="xs:int"/>
+          <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="Parent_ID" nillable="true" type="xs:int"/>
+          <xs:element minOccurs="0" name="Properties" nillable="true" type="tns:ArrayOfObjectPropertyService"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="OwnObjectService" nillable="true" type="tns:OwnObjectService"/>
+      <xs:complexType name="ArrayOfObjectPropertyService">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="ObjectPropertyService" nillable="true" type="tns:ObjectPropertyService"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfObjectPropertyService" nillable="true" type="tns:ArrayOfObjectPropertyService"/>
+      <xs:complexType name="ObjectPropertyService">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="DictionaryModelID" type="xs:int"/>
+          <xs:element minOccurs="0" name="DictionaryValue" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="ID" type="xs:int"/>
+          <xs:element minOccurs="0" name="IdentifyID" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="ModelName" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="Object_ID" type="xs:int"/>
+          <xs:element minOccurs="0" name="Property_Model_ID" type="xs:int"/>
+          <xs:element minOccurs="0" name="Property_Value_Type" type="xs:int"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ObjectPropertyService" nillable="true" type="tns:ObjectPropertyService"/>
+      <xs:complexType name="ArrayOfOwnObjectService">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="OwnObjectService" nillable="true" type="tns:OwnObjectService"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfOwnObjectService" nillable="true" type="tns:ArrayOfOwnObjectService"/>
+      <xs:complexType name="DynamicObjectConnection">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Id" type="xs:int"/>
+          <xs:element minOccurs="0" name="ModelId" type="xs:int"/>
+          <xs:element minOccurs="0" name="SourceModelId" type="xs:int"/>
+          <xs:element minOccurs="0" name="SourceObjectId" type="xs:int"/>
+          <xs:element minOccurs="0" name="TargetModelId" type="xs:int"/>
+          <xs:element minOccurs="0" name="TargetObjectId" type="xs:int"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="DynamicObjectConnection" nillable="true" type="tns:DynamicObjectConnection"/>
+      <xs:complexType name="ArrayOfSortField">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="SortField" nillable="true" type="tns:SortField"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfSortField" nillable="true" type="tns:ArrayOfSortField"/>
+      <xs:complexType name="SortField">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="field" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="fieldType" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="sortType" nillable="true" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="SortField" nillable="true" type="tns:SortField"/>
+      <xs:complexType name="ArrayOfOwnObjectModelService">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="OwnObjectModelService" nillable="true" type="tns:OwnObjectModelService"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfOwnObjectModelService" nillable="true" type="tns:ArrayOfOwnObjectModelService"/>
+      <xs:complexType name="OwnObjectModelService">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Childs" nillable="true" type="tns:ArrayOfOwnObjectModelService"/>
+          <xs:element minOccurs="0" name="ID" type="xs:int"/>
+          <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="ParentID" nillable="true" type="xs:int"/>
+          <xs:element minOccurs="0" name="Properties" nillable="true" type="tns:ArrayOfObjectPropertyModelService"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="OwnObjectModelService" nillable="true" type="tns:OwnObjectModelService"/>
+      <xs:complexType name="ArrayOfObjectPropertyModelService">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="ObjectPropertyModelService" nillable="true" type="tns:ObjectPropertyModelService"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfObjectPropertyModelService" nillable="true" type="tns:ArrayOfObjectPropertyModelService"/>
+      <xs:complexType name="ObjectPropertyModelService">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="ID" type="xs:int"/>
+          <xs:element minOccurs="0" name="IdentifyID" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="Link_Dictionary" nillable="true" type="xs:int"/>
+          <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="Object_Model_ID" type="xs:int"/>
+          <xs:element minOccurs="0" name="Property_Value_Type" type="xs:int"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ObjectPropertyModelService" nillable="true" type="tns:ObjectPropertyModelService"/>
+    </xs:schema>
+    <xs:schema elementFormDefault="qualified" targetNamespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+      <xs:complexType name="ArrayOfint">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="int" type="xs:int"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfint" nillable="true" type="tns:ArrayOfint"/>
+      <xs:complexType name="ArrayOfstring">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfstring" nillable="true" type="tns:ArrayOfstring"/>
+      <xs:complexType name="ArrayOfKeyValueOfstringstring">
+        <xs:annotation>
+          <xs:appinfo>
+            <IsDictionary xmlns="http://schemas.microsoft.com/2003/10/Serialization/">true</IsDictionary>
+          </xs:appinfo>
+        </xs:annotation>
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="KeyValueOfstringstring">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Key" nillable="true" type="xs:string"/>
+                <xs:element name="Value" nillable="true" type="xs:string"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfKeyValueOfstringstring" nillable="true" type="tns:ArrayOfKeyValueOfstringstring"/>
+    </xs:schema>
+    <xs:schema elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/DMWSClasses" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://schemas.datacontract.org/2004/07/DMWSClasses">
+      <xs:complexType name="ArrayOfConnectionModelService">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="ConnectionModelService" nillable="true" type="tns:ConnectionModelService"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfConnectionModelService" nillable="true" type="tns:ArrayOfConnectionModelService"/>
+      <xs:complexType name="ConnectionModelService">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="From_ID" type="xs:int"/>
+          <xs:element minOccurs="0" name="ID" type="xs:int"/>
+          <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="SourceDescription" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="TargetDescription" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="To_ID" type="xs:int"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ConnectionModelService" nillable="true" type="tns:ConnectionModelService"/>
+      <xs:complexType name="SqlQuery">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="Id" type="xs:unsignedLong"/>
+          <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="Query" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="Title" nillable="true" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="SqlQuery" nillable="true" type="tns:SqlQuery"/>
+    </xs:schema>
+    <xs:schema elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://schemas.datacontract.org/2004/07/">
+      <xs:complexType name="FileResult">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Bytes" nillable="true" type="xs:base64Binary"/>
+          <xs:element minOccurs="0" name="FileName" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="Length" type="xs:long"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="FileResult" nillable="true" type="tns:FileResult"/>
+    </xs:schema>
+    <xs:schema elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/AspectSystems.DM.Core.Entities" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://schemas.datacontract.org/2004/07/AspectSystems.DM.Core.Entities">
+      <xs:complexType name="ArrayOfCompanyRating">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="CompanyRating" nillable="true" type="tns:CompanyRating"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfCompanyRating" nillable="true" type="tns:ArrayOfCompanyRating"/>
+      <xs:complexType name="CompanyRating">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:CompanyInfo">
+            <xs:sequence>
+              <xs:element minOccurs="0" name="Index" type="xs:int"/>
+              <xs:element minOccurs="0" name="Rating" type="xs:double"/>
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:element name="CompanyRating" nillable="true" type="tns:CompanyRating"/>
+      <xs:complexType name="CompanyInfo">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Id" type="xs:int"/>
+          <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="Okrug" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="OrgType" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="Rayon" nillable="true" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="CompanyInfo" nillable="true" type="tns:CompanyInfo"/>
+      <xs:complexType name="ArrayOfCompanyInfo">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="CompanyInfo" nillable="true" type="tns:CompanyInfo"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfCompanyInfo" nillable="true" type="tns:ArrayOfCompanyInfo"/>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="IWS_AddOrUpdateOwnObject_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddOrUpdateOwnObject"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_AddOrUpdateOwnObject_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddOrUpdateOwnObjectResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_UpdateObjectProperties_InputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateObjectProperties"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_UpdateObjectProperties_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateObjectPropertiesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_UpdateOwnObjectList_InputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateOwnObjectList"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_UpdateOwnObjectList_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateOwnObjectListResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_DeleteOwnObject_InputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteOwnObject"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_DeleteOwnObject_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteOwnObjectResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_AddFileOwnObject_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddFileOwnObject"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_AddFileOwnObject_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddFileOwnObjectResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_AddConnection_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddConnection"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_AddConnection_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddConnectionResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_AddConnectionID_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddConnectionID"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_AddConnectionID_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddConnectionIDResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetObjectsByParentID_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetObjectsByParentID"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetObjectsByParentID_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetObjectsByParentIDResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetObjectsByModel_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetObjectsByModel"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetObjectsByModel_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetObjectsByModelResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetCrossConnectionObjectsByModel_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetCrossConnectionObjectsByModel"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetCrossConnectionObjectsByModel_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetCrossConnectionObjectsByModelResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetObjectsByChainObjectsAndModel_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetObjectsByChainObjectsAndModel"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetObjectsByChainObjectsAndModel_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetObjectsByChainObjectsAndModelResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetObjectByObjectID_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetObjectByObjectID"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetObjectByObjectID_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetObjectByObjectIDResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetObjectByParentID_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetObjectByParentID"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetObjectByParentID_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetObjectByParentIDResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetAllModelsTreeByRootId_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllModelsTreeByRootId"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetAllModelsTreeByRootId_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllModelsTreeByRootIdResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetAllModelsWithPropsTreeByRootId_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllModelsWithPropsTreeByRootId"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetAllModelsWithPropsTreeByRootId_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllModelsWithPropsTreeByRootIdResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetAllModelConnections_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllModelConnections"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetAllModelConnections_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllModelConnectionsResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetModelProperties_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetModelProperties"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetModelProperties_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetModelPropertiesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetObjectHistory_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetObjectHistory"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetObjectHistory_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetObjectHistoryResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetLinkConnectionObjectsByObjectId_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetLinkConnectionObjectsByObjectId"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetLinkConnectionObjectsByObjectId_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetLinkConnectionObjectsByObjectIdResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_FindObjectsByMaskOfName_InputMessage">
+    <wsdl:part name="parameters" element="tns:FindObjectsByMaskOfName"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_FindObjectsByMaskOfName_OutputMessage">
+    <wsdl:part name="parameters" element="tns:FindObjectsByMaskOfNameResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetPDF_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPDF"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetPDF_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPDFResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetReportXLS_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetReportXLS"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetReportXLS_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetReportXLSResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_ExecuteQueryWithTemplateToFile_InputMessage">
+    <wsdl:part name="parameters" element="tns:ExecuteQueryWithTemplateToFile"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_ExecuteQueryWithTemplateToFile_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ExecuteQueryWithTemplateToFileResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_ExecuteQueryToFile_InputMessage">
+    <wsdl:part name="parameters" element="tns:ExecuteQueryToFile"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_ExecuteQueryToFile_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ExecuteQueryToFileResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_SendEMail_InputMessage">
+    <wsdl:part name="parameters" element="tns:SendEMail"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_SendEMail_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SendEMailResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetFileById_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetFileById"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetFileById_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetFileByIdResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetSqlQueryByName_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetSqlQueryByName"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_GetSqlQueryByName_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetSqlQueryByNameResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_CopyFile_InputMessage">
+    <wsdl:part name="parameters" element="tns:CopyFile"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_CopyFile_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CopyFileResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_SaveFileInStorage_InputMessage">
+    <wsdl:part name="parameters" element="tns:SaveFileInStorage"/>
+  </wsdl:message>
+  <wsdl:message name="IWS_SaveFileInStorage_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SaveFileInStorageResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IDynamicModelSetterService_AddOrUpdateModelConnection_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddOrUpdateModelConnection"/>
+  </wsdl:message>
+  <wsdl:message name="IDynamicModelSetterService_AddOrUpdateModelConnection_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddOrUpdateModelConnectionResponse"/>
+  </wsdl:message>
+  <wsdl:message name="IDynamicModelSetterService_RemoveModelConnection_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveModelConnection"/>
+  </wsdl:message>
+  <wsdl:message name="IDynamicModelSetterService_RemoveModelConnection_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveModelConnectionResponse"/>
+  </wsdl:message>
+  <wsdl:message name="I731Service_MoveFileFromTempToZip_InputMessage">
+    <wsdl:part name="parameters" element="tns:MoveFileFromTempToZip"/>
+  </wsdl:message>
+  <wsdl:message name="I731Service_MoveFileFromTempToZip_OutputMessage">
+    <wsdl:part name="parameters" element="tns:MoveFileFromTempToZipResponse"/>
+  </wsdl:message>
+  <wsdl:message name="I731Service_AddFileToObjectZip_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddFileToObjectZip"/>
+  </wsdl:message>
+  <wsdl:message name="I731Service_AddFileToObjectZip_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddFileToObjectZipResponse"/>
+  </wsdl:message>
+  <wsdl:message name="I731Service_Get731CompaniesRating_InputMessage">
+    <wsdl:part name="parameters" element="tns:Get731CompaniesRating"/>
+  </wsdl:message>
+  <wsdl:message name="I731Service_Get731CompaniesRating_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Get731CompaniesRatingResponse"/>
+  </wsdl:message>
+  <wsdl:message name="I731Service_GetAllCompaniesNotConcludedAgreement_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllCompaniesNotConcludedAgreement"/>
+  </wsdl:message>
+  <wsdl:message name="I731Service_GetAllCompaniesNotConcludedAgreement_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllCompaniesNotConcludedAgreementResponse"/>
+  </wsdl:message>
+  <wsdl:portType name="IWS">
+    <wsdl:operation name="AddOrUpdateOwnObject">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/AddOrUpdateOwnObject" message="tns:IWS_AddOrUpdateOwnObject_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/AddOrUpdateOwnObjectResponse" message="tns:IWS_AddOrUpdateOwnObject_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateObjectProperties">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/UpdateObjectProperties" message="tns:IWS_UpdateObjectProperties_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/UpdateObjectPropertiesResponse" message="tns:IWS_UpdateObjectProperties_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateOwnObjectList">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/UpdateOwnObjectList" message="tns:IWS_UpdateOwnObjectList_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/UpdateOwnObjectListResponse" message="tns:IWS_UpdateOwnObjectList_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteOwnObject">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/DeleteOwnObject" message="tns:IWS_DeleteOwnObject_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/DeleteOwnObjectResponse" message="tns:IWS_DeleteOwnObject_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="AddFileOwnObject">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/AddFileOwnObject" message="tns:IWS_AddFileOwnObject_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/AddFileOwnObjectResponse" message="tns:IWS_AddFileOwnObject_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="AddConnection">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/AddConnection" message="tns:IWS_AddConnection_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/AddConnectionResponse" message="tns:IWS_AddConnection_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="AddConnectionID">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/AddConnectionID" message="tns:IWS_AddConnectionID_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/AddConnectionIDResponse" message="tns:IWS_AddConnectionID_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectsByParentID">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/GetObjectsByParentID" message="tns:IWS_GetObjectsByParentID_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/GetObjectsByParentIDResponse" message="tns:IWS_GetObjectsByParentID_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectsByModel">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/GetObjectsByModel" message="tns:IWS_GetObjectsByModel_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/GetObjectsByModelResponse" message="tns:IWS_GetObjectsByModel_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetCrossConnectionObjectsByModel">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/GetCrossConnectionObjectsByModel" message="tns:IWS_GetCrossConnectionObjectsByModel_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/GetCrossConnectionObjectsByModelResponse" message="tns:IWS_GetCrossConnectionObjectsByModel_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectsByChainObjectsAndModel">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/GetObjectsByChainObjectsAndModel" message="tns:IWS_GetObjectsByChainObjectsAndModel_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/GetObjectsByChainObjectsAndModelResponse" message="tns:IWS_GetObjectsByChainObjectsAndModel_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectByObjectID">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/GetObjectByObjectID" message="tns:IWS_GetObjectByObjectID_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/GetObjectByObjectIDResponse" message="tns:IWS_GetObjectByObjectID_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectByParentID">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/GetObjectByParentID" message="tns:IWS_GetObjectByParentID_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/GetObjectByParentIDResponse" message="tns:IWS_GetObjectByParentID_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllModelsTreeByRootId">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/GetAllModelsTreeByRootId" message="tns:IWS_GetAllModelsTreeByRootId_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/GetAllModelsTreeByRootIdResponse" message="tns:IWS_GetAllModelsTreeByRootId_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllModelsWithPropsTreeByRootId">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/GetAllModelsWithPropsTreeByRootId" message="tns:IWS_GetAllModelsWithPropsTreeByRootId_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/GetAllModelsWithPropsTreeByRootIdResponse" message="tns:IWS_GetAllModelsWithPropsTreeByRootId_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllModelConnections">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/GetAllModelConnections" message="tns:IWS_GetAllModelConnections_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/GetAllModelConnectionsResponse" message="tns:IWS_GetAllModelConnections_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetModelProperties">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/GetModelProperties" message="tns:IWS_GetModelProperties_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/GetModelPropertiesResponse" message="tns:IWS_GetModelProperties_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectHistory">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/GetObjectHistory" message="tns:IWS_GetObjectHistory_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/GetObjectHistoryResponse" message="tns:IWS_GetObjectHistory_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetLinkConnectionObjectsByObjectId">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/GetLinkConnectionObjectsByObjectId" message="tns:IWS_GetLinkConnectionObjectsByObjectId_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/GetLinkConnectionObjectsByObjectIdResponse" message="tns:IWS_GetLinkConnectionObjectsByObjectId_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="FindObjectsByMaskOfName">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/FindObjectsByMaskOfName" message="tns:IWS_FindObjectsByMaskOfName_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/FindObjectsByMaskOfNameResponse" message="tns:IWS_FindObjectsByMaskOfName_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetPDF">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/GetPDF" message="tns:IWS_GetPDF_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/GetPDFResponse" message="tns:IWS_GetPDF_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetReportXLS">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/GetReportXLS" message="tns:IWS_GetReportXLS_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/GetReportXLSResponse" message="tns:IWS_GetReportXLS_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="ExecuteQueryWithTemplateToFile">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/ExecuteQueryWithTemplateToFile" message="tns:IWS_ExecuteQueryWithTemplateToFile_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/ExecuteQueryWithTemplateToFileResponse" message="tns:IWS_ExecuteQueryWithTemplateToFile_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="ExecuteQueryToFile">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/ExecuteQueryToFile" message="tns:IWS_ExecuteQueryToFile_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/ExecuteQueryToFileResponse" message="tns:IWS_ExecuteQueryToFile_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="SendEMail">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/SendEMail" message="tns:IWS_SendEMail_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/SendEMailResponse" message="tns:IWS_SendEMail_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetFileById">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/GetFileById" message="tns:IWS_GetFileById_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/GetFileByIdResponse" message="tns:IWS_GetFileById_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetSqlQueryByName">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/GetSqlQueryByName" message="tns:IWS_GetSqlQueryByName_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/GetSqlQueryByNameResponse" message="tns:IWS_GetSqlQueryByName_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="CopyFile">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/CopyFile" message="tns:IWS_CopyFile_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/CopyFileResponse" message="tns:IWS_CopyFile_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="SaveFileInStorage">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWS/SaveFileInStorage" message="tns:IWS_SaveFileInStorage_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IWS/SaveFileInStorageResponse" message="tns:IWS_SaveFileInStorage_OutputMessage"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="IDynamicModelSetterService">
+    <wsdl:operation name="AddOrUpdateModelConnection">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDynamicModelSetterService/AddOrUpdateModelConnection" message="tns:IDynamicModelSetterService_AddOrUpdateModelConnection_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IDynamicModelSetterService/AddOrUpdateModelConnectionResponse" message="tns:IDynamicModelSetterService_AddOrUpdateModelConnection_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveModelConnection">
+      <wsdl:input wsaw:Action="http://tempuri.org/IDynamicModelSetterService/RemoveModelConnection" message="tns:IDynamicModelSetterService_RemoveModelConnection_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/IDynamicModelSetterService/RemoveModelConnectionResponse" message="tns:IDynamicModelSetterService_RemoveModelConnection_OutputMessage"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="I731Service">
+    <wsdl:operation name="MoveFileFromTempToZip">
+      <wsdl:input wsaw:Action="http://tempuri.org/I731Service/MoveFileFromTempToZip" message="tns:I731Service_MoveFileFromTempToZip_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/I731Service/MoveFileFromTempToZipResponse" message="tns:I731Service_MoveFileFromTempToZip_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="AddFileToObjectZip">
+      <wsdl:input wsaw:Action="http://tempuri.org/I731Service/AddFileToObjectZip" message="tns:I731Service_AddFileToObjectZip_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/I731Service/AddFileToObjectZipResponse" message="tns:I731Service_AddFileToObjectZip_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="Get731CompaniesRating">
+      <wsdl:input wsaw:Action="http://tempuri.org/I731Service/Get731CompaniesRating" message="tns:I731Service_Get731CompaniesRating_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/I731Service/Get731CompaniesRatingResponse" message="tns:I731Service_Get731CompaniesRating_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllCompaniesNotConcludedAgreement">
+      <wsdl:input wsaw:Action="http://tempuri.org/I731Service/GetAllCompaniesNotConcludedAgreement" message="tns:I731Service_GetAllCompaniesNotConcludedAgreement_InputMessage"/>
+      <wsdl:output wsaw:Action="http://tempuri.org/I731Service/GetAllCompaniesNotConcludedAgreementResponse" message="tns:I731Service_GetAllCompaniesNotConcludedAgreement_OutputMessage"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BasicHttpBinding_IWS" type="tns:IWS">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="AddOrUpdateOwnObject">
+      <soap:operation soapAction="http://tempuri.org/IWS/AddOrUpdateOwnObject" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateObjectProperties">
+      <soap:operation soapAction="http://tempuri.org/IWS/UpdateObjectProperties" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateOwnObjectList">
+      <soap:operation soapAction="http://tempuri.org/IWS/UpdateOwnObjectList" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteOwnObject">
+      <soap:operation soapAction="http://tempuri.org/IWS/DeleteOwnObject" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddFileOwnObject">
+      <soap:operation soapAction="http://tempuri.org/IWS/AddFileOwnObject" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddConnection">
+      <soap:operation soapAction="http://tempuri.org/IWS/AddConnection" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddConnectionID">
+      <soap:operation soapAction="http://tempuri.org/IWS/AddConnectionID" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectsByParentID">
+      <soap:operation soapAction="http://tempuri.org/IWS/GetObjectsByParentID" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectsByModel">
+      <soap:operation soapAction="http://tempuri.org/IWS/GetObjectsByModel" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCrossConnectionObjectsByModel">
+      <soap:operation soapAction="http://tempuri.org/IWS/GetCrossConnectionObjectsByModel" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectsByChainObjectsAndModel">
+      <soap:operation soapAction="http://tempuri.org/IWS/GetObjectsByChainObjectsAndModel" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectByObjectID">
+      <soap:operation soapAction="http://tempuri.org/IWS/GetObjectByObjectID" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectByParentID">
+      <soap:operation soapAction="http://tempuri.org/IWS/GetObjectByParentID" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllModelsTreeByRootId">
+      <soap:operation soapAction="http://tempuri.org/IWS/GetAllModelsTreeByRootId" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllModelsWithPropsTreeByRootId">
+      <soap:operation soapAction="http://tempuri.org/IWS/GetAllModelsWithPropsTreeByRootId" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllModelConnections">
+      <soap:operation soapAction="http://tempuri.org/IWS/GetAllModelConnections" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetModelProperties">
+      <soap:operation soapAction="http://tempuri.org/IWS/GetModelProperties" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectHistory">
+      <soap:operation soapAction="http://tempuri.org/IWS/GetObjectHistory" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetLinkConnectionObjectsByObjectId">
+      <soap:operation soapAction="http://tempuri.org/IWS/GetLinkConnectionObjectsByObjectId" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FindObjectsByMaskOfName">
+      <soap:operation soapAction="http://tempuri.org/IWS/FindObjectsByMaskOfName" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPDF">
+      <soap:operation soapAction="http://tempuri.org/IWS/GetPDF" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetReportXLS">
+      <soap:operation soapAction="http://tempuri.org/IWS/GetReportXLS" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ExecuteQueryWithTemplateToFile">
+      <soap:operation soapAction="http://tempuri.org/IWS/ExecuteQueryWithTemplateToFile" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ExecuteQueryToFile">
+      <soap:operation soapAction="http://tempuri.org/IWS/ExecuteQueryToFile" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendEMail">
+      <soap:operation soapAction="http://tempuri.org/IWS/SendEMail" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetFileById">
+      <soap:operation soapAction="http://tempuri.org/IWS/GetFileById" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSqlQueryByName">
+      <soap:operation soapAction="http://tempuri.org/IWS/GetSqlQueryByName" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CopyFile">
+      <soap:operation soapAction="http://tempuri.org/IWS/CopyFile" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SaveFileInStorage">
+      <soap:operation soapAction="http://tempuri.org/IWS/SaveFileInStorage" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="BasicHttpBinding_IDynamicModelSetterService" type="tns:IDynamicModelSetterService">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="AddOrUpdateModelConnection">
+      <soap:operation soapAction="http://tempuri.org/IDynamicModelSetterService/AddOrUpdateModelConnection" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveModelConnection">
+      <soap:operation soapAction="http://tempuri.org/IDynamicModelSetterService/RemoveModelConnection" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="BasicHttpBinding_I731Service" type="tns:I731Service">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="MoveFileFromTempToZip">
+      <soap:operation soapAction="http://tempuri.org/I731Service/MoveFileFromTempToZip" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddFileToObjectZip">
+      <soap:operation soapAction="http://tempuri.org/I731Service/AddFileToObjectZip" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Get731CompaniesRating">
+      <soap:operation soapAction="http://tempuri.org/I731Service/Get731CompaniesRating" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllCompaniesNotConcludedAgreement">
+      <soap:operation soapAction="http://tempuri.org/I731Service/GetAllCompaniesNotConcludedAgreement" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="WS">
+    <wsdl:port name="BasicHttpBinding_IWS" binding="tns:BasicHttpBinding_IWS">
+      <soap:address location="http://37.230.149.85:8733/DMWS/"/>
+    </wsdl:port>
+    <wsdl:port name="BasicHttpBinding_IDynamicModelSetterService" binding="tns:BasicHttpBinding_IDynamicModelSetterService">
+      <soap:address location="http://37.230.149.85:8733/DMWS/1.0"/>
+    </wsdl:port>
+    <wsdl:port name="BasicHttpBinding_I731Service" binding="tns:BasicHttpBinding_I731Service">
+      <soap:address location="http://37.230.149.85:8733/DMWS/731"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

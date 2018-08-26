@@ -1,0 +1,82 @@
+<span
+	data-popup-width=570
+	data-popup-height=330
+	data-popup-title='Коммунальная услуга'
+>
+
+	<style>
+
+        label[data-block-name=municipal_service_popup] {
+        	width: 180px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=municipal_service_popup] {
+        	width: 320px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:270px; margin:8px 0 0 0;">
+
+        <div class="w2ui-page page-0">
+
+
+            <div class="w2ui-field">
+                <label>Наименование</label>
+                <div>
+                	<input name=mainmunicipalservicename maxlength=100>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Вид коммунальной услуги</label>
+                <div>
+                	<input name=code_vc_nsi_3 maxlength=100>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Вид коммунального ресурса</label>
+                <div>
+                	<input name=code_vc_nsi_2 maxlength=100>
+                </div>
+            </div>
+<!--
+            <div class="w2ui-field">
+                <label>Единица измерения</label>
+                <div>
+                	<input name=okei>
+                </div>
+            </div>
+-->
+            <div class="w2ui-field">
+                <label>Порядок сортировки</label>
+                <div>
+                	<input name=sortorder maxlength=3>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Общедомовые нужды</label>
+                <div>
+                	<input name=is_general>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Производится самостоятельно</label>
+                <div>
+                	<input name=selfproduced>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>

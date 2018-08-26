@@ -1,0 +1,393 @@
+if (window.__LOGOUT__) delete window.__LOGOUT__
+
+requirejs.config ({
+    baseUrl: sessionStorage.getItem ('staticRoot') + '/libs',
+    paths: {app: '../app/js'}
+});
+
+function get_default_url () {
+
+    return '/widgets'
+
+}
+
+function setup_request () {
+
+    if (!$_USER) return
+
+    var parts = location.pathname.split ('/').filter (function (i) {return i})
+    
+//    if (parts.length < 2 && $_USER && $_USER.role) return redirect (window.name = get_default_url ())
+
+    $_REQUEST = {type: parts [1]}
+    
+    if (parts [2]) $_REQUEST.id = parts [2]
+
+}
+
+$.fn.w2relayout = function (o) {
+
+    if (w2ui [o.name]) w2ui [o.name].destroy ()
+
+    return this.w2layout (o)
+
+}
+
+$.fn.w2residebar = function (o) {
+
+    if (w2ui [o.name]) w2ui [o.name].destroy ()
+
+    return this.w2sidebar (o)
+
+}
+
+w2utils.settings = {
+    weekStarts       : "M",
+    "dataType"       : "JSON",
+    "locale"         : "ru-RU",
+    "dateFormat"     : "dd.mm.yyyy",
+    "timeFormat"     : "h24",
+    "currency"       : "^[-+]?[0-9]*[\\,]?[0-9]+$",
+    "currencyPrefix" : "",
+    "currencySuffix" : " р.",
+    "currencyPrecision": 2,
+    "decimalSymbol"  : ",",
+    "groupSymbol"    : " ",
+    "float"          : "^[-]?[0-9]*[\\.]?[0-9]+$",
+    "shortmonths"    : ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"],
+    "fullmonths"     : ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"],
+    "shortdays"      : ["П", "В", "С", "Ч", "П", "С","В"],
+    "fulldays"       : ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"],
+    "phrases" : {
+        "Add new record": "Добавить новую запись",
+        "Add New": "Добавить",
+        "All Fields": "Все поля",
+        "Are you sure you want to delete selected records?": "Вы действительно хотите удалить выделенные записи?",
+        "Attach files by dragging and dropping or Click to Select": "Перетащите файлы сюда или нажмите чтобы выбрать",
+        "begins with": "начинается с",
+        "begins": "начинается",
+        "before": "до (включительно)",
+        "after": "начиная с",
+        "between": "между",
+        "buffered": "буфер",
+        "Clear Search": "Очистить поиск",
+        "Column": "Колонка",
+        "Confirmation": "Подтверждение",
+        "contains": "содержит",
+        "Delete Confirmation": "Подтверждение удаления",
+        "Delete selected records": "Удалить выбранные записи",
+        "Delete": "Удалить",
+        "Edit selected record": "Изменить выделенную запись",
+        "Edit": "Изменить",
+        "Empty list": "Пустой список",
+        "ends with": "заканчивается на",
+        "ends": "заканчивается",
+        "Hide": "Скрыть",
+        "in": "в списке",
+        "is": "равняется",
+        "Loading...": "Загрузка...",
+        "Multi Fields": "Несколько полей",
+        "Multiple Fields": "Несколько полей",
+        "more than": "более или ровно",
+        "less than": "менее или ровно",
+        "Name": "Имя",
+        "Size": "Размер",
+        "Type": "Тип",
+        "Modified": "Дата изменения",
+        "No items found": "Ничего не найдено",
+        "No": "Нет",
+        "none": "пусто",
+        "not null": "не пусто",
+        "null": "пусто",
+        "Not a float": "Не натуральное число",
+        "Not a hex number": "Не шестнадцатеричное число",
+        "Not a valid date": "Неверный формат",
+        "Not a valid email": "Неверный e-mail",
+        "Not alpha-numeric": "Не буквенно-цифровой текст",
+        "Not an integer": "Не целое число",
+        "Not in money format": "Не денежный формат",
+        "not in": "не в списке",
+        "Notification": "Уведомление",
+        "of": "из",
+        "Ok": "OK",
+        "Open Search Fields": "Открыть поля поиска",
+        "Record ID": "Запись",
+        "Records": "Записей",
+        "Refreshing...": "Обновление...",
+        "Reload data in the list": "Обновить список",
+        "Remove": "Удалить",
+        "Required field": "Обязательное поле",
+        "Reset Column Size": "Восстановить размер колонок",
+        "Reset": "Очистить",
+        "Return data is not in JSON format. See console for more information.": "Возвращенные данные не в формате JSON. Смотрите в консоли ошибки.",
+        "Save changed records": "Сохранить измененные записи",
+        "Save": "Сохранить",
+        "Saving...": "Сохранение",
+        "Search took": "Поиск занял",
+        "Search": "Поиск",
+        "Search...": "Поиск...",
+        "sec": "сек",
+        "Select Search Field": "Выбрать поля поиска",
+        "selected": "выделено",
+        "Server Response": "Ответ сервера",
+        "Show": "Показать",
+        "Show/hide columns": "Показать/скрыть колонки",
+        "Skip": "Пропустить",
+        "Sorting took": "Сортировка заняла",
+        "Toggle Line Numbers": "Вкл/Выкл. номера строк",
+        "Yes": "Да",
+        "Yesterday": "Вчера",
+        "Line #": "Номер строки #",
+        "Save Grid State": "Сохранить состояние таблицы",
+        "Restore Default State": "Восстановить состояние таблицы",
+        "Type to search...": "Введите строку поиска...",
+        "Your remote data source record count has changed, reloading from the first record.": "Данные изменены на сервере. Пожалуйста, перезагрузите страницу"
+    }
+}
+
+function dt_dmy    (v) { return !v ? '' : v.substr (0, 10).split ('-').reverse (). join ('.') }
+
+function dt_dmy2   (v) { 
+    if (!v) return ''
+    var dmy = v.split ('-').reverse ()
+    dmy [2] %= 100
+    return dmy.join ('.')
+}
+
+function _dt (record, ind, col_ind, data) {
+    return dt_dmy (data)
+}
+
+function _ts (record, ind, col_ind, data) {
+    return dt_dmy (data) + data.substr (10)
+}
+
+function dt_dmyhms (v) { return !v ? '' : dt_dmy (v.substr (0, 10)) + v.substr (10,9)}
+
+function __d (data) {
+
+    for (i in data) {
+    
+        if (i.match (/^dt/)) {
+
+            var v = data [i]
+
+            if (!v || v.length != 10 || !v.match (/^\d\d\d\d-\d\d-\d\d$/)) continue
+
+            data [i] = dt_dmy (v)
+
+        }        
+    
+    }
+    
+    return data
+
+}
+
+function refreshButtons (e) {e.done (
+                
+    function () {
+
+        $('button', $(this.box)).each (function () {
+
+            var $this = $(this)
+        
+            clickOn ($this, $_DO [this.name + '_' + $this.attr ('data-block-name')])
+            
+        })
+
+        clickOn ($('span.anchor'), onDataUriDblClick)
+
+    }
+                
+)}
+
+function die (name, text) {
+    alert (text)
+    $('[name=' + name + ']').focus ()
+    throw 'core.ok.validation'
+}
+
+function not_off (i) {return !i.off}
+
+function reload_page () { location.reload () }
+
+var base_href = '/mosgis';
+
+function get_nsi (ids, done) {
+
+    var data = $('body').data ('data')
+
+    query ({type: 'voc_nsi_list', part: 'vocs', id: undefined}, {data: {ids: ids}}, function (d) {
+
+        d.bool = [{id: "0", label: "Нет"},{id: "1", label: "Да"}]
+
+        add_vocabularies (d, d)
+
+        for (k in d) data [k] = d [k]
+
+        done (data)
+
+    })
+
+}
+
+function edit_failed (grid, e) {
+
+    return function (o) {
+    
+        if (o.data && o.data.field) {
+            grid.unlock ()
+            alert (o.data.message)
+            e.preventDefault ()
+            grid.editField (e.recid, e.column, e.value_original)
+        }
+        else {
+            $_DO.apologize (o)
+        }
+        
+    }
+    
+}
+
+function color_data_mandatory (e) {
+
+    var grid = w2ui [e.target]
+
+    $('tr[recid] td[data-mandatory]').each (function () {
+        var $this = $(this)
+        if ($this.text ()) return
+        var p = {title: 'Обязательное поле'}
+        $this.css ({background: '#ffcccc'}).prop (p)
+        $('*', $this).prop (p)
+    })
+
+    $('tr[recid]').each (function () {
+        var $this = $(this)
+        var r = grid.get ($this.attr ('recid'))
+        if (!r) return
+        if (r.is_annuled) $('td', $this).css ({background: '#ccc'})
+        if (r.id_status == 30) $('td', $this).css ({background: '#fdd'})
+        if (r.is_deleted) $('td div', $this).css ({'text-decoration': 'line-through'})
+    })
+
+}
+
+function getPluralType () {
+    var parts = $_REQUEST.type.split ('_')
+    if (parts.length == 2 && parts [0] == 'premise') return parts.join ('s_')
+    return $_REQUEST.type + 's'
+}
+
+function clickActiveTab (tabs, key) {
+
+    function getActiveId (tabs, key) {
+
+        if (!tabs || !tabs.length) return null
+
+        var id = localStorage.getItem (key)
+
+        for (var i = 1; i < tabs.length; i ++) if (id == tabs [i].id && !tabs [i].hidden) return id
+
+        return tabs [0].id
+
+    }
+    
+    var id = getActiveId (tabs.tabs, key)
+    
+    if (id) tabs.click (id)
+
+}
+
+function color_passport_grid (e) {
+
+    e.done (function () {
+        
+        var last = null
+    
+        $.each ($('body').data ('data').vc_pass_fields, function () {
+
+            if (!('id_type' in this)) {
+            
+                var sel = 'tr[recid=' + this.id + ']'
+
+                $(sel + ' td.w2ui-grid-data').css ({
+                    'font-weight': 'bold',
+                    'border-bottom-width': '1px',
+                }).eq (0).css ({'border-right-width': 0})
+                
+                if (last) {
+                
+                    sel = 'tr[recid=' + last + ']'
+
+                    $(sel + ' td.w2ui-grid-data').css ({
+                        'border-bottom-width': '1px',
+                    })
+                
+                }
+            
+            }
+            
+            last = this.id                        
+
+        })
+        
+        $('td[data-status]').each (function () {
+            var $this = $(this)
+            var txt = $this.text ()
+            if (txt) return $this.find ('*').addBack ().attr ('title', txt)
+        })
+    
+    }) 
+
+}
+
+
+
+
+
+
+
+
+requirejs (['elu/elu', 'elu_w2ui/elu_w2ui'], function (jq, elu, elu_w2ui) {
+    
+    var _redirect = redirect;
+    redirect = function (url) {
+        _redirect (base_href + url)
+    }
+
+    clearTimeout (window.alarm)
+
+    $_SESSION.beforeExpiry ($_SESSION.keepAlive)
+    
+    window.addEventListener ('storage', $_SESSION.closeAllOnLogout)
+    
+    if ($_USER) $_USER.has_nsi_20 = function () {
+        for (var i = 0; i < arguments.length; i ++) if ($_USER.role ['nsi_20_' + arguments [i]]) return true
+        return false
+    }
+
+    if ($_USER && $_USER.opt && $_USER.opt.no_tabs) {
+        
+        openTab = function (url, name) {
+            url = base_href + url
+            window.name = name || url
+            location = url
+        }
+        
+    }
+    else {
+        
+        var _openTab = openTab
+        
+        openTab = function (url, name) {
+            _openTab (base_href + url, name)
+        }
+        
+    }
+
+    setup_request ()
+
+    use.block ($_REQUEST.type || 'main')
+
+});

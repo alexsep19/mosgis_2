@@ -1,0 +1,63 @@
+body > nav {
+
+	position:fixed;
+	left:0;
+	top:0;
+	bottom:0;
+
+	@bg: #376891;
+	@w: 50px;
+
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	justify-content: space-between;
+	align-items: stretch;
+	align-content: stretch;
+	
+	min-width: @w;
+	background-color: @bg;	
+    
+	button {
+	    width: @w;
+	    height: 60px;
+	    border-color: @bg;
+	    border-style: solid;
+	    border-width: 14px;
+	    border-left-width: 9px;
+	    border-right-width: 9px;		    
+	    background-color: #376891;
+	    background-repeat: no-repeat;
+	    background-size: 32px auto !important;
+	    outline: none;
+
+		&:hover, &.active {
+			background-color: #5791c1;
+			border-color: #5791c1;
+		}
+		
+		&.active {
+			background-color: #274a66;
+			border-color: #274a66;
+		}			
+		
+	}    
+
+	hr {
+		width: @w;
+		height: 1px;
+		min-height: 1px;
+		background: #7397b4;
+		border:none;
+		margin:0;
+	}
+    
+	header, footer {
+		width: @w;
+		display: flex;
+		flex-direction: column;
+		flex-shrink: 0;
+	}
+	
+}

@@ -1,0 +1,119 @@
+<span
+	data-popup-width=805
+	data-popup-height=260
+	data-popup-title='Комната'
+>
+
+	<style>
+
+        label[data-block-name=living_room_popup] {
+        	width: 170px;
+        	margin-right: 10px;
+        }
+
+        td[align=right] label[data-block-name=living_room_popup] {
+        	width: 170px;
+        	margin-right: 10px;
+        	margin-left: 28px;
+        }
+
+        input[data-block-name=living_room_popup] {
+        	width: 560px !important;
+        }
+
+        input[data-block-name=living_room_popup].short {
+        	width: 160px !important;
+        }
+
+		div[data-block-name=living_room_popup] .w2ui-input[disabled] {
+			background-image:none;
+			background-color:#f1f1f1!important;
+			color:#777!important
+		}
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:210px; margin:8px 0 0 0;">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field" data-on=item.is_condo>
+                <label>Квартира</label>
+                <div>
+                	<input name=uuid_premise>
+                </div>
+            </div>
+
+            <div class="w2ui-field" data-off=item.is_condo>
+                <label>Блок</label>
+                <div>
+                	<input name=uuid_block>
+                </div>
+            </div>
+
+        	<table width=743 border=0 cellpadding=0 cellspacing=0>
+
+        		<tr>
+        			<td>
+
+						<div class="w2ui-field">
+							<label>Номер комнаты</label>
+							<div>
+								<input name=roomnumber maxlength=255 class=short>
+							</div>
+						</div>
+
+        			</td>
+        			<td align=right>
+
+						<div class="w2ui-field">
+							<label>Площадь, м&sup2;</label>
+							<div>
+								<input name=square maxlength=26 class=short>
+							</div>
+						</div>
+
+        			</td>
+        		</tr>
+
+        		<tr>
+        			<td>
+
+						<div class="w2ui-field">
+							<label>Кадастровый номер</label>
+							<div>
+								<input name=cadastralnumber class=short>
+							</div>
+						</div>
+
+        			</td>
+        			<td align=right>
+
+						<div class="w2ui-field">
+							<label>Количество проживающих</label>
+							<div>
+								<input name=f_20130 class=short>
+							</div>
+						</div>
+
+        			</td>
+        		</tr>
+
+        	</table>
+
+            <div class="w2ui-field">
+                <label title="Наличие электрооборудования">Наличие э/оборудования</label>
+                <div>
+                	<input name=f_20056>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>
