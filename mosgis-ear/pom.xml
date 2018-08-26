@@ -36,6 +36,13 @@
                 <configuration>
                     <version>6</version>
                     <defaultLibBundleDir>lib</defaultLibBundleDir>
+                    <modules>
+                        <ejbModule>
+                            <groupId>ru.eludia.products</groupId>
+                            <artifactId>mosgis-ejb</artifactId>
+                            <bundleFileName>mosgis-ejb.jar</bundleFileName>
+                        </ejbModule>
+                    </modules>
                 </configuration>
             </plugin>
         </plugins>

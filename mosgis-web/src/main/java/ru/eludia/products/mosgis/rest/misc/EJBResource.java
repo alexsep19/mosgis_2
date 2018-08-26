@@ -7,8 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
 import javax.naming.InitialContext;
-import javax.naming.NameClassPair;
-import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.Response;
@@ -35,47 +33,20 @@ public abstract class EJBResource<T> {
             throw new IllegalStateException (nex);
         }        
     }
-    
-//    private static final String JNDI_ROOT = "java:global/ru/eludia/products_mosgis-ear_ear_1/0-SNAPSHOT/mosgis-ejb-1/0-SNAPSHOT";
-    private static final String JNDI_ROOT = "java:global/mosgis-ear-1/0-SNAPSHOT/mosgis-ejb-1/0-SNAPSHOT";
 
     protected T getEjbRef () {
         
         Class c = getEJBClass ();
-        String name = c2n.get (c);
         
-        try {
-            
-            if (name != null) return (T) ic.lookup (name);
-            
-            NamingEnumeration<NameClassPair> list = ic.list (JNDI_ROOT);
-            
-            while (list.hasMore()) {
-                
-                final NameClassPair pair = list.next ();
-                final String n = pair.getName ();
+        c2n.computeIfAbsent (c, (x) -> "java:app//mosgis-ejb/" + x.getSimpleName ().replace ("Local", "Impl"));
 
-                if (n.endsWith ("!ru")) continue;
-                
-                name = JNDI_ROOT + '/' + n;
-               
-                Object o = ic.lookup (name);
-                
-                if (!c.isAssignableFrom (o.getClass ())) continue;
-                
-                c2n.putIfAbsent (c, name);
-                
-                return (T) o;
-                
-            }
-            
+        try {                        
+            return (T) ic.lookup (c2n.get (c));                        
         }
         catch (NamingException nex) {
             throw new IllegalArgumentException (nex);
         }
-        
-        throw new IllegalStateException ("EJB of type " + c.getName () + " is not found");
-        
+                
     }
     
     protected Response createFileDownloadResponse (String id, String fileName, int len) {
