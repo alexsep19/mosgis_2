@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.util.Map;
 import javax.ejb.Stateless;
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -7,6 +8,7 @@ import javax.json.JsonObjectBuilder;
 import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
@@ -14,6 +16,7 @@ import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.MgmtContract;
 //import ru.eludia.products.mosgis.db.model.tables.ContractLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
+import ru.eludia.products.mosgis.db.model.voc.VocGisContractType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractorType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -82,7 +85,7 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
 
         Select select = model.select (MgmtContract.class, "AS root", "*", "uuid AS id")
             .toOne (VocOrganization.class, "AS org", "label").on ("uuid_org")
-            .toOne (VocOrganization.class, "AS org_contractor", "label").on ("uuid_org_contractor")
+            .toMaybeOne (VocOrganization.class, "AS org_contractor", "label").on ("uuid_org_contractor")
 //            .toMaybeOne (ContractLog.class         ).on ()
 //            .toMaybeOne (OutSoap.class,           "err_text").on ()
             .and ("uuid_org", p.getJsonObject ("data").getString ("uuid_org", null))
@@ -119,7 +122,7 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
             
             db.addJsonArrays (jb,
                     
-                NsiTable.getNsiTable (db, 58).getVocSelect (),
+                NsiTable.getNsiTable (db, 58).getVocSelect ().and ("f_7d0f481f17", 1),
                     
                 model
                     .select (VocOrganization.class, "uuid AS id", "label")                    
@@ -148,5 +151,23 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
         return jb.build ();
         
     }
+    
+    @Override
+    public JsonObject doCreate (JsonObject p, User user) {return doAction ((db) -> {
+
+        final Table table = getTable ();
+
+        Map<String, Object> data = getData (p);
+        
+        data.put ("id_contract_type", VocGisContractType.i.MGMT.getId ());
+        data.put (UUID_ORG, user.getUuidOrg ());
+        
+        if (data.get ("uuid_org_contractor") == null) data.put ("id_contractor_type", VocGisContractorType.i.OWNERS.getId ());
+        
+        Object insertId = db.insertId (table, data);
+        
+        logAction (db, user, insertId, "create");
+
+    });}
     
 }

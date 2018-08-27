@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.rest.resources;
 
+import javax.annotation.security.RolesAllowed;
 import ru.eludia.products.mosgis.rest.misc.EJBResource;
 import javax.json.JsonObject;
 import javax.ws.rs.Consumes;
@@ -90,6 +91,7 @@ public class MgmtContracts extends EJBResource <MgmtContractLocal> {
     @POST
     @Path("create") 
     @Produces (APPLICATION_JSON)
+    @RolesAllowed ("nsi_20_1")
     public JsonObject doCreate (JsonObject p) {
         getUserOrg ();
         return back.doCreate (p, getUser ());

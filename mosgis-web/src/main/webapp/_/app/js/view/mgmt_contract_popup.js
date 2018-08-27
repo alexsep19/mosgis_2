@@ -11,8 +11,11 @@ define ([], function () {
                 record: data.record,
 
                 fields : [                                
-                    {name: 'additionalservicetypename', type: 'text'},
-                    {name: 'okei', type: 'list', options: {items: data.vc_okei.items}},
+                    {name: 'docnum', type: 'text'},
+                    {name: 'signingdate', type: 'date'},
+                    {name: 'effectivedate', type: 'date'},
+                    {name: 'plandatecomptetion', type: 'date'},
+                    {name: 'code_vc_nsi_58', type: 'list', options: {items: data.vc_nsi_58.items}},
                 ],
 
             })

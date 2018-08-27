@@ -1,13 +1,13 @@
 <span
-	data-popup-width=500
-	data-popup-height=205
-	data-popup-title='Новый договор обслуживания'
+	data-popup-width=550
+	data-popup-height=305
+	data-popup-title='Новый договор управления'
 >
 
 	<style>
 
         label[data-block-name=mgmt_contract_popup] {
-        	width: 120px;
+        	width: 150px;
         	margin-right: 10px;
         }
 
@@ -15,13 +15,58 @@
         	width: 320px !important;
         }
 
+        input.dt[data-block-name=mgmt_contract_popup] {
+        	width: 70px !important;
+        }
+
 	</style>
 
-	<div class="w2ui-reset w2ui-form" style="height:150px; margin:8px 0 0 0;">
+	<div class="w2ui-reset w2ui-form" style="height:250px; margin:8px 0 0 0;">
 
         <div class="w2ui-page page-0">
 
+            <div class="w2ui-field">
+                <label>Номер</label>
+                <div>
+                	<input name=docnum maxlength=255>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Дата заключения</label>
+                <div>
+                	<input name=signingdate placeholder="" class=dt>
+                </div>
+            </div>
+            <div class="w2ui-field">
+                <label>Основание заключения</label>
+                <div>
+                	<input name=code_vc_nsi_58 placeholder="">
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Дата вступления в силу</label>
+                <div>
+                	<input name=effectivedate placeholder="" class=dt>
+                </div>
+            </div>
+            <div class="w2ui-field">
+                <label>Дата окончания</label>
+                <div>
+                	<input name=plandatecomptetion placeholder="" class=dt>
+                </div>
+            </div>
+
 <!--
+
+
+                {field: 'docnum', caption: 'Номер', size: 20},
+                {field: 'signingdate', caption: 'Дата заключения', size: 18, render: _dt},
+                {field: 'id_contractor_type',  caption: 'Сторона договора',     size: 30, voc: data.vc_gis_contractor_type},
+                {field: 'org_contractor.label', caption: 'Контрагент', size: 100},
+                {field: 'contractbase',  caption: 'Основание заключения',     size: 30, voc: data.vc_nsi_58},
+
             <div class="w2ui-field">
                 <label>Наименование</label>
                 <div>
