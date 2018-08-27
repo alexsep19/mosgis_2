@@ -39,6 +39,7 @@ public class LoggingOutMessageHandler implements SOAPHandler<SOAPMessageContext>
     private UUID getOrgPPAGuid (SOAPMessageContext messageContext) {
         UUID uuid = (UUID) messageContext.get (FIELD_ORG_PPA_GUID);
 logger.info ("getOrgPPAGuid: " + uuid);
+
         return uuid == null ? UUID.fromString (Conf.get (VocSetting.i.GIS_ID_ORGANIZATION)) : uuid;
     }
 
