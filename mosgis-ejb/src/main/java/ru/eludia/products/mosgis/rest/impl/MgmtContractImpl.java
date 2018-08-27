@@ -14,6 +14,8 @@ import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.MgmtContract;
 //import ru.eludia.products.mosgis.db.model.tables.ContractLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
+import ru.eludia.products.mosgis.db.model.voc.VocGisContractorType;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
@@ -79,7 +81,8 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
         final MosGisModel model = ModelHolder.getModel ();
 
         Select select = model.select (MgmtContract.class, "AS root", "*", "uuid AS id")
-            .toOne (VocOrganization.class, "AS org", "label").on ()
+            .toOne (VocOrganization.class, "AS org", "label").on ("uuid_org")
+            .toOne (VocOrganization.class, "AS org_contractor", "label").on ("uuid_org_contractor")
 //            .toMaybeOne (ContractLog.class         ).on ()
 //            .toMaybeOne (OutSoap.class,           "err_text").on ()
 //            .and ("uuid_org", user.getUuidOrg ())
@@ -109,21 +112,31 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
     public JsonObject getVocs () {
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();
+        
+        final MosGisModel model = ModelHolder.getModel ();
 
-        try (DB db = ModelHolder.getModel ().getDb ()) {
+        try (DB db = model.getDb ()) {
             
             db.addJsonArrays (jb,
                     
                 NsiTable.getNsiTable (db, 58).getVocSelect (),
                     
-                ModelHolder.getModel ()
+                model
                     .select (VocOrganization.class, "uuid AS id", "label")                    
                     .orderBy ("label")
-                    .and ("uuid", ModelHolder.getModel ().select (Contract.class, "uuid_org").where ("is_deleted", 0)),
+                    .and ("uuid", model.select (Contract.class, "uuid_org").where ("is_deleted", 0)),
 
-                ModelHolder.getModel ()
+                model
                     .select (VocAsyncEntityState.class, "id", "label")                    
-                    .orderBy ("label")
+                    .orderBy ("label"),
+                
+                model
+                    .select (VocGisContractorType.class, "id", "label")                    
+                    .orderBy ("label"),
+                    
+                model
+                    .select (VocGisStatus.class, "id", "label")                    
+                    .orderBy ("id")
 
             );
 

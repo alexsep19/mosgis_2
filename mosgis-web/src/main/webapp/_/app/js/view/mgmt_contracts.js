@@ -27,8 +27,8 @@ define ([], function () {
 
             show: {
                 toolbar: true,
-                toolbarAdd: !$_USER.role.admin,
-                toolbarEdit: !$_USER.role.admin,
+                toolbarAdd: $_USER.role.nsi_20_1,
+                toolbarEdit: $_USER.role.nsi_20_1,
                 footer: true,
             },     
 
@@ -42,27 +42,38 @@ define ([], function () {
             }, 
 
             searches: [            
-                {field: 'label_uc',  caption: 'Наименование',  type: 'text'},
+//                {field: 'label_uc',  caption: 'Наименование',  type: 'text'},
                 {field: 'is_deleted', caption: 'Статус записи', type: 'enum', options: {items: [
                     {id: "0", text: "Актуальные"},
                     {id: "1", text: "Удалённые"},
                 ]}},
-                {field: 'id_status', caption: 'Статус синхронизации',     type: 'enum', options: {items: data.vc_async_entity_states.items}},
+//                {field: 'id_status', caption: 'Статус синхронизации',     type: 'enum', options: {items: data.vc_async_entity_states.items}},
                 {field: 'uuid_org', caption: 'Организации', type: 'enum', options: {items: data.vc_orgs.items}, off: !$_USER.role.admin},
             ].filter (not_off),
 
+/*
+
+ Сторона договора, 
+ Контрагент, 
+
+ 
+ 
+*/
+
             columns: [                
-                {field: 'org.label', caption: 'Организация', size: 100, off: !$_USER.role.admin},
-                {field: 'label', caption: 'Наименование', size: 50},
-                {field: 'okei',  caption: 'Ед. изм.',     size: 10, voc: data.vc_okei},
-                {field: 'id_status',  caption: 'Статус',     size: 50, render: function (r, i, c, v) {
-                    var s = data.vc_async_entity_states [v]
-                    if (v == 30) {
-                        s = '<font color=red>' + s + '</font>: '
-                        s += r.out_soap.err_text
-                    }
-                    return s
-                }},
+            
+                {field: 'org.label', caption: 'Договородержатель', size: 100, off: $_USER.role.nsi_20_1},
+                {field: 'docnum', caption: 'Номер', size: 20},
+                {field: 'signingdate', caption: 'Дата заключения', size: 18, render: _dt},
+                {field: 'id_status',  caption: 'Статус',     size: 10, voc: data.vc_gis_status},
+                
+                
+                
+                {field: 'contractbase',  caption: 'Основание заключения',     size: 30, voc: data.vc_nsi_58},
+                
+                {field: 'effectivedate', caption: 'Дата вступления в силу', size: 18, render: _dt},
+                {field: 'plandatecomptetion', caption: 'Дата окончания', size: 18, render: _dt},               
+                
             ].filter (not_off),
             
             url: '/mosgis/_rest/?type=mgmt_contracts',
