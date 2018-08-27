@@ -11,7 +11,7 @@ import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
-import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+//import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.MgmtContract;
 //import ru.eludia.products.mosgis.db.model.tables.ContractLog;
@@ -104,9 +104,9 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
 
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
             .get (MgmtContract.class, id, "*")
-            .toOne      (VocOrganization.class,        "label").on ()
+            .toOne      (VocOrganization.class,        "label").on ("uuid_org")
 //            .toMaybeOne (ContractLog.class           ).on ()
-            .toMaybeOne (OutSoap.class,             "err_text").on ()
+//            .toMaybeOne (OutSoap.class,             "err_text").on ()
         ));
 
     });}
