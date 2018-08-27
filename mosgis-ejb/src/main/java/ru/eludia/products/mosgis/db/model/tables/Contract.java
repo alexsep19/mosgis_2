@@ -6,6 +6,7 @@ import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Num;
 import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.model.voc.VocGisContractType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractorType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -14,15 +15,16 @@ public class Contract extends Table {
 
     public Contract () {
 
-        super ("tb_contracts", "Договоры управления");
+        super ("tb_contracts", "Договоры");
 
         pk    ("uuid",                      Type.UUID,             NEW_UUID,            "Ключ");
         col   ("is_deleted",                Type.BOOLEAN,          Bool.FALSE,          "1, если запись удалена; иначе 0");
 
+        fk    ("id_contract_type",          VocGisContractType.class,                   "Тип договора");
         fk    ("uuid_org",                  VocOrganization.class,                      "Договородержатель");
 
-        fk    ("uuid_org_contractor",       VocOrganization.class, null,                "Контрагент");
-        fk    ("okei",                      VocGisContractorType.class,                 "Тип контрагента");
+        fk    ("uuid_org_contractor",       VocOrganization.class,                      "Контрагент");
+        fk    ("id_contractor_type",        VocGisContractorType.class,                 "Тип контрагента");
         
         fk    ("id_status",                 VocGisStatus.class,          new Num (VocGisStatus.i.PROJECT.getId ()), "Статус договора с точки зрения mosgis");
         fk    ("id_status_gis",             VocGisStatus.class,          new Num (VocGisStatus.i.NOT_RUNNING.getId ()), "Статус договора с точки зрения ГИС ЖКХ");
