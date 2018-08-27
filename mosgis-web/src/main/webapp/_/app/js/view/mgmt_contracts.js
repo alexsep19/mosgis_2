@@ -48,34 +48,25 @@ define ([], function () {
                     {id: "1", text: "Удалённые"},
                 ]}},
 //                {field: 'id_status', caption: 'Статус синхронизации',     type: 'enum', options: {items: data.vc_async_entity_states.items}},
-                {field: 'uuid_org', caption: 'Организации', type: 'enum', options: {items: data.vc_orgs.items}, off: !$_USER.role.admin},
+                {field: 'uuid_org', caption: 'Организации', type: 'enum', options: {items: data.vc_orgs.items}, off: $_USER.role.nsi_20_1},
             ].filter (not_off),
-
-/*
-
- Сторона договора, 
- Контрагент, 
-
- 
- 
-*/
 
             columns: [                
             
-                {field: 'org.label', caption: 'Договородержатель', size: 100, off: $_USER.role.nsi_20_1},
                 {field: 'docnum', caption: 'Номер', size: 20},
                 {field: 'signingdate', caption: 'Дата заключения', size: 18, render: _dt},
-                {field: 'id_status',  caption: 'Статус',     size: 10, voc: data.vc_gis_status},
-                
-                
-                
-                {field: 'contractbase',  caption: 'Основание заключения',     size: 30, voc: data.vc_nsi_58},
-                
+                {field: 'id_status',  caption: 'Статус',     size: 10, voc: data.vc_gis_status},                
+                {field: 'org.label', caption: 'Договородержатель', size: 100, off: $_USER.role.nsi_20_1},               
+                {field: 'id_contractor_type',  caption: 'Сторона договора',     size: 30, voc: data.vc_gis_contractor_type},                
+                {field: 'org_contractor.label', caption: 'Контрагент', size: 100},
+                {field: 'contractbase',  caption: 'Основание заключения',     size: 30, voc: data.vc_nsi_58},                
                 {field: 'effectivedate', caption: 'Дата вступления в силу', size: 18, render: _dt},
                 {field: 'plandatecomptetion', caption: 'Дата окончания', size: 18, render: _dt},               
                 
             ].filter (not_off),
             
+            postData: {data: $_USER.role.nsi_20_1 ? {uuid_org: $_USER.uuid_org} : {}},
+
             url: '/mosgis/_rest/?type=mgmt_contracts',
                         
             onAdd:      $_DO.create_mgmt_contracts,            

@@ -85,7 +85,7 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
             .toOne (VocOrganization.class, "AS org_contractor", "label").on ("uuid_org_contractor")
 //            .toMaybeOne (ContractLog.class         ).on ()
 //            .toMaybeOne (OutSoap.class,           "err_text").on ()
-//            .and ("uuid_org", user.getUuidOrg ())
+            .and ("uuid_org", p.getJsonObject ("data").getString ("uuid_org", null))
             .orderBy ("org.label")
             .orderBy ("root.docnum")
             .limit (p.getInt ("offset"), p.getInt ("limit"));

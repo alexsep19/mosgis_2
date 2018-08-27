@@ -23,7 +23,7 @@ public class Contract extends Table {
         fk    ("id_contract_type",          VocGisContractType.class,                   "Тип договора");
         fk    ("uuid_org",                  VocOrganization.class,                      "Договородержатель");
 
-        fk    ("uuid_org_contractor",       VocOrganization.class,                      "Контрагент");
+        fk    ("uuid_org_contractor",       VocOrganization.class,              null,   "Контрагент");
         fk    ("id_contractor_type",        VocGisContractorType.class,                 "Тип контрагента");
         
         fk    ("id_status",                 VocGisStatus.class,          new Num (VocGisStatus.i.PROJECT.getId ()), "Статус договора с точки зрения mosgis");

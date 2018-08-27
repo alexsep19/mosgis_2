@@ -63,7 +63,21 @@ public class MgmtContracts extends EJBResource <MgmtContractLocal> {
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject select (JsonObject p) { 
+        
+        if (securityContext.isUserInRole ("nsi_20_1")) {
+            
+            String toBe = getUser ().getUuidOrg ();
+            String asIs = p.getJsonObject ("data").getString ("uuid_org", null);
+            
+            if (!toBe.equals (asIs)) {
+                logger.warning ("Security violation: data.uuid_org must be " + toBe + ", received " + asIs);
+                throw new ValidationException ("foo", "Доступ запрещён");
+            }
+            
+        }
+
         return back.select (p, getUser ()); 
+        
     }
 
     @POST
