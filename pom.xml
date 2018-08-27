@@ -12,4 +12,37 @@
     <module>mosgis-ejb</module>
     <module>mosgis-api</module>
   </modules>
+
+  <scm>
+    <connection>scm:git:ssh://git@ns1:22/mosgis_2.git</connection>
+  </scm>
+
+  <build>
+        <plugins>
+            <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>buildnumber-maven-plugin</artifactId>
+              <version>1.4</version>
+              <executions>
+                <execution>
+                  <phase>validate</phase>
+                  <goals>
+                    <goal>create</goal>
+                  </goals>
+                </execution>
+              </executions>
+              <configuration>                  
+                <shortRevisionLength>7</shortRevisionLength>
+                <doCheck>false</doCheck>
+                <doUpdate>false</doUpdate>
+                <format>{0,date,yyyy-MM-dd}-{1}</format>
+                <items>
+                    <item>timestamp</item>
+                    <item>scmVersion</item>
+                </items>
+              </configuration>
+            </plugin>                        
+        </plugins>
+    </build>
+    
 </project>

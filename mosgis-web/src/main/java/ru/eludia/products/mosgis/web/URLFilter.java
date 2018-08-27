@@ -1,6 +1,8 @@
 package ru.eludia.products.mosgis.web;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -12,12 +14,14 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 public class URLFilter implements Filter {
     
     private FilterConfig filterConfig = null;
     private final static Logger logger = Logger.getLogger (Filter.class.getName ());
+    private String ver = "";
     
     public URLFilter () {
     }    
@@ -30,6 +34,7 @@ public class URLFilter implements Filter {
         RequestWrapper wrappedRequest = new RequestWrapper ((HttpServletRequest) request);
                         
         try {
+            ((HttpServletResponse) response).setHeader ("X-Mosgis-Version", ver);
             chain.doFilter (wrappedRequest, response);
         }
         catch (Throwable t) {
@@ -52,7 +57,16 @@ public class URLFilter implements Filter {
 
     @Override
     public void init (FilterConfig filterConfig) {        
+        
         this.filterConfig = filterConfig;
+
+        try (InputStream inputStream = filterConfig.getServletContext ().getResourceAsStream ("/META-INF/MANIFEST.MF")) {                                
+            ver = new Manifest (inputStream).getMainAttributes ().getValue ("Weblogic-Application-Version").toString ();
+        }
+        catch (IOException ex) {
+            logger.log (Level.SEVERE, "Cannot read MANIFEST.MF", ex);
+        }
+
     }
 
     @Override
