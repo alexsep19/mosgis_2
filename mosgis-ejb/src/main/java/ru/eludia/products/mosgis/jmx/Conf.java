@@ -391,5 +391,15 @@ public class Conf implements ConfMBean, ConfLocal {
     public void setWsGisFilesRespTimeout (int i) {
         setInt (VocSetting.i.WS_GIS_FILES_TMT_RESP, i);
     }
+    
+    @Override
+    public String getGisIdOrganization () {
+        return get (VocSetting.i.GIS_ID_ORGANIZATION);
+    }
 
+    @Override
+    public void setGisIdOrganization (String s) {
+        UUID.fromString(s);
+        set (VocSetting.i.GIS_ID_ORGANIZATION, s);
+    }
 }
