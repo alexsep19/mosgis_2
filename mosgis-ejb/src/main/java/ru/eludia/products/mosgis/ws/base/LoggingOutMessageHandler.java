@@ -23,6 +23,7 @@ import static ru.eludia.base.db.util.TypeConverter.hex;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.jmx.Conf;
 import ru.gosuslugi.dom.schema.integration.base.ObjectFactory;
 import ru.gosuslugi.dom.schema.integration.base.RequestHeader;
 import ru.gosuslugi.dom.schema.integration.base.ResultHeader;
@@ -38,7 +39,7 @@ public class LoggingOutMessageHandler implements SOAPHandler<SOAPMessageContext>
     private UUID getOrgPPAGuid (SOAPMessageContext messageContext) {
         UUID uuid = (UUID) messageContext.get (FIELD_ORG_PPA_GUID);
 logger.info ("getOrgPPAGuid: " + uuid);
-        return uuid == null ? UUID.fromString (VocSetting.i.GIS_ID_ORGANIZATION.getValue ()) : uuid;
+        return uuid == null ? UUID.fromString (Conf.get (VocSetting.i.GIS_ID_ORGANIZATION)) : uuid;
     }
 
     private static final String getCharSetName (SOAPMessage msg) {
