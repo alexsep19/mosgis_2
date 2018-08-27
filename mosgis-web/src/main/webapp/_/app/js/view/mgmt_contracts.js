@@ -28,7 +28,7 @@ define ([], function () {
             show: {
                 toolbar: true,
                 toolbarAdd: $_USER.role.nsi_20_1,
-                toolbarEdit: $_USER.role.nsi_20_1,
+//                toolbarEdit: $_USER.role.nsi_20_1,
                 footer: true,
             },     
 
@@ -70,7 +70,7 @@ define ([], function () {
             url: '/mosgis/_rest/?type=mgmt_contracts',
                         
             onAdd:      $_DO.create_mgmt_contracts,            
-            onEdit:     $_DO.edit_mgmt_contracts,
+//            onEdit:     $_DO.edit_mgmt_contracts,
             
             onDblClick: function (e) {
 
