@@ -2,7 +2,7 @@ define ([], function () {
 
     return function (data, view) {
         
-        $('title').text (data.item.label)
+        $('title').text ('ДУ №' + data.item.docnum + ' от ' + dt_dmy (data.item.signingdate))
         
         fill (view, data.item, $('body'))
 
