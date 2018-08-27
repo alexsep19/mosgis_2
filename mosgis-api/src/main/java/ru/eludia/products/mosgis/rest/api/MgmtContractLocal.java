@@ -5,7 +5,7 @@ import javax.json.JsonObject;
 import ru.eludia.products.mosgis.rest.api.base.CRUDBackend;
 
 @Local
-public interface ContractLocal extends CRUDBackend {
+public interface MgmtContractLocal extends CRUDBackend {
     
     JsonObject getVocs ();
 

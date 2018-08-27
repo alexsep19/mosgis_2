@@ -7,22 +7,24 @@ import javax.json.JsonObjectBuilder;
 import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
+import ru.eludia.products.mosgis.db.model.tables.MgmtContract;
 //import ru.eludia.products.mosgis.db.model.tables.ContractLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
-import ru.eludia.products.mosgis.rest.api.ContractLocal;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 import ru.eludia.products.mosgis.web.base.ComplexSearch;
 import ru.eludia.products.mosgis.web.base.Search;
 import ru.eludia.products.mosgis.web.base.SimpleSearch;
+import ru.eludia.products.mosgis.rest.api.MgmtContractLocal;
 
 @Stateless
-public class ContractImpl extends BaseCRUD<Contract> implements ContractLocal {
+public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContractLocal {
 
 /*    
     @Resource (mappedName = "mosgis.inContractsQueue")
@@ -73,11 +75,13 @@ public class ContractImpl extends BaseCRUD<Contract> implements ContractLocal {
 
     @Override
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
+        
+        final MosGisModel model = ModelHolder.getModel ();
 
-        Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
+        Select select = model.select (MgmtContract.class, "AS root", "*", "uuid AS id")
             .toOne (VocOrganization.class, "AS org", "label").on ()
 //            .toMaybeOne (ContractLog.class         ).on ()
-            .toMaybeOne (OutSoap.class,           "err_text").on ()
+//            .toMaybeOne (OutSoap.class,           "err_text").on ()
 //            .and ("uuid_org", user.getUuidOrg ())
             .orderBy ("org.label")
             .orderBy ("root.docnum")
@@ -93,7 +97,7 @@ public class ContractImpl extends BaseCRUD<Contract> implements ContractLocal {
     public JsonObject getItem (String id) {return fetchData ((db, job) -> {
 
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
-            .get (getTable (), id, "*")
+            .get (MgmtContract.class, id, "*")
             .toOne      (VocOrganization.class,        "label").on ()
 //            .toMaybeOne (ContractLog.class           ).on ()
             .toMaybeOne (OutSoap.class,             "err_text").on ()
