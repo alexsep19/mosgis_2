@@ -5,8 +5,8 @@ define ([], function () {
         var is_popup = $_SESSION.delete ('voc_organizations_popup.on')
     
         data = $('body').data ('data')
-        
-        $(w2ui ['rosters_layout'].el ('main')).w2regrid ({ 
+
+        $((w2ui ['popup_layout'] || w2ui ['rosters_layout']).el ('main')).w2regrid ({ 
 
             name: 'voc_organizations_grid',
 
@@ -75,13 +75,13 @@ define ([], function () {
 
                     }                
 
-                    $('.w2ui-search-all').attr ({
+                    $('#tb_voc_organizations_grid_toolbar_item_w2ui-search .w2ui-search-all').attr ({
                         style: 'width: 450px !important',
                         placeholder: 'Введите полный ОГРН[ИП], ИНН или подстроку наименования/ФИО для поиска',
                         title: 'Указав ИНН или ОГРН, Вы можете добавить через пробел КПП.\n\nДостаточно первых двух цифр, например: 7711122233 77',
                     })
                     
-                    $('.w2ui-toolbar-search').attr ({
+                    $('#tb_voc_organizations_grid_toolbar_item_w2ui-search .w2ui-toolbar-search').attr ({
                         style: 'width: 450px !important',
                     })
 

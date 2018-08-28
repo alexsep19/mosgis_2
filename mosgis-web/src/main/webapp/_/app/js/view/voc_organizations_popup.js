@@ -14,7 +14,7 @@ define ([], function () {
         
             $('#w2ui-popup .container').w2relayout ({
 
-                name: 'rosters_layout',
+                name: 'popup_layout',
 
                 panels: [
                     {type: 'main', size: 400},

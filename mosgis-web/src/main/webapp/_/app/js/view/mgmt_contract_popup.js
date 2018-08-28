@@ -6,7 +6,7 @@ define ([], function () {
 
             $('#w2ui-popup .w2ui-form').w2reform ({
 
-                name: 'voc_user_form',
+                name: 'mgmt_contract_form',
 
                 record: data.record,
 
@@ -16,7 +16,17 @@ define ([], function () {
                     {name: 'effectivedate', type: 'date'},
                     {name: 'plandatecomptetion', type: 'date'},
                     {name: 'code_vc_nsi_58', type: 'list', options: {items: data.vc_nsi_58.items}},
+                    {name: 'uuid_org_contractor', type: 'hidden'},
+                    {name: 'label_org_contractor', type: 'text'},
                 ],
+                
+                focus: 2,
+                
+                onRefresh: function (e) {e.done (function () {
+                
+                    clickOn ($('#label_org_contractor'), $_DO.open_orgs_mgmt_contract_popup)
+                
+                })}
 
             })
 

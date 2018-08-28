@@ -1,8 +1,38 @@
 define ([], function () {
 
+    var form_name = 'mgmt_contract_form'
+
+    $_DO.open_orgs_mgmt_contract_popup = function (e) {
+    
+        var f = w2ui [form_name]
+        
+        var saved = {
+            data: clone ($('body').data ('data')),
+            record: clone (f.record)
+        }        
+    
+        $('body').data ('voc_organizations_popup.callback', function (r) {
+
+            if (r) {
+                saved.record.uuid_org_contractor = r.uuid
+                saved.record.label_org_contractor = r.label
+            }
+
+            $('body').data ('data', saved.data)
+
+            $_SESSION.set ('record', saved.record)
+
+            use.block ('mgmt_contract_popup')
+
+        })
+
+        use.block ('voc_organizations_popup')
+
+    }
+
     $_DO.update_mgmt_contract_popup = function (e) {
 
-        var form = w2ui ['voc_user_form']
+        var form = w2ui [form_name]
 
         var v = form.values ()
         
@@ -38,7 +68,11 @@ define ([], function () {
 
         var data = clone ($('body').data ('data'))
         
-        data.record = $_SESSION.delete ('record')
+        var r = $_SESSION.delete ('record')
+        
+        if (!r.label_org_contractor) r.label_org_contractor = 'Собственник объекта жилищного фонда'
+        
+        data.record = r
 
         done (data)
 

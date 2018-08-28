@@ -1,6 +1,6 @@
 <span
 	data-popup-width=550
-	data-popup-height=305
+	data-popup-height=315
 	data-popup-title='Новый договор управления'
 >
 
@@ -21,9 +21,17 @@
 
 	</style>
 
-	<div class="w2ui-reset w2ui-form" style="height:250px; margin:8px 0 0 0;">
+	<div class="w2ui-reset w2ui-form" style="height:260px; margin:8px 0 0 0;">
 
         <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Контрагент</label>
+                <div>
+                	<input name=uuid_org_contractor type=hidden>
+                	<input name=label_org_contractor readonly>
+                </div>
+            </div>
 
             <div class="w2ui-field">
                 <label>Номер</label>
@@ -38,6 +46,7 @@
                 	<input name=signingdate placeholder="" class=dt>
                 </div>
             </div>
+
             <div class="w2ui-field">
                 <label>Основание заключения</label>
                 <div>
