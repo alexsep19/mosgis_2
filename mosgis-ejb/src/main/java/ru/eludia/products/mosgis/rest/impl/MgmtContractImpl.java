@@ -161,9 +161,7 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
         
         data.put ("id_contract_type", VocGisContractType.i.MGMT.getId ());
         data.put (UUID_ORG, user.getUuidOrg ());
-        
-        if (data.get ("uuid_org_contractor") == null) data.put ("id_contractor_type", VocGisContractorType.i.OWNERS.getId ());
-        
+
         Object insertId = db.insertId (table, data);
         
         logAction (db, user, insertId, "create");

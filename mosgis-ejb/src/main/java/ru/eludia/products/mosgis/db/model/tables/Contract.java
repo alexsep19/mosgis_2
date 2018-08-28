@@ -8,8 +8,10 @@ import ru.eludia.base.model.def.Num;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractorType;
+import ru.eludia.products.mosgis.db.model.voc.VocGisContractorTypeNsi20;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
 
 public class Contract extends Table {
 
@@ -45,9 +47,24 @@ public class Contract extends Table {
 
         key   ("org_docnum", "uuid_org", "docnum");
 
-/*
         trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
 
+            + "IF :NEW.id_contract_type = " + VocGisContractType.i.MGMT.getId () + " THEN "
+
+                + "IF :NEW.uuid_org_contractor IS NULL "
+                + "  THEN "
+                + "    :NEW.id_contractor_type:=" + VocGisContractorType.i.OWNERS.getId () + "; "
+                + "  ELSE "
+                + "    SELECT MIN(id) INTO :NEW.id_contractor_type FROM vc_gis_contractor_type_nsi_20 "
+                + "      WHERE code IN (SELECT code FROM vc_orgs_nsi_20 WHERE uuid = :NEW.uuid_org_contractor);"
+                + "    IF :NEW.id_contractor_type IS NULL THEN "
+                + "      raise_application_error (-20000, 'Указанная организация не имеет в ГИС ЖКХ полномочий, необходимых для контрагента договора управления: ТСЖ, ЖСК и т. п. Операция отменена.'); "
+                + "    END IF; "
+                + "END IF; "
+
+            + "END IF; "
+
+/*                
             + "IF UPDATING "
             + "  AND :OLD.id_log IS NOT NULL "             // что-то уже отправляли
             + "  AND :OLD.id_log <> :NEW.id_log "          // пытаются отредактировать вновь
@@ -55,9 +72,9 @@ public class Contract extends Table {
             + " THEN"
             + "  raise_application_error (-20000, 'В настоящий момент данная запись передаётся в ГИС ЖКХ. Операция отменена.'); "
             + "END IF; "
-
-        + "END;");        
 */
+        + "END;");        
+
     }
 
 }
