@@ -7,11 +7,9 @@ import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Num;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractType;
-import ru.eludia.products.mosgis.db.model.voc.VocGisContractorType;
-import ru.eludia.products.mosgis.db.model.voc.VocGisContractorTypeNsi20;
+import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
-import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
 
 public class Contract extends Table {
 
@@ -23,10 +21,10 @@ public class Contract extends Table {
         col   ("is_deleted",                Type.BOOLEAN,          Bool.FALSE,          "1, если запись удалена; иначе 0");
 
         fk    ("id_contract_type",          VocGisContractType.class,                   "Тип договора");
-        fk    ("uuid_org",                  VocOrganization.class,                      "Договородержатель");
+        fk    ("uuid_org",                  VocOrganization.class,                      "Исполнитель");
 
-        fk    ("uuid_org_contractor",       VocOrganization.class,              null,   "Контрагент");
-        fk    ("id_contractor_type",        VocGisContractorType.class,                 "Тип контрагента");
+        fk    ("uuid_org_customer",         VocOrganization.class,              null,   "Заказчик");
+        fk    ("id_customer_type",          VocGisCustomerType.class,                   "Тип заказчика");
         
         fk    ("id_status",                 VocGisStatus.class,          new Num (VocGisStatus.i.PROJECT.getId ()), "Статус договора с точки зрения mosgis");
         fk    ("id_status_gis",             VocGisStatus.class,          new Num (VocGisStatus.i.NOT_RUNNING.getId ()), "Статус договора с точки зрения ГИС ЖКХ");
@@ -51,14 +49,14 @@ public class Contract extends Table {
 
             + "IF :NEW.id_contract_type = " + VocGisContractType.i.MGMT.getId () + " THEN "
 
-                + "IF :NEW.uuid_org_contractor IS NULL "
+                + "IF :NEW.uuid_org_customer IS NULL "
                 + "  THEN "
-                + "    :NEW.id_contractor_type:=" + VocGisContractorType.i.OWNERS.getId () + "; "
+                + "    :NEW.id_customer_type:=" + VocGisCustomerType.i.OWNERS.getId () + "; "
                 + "  ELSE "
-                + "    SELECT MIN(id) INTO :NEW.id_contractor_type FROM vc_gis_contractor_type_nsi_20 "
-                + "      WHERE code IN (SELECT code FROM vc_orgs_nsi_20 WHERE uuid = :NEW.uuid_org_contractor);"
-                + "    IF :NEW.id_contractor_type IS NULL THEN "
-                + "      raise_application_error (-20000, 'Указанная организация не имеет в ГИС ЖКХ полномочий, необходимых для контрагента договора управления: ТСЖ, ЖСК и т. п. Операция отменена.'); "
+                + "    SELECT MIN(id) INTO :NEW.id_customer_type FROM vc_gis_customer_type_nsi_20 "
+                + "      WHERE code IN (SELECT code FROM vc_orgs_nsi_20 WHERE uuid = :NEW.uuid_org_customer);"
+                + "    IF :NEW.id_customer_type IS NULL THEN "
+                + "      raise_application_error (-20000, 'Указанная организация не зарегистрирована в ГИС ЖКХ как возможный заказчик договора управления: ТСЖ, ЖСК и т. п. Операция отменена.'); "
                 + "    END IF; "
                 + "END IF; "
 

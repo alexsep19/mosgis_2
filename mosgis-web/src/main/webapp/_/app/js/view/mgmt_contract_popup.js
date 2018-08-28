@@ -16,15 +16,15 @@ define ([], function () {
                     {name: 'effectivedate', type: 'date'},
                     {name: 'plandatecomptetion', type: 'date'},
                     {name: 'code_vc_nsi_58', type: 'list', options: {items: data.vc_nsi_58.items}},
-                    {name: 'uuid_org_contractor', type: 'hidden'},
-                    {name: 'label_org_contractor', type: 'text'},
+                    {name: 'uuid_org_customer', type: 'hidden'},
+                    {name: 'label_org_customer', type: 'text'},
                 ],
                 
                 focus: 2,
                 
                 onRefresh: function (e) {e.done (function () {
                 
-                    clickOn ($('#label_org_contractor'), $_DO.open_orgs_mgmt_contract_popup)
+                    clickOn ($('#label_org_customer'), $_DO.open_orgs_mgmt_contract_popup)
                 
                 })}
 

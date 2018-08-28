@@ -2,15 +2,15 @@ package ru.eludia.products.mosgis.db.model.voc;
 
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
-import static ru.eludia.products.mosgis.db.model.voc.VocGisContractorType.i.*;
+import static ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType.i.*;
 
-public class VocGisContractorTypeNsi20 extends Table {
+public class VocGisCustomerTypeNsi20 extends Table {
 
-    public VocGisContractorTypeNsi20 () {
+    public VocGisCustomerTypeNsi20 () {
 
-        super  ("vc_gis_contractor_type_nsi_20",  "Полномочия по тиам контрагентов");
+        super  ("vc_gis_customer_type_nsi_20",  "Полномочия по тиам контрагентов");
         
-        pkref  ("id", VocGisContractorType.class, "Тип");
+        pkref  ("id", VocGisCustomerType.class, "Тип");
         pk     ("code", Type.STRING, 20, "Код полномочия (НСИ 20)");
         
         data (i.class);
@@ -36,7 +36,7 @@ public class VocGisContractorTypeNsi20 extends Table {
             return code;
         }
 
-        private i (VocGisContractorType.i i, String code) {
+        private i (VocGisCustomerType.i i, String code) {
             this.id = i.getId ();
             this.code = code;
         }

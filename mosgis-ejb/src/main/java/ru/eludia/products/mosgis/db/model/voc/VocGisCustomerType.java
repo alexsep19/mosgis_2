@@ -6,11 +6,11 @@ import ru.eludia.base.model.Table;
 import ru.gosuslugi.dom.schema.integration.house_management.ContractType;
 import static ru.eludia.products.mosgis.db.model.voc.VocOrganization.regOrgType;
 
-public class VocGisContractorType extends Table {
+public class VocGisCustomerType extends Table {
 
-    public VocGisContractorType () {
+    public VocGisCustomerType () {
         
-        super ("vc_gis_contractor_type", "Типы контрагентов");
+        super ("vc_gis_customer_type", "Типы заказчиков в договорах управления");
         
         pk    ("id",           Type.INTEGER, "Ключ");        
         col   ("name",         Type.STRING,  "Идентификатор");
@@ -20,7 +20,7 @@ public class VocGisContractorType extends Table {
 
     }
     
-    public static final void setContractor (ContractType c, i type, UUID uuid) {
+    public static final void setCustomer (ContractType c, i type, UUID uuid) {
         
         switch (type) {
             
@@ -43,7 +43,7 @@ public class VocGisContractorType extends Table {
 
     public enum i {
 
-        OWNERS             (1, "Owners",           "Собственник объекта жилищного фонда (можно указать только один действущий управляемый объект)"),
+        OWNERS             (1, "Owners",           "Собственник объекта жилищного фонда"),
         COOPERATIVE        (2, "Cooperative",      "ТСЖ/Кооператив"),
         MUNICIPAL_HOUSING  (3, "MunicipalHousing", "Собственник муниципального жилья"),
         BUILDINGOWNER      (4, "BuildingOwner",    "Застройщик");

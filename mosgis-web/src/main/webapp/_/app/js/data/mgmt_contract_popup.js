@@ -14,8 +14,8 @@ define ([], function () {
         $('body').data ('voc_organizations_popup.callback', function (r) {
 
             if (r) {
-                saved.record.uuid_org_contractor = r.uuid
-                saved.record.label_org_contractor = r.label
+                saved.record.uuid_org_customer = r.uuid
+                saved.record.label_org_customer = r.label
             }
 
             $('body').data ('data', saved.data)
@@ -70,7 +70,7 @@ define ([], function () {
         
         var r = $_SESSION.delete ('record')
         
-        if (!r.label_org_contractor) r.label_org_contractor = 'Собственник объекта жилищного фонда'
+        if (!r.label_org_customer) r.label_org_customer = 'Собственник объекта жилищного фонда'
         
         data.record = r
 

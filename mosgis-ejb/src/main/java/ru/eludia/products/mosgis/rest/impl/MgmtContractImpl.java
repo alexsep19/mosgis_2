@@ -17,7 +17,7 @@ import ru.eludia.products.mosgis.db.model.tables.MgmtContract;
 //import ru.eludia.products.mosgis.db.model.tables.ContractLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractType;
-import ru.eludia.products.mosgis.db.model.voc.VocGisContractorType;
+import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -85,7 +85,7 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
 
         Select select = model.select (MgmtContract.class, "AS root", "*", "uuid AS id")
             .toOne (VocOrganization.class, "AS org", "label").on ("uuid_org")
-            .toMaybeOne (VocOrganization.class, "AS org_contractor", "label").on ("uuid_org_contractor")
+            .toMaybeOne (VocOrganization.class, "AS org_customer", "label").on ("uuid_org_customer")
 //            .toMaybeOne (ContractLog.class         ).on ()
 //            .toMaybeOne (OutSoap.class,           "err_text").on ()
             .and ("uuid_org", p.getJsonObject ("data").getString ("uuid_org", null))
@@ -134,7 +134,7 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
                     .orderBy ("label"),
                 
                 model
-                    .select (VocGisContractorType.class, "id", "label")                    
+                    .select (VocGisCustomerType.class, "id", "label")                    
                     .orderBy ("label"),
                     
                 model

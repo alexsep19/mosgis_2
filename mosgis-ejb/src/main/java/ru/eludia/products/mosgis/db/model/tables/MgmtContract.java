@@ -3,7 +3,7 @@ package ru.eludia.products.mosgis.db.model.tables;
 import ru.eludia.base.model.View;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractType;
-import ru.eludia.products.mosgis.db.model.voc.VocGisContractorType;
+import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 
@@ -17,9 +17,9 @@ public class MgmtContract extends View {
         col   ("is_deleted",                Type.BOOLEAN,                    "1, если запись удалена; иначе 0");
 
         fk    ("uuid_org",                  VocOrganization.class,                      "Договородержатель");
-        fk    ("uuid_org_contractor",       VocOrganization.class,                      "Контрагент");
+        fk    ("uuid_org_customer",       VocOrganization.class,                      "Контрагент");
         
-        fk    ("id_contractor_type",        VocGisContractorType.class,                 "Тип контрагента");
+        fk    ("id_customer_type",        VocGisCustomerType.class,                 "Тип контрагента");
         
         fk    ("id_status",                 VocGisStatus.class,           "Статус договора с точки зрения mosgis");
         fk    ("id_status_gis",             VocGisStatus.class,          "Статус договора с точки зрения ГИС ЖКХ");
@@ -42,8 +42,8 @@ public class MgmtContract extends View {
             "t.uuid" +
             ", t.is_deleted" +
             ", t.uuid_org" +
-            ", t.uuid_org_contractor" +
-            ", t.id_contractor_type" +
+            ", t.uuid_org_customer" +
+            ", t.id_customer_type" +
             ", t.id_status" +
             ", t.id_status_gis" +
             ", t.docnum" +
