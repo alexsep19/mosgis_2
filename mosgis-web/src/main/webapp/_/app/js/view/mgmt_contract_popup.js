@@ -18,6 +18,10 @@ define ([], function () {
                     {name: 'code_vc_nsi_58', type: 'list', options: {items: data.vc_nsi_58.items}},
                     {name: 'uuid_org_customer', type: 'hidden'},
                     {name: 'label_org_customer', type: 'text'},
+                    {name: 'automaticrolloveroneyear', type: 'list', options: {items: [
+                        {id: "0", text: "нет"},
+                        {id: "1", text: "на 1 год при наступлении даты окончания"},
+                    ]}},                    
                 ],
                 
                 focus: 2,

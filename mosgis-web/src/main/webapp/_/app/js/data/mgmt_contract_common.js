@@ -2,6 +2,24 @@ define ([], function () {
 
     var form_name = 'mgmt_contract_common_form'
     
+    $_DO.open_orgs_mgmt_contract_common = function (e) {
+    
+        var f = w2ui [form_name]
+            
+        $('body').data ('voc_organizations_popup.callback', function (r) {
+
+            if (r) {
+                f.record.uuid_org_customer = r.uuid
+                f.record.label_org_customer = r.label
+                f.refresh ()
+            }
+
+        })
+
+        use.block ('voc_organizations_popup')
+
+    }
+
     $_DO.cancel_mgmt_contract_common = function (e) {
         
         if (!confirm ('Отменить несохранённые правки?')) return
@@ -80,7 +98,7 @@ define ([], function () {
         use.block (name)        
     
     }
-
+    
     return function (done) {        
 
         w2ui ['topmost_layout'].unlock ('main')
@@ -93,9 +111,9 @@ define ([], function () {
 
         if ($_USER.role.admin) data.item.org_label = data.item ['vc_orgs.label']
         
-        data.item.status_label = data.vc_async_entity_states [data.item.id_status]
+        data.item.status_label = data.vc_gis_status [data.item.id_status]
         data.item.err_text = data.item ['out_soap.err_text']
-        
+                
         data.item._can = !$_USER.role.nsi_20_1 /*|| data.item.id_status == 10*/ ? {} : {
             edit: 1 - data.item.is_deleted,
             update: 1,
@@ -103,7 +121,7 @@ define ([], function () {
             delete: 1 - data.item.is_deleted,
 //            undelete: data.item.is_deleted,
         }
-darn (data)
+
         done (data)
         
     }

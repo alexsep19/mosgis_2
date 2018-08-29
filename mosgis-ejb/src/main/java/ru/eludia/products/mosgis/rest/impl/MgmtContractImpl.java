@@ -104,7 +104,8 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
 
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
             .get (getTable (), id, "*")
-            .toOne      (VocOrganization.class,        "label").on ("uuid_org")
+            .toOne      (VocOrganization.class,                    "label").on ("uuid_org")
+            .toMaybeOne (VocOrganization.class, "AS org_customer", "label").on ("uuid_org_customer")
 //            .toMaybeOne (ContractLog.class           ).on ()
 //            .toMaybeOne (OutSoap.class,             "err_text").on ()
         ));

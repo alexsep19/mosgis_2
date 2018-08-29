@@ -7,30 +7,50 @@
         	<style>
 
         		.w2ui-field > label {
-        			width: 300px;
+        			width: 330px;
         			margin-right: 10px;
         		}
 
         		.w2ui-field input {
-        			width: 230px !important;
+        			width: 270px !important;
         		}
-/*
-        		table.sync td:first-child {
-        			width: 200px;
-        		}
-*/
+
+				.w2ui-field input.dt {
+					width: 70px !important;
+				}
+
+				.w2ui-field input.long {
+					width: 600px !important;
+				}
+
         	</style>
-
-
-
-
-
 
         	<table border=0 cellpadding=0 cellspacing=0 width=90%>
 
         		<tr>
 
-					<td style="min-width:550px;" width=1 valign=top>
+					<td colspan=2 valign=top>
+							<div class="w2ui-field">
+								<label>Заказчик</label>
+								<div>
+									<input name=uuid_org_customer type=hidden>
+									<input name=label_org_customer readonly class=long>
+								</div>
+							</div>
+
+							<div class="w2ui-field">
+								<label>Исполнитель</label>
+								<div>
+									<input name=vc_orgs.label readonly class=long>
+								</div>
+							</div>
+					</td>
+
+        		</tr>
+        		<tr>
+
+					<td style="min-width:650px;" width=1 valign=top>
+
 
 							<div class="w2ui-field">
 								<label>Номер</label>
@@ -64,6 +84,12 @@
 									<input name=plandatecomptetion placeholder="" class=dt>
 								</div>
 							</div>
+							<div class="w2ui-field">
+								<label>Автопролонгация</label>
+								<div>
+									<input name=automaticrolloveroneyear>
+								</div>
+							</div>
 
 					</td>
 
@@ -72,7 +98,7 @@
 						<table border=0 cellpadding=0 cellspacing=0 width=100% class=sync>
 
 							<tr>
-								<td>Статус синхронизации:</td>
+								<td>Статус:</td>
 								<td data-text=status_label></td>
 							</tr>
 							<tr>

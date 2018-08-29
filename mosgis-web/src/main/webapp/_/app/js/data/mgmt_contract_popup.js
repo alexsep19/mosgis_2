@@ -70,7 +70,9 @@ define ([], function () {
         
         var r = $_SESSION.delete ('record')
         
-        if (!r.label_org_customer) r.label_org_customer = 'Собственник объекта жилищного фонда'
+        if (!('automaticrolloveroneyear' in r)) r.automaticrolloveroneyear = '0'        
+        
+        if (!r.label_org_customer) r.label_org_customer = 'Собственники объекта жилищного фонда'
         
         data.record = r
 

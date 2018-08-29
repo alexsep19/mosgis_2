@@ -10,7 +10,7 @@ public class VocGisCustomerTypeNsi20 extends Table {
 
         super  ("vc_gis_customer_type_nsi_20",  "Полномочия по тиам контрагентов");
         
-        pkref  ("id", VocGisCustomerType.class, "Тип");
+        pk     ("id",   Type.INTEGER, "Ключ");        
         pk     ("code", Type.STRING, 20, "Код полномочия (НСИ 20)");
         
         data (i.class);
