@@ -60,9 +60,17 @@ public class Contract extends Table {
                 + "    END IF; "
                 + "END IF; "
 
+                + "SELECT MIN(code) INTO :NEW.code_vc_nsi_58 FROM vc_gis_customer_type_nsi_58 WHERE code=:NEW.code_vc_nsi_58 AND id=:NEW.id_customer_type; "
+                + "IF :NEW.code_vc_nsi_58 IS NULL THEN "
+                + " raise_application_error (-20000, '#code_vc_nsi_58#: Указанное основание заключение договора неприменимо для организации-заказчика. Операция отменена.'); "
+                + "END IF; "
+                        
             + "END IF; "
 
 /*                
+                        
+                        
+                        
             + "IF UPDATING "
             + "  AND :OLD.id_log IS NOT NULL "             // что-то уже отправляли
             + "  AND :OLD.id_log <> :NEW.id_log "          // пытаются отредактировать вновь
