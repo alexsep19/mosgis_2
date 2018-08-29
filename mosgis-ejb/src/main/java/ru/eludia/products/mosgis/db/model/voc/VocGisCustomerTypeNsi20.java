@@ -8,9 +8,9 @@ public class VocGisCustomerTypeNsi20 extends Table {
 
     public VocGisCustomerTypeNsi20 () {
 
-        super  ("vc_gis_customer_type_nsi_20",  "Полномочия по тиам контрагентов");
+        super  ("vc_gis_customer_type_nsi_20",  "Полномочия по типам заказчиков договоров управления");
         
-        pk     ("id",   Type.INTEGER, "Ключ");        
+        pk     ("id",   Type.INTEGER, "Тип договора");        
         pk     ("code", Type.STRING, 20, "Код полномочия (НСИ 20)");
         
         data (i.class);
