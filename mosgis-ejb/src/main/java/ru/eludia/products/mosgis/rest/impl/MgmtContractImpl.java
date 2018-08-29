@@ -18,8 +18,12 @@ import ru.eludia.products.mosgis.db.model.tables.MgmtContract;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType;
+import static ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType.i.OWNERS;
+import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerTypeNsi20;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerTypeNsi58;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
@@ -123,7 +127,11 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
             
             db.addJsonArrays (jb,
                     
-                NsiTable.getNsiTable (db, 58).getVocSelect ().and ("f_7d0f481f17", 1),
+                NsiTable.getNsiTable (db, 58).getVocSelect ()
+                    .toMaybeOne (VocGisCustomerTypeNsi58.class, "AS it", "isdefault")
+                        .when ("id", OWNERS.getId ())
+                    .on ("vc_nsi_58.code=it.code")
+                .where ("f_7d0f481f17", 1),
                     
                 model
                     .select (VocOrganization.class, "uuid AS id", "label")                    

@@ -10,5 +10,6 @@ public interface VocOrganizationsLocal {
     JsonObject select (JsonObject p);
     JsonObject getItem (String id);
     JsonObject doImport (JsonObject p);
+    JsonObject getMgmtNsi58 (String id);
 
 }

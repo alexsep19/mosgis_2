@@ -11,7 +11,7 @@ public class VocGisCustomerTypeNsi58 extends Table {
 
         super  ("vc_gis_customer_type_nsi_58",  "Основания заключения по типам заказчиков договоров управления");
         
-        pk     ("id",         Type.INTEGER, "Тип договора");        
+        pk     ("id",         Type.INTEGER, "Тип заказчика договора");        
         pk     ("code",       Type.STRING,  20, "Основание заключения (НСИ 58)");
         col    ("isdefault",  Type.BOOLEAN, Bool.FALSE, "1 для значений по умолчанию, 0 для остальных");
         

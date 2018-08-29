@@ -33,13 +33,20 @@ public class VocOrganizations extends EJBResource <VocOrganizationsLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject getVocs () { 
         return back.getVocs (); 
-    }
+    }        
 
     @POST
     @Path("{id}") 
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) { 
         return back.getItem (id);
+    }
+    
+    @POST
+    @Path("{id}/mgmt_nsi_58") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject getMgmtNsi58 (@PathParam ("id") String id) { 
+        return back.getMgmtNsi58 (id);
     }
     
 }

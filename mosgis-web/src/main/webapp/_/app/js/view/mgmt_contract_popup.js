@@ -15,7 +15,7 @@ define ([], function () {
                     {name: 'signingdate', type: 'date'},
                     {name: 'effectivedate', type: 'date'},
                     {name: 'plandatecomptetion', type: 'date'},
-                    {name: 'code_vc_nsi_58', type: 'list', options: {items: data.vc_nsi_58.items}},
+                    {name: 'code_vc_nsi_58', type: 'list', options: {items: data.record.vc_nsi_58}},
                     {name: 'uuid_org_customer', type: 'hidden'},
                     {name: 'label_org_customer', type: 'text'},
                     {name: 'automaticrolloveroneyear', type: 'list', options: {items: [

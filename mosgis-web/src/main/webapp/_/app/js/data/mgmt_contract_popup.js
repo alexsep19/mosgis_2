@@ -9,20 +9,46 @@ define ([], function () {
         var saved = {
             data: clone ($('body').data ('data')),
             record: clone (f.record)
-        }        
-    
-        $('body').data ('voc_organizations_popup.callback', function (r) {
-
-            if (r) {
-                saved.record.uuid_org_customer = r.uuid
-                saved.record.label_org_customer = r.label
-            }
+        }
+        
+        function done () {
 
             $('body').data ('data', saved.data)
 
             $_SESSION.set ('record', saved.record)
 
             use.block ('mgmt_contract_popup')
+
+        }
+    
+        $('body').data ('voc_organizations_popup.callback', function (r) {
+
+            if (!r) return done ()
+            
+            query ({type: 'voc_organizations', id: r.uuid, part: 'mgmt_nsi_58'}, {}, function (d) {
+
+                var vc_nsi_58 = d.vc_nsi_58
+
+                if (!vc_nsi_58.length) {
+                    alert ('Указанная организация не зарегистрирована в ГИС ЖКХ как возможный заказчик договора управления: ТСЖ, ЖСК и т. п.')                    
+                }
+                else {
+                    
+                    $.each (vc_nsi_58, function () {
+                        this.text = this.label                        
+                        if (this ['it.isdefault']) saved.record.code_vc_nsi_58 = this;
+                    })
+                    
+                    saved.record.vc_nsi_58 = vc_nsi_58
+                
+                    saved.record.uuid_org_customer = r.uuid
+                    saved.record.label_org_customer = r.label
+                    
+                }
+
+                done ()
+
+            })
 
         })
 
@@ -73,6 +99,8 @@ define ([], function () {
         if (!('automaticrolloveroneyear' in r)) r.automaticrolloveroneyear = '0'        
         
         if (!r.label_org_customer) r.label_org_customer = 'Собственники объекта жилищного фонда'
+
+        if (!r.vc_nsi_58) r.vc_nsi_58 = data.vc_nsi_58.items.filter (function (i) {return 'it.isdefault' in i})
         
         data.record = r
 

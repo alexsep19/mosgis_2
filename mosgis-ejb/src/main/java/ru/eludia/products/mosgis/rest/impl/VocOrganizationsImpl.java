@@ -14,17 +14,20 @@ import ru.eludia.base.db.sql.gen.Predicate;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.rest.api.VocOrganizationsLocal;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerTypeNsi20;
+import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerTypeNsi58;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTypes;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.jmx.OrgMBean;
+import ru.eludia.products.mosgis.rest.impl.base.Base;
 import ru.eludia.products.mosgis.web.base.ComplexSearch;
 import ru.eludia.products.mosgis.web.base.Search;
 import ru.eludia.products.mosgis.web.base.SimpleSearch;
 
 @Stateless
-public class VocOrganizationsImpl implements VocOrganizationsLocal {
+public class VocOrganizationsImpl extends Base<VocOrganization> implements VocOrganizationsLocal {
 
     private static final Logger logger = Logger.getLogger (VocOrganizationsImpl.class.getName ());
     
@@ -194,5 +197,30 @@ public class VocOrganizationsImpl implements VocOrganizationsLocal {
         return jb.build ();
         
     }
+
+    @Override
+    public JsonObject getMgmtNsi58 (String id) {return fetchData ((db, job) -> {
+
+        db.addJsonArrays (job,
+
+            NsiTable.getNsiTable (db, 58).getVocSelect ()
+
+            .toOne (VocGisCustomerTypeNsi58.class, "AS it", "isdefault")
+                    
+                .where ("id", 
+                        
+                    db.getModel ().select (VocGisCustomerTypeNsi20.class, "id")
+                            
+                    .toOne (VocOrganizationNsi20.class)
+                        .where ("uuid", id)
+                    .on ("vc_gis_customer_type_nsi_20.code=vc_orgs_nsi_20.code")
+                        
+                )
+                    
+            .on ("vc_nsi_58.code=it.code")
+
+        );
+
+    });}
 
 }
