@@ -54,7 +54,7 @@ define ([], function () {
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
-//                            {id: 'mgmt_contract_common_log', caption: 'История изменений'},
+                            {id: 'mgmt_contract_common_log', caption: 'История изменений'},
                         ],
                         onClick: $_DO.choose_tab_mgmt_contract_common
                     }                

@@ -127,7 +127,7 @@ define ([], function () {
 
         if ($_USER.role.admin) data.item.org_label = data.item ['vc_orgs.label']
         
-        data.item.status_label = data.vc_gis_status [data.item.id_status]
+        data.item.status_label = data.vc_gis_status [data.item.id_ctr_status]
         data.item.err_text = data.item ['out_soap.err_text']
                 
         data.item._can = !$_USER.role.nsi_20_1 /*|| data.item.id_status == 10*/ ? {} : {

@@ -20,6 +20,9 @@ public class ContractLog extends Table {
         fk    ("uuid_object",               Contract.class,                             "Ссылка на запись");
         col   ("ts",                        Type.TIMESTAMP,        NOW,                 "Дата/время события");
         fk    ("uuid_user",                 VocUser.class,                      null,   "Оператор");
+        fk    ("uuid_out_soap",             OutSoap.class,                      null,   "Последний запрос на импорт в ГИС ЖКХ");
+        col   ("uuid_message",              Type.UUID,                          null,   "UUID запроса в ГИС ЖКХ");
+        col   ("elementguid_new",           Type.UUID,                          null,   "Идентификатор новой версии существующего (в ГИС) элемента справочника");        
         
         col   ("is_deleted",                Type.BOOLEAN,                       null,   "1, если запись удалена; иначе 0");
         fk    ("uuid_org",                  VocOrganization.class,              null,   "Исполнитель");

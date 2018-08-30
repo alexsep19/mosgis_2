@@ -8,6 +8,8 @@ import javax.json.JsonObject;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.base.model.Col;
+import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
@@ -65,6 +67,32 @@ public abstract class BaseCRUD <T extends Table> extends Base<T> implements CRUD
             .toMaybeOne (OutSoap.class, "AS soap", "id_status", "is_failed", "ts", "ts_rp", "err_text").on ()
             .orderBy ("log.ts DESC")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
+        
+        logTable.getColumns ().forEachEntry (0, (i) -> {
+            final Col value = i.getValue ();
+            if (!(value instanceof Ref)) return;
+            Ref ref = (Ref) value;
+            switch (i.getKey ()) {
+                case "uuid_user":
+                case "uuid_out_soap":
+                    return;
+                default:
+                    final Table targetTable = ref.getTargetTable ();
+                    if (!targetTable.getColumns ().containsKey ("label")) return;
+                    final String name = ref.getName ();
+                    StringBuilder sb = new StringBuilder ("AS ");
+                    if (name.startsWith ("uuid_")) {
+                        sb.append (name.substring (5));
+                    }
+                    else if (name.startsWith ("id_")) {
+                        sb.append (name.substring (3));
+                    }
+                    else {
+                        sb.append (name);
+                    }                            
+                    select.toMaybeOne (targetTable, sb.toString (), "label").on (ref.getName ());
+            }
+        });
 
         db.addJsonArrayCnt (job, select);
         
