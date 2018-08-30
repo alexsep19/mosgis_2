@@ -26,8 +26,8 @@ public class Contract extends Table {
         fk    ("uuid_org_customer",         VocOrganization.class,              null,   "Заказчик");
         fk    ("id_customer_type",          VocGisCustomerType.class,                   "Тип заказчика");
         
-        fk    ("id_status",                 VocGisStatus.class,          new Num (VocGisStatus.i.PROJECT.getId ()), "Статус договора с точки зрения mosgis");
-        fk    ("id_status_gis",             VocGisStatus.class,          new Num (VocGisStatus.i.NOT_RUNNING.getId ()), "Статус договора с точки зрения ГИС ЖКХ");
+        fk    ("id_ctr_status",             VocGisStatus.class,          new Num (VocGisStatus.i.PROJECT.getId ()), "Статус договора с точки зрения mosgis");
+        fk    ("id_ctr_status_gis",         VocGisStatus.class,          new Num (VocGisStatus.i.NOT_RUNNING.getId ()), "Статус договора с точки зрения ГИС ЖКХ");
         
         col   ("docnum",                    Type.STRING,           255,         "Номер договора");
         col   ("signingdate",               Type.DATE,                          "Дата заключения");
@@ -39,9 +39,7 @@ public class Contract extends Table {
  
         col   ("contractbase",              Type.STRING,  new Virt ("(''||\"CODE_VC_NSI_58\")"),  "Основание заключения договора");
 
-/*
-        fk    ("id_log",                    AdditionalServiceLog.class,         null, "Последнее событие редактирования");
-*/        
+        fk    ("id_log",                    ContractLog.class,         null, "Последнее событие редактирования");
 
         key   ("org_docnum", "uuid_org", "docnum");
 
