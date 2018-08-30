@@ -6,13 +6,29 @@ define ([], function () {
     
         var f = w2ui [form_name]
             
-        $('body').data ('voc_organizations_popup.callback', function (r) {
+        function done () {
+            f.refresh ()
+        }
 
-            if (r) {
-                f.record.uuid_org_customer = r.uuid
-                f.record.label_org_customer = r.label
-                f.refresh ()
-            }
+        $('body').data ('voc_organizations_popup.callback', function (r) {
+            
+            if (!r) return done ()
+            
+            query ({type: 'voc_organizations', id: r.uuid, part: 'mgmt_nsi_58'}, {}, function (d) {
+
+                if (!d.vc_nsi_58.length) {
+                    alert ('Указанная организация не зарегистрирована в ГИС ЖКХ как возможный заказчик договора управления: ТСЖ, ЖСК и т. п.')
+                }
+                else {                
+                    add_vocabularies (d, d)                                        
+                    f.get ('code_vc_nsi_58').options.items = d.vc_nsi_58.items
+                    f.record.uuid_org_customer = r.uuid
+                    f.record.label_org_customer = r.label                    
+                }
+
+                done ()
+
+            })
 
         })
 

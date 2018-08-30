@@ -102,6 +102,8 @@ define ([], function () {
 
         if (!r.vc_nsi_58) r.vc_nsi_58 = data.vc_nsi_58.items.filter (function (i) {return 'it.isdefault' in i})
         
+        if (!r.code_vc_nsi_58) r.code_vc_nsi_58 = r.vc_nsi_58.filter (function (i) {return i ['it.isdefault'] == 1}) [0].id
+        
         data.record = r
 
         done (data)
