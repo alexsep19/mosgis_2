@@ -2,6 +2,7 @@ package ru.eludia.products.mosgis.db.model.tables;
 
 import ru.eludia.base.model.View;
 import ru.eludia.base.model.Type;
+import ru.eludia.base.model.def.Num;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -17,12 +18,12 @@ public class MgmtContract extends View {
         col   ("is_deleted",                Type.BOOLEAN,                    "1, если запись удалена; иначе 0");
 
         fk    ("uuid_org",                  VocOrganization.class,                      "Договородержатель");
-        fk    ("uuid_org_customer",       VocOrganization.class,                      "Контрагент");
+        fk    ("uuid_org_customer",         VocOrganization.class,                      "Контрагент");
         
-        fk    ("id_customer_type",        VocGisCustomerType.class,                 "Тип контрагента");
+        fk    ("id_customer_type",          VocGisCustomerType.class,                 "Тип контрагента");
         
-        fk    ("id_status",                 VocGisStatus.class,           "Статус договора с точки зрения mosgis");
-        fk    ("id_status_gis",             VocGisStatus.class,          "Статус договора с точки зрения ГИС ЖКХ");
+        fk    ("id_ctr_status",             VocGisStatus.class,          "Статус договора с точки зрения mosgis");
+        fk    ("id_ctr_status_gis",         VocGisStatus.class,          "Статус договора с точки зрения ГИС ЖКХ");
         
         col   ("docnum",                    Type.STRING,                    "Номер договора");
         col   ("signingdate",               Type.DATE,                          "Дата заключения");
