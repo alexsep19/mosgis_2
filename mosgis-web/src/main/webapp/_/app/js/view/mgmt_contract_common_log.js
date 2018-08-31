@@ -47,7 +47,7 @@ define ([], function () {
                     switch (v) {
                         case 3: return 'Обработано'
                         case 2: return 'Ожидает ответа'
-                        default: return 'Ожидает отправки'
+                        default: return ''
                     }
                 }},
                 {field: 'soap.err_text', caption: 'Ошибка',    size: 30},
