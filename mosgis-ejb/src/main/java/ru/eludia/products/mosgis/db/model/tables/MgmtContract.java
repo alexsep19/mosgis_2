@@ -45,8 +45,8 @@ public class MgmtContract extends View {
             ", t.uuid_org" +
             ", t.uuid_org_customer" +
             ", t.id_customer_type" +
-            ", t.id_status" +
-            ", t.id_status_gis" +
+            ", t.id_ctr_status" +
+            ", t.id_ctr_status_gis" +
             ", t.docnum" +
             ", t.signingdate" +
             ", t.effectivedate" +
