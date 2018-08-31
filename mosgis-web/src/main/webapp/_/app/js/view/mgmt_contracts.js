@@ -35,7 +35,7 @@ define ([], function () {
             toolbar: {
             
                 items: [
-                    {type: 'button', id: b [0], caption: 'Удалить', onClick: $_DO.delete_mgmt_contracts, disabled: true, off: $_USER.role.admin},
+                    {type: 'button', id: b [0], caption: 'Удалить', onClick: $_DO.delete_mgmt_contracts, disabled: true, off: !$_USER.role.nsi_20_1},
 //                    {type: 'button', id: b [1], caption: 'Восстановить', onClick: $_DO.undelete_mgmt_contracts, disabled: true, off: $_USER.role.admin},
                 ].filter (not_off),
                 
