@@ -130,7 +130,7 @@ public class MgmtContracts extends EJBResource <MgmtContractLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) { 
         final JsonObject item = back.getItem (id);
-        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
+        if (!securityContext.isUserInRole ("admin") && !securityContext.isUserInRole ("nsi_20_4")) checkOrg (item.getJsonObject ("item"));
         return item;
     }
     
@@ -140,7 +140,7 @@ public class MgmtContracts extends EJBResource <MgmtContractLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
         final JsonObject item = back.getItem (id);
-        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
+        if (!securityContext.isUserInRole ("admin") && !securityContext.isUserInRole ("nsi_20_4")) checkOrg (item.getJsonObject ("item"));
         return back.getLog (id, p, getUser ());
     }
     

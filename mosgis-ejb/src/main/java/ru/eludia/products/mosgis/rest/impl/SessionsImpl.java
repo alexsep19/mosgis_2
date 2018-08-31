@@ -33,7 +33,9 @@ public class SessionsImpl implements SessionsLocal {
         jb.add ("uuid_org", uuid_org.toString ());            
             
         db.forEach (ModelHolder.getModel ().select (VocOrganizationNsi20.class, "code").where ("uuid", uuid_org), (rs) -> {
-            roles.add ("nsi_20_" + rs.getString (1), 1);
+            final String role = "nsi_20_" + rs.getString (1);
+            logger.info ("adding role: " + role);
+            roles.add (role, 1);
         });
             
         return roles.build ();
