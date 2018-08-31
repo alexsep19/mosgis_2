@@ -23,9 +23,9 @@ public class VocGisCustomerTypeNsi58 extends Table {
         
         BO_1      (BUILDINGOWNER,     "1"),
         BO_2      (BUILDINGOWNER,     "2"),
-        BO_6      (BUILDINGOWNER,     "6", true),
+        BO_6      (BUILDINGOWNER,     "6"),
         BO_9      (BUILDINGOWNER,     "9"),
-        BO_10     (BUILDINGOWNER,     "10"),
+        BO_10     (BUILDINGOWNER,     "10", true),
         
         OWNERS_1  (OWNERS,            "1", true),
         OWNERS_2  (OWNERS,            "2"),
@@ -33,8 +33,8 @@ public class VocGisCustomerTypeNsi58 extends Table {
         MUNI_1    (MUNICIPAL_HOUSING, "1"),
         MUNI_2    (MUNICIPAL_HOUSING, "2", true),
         
-        COOP_1    (COOPERATIVE,        "1"),
-        COOP_2    (COOPERATIVE,        "2", true),
+        COOP_1    (COOPERATIVE,        "1", true),
+        COOP_2    (COOPERATIVE,        "2"),
         COOP_5    (COOPERATIVE,        "5");
 
         byte id;
