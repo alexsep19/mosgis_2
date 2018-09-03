@@ -83,7 +83,13 @@ define ([], function () {
 
         if (!v.plandatecomptetion) die ('plandatecomptetion', 'Укажите, пожалуйста, плановую дату окончания действия договора')
         if (v.plandatecomptetion < v.effectivedate) die ('plandatecomptetion', 'Дата окончания не может предшествовать дате вступления договора в силу')
-
+        
+        if (v.ddt_m_start_nxt > v.ddt_m_end_nxt) die ('ddt_m_end_nxt', 'Окончание срока не может предшествовать его началу')
+        
+        if (v.ddt_m_start_nxt == v.ddt_m_end_nxt) {
+            if (v.ddt_m_start > v.ddt_m_end) die ('ddt_m_end', 'Окончание срока не может предшествовать его началу')
+        }
+        
         query ({type: 'mgmt_contracts', action: 'update'}, {data: v}, reload_page)
 
     }
