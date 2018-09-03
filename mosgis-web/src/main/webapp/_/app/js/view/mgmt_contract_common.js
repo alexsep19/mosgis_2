@@ -1,4 +1,12 @@
 define ([], function () {
+
+    var ddt_30 = [];
+    for (var i = 1; i <= 30; i ++) ddt_30.push ({id: i, text: i + '-е число'});        
+    var ddt_31 = ddt_30.concat ([{id: 31, text: '31-е число'}]);                
+    var last = {id: 99, text: 'последнее число'}        
+    ddt_30.push (last)
+    ddt_31.push (last)
+    var ddt_31_from = ddt_31.map (function (i) {return {id: i.id, text: i.text.replace ('е число', 'го числа')}})
     
     var form_name = 'mgmt_contract_common_form'
 
@@ -50,7 +58,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 350},
+                {type: 'top', size: 460},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
@@ -71,7 +79,12 @@ define ([], function () {
         var $panel = $(w2ui ['passport_layout'].el ('top'))
                 
         fill (view, data.item, $panel)        
-
+        
+        var nxt = [
+            {id: "0", text: "текущего месяца"},
+            {id: "1", text: "следующего месяца"},
+        ]
+        
         $panel.w2reform ({ 
         
             name   : form_name,
@@ -91,6 +104,17 @@ define ([], function () {
                     {name: 'vc_orgs.label', type: 'text'},
                     {name: 'uuid_org_customer', type: 'hidden'},
                     {name: 'label_org_customer', type: 'text'},
+                    
+                    {name: 'ddt_m_start', type: 'list', options: {items: ddt_31_from}},
+                    {name: 'ddt_m_end',   type: 'list', options: {items: ddt_31}},
+                    {name: 'ddt_d_start', type: 'list', options: {items: ddt_30}},
+                    {name: 'ddt_i_start', type: 'list', options: {items: ddt_30}},
+
+                    {name: 'ddt_m_start_nxt', type: 'list', options: {items: nxt}},
+                    {name: 'ddt_m_end_nxt',   type: 'list', options: {items: nxt}},
+                    {name: 'ddt_d_start_nxt', type: 'list', options: {items: nxt}},
+                    {name: 'ddt_i_start_nxt', type: 'list', options: {items: nxt}},
+
             ],
 
             focus: -1,
