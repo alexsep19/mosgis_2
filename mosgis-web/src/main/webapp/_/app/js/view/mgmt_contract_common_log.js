@@ -1,5 +1,14 @@
 define ([], function () {
 
+    function _ddt (record, ind, col_ind, data) {
+        return data < 99 ? data : 'посл.'
+    }
+    
+    var nxt = {
+        0: 'тек.',
+        1: 'след.',
+    }
+
     return function (data, view) {
     
         data = $('body').data ('data')
@@ -16,7 +25,7 @@ define ([], function () {
 
             columnGroups : [
                 {span: 3, caption: 'Событие'},
-                {span: 10, caption: 'Значения полей'},
+                {span: 18, caption: 'Значения полей'},
                 {span: 4, caption: 'Запрос в ГИС ЖКХ'},
             ], 
             
@@ -37,8 +46,16 @@ define ([], function () {
                 {field: 'id_customer_type',  caption: 'Тип заказчика',     size: 30, voc: data.vc_gis_customer_type},                
                 {field: 'org_customer.label', caption: 'Заказчик', size: 100},
                 {field: 'contractbase',  caption: 'Основание заключения',     size: 30, voc: data.vc_nsi_58},                
-                {field: 'effectivedate', caption: 'Дата вступления в силу', size: 18, render: _dt},
-                {field: 'plandatecomptetion', caption: 'Дата окончания', size: 18, render: _dt},               
+                {field: 'effectivedate', caption: 'Дата вступления в силу', size: 18, render: _dt},                
+                {field: 'plandatecomptetion', caption: 'Дата окончания', size: 18, render: _dt},                               
+                {field: 'ddt_m_start', caption: 'Ввод ПУ с (дата)', size: 5, render: _ddt, hidden: true},
+                {field: 'ddt_m_start_nxt', caption: 'Ввод ПУ с (мес.)', size: 5, voc: nxt, hidden: true},
+                {field: 'ddt_m_end', caption: 'Ввод ПУ по (дата)', size: 5, render: _ddt, hidden: true},
+                {field: 'ddt_m_end_nxt', caption: 'Ввод ПУ по (мес.)', size: 5, voc: nxt, hidden: true},
+                {field: 'ddt_d_start', caption: 'Плат. док. (дата)', size: 5, render: _ddt, hidden: true},
+                {field: 'ddt_d_start_nxt', caption: 'Плат. док. (мес.)', size: 5, voc: nxt, hidden: true},
+                {field: 'ddt_i_start', caption: 'Внес. платы (дата)', size: 5, render: _ddt, hidden: true},
+                {field: 'ddt_i_start_nxt', caption: 'Внес. платы (мес.)', size: 5, voc: nxt, hidden: true},
                 {field: 'is_deleted',  caption: 'Статус',     size: 20, voc: {0: 'Актуально', 1: 'Удалено'}},
                 
                 {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: 'data-ref=1'},

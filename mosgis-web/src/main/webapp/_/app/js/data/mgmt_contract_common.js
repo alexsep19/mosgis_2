@@ -83,12 +83,18 @@ define ([], function () {
 
         if (!v.plandatecomptetion) die ('plandatecomptetion', 'Укажите, пожалуйста, плановую дату окончания действия договора')
         if (v.plandatecomptetion < v.effectivedate) die ('plandatecomptetion', 'Дата окончания не может предшествовать дате вступления договора в силу')
+                
+        if (!v.ddt_m_start) die ('ddt_m_start', 'Укажите, пожалуйста, дату начала ввода показаний ПУ')
+        if (!v.ddt_m_end) die ('ddt_m_start', 'Укажите, пожалуйста, дату окончания ввода показаний ПУ')
         
         if (v.ddt_m_start_nxt > v.ddt_m_end_nxt) die ('ddt_m_end_nxt', 'Окончание срока не может предшествовать его началу')
         
         if (v.ddt_m_start_nxt == v.ddt_m_end_nxt) {
             if (v.ddt_m_start > v.ddt_m_end) die ('ddt_m_end', 'Окончание срока не может предшествовать его началу')
         }
+        
+        if (!v.ddt_d_start) die ('ddt_d_start', 'Укажите, пожалуйста, срок выставления платёжных документов')
+        if (!v.ddt_i_start) die ('ddt_i_start', 'Укажите, пожалуйста, срок внесения платы')
         
         query ({type: 'mgmt_contracts', action: 'update'}, {data: v}, reload_page)
 
@@ -135,12 +141,12 @@ define ([], function () {
         
         data.item.status_label = data.vc_gis_status [data.item.id_ctr_status]
         data.item.err_text = data.item ['out_soap.err_text']        
-
+/*
         for (i in data.item) {        
             if (!/_nxt/.test (i)) continue            
             if (!data.item [i.substr (0, i.length - 4)]) delete data.item [i]
         }
-                
+*/                
         data.item._can = !$_USER.role.nsi_20_1 /*|| data.item.id_status == 10*/ ? {} : {
             edit: 1 - data.item.is_deleted,
             update: 1,
