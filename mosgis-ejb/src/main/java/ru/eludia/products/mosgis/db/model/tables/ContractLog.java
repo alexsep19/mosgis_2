@@ -36,6 +36,14 @@ public class ContractLog extends Table {
         col   ("plandatecomptetion",        Type.DATE,                          null,   "Планируемая дата окончания");
         col   ("automaticrolloveroneyear",  Type.BOOLEAN,                       null,   "1, если запись удалена; иначе 0");
         col   ("code_vc_nsi_58",            Type.STRING,           20,          null,   "Ссылка на НСИ \"Основание заключения договора\" (реестровый номер 58)");
+        col   ("ddt_m_start",               Type.NUMERIC,          2,           null,  "Начало периода ввода показаний ПУ (1..31 — конкретное число; 99 — последнее число)");
+        col   ("ddt_m_start_nxt",           Type.BOOLEAN,                       null, "1, если начало периода ввода показаний ПУ в следующем месяце; иначе 0");
+        col   ("ddt_m_end",                 Type.NUMERIC,          2,           null,  "Окончание периода ввода показаний ПУ (1..31 — конкретное число; 99 — последнее число)");
+        col   ("ddt_m_end_nxt",             Type.BOOLEAN,                       null, "1, если окончание периода ввода показаний ПУ в следующем месяце; иначе 0");
+        col   ("ddt_d_start",               Type.NUMERIC,          2,           null,  "Срок представления (выставления) платежных документов для внесения платы за жилое помещение и (или) коммунальные услуги (1..30 — конкретное число; 99 — последнее число)");
+        col   ("ddt_d_start_nxt",           Type.BOOLEAN,                       null, "1, если срок представления (выставления) платежных документов для внесения платы за жилое помещение и (или) коммунальные услуги в следующем месяце; иначе 0");
+        col   ("ddt_i_start",               Type.NUMERIC,          2,           null,  "Срок внесения платы за жилое помещение и (или) коммунальные услуги (1..30 — конкретное число; 99 — последнее число)");
+        col   ("ddt_i_start_nxt",           Type.BOOLEAN,                       null, "1, если срок внесения платы за жилое помещение и (или) коммунальные услуги в следующем месяце; иначе 0");
 
         col   ("contractbase",              Type.STRING,                        new Virt ("(''||\"CODE_VC_NSI_58\")"),  "Основание заключения договора");
 
@@ -54,6 +62,15 @@ public class ContractLog extends Table {
            + "       , plandatecomptetion"
            + "       , automaticrolloveroneyear"
            + "       , code_vc_nsi_58"
+           + "       , ddt_m_start"
+           + "       , ddt_m_start_nxt"
+           + "       , ddt_m_end"
+           + "       , ddt_m_end_nxt"
+           + "       , ddt_d_start"
+           + "       , ddt_d_start_nxt"
+           + "       , ddt_i_start"
+           + "       , ddt_i_start_nxt"
+               
            + " INTO "
            + "       :NEW.is_deleted"
            + "       , :NEW.uuid_org"
@@ -67,6 +84,14 @@ public class ContractLog extends Table {
            + "       , :NEW.plandatecomptetion"
            + "       , :NEW.automaticrolloveroneyear"
            + "       , :NEW.code_vc_nsi_58"
+           + "       , :NEW.ddt_m_start"
+           + "       , :NEW.ddt_m_start_nxt"
+           + "       , :NEW.ddt_m_end"
+           + "       , :NEW.ddt_m_end_nxt"
+           + "       , :NEW.ddt_d_start"
+           + "       , :NEW.ddt_d_start_nxt"
+           + "       , :NEW.ddt_i_start"
+           + "       , :NEW.ddt_i_start_nxt"
            + " FROM tb_contracts WHERE uuid=:NEW.uuid_object; "
 
        + "END;");        
