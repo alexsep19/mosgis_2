@@ -1,6 +1,7 @@
 package ru.eludia.products.mosgis.jmx;
 
 import java.lang.management.ManagementFactory;
+import java.sql.SQLException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -13,9 +14,14 @@ import javax.ejb.Startup;
 import javax.jms.Queue;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+import ru.eludia.base.DB;
+import ru.eludia.products.mosgis.db.model.MosGisModel;
 import static ru.eludia.products.mosgis.db.model.voc.VocNsiListGroup.i.NSI;
 import static ru.eludia.products.mosgis.db.model.voc.VocNsiListGroup.i.NSIRAO;
+import ru.eludia.products.mosgis.db.model.voc.VocOkei;
+import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
+import ru.eludia.products.mosgis.rest.ValidationException;
 
 @Startup
 @Singleton
@@ -59,13 +65,14 @@ public class Nsi implements NsiMBean {
 
     @Override
     public void importNsi () {
+        checkEmptyNSI();
         UUIDPublisher.publish (inNsiQueue, String.valueOf (NSI.toString ()));
         UUIDPublisher.publish (inNsiQueue, String.valueOf (NSIRAO.toString ()));
     }
         
     @Override
     public void importNsiItems (int registryNumber) {
-        
+        checkEmptyNSI();
         if (waitingRegistryNumbers.contains (registryNumber)) {
             logger.warning ("Reloading registryNumber=" + registryNumber + " is already to schedule, bypassing it");
             return;
@@ -91,6 +98,24 @@ public class Nsi implements NsiMBean {
         }
         
         
+    }
+    
+    /**
+     * При пустой vc_okei выбрасывает исключение.
+     *
+     * @throws ValidationException
+     * @throws java.sql.SQLException
+     */
+    private void checkEmptyNSI() throws ValidationException {
+        final MosGisModel model = ModelHolder.getModel();
+        try (DB db = model.getDb()) {
+            if (db.getString(model.select(VocOkei.class, "code")) == null)
+                throw new ValidationException("", "Перед импортом НСИ необходимо загрузить справочник ОКЕИ");
+        }
+        catch (SQLException e)
+        {
+            throw new IllegalStateException("Ошибка доступа к справочнику ОКЕИ");
+        }
     }
     
 }
