@@ -65,14 +65,14 @@ public class Nsi implements NsiMBean {
 
     @Override
     public void importNsi () {
-        checkEmptyNSI();
+        checkEmptyOkei();
         UUIDPublisher.publish (inNsiQueue, String.valueOf (NSI.toString ()));
         UUIDPublisher.publish (inNsiQueue, String.valueOf (NSIRAO.toString ()));
     }
         
     @Override
     public void importNsiItems (int registryNumber) {
-        checkEmptyNSI();
+        checkEmptyOkei();
         if (waitingRegistryNumbers.contains (registryNumber)) {
             logger.warning ("Reloading registryNumber=" + registryNumber + " is already to schedule, bypassing it");
             return;
@@ -104,9 +104,8 @@ public class Nsi implements NsiMBean {
      * При пустой vc_okei выбрасывает исключение.
      *
      * @throws ValidationException
-     * @throws java.sql.SQLException
      */
-    private void checkEmptyNSI() throws ValidationException {
+    private void checkEmptyOkei() throws ValidationException {
         final MosGisModel model = ModelHolder.getModel();
         try (DB db = model.getDb()) {
             if (db.getString(model.select(VocOkei.class, "code")) == null)
