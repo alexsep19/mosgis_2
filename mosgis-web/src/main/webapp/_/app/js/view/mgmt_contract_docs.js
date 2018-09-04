@@ -11,6 +11,8 @@ define ([], function () {
         var layout = w2ui ['topmost_layout']
 
         var $panel = $(layout.el ('main'))
+        
+        var is_own = (data.item.uuid_org = $_USER.uuid_org)
 
         $panel.w2regrid ({ 
         
@@ -24,9 +26,9 @@ define ([], function () {
                 toolbarReload: false,
                 toolbarColumns: false,
                 toolbarInput: false,
-                toolbarAdd: true,
-                toolbarDelete: true,
-                toolbarEdit: true,
+                toolbarAdd: is_own,
+                toolbarDelete: is_own,
+                toolbarEdit: is_own,
             },            
 
             textSearch: 'contains',
