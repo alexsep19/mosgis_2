@@ -121,9 +121,10 @@ public class ContractDocsImpl extends BaseCRUD<ContractFile> implements Contract
         
         final JsonObject data = p.getJsonObject ("data");
 
-        db.update (ContractFile.class, HASH ("uuid", id,
-            "purchasenumber", data.getString ("purchasenumber"),
-            "note",           data.getString ("note")
+        db.update (ContractFile.class, HASH (
+            "uuid",           id,
+            "purchasenumber", data.getString ("purchasenumber", ""),
+            "description",    data.getString ("description", "")
         ));
 
     });}
