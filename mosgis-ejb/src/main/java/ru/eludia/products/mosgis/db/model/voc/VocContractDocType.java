@@ -3,9 +3,9 @@ package ru.eludia.products.mosgis.db.model.voc;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.Table;
 
-public class VocContractDocTypes extends Table {
+public class VocContractDocType extends Table {
 
-    public VocContractDocTypes () {
+    public VocContractDocType () {
         
         super ("vc_contract_doc_types", "Типы документов-приложений к договорам");
         
