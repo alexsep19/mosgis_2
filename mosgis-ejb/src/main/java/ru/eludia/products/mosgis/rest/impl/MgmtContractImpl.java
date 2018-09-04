@@ -16,6 +16,7 @@ import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.MgmtContract;
 //import ru.eludia.products.mosgis.db.model.tables.ContractLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
+import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType;
 import static ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType.i.OWNERS;
@@ -143,7 +144,11 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
                 model
                     .select (VocGisCustomerType.class, "id", "label")                    
                     .orderBy ("label"),
-                    
+                
+                model
+                    .select (VocContractDocType.class, "id", "label")                    
+                    .orderBy ("label"),
+
                 model
                     .select (VocGisStatus.class, "id", "label")                    
                     .orderBy ("id")

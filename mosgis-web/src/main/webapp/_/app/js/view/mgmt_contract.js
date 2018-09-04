@@ -18,6 +18,7 @@ define ([], function () {
 
                         tabs: [
                             {id: 'mgmt_contract_common',   caption: 'Общие'},
+                            {id: 'mgmt_contract_docs',     caption: 'Документы'},
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_mgmt_contract
