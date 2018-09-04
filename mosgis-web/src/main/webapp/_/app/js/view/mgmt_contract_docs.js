@@ -31,24 +31,11 @@ define ([], function () {
 
             textSearch: 'contains',
 
-            columns: [                
-/*            
-                {field: 'type', caption: 'Тип', size: 100, render: function (r) {var v = idx [r.id_type]; return v ? v.label : ''}},
-                {field: 'dt', caption: 'Дата', size: 18, render: function (r) {
-                    var vv = idx [r.id_type]
-                    if (!vv) return ''
-                    var v = data.item ['f_' + vv.id_dt]
-                    return !v ? '' : dt_dmy (v.substr (0, 10))}
-                },
-                {field: 'no', caption: '№', size: 25, render: function (r) {
-                    var vv = idx [r.id_type]
-                    if (!vv) return ''
-                    return data.item ['f_' + vv.id_no]}
-                },
-*/                
-                {field: 'label', caption: 'Имя файла', size: 100},
+            columns: [                               
+                {field: 'id_type', caption: 'Тип', size: 50, voc: data.vc_contract_doc_types},
+                {field: 'label', caption: 'Наименование', size: 100},
                 {field: 'len', caption: 'Объём, Мб', size: 10, render: function (r) {return (r.len/1024/1024).toFixed(3)}},
-                {field: 'note', caption: 'Прим.', size: 50},
+                {field: 'description', caption: 'Описание', size: 50},
             ],
             
             postData: {search: {"uuid_contract": $_REQUEST.id}},

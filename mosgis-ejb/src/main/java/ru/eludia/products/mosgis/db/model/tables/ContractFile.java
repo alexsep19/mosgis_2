@@ -22,7 +22,7 @@ public class ContractFile extends Table {
         col    ("mime",                  Type.STRING,                           "Тип содержимого");
         col    ("len",                   Type.INTEGER,                          "Размер, байт");
         col    ("body",                  Type.BLOB,                EMPTY_BLOB,  "Содержимое");
-        col    ("note",                  Type.TEXT,                null,        "Примечание");
+        col    ("description",           Type.TEXT,                null,        "Примечание");
         
         col    ("purchasenumber",        Type.STRING, 60,          null,        "Номер извещения (для протокола открытого конкурса)");
 

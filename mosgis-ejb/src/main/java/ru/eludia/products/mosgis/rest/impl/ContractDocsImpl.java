@@ -34,15 +34,16 @@ public class ContractDocsImpl extends BaseCRUD<ContractFile> implements Contract
 
             job.add ("id", 
                 db.insertId (getTable (), HASH (
-                    "purchasenumber", file.getString ("purchasenumber"),
-                    "id_type",        file.getString ("id_type"),
+                    "uuid_contract",  file.getString ("uuid"),
+                    "purchasenumber", file.getString ("purchasenumber", ""),
+                    "id_type",        file.getInt    ("id_type"),
                     "label",          file.getString ("label"),
-                    "note",           file.getString ("note"),
+                    "description",    file.getString ("description", ""),
                     "mime",           file.getString ("type"),
                     "len",            file.getInt    ("size")
                 )).toString ()
             );
-                
+
         db.commit ();
         
     });}
