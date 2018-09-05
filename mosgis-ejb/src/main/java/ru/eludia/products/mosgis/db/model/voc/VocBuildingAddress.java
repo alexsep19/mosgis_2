@@ -22,6 +22,13 @@ public class VocBuildingAddress extends View {
 
     @Override
     public final String getSQL () {
+        
+        String l = "s.formalname" +
+            "    || ' ' || s.shortname" +
+            "    ||DECODE(b.house_label,NULL,NULL,', ' || b.house_label)" +
+            "    ||DECODE(b.build_label,NULL,NULL,', ' || b.build_label)" +
+            "    ||DECODE(ss.shortname,NULL,NULL,', ' || ss.shortname || '. ' || b.strucnum)";
+        
 
         return "SELECT" +
             "  b.houseguid" +
@@ -29,10 +36,8 @@ public class VocBuildingAddress extends View {
             "  , b.postalcode" +
             "  , b.eststatus" +
             "  , s.formalname" +
-            "    || ' ' || s.shortname" +
-            "    ||DECODE(b.house_label,NULL,NULL,', ' || b.house_label)" +
-            "    ||DECODE(b.build_label,NULL,NULL,', ' || b.build_label)" +
-            "    ||DECODE(ss.shortname,NULL,NULL,', ' || ss.shortname || '. ' || b.strucnum) label" +
+            "  , " + l + " label " +
+            "  , UPPER(" + l + ") label_uc " +
             " FROM " +
             "  vc_buildings b" +
             "  INNER JOIN vc_streets s ON b.aoguid = s.aoguid" +
