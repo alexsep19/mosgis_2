@@ -41,7 +41,7 @@ public class ContractDocsImpl extends BaseCRUD<ContractFile> implements Contract
 
                     "purchasenumber",  file.getString ("purchasenumber",  ""),
                     "agreementnumber", file.getString ("agreementnumber", ""),
-                    "agreementdate",   file.getString ("agreementdate",   ""),
+                    "agreementdate",   file.getString ("agreementdate",   null),
 
                     "id_type",        file.getInt    ("id_type"),
                     "label",          file.getString ("label"),
