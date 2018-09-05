@@ -23,11 +23,14 @@ public class ContractFile extends Table {
         col    ("len",                   Type.INTEGER,                          "Размер, байт");
         col    ("body",                  Type.BLOB,                EMPTY_BLOB,  "Содержимое");
         col    ("description",           Type.TEXT,                null,        "Примечание");
-        
+
         col    ("purchasenumber",        Type.STRING, 60,          null,        "Номер извещения (для протокола открытого конкурса)");
 
+        col    ("agreementnumber",       Type.STRING, 255,         null,        "Номер дополнительного соглашения");
+        col    ("agreementdate",         Type.DATE,                null,        "Дата дополнительного соглашения");
+
         col    ("id_status",             Type.INTEGER, 1,          ZERO,        "Статус");
-        
+
         trigger ("BEFORE UPDATE", "BEGIN "
                 
             + " IF :NEW.id_status = 0 AND DBMS_LOB.GETLENGTH (:NEW.body) = :NEW.len THEN "

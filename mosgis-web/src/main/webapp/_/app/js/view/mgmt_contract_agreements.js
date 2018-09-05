@@ -1,6 +1,6 @@
 define ([], function () {
     
-    var grid_name = 'mgmt_contract_docs_grid'
+    var grid_name = 'mgmt_contract_agreements_grid'
     
     function getData () {
         return $('body').data ('data')
@@ -33,8 +33,9 @@ define ([], function () {
 
             textSearch: 'contains',
 
-            columns: [                               
-                {field: 'id_type', caption: 'Тип', size: 50, voc: data.vc_contract_doc_types},
+            columns: [              
+                {field: 'agreementnumber', caption: 'Номер', size: 20},
+                {field: 'agreementdate', caption: 'Дата', size: 18, render: _dt},
                 {field: 'label', caption: 'Наименование', size: 100},
                 {field: 'len', caption: 'Объём, Мб', size: 10, render: function (r) {return (r.len/1024/1024).toFixed(3)}},
                 {field: 'description', caption: 'Описание', size: 50},
@@ -42,18 +43,18 @@ define ([], function () {
             
             postData: {search: [
                 {field: "uuid_contract", operator: "is", value: $_REQUEST.id},
-                {field: "id_type",       operator: "not in", value: [{id: 1}]}
+                {field: "id_type",       operator: "is", value: 1}
             ]},
 
             url: '/mosgis/_rest/?type=contract_docs',
             
-            onDblClick: $_DO.download_mgmt_contract_docs,
+            onDblClick: $_DO.download_mgmt_contract_agreements,
             
-            onDelete: $_DO.delete_mgmt_contract_docs,
+            onDelete: $_DO.delete_mgmt_contract_agreements,
             
-            onAdd: $_DO.create_mgmt_contract_docs,
+            onAdd: $_DO.create_mgmt_contract_agreements,
             
-            onEdit: $_DO.edit_mgmt_contract_docs,
+            onEdit: $_DO.edit_mgmt_contract_agreements,
                         
 //            onChange: $_DO.patch_mgmt_contract_common,
             

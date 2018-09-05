@@ -9,16 +9,19 @@ import java.sql.ResultSet;
 import java.util.Base64;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.WebApplicationException;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
+import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.rest.api.ContractDocsLocal;
 import ru.eludia.products.mosgis.db.model.tables.ContractFile;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
+import ru.eludia.products.mosgis.web.base.ComplexSearch;
 
 @Stateless
 public class ContractDocsImpl extends BaseCRUD<ContractFile> implements ContractDocsLocal  {
@@ -131,14 +134,16 @@ public class ContractDocsImpl extends BaseCRUD<ContractFile> implements Contract
 
     @Override
     public JsonObject select (JsonObject p, User u) {return fetchData ((db, job) -> {
-
-        JsonObject search = p.getJsonObject ("search");
-
-        db.addJsonArrays (job, ModelHolder.getModel ()
+        
+        ComplexSearch s = new ComplexSearch (p.getJsonArray ("search"));
+        
+        if (!s.getFilters ().containsKey ("uuid_contract")) throw new IllegalStateException ("uuid_contract filter is not set");
+                
+        Select select = ModelHolder.getModel ()
             .select (getTable (), "*", "uuid AS id")
-            .where ("uuid_contract", search.getString ("uuid_contract"))
-            .and   ("id_status",   1)
-        );
+            .where  ("id_status",  1);
+        
+        db.addJsonArrays (job, s.filter (select, ""));
 
     });}
 
