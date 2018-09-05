@@ -13,7 +13,7 @@ public interface ConfMBean {
 
     public String getPathOpenData ();
     public void   setPathOpenData (String s);
-
+    
     public String getWsGisFilesUrl ();
     public void   setWsGisFilesUrl (String s);    
     public int    getWsGisFilesConnTimeout ();     
@@ -71,4 +71,7 @@ public interface ConfMBean {
     
     public String getGisIdOrganization ();
     public void   setGisIdOrganization (String s);
+    
+    public String getWsGisUrlRoot ();
+    public void   setWsGisUrlRoot (String s);
 }

@@ -39,7 +39,7 @@ public class VocSetting extends Table {
 
     }
     
-    public static final String WS_GIS_URL_ROOT = "https://217.107.108.156:10081";
+    public static final String WS_GIS_URL_ROOT_DEFAULT = "https://217.107.108.156:10081";
     
     public enum i {
         
@@ -50,28 +50,29 @@ public class VocSetting extends Table {
         PATH_FIAS ("path.fias", "Директория с распакованной из RAR XML-выгрузкой ФИАС", "c:/projects/mosgis/incoming/fias/fias_xml"),
         PATH_OPENDATA ("path.opendata", "Директория с распакованной из ZIP XML-выгрузкой с портала открытых данных Правительства Москвы", "c:/projects/mosgis/incoming/opendata"),
 
-
-        WS_GIS_FILES_URL      ("ws.gis.files.url", "Endpoint URL файлового REST-сервиса ГИС ЖКХ", WS_GIS_URL_ROOT.concat("/ext-bus-file-store-service/rest/")),
+        WS_GIS_URL_ROOT       ("ws.gis.url.root", "Корневой URL сервисов GIS", ""),
+        
+        WS_GIS_FILES_URL      ("ws.gis.files.url", "Endpoint URL файлового REST-сервиса ГИС ЖКХ", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-file-store-service/rest/"),
         WS_GIS_FILES_TMT_CONN ("ws.gis.files.timeout.connection", "Время ожидания подключения к файловому REST-сервису ГИС ЖКХ, мс", "10000"),
         WS_GIS_FILES_TMT_RESP ("ws.gis.files.timeout.response", "Время ожидания подключения к файловому REST-сервису ГИС ЖКХ (BillsServiceAsync), мс", "10000"),
 
-        WS_GIS_BILLS_URL      ("ws.gis.bills.url", "Endpoint URL сервиса обмена сведениями о начислениях, взаиморасчетах ГИС ЖКХ (BillsServiceAsync)", WS_GIS_URL_ROOT.concat("/ext-bus-bills-service/services/BillsAsync/")),
+        WS_GIS_BILLS_URL      ("ws.gis.bills.url", "Endpoint URL сервиса обмена сведениями о начислениях, взаиморасчетах ГИС ЖКХ (BillsServiceAsync)", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-bills-service/services/BillsAsync"),
         WS_GIS_BILLS_TMT_CONN ("ws.gis.bills.timeout.connection", "Время ожидания подключения к сервису обмена сведениями о начислениях, взаиморасчетах ГИС ЖКХ (BillsServiceAsync), мс", "10000"),
         WS_GIS_BILLS_TMT_RESP ("ws.gis.bills.timeout.response", "Время ожидания подключения к сервису обмена сведениями о начислениях, взаиморасчетах ГИС ЖКХ (BillsServiceAsync), мс", "10000"),
 
-        WS_GIS_NSI_URL      ("ws.gis.nsi.url", "Endpoint URL сервиса частной НСИ ГИС ЖКХ (NsiAsyncService)", WS_GIS_URL_ROOT.concat("/ext-bus-nsi-service/services/NsiAsync")),
+        WS_GIS_NSI_URL      ("ws.gis.nsi.url", "Endpoint URL сервиса частной НСИ ГИС ЖКХ (NsiAsyncService)", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-nsi-service/services/NsiAsync"),
         WS_GIS_NSI_TMT_CONN ("ws.gis.nsi.timeout.connection", "Время ожидания подключения к сервису частной НСИ ГИС ЖКХ (NsiAsyncService), мс", "10000"),
         WS_GIS_NSI_TMT_RESP ("ws.gis.nsi.timeout.response", "Время ожидания подключения к сервису частной НСИ ГИС ЖКХ (NsiAsyncService), мс", "10000"),
 
-        WS_GIS_NSI_COMMON_URL      ("ws.gis.nsi.common.url", "Endpoint URL сервиса НСИ ГИС ЖКХ (NsiCommonAsyncService)", WS_GIS_URL_ROOT.concat("/ext-bus-nsi-common-service/services/NsiCommonAsync")),
+        WS_GIS_NSI_COMMON_URL      ("ws.gis.nsi.common.url", "Endpoint URL сервиса НСИ ГИС ЖКХ (NsiCommonAsyncService)", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-nsi-common-service/services/NsiCommonAsync"),
         WS_GIS_NSI_COMMON_TMT_CONN ("ws.gis.nsi.common.timeout.connection", "Время ожидания подключения к сервису НСИ ГИС ЖКХ (NsiCommonAsyncService), мс", "10000"),
         WS_GIS_NSI_COMMON_TMT_RESP ("ws.gis.nsi.common.timeout.response", "Время ожидания подключения к сервису НСИ ГИС ЖКХ (NsiCommonAsyncService), мс", "10000"),
 
-        WS_GIS_ORG_COMMON_URL      ("ws.gis.org.common.url", "Endpoint URL сервиса реестра юрлиц ГИС ЖКХ (NsiCommonAsyncService)", WS_GIS_URL_ROOT.concat("/ext-bus-org-registry-common-service/services/OrgRegistryCommonAsync")),
+        WS_GIS_ORG_COMMON_URL      ("ws.gis.org.common.url", "Endpoint URL сервиса реестра юрлиц ГИС ЖКХ (NsiCommonAsyncService)", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-org-registry-common-service/services/OrgRegistryCommonAsync"),
         WS_GIS_ORG_COMMON_TMT_CONN ("ws.gis.org.common.timeout.connection", "Время ожидания подключения к сервису реестра юрлиц ГИС ЖКХ (NsiCommonAsyncService), мс", "10000"),
         WS_GIS_ORG_COMMON_TMT_RESP ("ws.gis.org.common.timeout.response", "Время ожидания подключения к сервису реестра юрлиц ГИС ЖКХ (NsiCommonAsyncService), мс", "10000"),
 
-        WS_GIS_HOUSE_MANAGEMENT_URL      ("ws.gis.house.management.url", "Endpoint URL сервиса обмена сведениями о жилищном фонде ГИС ЖКХ (HouseManagementServiceAsync)", WS_GIS_URL_ROOT.concat("/ext-bus-home-management-service/services/HomeManagementAsync")),
+        WS_GIS_HOUSE_MANAGEMENT_URL      ("ws.gis.house.management.url", "Endpoint URL сервиса обмена сведениями о жилищном фонде ГИС ЖКХ (HouseManagementServiceAsync)", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-home-management-service/services/HomeManagementAsync"),
         WS_GIS_HOUSE_MANAGEMENT_TMT_CONN ("ws.gis.house.management.timeout.connection", "Время ожидания подключения к сервису обмена сведениями о жилищном фонде ГИС ЖКХ (HouseManagementServiceAsync), мс", "10000"),
         WS_GIS_HOUSE_MANAGEMENT_TMT_RESP ("ws.gis.house.management.timeout.response", "Время ожидания подключения к сервису обмена сведениями о жилищном фонде ГИС ЖКХ (HouseManagementServiceAsync), мс", "10000"),
         
@@ -102,7 +103,6 @@ public class VocSetting extends Table {
             this.value = value;
             this.label = label;
         }
-        
     }
     
 }

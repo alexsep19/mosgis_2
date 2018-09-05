@@ -33,6 +33,8 @@ public class Conf implements ConfMBean, ConfLocal {
     private MBeanServer platformMBeanServer;
     private static Logger logger = Logger.getLogger (Conf.class.getName ());
     
+    private int currentPrefixLength = VocSetting.WS_GIS_URL_ROOT_DEFAULT.length();
+    
     @EJB
     protected UUIDPublisher UUIDPublisher;
 
@@ -116,10 +118,11 @@ public class Conf implements ConfMBean, ConfLocal {
             
             db.forEach (ModelHolder.getModel ().select (Setting.class, "id", "value"), rs -> {
            
-                final String id = rs.getString ("id");
+                final String id = rs.getString ("id");                
+                final String value = rs.getString ("value");
                 
-                settings.put (id, rs.getString ("value"));
-
+                settings.put (id, value == null ? "" : value);
+  
                 logger.log (Level.INFO, "Loaded {0}", id);
                 
             });
@@ -159,6 +162,8 @@ public class Conf implements ConfMBean, ConfLocal {
     @Override
     public void setWsGisNsiCommonUrl (String s) {
         set (VocSetting.i.WS_GIS_NSI_COMMON_URL, s);
+        set (VocSetting.i.WS_GIS_URL_ROOT, "");
+        currentPrefixLength = 0;
     }
 
     @Override
@@ -229,6 +234,8 @@ public class Conf implements ConfMBean, ConfLocal {
     @Override
     public void setWsGisOrgCommonUrl (String s) {
         set (VocSetting.i.WS_GIS_ORG_COMMON_URL, s);
+        set (VocSetting.i.WS_GIS_URL_ROOT, "");
+        currentPrefixLength = 0;
     }
 
     @Override
@@ -279,6 +286,8 @@ public class Conf implements ConfMBean, ConfLocal {
     @Override
     public void setWsGisNsiUrl (String s) {
         set (VocSetting.i.WS_GIS_NSI_URL, s);
+        set (VocSetting.i.WS_GIS_URL_ROOT, "");
+        currentPrefixLength = 0;
     }
 
     @Override
@@ -309,6 +318,8 @@ public class Conf implements ConfMBean, ConfLocal {
     @Override
     public void setWsGisBillsUrl (String s) {
         set (VocSetting.i.WS_GIS_BILLS_URL, s);
+        set (VocSetting.i.WS_GIS_URL_ROOT, "");
+        currentPrefixLength = 0;
     }
 
     @Override
@@ -340,6 +351,8 @@ public class Conf implements ConfMBean, ConfLocal {
     @Override
     public void setWsGisHouseManagementUrl(String s) {
         set (VocSetting.i.WS_GIS_HOUSE_MANAGEMENT_URL, s);
+        set (VocSetting.i.WS_GIS_URL_ROOT, "");
+        currentPrefixLength = 0;
     }
 
     @Override
@@ -370,6 +383,8 @@ public class Conf implements ConfMBean, ConfLocal {
     @Override
     public void setWsGisFilesUrl (String s) {
         set (VocSetting.i.WS_GIS_FILES_URL, s);
+        set (VocSetting.i.WS_GIS_URL_ROOT, "");
+        currentPrefixLength = 0;
     }
 
     @Override
@@ -401,5 +416,26 @@ public class Conf implements ConfMBean, ConfLocal {
     public void setGisIdOrganization (String s) {
         UUID.fromString(s);
         set (VocSetting.i.GIS_ID_ORGANIZATION, s);
+    }
+    
+    @Override
+    public String getWsGisUrlRoot()
+    {
+        return get (VocSetting.i.WS_GIS_URL_ROOT);
+    }
+    
+    @Override
+    public void setWsGisUrlRoot(String s)
+    {   
+        set (VocSetting.i.WS_GIS_URL_ROOT, s);
+        
+        set (VocSetting.i.WS_GIS_BILLS_URL, s + (get (VocSetting.i.WS_GIS_BILLS_URL)).substring(currentPrefixLength));
+        set (VocSetting.i.WS_GIS_FILES_URL, s + (get (VocSetting.i.WS_GIS_FILES_URL)).substring(currentPrefixLength));
+        set (VocSetting.i.WS_GIS_HOUSE_MANAGEMENT_URL, s + (get (VocSetting.i.WS_GIS_HOUSE_MANAGEMENT_URL)).substring(currentPrefixLength));
+        set (VocSetting.i.WS_GIS_NSI_COMMON_URL, s + (get (VocSetting.i.WS_GIS_NSI_COMMON_URL)).substring(currentPrefixLength));
+        set (VocSetting.i.WS_GIS_NSI_URL, s + (get (VocSetting.i.WS_GIS_NSI_URL)).substring(currentPrefixLength));
+        set (VocSetting.i.WS_GIS_ORG_COMMON_URL, s + (get (VocSetting.i.WS_GIS_ORG_COMMON_URL)).substring(currentPrefixLength));
+        
+        currentPrefixLength = s.length();
     }
 }
