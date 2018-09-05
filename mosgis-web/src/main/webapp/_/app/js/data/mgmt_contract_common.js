@@ -95,6 +95,11 @@ define ([], function () {
         
         if (!v.ddt_d_start) die ('ddt_d_start', 'Укажите, пожалуйста, срок выставления платёжных документов')
         if (!v.ddt_i_start) die ('ddt_i_start', 'Укажите, пожалуйста, срок внесения платы')
+
+        if (v.ddt_d_start_nxt > v.ddt_i_start_nxt) die ('ddt_i_start_nxt', 'Срок выставления платежных документов не должен превышать срок внесения платы')
+        if (v.ddt_d_start_nxt == v.ddt_i_start_nxt) {
+            if (v.ddt_d_start > v.ddt_i_start) die ('ddt_i_start', 'Срок выставления платежных документов не должен превышать срок внесения платы')
+        }
         
         query ({type: 'mgmt_contracts', action: 'update'}, {data: v}, reload_page)
 
