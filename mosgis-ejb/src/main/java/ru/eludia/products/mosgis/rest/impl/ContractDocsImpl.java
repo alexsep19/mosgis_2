@@ -9,7 +9,6 @@ import java.sql.ResultSet;
 import java.util.Base64;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
-import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.WebApplicationException;
@@ -34,16 +33,22 @@ public class ContractDocsImpl extends BaseCRUD<ContractFile> implements Contract
         JsonObject file = p.getJsonObject ("file");
                        
         db.begin ();
-
+        
             job.add ("id", 
                 db.insertId (getTable (), HASH (
+                        
                     "uuid_contract",  file.getString ("uuid"),
-                    "purchasenumber", file.getString ("purchasenumber", ""),
+
+                    "purchasenumber",  file.getString ("purchasenumber",  ""),
+                    "agreementnumber", file.getString ("agreementnumber", ""),
+                    "agreementdate",   file.getString ("agreementdate",   ""),
+
                     "id_type",        file.getInt    ("id_type"),
                     "label",          file.getString ("label"),
                     "description",    file.getString ("description", ""),
                     "mime",           file.getString ("type"),
                     "len",            file.getInt    ("size")
+                        
                 )).toString ()
             );
 
@@ -125,9 +130,11 @@ public class ContractDocsImpl extends BaseCRUD<ContractFile> implements Contract
         final JsonObject data = p.getJsonObject ("data");
 
         db.update (ContractFile.class, HASH (
-            "uuid",           id,
-            "purchasenumber", data.getString ("purchasenumber", ""),
-            "description",    data.getString ("description", "")
+            "uuid",            id,
+            "purchasenumber",  data.getString ("purchasenumber",  ""),
+            "description",     data.getString ("description",     ""),
+            "agreementnumber", data.getString ("agreementnumber", ""),
+            "agreementdate",   data.getString ("agreementdate",   "")
         ));
 
     });}
