@@ -42,7 +42,7 @@ define ([], function () {
 
             url: '/mosgis/_rest/?type=contract_objects',
                         
-//            onDelete: $_DO.delete_mgmt_contract_objects,
+            onDblClick: function (e) {openTab ('/mgmt_contract_object/' + e.recid)},
             
             onAdd: $_DO.create_mgmt_contract_objects,
                         

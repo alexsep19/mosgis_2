@@ -5,10 +5,12 @@ import javax.ejb.Stateless;
 import javax.json.JsonObject;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Type;
+import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractFile;
 import ru.eludia.products.mosgis.rest.api.ContractObjectsLocal;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 import ru.eludia.products.mosgis.web.base.ComplexSearch;
@@ -22,7 +24,10 @@ public class ContractObjectsImpl extends BaseCRUD<ContractObject> implements Con
     public JsonObject getItem (String id) {return fetchData ((db, job) -> {
 
         job.add ("item", db.getJsonObject (db.getModel ()
-            .get (getTable (), id, "*")
+            .get   (getTable (), id,          "AS root", "*"    )
+            .toOne (Contract.class,           "AS ctr",  "*"    ).on ()
+            .toOne (VocOrganization.class,    "AS org",  "label").on ("ctr.uuid_org")
+            .toOne (VocBuildingAddress.class, "AS fias", "label").on ("root.fiashouseguid=fias.houseguid")
         ));
 
     });}
