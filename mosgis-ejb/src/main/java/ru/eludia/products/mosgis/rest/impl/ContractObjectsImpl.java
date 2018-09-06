@@ -5,13 +5,13 @@ import javax.ejb.Stateless;
 import javax.json.JsonObject;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.rest.api.ContractObjectsLocal;
-import ru.eludia.products.mosgis.db.model.tables.ContractFile;
+import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 import ru.eludia.products.mosgis.web.base.ComplexSearch;
 
 @Stateless
-public class ContractObjectsImpl extends BaseCRUD<ContractFile> implements ContractObjectsLocal  {
+public class ContractObjectsImpl extends BaseCRUD<ContractObject> implements ContractObjectsLocal  {
 
     private static final Logger logger = Logger.getLogger (ContractObjectsImpl.class.getName ());    
 
@@ -33,7 +33,7 @@ public class ContractObjectsImpl extends BaseCRUD<ContractFile> implements Contr
                 
         Select select = db.getModel ()
             .select (getTable (), "*", "uuid AS id")
-            .where  ("id_status",  1)
+            .where  ("is_deleted", 0)
             .orderBy ("uuid")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
         

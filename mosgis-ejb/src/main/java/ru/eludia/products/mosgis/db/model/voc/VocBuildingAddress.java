@@ -17,6 +17,7 @@ public class VocBuildingAddress extends View {
         col   ("livestatus",   Type.BOOLEAN, Bool.TRUE,                           "1 для актуальных записей, 0 для удалённых");
 
         col   ("label",        Type.STRING, null,                                 "Адрес здания (без индекса)");
+        col   ("label_uc",     Type.STRING, null,                                 "АДРЕС ЗДАНИЯ В ВЕРХНЕМ РЕГИСТРЕ (БЕЗ ИНДЕКСА)");
         
     }
 
