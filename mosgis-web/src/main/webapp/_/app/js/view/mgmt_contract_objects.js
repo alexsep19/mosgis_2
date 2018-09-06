@@ -19,6 +19,7 @@ define ([], function () {
             show: {
                 toolbar: true,
                 footer: 1,
+                toolbarReload: false,
                 toolbarColumns: false,
                 toolbarInput: false,
                 toolbarAdd: is_own,
@@ -27,9 +28,12 @@ define ([], function () {
             textSearch: 'contains',
             
             columns: [              
-//                {field: 'objectnumber', caption: 'Номер', size: 20},
+                {field: 'fias.label', caption: 'Адрес', size: 100},
                 {field: 'startdate', caption: 'Начало', size: 18, render: _dt},
                 {field: 'enddate', caption: 'Окончание', size: 18, render: _dt},
+                {field: '_', caption: 'Основание', size: 50, render: function (r) {
+                    return r.dt ? 'ДС от ' + dt_dmy (r.dt) + ' №' + r.no : 'договор'
+                }},
             ],
             
             postData: {search: [
