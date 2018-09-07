@@ -29,7 +29,7 @@ define ([], function () {
             
                 items: !is_own ? [] : [
                     {type: 'button', id: 'new_house_service', caption: 'Добавить коммунальную услугу', onClick: $_DO.create_mgmt_contract_object_common_services, icon: 'w2ui-icon-plus'},
-                    {type: 'button', id: 'new_add_service', caption: 'Добавить дополнительную услугу', onClick: $_DO.create_mgmt_contract_object_common_services, icon: 'w2ui-icon-plus'},
+                    {type: 'button', id: 'new_add_service', caption: 'Добавить дополнительную услугу', onClick: $_DO.create_mgmt_contract_object_common_services, icon: 'w2ui-icon-plus', off: data.tb_add_services.length == 0},
                 ].filter (not_off),
                 
             }, 

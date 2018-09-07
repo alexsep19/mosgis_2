@@ -5,6 +5,8 @@ import javax.ejb.Stateless;
 import javax.json.JsonObject;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.AdditionalService;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractFile;
 import ru.eludia.products.mosgis.rest.api.ContractObjectsLocal;
@@ -25,16 +27,26 @@ public class ContractObjectsImpl extends BaseCRUD<ContractObject> implements Con
     public JsonObject getItem (String id) {return fetchData ((db, job) -> {
         
         final Model m = db.getModel ();
-
-        job.add ("item", db.getJsonObject (m
+        
+        final JsonObject item = db.getJsonObject (m
             .get   (getTable (), id,          "AS root", "*"    )
             .toOne (Contract.class,           "AS ctr",  "*"    ).on ()
             .toOne (VocOrganization.class,    "AS org",  "label").on ("ctr.uuid_org")
             .toOne (VocBuildingAddress.class, "AS fias", "label").on ("root.fiashouseguid=fias.houseguid")
-        ));
+        );
+
+        job.add ("item", item);
         
         db.addJsonArrays (job,                
-            m.select (VocContractDocType.class, "id", "label").orderBy ("label")
+                
+            NsiTable.getNsiTable (db, 3).getVocSelect (),                
+                
+            m.select (VocContractDocType.class, "id", "label").orderBy ("label"),
+            
+            m.select (AdditionalService.class, "uuid AS id", "label").orderBy ("label")
+                .and ("is_deleted", 0)
+                .and ("uuid_org", item.getString ("ctr.uuid_org"))
+
         );
 
     });}
