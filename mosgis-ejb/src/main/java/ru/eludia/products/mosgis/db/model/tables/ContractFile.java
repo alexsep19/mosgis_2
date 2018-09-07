@@ -15,7 +15,8 @@ public class ContractFile extends Table {
         
         pk     ("uuid",                  Type.UUID,                NEW_UUID,    "Ключ");
         
-        ref    ("uuid_contract",         Contract.class,                        "Ссылка на договор");        
+        ref    ("uuid_contract",         Contract.class,                        "Ссылка на договор");
+        ref    ("uuid_contract_object",  ContractObject.class,     null,        "Ссылка на объект договора");
         ref    ("id_type",               VocContractDocType.class,              "Ссылка на тип документа");
         
         col    ("label",                 Type.STRING,                           "Имя файла");

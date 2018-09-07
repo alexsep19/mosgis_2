@@ -3,13 +3,21 @@ package ru.eludia.products.mosgis.rest.impl;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.json.JsonObject;
+import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Type;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractFile;
 import ru.eludia.products.mosgis.rest.api.ContractObjectsLocal;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
+import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
+import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
+import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType;
+import static ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType.i.OWNERS;
+import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerTypeNsi58;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
@@ -22,13 +30,19 @@ public class ContractObjectsImpl extends BaseCRUD<ContractObject> implements Con
 
     @Override
     public JsonObject getItem (String id) {return fetchData ((db, job) -> {
+        
+        final Model m = db.getModel ();
 
-        job.add ("item", db.getJsonObject (db.getModel ()
+        job.add ("item", db.getJsonObject (m
             .get   (getTable (), id,          "AS root", "*"    )
             .toOne (Contract.class,           "AS ctr",  "*"    ).on ()
             .toOne (VocOrganization.class,    "AS org",  "label").on ("ctr.uuid_org")
             .toOne (VocBuildingAddress.class, "AS fias", "label").on ("root.fiashouseguid=fias.houseguid")
         ));
+        
+        db.addJsonArrays (job,                
+            m.select (VocContractDocType.class, "id", "label").orderBy ("label")
+        );
 
     });}
 
