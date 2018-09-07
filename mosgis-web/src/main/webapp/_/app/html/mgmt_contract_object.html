@@ -1,10 +1,20 @@
 <table width=100% height=100% cellpadding=0 cellspacing=0 border=0 class="w2ui-reset" style="background-color: #fafafa;padding: 3px 0;">
-    <tr height=40>
-        <td style="font-size: 14pt; padding: 0 0 0 20px">
-        	<span data-text=fias.label /> в договоре управления
-        		от <span data-text=ctr.signingdate data-date/>
-        		№<span data-text=ctr.docnum />
-        		<span data-text=org.label />
+    <tr height=110 valign=top>
+        <td style="font-size: 14pt; padding: 10px 0 0 20px">
+
+        	Объект управления по адресу <span data-text=fias.label />
+
+        	<br />
+        	<br />
+        	<span data-text=org.label />
+
+        	<br />
+        	<br />
+        	<span id=ctr_link title="Перейти на страницу договора">
+				Договор управления № <span data-text=ctr.docnum /> от <span data-text=ctr.signingdate data-date />
+					(период действия <span data-text=ctr.effectivedate data-date />-<span data-text=ctr.plandatecomptetion data-date />)
+			</span>
+
         </td>
     </tr>
     <tr>

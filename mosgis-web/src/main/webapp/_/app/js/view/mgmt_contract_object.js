@@ -34,6 +34,12 @@ define ([], function () {
             },
 
         });
+        
+        clickOn ($('#ctr_link'), function () {
+        
+            openTab ('/mgmt_contract/' + data.item.uuid_contract)
+        
+        })
 
     }
 
