@@ -22,15 +22,47 @@ public class ContractObject extends Table {
 
         col    ("startdate",               Type.DATE,                           "Дата начала предоставления услуг");
         col    ("enddate",                 Type.DATE,                           "Дата окончания предоставления услуг");        
-/*
-        trigger ("BEFORE UPDATE", "BEGIN "
+        
+        trigger ("BEFORE INSERT OR UPDATE", ""
                 
-            + " IF :NEW.id_status = 0 AND DBMS_LOB.GETLENGTH (:NEW.body) = :NEW.len THEN "
-            + "   :NEW.id_status := 1; "
-            + " END IF;"
-                
-        + "END;");        
-*/
+            + "DECLARE" 
+            + " PRAGMA AUTONOMOUS_TRANSACTION; "
+            + "BEGIN "
+
+            + "IF :NEW.is_deleted = 0 THEN "
+            + " FOR i IN ("
+                + "SELECT "
+                + " o.startdate"
+                + " , o.enddate"
+                + " , c.docnum"
+                + " , c.signingdate"
+                + " , org.label "
+                + "FROM "
+                + " tb_contract_objects o "
+                + " INNER JOIN tb_contracts c ON o.uuid_contract = c.uuid"
+                + " INNER JOIN vc_orgs org    ON c.uuid_org      = org.uuid "
+                + "WHERE o.is_deleted = 0"
+                + " AND o.enddate   >= :NEW.startdate "
+                + " AND o.startdate <= :NEW.enddate "
+                + " AND o.uuid <> NVL(:NEW.uuid, '00') "
+                + ") LOOP"
+            + " raise_application_error (-20000, "
+                + "'Этот адрес обслуживается с ' "
+                + "|| TO_CHAR (i.startdate, 'DD.MM.YYYY')"
+                + "||' по '"
+                + "|| TO_CHAR (i.enddate, 'DD.MM.YYYY')"
+                + "||' по договору управления от '"
+                + "|| TO_CHAR (i.signingdate, 'DD.MM.YYYY')"
+                + "||' №'"
+                + "|| i.docnum"
+                + "||' с '"
+                + "|| i.label"
+                + "|| '. Операция отменена.'); "
+            + " END LOOP; "
+            + "END IF; "
+
+        + "END;");
+
     }
     
 }
