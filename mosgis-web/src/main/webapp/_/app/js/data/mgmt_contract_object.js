@@ -21,7 +21,10 @@ define ([], function () {
     
         query ({type: 'contract_objects'}, {}, function (data) {
         
-            add_vocabularies (data, {vc_contract_doc_types: 1})
+            add_vocabularies (data, {
+                vc_contract_doc_types: 1,
+                vc_nsi_3: 1,
+            })
 
             $('body').data ('data', data)
 

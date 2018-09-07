@@ -2,7 +2,7 @@ define ([], function () {
 
     $_DO.create_mgmt_contract_object_common_services = function (e) {
 
-        use.block ('mgmt_contract_object_common_service_new_' + e.target.split ('_') [1])
+        use.block ('mgmt_contract_object_common_service_' + e.target.split ('_') [1] + '_new')
 
     }   
 

@@ -22,7 +22,7 @@ define ([], function () {
                 toolbarReload: false,
                 toolbarColumns: false,
                 toolbarInput: false,
-//                toolbarAdd: is_own,
+                toolbarDelete: is_own,
             },            
             
             toolbar: {
@@ -52,10 +52,8 @@ define ([], function () {
             ]},
 
             url: '/mosgis/_rest/?type=contract_object_services',
-                        
-//            onDblClick: function (e) {openTab ('/mgmt_contract_object/' + e.recid)},
-            
-//            onAdd: $_DO.create_mgmt_contract_object_common_services,
+                                    
+            onDelete: $_DO.delete_mgmt_contract_object_common_services,
                         
         })
 
