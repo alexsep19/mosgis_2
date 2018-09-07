@@ -17,6 +17,8 @@ import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.rest.api.ContractDocsLocal;
 import ru.eludia.products.mosgis.db.model.tables.ContractFile;
+import ru.eludia.products.mosgis.db.model.tables.ContractObject;
+import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
@@ -149,6 +151,8 @@ public class ContractDocsImpl extends BaseCRUD<ContractFile> implements Contract
                 
         Select select = ModelHolder.getModel ()
             .select (getTable (), "*", "uuid AS id")
+            .toMaybeOne (ContractObject.class, "AS obj").on ()
+            .toMaybeOne (VocBuildingAddress.class, "AS fias", "label").on ("obj.fiashouseguid=fias.houseguid")
             .where  ("id_status",  1);
         
         db.addJsonArrays (job, s.filter (select, ""));

@@ -38,6 +38,7 @@ define ([], function () {
                 {field: 'label', caption: 'Наименование', size: 100},
                 {field: 'len', caption: 'Объём, Мб', size: 10, render: function (r) {return (r.len/1024/1024).toFixed(3)}},
                 {field: 'description', caption: 'Описание', size: 50},
+                {field: 'fias.label', caption: 'Объект', size: 50},
             ],
             
             postData: {search: [
