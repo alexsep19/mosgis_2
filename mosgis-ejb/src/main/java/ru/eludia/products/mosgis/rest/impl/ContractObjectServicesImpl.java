@@ -42,11 +42,11 @@ public class ContractObjectServicesImpl extends BaseCRUD<ContractObjectService> 
         Select select = db.getModel ()
             .select     (getTable (),              "AS root", "*", "uuid AS id")
             .toMaybeOne (ContractFile.class,       "AS agreement", "agreementnumber AS no", "agreementdate AS dt").on ()
-            .toMaybeOne (AdditionalService.class,  "AS add", "label").on ()
-            .toMaybeOne (nsiTable, nsiTable.getLabelField ().getfName () + " AS label").on ("(root.code_vc_nsi_3=vc_nsi_3.code AND vc_nsi_3.isactual=1)")
+            .toMaybeOne (AdditionalService.class,  "AS adds", "label").on ()
+            .toMaybeOne (nsiTable, nsiTable.getLabelField ().getfName () + " AS nsi_label").on ("(root.code_vc_nsi_3=vc_nsi_3.code AND vc_nsi_3.isactual=1)")
             .where      ("is_deleted", 0)
-            .orderBy    ("vc_nsi_3.label")
-            .orderBy    ("add.label")
+            .orderBy    ("\"nsi_label\"")
+            .orderBy    ("adds.label")
             ;
         
         db.addJsonArrays (job, s.filter (select, ""));
