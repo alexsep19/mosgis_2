@@ -1,6 +1,6 @@
 define ([], function () {
 
-    $_DO.update_mgmt_contract_object_common_service_house_popup = function (e) {
+    $_DO.update_mgmt_contract_object_common_service_popup = function (e) {
 
         var form = w2ui ['voc_user_form']
 

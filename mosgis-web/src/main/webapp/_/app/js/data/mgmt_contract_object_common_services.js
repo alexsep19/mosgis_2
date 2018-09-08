@@ -8,7 +8,7 @@ define ([], function () {
     
     $_DO.edit_mgmt_contract_object_common_services = function (e) {
 
-        use.block ('mgmt_contract_object_common_service_' + (w2ui [e.target].get (e.recid).is_additional ? 'add' : 'house') + '_popup')
+        use.block ('mgmt_contract_object_common_service_popup')
 
     }   
 

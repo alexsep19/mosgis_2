@@ -2,7 +2,7 @@ define ([], function () {
 
     return function (data, view) {
 
-        view.attr ({'data-popup-title': data.vc_nsi_3 [data.record.code_vc_nsi_3]}) 
+        view.attr ({'data-popup-title': data.vc_nsi_3 [data.record.code_vc_nsi_3] || data.tb_add_services [data.record.uuid_add_service]}) 
 
         $(fill (view, data.record)).w2uppop ({}, function () {
 
