@@ -42,7 +42,10 @@ define ([], function () {
 
                 {field: 'is_additional', caption: 'Тип', size: 10, voc: {0: 'Коммунальная', 1: 'Дополнительная'}},
                 {field: '_', caption: 'Вид', size: 30, render: function (r) {
-                    return data.vc_nsi_3 [r.code_vc_nsi_3]
+                    switch (r.is_additional) {
+                        case 0: return data.vc_nsi_3 [r.code_vc_nsi_3]
+                        case 1: return data.tb_add_services [r.uuid_add_service]
+                    }
                 }},
                 {field: 'startdate', caption: 'Начало', size: 18, render: _dt},
                 {field: 'enddate', caption: 'Окончание', size: 18, render: _dt},
