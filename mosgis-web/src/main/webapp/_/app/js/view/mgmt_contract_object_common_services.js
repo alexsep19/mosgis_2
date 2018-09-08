@@ -23,6 +23,7 @@ define ([], function () {
                 toolbarColumns: false,
                 toolbarInput: false,
                 toolbarDelete: is_own,
+                toolbarEdit: is_own,
             },            
             
             toolbar: {
@@ -39,6 +40,10 @@ define ([], function () {
             
             columns: [              
 
+                {field: 'is_additional', caption: 'Тип', size: 10, voc: {0: 'Коммунальная', 1: 'Дополнительная'}},
+                {field: '_', caption: 'Вид', size: 30, render: function (r) {
+                    return data.vc_nsi_3 [r.code_vc_nsi_3]
+                }},
                 {field: 'startdate', caption: 'Начало', size: 18, render: _dt},
                 {field: 'enddate', caption: 'Окончание', size: 18, render: _dt},
                 {field: '_', caption: 'Основание', size: 50, render: function (r) {
@@ -54,6 +59,7 @@ define ([], function () {
             url: '/mosgis/_rest/?type=contract_object_services',
                                     
             onDelete: $_DO.delete_mgmt_contract_object_common_services,
+            onEdit: $_DO.edit_mgmt_contract_object_common_services,
                         
         })
 
