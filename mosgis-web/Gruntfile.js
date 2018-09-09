@@ -1,9 +1,9 @@
 module.exports = function (grunt) {
 
   require('jit-grunt')(grunt);
-  
-  var appModules = grunt.file.expand ({filter: "isFile", cwd: "src/main/webapp/_/app/js"}, ["*/*.js"]).map (function (s) {return 'app/' + s.replace ('.js', '')})
-  appModules.unshift ('../app/handler')
+
+//  var appModules = grunt.file.expand ({filter: "isFile", cwd: "src/main/webapp/_/app/js"}, ["*/*.js"]).map (function (s) {return 'app/' + s.replace ('.js', '')})
+//  appModules.unshift ('../app/handler')
 
   grunt.initConfig ({
   
@@ -79,7 +79,7 @@ module.exports = function (grunt) {
         }]
       }
     },
-    
+/*    
     requirejs: {
       compile: {
         options: {
@@ -93,7 +93,7 @@ module.exports = function (grunt) {
         }
       }
     },
-    
+*/    
     concat: {
         options: {
             stripBanners: true
@@ -103,16 +103,13 @@ module.exports = function (grunt) {
                 'src/main/webapp/_/libs/jquery/jquery-3.1.1.min.js', 
                 'src/main/webapp/_/libs/requirejs/require.js',
                 'src/main/webapp/_/libs/w2ui/w2ui-1.5.rc1.min.js',
-                'src/main/webapp/_/app/js/app.js'
+                'src/main/webapp/_/app/handler.js'                
             ],
             dest: 'src/main/webapp/_/app/js/_.js'
         }
     }, 
-    
-    shell: {
-        reboot: {command: '/etc/init.d/mosgis restart'}
-    },
 
+/*
     compress: {
       xslt: {
         options: {mode: 'gzip'},
@@ -131,15 +128,15 @@ module.exports = function (grunt) {
         dest: 'src/main/webapp/_/app/js'
       }
     },
-    
-    clean: {
-      gz: ['src/main/webapp/_/app/**/*.gz']
-    },
+*/
+//    clean: {
+//      gz: ['src/main/webapp/_/app/**/*.gz']
+//    },
 
     watch: {
 
       general: {
-        files: ['src/main/webapp**/*.*'],
+        files: ['src/main/webapp/_/app/**/*.*'],
         tasks: ['bump', 'replace'],
         options: {nospawn: true}
       },
@@ -149,25 +146,19 @@ module.exports = function (grunt) {
         tasks: ['less'],
         options: {nospawn: true}
       },
-
+/*
       svg: {
         files: ['src/main/webapp/_/libs/mosgis/svg/*.svg'],
         tasks: ['svg_sprite', 'less'],
         options: {nospawn: true}
       },
-
+*/
       js: {
-        files: ['src/main/webapp/_/app/js/data/*.js', 'src/main/webapp/_/app/js/view/*.js', 'src/main/webapp/_/app/handler.js'],
-        tasks: ['bump', 'replace', 'requirejs', 'concat:js'],
-        options: {nospawn: true}
-      },
-
-      model: {
-        files: ['../back/lib/Model/*.pm', '../back/lib/Config.pm'],
-        tasks: ['shell:reboot'],
+        files: ['src/main/webapp/_/app/handler.js'],
+        tasks: ['concat:js'],
         options: {nospawn: true}
       }
-
+      
     }
     
   });
