@@ -1,6 +1,7 @@
 package ru.eludia.products.mosgis.jmx;
 
 import java.lang.management.ManagementFactory;
+import java.nio.file.FileSystems;
 import java.sql.SQLException;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -139,6 +140,9 @@ public class Conf implements ConfMBean, ConfLocal {
 
     @Override
     public void setPathFias (String s) {
+        
+        Fias.CheckPath ch = new Fias.CheckPath(FileSystems.getDefault ().getPath (Conf.get (VocSetting.i.PATH_FIAS)));
+        ch.check();
         set (VocSetting.i.PATH_FIAS, s);
     }
 
