@@ -42,6 +42,13 @@ public class Fias implements FiasMBean {
     @Resource (mappedName = "mosgis.inFiasQueue")
     Queue inFiasQueue;
     
+    public enum Names {
+        HOUSE,
+        ADDROBJ,
+        ESTSTAT,
+        STRSTAT;
+    };
+    
     @PostConstruct
     public void registerInJMX () {
         
@@ -73,18 +80,7 @@ public class Fias implements FiasMBean {
 
         Map<String, Object> record = HASH ();
         
-        Map<String, Path> n2p = new HashMap<> ();
-        
-        String [] names = new String [] {
-            "strstat",
-            "eststat",
-            "addrobj",
-            "house"
-        };
-        
-        private void add (String name) {
-            
-            Path p = n2p.get (name);
+        private void add (String name, Path p) {
             
             record.put ("sz_" + name, p.toFile ().length ());
             record.put ("uri_" + name, p.toUri ().toString ());
@@ -92,7 +88,9 @@ public class Fias implements FiasMBean {
         }
                 
         public Import () {
-        
+            CheckPath ch = new CheckPath(fs.getPath (Conf.get (VocSetting.i.PATH_FIAS)));
+            ch.check();
+                
             try {
                 
                 Files.list (fs.getPath (Conf.get (VocSetting.i.PATH_FIAS))).forEach (path -> {
@@ -104,14 +102,15 @@ public class Fias implements FiasMBean {
                     if (!name.startsWith ("AS_")) return;
                     if ( name.startsWith ("AS_DEL_")) return;
                     String[] part = name.split ("_");
-                    n2p.put (part [1].toLowerCase (), path);
                     if (!record.isEmpty ()) return;
                     String dt = part [2];
                     record.put ("dt", dt.substring (0, 4) + '-' + dt.substring (4, 6) + '-' + dt.substring (6, 8));
                 });
         
-                for (String name: names) add (name);
-                
+                for (Fias.Names name: Fias.Names.values()) {
+                    
+                    add (name.toString().toLowerCase(), ch.getPath(name));
+                }
             }
             catch (Exception ex) {
                 throw new IllegalStateException (ex);
@@ -138,5 +137,40 @@ public class Fias implements FiasMBean {
         }
 
     }
+    public static class CheckPath {
+        
+        Map<Names, Path> n2p = new HashMap<> ();
+    
+        public CheckPath (Path fias_dir) {
+            
+            try {
+                
+                Files.list (fias_dir).forEach (path -> {
 
+                    File file = path.toFile ();
+                    String name = file.getName ();
+                    
+                    for (Fias.Names c: Fias.Names.values())
+                        if (name.endsWith (".XML") && name.startsWith ("AS_" + c.toString() + "_"))
+                                 n2p.put(c, path);
+                });
+                
+            }
+            catch (Exception ex) {
+                throw new IllegalStateException (ex);
+            }
+        }
+        
+        public void check() {
+            
+            for (Fias.Names c: Fias.Names.values())
+                if (n2p.get(c) == null)
+                    throw new IllegalStateException ("there is no file with the name : 'AS_" + c.toString() + "_'");
+            
+        }
+        public  Path getPath (Fias.Names s) {
+            return n2p.get(s);
+        }
+        
+    }
 }
