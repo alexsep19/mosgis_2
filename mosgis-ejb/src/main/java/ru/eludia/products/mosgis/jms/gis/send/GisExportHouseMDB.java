@@ -15,7 +15,7 @@ import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
-import ru.eludia.products.mosgis.ejb.wsc.WsGisExportHouseClient;
+import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.base.TextMDB;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
@@ -33,7 +33,7 @@ public class GisExportHouseMDB extends TextMDB {
     protected UUIDPublisher UUIDPublisher;
 
     @EJB
-    protected WsGisExportHouseClient wsGisExportHouseClient;
+    protected WsGisHouseManagementClient wsGisExportHouseClient;
     
     @Resource (mappedName = "mosgis.outExportHouseQueue")
     Queue outExportHouseQueue;

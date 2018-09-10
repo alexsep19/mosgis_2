@@ -1,7 +1,9 @@
 package ru.eludia.products.mosgis.rest.impl;
 
 import java.util.Map;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
+import javax.jms.Queue;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -35,15 +37,19 @@ import ru.eludia.products.mosgis.rest.api.MgmtContractLocal;
 @Stateless
 public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContractLocal {
 
-/*    
-    @Resource (mappedName = "mosgis.inContractsQueue")
+    @Resource (mappedName = "mosgis.inHouseMgmtContractsQueue")
     Queue queue;
 
     @Override
     public Queue getQueue () {
         return queue;
     }
-*/
+
+    @Override
+    protected void publishMessage (String action, String id_log) {        
+        if ("publish".equals (action)) super.publishMessage (action, id_log);
+    }
+
     private void filterOffDeleted (Select select) {
         select.and ("is_deleted", 0);
     }

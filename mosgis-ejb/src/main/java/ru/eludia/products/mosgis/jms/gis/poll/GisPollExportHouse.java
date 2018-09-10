@@ -21,7 +21,7 @@ import ru.eludia.products.mosgis.db.model.gis.PremiseGis;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
-import ru.eludia.products.mosgis.ejb.wsc.WsGisExportHouseClient;
+import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.house_management.BlockCategoryType;
@@ -38,7 +38,7 @@ import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 public class GisPollExportHouse extends UUIDMDB<OutSoap> {
     
     @EJB
-    protected WsGisExportHouseClient wsGisExportHouseClient;
+    protected WsGisHouseManagementClient wsGisExportHouseClient;
 
     @Override
     protected Get get (UUID uuid) {

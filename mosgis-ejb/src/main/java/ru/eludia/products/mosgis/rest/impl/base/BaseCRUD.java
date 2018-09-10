@@ -29,6 +29,14 @@ public abstract class BaseCRUD <T extends Table> extends Base<T> implements CRUD
     protected Queue getQueue () {
         return null;
     }
+    
+    protected void publishMessage (String action, String id_log) {
+        
+        Queue queue = getQueue ();
+        
+        if (queue != null) UUIDPublisher.publish (queue, id_log);
+        
+    }
 
     protected void logAction (DB db, User user, Object id, String action) throws SQLException {
 
@@ -48,9 +56,7 @@ public abstract class BaseCRUD <T extends Table> extends Base<T> implements CRUD
             "id_log",    id_log
         ));
 
-        Queue queue = getQueue ();
-
-        if (queue != null) UUIDPublisher.publish (queue, id_log);
+        publishMessage (action, id_log);
 
     }
 
