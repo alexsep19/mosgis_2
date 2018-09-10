@@ -18,7 +18,6 @@ import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import static ru.eludia.products.mosgis.db.model.voc.VocNsiListGroup.i.NSI;
-import static ru.eludia.products.mosgis.db.model.voc.VocNsiListGroup.i.NSIRAO;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.rest.ValidationException;
@@ -67,7 +66,6 @@ public class Nsi implements NsiMBean {
     public void importNsi () {
         checkEmptyOkei();
         UUIDPublisher.publish (inNsiQueue, String.valueOf (NSI.toString ()));
-        UUIDPublisher.publish (inNsiQueue, String.valueOf (NSIRAO.toString ()));
     }
         
     @Override
