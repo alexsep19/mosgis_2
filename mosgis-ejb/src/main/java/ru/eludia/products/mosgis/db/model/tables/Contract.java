@@ -104,7 +104,28 @@ public class Contract extends Table {
                 + "   raise_application_error (-20000, 'К договору не приложен протокол открытого конкурса. Операция отменена.'); "
                 + " END IF; "
                 + "END IF; "
-                                        
+                        
+                + "IF :NEW.code_vc_nsi_58 = 10 THEN "
+                + " SELECT COUNT(*) INTO cnt FROM tb_contract_files WHERE uuid_contract = :NEW.uuid AND id_status = 1 AND id_type = " + VocContractDocType.i.CHARTER.getId ()
+                + " ; IF cnt=0 THEN "
+                + "   raise_application_error (-20000, 'К договору не приложен устав. Операция отменена.'); "
+                + " END IF; "
+                + "END IF; "
+
+                + "IF :NEW.code_vc_nsi_58 = 5 THEN "
+                + " SELECT COUNT(*) INTO cnt FROM tb_contract_files WHERE uuid_contract = :NEW.uuid AND id_status = 1 AND id_type = " + VocContractDocType.i.PROTOCOL_MEETING_BOARD.getId ()
+                + " ; IF cnt=0 THEN "
+                + "   raise_application_error (-20000, 'К договору не приложен протокол заседания правления. Операция отменена.'); "
+                + " END IF; "
+                + "END IF; "
+                        
+                + "IF :NEW.code_vc_nsi_58 = 6 THEN "
+                + " SELECT COUNT(*) INTO cnt FROM tb_contract_files WHERE uuid_contract = :NEW.uuid AND id_status = 1 AND id_type = " + VocContractDocType.i.PROTOCOL_BUILDING_OWNER.getId ()
+                + " ; IF cnt=0 THEN "
+                + "   raise_application_error (-20000, 'К договору не приложено решение органа управления застройщика. Операция отменена.'); "
+                + " END IF; "
+                + "END IF; "
+                        
             + "END IF; "
 
         + "END;");        
