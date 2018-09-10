@@ -6,6 +6,7 @@ import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Num;
 import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -27,7 +28,8 @@ public class Contract extends Table {
         fk    ("id_customer_type",          VocGisCustomerType.class,                   "Тип заказчика");
         
         fk    ("id_ctr_status",             VocGisStatus.class,          new Num (VocGisStatus.i.PROJECT.getId ()), "Статус договора с точки зрения mosgis");
-        fk    ("id_ctr_status_gis",         VocGisStatus.class,          new Num (VocGisStatus.i.NOT_RUNNING.getId ()), "Статус договора с точки зрения ГИС ЖКХ");
+        fk    ("id_ctr_status_gis",         VocGisStatus.class,          new Num (VocGisStatus.i.PROJECT.getId ()), "Статус договора с точки зрения ГИС ЖКХ");
+        fk    ("id_ctr_state_gis",          VocGisStatus.class,          new Num (VocGisStatus.i.NOT_RUNNING.getId ()), "Состояние договора с точки зрения ГИС ЖКХ");
         
         col   ("docnum",                    Type.STRING,           255,         "Номер договора");
         col   ("signingdate",               Type.DATE,                          "Дата заключения");
@@ -59,7 +61,12 @@ public class Contract extends Table {
 
         key   ("org_docnum", "uuid_org", "docnum");
 
-        trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
+        trigger ("BEFORE INSERT OR UPDATE", ""                
+
+        + "DECLARE "
+        + " cnt INTEGER := 0;"
+                
+        + "BEGIN "
 
             + "IF :NEW.id_contract_type = " + VocGisContractType.i.MGMT.getId () + " THEN "
 
@@ -81,18 +88,25 @@ public class Contract extends Table {
                         
             + "END IF; "
 
-/*                
-                        
-                        
-                        
             + "IF UPDATING "
-            + "  AND :OLD.id_log IS NOT NULL "             // что-то уже отправляли
-            + "  AND :OLD.id_log <> :NEW.id_log "          // пытаются отредактировать вновь
-            + "  AND :OLD.id_status = " + PENDING.getId () // прошлая синхронизация не доехала
-            + " THEN"
-            + "  raise_application_error (-20000, 'В настоящий момент данная запись передаётся в ГИС ЖКХ. Операция отменена.'); "
+            + "  AND :OLD.id_ctr_status < " + VocGisStatus.i.APPROVED.getId ()
+            + "  AND :NEW.id_ctr_status = " + VocGisStatus.i.APPROVED.getId ()
+            + " THEN "
+
+                + " SELECT COUNT(*) INTO cnt FROM tb_contract_files WHERE uuid_contract = :NEW.uuid AND id_status = 1 AND id_type = " + VocContractDocType.i.CONTRACT.getId ()
+                + " ; IF cnt=0 THEN "
+                + "   raise_application_error (-20000, 'На в кладке \"документы\" не приложен файл договора. Операция отменена.'); "
+                + " END IF; "
+
+                + "IF :NEW.code_vc_nsi_58 = 2 THEN "
+                + " SELECT COUNT(*) INTO cnt FROM tb_contract_files WHERE uuid_contract = :NEW.uuid AND id_status = 1 AND id_type = " + VocContractDocType.i.PROTOCOL_OK.getId ()
+                + " ; IF cnt=0 THEN "
+                + "   raise_application_error (-20000, 'К договору не приложен протокол открытого конкурса. Операция отменена.'); "
+                + " END IF; "
+                + "END IF; "
+                                        
             + "END IF; "
-*/
+
         + "END;");        
 
     }

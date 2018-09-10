@@ -7,6 +7,7 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
@@ -179,5 +180,17 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
         logAction (db, user, insertId, "create");
 
     });}
-    
+
+    @Override
+    public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
+
+        db.update (getTable (), HASH (
+            "uuid",           id,
+            "id_ctr_status",  VocGisStatus.i.APPROVED.getId ()
+        ));
+
+        logAction (db, user, id, "approve");
+
+    });}
+
 }

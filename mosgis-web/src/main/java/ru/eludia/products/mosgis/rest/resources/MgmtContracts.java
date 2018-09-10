@@ -117,6 +117,15 @@ public class MgmtContracts extends EJBResource <MgmtContractLocal> {
     }
     
     @POST
+    @Path("{id}/approve") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject doApprove (@PathParam ("id") String id) { 
+        final JsonObject item = getInnerItem (id);
+        checkOrg (item);
+        return back.doApprove (id, getUser ());
+    }
+    
+    @POST
     @Path("{id}/undelete") 
     @Produces (APPLICATION_JSON)
     public JsonObject doUndelete (@PathParam ("id") String id) { 
