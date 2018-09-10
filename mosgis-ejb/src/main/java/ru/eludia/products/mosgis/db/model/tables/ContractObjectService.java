@@ -31,6 +31,12 @@ public class ContractObjectService extends Table {
         trigger ("BEFORE INSERT", "BEGIN "
             + "SELECT uuid_contract INTO :NEW.uuid_contract FROM tb_contract_objects WHERE uuid = :NEW.uuid_contract_object; "
         + "END;");
+        
+        trigger ("BEFORE INSERT OR UPDATE", " BEGIN "
+            + "IF :NEW.startdate > :NEW.enddate THEN "
+            + " raise_application_error (-20000, '#enddate#: Окончание периода не может предшествовать его началу');"
+            + "END IF; "
+        + "END;");
 
     }
 
