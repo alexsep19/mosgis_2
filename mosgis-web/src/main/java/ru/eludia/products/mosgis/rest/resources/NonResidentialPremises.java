@@ -10,17 +10,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import javax.ws.rs.core.SecurityContext;
-import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.NonResidentialPremisesLocal;
 
 @Path ("premises_nonresidental")
 public class NonResidentialPremises extends EJBResource <NonResidentialPremisesLocal> {
-
-    @Context SecurityContext securityContext;
-    
-    private User getUser () {
-        return (User) securityContext.getUserPrincipal ();
-    }
 
     @POST
     @Consumes (APPLICATION_JSON)

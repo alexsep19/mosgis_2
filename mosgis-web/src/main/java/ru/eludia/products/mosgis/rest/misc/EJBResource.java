@@ -9,8 +9,11 @@ import java.util.logging.Logger;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.StreamingOutput;
+import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.base.FileBackend;
 
 public abstract class EJBResource<T> {
@@ -64,7 +67,12 @@ public abstract class EJBResource<T> {
         }
         
     }
-
+    protected @Context SecurityContext securityContext;
+    
+    protected final User getUser () {
+        return (User) securityContext.getUserPrincipal ();
+    }
+    
     protected T back = getEjbRef ();
     
 }

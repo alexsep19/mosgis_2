@@ -7,22 +7,13 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
-import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.ContractDocsLocal;
 
 @Path ("contract_docs")
 public class ContractDocs extends EJBResource <ContractDocsLocal> {
-
-    @Context SecurityContext securityContext;
-    
-    private User getUser () {
-        return (User) securityContext.getUserPrincipal ();
-    }
 
     @POST
     @Consumes (APPLICATION_JSON)

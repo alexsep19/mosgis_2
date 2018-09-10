@@ -8,21 +8,12 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import javax.ws.rs.core.SecurityContext;
-import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.rest.api.MainMunicipalServiceLocal;
 
 @Path ("municipal_services")
 public class MainMunicipalServices extends EJBResource <MainMunicipalServiceLocal> {
-    
-    @Context SecurityContext securityContext;
-    
-    private User getUser () {
-        return (User) securityContext.getUserPrincipal ();
-    }
     
     private JsonObject getInnerItem (String id) {
         final JsonObject data = back.getItem (id);        
