@@ -93,9 +93,14 @@ public class Contract extends Table {
             + "  AND :NEW.id_ctr_status = " + VocGisStatus.i.APPROVED.getId ()
             + " THEN "
 
+                + " SELECT COUNT(*) INTO cnt FROM tb_contract_objects WHERE uuid_contract = :NEW.uuid AND is_deleted = 0"
+                + " ; IF cnt=0 THEN "
+                + "   raise_application_error (-20000, 'Не заявлен ни один объект управления. Операция отменена.'); "
+                + " END IF; "
+
                 + " SELECT COUNT(*) INTO cnt FROM tb_contract_files WHERE uuid_contract = :NEW.uuid AND id_status = 1 AND id_type = " + VocContractDocType.i.CONTRACT.getId ()
                 + " ; IF cnt=0 THEN "
-                + "   raise_application_error (-20000, 'На в кладке \"документы\" не приложен файл договора. Операция отменена.'); "
+                + "   raise_application_error (-20000, 'На в вкладке \"документы\" не приложен файл договора. Операция отменена.'); "
                 + " END IF; "
 
                 + "IF :NEW.code_vc_nsi_58 = 2 THEN "
@@ -104,7 +109,7 @@ public class Contract extends Table {
                 + "   raise_application_error (-20000, 'К договору не приложен протокол открытого конкурса. Операция отменена.'); "
                 + " END IF; "
                 + "END IF; "
-                        
+
                 + "IF :NEW.code_vc_nsi_58 = 10 THEN "
                 + " SELECT COUNT(*) INTO cnt FROM tb_contract_files WHERE uuid_contract = :NEW.uuid AND id_status = 1 AND id_type = " + VocContractDocType.i.CHARTER.getId ()
                 + " ; IF cnt=0 THEN "
@@ -126,6 +131,74 @@ public class Contract extends Table {
                 + " END IF; "
                 + "END IF; "
                         
+                + "IF :NEW.code_vc_nsi_58 = 9 THEN "
+                + " FOR i IN ("
+                + "  SELECT "
+                + "    a.label "
+                + "  FROM "
+                + "    tb_contract_objects o"
+                + "    LEFT JOIN tb_contract_files f ON (f.uuid_contract_object=o.uuid AND f.id_status = 1 AND f.id_type=" + VocContractDocType.i.COMMISSIONING_PERMIT_AGREEMENT.getId () + ")"
+                + "    LEFT JOIN vc_build_addresses a ON (o.fiashouseguid = a.houseguid)"
+                + "  WHERE 1=1"
+                + "    AND o.uuid_contract = :NEW.uuid"
+                + "    AND o.is_deleted = 0"
+                + "    AND f.uuid IS NULL"
+                + "  ) LOOP"
+                + "   raise_application_error (-20000, 'Для объекта по адресу ' || i.label || ' не приложено разрешение на ввод в эксплуатацию. Операция отменена.'); "
+                + " END LOOP; "
+                + "END IF; "
+
+                        
+                + "IF :NEW.code_vc_nsi_58 = 1 THEN "                        
+
+                    + "IF :NEW.id_customer_type = 1 THEN BEGIN "
+                        
+                        + " SELECT COUNT(*) INTO cnt FROM tb_contract_files WHERE uuid_contract = :NEW.uuid AND id_status = 1 AND id_type = " + VocContractDocType.i.SIGNED_OWNERS.getId ()
+                        + " ; IF cnt=0 THEN "
+                        + "   raise_application_error (-20000, 'К договору не приложен реестр собственников. Операция отменена.'); "
+                        + " END IF; "
+
+                        + " SELECT COUNT(*) INTO cnt FROM tb_contract_files WHERE uuid_contract = :NEW.uuid AND id_status = 1 AND id_type = " + VocContractDocType.i.PROTOCOL_MEETING_OWNERS.getId ()
+                        + " ; IF cnt=0 THEN "
+                        + "   raise_application_error (-20000, 'К договору не приложен протокол собрания собственников. Операция отменена.'); "
+                        + " END IF; "
+                                
+                    + "END; ELSE "
+                        
+                        + " FOR i IN ("
+                        + "  SELECT "
+                        + "    a.label "
+                        + "  FROM "
+                        + "    tb_contract_objects o"
+                        + "    LEFT JOIN tb_contract_files f ON (f.uuid_contract_object=o.uuid AND f.id_status = 1 AND f.id_type=" + VocContractDocType.i.SIGNED_OWNERS.getId () + ")"
+                        + "    LEFT JOIN vc_build_addresses a ON (o.fiashouseguid = a.houseguid)"
+                        + "  WHERE 1=1"
+                        + "    AND o.uuid_contract = :NEW.uuid"
+                        + "    AND o.is_deleted = 0"
+                        + "    AND f.uuid IS NULL"
+                        + "  ) LOOP"
+                        + "   raise_application_error (-20000, 'Для объекта по адресу ' || i.label || ' не приложен реестр собственников. Операция отменена.'); "
+                        + " END LOOP; "
+                                
+                        + " FOR i IN ("
+                        + "  SELECT "
+                        + "    a.label "
+                        + "  FROM "
+                        + "    tb_contract_objects o"
+                        + "    LEFT JOIN tb_contract_files f ON (f.uuid_contract_object=o.uuid AND f.id_status = 1 AND f.id_type=" + VocContractDocType.i.PROTOCOL_MEETING_OWNERS.getId () + ")"
+                        + "    LEFT JOIN vc_build_addresses a ON (o.fiashouseguid = a.houseguid)"
+                        + "  WHERE 1=1"
+                        + "    AND o.uuid_contract = :NEW.uuid"
+                        + "    AND o.is_deleted = 0"
+                        + "    AND f.uuid IS NULL"
+                        + "  ) LOOP"
+                        + "   raise_application_error (-20000, 'Для объекта по адресу ' || i.label || ' не приложен протокол собрания собственников. Операция отменена.'); "
+                        + " END LOOP; "
+                                                
+                    + "END IF; "
+                        
+                + "END IF; "
+
             + "END IF; "
 
         + "END;");        
