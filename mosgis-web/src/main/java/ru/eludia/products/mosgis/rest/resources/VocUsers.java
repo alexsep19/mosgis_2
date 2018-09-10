@@ -8,25 +8,16 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import javax.ws.rs.core.SecurityContext;
-import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.rest.api.VocUsersLocal;
 
 @Path ("voc_users")
 //@RolesAllowed ("admin")
 public class VocUsers extends EJBResource <VocUsersLocal> {
-
-    @Context SecurityContext securityContext;
     
     protected boolean isUserAdmin () {
         return securityContext.isUserInRole ("admin");
-    }
-
-    private User getUser () {
-        return (User) securityContext.getUserPrincipal ();
     }
     
     private void croak () {

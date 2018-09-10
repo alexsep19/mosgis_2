@@ -7,21 +7,12 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import javax.ws.rs.core.SecurityContext;
-import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.LivingRoomsLocal;
 
 @Path ("living_rooms")
 public class LivingRooms extends EJBResource <LivingRoomsLocal> {
     
-    @Context SecurityContext securityContext;
-    
-    private User getUser () {
-        return (User) securityContext.getUserPrincipal ();
-    }
-
     @POST
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
