@@ -34,14 +34,11 @@ import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.nsi.NsiMultipleRefTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
-import ru.eludia.products.mosgis.db.model.tables.Passport;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiList;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementFieldType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementType;
 import ru.gosuslugi.dom.schema.integration.nsi_common.GetStateResult;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
-import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
-import static ru.eludia.products.mosgis.db.model.voc.VocPassportFields.PASSPORT_FIELDS_LIST_NSI_REGISTRY_NUMBER;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisNsiCommonClient;
@@ -93,8 +90,6 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
 
     @Override
     protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
-        
-        Set<Integer> refs = new HashSet<> ();
         
         try {
             
@@ -259,27 +254,12 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
             
             db.commit ();
             
-            if (registryNumber == PASSPORT_FIELDS_LIST_NSI_REGISTRY_NUMBER) {
-                
-                logger.info ("registryNumber=" + PASSPORT_FIELDS_LIST_NSI_REGISTRY_NUMBER + ", reloading passport fields");
-                
-                for (Class c: Passport.classes) ((Passport) ModelHolder.getModel ().get (c)).update (db);
-                                    
-                db.forEach (ModelHolder.getModel ().select (VocPassportFields.class, "voc").where ("voc >", 0), rs -> {refs.add (rs.getInt (1));});
-                
-                logger.info ("Fetched voc fields referring: " + refs);
-                
-            }
-            
             if (page < pages) UUIDPublisher.publish (inNsiQueue, registryNumber + "." + (page + 1));
 
         }
         catch (Exception ex) {
             logger.log (Level.SEVERE, null, ex);
         }
-        
-        for (int ref: refs) nsi.importNsiItems (ref);
-        
     }
     
     private static final Charset UTF8 = Charset.forName ("UTF-8");
