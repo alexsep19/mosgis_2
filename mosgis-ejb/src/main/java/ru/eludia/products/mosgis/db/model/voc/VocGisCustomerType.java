@@ -20,27 +20,6 @@ public class VocGisCustomerType extends Table {
 
     }
     
-    public static final void setCustomer (ContractType c, i type, UUID uuid) {
-        
-        switch (type) {
-            
-            case OWNERS:
-                c.setOwners (Boolean.TRUE);
-                break;
-            case COOPERATIVE:
-                c.setCooperative (regOrgType (uuid));
-                break;
-            case MUNICIPAL_HOUSING:
-                c.setMunicipalHousing (regOrgType (uuid));
-                break;
-            case BUILDINGOWNER:
-                c.setBuildingOwner (regOrgType (uuid));
-                break;            
-                
-        }
-        
-    }
-
     public enum i {
 
         OWNERS             (1, "Owners",           "Собственник объекта жилищного фонда"),
@@ -70,11 +49,33 @@ public class VocGisCustomerType extends Table {
             this.label = label;            
         }
         
-        public static i forName (String name) {
-            for (i i: values ()) if (i.name.equals (name)) return i;
-            return null;
+        public static i forId (Object v) {
+            byte b = Byte.parseByte (v.toString ());
+            for (i i: values ()) if (i.id == b) return i;
+            throw new IllegalArgumentException ("Invalid VocGisCustomerType id: " + v);
         }
         
+        public final void setCustomer (ContractType c, UUID uuid) {
+
+            switch (this) {
+
+                case OWNERS:
+                    c.setOwners (Boolean.TRUE);
+                    break;
+                case COOPERATIVE:
+                    c.setCooperative (regOrgType (uuid));
+                    break;
+                case MUNICIPAL_HOUSING:
+                    c.setMunicipalHousing (regOrgType (uuid));
+                    break;
+                case BUILDINGOWNER:
+                    c.setBuildingOwner (regOrgType (uuid));
+                    break;            
+
+            }
+
+        }
+
     }
     
 }

@@ -1,16 +1,20 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Map;
+import java.util.UUID;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Num;
 import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.gosuslugi.dom.schema.integration.house_management.ContractType;
 
 public class Contract extends Table {
 
@@ -92,6 +96,11 @@ public class Contract extends Table {
             + "  AND :OLD.id_ctr_status < " + VocGisStatus.i.APPROVED.getId ()
             + "  AND :NEW.id_ctr_status = " + VocGisStatus.i.APPROVED.getId ()
             + " THEN "
+
+                + " IF :NEW.ddt_m_start IS NULL THEN raise_application_error (-20000, 'Не задано начало периода ввода показаний приборов учёта. Операция отменена.'); END IF; "
+                + " IF :NEW.ddt_m_end   IS NULL THEN raise_application_error (-20000, 'Не задано окончание периода ввода показаний приборов учёта. Операция отменена.'); END IF; "
+                + " IF :NEW.ddt_d_start IS NULL THEN raise_application_error (-20000, 'Не задан срок выставления платежных документов. Операция отменена.'); END IF; "
+                + " IF :NEW.ddt_i_start IS NULL THEN raise_application_error (-20000, 'Не задан срок внесения платы за помещение / услуги. Операция отменена.'); END IF; "
 
                 + " SELECT COUNT(*) INTO cnt FROM tb_contract_objects WHERE uuid_contract = :NEW.uuid AND is_deleted = 0"
                 + " ; IF cnt=0 THEN "
@@ -202,6 +211,14 @@ public class Contract extends Table {
             + "END IF; "
 
         + "END;");        
+
+    }
+
+    public static void fillContract (ContractType c, Map<String, Object> r) {
+
+        VocGisCustomerType.i.forId (r.get ("id_customer_type")).setCustomer (c, (UUID) r.get ("uuid_org_customer"));
+
+        c.setContractBase (NsiTable.toDom ((String) r.get ("code_vc_nsi_58"), (UUID) r.get ("vc_nsi_58.guid")));
 
     }
 

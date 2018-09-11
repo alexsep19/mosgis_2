@@ -1,0 +1,24 @@
+package ru.eludia.products.mosgis.jms.gis.poll;
+
+import java.sql.SQLException;
+import java.util.Map;
+import java.util.UUID;
+import javax.ejb.ActivationConfigProperty;
+import javax.ejb.MessageDriven;
+import ru.eludia.base.DB;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.jms.base.UUIDMDB;
+
+@MessageDriven(activationConfig = {
+ @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outExportHouseMgmtContractsQueue")
+ , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
+ , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
+})
+public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
+
+    @Override
+    protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
+
+    }
+    
+}

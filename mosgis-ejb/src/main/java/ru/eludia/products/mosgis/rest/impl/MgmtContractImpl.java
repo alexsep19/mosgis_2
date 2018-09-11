@@ -14,10 +14,8 @@ import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
-//import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.MgmtContract;
-//import ru.eludia.products.mosgis.db.model.tables.ContractLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractType;
@@ -46,8 +44,8 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
     }
 
     @Override
-    protected void publishMessage (String action, String id_log) {        
-        if ("publish".equals (action)) super.publishMessage (action, id_log);
+    protected void publishMessage (String action, String id_log) {
+        if ("approve".equals (action)) super.publishMessage (action, id_log);
     }
 
     private void filterOffDeleted (Select select) {
@@ -196,7 +194,7 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
         ));
 
         logAction (db, user, id, "approve");
-
+        
     });}
 
 }

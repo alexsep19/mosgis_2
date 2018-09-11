@@ -8,6 +8,7 @@ import javax.jws.HandlerChain;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
 import ru.eludia.base.DB;
+import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ws.base.LoggingOutMessageHandler;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
@@ -63,12 +64,17 @@ public class WsGisHouseManagementClient {
     public AckRequest.Ack placeContractData (UUID orgPPAGuid, Map<String, Object> r) throws Fault {
         
         final ImportContractRequest.Contract.PlacingContract pc = (ImportContractRequest.Contract.PlacingContract) DB.to.javaBean (ImportContractRequest.Contract.PlacingContract.class, r);
+        Contract.fillContract (pc, r);
         
 logger.info ("pc=" + pc);
 
         ImportContractRequest importContractRequest = of.createImportContractRequest ();
-        importContractRequest.getContract ().add (of.createImportContractRequestContract ());
-        importContractRequest.getContract ().get (0).setPlacingContract (pc);        
+        
+        final ImportContractRequest.Contract c = of.createImportContractRequestContract ();
+        c.setPlacingContract (pc);        
+        c.setTransportGUID (UUID.randomUUID ().toString ());
+        
+        importContractRequest.getContract ().add (c);
 
         return getPort (orgPPAGuid).importContractData (importContractRequest).getAck ();
         

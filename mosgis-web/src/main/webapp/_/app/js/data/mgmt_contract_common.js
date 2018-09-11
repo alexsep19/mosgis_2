@@ -110,6 +110,11 @@ define ([], function () {
         query ({type: 'mgmt_contracts', action: 'delete'}, {}, reload_page)
     }
     
+    $_DO.approve_mgmt_contract_common = function (e) {   
+        if (!confirm ('Утвердить этот договор, Вы уверены?\n\n(дальнейшая правка станет невозможна)')) return        
+        query ({type: 'mgmt_contracts', action: 'approve'}, {}, reload_page)
+    }
+
     $_DO.undelete_mgmt_contract_common = function (e) {   
         if (!confirm ('Восстановить эту запись, Вы уверены?')) return        
         query ({type: 'mgmt_contracts', action: 'undelete'}, {}, reload_page)
@@ -146,18 +151,19 @@ define ([], function () {
         
         data.item.status_label = data.vc_gis_status [data.item.id_ctr_status]
         data.item.err_text = data.item ['out_soap.err_text']        
-/*
-        for (i in data.item) {        
-            if (!/_nxt/.test (i)) continue            
-            if (!data.item [i.substr (0, i.length - 4)]) delete data.item [i]
-        }
-*/                
-        data.item._can = !$_USER.role.nsi_20_1 /*|| data.item.id_status == 10*/ ? {} : {
-            edit: 1 - data.item.is_deleted,
-            update: 1,
-            cancel: 1,
-            delete: 1 - data.item.is_deleted,
-//            undelete: data.item.is_deleted,
+    
+        data.item._can = {}
+        
+        if ($_USER.role.nsi_20_1 && data.item.id_ctr_status == 10 && !data.item.is_deleted) {
+
+            data.item._can = {
+                edit:    1,
+                update:  1,
+                cancel:  1,
+                approve: 1,
+                delete:  1,
+            }
+
         }
 
         done (data)
