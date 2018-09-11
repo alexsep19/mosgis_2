@@ -2,7 +2,10 @@ package ru.eludia.products.mosgis.jms.gis.send;
 
 import static com.sun.javafx.animation.TickCalculation.sub;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -18,10 +21,14 @@ import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
+import ru.eludia.products.mosgis.db.model.tables.ContractFile;
 import ru.eludia.products.mosgis.db.model.tables.ContractLog;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
+import ru.eludia.products.mosgis.ejb.wsc.GisRestStream;
+import ru.eludia.products.mosgis.ejb.wsc.RestGisFilesClient;
+import ru.eludia.products.mosgis.ejb.wsc.RestGisFilesClient.Context;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
@@ -37,6 +44,9 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
     @EJB
     WsGisHouseManagementClient wsGisHouseManagementClient;
 
+    @EJB
+    RestGisFilesClient restGisFilesClient;
+    
     @Resource (mappedName = "mosgis.outExportHouseMgmtContractsQueue")
     Queue queue;
     
@@ -67,20 +77,63 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
     @Override
     protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
         
+        final UUID orgppaguid = (UUID) r.get ("ctr.uuid_org");        
+        
         Model m = db.getModel ();
+        
+        Map<UUID, Map<String, Object>> id2file = new HashMap <> ();
+        
+        db.forEach (m.select (ContractFile.class, "*").where ("uuid_contract", r.get ("uuid_object")).and ("id_status", 1), (rs) -> {                        
+            final Map<String, Object> file = db.HASH (rs);
+            id2file.put ((UUID) file.get ("uuid"), file);
+        });
+        
+        final Collection<Map<String, Object>> files = id2file.values ();
+        
+        for (Map<String, Object> file: files) {
+            
+            try (
+                GisRestStream out = new GisRestStream (
+                    restGisFilesClient,
+                    Context.HOMEMANAGEMENT,
+                    orgppaguid, 
+                    file.get ("name").toString (), 
+                    Long.parseLong (file.get ("len").toString ()),
+                    (uploadId) -> file.put ("attachmentguid", uploadId)
+                )
+            ) {
+                
+                db.getStream (m.get (ContractFile.class, file.get ("uuid"), "body"), out);
+                
+                db.update (getTable (), DB.HASH (
+                    "uuid",           uuid,
+                    "attachmentguid", file.get ("attachmentguid")
+                ));                
+                
+            }
+            catch (Exception ex) {
+                logger.log (Level.SEVERE, "Cannot upload " + file, ex);
+                return;
+            }
+            
+        }
+        
+        r.put ("files", id2file.values ());
                 
         try {
             
             Map<UUID, Map<String, Object>> id2o = new HashMap <> ();
             
             db.forEach (m.select (ContractObject.class, "*").where ("uuid_contract", r.get ("uuid_object")).and ("is_deleted", 0), (rs) -> {                
-                Map<String, Object> hash = db.HASH (rs);                
-                id2o.put ((UUID) hash.get ("uuid"), hash);                
+                Map<String, Object> object = db.HASH (rs);                                
+                UUID agr = (UUID) object.get ("uuid_contract_agreement");
+                if (agr != null) object.put ("contract_agreement", ContractFile.toAttachmentType (id2file.get (agr)));
+                id2o.put ((UUID) object.get ("uuid"), object);                
             });
             
             r.put ("objects", id2o.values ());
             
-            AckRequest.Ack ack = wsGisHouseManagementClient.placeContractData ((UUID) r.get ("ctr.uuid_org"), r);
+            AckRequest.Ack ack = wsGisHouseManagementClient.placeContractData (orgppaguid, r);
             
             db.update (getTable (), DB.HASH (
                 "uuid",          uuid,

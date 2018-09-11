@@ -46,6 +46,12 @@ public class VocContractDocType extends Table {
             this.id = id;
             this.label = label;
         }
+        
+        public static i forId (Object iD) {
+            int id = Integer.parseInt (iD.toString ());
+            for (i i: values ()) if (id == i.id) return i;
+            throw new IllegalArgumentException ("Invalid VocContractDocType id: " + iD);
+        }
 
     }
     
