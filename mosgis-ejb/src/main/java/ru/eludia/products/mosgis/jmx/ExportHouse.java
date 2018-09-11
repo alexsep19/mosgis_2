@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
+import javax.ejb.DependsOn;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
@@ -30,7 +31,7 @@ public class ExportHouse implements ExportHouseMBean {
         
     @PostConstruct
     public void registerInJMX () {
-        
+        /*
         try {
             objectName = new ObjectName ("ru.eludia:Name=MosGis,Type=ExportHouse");
             platformMBeanServer = ManagementFactory.getPlatformMBeanServer ();
@@ -39,18 +40,18 @@ public class ExportHouse implements ExportHouseMBean {
         catch (Exception e) {
             throw new IllegalStateException ("Problem during registration of Monitoring into JMX:" + e);
         }
-
+        */
     }
 
     @PreDestroy
     public void unregisterFromJMX () {
-
+        /*
         try {
             platformMBeanServer.unregisterMBean (this.objectName);
         } catch (Exception e) {
             throw new IllegalStateException ("Problem during unregistration of Monitoring into JMX:" + e);
         }
-
+        */
     }   
             
     @Override

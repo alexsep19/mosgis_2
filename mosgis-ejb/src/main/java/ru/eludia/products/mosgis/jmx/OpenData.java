@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
+import javax.ejb.DependsOn;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
@@ -22,6 +23,7 @@ import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 
 @Startup
 @Singleton
+@DependsOn ("ModelHolder")
 public class OpenData implements OpenDataMBean {
 
     private ObjectName objectName = null;
@@ -36,7 +38,7 @@ public class OpenData implements OpenDataMBean {
     
     @PostConstruct
     public void registerInJMX () {
-        
+        /*
         try {
             objectName = new ObjectName ("ru.eludia:Name=MosGis,Type=OpenData");
             platformMBeanServer = ManagementFactory.getPlatformMBeanServer ();
@@ -45,18 +47,18 @@ public class OpenData implements OpenDataMBean {
         catch (Exception e) {
             throw new IllegalStateException ("Problem during registration of Monitoring into JMX:" + e);
         }
-
+        */
     }
 
     @PreDestroy
     public void unregisterFromJMX () {
-
+        /*
         try {
             platformMBeanServer.unregisterMBean (this.objectName);
         } catch (Exception e) {
             throw new IllegalStateException ("Problem during unregistration of Monitoring into JMX:" + e);
         }
-
+        */
     }
 
     @Override

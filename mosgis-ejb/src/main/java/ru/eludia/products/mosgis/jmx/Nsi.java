@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
+import javax.ejb.DependsOn;
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
@@ -25,6 +26,7 @@ import ru.eludia.products.mosgis.rest.ValidationException;
 
 @Startup
 @Singleton
+@DependsOn ("ModelHolder")
 public class Nsi implements NsiMBean {
 
     private ObjectName objectName = null;

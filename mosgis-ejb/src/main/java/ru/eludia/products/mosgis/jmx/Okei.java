@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.ejb.DependsOn;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.json.Json;
@@ -26,6 +27,7 @@ import ru.eludia.products.mosgis.ejb.ModelHolder;
 
 @Startup
 @Singleton
+@DependsOn ("ModelHolder")
 public class Okei implements OkeiMBean {
 
     private ObjectName objectName = null;
