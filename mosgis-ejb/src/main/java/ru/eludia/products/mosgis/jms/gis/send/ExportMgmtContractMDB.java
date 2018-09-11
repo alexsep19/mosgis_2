@@ -1,15 +1,11 @@
 package ru.eludia.products.mosgis.jms.gis.send;
 
-import static com.sun.javafx.animation.TickCalculation.sub;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -24,6 +20,7 @@ import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractFile;
 import ru.eludia.products.mosgis.db.model.tables.ContractLog;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.GisRestStream;
@@ -63,7 +60,8 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
             
             return (Get) m
                 .get (getTable (), uuid, "*")
-                .toOne (Contract.class, "AS ctr", "uuid_org").on ()
+                .toOne (Contract.class, "AS ctr").on ()
+                .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("ctr.uuid_org")
                 .toOne (nsi58, "AS vc_nsi_58", "guid").on ("vc_nsi_58.code=ctr.code_vc_nsi_58 AND vc_nsi_58.isactual=1")
             ;
             
@@ -77,7 +75,7 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
     @Override
     protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
         
-        final UUID orgppaguid = (UUID) r.get ("ctr.uuid_org");        
+        final UUID orgppaguid = (UUID) r.get ("org.orgppaguid");
         
         Model m = db.getModel ();
         
@@ -97,7 +95,7 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
                     restGisFilesClient,
                     Context.HOMEMANAGEMENT,
                     orgppaguid, 
-                    file.get ("name").toString (), 
+                    file.get ("label").toString (), 
                     Long.parseLong (file.get ("len").toString ()),
                     (uploadId) -> file.put ("attachmentguid", uploadId)
                 )
@@ -105,7 +103,7 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
                 
                 db.getStream (m.get (ContractFile.class, file.get ("uuid"), "body"), out);
                 
-                db.update (getTable (), DB.HASH (
+                db.update (ContractFile.class, DB.HASH (
                     "uuid",           uuid,
                     "attachmentguid", file.get ("attachmentguid")
                 ));                

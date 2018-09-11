@@ -75,6 +75,8 @@ public class ContractObject extends Table {
     public static void add (ImportContractRequest.Contract.PlacingContract pc, Map<String, Object> r) {
 
         final ImportContractRequest.Contract.PlacingContract.ContractObject co = (ImportContractRequest.Contract.PlacingContract.ContractObject) DB.to.javaBean (ImportContractRequest.Contract.PlacingContract.ContractObject.class, r);
+        
+        co.setTransportGUID (UUID.randomUUID ().toString ());
 
         AttachmentType a = (AttachmentType) r.get ("contract_agreement");
 
