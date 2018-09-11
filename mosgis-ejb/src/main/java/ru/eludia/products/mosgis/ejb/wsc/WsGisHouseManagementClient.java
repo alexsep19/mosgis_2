@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.ejb.wsc;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -9,10 +10,12 @@ import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
+import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ws.base.LoggingOutMessageHandler;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.base.GetStateRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.DateDetailsType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportHouseRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
@@ -66,6 +69,12 @@ public class WsGisHouseManagementClient {
         final ImportContractRequest.Contract.PlacingContract pc = (ImportContractRequest.Contract.PlacingContract) DB.to.javaBean (ImportContractRequest.Contract.PlacingContract.class, r);
         Contract.fillContract (pc, r);
         
+        for (Map<String, Object> o: (Collection<Map<String, Object>>) r.get ("objects")) {
+            final ImportContractRequest.Contract.PlacingContract.ContractObject co = (ImportContractRequest.Contract.PlacingContract.ContractObject) DB.to.javaBean (ImportContractRequest.Contract.PlacingContract.ContractObject.class, o);
+            ContractObject.fillContractObject (co, r);
+            pc.getContractObject ().add (co);
+        }
+
 logger.info ("pc=" + pc);
 
         ImportContractRequest importContractRequest = of.createImportContractRequest ();

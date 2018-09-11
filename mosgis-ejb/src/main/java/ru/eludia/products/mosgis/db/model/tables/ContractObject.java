@@ -1,10 +1,16 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Map;
+import java.util.UUID;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
+import ru.gosuslugi.dom.schema.integration.house_management.BaseServiceType;
+import ru.gosuslugi.dom.schema.integration.house_management.ContractExportType;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
 
 public class ContractObject extends Table {
 
@@ -64,6 +70,22 @@ public class ContractObject extends Table {
 
         + "END;");
 
+    }
+    
+    public static void fillContractObject (ImportContractRequest.Contract.PlacingContract.ContractObject co, Map<String, Object> r) {
+        
+        UUID a = (UUID) r.get ("uuid_contract_agreement");
+        
+        final BaseServiceType base = new BaseServiceType ();        
+        base.setCurrentDoc (a == null);
+/*        
+        if (!base.isCurrentDoc ()) {
+            final AttachmentType att = new AttachmentType ();
+            base.setAgreement (att);
+        }
+*/        
+        co.setBaseMService (base);
+        
     }
     
 }

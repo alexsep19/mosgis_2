@@ -1,6 +1,8 @@
 package ru.eludia.products.mosgis.jms.gis.send;
 
+import static com.sun.javafx.animation.TickCalculation.sub;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -11,11 +13,13 @@ import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import javax.jms.Queue;
 import ru.eludia.base.DB;
+import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractLog;
+import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
@@ -62,8 +66,19 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
 
     @Override
     protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
+        
+        Model m = db.getModel ();
                 
         try {
+            
+            Map<UUID, Map<String, Object>> id2o = new HashMap <> ();
+            
+            db.forEach (m.select (ContractObject.class, "*").where ("uuid_contract", r.get ("uuid_object")).and ("is_deleted", 0), (rs) -> {                
+                Map<String, Object> hash = db.HASH (rs);                
+                id2o.put ((UUID) hash.get ("uuid"), hash);                
+            });
+            
+            r.put ("objects", id2o.values ());
             
             AckRequest.Ack ack = wsGisHouseManagementClient.placeContractData ((UUID) r.get ("ctr.uuid_org"), r);
             

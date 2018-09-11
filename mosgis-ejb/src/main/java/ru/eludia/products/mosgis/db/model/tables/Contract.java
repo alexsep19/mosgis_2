@@ -14,7 +14,11 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisContractType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.gosuslugi.dom.schema.integration.house_management.BaseServiceType;
 import ru.gosuslugi.dom.schema.integration.house_management.ContractType;
+import ru.gosuslugi.dom.schema.integration.house_management.DateDetailsType;
+import ru.gosuslugi.dom.schema.integration.house_management.DeviceMeteringsDaySelectionType;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
 
 public class Contract extends Table {
 
@@ -213,13 +217,50 @@ public class Contract extends Table {
         + "END;");        
 
     }
+    
+    private static DateDetailsType.PaymentDocumentInterval paymentDocumentInterval (Map<String, Object> r, String key) {
+        final DateDetailsType.PaymentDocumentInterval result = new DateDetailsType.PaymentDocumentInterval ();
+        String s = r.get (key).toString ();
+        result.setLastDay ("99".equals (s) ? true: null);
+        if (result.isLastDay () == null) result.setStartDate (Byte.parseByte (s));
+        result.setNextMounth ("1".equals (r.get (key + "_nxt").toString ()));
+        return result;
+    }
+    
+    private static DateDetailsType.PaymentInterval paymentInterval (Map<String, Object> r, String key) {
+        final DateDetailsType.PaymentInterval result = new DateDetailsType.PaymentInterval ();
+        String s = r.get (key).toString ();
+        result.setLastDay ("99".equals (s) ? true: null);
+        if (result.isLastDay () == null) result.setStartDate (Byte.parseByte (s));
+        result.setNextMounth ("1".equals (r.get (key + "_nxt").toString ()));
+        return result;        
+    }
+
+    private static DeviceMeteringsDaySelectionType deviceMeteringsDaySelectionType (Map<String, Object> r, String key) {        
+        final DeviceMeteringsDaySelectionType result = new DeviceMeteringsDaySelectionType ();
+        String s = r.get (key).toString ();
+        result.setLastDay ("99".equals (s) ? true: null);
+        if (result.isLastDay () == null) result.setDate (Byte.parseByte (s));
+        result.setIsNextMonth ("1".equals (r.get (key + "_nxt").toString ()));
+        return result;
+    }
 
     public static void fillContract (ContractType c, Map<String, Object> r) {
 
         VocGisCustomerType.i.forId (r.get ("id_customer_type")).setCustomer (c, (UUID) r.get ("uuid_org_customer"));
 
         c.setContractBase (NsiTable.toDom ((String) r.get ("code_vc_nsi_58"), (UUID) r.get ("vc_nsi_58.guid")));
-
+       
+        final DateDetailsType dd = new DateDetailsType ();
+        
+        final DateDetailsType.PeriodMetering pm = new DateDetailsType.PeriodMetering ();                                
+        pm.setStartDate (deviceMeteringsDaySelectionType       (r, "ddt_m_start"));
+        pm.setEndDate   (deviceMeteringsDaySelectionType       (r, "ddt_m_end"));       
+        dd.setPeriodMetering (pm);
+        dd.setPaymentDocumentInterval (paymentDocumentInterval (r, "ddt_d_start"));
+        dd.setPaymentInterval         (paymentInterval         (r, "ddt_i_start"));                
+        c.setDateDetails (dd);
+                
     }
-
+    
 }
