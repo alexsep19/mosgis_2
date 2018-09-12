@@ -47,9 +47,9 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
     @Override
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
-            .toOne (ContractLog.class, "AS log").on ("log.uuid_out_soap=root.uuid")
-            .toOne (Contract.class, "AS ctr").on ()
-            .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("ctr.uuid_org")                
+            .toOne (ContractLog.class,     "AS log", "uuid"      ).on ("log.uuid_out_soap=root.uuid")
+            .toOne (Contract.class,        "AS ctr", "uuid"      ).on ()
+            .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("ctr.uuid_org")
         ;
         
     }
@@ -85,9 +85,7 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
 
     @Override
     protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
-        
-        final Object uuidObject = r.get ("log.uuid_object");
-        
+                
         UUID orgPPAGuid = (UUID) r.get ("org.orgppaguid");        
         
         try {
@@ -112,11 +110,19 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
                                     
             db.begin ();            
             
+                VocGisStatus.i state = VocGisStatus.i.forName (importContract.getState ());
+                if (state == null) state = VocGisStatus.i.NOT_RUNNING;
+            
                 db.update (Contract.class, HASH (
-                    "uuid", uuidObject,
-                    "id_ctr_status_gis", VocGisStatus.i.forName (importContract.getContractStatus ().value ()),
-                    "id_ctr_state_gis",  VocGisStatus.i.forName (importContract.getState ())
-                ));            
+                    "uuid", r.get ("ctr.uuid"),
+                    "id_ctr_status_gis", VocGisStatus.i.forName (importContract.getContractStatus ().value ()).getId (),
+                    "id_ctr_state_gis",  state.getId ()
+                ));
+                
+                db.update (ContractLog.class, HASH (
+                    "uuid", r.get ("log.uuid"),
+                    "contractversionguid", importContract.getContractVersionGUID ()
+                ));
 
                 db.update (OutSoap.class, HASH (
                     "uuid", uuid,

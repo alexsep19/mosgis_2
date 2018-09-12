@@ -1,10 +1,15 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Map;
+import java.util.UUID;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
 
 public class ContractObjectService extends Table {
 
@@ -37,6 +42,35 @@ public class ContractObjectService extends Table {
             + " raise_application_error (-20000, '#enddate#: Окончание периода не может предшествовать его началу');"
             + "END IF; "
         + "END;");
+
+    }
+    
+    public static void add (ImportContractRequest.Contract.PlacingContract.ContractObject co, Map<String, Object> r) {
+        switch (r.get ("is_additional").toString ()) {
+            case "0": addHouse (co, r); break;
+            case "1": addAdd   (co, r); break;
+        }
+    }
+    
+    private static void addAdd (ImportContractRequest.Contract.PlacingContract.ContractObject co, Map<String, Object> r) {
+
+        final ImportContractRequest.Contract.PlacingContract.ContractObject.AddService as = (ImportContractRequest.Contract.PlacingContract.ContractObject.AddService) DB.to.javaBean (ImportContractRequest.Contract.PlacingContract.ContractObject.AddService.class, r);
+        
+        as.setServiceType (NsiTable.toDom ((String) r.get ("add_service.uniquenumber"), (UUID) r.get ("add_service.elementguid")));
+        as.setBaseService (ContractFile.getBaseServiceType (r));
+                
+        co.getAddService ().add (as);
+        
+    }
+
+    private static void addHouse (ImportContractRequest.Contract.PlacingContract.ContractObject co, Map<String, Object> r) {
+        
+        final ImportContractRequest.Contract.PlacingContract.ContractObject.HouseService hs = (ImportContractRequest.Contract.PlacingContract.ContractObject.HouseService) DB.to.javaBean (ImportContractRequest.Contract.PlacingContract.ContractObject.HouseService.class, r);
+        
+        hs.setServiceType (NsiTable.toDom ((String) r.get ("vc_nsi_3.code"), (UUID) r.get ("vc_nsi_3.guid")));
+        hs.setBaseService (ContractFile.getBaseServiceType (r));
+        
+        co.getHouseService ().add (hs);
 
     }
 

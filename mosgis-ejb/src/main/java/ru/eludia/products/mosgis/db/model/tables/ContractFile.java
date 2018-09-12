@@ -10,6 +10,7 @@ import static ru.eludia.base.model.def.Num.ZERO;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.gosuslugi.dom.schema.integration.base.Attachment;
 import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
+import ru.gosuslugi.dom.schema.integration.house_management.BaseServiceType;
 import ru.gosuslugi.dom.schema.integration.house_management.ContractType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImprintAgreementType;
 
@@ -141,5 +142,17 @@ public class ContractFile extends Table {
         return protocol;
         
     }    
+    
+    public static BaseServiceType getBaseServiceType (Map<String, Object> r) {
+        
+        AttachmentType a = (AttachmentType) r.get ("contract_agreement");
+
+        final BaseServiceType result = new BaseServiceType ();
+
+        if (a != null) result.setAgreement (a); else result.setCurrentDoc (true);
+        
+        return result;
+
+    }
 
 }

@@ -1,8 +1,10 @@
 package ru.eludia.products.mosgis.jms.gis.send;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -16,10 +18,12 @@ import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.AdditionalService;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractFile;
 import ru.eludia.products.mosgis.db.model.tables.ContractLog;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
+import ru.eludia.products.mosgis.db.model.tables.ContractObjectService;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -120,16 +124,32 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
                 
         try {
             
+            NsiTable nsi3 = NsiTable.getNsiTable (db, 3);
+
             Map<UUID, Map<String, Object>> id2o = new HashMap <> ();
             
             db.forEach (m.select (ContractObject.class, "*").where ("uuid_contract", r.get ("uuid_object")).and ("is_deleted", 0), (rs) -> {                
                 Map<String, Object> object = db.HASH (rs);                                
+                object.put ("services", new ArrayList ());
                 UUID agr = (UUID) object.get ("uuid_contract_agreement");
                 if (agr != null) object.put ("contract_agreement", ContractFile.toAttachmentType (id2file.get (agr)));
                 id2o.put ((UUID) object.get ("uuid"), object);                
             });
             
             r.put ("objects", id2o.values ());
+            
+            db.forEach (m
+                .select (ContractObjectService.class, "AS root", "*")
+                .toMaybeOne (AdditionalService.class, "AS add_service", "uniquenumber", "elementguid").on ()
+                .toMaybeOne (nsi3, "AS vc_nsi_3", "code", "guid").on ("vc_nsi_3.code=root.code_vc_nsi_3 AND vc_nsi_3.isactual=1")
+                .where ("uuid_contract", r.get ("uuid_object"))
+                .and ("is_deleted", 0), 
+            (rs) -> {
+                Map<String, Object> service = db.HASH (rs);                                
+                UUID agr = (UUID) service.get ("uuid_contract_agreement");
+                if (agr != null) service.put ("contract_agreement", ContractFile.toAttachmentType (id2file.get (agr)));
+                ((List) id2o.get (service.get ("uuid_contract_object")).get ("services")).add (service);
+            });
             
             AckRequest.Ack ack = wsGisHouseManagementClient.placeContractData (orgppaguid, r);
             
