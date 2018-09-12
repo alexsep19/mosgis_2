@@ -150,6 +150,7 @@ define ([], function () {
         if ($_USER.role.admin) data.item.org_label = data.item ['vc_orgs.label']
         
         data.item.status_label = data.vc_gis_status [data.item.id_ctr_status]
+        data.item.gis_status_label = data.vc_gis_status [data.item.id_ctr_status_gis] + ' (' + data.vc_gis_status [data.item.id_ctr_state_gis] + ')'
         data.item.err_text = data.item ['out_soap.err_text']        
     
         data.item._can = {}
