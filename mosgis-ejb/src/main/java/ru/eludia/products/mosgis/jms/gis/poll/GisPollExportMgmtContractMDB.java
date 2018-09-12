@@ -4,9 +4,11 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
+import javax.jms.Queue;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
@@ -17,6 +19,7 @@ import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
@@ -35,6 +38,12 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
     @EJB
     WsGisHouseManagementClient wsGisHouseManagementClient;
 
+    @Resource (mappedName = "mosgis.outExportHouseMgmtContractsQueue")
+    Queue queue;
+    
+    @EJB
+    protected UUIDPublisher UUIDPublisher;
+    
     @Override
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
@@ -91,6 +100,12 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
             catch (Fault ex) {
                 final ru.gosuslugi.dom.schema.integration.base.Fault faultInfo = ex.getFaultInfo ();
                 throw new FU (faultInfo.getErrorCode (), faultInfo.getErrorMessage ());
+            }
+            
+            if (rp.getRequestState () < DONE.getId ()) {
+                logger.info ("requestState = " + rp.getRequestState () + ", retry...");
+                UUIDPublisher.publish (queue, uuid);
+                return;
             }
 
             ImportContractResultType importContract = digImportContract (rp);

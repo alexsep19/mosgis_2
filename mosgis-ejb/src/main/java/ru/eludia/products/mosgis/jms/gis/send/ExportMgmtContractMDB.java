@@ -20,6 +20,7 @@ import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractFile;
 import ru.eludia.products.mosgis.db.model.tables.ContractLog;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
@@ -100,14 +101,13 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
                     (uploadId) -> file.put ("attachmentguid", uploadId)
                 )
             ) {
-                
+
                 db.getStream (m.get (ContractFile.class, file.get ("uuid"), "body"), out);
-                
-                db.update (ContractFile.class, DB.HASH (
-                    "uuid",           uuid,
-                    "attachmentguid", file.get ("attachmentguid")
-                ));                
-                
+
+                file.put ("attachmenthash", out.getAttachmentHASH ());
+
+                db.update (ContractFile.class, file);
+
             }
             catch (Exception ex) {
                 logger.log (Level.SEVERE, "Cannot upload " + file, ex);
@@ -133,11 +133,20 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
             
             AckRequest.Ack ack = wsGisHouseManagementClient.placeContractData (orgppaguid, r);
             
-            db.update (getTable (), DB.HASH (
-                "uuid",          uuid,
-                "uuid_out_soap", ack.getRequesterMessageGUID (),
-                "uuid_message",  ack.getMessageGUID ()
-            ));
+            db.begin ();
+            
+                db.update (OutSoap.class, DB.HASH (
+                    "uuid",     ack.getRequesterMessageGUID (),
+                    "uuid_ack", ack.getMessageGUID ()
+                ));
+
+                db.update (getTable (), DB.HASH (
+                    "uuid",          uuid,
+                    "uuid_out_soap", ack.getRequesterMessageGUID (),
+                    "uuid_message",  ack.getMessageGUID ()
+                ));
+            
+            db.commit ();
 
             UUIDPublisher.publish (queue, ack.getRequesterMessageGUID ());
             

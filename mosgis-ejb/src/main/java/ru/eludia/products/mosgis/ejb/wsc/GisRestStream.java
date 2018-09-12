@@ -2,8 +2,10 @@ package ru.eludia.products.mosgis.ejb.wsc;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.security.MessageDigest;
 import java.util.UUID;
 import java.util.function.Consumer;
+import ru.eludia.base.DB;
 
 public class GisRestStream extends OutputStream {
         
@@ -18,6 +20,7 @@ public class GisRestStream extends OutputStream {
     UUID uploadId;
     Consumer<UUID> setId;
     RestGisFilesClient restGisFilesClient;
+    MessageDigest gost = MessageDigest.getInstance ("GOST3411");
 
     public GisRestStream (RestGisFilesClient restGisFilesClient, RestGisFilesClient.Context context, UUID orgPPAGUID, String name, long len, Consumer<UUID> setId) throws Exception {
         if (len == 0) throw new Exception ("Zero file length is not allowed");
@@ -34,6 +37,10 @@ public class GisRestStream extends OutputStream {
     public void setUploadId (UUID uploadId) {
         this.uploadId = uploadId;
         setId.accept (uploadId);
+    }
+    
+    public String getAttachmentHASH () {
+        return DB.to.hex (gost.digest ());
     }
 
     @Override
@@ -59,6 +66,7 @@ public class GisRestStream extends OutputStream {
     @Override
     public void write (int b) throws IOException {
         body [cnt++] = (byte) b;
+        gost.update ((byte) b);
         if (cnt == RestGisFilesClient.CHUNK_SIZE) flush ();
     }
 
@@ -69,6 +77,8 @@ public class GisRestStream extends OutputStream {
         if (off < 0 || len < 0 || (off + len) > b.length) throw new IndexOutOfBoundsException ();
 
         int free = RestGisFilesClient.CHUNK_SIZE - cnt;
+        
+        gost.update (b, off, len);
 
         if (len <= free) {
 

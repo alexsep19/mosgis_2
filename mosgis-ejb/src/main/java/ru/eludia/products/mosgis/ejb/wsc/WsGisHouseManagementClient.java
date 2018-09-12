@@ -68,6 +68,7 @@ public class WsGisHouseManagementClient {
     public AckRequest.Ack placeContractData (UUID orgPPAGuid, Map<String, Object> r) throws Fault {
         
         final ImportContractRequest.Contract.PlacingContract pc = (ImportContractRequest.Contract.PlacingContract) DB.to.javaBean (ImportContractRequest.Contract.PlacingContract.class, r);
+        pc.setLicenseRequest (true);
         Contract.fillContract (pc, r);
         
         for (Map<String, Object> file: (Collection<Map<String, Object>>) r.get ("files"))   ContractFile.add   (pc, file);

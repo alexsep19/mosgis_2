@@ -31,6 +31,7 @@ public class ContractFile extends Table {
         col    ("body",                  Type.BLOB,                EMPTY_BLOB,  "Содержимое");
         col    ("description",           Type.TEXT,                null,        "Примечание");
         col    ("attachmentguid",        Type.UUID,                null,        "Идентификатор сохраненного вложения");
+        col    ("attachmenthash",        Type.BINARY, 32,          null,        "ГОСТ Р 34.11-94");
 
         col    ("purchasenumber",        Type.STRING, 60,          null,        "Номер извещения (для протокола открытого конкурса)");
         col    ("agreementnumber",       Type.STRING, 255,         null,        "Номер дополнительного соглашения");
@@ -48,10 +49,11 @@ public class ContractFile extends Table {
 
     }
     
-    private static void fill (AttachmentType result, Map<String, Object> r) {
+    private static void fill (AttachmentType result, Map<String, Object> r) {        
         result.setName (r.get ("label").toString ());
         final String desc = r.get ("description").toString ();
         result.setDescription (desc == null || desc.isEmpty () ? " " : desc);
+        result.setAttachmentHASH (r.get ("attachmenthash").toString ());
         final Attachment attachment = new Attachment ();
         attachment.setAttachmentGUID (r.get ("attachmentguid").toString ());
         result.setAttachment (attachment);
