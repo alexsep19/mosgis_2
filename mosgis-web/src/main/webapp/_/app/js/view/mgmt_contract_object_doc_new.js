@@ -7,11 +7,11 @@ define ([], function () {
         var types = {
             99: 1,
         }
-        
+
         switch (data.item ['ctr.code_vc_nsi_58']) {
 
             case "1": 
-                if (data.item.id_customer_type != 1) types [10] = types [8] = 1;
+                if (data.item ['ctr.id_customer_type'] != 1) types [10] = types [8] = 1;
                 break;
 
             case "9": 
