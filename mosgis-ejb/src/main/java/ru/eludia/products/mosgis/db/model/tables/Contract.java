@@ -223,7 +223,7 @@ public class Contract extends Table {
         String s = r.get (key).toString ();
         result.setLastDay ("99".equals (s) ? true: null);
         if (result.isLastDay () == null) result.setStartDate (Byte.parseByte (s));
-        result.setNextMounth ("1".equals (r.get (key + "_nxt").toString ()));
+        if ("1".equals (r.get (key + "_nxt").toString ())) result.setNextMounth (true); else result.setCurrentMounth (true);
         return result;
     }
     
@@ -232,8 +232,8 @@ public class Contract extends Table {
         String s = r.get (key).toString ();
         result.setLastDay ("99".equals (s) ? true: null);
         if (result.isLastDay () == null) result.setStartDate (Byte.parseByte (s));
-        result.setNextMounth ("1".equals (r.get (key + "_nxt").toString ()));
-        return result;        
+        if ("1".equals (r.get (key + "_nxt").toString ())) result.setNextMounth (true); else result.setCurrentMounth (true);
+        return result;
     }
 
     private static DeviceMeteringsDaySelectionType deviceMeteringsDaySelectionType (Map<String, Object> r, String key) {        
