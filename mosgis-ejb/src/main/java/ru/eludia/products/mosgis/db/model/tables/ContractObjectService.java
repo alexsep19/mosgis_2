@@ -39,7 +39,7 @@ public class ContractObjectService extends Table {
         
         trigger ("BEFORE INSERT OR UPDATE", " BEGIN "
             + "IF :NEW.startdate > :NEW.enddate THEN "
-            + " raise_application_error (-20000, '#enddate#: Окончание периода не может предшествовать его началу');"
+            + " raise_application_error (-20000, '#enddate#: Дата начала предоставления услуги должна быть раньше даты окончания');"
             + "END IF; "
         + "END;");
 
