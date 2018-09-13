@@ -32,14 +32,18 @@ public class LoggingOutMessageHandler implements SOAPHandler<SOAPMessageContext>
 
     private static final String defaultCharSetName = "UTF-8";
     private static final ObjectFactory of = new ObjectFactory ();
+    public static final String FIELD_MESSAGE_GUID = "MessageGUID";
     public static final String FIELD_ORG_PPA_GUID = "OrgPPAGuid";
 
     private final static Logger logger = Logger.getLogger (LoggingOutMessageHandler.class.getName ());
+    
+    private UUID getMessageGUID (SOAPMessageContext messageContext) {
+        UUID uuid = (UUID) messageContext.get (FIELD_MESSAGE_GUID);
+        return uuid == null ? UUID.randomUUID () : uuid;
+    }
 
     private UUID getOrgPPAGuid (SOAPMessageContext messageContext) {
         UUID uuid = (UUID) messageContext.get (FIELD_ORG_PPA_GUID);
-logger.info ("getOrgPPAGuid: " + uuid);
-
         return uuid == null ? UUID.fromString (Conf.get (VocSetting.i.GIS_ID_ORGANIZATION)) : uuid;
     }
 
@@ -208,7 +212,7 @@ logger.info ("getOrgPPAGuid: " + uuid);
             RequestHeader rh = of.createRequestHeader ();
 
             rh.setDate (DB.to.XMLGregorianCalendar (new java.sql.Timestamp (System.currentTimeMillis ())));
-            rh.setMessageGUID (UUID.randomUUID ().toString ());            
+            rh.setMessageGUID (getMessageGUID (messageContext).toString ());
             rh.setOrgPPAGUID (getOrgPPAGuid (messageContext).toString ());
             rh.setIsOperatorSignature (Boolean.TRUE);
             

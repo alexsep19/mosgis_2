@@ -27,7 +27,7 @@ import ru.eludia.products.mosgis.ejb.ModelHolder;
 
 @Startup
 @Singleton
-@DependsOn ("Conf")
+//@DependsOn ("Conf")
 public class Okei implements OkeiMBean {
 
     private ObjectName objectName = null;

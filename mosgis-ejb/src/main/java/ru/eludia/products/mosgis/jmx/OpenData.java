@@ -23,7 +23,7 @@ import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 
 @Startup
 @Singleton
-@DependsOn ("ModelHolder")
+//@DependsOn ("ModelHolder")
 public class OpenData implements OpenDataMBean {
 
     private ObjectName objectName = null;

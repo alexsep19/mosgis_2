@@ -31,7 +31,7 @@ import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 
 @Startup
 @Singleton
-@DependsOn ("Conf")
+//@DependsOn ("Conf")
 public class Fias implements FiasMBean {
 
     private ObjectName objectName = null;

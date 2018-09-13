@@ -25,7 +25,7 @@ import ru.eludia.products.mosgis.rest.ValidationException;
 
 @Startup
 @Singleton
-@DependsOn ("Okei")
+//@DependsOn ("Okei")
 public class Nsi implements NsiMBean {
 
     private ObjectName objectName = null;

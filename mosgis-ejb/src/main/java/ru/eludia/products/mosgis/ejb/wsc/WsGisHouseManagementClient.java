@@ -16,7 +16,6 @@ import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ws.base.LoggingOutMessageHandler;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.base.GetStateRequest;
-import ru.gosuslugi.dom.schema.integration.house_management.DateDetailsType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportHouseRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
@@ -41,10 +40,12 @@ public class WsGisHouseManagementClient {
         return port;
     }
 
-    private HouseManagementPortsTypeAsync getPort (UUID orgPPAGuid) {
+    private HouseManagementPortsTypeAsync getPort (UUID orgPPAGuid, UUID messageGUID) {
         HouseManagementPortsTypeAsync port = service.getHouseManagementPortAsync();
         VocSetting.setPort (port, "WS_GIS_HOUSE_MANAGEMENT");
-        ((BindingProvider)port).getRequestContext ().put (LoggingOutMessageHandler.FIELD_ORG_PPA_GUID, orgPPAGuid);
+        final Map<String, Object> requestContext = ((BindingProvider)port).getRequestContext ();
+        requestContext.put (LoggingOutMessageHandler.FIELD_MESSAGE_GUID, messageGUID);
+        requestContext.put (LoggingOutMessageHandler.FIELD_ORG_PPA_GUID, orgPPAGuid);
         return port;
     }
 
@@ -65,7 +66,7 @@ public class WsGisHouseManagementClient {
         
     }
     
-    public AckRequest.Ack placeContractData (UUID orgPPAGuid, Map<String, Object> r) throws Fault {
+    public AckRequest.Ack placeContractData (UUID orgPPAGuid, UUID messageGUID,  Map<String, Object> r) throws Fault {
         
         final ImportContractRequest.Contract.PlacingContract pc = (ImportContractRequest.Contract.PlacingContract) DB.to.javaBean (ImportContractRequest.Contract.PlacingContract.class, r);
         pc.setLicenseRequest (true);
@@ -84,14 +85,14 @@ logger.info ("pc=" + pc);
         
         importContractRequest.getContract ().add (c);
 
-        return getPort (orgPPAGuid).importContractData (importContractRequest).getAck ();
+        return getPort (orgPPAGuid, messageGUID).importContractData (importContractRequest).getAck ();
         
     }
     
     public GetStateResult getState (UUID orgPPAGuid, UUID uuid) throws Fault {
         GetStateRequest getStateRequest = new GetStateRequest ();
         getStateRequest.setMessageGUID (uuid.toString ());
-        return getPort (orgPPAGuid).getState(getStateRequest);
+        return getPort (orgPPAGuid, UUID.randomUUID ()).getState (getStateRequest);
     }    
 
 }

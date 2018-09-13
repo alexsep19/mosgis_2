@@ -14,11 +14,9 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisContractType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
-import ru.gosuslugi.dom.schema.integration.house_management.BaseServiceType;
 import ru.gosuslugi.dom.schema.integration.house_management.ContractType;
 import ru.gosuslugi.dom.schema.integration.house_management.DateDetailsType;
 import ru.gosuslugi.dom.schema.integration.house_management.DeviceMeteringsDaySelectionType;
-import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
 
 public class Contract extends Table {
 
@@ -64,6 +62,9 @@ public class Contract extends Table {
         col   ("ddt_i_start_nxt",           Type.BOOLEAN,          Bool.FALSE, "1, если срок внесения платы за жилое помещение и (или) коммунальные услуги в следующем месяце; иначе 0");
 
         col   ("contractbase",              Type.STRING,  new Virt ("(''||\"CODE_VC_NSI_58\")"),  "Основание заключения договора");
+        
+        fk    ("uuid_out_soap",             OutSoap.class,             null,    "Последний запрос на импорт в ГИС ЖКХ");
+        col   ("contractguid",              Type.UUID,                 null,    "UUID договора в ГИС ЖКХ");
 
         fk    ("id_log",                    ContractLog.class,         null, "Последнее событие редактирования");
 
@@ -103,6 +104,9 @@ public class Contract extends Table {
 
                 + " IF :NEW.ddt_m_start IS NULL THEN raise_application_error (-20000, 'Не задано начало периода ввода показаний приборов учёта. Операция отменена.'); END IF; "
                 + " IF :NEW.ddt_m_end   IS NULL THEN raise_application_error (-20000, 'Не задано окончание периода ввода показаний приборов учёта. Операция отменена.'); END IF; "
+
+                + " IF :NEW.ddt_m_end_nxt > :NEW.ddt_m_start_nxt AND :NEW.ddt_m_end > :NEW.ddt_m_start THEN raise_application_error (-20000, 'Период сдачи показаний по ИПУ указан некорректно: обнаружено пересечение периодов. Операция отменена.'); END IF; "
+                    
                 + " IF :NEW.ddt_d_start IS NULL THEN raise_application_error (-20000, 'Не задан срок выставления платежных документов. Операция отменена.'); END IF; "
                 + " IF :NEW.ddt_i_start IS NULL THEN raise_application_error (-20000, 'Не задан срок внесения платы за помещение / услуги. Операция отменена.'); END IF; "
 

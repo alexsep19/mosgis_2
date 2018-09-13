@@ -14,6 +14,7 @@ import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import javax.jms.Queue;
 import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
@@ -25,6 +26,7 @@ import ru.eludia.products.mosgis.db.model.tables.ContractLog;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.ContractObjectService;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
@@ -121,9 +123,7 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
         }
         
         r.put ("files", id2file.values ());
-                
-        try {
-            
+
             NsiTable nsi3 = NsiTable.getNsiTable (db, 3);
 
             Map<UUID, Map<String, Object>> id2o = new HashMap <> ();
@@ -150,32 +150,71 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
                 if (agr != null) service.put ("contract_agreement", ContractFile.toAttachmentType (id2file.get (agr)));
                 ((List) id2o.get (service.get ("uuid_contract_object")).get ("services")).add (service);
             });
-            
-            AckRequest.Ack ack = wsGisHouseManagementClient.placeContractData (orgppaguid, r);
-            
-            db.begin ();
-            
-                db.update (OutSoap.class, DB.HASH (
-                    "uuid",     ack.getRequesterMessageGUID (),
-                    "uuid_ack", ack.getMessageGUID ()
-                ));
+                        
+            UUID messageGUID = UUID.randomUUID ();
+                                    
+            try {
+                
+                AckRequest.Ack ack = wsGisHouseManagementClient.placeContractData (orgppaguid, messageGUID, r);
+                
+                db.begin ();
 
-                db.update (getTable (), DB.HASH (
-                    "uuid",          uuid,
-                    "uuid_out_soap", ack.getRequesterMessageGUID (),
-                    "uuid_message",  ack.getMessageGUID ()
-                ));
-            
-            db.commit ();
+                    db.update (OutSoap.class, DB.HASH (
+                        "uuid",     messageGUID,
+                        "uuid_ack", ack.getMessageGUID ()
+                    ));
 
-            UUIDPublisher.publish (queue, ack.getRequesterMessageGUID ());
-            
-        }
-        catch (Fault ex) {
-            logger.log (Level.SEVERE, "Can't place management contract", ex);
-            return;
-        }
+                    db.update (getTable (), DB.HASH (
+                        "uuid",          uuid,
+                        "uuid_out_soap", messageGUID,
+                        "uuid_message",  ack.getMessageGUID ()
+                    ));
 
+                db.commit ();
+
+                UUIDPublisher.publish (queue, ack.getRequesterMessageGUID ());            
+                
+            }
+            catch (Fault ex) {
+
+                logger.log (Level.SEVERE, "Can't place management contract", ex);
+
+                ru.gosuslugi.dom.schema.integration.base.Fault faultInfo = ex.getFaultInfo ();
+
+                db.begin ();
+
+                    db.update (OutSoap.class, HASH (
+                        "uuid", messageGUID,
+                        "id_status", DONE.getId (),
+                        "is_failed", 1,
+                        "err_code",  faultInfo.getErrorCode (),
+                        "err_text",  faultInfo.getErrorMessage ()
+                    ));
+
+                    db.update (getTable (), DB.HASH (
+                        "uuid",          uuid,
+                        "uuid_out_soap", messageGUID
+                    ));
+
+                db.commit ();
+
+                return;
+
+            }
+            finally {
+                
+                try {
+                    db.update (Contract.class, DB.HASH (
+                        "uuid",          r.get ("uuid_object"),
+                        "uuid_out_soap", messageGUID
+                    ));
+                }
+                catch (Exception ex) {
+                    logger.log (Level.SEVERE, "Can't store contract placing SOAP message id", ex);
+                }                
+            
+            }
+            
     }
     
 }

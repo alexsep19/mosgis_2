@@ -22,6 +22,7 @@ import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
+import ru.gosuslugi.dom.schema.integration.base.CommonResultType;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractResultType;
@@ -73,11 +74,16 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
 
         List<ImportResult.CommonResult> commonResult = result.getCommonResult ();
         assertLen1 (importResult, "Вместо 1 результата (commonResult)");
+        
+        ImportResult.CommonResult icr = commonResult.get (0);
+        List<CommonResultType.Error> e3 = icr.getError ();
+        
+        if (e3 != null && !e3.isEmpty ()) throw new FU (e3.get (0));
             
-        ImportContractResultType importContract = commonResult.get (0).getImportContract ();
+        ImportContractResultType importContract = icr.getImportContract ();
         if (importContract == null) throw new FU ("0", "Тип ответа не соответствует передаче договора управления");
             
-        ErrorMessageType e3 = importContract.getError (); if (e3 != null) throw new FU (e3);
+        ErrorMessageType e4 = importContract.getError (); if (e4 != null) throw new FU (e4);
         
         return importContract;
         
@@ -106,19 +112,20 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
                 return;
             }
 
-            ImportContractResultType importContract = digImportContract (rp);
-                                    
+            ImportContractResultType importContract = digImportContract (rp);            
+
             db.begin ();            
-            
+
                 VocGisStatus.i state = VocGisStatus.i.forName (importContract.getState ());
                 if (state == null) state = VocGisStatus.i.NOT_RUNNING;
-            
+
                 db.update (Contract.class, HASH (
                     "uuid", r.get ("ctr.uuid"),
+                    "contractguid", importContract.getContractGUID (),
                     "id_ctr_status_gis", VocGisStatus.i.forName (importContract.getContractStatus ().value ()).getId (),
                     "id_ctr_state_gis",  state.getId ()
                 ));
-                
+
                 db.update (ContractLog.class, HASH (
                     "uuid", r.get ("log.uuid"),
                     "contractversionguid", importContract.getContractVersionGUID ()

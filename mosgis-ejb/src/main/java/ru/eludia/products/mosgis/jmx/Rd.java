@@ -35,7 +35,7 @@ import ru.eludia.products.mosgis.ejb.wsc.WsRdClient;
 
 @Startup
 @Singleton
-@DependsOn ("ModelHolder")
+//@DependsOn ("ModelHolder")
 public class Rd implements RdMBean {
 
     private ObjectName objectName = null;
