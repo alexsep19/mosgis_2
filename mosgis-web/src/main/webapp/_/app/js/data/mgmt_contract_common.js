@@ -87,12 +87,16 @@ define ([], function () {
         if (!v.ddt_m_start) die ('ddt_m_start', 'Укажите, пожалуйста, дату начала ввода показаний ПУ')
         if (!v.ddt_m_end) die ('ddt_m_start', 'Укажите, пожалуйста, дату окончания ввода показаний ПУ')
         
-        if (v.ddt_m_start_nxt > v.ddt_m_end_nxt) die ('ddt_m_end_nxt', 'Окончание срока не может предшествовать его началу')
-        
-        if (v.ddt_m_start_nxt == v.ddt_m_end_nxt) {
+        if (v.ddt_m_start_nxt > v.ddt_m_end_nxt) {
+            die ('ddt_m_end_nxt', 'Окончание срока не может предшествовать его началу')
+        }        
+        else if (v.ddt_m_start_nxt == v.ddt_m_end_nxt) {
             if (v.ddt_m_start > v.ddt_m_end) die ('ddt_m_end', 'Окончание срока не может предшествовать его началу')
         }
-        
+        else {
+            if (v.ddt_m_start < v.ddt_m_end) die ('ddt_m_end', 'Период сдачи показаний по ИПУ указан некорректно: обнаружено пересечение периодов')
+        }
+                
         if (!v.ddt_d_start) die ('ddt_d_start', 'Укажите, пожалуйста, срок выставления платёжных документов')
         if (!v.ddt_i_start) die ('ddt_i_start', 'Укажите, пожалуйста, срок внесения платы')
 
@@ -149,15 +153,21 @@ define ([], function () {
 
         if ($_USER.role.admin) data.item.org_label = data.item ['vc_orgs.label']
         
-        data.item.status_label = data.vc_gis_status [data.item.id_ctr_status]
-        data.item.gis_status_label = data.vc_gis_status [data.item.id_ctr_status_gis] + ' (' + data.vc_gis_status [data.item.id_ctr_state_gis] + ')'
-        data.item.err_text = data.item ['out_soap.err_text']        
-    
-        data.item._can = {}
+        var it = data.item
         
-        if ($_USER.role.nsi_20_1 && data.item.id_ctr_status == 10 && !data.item.is_deleted) {
+        it.status_label     = data.vc_gis_status [it.id_ctr_status]
+        it.state_label      = data.vc_gis_status [it.id_ctr_state]
 
-            data.item._can = {
+        if (it.id_ctr_status != it.id_ctr_status_gis) it.gis_status_label = data.vc_gis_status [it.id_ctr_status_gis]
+        if (it.id_ctr_state  != it.id_ctr_state_gis ) it.gis_state_label  = data.vc_gis_status [it.id_ctr_state_gis]
+        
+        it.err_text = it ['out_soap.err_text']        
+    
+        it._can = {}
+        
+        if ($_USER.role.nsi_20_1 && it.id_ctr_status == 10 && !it.is_deleted) {
+
+            it._can = {
                 edit:    1,
                 update:  1,
                 cancel:  1,

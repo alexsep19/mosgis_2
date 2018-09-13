@@ -31,6 +31,10 @@
 					width: 600px !important;
 				}
 
+				.sync b {
+					color: red;
+				}
+
         	</style>
 
         	<table border=0 cellpadding=0 cellspacing=0 width=90%>
@@ -107,11 +111,21 @@
 
 							<tr>
 								<td>Статус:</td>
-								<td data-text=status_label></td>
+								<td>
+									<span data-text=status_label/>
+									<b data-on=gis_status_label>
+										(ГИС ЖКХ: <span data-text=gis_status_label/>)
+									</b>
+								</td>
 							</tr>
 							<tr>
-								<td>Статус в ГИС ЖКХ:</td>
-								<td data-text=gis_status_label></td>
+								<td>Состояние:</td>
+								<td>
+									<span data-text=state_label/>
+									<b data-on=gis_state_label>
+										(ГИС ЖКХ: <span data-text=gis_state_label/>)
+									</b>
+								</td>
 							</tr>
 							<tr>
 								<th colspan=2 data-text=err_text></th>

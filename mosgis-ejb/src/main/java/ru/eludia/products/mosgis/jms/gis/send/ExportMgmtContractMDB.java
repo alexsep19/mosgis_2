@@ -170,6 +170,11 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
                         "uuid_message",  ack.getMessageGUID ()
                     ));
 
+                    db.update (Contract.class, DB.HASH (
+                        "uuid",          r.get ("uuid_object"),
+                        "uuid_out_soap", messageGUID
+                    ));
+
                 db.commit ();
 
                 UUIDPublisher.publish (queue, ack.getRequesterMessageGUID ());            
@@ -195,26 +200,17 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
                         "uuid",          uuid,
                         "uuid_out_soap", messageGUID
                     ));
+                    
+                    db.update (Contract.class, DB.HASH (
+                        "uuid",          r.get ("uuid_object"),
+                        "uuid_out_soap", messageGUID
+                    ));
 
                 db.commit ();
 
                 return;
 
-            }
-            finally {
-                
-                try {
-                    db.update (Contract.class, DB.HASH (
-                        "uuid",          r.get ("uuid_object"),
-                        "uuid_out_soap", messageGUID
-                    ));
-                }
-                catch (Exception ex) {
-                    logger.log (Level.SEVERE, "Can't store contract placing SOAP message id", ex);
-                }                
-            
-            }
-            
+            }            
     }
     
 }

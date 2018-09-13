@@ -32,6 +32,7 @@ define ([], function () {
             columns: [                
                 {field: 'ts', caption: 'Дата/время',    size: 30, render: _ts},
                 {field: 'action', caption: 'Действие',    size: 30, voc: {
+                    approve: 'Утверждение',
                     create: 'Создание',
                     update: 'Редактирование',
                     delete: 'Удаление',
@@ -60,13 +61,12 @@ define ([], function () {
                 
                 {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: 'data-ref=1'},
                 {field: 'soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: 'data-ref=1'},
-                {field: 'soap.id_status', caption: 'Статус',    size: 30, render: function (r, i, c, v) {
-                    switch (v) {
-                        case 3: return 'Обработано'
-                        case 2: return 'Ожидает ответа'
-                        default: return ''
-                    }
-                }},
+                {field: 'soap.id_status', caption: 'Статус',    size: 30, render: function (r, i, c, v) {return (
+                    r.action != 'approve' ? '' : 
+                    r ['soap.ts_rp']      ? 'Обработано' : 
+                    r ['soap.ts']         ? 'Ожидает ответа' : 
+                                            'Ожидает отправки'
+                )}},
                 {field: 'soap.err_text', caption: 'Ошибка',    size: 30},
 
             ],

@@ -15,7 +15,9 @@ import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
+import ru.eludia.products.mosgis.db.model.tables.ContractLog;
 import ru.eludia.products.mosgis.db.model.tables.MgmtContract;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractType;
@@ -94,8 +96,8 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
         Select select = model.select (MgmtContract.class, "AS root", "*", "uuid AS id")
             .toOne (VocOrganization.class, "AS org", "label").on ("uuid_org")
             .toMaybeOne (VocOrganization.class, "AS org_customer", "label").on ("uuid_org_customer")
-//            .toMaybeOne (ContractLog.class         ).on ()
-//            .toMaybeOne (OutSoap.class,           "err_text").on ()
+            .toMaybeOne (ContractLog.class         ).on ()
+            .toMaybeOne (OutSoap.class,           "err_text").on ()
             .and ("uuid_org", p.getJsonObject ("data").getString ("uuid_org", null))
             .orderBy ("org.label")
             .orderBy ("root.docnum")
@@ -111,11 +113,11 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
     public JsonObject getItem (String id) {return fetchData ((db, job) -> {
 
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
-            .get (getTable (), id, "*")
+            .get (MgmtContract.class, id, "*")
             .toOne      (VocOrganization.class,                    "label").on ("uuid_org")
             .toMaybeOne (VocOrganization.class, "AS org_customer", "label").on ("uuid_org_customer")
-//            .toMaybeOne (ContractLog.class           ).on ()
-//            .toMaybeOne (OutSoap.class,             "err_text").on ()
+            .toMaybeOne (ContractLog.class                                ).on ()
+            .toMaybeOne (OutSoap.class,                         "err_text").on ()
         ));
 
     });}
