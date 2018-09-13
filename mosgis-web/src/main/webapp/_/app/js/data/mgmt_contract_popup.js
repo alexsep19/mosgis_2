@@ -80,12 +80,14 @@ define ([], function () {
 
         var grid = w2ui ['mgmt_contracts_grid']
 
-        query (tia, {data: v}, function () {
+        query (tia, {data: v}, function (data) {
         
             w2popup.close ()
             
-            grid.reload (grid.refresh)
-            
+            if (data.id) w2confirm ('Перейти на страницу договора?').yes (function () {openTab ('/mgmt_contract/' + data.id)})
+
+            grid.reload (grid.refresh)            
+
         })
 
     }

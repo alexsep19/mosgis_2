@@ -170,18 +170,20 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
     }
     
     @Override
-    public JsonObject doCreate (JsonObject p, User user) {return doAction ((db) -> {
+    public JsonObject doCreate (JsonObject p, User user) {return fetchData ((db, job) -> {
 
         final Table table = getTable ();
 
         Map<String, Object> data = getData (p);
-        
+
         data.put ("id_contract_type", VocGisContractType.i.MGMT.getId ());
         data.put (UUID_ORG, user.getUuidOrg ());
 
         Object insertId = db.insertId (table, data);
-        
+
         logAction (db, user, insertId, "create");
+
+        job.add ("id", insertId.toString ());
 
     });}
 
