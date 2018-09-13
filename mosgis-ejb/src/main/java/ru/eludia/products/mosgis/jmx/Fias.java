@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
+import javax.ejb.DependsOn;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
@@ -30,6 +31,7 @@ import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 
 @Startup
 @Singleton
+@DependsOn ("Conf")
 public class Fias implements FiasMBean {
 
     private ObjectName objectName = null;

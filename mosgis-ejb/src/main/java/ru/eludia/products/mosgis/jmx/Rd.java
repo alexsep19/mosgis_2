@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
+import javax.ejb.DependsOn;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
@@ -34,6 +35,7 @@ import ru.eludia.products.mosgis.ejb.wsc.WsRdClient;
 
 @Startup
 @Singleton
+@DependsOn ("ModelHolder")
 public class Rd implements RdMBean {
 
     private ObjectName objectName = null;
@@ -54,16 +56,16 @@ public class Rd implements RdMBean {
     
     @PostConstruct
     public void registerInJMX () {
-        
-        try {
-/*            
-            service.setHandlerResolver (new HandlerResolver () {
-                @Override
-                public List<Handler> getHandlerChain (PortInfo portInfo) {
-                    return Collections.singletonList (new LoggingOutMessageHandler ());
-                }
-            });
-*/
+        /*
+        try {           
+            
+//            service.setHandlerResolver (new HandlerResolver () {
+//                @Override
+//                public List<Handler> getHandlerChain (PortInfo portInfo) {
+//                    return Collections.singletonList (new LoggingOutMessageHandler ());
+//                }
+//            });
+            
             objectName = new ObjectName ("ru.eludia:Name=MosGis,Type=Rd");
             platformMBeanServer = ManagementFactory.getPlatformMBeanServer ();
             platformMBeanServer.registerMBean (this, objectName);
@@ -71,18 +73,18 @@ public class Rd implements RdMBean {
         catch (Exception e) {
             throw new IllegalStateException ("Problem during registration of Monitoring into JMX:" + e);
         }
-
+        */
     }
 
     @PreDestroy
     public void unregisterFromJMX () {
-
+        /*
         try {
             platformMBeanServer.unregisterMBean (this.objectName);
         } catch (Exception e) {
             throw new IllegalStateException ("Problem during unregistration of Monitoring into JMX:" + e);
         }
-
+        */
     }
 
     @Override

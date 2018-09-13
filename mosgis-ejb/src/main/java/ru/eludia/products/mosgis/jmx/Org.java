@@ -30,7 +30,7 @@ public class Org implements OrgMBean {
         
     @PostConstruct
     public void registerInJMX () {
-        
+        /*
         try {
             objectName = new ObjectName ("ru.eludia:Name=MosGis,Type=Org");
             platformMBeanServer = ManagementFactory.getPlatformMBeanServer ();
@@ -39,18 +39,18 @@ public class Org implements OrgMBean {
         catch (Exception e) {
             throw new IllegalStateException ("Problem during registration of Monitoring into JMX:" + e);
         }
-
+        */
     }
 
     @PreDestroy
     public void unregisterFromJMX () {
-
+        /*
         try {
             platformMBeanServer.unregisterMBean (this.objectName);
         } catch (Exception e) {
             throw new IllegalStateException ("Problem during unregistration of Monitoring into JMX:" + e);
         }
-
+        */
     }
     
     private static final Pattern RE = Pattern.compile ("\\d{13}(\\d\\d)?");    
