@@ -12,6 +12,7 @@ import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Num;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import static ru.eludia.products.mosgis.db.model.voc.VocGisStatus.i.MUTATING;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportStatusCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
 
@@ -80,6 +81,8 @@ public class ContractObject extends Table {
             + " UPDATE tb_contract_services SET is_deleted = 1 WHERE uuid_contract_object = :NEW.uuid; "
             + "END IF; "
 
+            + "IF :NEW.contractobjectversionguid IS NOT NULL THEN :NEW.id_ctr_status := " + MUTATING.getId () + "; END IF; "
+                    
         + "END;");
 
     }

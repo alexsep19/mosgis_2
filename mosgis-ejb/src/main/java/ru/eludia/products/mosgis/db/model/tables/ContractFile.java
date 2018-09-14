@@ -8,6 +8,7 @@ import static ru.eludia.base.model.def.Blob.EMPTY_BLOB;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import static ru.eludia.base.model.def.Num.ZERO;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
+import static ru.eludia.products.mosgis.db.model.voc.VocGisStatus.i.MUTATING;
 import ru.gosuslugi.dom.schema.integration.base.Attachment;
 import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
 import ru.gosuslugi.dom.schema.integration.house_management.BaseServiceType;
@@ -45,6 +46,8 @@ public class ContractFile extends Table {
             + " IF :NEW.id_status = 0 AND DBMS_LOB.GETLENGTH (:NEW.body) = :NEW.len THEN "
             + "   :NEW.id_status := 1; "
             + " END IF;"
+                
+            + " UPDATE tb_contract_objects SET id_ctr_status = " + MUTATING.getId () + " WHERE uuid = :NEW.uuid_contract_object AND contractobjectversionguid IS NOT NULL; "
                 
         + "END;");        
 

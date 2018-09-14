@@ -9,6 +9,7 @@ import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import static ru.eludia.products.mosgis.db.model.voc.VocGisStatus.i.MUTATING;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
 
 public class ContractObjectService extends Table {
@@ -38,9 +39,13 @@ public class ContractObjectService extends Table {
         + "END;");
         
         trigger ("BEFORE INSERT OR UPDATE", " BEGIN "
+                
             + "IF :NEW.startdate > :NEW.enddate THEN "
             + " raise_application_error (-20000, '#enddate#: Дата начала предоставления услуги должна быть раньше даты окончания');"
             + "END IF; "
+                
+            + " UPDATE tb_contract_objects SET id_ctr_status = " + MUTATING.getId () + " WHERE uuid = :NEW.uuid_contract_object AND contractobjectversionguid IS NOT NULL; "
+                
         + "END;");
 
     }

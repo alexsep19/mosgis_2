@@ -27,7 +27,21 @@ define ([], function () {
                 tb_add_services: 1,
                 vc_gis_status: 1,
             })
+            
+            var it = data.item
 
+            it._can = {}
+
+            if ($_USER.role.nsi_20_1 && it ['ctr.uuid_org'] == $_USER.uuid_org) {
+
+                if (!it.is_deleted) it._can.edit = 1
+
+                if (!it.contractobjectversionguid) it._can.delete = 1
+
+                it._can.update = it._can.cancel = it._can.edit
+
+            }
+            
             $('body').data ('data', data)
 
             done (data)

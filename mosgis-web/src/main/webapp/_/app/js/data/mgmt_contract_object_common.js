@@ -91,16 +91,6 @@ define ([], function () {
         it.status_label     = data.vc_gis_status [it.id_ctr_status]
         if (it.id_ctr_status != it.id_ctr_status_gis) it.gis_status_label = data.vc_gis_status [it.id_ctr_status_gis]
         
-//        data.item.err_text = data.item ['out_soap.err_text']        
-
-        data.item._can = !$_USER.role.nsi_20_1 /*|| data.item.id_status == 10*/ ? {} : {
-            edit: 1 - data.item.is_deleted,
-            update: 1,
-            cancel: 1,
-            delete: 1 - data.item.is_deleted,
-//            undelete: data.item.is_deleted,
-        }
-        
         data.item.startdate = dt_dmy (data.item.startdate)
         data.item.enddate = dt_dmy (data.item.enddate)
         

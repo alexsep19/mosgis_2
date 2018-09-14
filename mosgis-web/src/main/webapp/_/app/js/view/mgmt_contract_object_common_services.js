@@ -8,7 +8,7 @@ define ([], function () {
 
         var $panel = $(layout.el ('main'))
         
-        var is_own = (data.item.uuid_org = $_USER.uuid_org)
+        var is_editable = data.item._can.edit
 
         $panel.w2regrid ({ 
         
@@ -22,13 +22,13 @@ define ([], function () {
                 toolbarReload: false,
                 toolbarColumns: false,
                 toolbarInput: false,
-                toolbarDelete: is_own,
-                toolbarEdit: is_own,
+                toolbarDelete: is_editable,
+                toolbarEdit: is_editable,
             },            
             
             toolbar: {
             
-                items: !is_own ? [] : [
+                items: !is_editable ? [] : [
                     {type: 'button', id: 'new_house_service', caption: 'Добавить коммунальную услугу', onClick: $_DO.create_mgmt_contract_object_common_services, icon: 'w2ui-icon-plus'},
                     {type: 'button', id: 'new_add_service', caption: 'Добавить дополнительную услугу', onClick: $_DO.create_mgmt_contract_object_common_services, icon: 'w2ui-icon-plus', off: data.tb_add_services.length == 0},
                 ].filter (not_off),

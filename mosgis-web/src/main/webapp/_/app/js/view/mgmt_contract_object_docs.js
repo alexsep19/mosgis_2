@@ -8,7 +8,7 @@ define ([], function () {
 
         var $panel = $(layout.el ('main'))
         
-        var is_own = (data.item.uuid_org = $_USER.uuid_org)
+        var is_editable = data.item._can.edit
 
         $panel.w2regrid ({ 
         
@@ -22,9 +22,9 @@ define ([], function () {
                 toolbarReload: false,
                 toolbarColumns: false,
                 toolbarInput: false,
-                toolbarAdd: is_own,
-                toolbarDelete: is_own,
-                toolbarEdit: is_own,
+                toolbarAdd: is_editable,
+                toolbarDelete: is_editable,
+                toolbarEdit: is_editable,
             },            
 
             textSearch: 'contains',
