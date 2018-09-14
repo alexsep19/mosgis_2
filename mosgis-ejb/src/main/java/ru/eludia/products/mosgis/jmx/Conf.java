@@ -2,9 +2,6 @@ package ru.eludia.products.mosgis.jmx;
 
 import java.lang.management.ManagementFactory;
 import java.nio.file.FileSystems;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.sql.SQLException;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,13 +42,6 @@ public class Conf implements ConfMBean, ConfLocal {
     
     @PostConstruct
     public void registerInJMX () {
-        
-        try {
-            MessageDigest.getInstance ("GOST3411");
-        }
-        catch (NoSuchAlgorithmException ex) {
-            throw new IllegalStateException ("GOST3411 message digest algorithm not supported. Please install CryptoPro JCP, BouncyCastle or other compatible provider", ex);
-        }
         
         reload ();
 
