@@ -13,6 +13,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import static ru.eludia.products.mosgis.db.model.voc.VocGisStatus.i.ANNUL;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.gosuslugi.dom.schema.integration.house_management.ContractType;
 import ru.gosuslugi.dom.schema.integration.house_management.DateDetailsType;
@@ -215,8 +216,10 @@ public class Contract extends Table {
                     + "END IF; "
                         
                 + "END IF; "
+                                
+                + " UPDATE tb_contract_objects SET id_ctr_status = :NEW.id_ctr_status WHERE uuid_contract=:NEW.uuid AND is_deleted=0 AND id_ctr_status NOT IN (" + ANNUL.getId () + "); "
 
-            + "END IF; "
+            + "END IF; " // UPDATING and approving
 
         + "END;");        
 

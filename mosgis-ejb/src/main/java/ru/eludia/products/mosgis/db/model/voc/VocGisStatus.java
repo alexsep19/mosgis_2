@@ -20,6 +20,8 @@ public class VocGisStatus extends Table {
     public enum i {
 
         PROJECT          (10,  "Project",         "проект"),
+        MUTATING         (11,  "_mutating",       "изменение"),
+        
         REVIEWED         (20,  "Reviewed",        "рассмотрен"),
         APPROVAL_PROCESS (30,  "ApprovalProcess", "на утверждении"),
         APPROVED         (40,  "Approved",        "утвержден"),

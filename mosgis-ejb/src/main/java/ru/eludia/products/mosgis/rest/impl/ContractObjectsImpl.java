@@ -13,6 +13,7 @@ import ru.eludia.products.mosgis.rest.api.ContractObjectsLocal;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
@@ -42,6 +43,8 @@ public class ContractObjectsImpl extends BaseCRUD<ContractObject> implements Con
             NsiTable.getNsiTable (db, 3).getVocSelect (),                
                 
             m.select (VocContractDocType.class, "id", "label").orderBy ("label"),
+            
+            m.select (VocGisStatus.class,       "id", "label").orderBy ("id"),
             
             m.select (AdditionalService.class, "uuid AS id", "label").orderBy ("label")
                 .and ("is_deleted", 0)

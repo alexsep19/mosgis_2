@@ -12,8 +12,10 @@ import javax.jms.Queue;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
+import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractLog;
+import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -24,6 +26,7 @@ import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import ru.gosuslugi.dom.schema.integration.base.CommonResultType;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportStatusCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportResult;
@@ -135,6 +138,14 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
                     "uuid", uuid,
                     "id_status", DONE.getId ()
                 ));
+                                
+                final Table t = db.getModel ().t (ContractObject.class);
+                                
+                ContractObject contractObjectTableDefinition = (ContractObject) t;
+                
+                for (ExportStatusCAChResultType.ContractObject co: importContract.getContractObject ()) 
+                    
+                    db.d0 (contractObjectTableDefinition.updateStatus ((UUID) r.get ("ctr.uuid"), co));
 
             db.commit ();
             

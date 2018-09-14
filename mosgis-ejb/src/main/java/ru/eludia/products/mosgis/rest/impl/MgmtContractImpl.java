@@ -200,5 +200,17 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
         logAction (db, user, id, "approve");
         
     });}
+    
+    @Override
+    public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
+
+        db.update (getTable (), HASH (
+            "uuid",           id,
+            "id_ctr_status",  VocGisStatus.i.MUTATING.getId ()
+        ));
+
+        logAction (db, user, id, "alter");
+        
+    });}
 
 }

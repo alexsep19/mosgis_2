@@ -4,11 +4,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import ru.eludia.base.DB;
+import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
+import ru.eludia.base.model.def.Num;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportStatusCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
 
 public class ContractObject extends Table {
@@ -27,6 +31,11 @@ public class ContractObject extends Table {
 
         col    ("startdate",               Type.DATE,                           "Дата начала предоставления услуг");
         col    ("enddate",                 Type.DATE,                           "Дата окончания предоставления услуг");        
+        
+        fk     ("id_ctr_status",           VocGisStatus.class,                  new Num (VocGisStatus.i.PROJECT.getId ()), "Статус объекта договора с точки зрения mosgis");
+        fk     ("id_ctr_status_gis",       VocGisStatus.class,                  new Num (VocGisStatus.i.PROJECT.getId ()), "Статус объекта договора с точки зрения ГИС ЖКХ");
+
+        col    ("contractobjectversionguid",     Type.UUID,      null,          "UUID последней версии данного объекта в ГИС ЖКХ");
         
         trigger ("BEFORE INSERT OR UPDATE", ""
                 
@@ -66,6 +75,10 @@ public class ContractObject extends Table {
                 + "|| '. Операция отменена.'); "
             + " END LOOP; "
             + "END IF; "
+                
+            + "IF :NEW.is_deleted = 1 THEN "
+            + " UPDATE tb_contract_services SET is_deleted = 1 WHERE uuid_contract_object = :NEW.uuid; "
+            + "END IF; "
 
         + "END;");
 
@@ -83,6 +96,22 @@ public class ContractObject extends Table {
 
         pc.getContractObject ().add (co);        
 
+    }
+    
+    public QP updateStatus (UUID uuid_contract, ExportStatusCAChResultType.ContractObject co) {
+    
+        QP qp = new QP ("UPDATE ");
+                    
+        qp.append (getName ());
+        qp.add (" SET id_ctr_status_gis         = ?", VocGisStatus.i.forName (co.getManagedObjectStatus ().value ()).getId (), getColumn ("id_ctr_status_gis").toPhysical ());
+        qp.add (",    contractobjectversionguid = ?", co.getContractObjectVersionGUID (),                                      getColumn ("contractobjectversionguid").toPhysical ());
+
+        qp.append (" WHERE is_deleted = 0");
+        qp.add (" AND uuid_contract   = ?", uuid_contract,          getColumn ("uuid_contract").toPhysical ());
+        qp.add (" AND fiashouseguid   = ?", co.getFIASHouseGuid (), getColumn ("fiashouseguid").toPhysical ());
+                    
+        return qp;
+    
     }
 
 }

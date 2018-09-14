@@ -86,7 +86,11 @@ define ([], function () {
 
         if ($_USER.role.admin) data.item.org_label = data.item ['vc_orgs.label']
         
-//        data.item.status_label = data.vc_gis_status [data.item.id_ctr_status]
+        var it = data.item
+        
+        it.status_label     = data.vc_gis_status [it.id_ctr_status]
+        if (it.id_ctr_status != it.id_ctr_status_gis) it.gis_status_label = data.vc_gis_status [it.id_ctr_status_gis]
+        
 //        data.item.err_text = data.item ['out_soap.err_text']        
 
         data.item._can = !$_USER.role.nsi_20_1 /*|| data.item.id_status == 10*/ ? {} : {

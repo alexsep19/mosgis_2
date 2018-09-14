@@ -145,10 +145,17 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
                 .where ("uuid_contract", r.get ("uuid_object"))
                 .and ("is_deleted", 0), 
             (rs) -> {
+                
                 Map<String, Object> service = db.HASH (rs);                                
+                
                 UUID agr = (UUID) service.get ("uuid_contract_agreement");
+                
                 if (agr != null) service.put ("contract_agreement", ContractFile.toAttachmentType (id2file.get (agr)));
-                ((List) id2o.get (service.get ("uuid_contract_object")).get ("services")).add (service);
+            
+                final Map<String, Object> o = id2o.get (service.get ("uuid_contract_object"));
+                
+                if (o != null) ((List) o.get ("services")).add (service);
+                
             });
                         
             UUID messageGUID = UUID.randomUUID ();

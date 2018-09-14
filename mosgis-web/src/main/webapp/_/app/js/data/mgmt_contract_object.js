@@ -25,6 +25,7 @@ define ([], function () {
                 vc_contract_doc_types: 1,
                 vc_nsi_3: 1,
                 tb_add_services: 1,
+                vc_gis_status: 1,
             })
 
             $('body').data ('data', data)

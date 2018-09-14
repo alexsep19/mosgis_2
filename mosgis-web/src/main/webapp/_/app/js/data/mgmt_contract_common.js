@@ -114,9 +114,14 @@ define ([], function () {
         query ({type: 'mgmt_contracts', action: 'delete'}, {}, reload_page)
     }
     
-    $_DO.approve_mgmt_contract_common = function (e) {   
+    $_DO.approve_mgmt_contract_common = function (e) {
         if (!confirm ('Утвердить этот договор, Вы уверены?\n\n(дальнейшая правка станет невозможна)')) return        
         query ({type: 'mgmt_contracts', action: 'approve'}, {}, reload_page)
+    }
+    
+    $_DO.alter_mgmt_contract_common = function (e) {
+        if (!confirm ('Открыть этот договор на редактирование, Вы уверены?')) return
+        query ({type: 'mgmt_contracts', action: 'alter'}, {}, reload_page)
     }
 
     $_DO.undelete_mgmt_contract_common = function (e) {   
@@ -160,20 +165,28 @@ define ([], function () {
 
         if (it.id_ctr_status != it.id_ctr_status_gis) it.gis_status_label = data.vc_gis_status [it.id_ctr_status_gis]
         if (it.id_ctr_state  != it.id_ctr_state_gis ) it.gis_state_label  = data.vc_gis_status [it.id_ctr_state_gis]
-        
-        it.err_text = it ['out_soap.err_text']        
-    
-        it._can = {}
-        
-        if ($_USER.role.nsi_20_1 && it.id_ctr_status == 10 && !it.is_deleted) {
 
-            it._can = {
-                edit:    1,
-                update:  1,
-                cancel:  1,
-                approve: 1,
-                delete:  1,
+        it.err_text = it ['out_soap.err_text']        
+
+        it._can = {}
+
+        if ($_USER.role.nsi_20_1 && !it.is_deleted) {
+
+            switch (it.id_ctr_status) {
+
+                case 10:
+                    it._can.approve = 1
+                    it._can.delete  = 1
+                case 11:
+                    it._can.edit    = 1
+                    break;
+                case 40:
+                    if (it.contractguid) it._can.alter = 1
+                    break;
+
             }
+
+            it._can.update = it._can.cancel = it._can.edit
 
         }
 

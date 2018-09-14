@@ -32,10 +32,11 @@ define ([], function () {
             columns: [                
                 {field: 'ts', caption: 'Дата/время',    size: 30, render: _ts},
                 {field: 'action', caption: 'Действие',    size: 30, voc: {
-                    approve: 'Утверждение',
-                    create: 'Создание',
-                    update: 'Редактирование',
-                    delete: 'Удаление',
+                    alter:    'Изменение',
+                    approve:  'Утверждение',
+                    create:   'Создание',
+                    update:   'Редактирование',
+                    delete:   'Удаление',
                     undelete: 'Восстановление',
                 }},
                 {field: 'vc_users.label', caption: 'Оператор',    size: 30},
