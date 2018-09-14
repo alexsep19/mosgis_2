@@ -43,13 +43,6 @@ public class Conf implements ConfMBean, ConfLocal {
     @PostConstruct
     public void registerInJMX () {
         
-//        try {
-//            MessageDigest.getInstance ("GOST3411");
-//        }
-//        catch (NoSuchAlgorithmException ex) {
-//            throw new IllegalStateException ("GOST3411 message digest algorithm not supported. Please install CryptoPro JCP, BouncyCastle or other compatible provider", ex);
-//        }
-        
         reload ();
 
         try {

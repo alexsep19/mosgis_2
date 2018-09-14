@@ -21,7 +21,6 @@ public class GisRestStream extends OutputStream {
     UUID uploadId;
     Consumer<UUID> setId;
     RestGisFilesClient restGisFilesClient;
-    //MessageDigest gost = MessageDigest.getInstance ("GOST3411");
     Gost341194 gost = new Gost341194 ();
 
     public GisRestStream (RestGisFilesClient restGisFilesClient, RestGisFilesClient.Context context, UUID orgPPAGUID, String name, long len, Consumer<UUID> setId) throws Exception {
