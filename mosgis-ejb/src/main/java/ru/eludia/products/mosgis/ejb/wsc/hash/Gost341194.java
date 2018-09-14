@@ -1,7 +1,11 @@
 package ru.eludia.products.mosgis.ejb.wsc.hash;
 
+import java.io.ByteArrayOutputStream;
+
 public class Gost341194 {
 
+    private ByteArrayOutputStream baos = null;
+    
     private HashContext hashContext = null;
     private final static SubstitutionBlock PARAMETERS = new SubstitutionBlock();
     
@@ -41,11 +45,21 @@ public class Gost341194 {
         if ( length < 0 && block != null )
             length = block.length;
         
-        init ();
-        hashContext.hashBlock(block, pos, length);
+        if (baos == null) {
+            baos = new ByteArrayOutputStream ();
+        }
+        
+        baos.write(block, pos, length);
     }
 
     public byte[] digest() {
+        
+        byte[] bytes = baos.toByteArray ();
+        baos = null;
+        
+        init ();
+        hashContext.hashBlock (bytes);
+        
         return hashContext.finishHash();
     }
 }
