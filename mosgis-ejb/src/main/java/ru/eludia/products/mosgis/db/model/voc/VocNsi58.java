@@ -3,18 +3,27 @@ package ru.eludia.products.mosgis.db.model.voc;
 import ru.eludia.base.model.def.Bool;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
+import ru.eludia.base.model.def.Virt;
 
 public class VocNsi58 extends Table{
 
     public VocNsi58 () {
         super ("vc_nsi_58", "Справочник ГИС ЖКХ номер 58");
         
-        pk     ("code",         Type.STRING,  20,            "Код элемента справочника, уникальный в пределах справочника");
-        col    ("f_7d0f481f17", Type.BOOLEAN,     null,      "Применимо к договорам управления");
-        col    ("guid",         Type.UUID,                   "Глобально-уникальный идентификатор элемента справочника");
-        col    ("f_a175d0edd2", Type.STRING,      null,      "Основание заключения договора");
-        col    ("f_101d7ea249", Type.BOOLEAN,     null,      "Применимо к договорам ресурсоснабжения");
-        col    ("isactual",     Type.BOOLEAN,     Bool.TRUE, "Признак актуальности элемента справочника");
+        pk     ("code",         Type.STRING,  20,                                                 "Код элемента справочника, уникальный в пределах справочника");
+        
+        col    ("f_7d0f481f17", Type.BOOLEAN,     null,                                           "Применимо к договорам управления");
+        col    ("is_mgmt",      Type.BOOLEAN,                new Virt ("''||F_7D0F481F17"),       "Применимо к договорам управления (синоним)");
+        
+        col    ("guid",         Type.UUID,                                                        "Глобально-уникальный идентификатор элемента справочника");
+        
+        col    ("f_a175d0edd2", Type.STRING,      null,                                           "Основание заключения договора");
+        col    ("label",        Type.STRING,                 new Virt ("''||F_A175D0EDD2"),       "Основание заключения договора (синоним)");
+        
+        col    ("f_101d7ea249", Type.BOOLEAN,     null,                                           "Применимо к договорам ресурсоснабжения");
+        col    ("is_supply",    Type.BOOLEAN,                new Virt ("''||F_101D7EA249"),       "Применимо к договорам ресурсоснабжения (синоним)");
+        
+        col    ("isactual",     Type.BOOLEAN,     Bool.TRUE,                                      "Признак актуальности элемента справочника");
         
         data (i.class);
     }
