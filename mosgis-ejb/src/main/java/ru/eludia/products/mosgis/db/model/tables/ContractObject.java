@@ -36,8 +36,10 @@ public class ContractObject extends Table {
         fk     ("id_ctr_status",           VocGisStatus.class,                  new Num (VocGisStatus.i.PROJECT.getId ()), "Статус объекта договора с точки зрения mosgis");
         fk     ("id_ctr_status_gis",       VocGisStatus.class,                  new Num (VocGisStatus.i.PROJECT.getId ()), "Статус объекта договора с точки зрения ГИС ЖКХ");
 
-        col    ("contractobjectversionguid",     Type.UUID,      null,          "UUID последней версии данного объекта в ГИС ЖКХ");
+        col    ("contractobjectversionguid",     Type.UUID,       null,          "UUID последней версии данного объекта в ГИС ЖКХ");
         
+        fk     ("id_log",                  ContractObjectLog.class,  null,      "Последнее событие редактирования");
+ 
         trigger ("BEFORE INSERT OR UPDATE", ""
                 
             + "DECLARE" 
@@ -79,9 +81,15 @@ public class ContractObject extends Table {
                 
             + "IF :NEW.is_deleted = 1 THEN "
             + " UPDATE tb_contract_services SET is_deleted = 1 WHERE uuid_contract_object = :NEW.uuid; "
+            + " COMMIT; "
             + "END IF; "
 
-            + "IF :NEW.contractobjectversionguid IS NOT NULL THEN :NEW.id_ctr_status := " + MUTATING.getId () + "; END IF; "
+            + "IF :NEW.contractobjectversionguid IS NOT NULL THEN "
+            + " UPDATE tb_contract_objects__log SET contractobjectversionguid = :NEW.contractobjectversionguid WHERE uuid = :NEW.id_log; "
+            + " COMMIT; "
+            + "END IF; "
+
+            + "IF :OLD.contractobjectversionguid IS NOT NULL THEN :NEW.id_ctr_status := " + MUTATING.getId () + "; END IF; "
                     
         + "END;");
 

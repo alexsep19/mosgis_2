@@ -83,5 +83,15 @@ public class ContractObjects extends EJBResource <ContractObjectsLocal> {
         if (!securityContext.isUserInRole ("admin") && !securityContext.isUserInRole ("nsi_20_4")) checkOrg (item.getJsonObject ("item"));
         return item;
     }
+    
+    @POST
+    @Path("{id}/log") 
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
+        final JsonObject item = back.getItem (id);
+        if (!securityContext.isUserInRole ("admin") && !securityContext.isUserInRole ("nsi_20_4")) checkOrg (item.getJsonObject ("item"));
+        return back.getLog (id, p, getUser ());
+    }    
 
 }

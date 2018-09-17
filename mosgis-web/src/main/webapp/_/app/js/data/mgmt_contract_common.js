@@ -179,6 +179,7 @@ define ([], function () {
                     it._can.delete  = 1
                 case 11:
                     it._can.edit    = 1
+                    it._can.approve = 1
                     break;
                 case 40:
                     if (it.contractguid || it ['out_soap.err_text']) it._can.alter = 1

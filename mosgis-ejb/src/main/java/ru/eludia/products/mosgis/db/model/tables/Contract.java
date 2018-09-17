@@ -212,16 +212,20 @@ public class Contract extends Table {
                         + "  ) LOOP"
                         + "   raise_application_error (-20000, 'Для объекта по адресу ' || i.label || ' не приложен протокол собрания собственников. Операция отменена.'); "
                         + " END LOOP; "
-                                                
-                    + "END IF; "
-                        
-                + "END IF; "
-                                
-                + " UPDATE tb_contract_objects SET id_ctr_status = :NEW.id_ctr_status WHERE uuid_contract=:NEW.uuid AND is_deleted=0 AND id_ctr_status NOT IN (" + ANNUL.getId () + "); "
 
+                    + "END IF; "
+
+                + "END IF; "
+
+                + " UPDATE tb_contract_objects SET id_ctr_status = :NEW.id_ctr_status WHERE uuid_contract=:NEW.uuid AND is_deleted=0 AND id_ctr_status NOT IN (" + ANNUL.getId () + "); "
+                        
             + "END IF; " // UPDATING and approving
 
-        + "END;");        
+            + "IF :NEW.uuid_out_soap IS NOT NULL AND (:OLD.uuid_out_soap IS NULL OR (:NEW.uuid_out_soap <> :OLD.uuid_out_soap)) THEN "
+            + " UPDATE tb_contract_objects__log SET uuid_out_soap = :NEW.uuid_out_soap WHERE uuid IN (SELECT id_log FROM tb_contract_objects WHERE uuid_contract=:NEW.uuid AND is_deleted=0 AND uuid_out_soap IS NULL); "
+            + "END IF; "
+                        
+        + "END;");
 
     }
     
