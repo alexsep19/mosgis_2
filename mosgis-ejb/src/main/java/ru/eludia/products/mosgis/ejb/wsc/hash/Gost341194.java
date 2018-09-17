@@ -1,10 +1,6 @@
 package ru.eludia.products.mosgis.ejb.wsc.hash;
 
-import java.io.ByteArrayOutputStream;
-
 public class Gost341194 {
-
-    private ByteArrayOutputStream baos = null;
     
     private HashContext hashContext = null;
     private final static SubstitutionBlock PARAMETERS = new SubstitutionBlock();
@@ -36,30 +32,29 @@ public class Gost341194 {
     }
 
     public void update (byte b) {
+        
         byte[] block = new byte[] {b};
         
         update (block, 0, 1);
     }
     
     public void update(byte[] block, int pos, int length) {
+        
+        if (hashContext == null) {
+            init ();
+        }
+        
         if ( length < 0 && block != null )
             length = block.length;
         
-        if (baos == null) {
-            baos = new ByteArrayOutputStream ();
-        }
-        
-        baos.write(block, pos, length);
+        hashContext.hashBlock(block, pos, length);
     }
 
     public byte[] digest() {
         
-        byte[] bytes = baos.toByteArray ();
-        baos = null;
+        byte[] result = hashContext.finishHash();
+        hashContext = null;
         
-        init ();
-        hashContext.hashBlock (bytes);
-        
-        return hashContext.finishHash();
+        return result;
     }
 }
