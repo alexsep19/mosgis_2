@@ -1,6 +1,38 @@
 define ([], function () {
 
     return function (data, view) {
+    
+        var name = 'mgmt_contract_doc_new_form'
+
+        function recalc () {
+
+            var v = w2ui [name].values ()
+
+            var on = v.id_type == 9 ? 1 : 0
+
+            var $purchasenumber = $('#purchasenumber')
+            var $row = $purchasenumber.closest ('.w2ui-field')
+
+            if (on) {
+                $row.show ()
+                $purchasenumber.prop ('disabled', false).focus ()
+            }
+            else {
+                $purchasenumber.val ('').prop ('disabled', true)
+                $row.hide ()
+            }
+                        
+            var o = {
+                form: 195,
+                page: 116,
+                box: 216,
+                popup: 250,
+                'form-box': 193,
+            }
+            
+            for (var k in o) $row.closest ('.w2ui-' + k).height (o [k] + 30 * on)
+            
+        }
 
         var contract = data.contract || data
         
@@ -45,8 +77,6 @@ define ([], function () {
 
                 event.onComplete = function () {
 
-                    var name = 'mgmt_contract_doc_new_form'
-
                     if (w2ui [name]) w2ui [name].destroy ()
 
                     $('#w2ui-popup .w2ui-form').w2form ({
@@ -60,22 +90,9 @@ define ([], function () {
                             {name: 'id_type', type: 'list', options: {items: data.vc_contract_doc_types.items.filter (function (i) {return types [i.id]}) }},
                         ],
                         
-                        onChange: function (e) {
+                        onChange: function (e) {if (e.target == "id_type") e.done (recalc)},
                         
-                            if (e.target == "id_type") e.done (function () {
-                            
-                                var $purchasenumber = $('#purchasenumber')
-                                
-                                if (e.value_new.id == 9) {
-                                    $purchasenumber.prop ('disabled', false).focus ()
-                                }
-                                else {
-                                    $purchasenumber.val ('').prop ('disabled', true)
-                                }
-                                                        
-                            })
-                        
-                        }
+                        onRender: function (e) {e.done (setTimeout (recalc, 100))}
 
                     });
 
