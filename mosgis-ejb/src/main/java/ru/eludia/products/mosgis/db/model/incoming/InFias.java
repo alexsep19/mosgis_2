@@ -21,20 +21,20 @@ public class InFias extends Table {
         col   ("uri_archive", Type.STRING, null, "Путь к архиву");
 
         col   ("uri_addrobj", Type.STRING, "Путь к файлу с адресными объектами");
-        col   ("sz_addrobj",  Type.NUMERIC, 20, 0, Num.ZERO, "Размер XML-файла ADDROBJ, в байтах");
-        col   ("rd_addrobj",  Type.NUMERIC, 20, 0, Num.ZERO, "Сколько прочитано XML-файла ADDROBJ, в байтах");
+        col   ("sz_addrobj",  Type.NUMERIC, 12, 0, Num.ZERO, "Размер XML-файла ADDROBJ, в байтах");
+        col   ("rd_addrobj",  Type.NUMERIC, 12, 0, Num.ZERO, "Сколько прочитано XML-файла ADDROBJ, в байтах");
         
         col   ("uri_house",   Type.STRING, "Путь к файлу со зданиями/сооружениями");
-        col   ("sz_house",    Type.NUMERIC, 20, 0, Num.ZERO, "Размер XML-файла HOUSE, в байтах");
-        col   ("rd_house",    Type.NUMERIC, 20, 0, Num.ZERO, "Сколько прочитано XML-файла HOUSE, в байтах");
+        col   ("sz_house",    Type.NUMERIC, 12, 0, Num.ZERO, "Размер XML-файла HOUSE, в байтах");
+        col   ("rd_house",    Type.NUMERIC, 12, 0, Num.ZERO, "Сколько прочитано XML-файла HOUSE, в байтах");
 
         col   ("uri_eststat", Type.STRING, "Путь к файлу с типами владения");
-        col   ("sz_eststat",  Type.NUMERIC, 20, 0, Num.ZERO, "Размер XML-файла ESTSTAT, в байтах");
-        col   ("rd_eststat",  Type.NUMERIC, 20, 0, Num.ZERO, "Сколько прочитано XML-файла ESTSTAT, в байтах");
+        col   ("sz_eststat",  Type.NUMERIC, 12, 0, Num.ZERO, "Размер XML-файла ESTSTAT, в байтах");
+        col   ("rd_eststat",  Type.NUMERIC, 12, 0, Num.ZERO, "Сколько прочитано XML-файла ESTSTAT, в байтах");
 
         col   ("uri_strstat", Type.STRING, "Путь к файлу с типами строений");
-        col   ("sz_strstat",  Type.NUMERIC, 20, 0, Num.ZERO, "Размер XML-файла STRSTAT, в байтах");
-        col   ("rd_strstat",  Type.NUMERIC, 20, 0, Num.ZERO, "Сколько прочитано XML-файла STRSTAT, в байтах");
+        col   ("sz_strstat",  Type.NUMERIC, 12, 0, Num.ZERO, "Размер XML-файла STRSTAT, в байтах");
+        col   ("rd_strstat",  Type.NUMERIC, 12, 0, Num.ZERO, "Сколько прочитано XML-файла STRSTAT, в байтах");
         
         col   ("prc", Type.NUMERIC, 3, 2, new Virt ("100*(RD_ADDROBJ+RD_HOUSE+RD_ESTSTAT+RD_STRSTAT)/(SZ_ADDROBJ+SZ_HOUSE+SZ_ESTSTAT+SZ_STRSTAT)"), "% прочитано");
 
