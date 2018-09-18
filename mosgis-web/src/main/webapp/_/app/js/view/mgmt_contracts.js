@@ -70,23 +70,42 @@ define ([], function () {
             url: '/mosgis/_rest/?type=mgmt_contracts',
                         
             onAdd:      $_DO.create_mgmt_contracts,            
-//            onEdit:     $_DO.edit_mgmt_contracts,
             
             onDblClick: function (e) {
-
                 openTab ('/mgmt_contract/' + e.recid)
-
-/*                
-                if (e.column == 2) {
-                    openTab ('/voc_organization_legal/' + this.get (e.recid).uuid_org)
-                }
-                else {
-                    $_DO.edit_mgmt_contracts (e)
-                }
-*/
             },
             
-            onRefresh: function (e) {e.done (color_data_mandatory)},
+            onRefresh: function (e) {e.done (
+            
+                function (e) {
+
+                    var grid = w2ui [e.target]
+
+                    $('tr[recid]').each (function () {
+                    
+                        var $this = $(this)
+                        
+                        var r = grid.get ($this.attr ('recid'))
+                                                
+                        if (r ['out_soap.err_text']) {
+                            var p = {title: 'Ошибка передачи в ГИС ЖХХ'}
+                            var $td = $('td[col=0]', $this)
+                            $td.css ({background: '#fdd'}).prop (p)
+                            $('div', $td).prop (p)
+                        }
+
+                        if (r.id_ctr_status != 10 && r.id_ctr_status_gis != r.id_ctr_status) {
+                            var p = {title: 'Статус не соответствует статусу объекта ГИС ЖКХ'}
+                            var $td = $('td[col=2]', $this)
+                            $td.css ({background: '#fdd'}).prop (p)
+                            $('div', $td).prop (p)
+                        }
+                                                
+                    })
+
+                }            
+            
+            )},
             
             onSelect: recalcToolbar,
             onUnselect: recalcToolbar,
