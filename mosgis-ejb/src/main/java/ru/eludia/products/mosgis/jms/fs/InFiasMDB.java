@@ -42,6 +42,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocBuildingEstate;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingStructure;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import com.github.junrar.Archive;
+import java.math.BigDecimal;
 
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inFiasQueue")
@@ -190,7 +191,8 @@ public class InFiasMDB extends UUIDMDB<InFias> {
                                 }
                             });
 
-                            final Long size = (Long) r.get ("sz_" + postfix);
+                            final Long size = ((BigDecimal) r.get ("sz_" + postfix)).longValue ();
+                            logger.log (Level.INFO, "SIZE " + size);
                             try (ProgressInputStream pis = new ProgressInputStream (pipeIS, size, PROGRESS_STEPS, (pos, len) -> {
                                 logger.log (Level.INFO, "{0}% of {1} read...", new Object[]{Double.valueOf ((100.0 * pos) / (1.0 * len)).intValue (), postfix});
                                 db.d0 (progressSQL, pos, uuid);

@@ -87,7 +87,7 @@ public class Fias implements FiasMBean {
         
         private void add (String name, FileHeader header) {
             
-            record.put ("sz_" + name, header.getUnpSize ());
+            record.put ("sz_" + name, header.getFullUnpackSize ());
             record.put ("uri_" + name, header.getFileNameW ());
             
         }

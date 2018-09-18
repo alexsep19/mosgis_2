@@ -17,7 +17,7 @@ public class ProgressInputStream extends FilterInputStream {
         
     public ProgressInputStream (InputStream in, long size, int steps, JDBCBiConsumer<Long, Long> callback) {
         super (in);
-        this.pos = 0;
+        this.pos = 0L;
         this.size = size;
         setSteps (steps);
         this.callback = callback;
@@ -25,7 +25,7 @@ public class ProgressInputStream extends FilterInputStream {
     
     public ProgressInputStream (InputStream in, long size, JDBCBiConsumer<Long, Long> callback, long step) {
         super (in);
-        this.pos = 0;
+        this.pos = 0L;
         this.size = size;
         setStep (step);
         this.callback = callback;
@@ -58,7 +58,7 @@ public class ProgressInputStream extends FilterInputStream {
     public void close () throws IOException {
         super.close ();
         pos = size;
-        next = 0;
+        next = 0L;
         check ();
     }
 
@@ -72,7 +72,7 @@ public class ProgressInputStream extends FilterInputStream {
     @Override
     public int read (byte[] b) throws IOException {
         int result = super.read (b);
-        pos += b.length;
+        pos += result;
         check ();
         return result;
     }
