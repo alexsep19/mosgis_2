@@ -1,12 +1,13 @@
 package ru.eludia.products.mosgis.jmx;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.lang.management.ManagementFactory;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -28,6 +29,8 @@ import ru.eludia.products.mosgis.db.model.incoming.InFias;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
+import com.github.junrar.Archive;
+import com.github.junrar.rarfile.FileHeader;
 
 @Startup
 @Singleton
@@ -82,36 +85,33 @@ public class Fias implements FiasMBean {
 
         Map<String, Object> record = HASH ();
         
-        private void add (String name, Path p) {
+        private void add (String name, FileHeader header) {
             
-            record.put ("sz_" + name, p.toFile ().length ());
-            record.put ("uri_" + name, p.toUri ().toString ());
+            record.put ("sz_" + name, header.getUnpSize ());
+            record.put ("uri_" + name, header.getFileNameW ());
             
         }
                 
         public Import () {
-            CheckPath ch = new CheckPath(fs.getPath (Conf.get (VocSetting.i.PATH_FIAS)));
+            
+            CheckPath ch = new CheckPath(fs.getPath (Conf.get (VocSetting.i.PATH_FIAS), "fias_xml.rar"));
             ch.check();
                 
             try {
-                
-                Files.list (fs.getPath (Conf.get (VocSetting.i.PATH_FIAS))).forEach (path -> {
-
-                    File file = path.toFile ();
-                    if (file.isDirectory ()) return;
-                    String name = file.getName ();
-                    if (!name.endsWith (".XML")) return;
-                    if (!name.startsWith ("AS_")) return;
-                    if ( name.startsWith ("AS_DEL_")) return;
-                    String[] part = name.split ("_");
-                    if (!record.isEmpty ()) return;
-                    String dt = part [2];
-                    record.put ("dt", dt.substring (0, 4) + '-' + dt.substring (4, 6) + '-' + dt.substring (6, 8));
-                });
         
                 for (Fias.Names name: Fias.Names.values()) {
                     
-                    add (name.toString().toLowerCase(), ch.getPath(name));
+                    FileHeader header = ch.getHeader (name);
+                    
+                    if (!record.isEmpty ()) {
+                        String headerName = header.getFileNameW ();
+                        String[] part = headerName.split ("_");
+                        String dt = part [2];
+                        record.put ("dt", dt.substring (0, 4) + '-' + dt.substring (4, 6) + '-' + dt.substring (6, 8));
+                        record.put ("uri_archive", Conf.get (VocSetting.i.PATH_FIAS) + "\\fias_xml.rar");
+                    }
+                    
+                    add (name.toString ().toLowerCase (), header);
                 }
             }
             catch (Exception ex) {
@@ -141,22 +141,25 @@ public class Fias implements FiasMBean {
     }
     public static class CheckPath {
         
-        Map<Names, Path> n2p = new HashMap<> ();
+        Map<Names, FileHeader> n2h = new HashMap<> ();
     
-        public CheckPath (Path fias_dir) {
+        public CheckPath (Path fiasRar) {
             
             try {
                 
-                Files.list (fias_dir).forEach (path -> {
-
-                    File file = path.toFile ();
-                    String name = file.getName ();
-                    
-                    for (Fias.Names c: Fias.Names.values())
-                        if (name.endsWith (".XML") && name.startsWith ("AS_" + c.toString() + "_"))
-                                 n2p.put(c, path);
-                });
+                File file = fiasRar.toFile ();
+                FileInputStream fis = new FileInputStream (file);
                 
+                Archive archive = new Archive ();
+                List<FileHeader> filesList = archive.readFileHeaders(fis);
+                
+                fis.close ();
+                
+                filesList.forEach (header -> {
+                    for (Fias.Names c: Fias.Names.values())
+                        if (header.getFileNameW ().endsWith (".XML") && header.getFileNameW ().startsWith ("AS_" + c.toString() + "_"))
+                                 n2h.put (c, header);
+                });
             }
             catch (Exception ex) {
                 throw new IllegalStateException (ex);
@@ -166,12 +169,12 @@ public class Fias implements FiasMBean {
         public void check() {
             
             for (Fias.Names c: Fias.Names.values())
-                if (n2p.get(c) == null)
+                if (n2h.get(c) == null)
                     throw new IllegalStateException ("there is no file with the name : 'AS_" + c.toString() + "_'");
             
         }
-        public  Path getPath (Fias.Names s) {
-            return n2p.get(s);
+        public FileHeader getHeader (Fias.Names s) {
+            return n2h.get(s);
         }
         
     }
