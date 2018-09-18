@@ -60,9 +60,10 @@ define ([], function () {
         var contract = $('body').data ('data')
         
         var data = {
-            uuid         : $_REQUEST.id,
-            description  : v.description,
-            id_type      : v.id_type,
+            uuid           : $_REQUEST.id,
+            description    : v.description,
+            id_type        : v.id_type,
+            purchasenumber : v.purchasenumber
         }
         
         var n = r.files.length

@@ -42,7 +42,7 @@ define ([], function () {
         var id = grid.getSelection () [0]
 
         var data = grid.get (id)
-
+darn (data)
         done (data)
 
     }
