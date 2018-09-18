@@ -25,7 +25,7 @@ define ([], function () {
 
             columnGroups : [
                 {span: 3, caption: 'Событие'},
-                {span: 2, caption: 'Значения полей'},
+                {span: 3, caption: 'Значения полей'},
                 {span: 4, caption: 'Запрос в ГИС ЖКХ'},
             ], 
             
@@ -43,11 +43,9 @@ define ([], function () {
 
                 {field: 'startdate', caption: 'Начало', size: 18, render: _dt},
                 {field: 'enddate', caption: 'Окончание', size: 18, render: _dt},
-/*                
                 {field: '_', caption: 'Основание', size: 50, render: function (r) {
-                    return r.dt ? 'ДС от ' + dt_dmy (r.dt) + ' №' + r.no : 'договор'
+                    return r.uuid_contract_agreement ? r ["contract_agreement.label"] : 'договор'
                 }},
-*/                
                 {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: 'data-ref=1'},
                 {field: 'soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: 'data-ref=1'},
                 {field: 'soap.id_status', caption: 'Статус',    size: 30, render: function (r, i, c, v) {return (
