@@ -175,31 +175,34 @@ public class InFiasMDB extends UUIDMDB<InFias> {
                 File archiveFile = archivePath.toFile ();
                 Archive archive = new Archive ();
                 
-                FileInputStream fis = new FileInputStream (archiveFile);
-                PipedOutputStream pipeOS = new PipedOutputStream ();
-                PipedInputStream pipeIS = new PipedInputStream ();
-                pipeOS.connect(pipeIS);
-                
-                ExecutorService executor = Executors.newSingleThreadExecutor ();
-                executor.execute(() -> {
-                    try {
-                        archive.extractFile(fis, fileUri, pipeOS);
-                        pipeOS.close();
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
+                try (FileInputStream fis = new FileInputStream (archiveFile)) {
+                    try (PipedOutputStream pipeOS = new PipedOutputStream ()) {
+                        try (PipedInputStream pipeIS = new PipedInputStream ()) {
+                            pipeOS.connect(pipeIS);
+
+                            ExecutorService executor = Executors.newSingleThreadExecutor ();
+                            executor.execute(() -> {
+                                try {
+                                    archive.extractFile(fis, fileUri, pipeOS);
+                                    pipeOS.close();
+                                } catch (Exception e) {
+                                    throw new RuntimeException(e);
+                                }
+                            });
+
+                            final Long size = (Long) r.get ("sz_" + postfix);
+                            try (ProgressInputStream pis = new ProgressInputStream (pipeIS, size, PROGRESS_STEPS, (pos, len) -> {
+                                logger.log (Level.INFO, "{0}% of {1} read...", new Object[]{Double.valueOf ((100.0 * pos) / (1.0 * len)).intValue (), postfix});
+                                db.d0 (progressSQL, pos, uuid);
+                            }))
+                            {
+                                spf.newSAXParser ().parse (pis, this);
+                            }
+
+                            if (t.getColumn ("livestatus") != null) db.d0 ("UPDATE " + t.getName () + " SET livestatus=? WHERE uuid_in_fias <> ?", 0, uuid);
+                        }
                     }
-                });
-                
-                final Long size = (Long) r.get ("sz_" + postfix);
-                try (ProgressInputStream pis = new ProgressInputStream (pipeIS, size, PROGRESS_STEPS, (pos, len) -> {
-                    logger.log (Level.INFO, "{0}% of {1} read...", new Object[]{Double.valueOf ((100.0 * pos) / (1.0 * len)).intValue (), postfix});
-                    db.d0 (progressSQL, pos, uuid);
-                }))
-                {
-                    spf.newSAXParser ().parse (pis, this);
                 }
-                
-                if (t.getColumn ("livestatus") != null) db.d0 ("UPDATE " + t.getName () + " SET livestatus=? WHERE uuid_in_fias <> ?", 0, uuid);
 
             }
             catch (Exception ex) {
