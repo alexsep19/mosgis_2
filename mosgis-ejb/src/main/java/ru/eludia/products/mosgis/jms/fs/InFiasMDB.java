@@ -1,8 +1,13 @@
 package ru.eludia.products.mosgis.jms.fs;
 
-import java.io.InputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.lang.reflect.ParameterizedType;
-import java.net.URL;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -13,6 +18,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.xml.parsers.SAXParserFactory;
@@ -34,6 +41,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocStreet;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingEstate;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingStructure;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
+import com.github.junrar.Archive;
 
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inFiasQueue")
@@ -151,45 +159,53 @@ public class InFiasMDB extends UUIDMDB<InFias> {
         
         public void run () {
 
-            String uri = (String) r.get ("uri_" + postfix);
+            String fileUri = (String) r.get ("uri_" + postfix);
+            String archiveUri = (String) r.get ("uri_archive");
 
-            logger.log (Level.INFO, uri);
+            logger.log (Level.INFO, "Import file " + fileUri + " from archive " + archiveUri);
 
             try (DB.RecordBuffer bb = createBuffer ()) {
                 
                 b = bb;
-
-                URL url = new URL (uri);
                 
-                final String progressSQL = "UPDATE " + getTable ().getName () + " SET rd_" + postfix +  "=? WHERE uuid=?";
+                final String progressSQL = "UPDATE " + getTable ().getName () + " SET rd_" + postfix + "=? WHERE uuid=?";
 
-                try (InputStream is = url.openStream ()) {
-                    
-                    final Long size = (Long) r.get ("sz_" + postfix);
-
-                    try (ProgressInputStream pis = new ProgressInputStream (is, size, PROGRESS_STEPS, (pos, len) -> {
-
-                        logger.log (Level.INFO, Double.valueOf ((100.0 * pos) / (1.0 * len)).intValue () + "% of " + postfix + " read...");
-
-                        db.d0 (progressSQL, pos, uuid);
-
-                    })) {
-
-                        spf.newSAXParser ().parse (pis, this);
-
+                FileSystem fs = FileSystems.getDefault ();
+                Path archivePath = fs.getPath(archiveUri);
+                File archiveFile = archivePath.toFile ();
+                Archive archive = new Archive ();
+                
+                FileInputStream fis = new FileInputStream (archiveFile);
+                PipedOutputStream pipeOS = new PipedOutputStream ();
+                PipedInputStream pipeIS = new PipedInputStream ();
+                pipeOS.connect(pipeIS);
+                
+                ExecutorService executor = Executors.newSingleThreadExecutor ();
+                executor.execute(() -> {
+                    try {
+                        archive.extractFile(fis, fileUri, pipeOS);
+                        pipeOS.close();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
                     }
-
+                });
+                
+                final Long size = (Long) r.get ("sz_" + postfix);
+                try (ProgressInputStream pis = new ProgressInputStream (pipeIS, size, PROGRESS_STEPS, (pos, len) -> {
+                    logger.log (Level.INFO, "{0}% of {1} read...", new Object[]{Double.valueOf ((100.0 * pos) / (1.0 * len)).intValue (), postfix});
+                    db.d0 (progressSQL, pos, uuid);
+                }))
+                {
+                    spf.newSAXParser ().parse (pis, this);
                 }
-
+                
                 if (t.getColumn ("livestatus") != null) db.d0 ("UPDATE " + t.getName () + " SET livestatus=? WHERE uuid_in_fias <> ?", 0, uuid);
 
             }
             catch (Exception ex) {
                 Logger.getLogger (InFiasMDB.class.getName()).log (Level.SEVERE, "Cannot import FIAS database", ex);
             }
-            
         }
-
     }
 
     private class BuildingEstateScanner extends Scanner<VocBuildingEstate> {

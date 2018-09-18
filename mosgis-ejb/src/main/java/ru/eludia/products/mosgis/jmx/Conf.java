@@ -141,8 +141,8 @@ public class Conf implements ConfMBean, ConfLocal {
     @Override
     public void setPathFias (String s) {
         
-        Fias.CheckPath ch = new Fias.CheckPath(FileSystems.getDefault ().getPath (Conf.get (VocSetting.i.PATH_FIAS)));
-        ch.check();
+//        Fias.CheckPath ch = new Fias.CheckPath(FileSystems.getDefault ().getPath (Conf.get (VocSetting.i.PATH_FIAS)));
+//        ch.check();
         set (VocSetting.i.PATH_FIAS, s);
     }
 
