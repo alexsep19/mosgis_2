@@ -18,7 +18,7 @@ public class InFias extends Table {
         col   ("dt_from",     Type.DATE, null,  "Дата начала процесса");
         col   ("dt_to_fact",  Type.DATE, null,  "Дата окончания процеса");
         
-        col   ("uri_archive", Type.STRING, "Путь к архиву");
+        col   ("uri_archive", Type.STRING, null, "Путь к архиву");
 
         col   ("uri_addrobj", Type.STRING, "Путь к файлу с адресными объектами");
         col   ("sz_addrobj",  Type.NUMERIC, 12, 0, Num.ZERO, "Размер XML-файла ADDROBJ, в байтах");
