@@ -78,6 +78,16 @@ public class Contract extends Table {
                 
         + "BEGIN "
 
+            + "IF UPDATING "
+            + " AND :OLD.id_ctr_status NOT IN (10, 11) "
+            + " AND :NEW.id_ctr_status NOT IN (10, 11) "
+            + " AND NVL (:OLD.id_log, '00') = NVL (:NEW.id_log, '00') "
+            + " AND NVL (:OLD.uuid_out_soap, '00') = NVL (:NEW.uuid_out_soap, '00') "
+            + " AND NVL (:OLD.contractguid, '00')  = NVL (:NEW.contractguid, '00') "
+            + "THEN "
+            + "   raise_application_error (-20000, 'Внесение изменений в договор в настоящее время запрещено. Операция отменена.'); "
+            + "END IF; "
+
             + "IF :NEW.id_contract_type = " + VocGisContractType.i.MGMT.getId () + " THEN "
 
                 + "IF :NEW.uuid_org_customer IS NULL "

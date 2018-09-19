@@ -27,6 +27,7 @@ import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.ContractObjectService;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
@@ -104,16 +105,14 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
                     orgppaguid, 
                     file.get ("label").toString (), 
                     Long.parseLong (file.get ("len").toString ()),
-                    (uploadId) -> file.put ("attachmentguid", uploadId)
+                    (uploadId, attachmentHash) -> {
+                        file.put ("attachmentguid", uploadId);
+                        file.put ("attachmenthash", attachmentHash);
+                        db.update (ContractFile.class, file);
+                    }
                 )
             ) {
-
                 db.getStream (m.get (ContractFile.class, file.get ("uuid"), "body"), out);
-
-                file.put ("attachmenthash", out.getAttachmentHASH ());
-
-                db.update (ContractFile.class, file);
-
             }
             catch (Exception ex) {
                 logger.log (Level.SEVERE, "Cannot upload " + file, ex);
@@ -176,7 +175,7 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
                         "uuid_out_soap", messageGUID,
                         "uuid_message",  ack.getMessageGUID ()
                     ));
-
+                    
                     db.update (Contract.class, DB.HASH (
                         "uuid",          r.get ("uuid_object"),
                         "uuid_out_soap", messageGUID
@@ -207,17 +206,17 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
                         "uuid",          uuid,
                         "uuid_out_soap", messageGUID
                     ));
-                    
+                                        
                     db.update (Contract.class, DB.HASH (
-                        "uuid",          r.get ("uuid_object"),
-                        "uuid_out_soap", messageGUID
+                        "uuid",              r.get ("uuid_object"),
+                        "uuid_out_soap",     messageGUID
                     ));
-
+                    
                 db.commit ();
 
                 return;
 
-            }            
+            }
     }
     
 }

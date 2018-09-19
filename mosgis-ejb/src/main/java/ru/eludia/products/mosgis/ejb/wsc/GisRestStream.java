@@ -2,9 +2,9 @@ package ru.eludia.products.mosgis.ejb.wsc;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.security.MessageDigest;
+import java.sql.SQLException;
 import java.util.UUID;
-import java.util.function.Consumer;
+import ru.eludia.base.db.util.JDBCBiConsumer;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.ejb.wsc.hash.Gost341194;
 
@@ -19,11 +19,11 @@ public class GisRestStream extends OutputStream {
     UUID orgPPAGUID;
     RestGisFilesClient.Context context;
     UUID uploadId;
-    Consumer<UUID> setId;
+    JDBCBiConsumer<UUID, String> setId;
     RestGisFilesClient restGisFilesClient;
     Gost341194 gost = new Gost341194 ();
 
-    public GisRestStream (RestGisFilesClient restGisFilesClient, RestGisFilesClient.Context context, UUID orgPPAGUID, String name, long len, Consumer<UUID> setId) throws Exception {
+    public GisRestStream (RestGisFilesClient restGisFilesClient, RestGisFilesClient.Context context, UUID orgPPAGUID, String name, long len, JDBCBiConsumer<UUID, String> setId) throws Exception {
         if (len == 0) throw new Exception ("Zero file length is not allowed");
         this.restGisFilesClient = restGisFilesClient;
         this.len = len;
@@ -35,15 +35,11 @@ public class GisRestStream extends OutputStream {
         if (isLong) setUploadId (restGisFilesClient.getUploadId (orgPPAGUID, context, name, len));
     }
 
-    public void setUploadId (UUID uploadId) {
+    public void setUploadId (UUID uploadId) throws SQLException {
         this.uploadId = uploadId;
-        setId.accept (uploadId);
+        setId.accept (uploadId, DB.to.hex (gost.digest ()));
     }
     
-    public String getAttachmentHASH () {
-        return DB.to.hex (gost.digest ());
-    }
-
     @Override
     public void flush () throws IOException {
         

@@ -45,6 +45,12 @@ public class ContractObject extends Table {
             + "DECLARE" 
             + " PRAGMA AUTONOMOUS_TRANSACTION; "
             + "BEGIN "
+                
+            + "IF INSERTING OR (NVL (:NEW.contractobjectversionguid, '00') = NVL (:NEW.contractobjectversionguid, '00')) THEN "
+            + " FOR i IN (SELECT uuid FROM tb_contracts WHERE uuid=:NEW.uuid_contract AND id_ctr_status NOT IN (10, 11)) LOOP"
+            + "   raise_application_error (-20000, 'Внесение изменений в договор в настоящее время запрещено. Операция отменена.'); "
+            + " END LOOP; "
+            + "END IF; "
 
             + "IF :NEW.is_deleted = 0 THEN "
             + " FOR i IN ("
@@ -79,12 +85,12 @@ public class ContractObject extends Table {
             + " END LOOP; "
             + "END IF; "
                 
-            + "IF :NEW.is_deleted = 1 THEN "
+            + "IF :OLD.is_deleted = 0 AND :NEW.is_deleted = 1 THEN "
             + " UPDATE tb_contract_services SET is_deleted = 1 WHERE uuid_contract_object = :NEW.uuid; "
             + " COMMIT; "
             + "END IF; "
 
-            + "IF :NEW.contractobjectversionguid IS NOT NULL THEN "
+            + "IF UPDATING AND (NVL (:NEW.contractobjectversionguid, '00') <> NVL (:NEW.contractobjectversionguid, '00')) THEN "
             + " UPDATE tb_contract_objects__log SET contractobjectversionguid = :NEW.contractobjectversionguid WHERE uuid = :NEW.id_log; "
             + " COMMIT; "
             + "END IF; "

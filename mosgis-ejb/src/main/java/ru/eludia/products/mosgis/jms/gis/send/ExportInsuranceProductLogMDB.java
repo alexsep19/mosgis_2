@@ -12,6 +12,7 @@ import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import javax.jms.Queue;
 import ru.eludia.base.DB;
+import ru.eludia.products.mosgis.db.model.tables.ContractFile;
 import ru.eludia.products.mosgis.db.model.tables.InsuranceProduct;
 import ru.eludia.products.mosgis.db.model.tables.InsuranceProductLog;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -63,17 +64,14 @@ public class ExportInsuranceProductLogMDB extends UUIDMDB<InsuranceProductLog> {
                 orgPPAGuid, 
                 r.get ("name").toString (), 
                 Long.parseLong (r.get ("len").toString ()),
-                (uploadId) -> r.put ("attachmentguid", uploadId)
+                (uploadId, attachmentHash) -> {
+                    r.put ("attachmentguid", uploadId);
+                    r.put ("attachmenthash", attachmentHash);
+                    db.update (ContractFile.class, r);
+                }
             )
-        ) {
-            
+        ) {            
             db.getStream (ModelHolder.getModel ().get (getTable (), uuid, "body"), out);
-            
-            db.update (getTable (), DB.HASH (
-                "uuid",           uuid,
-                "attachmentguid", r.get ("attachmentguid")
-            ));
-            
         }
         catch (Exception ex) {
             logger.log (Level.SEVERE, "Cannot upload file", ex);

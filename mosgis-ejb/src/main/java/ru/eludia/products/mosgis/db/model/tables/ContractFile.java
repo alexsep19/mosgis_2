@@ -42,13 +42,17 @@ public class ContractFile extends Table {
         col    ("id_status",             Type.INTEGER, 1,          ZERO,        "Статус");
 
         trigger ("BEFORE UPDATE", "BEGIN "
+
+            + "IF NVL (:OLD.attachmentguid, '00') = NVL (:NEW.attachmentguid, '00') THEN "
+            + "   raise_application_error (-20000, 'Внесение изменений в договор в настоящее время запрещено. Операция отменена.'); "
+            + "END IF; "
                 
             + " IF :NEW.id_status = 0 AND DBMS_LOB.GETLENGTH (:NEW.body) = :NEW.len THEN "
             + "   :NEW.id_status := 1; "
             + " END IF;"
-                
+
             + " UPDATE tb_contract_objects SET id_ctr_status = " + MUTATING.getId () + " WHERE uuid = :NEW.uuid_contract_object AND contractobjectversionguid IS NOT NULL; "
-                
+
         + "END;");        
 
     }
