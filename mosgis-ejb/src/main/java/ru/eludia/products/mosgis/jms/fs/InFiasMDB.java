@@ -70,7 +70,7 @@ public class InFiasMDB extends UUIDMDB<InFias> {
         new BuildingEstateScanner    (r, db, uuid, aoGuids).run ();
         new BuildingStructureScanner (r, db, uuid, aoGuids).run ();
         new StreetScanner            (r, db, uuid, aoGuids).run ();
-        //new BuildingScanner          (r, db, uuid, aoGuids).run ();
+        new BuildingScanner          (r, db, uuid, aoGuids).run ();
 
         db.update (InFias.class, HASH ("uuid", uuid, "dt_to_fact", NOW));
 
