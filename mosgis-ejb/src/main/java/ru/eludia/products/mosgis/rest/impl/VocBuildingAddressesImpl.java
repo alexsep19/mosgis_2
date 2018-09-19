@@ -39,10 +39,16 @@ public class VocBuildingAddressesImpl extends Base implements VocBuildingAddress
                 sb.append (token.toUpperCase ());
                 sb.append ('%');
             }
-            
         }
        
-        if (sb.length () > 0) select.and ("label_uc LIKE", sb.toString ());
+        if (sb.length () > 0) {
+            String value = sb.toString();
+            if (value.contains("Ё") || value.contains ("ё")) {
+                    select.and ("label_uc LIKE", value.replace ("Ё", "Е").replace ("ё", "е"));
+                } else {
+                    select.and ("label_uc LIKE", value);
+                }
+        }
         
         db.addJsonArrays (job, select);
 
