@@ -24,8 +24,30 @@ define ([], function () {
             add_vocabularies (data, data)
 
             query ({type: 'mgmt_contracts'}, {}, function (d) {
-            
-                data.item = d.item
+                            
+                var it = data.item = d.item
+
+                it._can = {}
+
+                if ($_USER.role.nsi_20_1 && !it.is_deleted) {
+
+                    switch (it.id_ctr_status) {
+
+                        case 10:
+                            it._can.delete  = 1
+                        case 11:
+                            it._can.edit    = 1
+                            it._can.approve = 1
+                            break;
+                        case 40:
+                            if (it.contractguid || it ['out_soap.err_text']) it._can.alter = 1
+                            break;
+
+                    }
+
+                    it._can.update = it._can.cancel = it._can.edit
+
+                }
 
                 $('body').data ('data', data)
                 
