@@ -22,8 +22,8 @@ public class VocGisStatus extends Table {
         PROJECT          (10,  "Project",         "проект"),
         MUTATING         (11,  "_mutating",       "изменение"),
         
-        REVIEWED         (20,  "Reviewed",        "рассмотрен"),
-        APPROVAL_PROCESS (30,  "ApprovalProcess", "на утверждении"),
+        APPROVAL_PROCESS (20,  "ApprovalProcess", "на утверждении"),
+        REVIEWED         (30,  "Reviewed",        "рассмотрен"),
         APPROVED         (40,  "Approved",        "утвержден"),
         RUNNING          (50,  "Running",         "действующий"),
         EXPIRED          (60,  "Expired",         "истек срок действия"),
