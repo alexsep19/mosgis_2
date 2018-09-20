@@ -87,12 +87,11 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
         
         Model m = db.getModel ();
         
-        Map<UUID, Map<String, Object>> id2file = new HashMap <> ();
-        
-        db.forEach (m.select (ContractFile.class, "*").where ("uuid_contract", r.get ("uuid_object")).and ("id_status", 1), (rs) -> {                        
-            final Map<String, Object> file = db.HASH (rs);
-            id2file.put ((UUID) file.get ("uuid"), file);
-        });
+        Map<Object, Map<String, Object>> id2file = db.getIdx (m
+            .select (ContractFile.class, "*")
+            .where ("uuid_contract", r.get ("uuid_object"))
+            .and ("id_status", 1)
+        );
         
         final Collection<Map<String, Object>> files = id2file.values ();
         
