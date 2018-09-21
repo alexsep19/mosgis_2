@@ -46,7 +46,7 @@ public class ContractObject extends Table {
             + " PRAGMA AUTONOMOUS_TRANSACTION; "
             + "BEGIN "
                 
-            + "IF INSERTING OR (NVL (:NEW.contractobjectversionguid, '00') = NVL (:NEW.contractobjectversionguid, '00')) THEN "
+            + "IF INSERTING OR (NVL (:OLD.contractobjectversionguid, '00') = NVL (:NEW.contractobjectversionguid, '00')) THEN "
             + " FOR i IN (SELECT uuid FROM tb_contracts WHERE uuid=:NEW.uuid_contract AND id_ctr_status NOT IN (10, 11)) LOOP"
             + "   raise_application_error (-20000, 'Внесение изменений в договор в настоящее время запрещено. Операция отменена.'); "
             + " END LOOP; "

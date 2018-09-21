@@ -92,8 +92,9 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
             .where ("uuid_contract", r.get ("uuid_object"))
             .and ("id_status", 1)
         );
-        
+logger.info ("id2file=" + id2file);
         final Collection<Map<String, Object>> files = id2file.values ();
+logger.info ("files=" + files);
         
         for (Map<String, Object> file: files) {
             

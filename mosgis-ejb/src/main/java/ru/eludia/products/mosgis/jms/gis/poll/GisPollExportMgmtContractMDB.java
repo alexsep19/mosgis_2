@@ -118,27 +118,7 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
             ImportContractResultType importContract = digImportContract (rp);            
 
             db.begin ();            
-
-                VocGisStatus.i state = VocGisStatus.i.forName (importContract.getState ());
-                if (state == null) state = VocGisStatus.i.NOT_RUNNING;
-
-                    db.update (Contract.class, HASH (
-                        "uuid", r.get ("ctr.uuid"),
-                        "contractguid", importContract.getContractGUID (),
-                        "id_ctr_status_gis", VocGisStatus.i.forName (importContract.getContractStatus ().value ()).getId (),
-                        "id_ctr_state_gis",  state.getId ()
-                    ));
-
-                    db.update (ContractLog.class, HASH (
-                        "uuid", r.get ("log.uuid"),
-                        "contractversionguid", importContract.getContractVersionGUID ()
-                    ));
-
-                    db.update (OutSoap.class, HASH (
-                        "uuid", uuid,
-                        "id_status", DONE.getId ()
-                    ));
-                                                    
+            
                 final Table t = db.getModel ().t (ContractObject.class);
                                 
                 ContractObject contractObjectTableDefinition = (ContractObject) t;
@@ -146,7 +126,28 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
                 for (ExportStatusCAChResultType.ContractObject co: importContract.getContractObject ()) 
                     
                     db.d0 (contractObjectTableDefinition.updateStatus ((UUID) r.get ("ctr.uuid"), co));
+            
 
+                VocGisStatus.i state = VocGisStatus.i.forName (importContract.getState ());
+                if (state == null) state = VocGisStatus.i.NOT_RUNNING;
+
+                db.update (Contract.class, HASH (
+                    "uuid", r.get ("ctr.uuid"),
+                    "contractguid", importContract.getContractGUID (),
+                    "id_ctr_status_gis", VocGisStatus.i.forName (importContract.getContractStatus ().value ()).getId (),
+                    "id_ctr_state_gis",  state.getId ()
+                ));
+
+                db.update (ContractLog.class, HASH (
+                    "uuid", r.get ("log.uuid"),
+                    "contractversionguid", importContract.getContractVersionGUID ()
+                ));
+
+                db.update (OutSoap.class, HASH (
+                    "uuid", uuid,
+                    "id_status", DONE.getId ()
+                ));
+                                                    
             db.commit ();
             
         }
