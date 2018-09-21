@@ -1,11 +1,19 @@
 package ru.eludia.products.mosgis.db.model.voc;
 
+import java.math.BigInteger;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.xml.datatype.XMLGregorianCalendar;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.gosuslugi.dom.schema.integration.nsi_base.NsiItemInfoType;
 
 public class VocNsiList extends Table {
-
+    
+    private static final XMLGregorianCalendar epoch = DB.to.XMLGregorianCalendar (new java.sql.Timestamp (0L));
+    
     public VocNsiList () {
         
         super ("vc_nsi_list", "Перечень справочников НСИ ГИС ЖКХ");
@@ -20,5 +28,17 @@ public class VocNsiList extends Table {
         key   ("name", "name");
         
     }
+    
+    public static final NsiItemInfoType toDom (DB db, ResultSet rs) throws SQLException {
+        
+        final NsiItemInfoType i = new NsiItemInfoType ();
+        
+        i.setName           (rs.getString ("name"));
+        i.setRegistryNumber (BigInteger.valueOf (rs.getLong ("registrynumber")));
+        i.setModified       (epoch);
+        
+        return i;
+        
+    }    
         
 }
