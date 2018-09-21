@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.json.JsonObject;
 import ru.eludia.base.model.Col;
+import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementFieldType;
 
 public abstract class NsiScalarField extends NsiField {
     
@@ -13,6 +14,12 @@ public abstract class NsiScalarField extends NsiField {
     public NsiScalarField (JsonObject o) {
         super (o);
         fName = "F_" + name;
+    }
+    
+//    public abstract NsiElementFieldType toDom (Object value) throws java.sql.SQLException;
+
+    public NsiElementFieldType toDom (Object value) throws java.sql.SQLException {
+        return null;
     }
 
     @Override

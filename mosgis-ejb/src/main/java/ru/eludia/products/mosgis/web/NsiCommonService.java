@@ -8,7 +8,10 @@ import javax.jws.WebService;
 import javax.xml.datatype.XMLGregorianCalendar;
 import ru.eludia.base.DB;
 import ru.eludia.base.Model;
+import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.nsi.fields.NsiField;
+import ru.eludia.products.mosgis.db.model.nsi.fields.NsiNsiRefField;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiList;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiListGroup;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -85,11 +88,27 @@ public class NsiCommonService {
             
             NsiTable nsiTable = NsiTable.getNsiTable (db, registryNumber.intValue ());
             
-            Map<Object, Map<String, Object>> idx = db.getIdx (m.select (nsiTable, "*"));
+            final Select select = m.select (nsiTable, "AS root", "*");
+            
+            for (NsiField f: nsiTable.getNsiFields ().values ()) {
+                
+                if (!(f instanceof NsiNsiRefField)) continue;
+                
+                NsiNsiRefField nrf = (NsiNsiRefField) f;
+                
+                int rn = nrf.getRegistryNumber ();
+                
+                NsiTable refTable = NsiTable.getNsiTable (db, rn);
+                
+                String alias = "nsi_" + rn;
+                
+                select.toMaybeOne (refTable, "AS " + alias, "code").on ("root." + nrf.getfName () + "=" + alias + ".guid");
+                
+            }
+            
+            Map<Object, Map<String, Object>> idx = db.getIdx (select);
             
             for (Map<String, Object> r: idx.values ()) nsiElement.add (nsiTable.toDom (r));
-
-//            db.forEach (m.select (nsiTable, "*"), rs -> {nsiElement.add (nsiTable.toDom (db, rs));});
             
         }
         catch (Exception ex) {

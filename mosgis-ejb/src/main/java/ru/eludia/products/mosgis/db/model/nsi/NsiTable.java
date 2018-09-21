@@ -59,10 +59,26 @@ public class NsiTable extends Table {
         
         for (NsiField field: nsiFields.values ()) {            
             
-            if (field instanceof NsiScalarField) {
-                NsiScalarField sf = (NsiScalarField) field;
-                NsiElementFieldType f = field.toDom (r.get (sf.getfName ().toLowerCase ()));
+            if (field instanceof NsiNsiRefField) {
+                
+                NsiNsiRefField nrf = (NsiNsiRefField) field;
+                
+                NsiElementFieldType f = nrf.toDom (
+                    r.get (nrf.getfName ().toLowerCase ()), 
+                    r.get ("nsi_" + nrf.getRegistryNumber () + ".code").toString ()
+                );
+                
                 if (f != null) nsiElementField.add (f);
+                
+            }
+            else if (field instanceof NsiScalarField) {
+                
+                NsiScalarField sf = (NsiScalarField) field;
+                
+                NsiElementFieldType f = sf.toDom (r.get (sf.getfName ().toLowerCase ()));
+                
+                if (f != null) nsiElementField.add (f);
+                
             }
             
         }

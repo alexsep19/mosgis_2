@@ -1,11 +1,14 @@
 package ru.eludia.products.mosgis.db.model.nsi.fields;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import javax.json.JsonObject;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Type;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementFieldType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementNsiRefFieldType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
@@ -41,6 +44,17 @@ public class NsiNsiRefField extends NsiScalarField {
 
     public final int getRegistryNumber () {
         return registryNumber;
+    }
+    
+    public NsiElementFieldType toDom (Object value, String code) throws java.sql.SQLException {
+        if (value == null) return null;
+        NsiElementNsiRefFieldType result = new NsiElementNsiRefFieldType ();
+        result.setName (remark);
+        final NsiElementNsiRefFieldType.NsiRef nsiRef = new NsiElementNsiRefFieldType.NsiRef ();
+        result.setNsiRef (nsiRef);
+        nsiRef.setNsiItemRegistryNumber (BigInteger.valueOf (registryNumber));
+        nsiRef.setRef (NsiTable.toDom (code, (UUID) value));
+        return result;
     }
     
 }
