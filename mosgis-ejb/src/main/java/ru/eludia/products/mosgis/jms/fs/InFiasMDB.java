@@ -130,9 +130,13 @@ public class InFiasMDB extends UUIDMDB<InFias> {
             return false;
         }
 
+        String stringHandler (Attributes attributes, String field) {
+            return attributes.getValue (field);
+        }
+        
         @Override
         public void startElement (String uri, String localName, String qName, Attributes attributes) throws SAXException {
-
+            
             if (!tagName.equals (qName) || isOff (attributes)) return;            
             
             Map <String, Object> r = HASH (
@@ -143,13 +147,7 @@ public class InFiasMDB extends UUIDMDB<InFias> {
             extra (attributes);
                         
             fields.forEach((i) -> {
-                if (postfix.equals ("addrobj") && i.equals ("FORMALNAME")
-                        && (attributes.getValue (i).contains ("Ё") || attributes.getValue (i).contains ("ё"))) {
-                    logger.log (Level.INFO, "TRYING TO REPLACE 'Ё' in " + attributes.getValue (i));
-                    r.put (i.toLowerCase (), attributes.getValue (i).replace ("Ё", "Е").replace ("ё", "е"));
-                } else {
-                    r.put (i.toLowerCase (), attributes.getValue (i));
-                }
+                r.put (i.toLowerCase (), stringHandler(attributes, i));
             });    
 
             try {
@@ -261,6 +259,10 @@ public class InFiasMDB extends UUIDMDB<InFias> {
             aoGuids.add (attributes.getValue ("AOGUID"));
         }
         
+        @Override
+        final String stringHandler (Attributes attributes, String field) {
+            return attributes.getValue (field).replace ('Ё', 'Е').replace ('ё', 'е');
+        }        
     }
     
     private class BuildingScanner extends BScanner<VocBuilding, InFiasVocBuilding> {

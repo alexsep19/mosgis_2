@@ -40,14 +40,9 @@ public class VocBuildingAddressesImpl extends Base implements VocBuildingAddress
                 sb.append ('%');
             }
         }
-       
+        
         if (sb.length () > 0) {
-            String value = sb.toString();
-            if (value.contains("Ё") || value.contains ("ё")) {
-                    select.and ("label_uc LIKE", value.replace ("Ё", "Е").replace ("ё", "е"));
-                } else {
-                    select.and ("label_uc LIKE", value);
-                }
+            select.and ("label_uc LIKE", sb.toString ().replace ('Ё', 'Е').replace ('ё', 'е'));
         }
         
         db.addJsonArrays (job, select);
