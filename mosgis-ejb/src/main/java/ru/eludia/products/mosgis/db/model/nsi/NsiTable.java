@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import javax.xml.datatype.XMLGregorianCalendar;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
@@ -22,10 +23,13 @@ import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.nsi.fields.NsiField;
 import ru.eludia.products.mosgis.db.model.nsi.fields.NsiNsiRefField;
 import ru.eludia.products.mosgis.db.model.nsi.fields.NsiOkeiRefField;
+import ru.eludia.products.mosgis.db.model.nsi.fields.NsiScalarField;
 import ru.eludia.products.mosgis.db.model.nsi.fields.NsiStringField;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiList;
 import static ru.eludia.products.mosgis.db.model.voc.VocPassportFields.PASSPORT_FIELDS_LIST_NSI_REGISTRY_NUMBER;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementFieldType;
+import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementStringFieldType;
+import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
 
 public class NsiTable extends Table {
@@ -37,6 +41,7 @@ public class NsiTable extends Table {
     NsiOkeiRefField okeiField = null;
     NsiStringField labelField = null;
     List<NsiMultipleRefTable> multipleRefTables = Collections.EMPTY_LIST;
+    private static final XMLGregorianCalendar epoch = DB.to.XMLGregorianCalendar (new java.sql.Timestamp (0L));
     
     public static NsiRef toDom (String code, UUID uuid) {
         NsiRef nsiRef = new NsiRef ();
@@ -45,6 +50,27 @@ public class NsiTable extends Table {
         return nsiRef;
     }    
     
+    public NsiElementType toDom (Map<String, Object> r) throws SQLException {
+
+        NsiElementType result = (NsiElementType) DB.to.javaBean (NsiElementType.class, r);
+        result.setModified (epoch);
+        
+        List<NsiElementFieldType> nsiElementField = result.getNsiElementField ();
+        
+        for (NsiField field: nsiFields.values ()) {            
+            
+            if (field instanceof NsiScalarField) {
+                NsiScalarField sf = (NsiScalarField) field;
+                NsiElementFieldType f = field.toDom (r.get (sf.getfName ().toLowerCase ()));
+                if (f != null) nsiElementField.add (f);
+            }
+            
+        }
+        
+        return result;
+        
+    }
+       
     public Select getVocSelect () {
         
         final String label = getLabelField ().getfName ();

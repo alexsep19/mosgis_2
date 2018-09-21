@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.db.model.nsi.fields;
 
+import java.math.BigInteger;
 import java.util.Map;
 import javax.json.JsonObject;
 import ru.eludia.base.model.Col;
@@ -20,6 +21,15 @@ public final class NsiBooleanField extends NsiScalarField {
         if (v == null) return;
         Boolean b = v.isValue ();
         record.put (fName, b == null ? null : b ? 1 : 0);
+    }
+    
+    @Override
+    public NsiElementFieldType toDom (Object value) throws java.sql.SQLException {
+        if (value == null) return null;
+        NsiElementBooleanFieldType result = new NsiElementBooleanFieldType ();
+        result.setName (remark);
+        result.setValue ("1".equals (value.toString ()));
+        return result;
     }
     
 }

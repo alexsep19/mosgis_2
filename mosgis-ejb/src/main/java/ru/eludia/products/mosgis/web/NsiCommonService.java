@@ -1,18 +1,24 @@
 package ru.eludia.products.mosgis.web;
 
+import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.Stateless;
 import javax.jws.WebService;
 import javax.xml.datatype.XMLGregorianCalendar;
 import ru.eludia.base.DB;
 import ru.eludia.base.Model;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiList;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiListGroup;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.gosuslugi.dom.schema.integration.nsi.ExportNsiPagingItemResult;
+import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiItemInfoType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiListType;
 import ru.gosuslugi.dom.schema.integration.nsi_common_service.Fault;
 import ru.gosuslugi.dom.schema.integration.nsi_common.ExportNsiListResult;
+import ru.gosuslugi.dom.schema.integration.nsi_common.ExportNsiItemResult;
 
 @WebService (
     serviceName = "NsiService", 
@@ -61,9 +67,39 @@ public class NsiCommonService {
         
     }
 
-    public ru.gosuslugi.dom.schema.integration.nsi_common.ExportNsiItemResult exportNsiItem (ru.gosuslugi.dom.schema.integration.nsi_common.ExportNsiItemRequest exportNsiItemRequest) throws Fault {
-        //TODO implement this method
-        throw new UnsupportedOperationException ("Not implemented yet.");
+    public ExportNsiItemResult exportNsiItem (ru.gosuslugi.dom.schema.integration.nsi_common.ExportNsiItemRequest exportNsiItemRequest) throws Fault {
+        
+        ExportNsiItemResult result = new ExportNsiItemResult ();        
+        final ExportNsiPagingItemResult.NsiItem nsiItem = new ExportNsiPagingItemResult.NsiItem ();
+
+        BigInteger registryNumber = exportNsiItemRequest.getRegistryNumber ();
+                
+        nsiItem.setCreated (epoch);        
+        nsiItem.setNsiItemRegistryNumber (registryNumber);
+
+        List<NsiElementType> nsiElement = nsiItem.getNsiElement ();
+        
+        Model m = ModelHolder.getModel ();
+
+        try (DB db = m.getDb ()) {                        
+            
+            NsiTable nsiTable = NsiTable.getNsiTable (db, registryNumber.intValue ());
+            
+            Map<Object, Map<String, Object>> idx = db.getIdx (m.select (nsiTable, "*"));
+            
+            for (Map<String, Object> r: idx.values ()) nsiElement.add (nsiTable.toDom (r));
+
+//            db.forEach (m.select (nsiTable, "*"), rs -> {nsiElement.add (nsiTable.toDom (db, rs));});
+            
+        }
+        catch (Exception ex) {
+           throw new IllegalStateException (ex);
+        }                
+        
+        result.setNsiItem (nsiItem);
+        
+        return result;
+                
     }
 
     public ru.gosuslugi.dom.schema.integration.nsi_common.ExportNsiPagingItemResult exportNsiPagingItem (ru.gosuslugi.dom.schema.integration.nsi_common.ExportNsiPagingItemRequest exportNsiPagingItemRequest) throws Fault {

@@ -24,5 +24,14 @@ public class NsiStringField extends NsiScalarField {
         if (value instanceof NsiElementOkeiRefFieldType) return ((NsiElementOkeiRefFieldType) value).getCode ();
         return ((NsiElementStringFieldType) value).getValue ();
     }
+
+    @Override
+    public NsiElementFieldType toDom (Object value) throws java.sql.SQLException {
+        if (value == null) return null;
+        NsiElementStringFieldType result = new NsiElementStringFieldType ();
+        result.setName (remark);
+        result.setValue (value.toString ());
+        return result;
+    }
     
 }

@@ -20,6 +20,10 @@ public abstract class NsiField extends NamedObject {
         return multiple;
     }
     
+    public NsiElementFieldType toDom (Object value) throws java.sql.SQLException {
+        return null;
+    }
+    
     public static NsiField fromJson (JsonObject o) {
                 
         final String type = o.getString ("type");                
