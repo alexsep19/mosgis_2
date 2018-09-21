@@ -59,8 +59,6 @@ public class ContractFile extends Table {
             + "   :NEW.id_status := 0; "
             + " END IF;"
 
-            + " UPDATE tb_contract_objects SET id_ctr_status = " + MUTATING.getId () + " WHERE uuid = :NEW.uuid_contract_object AND contractobjectversionguid IS NOT NULL; "
-
         + "END;");        
 
     }

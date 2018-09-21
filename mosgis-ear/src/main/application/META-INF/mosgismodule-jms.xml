@@ -187,6 +187,12 @@
     <jndi-name>mosgis.inHouseMgmtContractsQueue</jndi-name>
   </uniform-distributed-queue>
 
+  <!-- очередь обработки запросов на экспорт документов, приложенных к договорам обслуживания -->
+  <uniform-distributed-queue name="inHouseMgmtContractFilesQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.inHouseMgmtContractFilesQueue</jndi-name>
+  </uniform-distributed-queue>
+
   <!-- очередь опроса статуса исходящих запросов на экспорт договоров обслуживания -->
   <uniform-distributed-queue name="outExportHouseMgmtContractsQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>

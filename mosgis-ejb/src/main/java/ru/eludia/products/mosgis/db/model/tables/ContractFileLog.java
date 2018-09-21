@@ -17,6 +17,7 @@ public class ContractFileLog extends Table {
         fk     ("uuid_object",           ContractFile.class,                    "Ссылка на запись");
         col    ("ts",                    Type.TIMESTAMP,           NOW,         "Дата/время события");
         fk     ("uuid_user",             VocUser.class,            null,        "Оператор");        
+        col    ("ts_start_sending",      Type.DATE,                null,        "Дата начала передачи");
         
         fk     ("uuid_out_soap",         OutSoap.class,            null,        "Последний запрос на импорт в ГИС ЖКХ");
         col    ("uuid_message",          Type.UUID,                null,        "UUID запроса в ГИС ЖКХ");
