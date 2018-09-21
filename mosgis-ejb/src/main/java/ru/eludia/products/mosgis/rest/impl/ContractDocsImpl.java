@@ -36,25 +36,27 @@ public class ContractDocsImpl extends BaseCRUD<ContractFile> implements Contract
                        
         db.begin ();
         
-            job.add ("id", 
-                db.insertId (getTable (), HASH (
-                        
-                    "uuid_contract",         file.getString ("uuid"),
-                    "uuid_contract_object",  file.getString ("uuid_contract_object", null),
+            Object id = db.insertId (getTable (), HASH (
+                
+                "uuid_contract",         file.getString ("uuid"),
+                "uuid_contract_object",  file.getString ("uuid_contract_object", null),
+                
+                "purchasenumber",  file.getString ("purchasenumber",  ""),
+                "agreementnumber", file.getString ("agreementnumber", ""),
+                "agreementdate",   file.getString ("agreementdate",   null),
+                
+                "id_type",        file.getInt    ("id_type"),
+                "label",          file.getString ("label"),
+                "description",    file.getString ("description", ""),
+                "mime",           file.getString ("type"),
+                "len",            file.getInt    ("size")
+                
+            ));
+        
+            job.add ("id", id.toString ());
 
-                    "purchasenumber",  file.getString ("purchasenumber",  ""),
-                    "agreementnumber", file.getString ("agreementnumber", ""),
-                    "agreementdate",   file.getString ("agreementdate",   null),
-
-                    "id_type",        file.getInt    ("id_type"),
-                    "label",          file.getString ("label"),
-                    "description",    file.getString ("description", ""),
-                    "mime",           file.getString ("type"),
-                    "len",            file.getInt    ("size")
-                        
-                )).toString ()
-            );
-
+            logAction (db, user, id, "create");
+            
         db.commit ();
         
     });}
@@ -108,6 +110,8 @@ public class ContractDocsImpl extends BaseCRUD<ContractFile> implements Contract
             "id_status", 2
         ));
         
+        logAction (db, user, id, "delete");
+        
     });}
     
     @Override
@@ -139,6 +143,8 @@ public class ContractDocsImpl extends BaseCRUD<ContractFile> implements Contract
             "agreementnumber", data.getString ("agreementnumber", ""),
             "agreementdate",   data.getString ("agreementdate",   null)
         ));
+        
+        logAction (db, user, id, "update");
 
     });}
 

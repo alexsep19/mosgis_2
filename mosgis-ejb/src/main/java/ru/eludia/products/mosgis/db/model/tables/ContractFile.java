@@ -39,8 +39,9 @@ public class ContractFile extends Table {
         col    ("agreementnumber",       Type.STRING, 255,         null,        "Номер дополнительного соглашения");
         col    ("agreementdate",         Type.DATE,                null,        "Дата дополнительного соглашения");
 
-        col    ("id_status",             Type.INTEGER, 1,          ZERO,        "Статус");
-
+        col    ("id_status",             Type.INTEGER, 2,          ZERO,        "Статус");
+        fk     ("id_log",                ContractFileLog.class,    null,        "Последнее событие редактирования");
+       
         trigger ("BEFORE UPDATE", "BEGIN "
 
             + "IF NVL (:OLD.attachmentguid, '00') = NVL (:NEW.attachmentguid, '00') THEN "
@@ -51,6 +52,10 @@ public class ContractFile extends Table {
                 
             + " IF :NEW.id_status = 0 AND DBMS_LOB.GETLENGTH (:NEW.body) = :NEW.len THEN "
             + "   :NEW.id_status := 1; "
+            + " END IF;"
+
+            + " IF :NEW.id_status = 10 THEN "
+            + "   :NEW.id_status := 0; "
             + " END IF;"
 
             + " UPDATE tb_contract_objects SET id_ctr_status = " + MUTATING.getId () + " WHERE uuid = :NEW.uuid_contract_object AND contractobjectversionguid IS NOT NULL; "
