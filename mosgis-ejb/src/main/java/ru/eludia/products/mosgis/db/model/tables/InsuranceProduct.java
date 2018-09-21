@@ -29,6 +29,8 @@ public class InsuranceProduct extends Table {
         col   ("body",                      Type.BLOB,             EMPTY_BLOB,          "Содержимое");       
         
         col   ("attachmentguid",            Type.UUID,                          null,   "Идентификатор сохраненного вложения");        
+        col   ("attachmenthash",            Type.BINARY,           32,          null,   "ГОСТ Р 34.11-94");
+
         col   ("insuranceproductguid",      Type.UUID,                          null,   "Идентификатор страхового продукта");
         col   ("uniquenumber",              Type.STRING,                        null,   "Уникальный реестровый номер");
 

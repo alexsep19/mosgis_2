@@ -30,6 +30,8 @@ public class InsuranceProductLog extends Table {
         col   ("body",                      Type.BLOB,             EMPTY_BLOB,          "Содержимое");       
         
         col   ("attachmentguid",            Type.UUID,                          null,   "Идентификатор сохраненного вложения");        
+        col   ("attachmenthash",            Type.BINARY,           32,          null,   "ГОСТ Р 34.11-94");
+        
         col   ("insuranceproductguid",      Type.UUID,                          null,   "Идентификатор страхового продукта");
 
         fk    ("uuid_out_soap",             OutSoap.class,                      null,   "Последний запрос на импорт в ГИС ЖКХ");
@@ -71,9 +73,10 @@ public class InsuranceProductLog extends Table {
 
         trigger ("AFTER UPDATE", "BEGIN "
                 
-            + "IF :NEW.attachmentguid <> NVL (:OLD.attachmentguid, '00') THEN "
+            + "IF NVL (:NEW.attachmentguid, '00') <> NVL (:OLD.attachmentguid, '00') THEN "
                 + "UPDATE tb_ins_products SET "
-                    + "attachmentguid = :NEW.attachmentguid "
+                    + "attachmentguid = :NEW.attachmentguid, "
+                    + "attachmenthash = :NEW.attachmenthash "
                 + "WHERE uuid = :NEW.uuid_object; "
             + "END IF; "
                 
