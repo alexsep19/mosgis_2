@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.xml.datatype.XMLGregorianCalendar;
 import ru.eludia.base.DB;
@@ -26,6 +27,7 @@ import ru.gosuslugi.dom.schema.integration.nsi_common_service.Fault;
 import ru.gosuslugi.dom.schema.integration.nsi_common.ExportNsiListResult;
 import ru.gosuslugi.dom.schema.integration.nsi_common.ExportNsiItemResult;
 
+@HandlerChain (file="handler-chain.xml")
 @WebService (
     serviceName = "NsiService", 
     portName = "NsiPort", 

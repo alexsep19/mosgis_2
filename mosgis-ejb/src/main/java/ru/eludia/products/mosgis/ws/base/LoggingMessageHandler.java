@@ -3,8 +3,8 @@ package ru.eludia.products.mosgis.ws.base;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.sql.SQLException;
-import java.sql.SQLIntegrityConstraintViolationException;
+//import java.sql.SQLException;
+//import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.logging.Logger;
 import java.util.Collections;
 import java.util.Set;
@@ -17,11 +17,11 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
-import ru.eludia.base.DB;
+//import ru.eludia.base.DB;
 import static ru.eludia.base.db.util.TypeConverter.hex;
-import ru.eludia.products.mosgis.db.model.incoming.soap.InSoap;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
-import ru.gosuslugi.dom.schema.integration.base.RequestHeader;
+//import ru.eludia.products.mosgis.db.model.incoming.soap.InSoap;
+//import ru.eludia.products.mosgis.ejb.ModelHolder;
+//import ru.gosuslugi.dom.schema.integration.base.RequestHeader;
 
 public class LoggingMessageHandler implements SOAPHandler<SOAPMessageContext> {
         
@@ -116,8 +116,8 @@ public class LoggingMessageHandler implements SOAPHandler<SOAPMessageContext> {
             logger.log (Level.INFO, "{0}{1}", new Object [] {
                 messageInfo.toString (), 
                 s
-                    .replace ("\r", "\\r")
-                    .replace ("\n", "\\n")
+                    .replace ('\r', ' ')
+                    .replace ('\n', ' ')
             });
             
             return s;
@@ -136,7 +136,7 @@ public class LoggingMessageHandler implements SOAPHandler<SOAPMessageContext> {
         }
         
     }
-    
+/*    
     private void storeToDB (MessageInfo messageInfo, RequestHeader rh, String s) {
 
         try (DB db = ModelHolder.getModel ().getDb ()) {
@@ -167,7 +167,7 @@ public class LoggingMessageHandler implements SOAPHandler<SOAPMessageContext> {
         }
         
     }
-
+*/
     public boolean handleMessage (SOAPMessageContext messageContext) {
 
         SOAPMessage msg = messageContext.getMessage ();
@@ -177,7 +177,7 @@ public class LoggingMessageHandler implements SOAPHandler<SOAPMessageContext> {
         byte [] bytes = toBytes (msg);
         
         String s = getLoggedMessge (messageInfo, bytes, getCharSetName (msg));
-        
+/*        
         if (!messageInfo.isOut) {
 
             RequestHeader rh = AbstactServiceAsync.getRequestHeader (msg);
@@ -185,7 +185,7 @@ public class LoggingMessageHandler implements SOAPHandler<SOAPMessageContext> {
             storeToDB (messageInfo, rh, s);
 
         }
-        
+*/        
         return true;
         
     }
