@@ -1,8 +1,10 @@
 package ru.eludia.products.mosgis.web;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.jws.WebService;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -33,6 +35,8 @@ import ru.gosuslugi.dom.schema.integration.nsi_common.ExportNsiItemResult;
 @Stateless
 public class NsiCommonService {    
     
+    protected Logger logger = Logger.getLogger (getClass ().getName ());
+
     private static final XMLGregorianCalendar epoch = DB.to.XMLGregorianCalendar (new java.sql.Timestamp (0L));
 
     public ExportNsiListResult exportNsiList (ru.gosuslugi.dom.schema.integration.nsi_common.ExportNsiListRequest exportNsiListRequest) throws Fault {
@@ -57,6 +61,7 @@ public class NsiCommonService {
             db.forEach (m
                 .select (VocNsiList.class, "*")
                 .where ("listgroup", group.getName ())
+                .and   ("cols IS NOT NULL")
                 ,(rs) -> {nsiItemInfo.add (VocNsiList.toDom (db, rs));}
             );
         }
@@ -105,10 +110,33 @@ public class NsiCommonService {
                 select.toMaybeOne (refTable, "AS " + alias, "code").on ("root." + nrf.getfName () + "=" + alias + ".guid");
                 
             }
-            
+                                    
             Map<Object, Map<String, Object>> idx = db.getIdx (select);
             
-            for (Map<String, Object> r: idx.values ()) nsiElement.add (nsiTable.toDom (r));
+            if (nsiTable.getColumns ().containsKey ("parent")) {
+                                
+                for (Map<String, Object> r: idx.values ()) {
+                    
+                    final Object parentId = r.get ("parent");
+                    
+                    if (parentId == null) continue;
+                    
+                    Map<String, Object> parent = idx.get (parentId);
+                    
+                    if (parent == null) {
+                        logger.warning ("parent not found for " + parentId);
+                        continue;
+                    };
+                                        
+                    if (!parent.containsKey (NsiTable.CHILDREN)) parent.put (NsiTable.CHILDREN, new ArrayList ());
+                    
+                    ((List) parent.get (NsiTable.CHILDREN)).add (r);
+
+                }
+                
+            }
+            
+            for (Map<String, Object> r: idx.values ()) if (r.get ("parent") == null) nsiElement.add (nsiTable.toDom (r));
             
         }
         catch (Exception ex) {

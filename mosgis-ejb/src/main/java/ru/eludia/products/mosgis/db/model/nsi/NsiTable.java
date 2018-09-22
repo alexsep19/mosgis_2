@@ -15,6 +15,7 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.xml.datatype.XMLGregorianCalendar;
 import ru.eludia.base.DB;
+import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.abs.Roster;
@@ -33,6 +34,8 @@ import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
 
 public class NsiTable extends Table {
+
+    public static final String CHILDREN = "children";
     
     protected Logger logger = Logger.getLogger (getClass ().getName ());
     
@@ -83,6 +86,16 @@ public class NsiTable extends Table {
             
         }
         
+        List<Map<String, Object>> children = (List) r.get (CHILDREN);
+        
+        if (children != null) {
+            
+            List<NsiElementType> childElement = result.getChildElement ();
+            
+            for (Map<String, Object> c: children) childElement.add (toDom (c));
+            
+        }
+        
         return result;
         
     }
@@ -115,7 +128,11 @@ public class NsiTable extends Table {
     }
     
     public NsiTable (DB db, int n) throws SQLException {
+        
         this (db.getMap (VocNsiList.class, n));
+
+        db.forFirst (new QP ("SELECT column_name FROM user_tab_cols WHERE column_name=? AND table_name=?", "PARENT", "VC_NSI_" + n), (rs) -> {this.addParentCol ();});
+
     }        
 
     public NsiTable (DB db, ResultSet rs) throws SQLException {
