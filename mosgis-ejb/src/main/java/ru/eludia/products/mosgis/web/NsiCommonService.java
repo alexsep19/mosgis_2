@@ -11,6 +11,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import ru.eludia.base.DB;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.products.mosgis.db.model.nsi.NsiMultipleRefTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.nsi.fields.NsiField;
 import ru.eludia.products.mosgis.db.model.nsi.fields.NsiNsiRefField;
@@ -97,8 +98,8 @@ public class NsiCommonService {
             
             for (NsiField f: nsiTable.getNsiFields ().values ()) {
                 
-                if (!(f instanceof NsiNsiRefField)) continue;
-                
+                if (f.isMultiple () || !(f instanceof NsiNsiRefField)) continue;
+
                 NsiNsiRefField nrf = (NsiNsiRefField) f;
                 
                 int rn = nrf.getRegistryNumber ();
@@ -112,6 +113,43 @@ public class NsiCommonService {
             }
                                     
             Map<Object, Map<String, Object>> idx = db.getIdx (select);
+            
+            for (NsiMultipleRefTable mrt: nsiTable.getMultipleRefTables ()) {
+                
+                db.adjustTable (mrt);
+                
+                String name = mrt.getTargetField ().getName ();
+                
+                NsiTable refTable = NsiTable.getNsiTable (db, mrt.getTargetField ().getRegistryNumber ());
+                
+                db.forEach (m
+                    
+                    .select (mrt,      "AS root", "guid_from"   )
+                    .toOne  (refTable, "AS ref",  "code", "guid").on ("root.guid_to=ref.guid")
+                    .orderBy ("root.ord")
+                    
+                    , (rs) -> {
+                    
+                    Map<String, Object> r = db.HASH (rs);
+                    
+                    final Object parentId = r.get ("guid_from");
+                    
+                    if (parentId == null) return;
+                    
+                    Map<String, Object> parent = idx.get (parentId);
+                    
+                    if (parent == null) {
+                        logger.warning ("parent not found for " + parentId);
+                        return;
+                    };
+                                        
+                    if (!parent.containsKey (name)) parent.put (name, new ArrayList ());
+                    
+                    ((List) parent.get (name)).add (r);
+                    
+                });
+                
+            }
             
             if (nsiTable.getColumns ().containsKey ("parent")) {
                                 

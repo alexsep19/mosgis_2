@@ -60,7 +60,9 @@ public class NsiTable extends Table {
         
         List<NsiElementFieldType> nsiElementField = result.getNsiElementField ();
         
-        for (NsiField field: nsiFields.values ()) {            
+        for (NsiField field: nsiFields.values ()) {
+            
+            if (field.isMultiple ()) continue;
             
             if (field instanceof NsiNsiRefField) {
                 
@@ -84,6 +86,27 @@ public class NsiTable extends Table {
                 
             }
             
+        }
+        
+        for (NsiMultipleRefTable mrt: getMultipleRefTables ()) {
+            
+            NsiNsiRefField nrf = mrt.getTargetField ();
+            
+            List<Map<String, Object>> values = (List) r.get (nrf.getName ());
+            
+            if (values == null || values.isEmpty ()) continue;
+            
+            for (Map<String, Object> value: values) {
+                                
+                NsiElementFieldType f = nrf.toDom (
+                    (UUID) value.get ("ref.guid"),
+                    value.get ("ref.code").toString ()
+                );
+                
+                if (f != null) nsiElementField.add (f);
+                
+            }
+
         }
         
         List<Map<String, Object>> children = (List) r.get (CHILDREN);
