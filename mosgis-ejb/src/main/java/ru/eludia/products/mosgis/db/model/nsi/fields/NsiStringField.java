@@ -28,9 +28,11 @@ public class NsiStringField extends NsiScalarField {
     @Override
     public NsiElementFieldType toDom (Object value) throws java.sql.SQLException {
         if (value == null) return null;
+        final String s = value.toString ();
+        if (s.isEmpty ()) return null;
         NsiElementStringFieldType result = new NsiElementStringFieldType ();
         result.setName (remark);
-        result.setValue (value.toString ());
+        result.setValue (s);
         return result;
     }
     

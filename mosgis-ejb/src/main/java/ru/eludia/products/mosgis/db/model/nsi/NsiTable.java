@@ -144,7 +144,7 @@ public class NsiTable extends Table {
     }
     
     public void addParentCol () {
-        col ("parent", Type.UUID, null, "Ссылка на родительскую запись");
+        if (!columns.containsKey ("parent")) col ("parent", Type.UUID, null, "Ссылка на родительскую запись");
     }
     
     public final String getColNameByRemarkPrefix (String prefix) {

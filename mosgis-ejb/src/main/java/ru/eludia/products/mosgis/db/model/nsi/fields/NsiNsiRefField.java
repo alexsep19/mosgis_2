@@ -56,5 +56,5 @@ public class NsiNsiRefField extends NsiScalarField {
         nsiRef.setRef (NsiTable.toDom (code, (UUID) value));
         return result;
     }
-    
+
 }

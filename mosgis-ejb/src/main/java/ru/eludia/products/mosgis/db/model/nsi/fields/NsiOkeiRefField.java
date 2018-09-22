@@ -17,9 +17,11 @@ public class NsiOkeiRefField extends NsiStringField {
     @Override
     public NsiElementFieldType toDom (Object value) throws java.sql.SQLException {
         if (value == null) return null;
+        final String s = value.toString ();
+        if (s.isEmpty ()) return null;
         NsiElementOkeiRefFieldType result = new NsiElementOkeiRefFieldType ();
         result.setName (remark);
-        result.setCode (value.toString ());
+        result.setCode (s);
         return result;
     }
 
