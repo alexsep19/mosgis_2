@@ -29,7 +29,6 @@ import ru.eludia.products.mosgis.db.model.nsi.fields.NsiStringField;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiList;
 import static ru.eludia.products.mosgis.db.model.voc.VocPassportFields.PASSPORT_FIELDS_LIST_NSI_REGISTRY_NUMBER;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementFieldType;
-import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementStringFieldType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
 
@@ -44,6 +43,7 @@ public class NsiTable extends Table {
     NsiOkeiRefField okeiField = null;
     NsiStringField labelField = null;
     List<NsiMultipleRefTable> multipleRefTables = Collections.EMPTY_LIST;
+    List<NsiMultipleScalarTable> multipleScalarTables = Collections.EMPTY_LIST;
     private static final XMLGregorianCalendar epoch = DB.to.XMLGregorianCalendar (new java.sql.Timestamp (0L));
     
     public static NsiRef toDom (String code, UUID uuid) {
@@ -87,6 +87,24 @@ public class NsiTable extends Table {
             }
             
         }
+        
+        for (NsiMultipleScalarTable mst: getMultipleScalarTables ()) {
+            
+            NsiScalarField vf = mst.getValueField ();
+            
+            List<Map<String, Object>> values = (List) r.get (vf.getName ());
+
+            if (values == null || values.isEmpty ()) continue;
+
+            for (Object value: values) {
+                
+                NsiElementFieldType f = vf.toDom (value);
+                
+                if (f != null) nsiElementField.add (f);
+                
+            }
+            
+        }        
         
         for (NsiMultipleRefTable mrt: getMultipleRefTables ()) {
             
@@ -175,10 +193,12 @@ public class NsiTable extends Table {
     }
     
     public Table [] getTables () {
-        final int size = multipleRefTables.size ();
-        Table [] result = new Table [1 + size];
-        for (int i = 0; i < size; i ++) result [i] = multipleRefTables.get (i);
-        result [size] = this;       
+        final int rSize = multipleRefTables.size ();
+        final int sSize = multipleScalarTables.size ();
+        Table [] result = new Table [1 + rSize + sSize];
+        for (int i = 0; i < rSize; i ++) result [i] = multipleRefTables.get (i);
+        for (int i = 0; i < sSize; i ++) result [i + rSize] = multipleScalarTables.get (i);
+        result [rSize + sSize] = this;       
         return result;
     }
     
@@ -206,13 +226,29 @@ public class NsiTable extends Table {
 
                     if (nsiField.isMultiple ()) {
                         
-                        if (!(nsiField instanceof NsiNsiRefField)) return;
-                        
-                        NsiNsiRefField targetField = (NsiNsiRefField) nsiField;
-                        
-                        if (multipleRefTables.isEmpty ()) multipleRefTables = new ArrayList<> ();
-                        
-                        multipleRefTables.add (new NsiMultipleRefTable (this, targetField));
+                        if (nsiField instanceof NsiNsiRefField) {
+                            
+                            NsiNsiRefField targetField = (NsiNsiRefField) nsiField;
+
+                            if (multipleRefTables.isEmpty ()) multipleRefTables = new ArrayList<> ();
+
+                            multipleRefTables.add (new NsiMultipleRefTable (this, targetField));
+                            
+                        }
+                        else if (nsiField instanceof NsiScalarField) {
+                            
+                            NsiScalarField valueField = (NsiScalarField) nsiField;
+
+                            if (multipleScalarTables.isEmpty ()) multipleScalarTables = new ArrayList<> ();
+
+                            multipleScalarTables.add (new NsiMultipleScalarTable (this, valueField));
+                            
+                        }
+                        else {
+                            
+                            logger.warning ("Bizarre NSI field definition: " + i);
+                            
+                        }
                         
                     }
                     else {
@@ -254,6 +290,10 @@ public class NsiTable extends Table {
 
     public List<NsiMultipleRefTable> getMultipleRefTables () {
         return multipleRefTables;
+    }
+
+    public List<NsiMultipleScalarTable> getMultipleScalarTables () {
+        return multipleScalarTables;
     }
     
     public void add (Map<String, Object> record, NsiElementFieldType f) {

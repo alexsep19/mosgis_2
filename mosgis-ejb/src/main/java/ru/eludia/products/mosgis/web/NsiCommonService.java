@@ -13,9 +13,11 @@ import ru.eludia.base.DB;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.nsi.NsiMultipleRefTable;
+import ru.eludia.products.mosgis.db.model.nsi.NsiMultipleScalarTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.nsi.fields.NsiField;
 import ru.eludia.products.mosgis.db.model.nsi.fields.NsiNsiRefField;
+import ru.eludia.products.mosgis.db.model.nsi.fields.NsiScalarField;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiList;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiListGroup;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -115,6 +117,42 @@ public class NsiCommonService {
             }
                                     
             Map<Object, Map<String, Object>> idx = db.getIdx (select);
+            
+            for (NsiMultipleScalarTable mst: nsiTable.getMultipleScalarTables ()) {
+                
+                db.adjustTable (mst);
+                
+                final NsiScalarField valueField = mst.getValueField ();
+                
+                String name = valueField.getName ();
+                String fName = valueField.getfName ().toLowerCase ();
+
+                db.forEach (m.select (mst, "*").orderBy ("ord")                        
+
+                    , (rs) -> {
+                        
+                        Map<String, Object> r = db.HASH (rs);
+
+                        final Object parentId = r.get ("guid");
+
+                        if (parentId == null) return;
+
+                        Map<String, Object> parent = idx.get (parentId);
+
+                        if (parent == null) {
+                            logger.warning ("parent not found for " + parentId);
+                            return;
+                        };
+
+                        if (!parent.containsKey (name)) parent.put (name, new ArrayList ());
+
+                        ((List) parent.get (name)).add (r.get (fName));
+                        
+                    }
+                        
+                );
+                                
+            }
             
             for (NsiMultipleRefTable mrt: nsiTable.getMultipleRefTables ()) {
                 

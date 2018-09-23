@@ -1,6 +1,7 @@
 package ru.eludia.products.mosgis.db.model.nsi.fields;
 
-import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.json.JsonObject;
 import ru.eludia.base.model.Col;
@@ -16,11 +17,18 @@ public final class NsiBooleanField extends NsiScalarField {
     }
 
     @Override
-    public void add (Map<String, Object> record, NsiElementFieldType value) {
+    public void add (Map<String, Object> record, NsiElementFieldType value) {        
         NsiElementBooleanFieldType v = (NsiElementBooleanFieldType) value;
         if (v == null) return;
         Boolean b = v.isValue ();
-        record.put (fName, b == null ? null : b ? 1 : 0);
+        int i = b == null ? null : b ? 1 : 0;
+        if (isMultiple ()) {
+            if (!record.containsKey (fName)) record.put (fName, new ArrayList ());
+            ((List) record.get (fName)).add (i);
+        }
+        else {
+            record.put (fName, i);
+        }        
     }
     
     @Override

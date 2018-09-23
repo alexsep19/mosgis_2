@@ -33,6 +33,7 @@ import static ru.eludia.base.model.def.Def.NOW;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.nsi.NsiMultipleRefTable;
+import ru.eludia.products.mosgis.db.model.nsi.NsiMultipleScalarTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiList;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementFieldType;
@@ -208,7 +209,7 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
 
             db.begin ();
 
-            for (NsiMultipleRefTable refTable: table.getMultipleRefTables ()) {
+                for (NsiMultipleRefTable refTable: table.getMultipleRefTables ()) {
                     
                     final String fName = refTable.getTargetField ().getfName ();
 
@@ -234,6 +235,32 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
 
                     db.d0 ("DELETE FROM " + refTable.getName () + " WHERE ord = -1");
                                         
+                }
+                
+                for (NsiMultipleScalarTable sTable: table.getMultipleScalarTables ()) {
+                    
+                    final String fName = sTable.getValueField ().getfName ();
+                    
+                    List <Map<String, Object>> m2m = new ArrayList<> ();
+                    
+                    for (Map<String, Object> record: records) {
+                        
+                        List values = (List) record.remove (fName);
+                        
+                        if (values == null) continue;
+                                                
+                        for (int i = 0; i < values.size (); i ++) m2m.add (HASH (
+                            "guid", record.get ("guid"),
+                            fName,  values.get (i),
+                            "ord",  i + 1
+                        ));
+                        
+                        db.d0 ("DELETE FROM " + sTable.getName ());
+
+                        db.insert (sTable, m2m);
+
+                    }
+                    
                 }
             
                 db.upsert (table, records, null);

@@ -1,5 +1,7 @@
 package ru.eludia.products.mosgis.db.model.nsi.fields;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.json.JsonObject;
 import ru.eludia.base.model.Col;
@@ -16,8 +18,14 @@ public class NsiStringField extends NsiScalarField {
     }
 
     @Override
-    public void add (Map<String, Object> record, NsiElementFieldType value) {
-        record.put (fName, getString (value));
+    public void add (Map<String, Object> record, NsiElementFieldType value) {        
+        if (isMultiple ()) {
+            if (!record.containsKey (fName)) record.put (fName, new ArrayList ());
+            ((List) record.get (fName)).add (getString (value));
+        }
+        else {
+            record.put (fName, getString (value));
+        }
     }
 
     String getString (NsiElementFieldType value) {
