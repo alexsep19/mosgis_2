@@ -1,8 +1,8 @@
 package ru.eludia.products.mosgis.jms.gis.send;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,11 +17,13 @@ import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Get;
+import static ru.eludia.base.model.def.Def.NOW;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.AdditionalService;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractFile;
+import ru.eludia.products.mosgis.db.model.tables.ContractFileLog;
 import ru.eludia.products.mosgis.db.model.tables.ContractLog;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.ContractObjectService;
@@ -31,9 +33,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
-import ru.eludia.products.mosgis.ejb.wsc.GisRestStream;
 import ru.eludia.products.mosgis.ejb.wsc.RestGisFilesClient;
-import ru.eludia.products.mosgis.ejb.wsc.RestGisFilesClient.Context;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
@@ -54,6 +54,12 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
     
     @Resource (mappedName = "mosgis.outExportHouseMgmtContractsQueue")
     Queue queue;
+    
+    @Resource (mappedName = "mosgis.inHouseMgmtContractFilesQueue")
+    Queue filesQueue;
+    
+    @Resource (mappedName = "mosgis.inHouseMgmtContractsQueue")
+    Queue ownQueue;
     
     @EJB
     protected UUIDPublisher UUIDPublisher;
@@ -89,37 +95,59 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
         
         Map<Object, Map<String, Object>> id2file = db.getIdx (m
             .select (ContractFile.class, "*")
-            .where ("uuid_contract", r.get ("uuid_object"))
-            .and ("id_status", 1)
+            .toOne  (ContractFileLog.class, "AS log", "ts_start_sending").on ()
+            .where  ("uuid_contract", r.get ("uuid_object"))
+            .and    ("id_status", 1)
         );
-
-        final Collection<Map<String, Object>> files = id2file.values ();
         
-        for (Map<String, Object> file: files) {
+        UUID waitingFor = null;
+        
+        for (Map<String, Object> file: id2file.values ()) {
             
-            try (
-                GisRestStream out = new GisRestStream (
-                    restGisFilesClient,
-                    Context.HOMEMANAGEMENT,
-                    orgppaguid, 
-                    file.get ("label").toString (), 
-                    Long.parseLong (file.get ("len").toString ()),
-                    (uploadId, attachmentHash) -> {
-                        file.put ("attachmentguid", uploadId);
-                        file.put ("attachmenthash", attachmentHash);
-                        db.update (ContractFile.class, file);
-                    }
-                )
-            ) {
-                db.getStream (m.get (ContractFile.class, file.get ("uuid"), "body"), out);
+            if (file.get ("attachmentguid") != null) continue;
+            
+            final Object ots = file.get ("log.ts_start_sending");            
+            
+            if (ots == null) {
+                
+                db.update (ContractFileLog.class, DB.HASH (
+                    "uuid",              file.get ("id_log"),
+                    "ts_start_sending",  NOW
+                ));
+
+                UUIDPublisher.publish (filesQueue, waitingFor = (UUID) file.get ("uuid"));
+                
             }
-            catch (Exception ex) {
-                logger.log (Level.SEVERE, "Cannot upload " + file, ex);
+            else if (Timestamp.valueOf (ots.toString ()).getTime () < System.currentTimeMillis () - 1000L * 60 * 60) {
+                                                        
+                db.update (Contract.class, DB.HASH (
+                    "uuid",              r.get ("uuid_object"),
+                    "id_ctr_status",     VocGisStatus.i.MUTATING.getId () // !!!
+                ));
+                
+                logger.warning ("Stale contract file: " + file.get ("uuid"));
+
                 return;
+                
+            }
+            else if (waitingFor == null) {
+                
+                waitingFor = (UUID) file.get ("uuid");
+                
             }
             
         }
         
+        if (waitingFor != null) {
+            
+            logger.info ("Waiting for " + waitingFor + " to upload");
+            
+            UUIDPublisher.publish (ownQueue, uuid);
+            
+            return;
+            
+        }
+
         r.put ("files", id2file.values ());
 
             NsiTable nsi3 = NsiTable.getNsiTable (db, 3);

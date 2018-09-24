@@ -185,6 +185,10 @@
   <uniform-distributed-queue name="inHouseMgmtContractsQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
     <jndi-name>mosgis.inHouseMgmtContractsQueue</jndi-name>
+    <delivery-params-overrides>
+        <time-to-deliver>2000</time-to-deliver>
+        <redelivery-delay>10000</redelivery-delay>
+    </delivery-params-overrides>
   </uniform-distributed-queue>
 
   <!-- очередь обработки запросов на экспорт документов, приложенных к договорам обслуживания -->
