@@ -39,6 +39,9 @@ public class Nsi implements NsiMBean {
     @Resource (mappedName = "mosgis.inNsiQueue")
     Queue inNsiQueue;
     
+    @Resource (mappedName = "mosgis.inNsiItemQueue")
+    Queue inNsiItemQueue;
+    
     @PostConstruct
     public void registerInJMX () {
         
@@ -93,10 +96,9 @@ public class Nsi implements NsiMBean {
             return;
         }
         else {
-            UUIDPublisher.publish (inNsiQueue, String.valueOf (registryNumber));
+            UUIDPublisher.publish (inNsiItemQueue, String.valueOf (registryNumber));
             logger.info ("registryNumber=" + registryNumber + " is requested; " + waitingRegistryNumbers.size () + " left to go");
-        }
-        
+        }        
         
     }
     

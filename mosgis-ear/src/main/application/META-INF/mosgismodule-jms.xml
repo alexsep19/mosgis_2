@@ -40,11 +40,20 @@
   </uniform-distributed-queue>  
 
 
-  <!-- очередь обработки запросов на импорт (списков) справочников НСИ -->
+  <!-- очередь обработки запросов на импорт (списков) групп справочников НСИ -->
   <uniform-distributed-queue name="inNsiQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
     <jndi-name>mosgis.inNsiQueue</jndi-name>
   </uniform-distributed-queue>
+
+  <!-- очередь обработки запросов на импорт (списков) справочников НСИ -->
+  <uniform-distributed-queue name="inNsiItemQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.inNsiItemQueue</jndi-name>
+  </uniform-distributed-queue>
+  
+  
+  
 
   <!-- очередь опроса статуса исходящих запросов на импорт списков справочников НСИ -->
   <uniform-distributed-queue name="outExportNsiQueue">
