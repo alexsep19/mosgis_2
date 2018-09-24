@@ -33,6 +33,8 @@ public class ContractObjectService extends Table {
 
         col    ("startdate",               Type.DATE,                           "Дата начала предоставления услуги");
         col    ("enddate",                 Type.DATE,                           "Дата окончания предоставления услуги");
+        
+        fk     ("id_log",                  ContractObjectServiceLog.class,      null, "Последнее событие редактирования");        
 
         trigger ("BEFORE INSERT", "BEGIN "
             + "SELECT uuid_contract INTO :NEW.uuid_contract FROM tb_contract_objects WHERE uuid = :NEW.uuid_contract_object; "
