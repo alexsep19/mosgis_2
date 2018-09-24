@@ -43,7 +43,7 @@ import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisNsiCommonClient;
-import ru.eludia.products.mosgis.jmx.NsiMBean;
+import ru.eludia.products.mosgis.jmx.NsiLocal;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementNsiRefFieldType;
 
@@ -61,11 +61,11 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
     protected WsGisNsiCommonClient wsGisNsiCommonClient;
     
     @EJB
-    NsiMBean nsi;
-
+    NsiLocal nsi;
+/*
     @Resource (mappedName = "mosgis.inNsiItemQueue")
     Queue inNsiItemQueue;
-
+*/
     @Resource (mappedName = "mosgis.outExportNsiItemQueue")
     Queue outExportNsiItemQueue;
 
@@ -133,7 +133,9 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
                                 
                 if ("INT016041".equals (errorMessage.getErrorCode ())) {
                     
-                    UUIDPublisher.publish (inNsiItemQueue, registryNumber + ".1");
+//                    UUIDPublisher.publish (inNsiItemQueue, registryNumber + ".1");
+                    
+                    nsi.importNsiItems (registryNumber, 1);
 
                     db.update (OutSoap.class, HASH (
                         "uuid", uuid,
@@ -281,7 +283,9 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
             
             db.commit ();
             
-            if (page < pages) UUIDPublisher.publish (inNsiItemQueue, registryNumber + "." + (page + 1));
+            if (page < pages) nsi.importNsiItems (registryNumber, page + 1);
+
+//                UUIDPublisher.publish (inNsiItemQueue, registryNumber + "." + (page + 1));
 
         }
         catch (Exception ex) {

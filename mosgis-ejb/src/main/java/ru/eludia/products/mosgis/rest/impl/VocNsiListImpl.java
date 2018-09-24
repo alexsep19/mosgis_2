@@ -33,10 +33,13 @@ import ru.eludia.products.mosgis.db.model.voc.VocRdCol;
 import static ru.eludia.products.mosgis.db.model.voc.VocRdColType.i.REF;
 import ru.eludia.products.mosgis.db.model.voc.VocRdList;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
-import ru.eludia.products.mosgis.jmx.NsiMBean;
+import ru.eludia.products.mosgis.jmx.NsiLocal;
 
 @Stateless
 public class VocNsiListImpl implements VocNsiListLocal {
+    
+    @EJB
+    NsiLocal nsi;
 
     private static final Logger logger = Logger.getLogger (VocNsiListImpl.class.getName ());
         
@@ -280,9 +283,6 @@ public class VocNsiListImpl implements VocNsiListLocal {
 
     }
     
-    @EJB
-    NsiMBean nsi;
-
     @Override
     public JsonObject doImport (String id) {
 

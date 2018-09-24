@@ -19,6 +19,7 @@ import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.incoming.InNsiGroup;
+import ru.eludia.products.mosgis.db.model.incoming.InNsiItem;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiListGroup;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -28,7 +29,7 @@ import ru.eludia.products.mosgis.rest.ValidationException;
 @Startup
 @Singleton
 //@DependsOn ("Okei")
-public class Nsi implements NsiMBean {
+public class Nsi implements NsiMBean, NsiLocal {
 
     private ObjectName objectName = null;
     private MBeanServer platformMBeanServer;
@@ -71,10 +72,8 @@ public class Nsi implements NsiMBean {
     
     @Override
     public void importNsiGroup (VocNsiListGroup.i group) {
-        
-        final MosGisModel m = ModelHolder.getModel ();
-        
-        try (DB db = m.getDb ()) {
+
+        try (DB db = ModelHolder.getModel ().getDb ()) {
             
             UUIDPublisher.publish (inNsiQueue, 
                 (UUID) db.insertId (InNsiGroup.class, HASH (
@@ -106,7 +105,7 @@ public class Nsi implements NsiMBean {
         
     }
     
-    @Schedule (second="*/10", minute="*", hour="*", persistent=false)
+    @Schedule (second="*/4", minute="*", hour="*", persistent=false)
     public void checkQueue () {
         
         Integer registryNumber = waitingRegistryNumbers.poll ();
@@ -116,11 +115,29 @@ public class Nsi implements NsiMBean {
             return;
         }
         else {
-            UUIDPublisher.publish (inNsiItemQueue, String.valueOf (registryNumber));
+            importNsiItems (registryNumber, null);
             logger.info ("registryNumber=" + registryNumber + " is requested; " + waitingRegistryNumbers.size () + " left to go");
         }        
         
     }
+    
+    @Override
+    public void importNsiItems (int registryNumber, Integer page) {
+
+        try (DB db = ModelHolder.getModel ().getDb ()) {
+            
+            UUIDPublisher.publish (inNsiItemQueue, 
+                (UUID) db.insertId (InNsiItem.class, HASH (
+                    "registrynumber", registryNumber,
+                    "page", page
+                )));
+            
+        }
+        catch (Exception ex) {
+            throw new IllegalStateException (ex);
+        }        
+
+    }    
     
     /**
      * При пустой vc_okei выбрасывает исключение.

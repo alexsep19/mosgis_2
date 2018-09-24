@@ -1,6 +1,7 @@
 package ru.eludia.products.mosgis.jms.gis.send;
 
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,13 +13,14 @@ import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.jms.TextMessage;
 import ru.eludia.base.DB;
+import ru.eludia.products.mosgis.db.model.incoming.InNsiItem;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiList;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiListGroup;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisNsiCommonClient;
-import ru.eludia.products.mosgis.jms.base.TextMDB;
+import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.nsi_common_service_async.Fault;
 
@@ -27,7 +29,7 @@ import ru.gosuslugi.dom.schema.integration.nsi_common_service_async.Fault;
     , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
     , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class GisNsiItemMDB extends TextMDB {
+public class GisNsiItemMDB extends UUIDMDB<InNsiItem> {
     
     private static final Logger logger = Logger.getLogger (GisNsiItemMDB.class.getName ());
 
@@ -41,19 +43,19 @@ public class GisNsiItemMDB extends TextMDB {
     Queue outExportNsiItemQueue;
 
     @Override
-    protected void onTextMessage (TextMessage message) throws SQLException, JMSException {
+    protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
         
-        createImport (message.getText ()).run ();
+        createImport (r.get ("registrynumber"), r.get ("page")).run ();
 
     }
-    
-    private Import createImport (String text) {
-        
-        int pos = text.indexOf ('.');
-        
-        if (pos < 0) return new ImportNsiItem (Integer.valueOf (text));
 
-        return new ImportNsiPagingItem (Integer.valueOf (text.substring (0, pos)), Integer.valueOf (text.substring (pos + 1)));
+    private Import createImport (Object registryNumber, Object page) {
+        
+        int r = Integer.parseInt (registryNumber.toString ());
+                
+        if (page == null) return new ImportNsiItem (r);
+
+        return new ImportNsiPagingItem (r, Integer.valueOf (page.toString ()));
         
     }
     
