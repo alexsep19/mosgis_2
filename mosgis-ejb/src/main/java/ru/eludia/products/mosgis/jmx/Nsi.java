@@ -72,13 +72,18 @@ public class Nsi implements NsiMBean, NsiLocal {
     
     @Override
     public void importNsiGroup (VocNsiListGroup.i group) {
+        
+        UUID uuid = UUID.randomUUID ();
 
         try (DB db = ModelHolder.getModel ().getDb ()) {
             
-            UUIDPublisher.publish (inNsiQueue, 
-                (UUID) db.insertId (InNsiGroup.class, HASH (
-                    "listgroup", group.getName ())));
+            db.insert (InNsiGroup.class, HASH (
+                "uuid", uuid,
+                "listgroup", group.getName ()
+            ));
             
+            UUIDPublisher.publish (inNsiQueue, uuid);
+                        
         }
         catch (Exception ex) {
             throw new IllegalStateException (ex);
@@ -124,14 +129,18 @@ public class Nsi implements NsiMBean, NsiLocal {
     @Override
     public void importNsiItems (int registryNumber, Integer page) {
 
+        UUID uuid = UUID.randomUUID ();
+
         try (DB db = ModelHolder.getModel ().getDb ()) {
-            
-            UUIDPublisher.publish (inNsiItemQueue, 
-                (UUID) db.insertId (InNsiItem.class, HASH (
-                    "registrynumber", registryNumber,
-                    "page", page
-                )));
-            
+
+            db.insert (InNsiItem.class, HASH (
+                "uuid",           uuid,
+                "registrynumber", registryNumber,
+                "page",           page
+            ));
+
+            UUIDPublisher.publish (inNsiItemQueue, uuid);
+
         }
         catch (Exception ex) {
             throw new IllegalStateException (ex);

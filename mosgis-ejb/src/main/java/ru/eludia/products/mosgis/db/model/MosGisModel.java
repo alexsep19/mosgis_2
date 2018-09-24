@@ -17,9 +17,9 @@ public final class MosGisModel extends ru.eludia.base.Model {
         super (ds
             , "ru.eludia.products.mosgis.db.model.gis"
             , "ru.eludia.products.mosgis.db.model.tables"
+            , "ru.eludia.products.mosgis.db.model.incoming.soap"
             , "ru.eludia.products.mosgis.db.model.incoming"
 /*                
-            , "ru.eludia.products.mosgis.db.model.incoming.soap"
             , "ru.eludia.products.mosgis.db.model.incoming.json"
             , "ru.eludia.products.mosgis.db.model.incoming.json.statusViews"
             , "ru.eludia.products.mosgis.db.model.incoming.rec"

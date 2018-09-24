@@ -44,10 +44,10 @@ public class GisNsiMDB extends UUIDMDB<InNsiGroup> {
         
         try {
             
-            AckRequest.Ack ack = wsGisNsiCommonClient.exportNsiList (VocNsiListGroup.i.forName (g));
+            AckRequest.Ack ack = wsGisNsiCommonClient.exportNsiList (VocNsiListGroup.i.forName (g), uuid);
             
             db.update (OutSoap.class, DB.HASH (
-                "uuid",     ack.getRequesterMessageGUID (),
+                "uuid",     uuid,
                 "uuid_ack", ack.getMessageGUID ()
             ));
                 

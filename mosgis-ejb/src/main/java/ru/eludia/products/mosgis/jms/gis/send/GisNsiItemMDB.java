@@ -9,9 +9,7 @@ import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
-import javax.jms.JMSException;
 import javax.jms.Queue;
-import javax.jms.TextMessage;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.incoming.InNsiItem;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
@@ -45,17 +43,17 @@ public class GisNsiItemMDB extends UUIDMDB<InNsiItem> {
     @Override
     protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
         
-        createImport (r.get ("registrynumber"), r.get ("page")).run ();
+        createImport (r.get ("registrynumber"), r.get ("page"), uuid).run ();
 
     }
 
-    private Import createImport (Object registryNumber, Object page) {
+    private Import createImport (Object registryNumber, Object page, UUID uuid) {
         
         int r = Integer.parseInt (registryNumber.toString ());
                 
-        if (page == null) return new ImportNsiItem (r);
+        if (page == null) return new ImportNsiItem (uuid, r);
 
-        return new ImportNsiPagingItem (r, Integer.valueOf (page.toString ()));
+        return new ImportNsiPagingItem (uuid, r, Integer.valueOf (page.toString ()));
         
     }
     
@@ -95,10 +93,12 @@ public class GisNsiItemMDB extends UUIDMDB<InNsiItem> {
            
     private class ImportNsiItem extends Import {
         
+        UUID uuid;
         int registryNumber;
 
-        public ImportNsiItem (int registryNumber) {
+        public ImportNsiItem (UUID uuid, int registryNumber) {
 
+            this.uuid = uuid;
             this.registryNumber = registryNumber;
             
             try (DB db = ModelHolder.getModel ().getDb ()) {
@@ -112,7 +112,7 @@ public class GisNsiItemMDB extends UUIDMDB<InNsiItem> {
 
         @Override
         AckRequest.Ack getAck () throws Fault {
-            return wsGisNsiCommonClient.exportNsiItem (listGroup, registryNumber);
+            return wsGisNsiCommonClient.exportNsiItem (listGroup, registryNumber, uuid);
         }
 
         @Override
@@ -142,14 +142,14 @@ public class GisNsiItemMDB extends UUIDMDB<InNsiItem> {
         
         int page;
 
-        public ImportNsiPagingItem (int registryNumber, int page) {
-            super (registryNumber);
+        public ImportNsiPagingItem (UUID uuid, int registryNumber, int page) {
+            super (uuid, registryNumber);
             this.page = page;
         }
 
         @Override
         AckRequest.Ack getAck () throws Fault {
-            return wsGisNsiCommonClient.exportNsiPagingItem (listGroup, registryNumber, page);
+            return wsGisNsiCommonClient.exportNsiPagingItem (listGroup, registryNumber, page, uuid);
         }
         
     }
