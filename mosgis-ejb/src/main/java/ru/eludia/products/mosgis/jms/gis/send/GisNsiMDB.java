@@ -1,6 +1,7 @@
 package ru.eludia.products.mosgis.jms.gis.send;
 
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -8,16 +9,14 @@ import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
-import javax.jms.JMSException;
 import javax.jms.Queue;
-import javax.jms.TextMessage;
 import ru.eludia.base.DB;
+import ru.eludia.products.mosgis.db.model.incoming.InNsiGroup;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiListGroup;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisNsiCommonClient;
-import ru.eludia.products.mosgis.jms.base.TextMDB;
+import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 
 @MessageDriven(activationConfig = {
@@ -25,7 +24,7 @@ import ru.gosuslugi.dom.schema.integration.base.AckRequest;
     , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
     , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class GisNsiMDB extends TextMDB {
+public class GisNsiMDB extends UUIDMDB<InNsiGroup> {
     
     private static final Logger logger = Logger.getLogger (GisNsiMDB.class.getName ());
 
@@ -37,26 +36,28 @@ public class GisNsiMDB extends TextMDB {
 
     @Resource (mappedName = "mosgis.outExportNsiQueue")
     Queue outExportNsiQueue;
-
+    
     @Override
-    protected void onTextMessage (TextMessage message) throws SQLException, JMSException {
-                
-        try (DB db = ModelHolder.getModel ().getDb ()) {
-                
-            AckRequest.Ack ack = wsGisNsiCommonClient.exportNsiList (VocNsiListGroup.i.forName (message.getText ()));
-                
+    protected void handleRecord (DB db, UUID uuid, Map r) throws SQLException {
+        
+        String g = r.get ("listgroup").toString ();
+        
+        try {
+            
+            AckRequest.Ack ack = wsGisNsiCommonClient.exportNsiList (VocNsiListGroup.i.forName (g));
+            
             db.update (OutSoap.class, DB.HASH (
                 "uuid",     ack.getRequesterMessageGUID (),
                 "uuid_ack", ack.getMessageGUID ()
             ));
                 
             UUIDPublisher.publish (outExportNsiQueue, UUID.fromString (ack.getRequesterMessageGUID ()));
-                
+            
         }
         catch (Exception ex) {
-            logger.log (Level.SEVERE, null, ex);
+            logger.log (Level.SEVERE, "Cannot import NSI group " + g, ex);
         }
-       
+
     }
 
 }

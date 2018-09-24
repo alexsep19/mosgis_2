@@ -2,12 +2,12 @@ package ru.eludia.products.mosgis.jmx;
 
 import java.lang.management.ManagementFactory;
 import java.sql.SQLException;
+import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
-import javax.ejb.DependsOn;
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
@@ -16,9 +16,11 @@ import javax.jms.Queue;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.incoming.InNsiGroup;
+import ru.eludia.products.mosgis.db.model.voc.VocNsiListGroup;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
-import static ru.eludia.products.mosgis.db.model.voc.VocNsiListGroup.i.NSI;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.rest.ValidationException;
@@ -66,11 +68,29 @@ public class Nsi implements NsiMBean {
         }
 
     }
+    
+    @Override
+    public void importNsiGroup (VocNsiListGroup.i group) {
+        
+        final MosGisModel m = ModelHolder.getModel ();
+        
+        try (DB db = m.getDb ()) {
+            
+            UUIDPublisher.publish (inNsiQueue, 
+                (UUID) db.insertId (InNsiGroup.class, HASH (
+                    "listgroup", group.getName ())));
+            
+        }
+        catch (Exception ex) {
+            throw new IllegalStateException (ex);
+        }        
+        
+    }
 
     @Override
     public void importNsi () {
         checkEmptyOkei();
-        UUIDPublisher.publish (inNsiQueue, String.valueOf (NSI.toString ()));
+        importNsiGroup (VocNsiListGroup.i.NSI);
     }
         
     @Override
