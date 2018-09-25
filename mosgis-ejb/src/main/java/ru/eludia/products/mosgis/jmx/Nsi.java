@@ -3,13 +3,11 @@ package ru.eludia.products.mosgis.jmx;
 import java.lang.management.ManagementFactory;
 import java.sql.SQLException;
 import java.util.UUID;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
-import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.jms.Queue;
@@ -17,9 +15,11 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
+import ru.eludia.base.Model;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.incoming.InNsiGroup;
 import ru.eludia.products.mosgis.db.model.incoming.InNsiItem;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiListGroup;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -34,7 +34,7 @@ public class Nsi implements NsiMBean, NsiLocal {
     private ObjectName objectName = null;
     private MBeanServer platformMBeanServer;
     private static final Logger logger = Logger.getLogger (Nsi.class.getName ());
-    private ArrayBlockingQueue<Integer> waitingRegistryNumbers = new ArrayBlockingQueue <> (1000);
+//    private ArrayBlockingQueue<Integer> waitingRegistryNumbers = new ArrayBlockingQueue <> (1000);
     
     @EJB
     protected UUIDPublisher UUIDPublisher;
@@ -93,36 +93,56 @@ public class Nsi implements NsiMBean, NsiLocal {
 
     @Override
     public void importNsi () {
-        checkEmptyOkei();
+        
+        checkEmptyOkei ();
+        
         importNsiGroup (VocNsiListGroup.i.NSI);
+        
+        importNsiGroup (VocNsiListGroup.i.NSIRAO);
+        
     }
         
     @Override
     public void importNsiItems (int registryNumber) {
-        checkEmptyOkei();
-        if (waitingRegistryNumbers.contains (registryNumber)) {
-            logger.warning ("Reloading registryNumber=" + registryNumber + " is already to schedule, bypassing it");
-            return;
-        }
         
-        logger.warning ("Scheduling registryNumber=" + registryNumber + "...");
-        waitingRegistryNumbers.add (registryNumber);
+        checkEmptyOkei ();
+        
+        importNsiItems (registryNumber, null);
         
     }
     
-    @Schedule (second="*/4", minute="*", hour="*", persistent=false)
-    public void checkQueue () {
+    @Override
+    public void checkForPending () {
         
-        Integer registryNumber = waitingRegistryNumbers.poll ();
+        logger.info ("Checking for pending NSI item imports...");
         
-        if (registryNumber == null) {
-//            logger.info ("Nothing to do");
-            return;
+        Model m = ModelHolder.getModel ();
+                                
+        try (DB db = m.getDb ()) {
+            
+            String sUID = db.getString (m.select (InNsiItem.class, "uuid").where ("uuid NOT IN", m.select (OutSoap.class, "uuid")));
+            
+            if (sUID != null) {
+                
+                UUID uuid = DB.to.UUIDFromHex (sUID);
+                
+                UUIDPublisher.publish (inNsiItemQueue, uuid);
+                
+                logger.info ("NSI import is launched for " + uuid);
+                
+            }
+            else {
+                
+                logger.info ("NSI import is over");
+                
+            }
+
         }
-        else {
-            importNsiItems (registryNumber, null);
-            logger.info ("registryNumber=" + registryNumber + " is requested; " + waitingRegistryNumbers.size () + " left to go");
-        }        
+        catch (Exception ex) {
+            
+            throw new IllegalStateException (ex);
+            
+        }                
         
     }
     

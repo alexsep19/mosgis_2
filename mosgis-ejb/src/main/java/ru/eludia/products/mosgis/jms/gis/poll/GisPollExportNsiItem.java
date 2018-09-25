@@ -62,10 +62,7 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
     
     @EJB
     NsiLocal nsi;
-/*
-    @Resource (mappedName = "mosgis.inNsiItemQueue")
-    Queue inNsiItemQueue;
-*/
+
     @Resource (mappedName = "mosgis.outExportNsiItemQueue")
     Queue outExportNsiItemQueue;
 
@@ -132,8 +129,6 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
             if (errorMessage != null) {
                                 
                 if ("INT016041".equals (errorMessage.getErrorCode ())) {
-                    
-//                    UUIDPublisher.publish (inNsiItemQueue, registryNumber + ".1");
                     
                     nsi.importNsiItems (registryNumber, 1);
 
@@ -283,10 +278,13 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
             
             db.commit ();
             
-            if (page < pages) nsi.importNsiItems (registryNumber, page + 1);
-
-//                UUIDPublisher.publish (inNsiItemQueue, registryNumber + "." + (page + 1));
-
+            if (page < pages) {
+                nsi.importNsiItems (registryNumber, page + 1);
+            }
+            else {
+                nsi.checkForPending ();
+            }
+            
         }
         catch (Exception ex) {
             logger.log (Level.SEVERE, null, ex);

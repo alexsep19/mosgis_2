@@ -10,5 +10,6 @@ public interface NsiLocal {
     public void importNsiGroup (VocNsiListGroup.i group);
     public void importNsiItems (int registryNumber);
     public void importNsiItems (int registryNumber, Integer page);
-    
+    public void checkForPending ();
+
 }
