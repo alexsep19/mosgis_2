@@ -232,6 +232,8 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
         qp.add (" WHERE uuid_contract = ?", id, uCol);
         qp.append (")");
         
+        db.d0 (qp);        
+
         logAction (db, user, id, "alter");
         
     });}
