@@ -147,6 +147,8 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
                         "err_code",  errorMessage.getErrorCode (),
                         "err_text",  errorMessage.getDescription ()                        
                     ));
+                    
+                    nsi.checkForPending ();
 
                 }                
                 

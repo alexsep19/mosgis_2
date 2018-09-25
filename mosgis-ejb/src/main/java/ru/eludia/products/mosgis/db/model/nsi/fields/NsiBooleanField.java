@@ -18,10 +18,15 @@ public final class NsiBooleanField extends NsiScalarField {
 
     @Override
     public void add (Map<String, Object> record, NsiElementFieldType value) {        
-        NsiElementBooleanFieldType v = (NsiElementBooleanFieldType) value;
+        
+        NsiElementBooleanFieldType v = (NsiElementBooleanFieldType) value;        
         if (v == null) return;
+        
         Boolean b = v.isValue ();
-        int i = b == null ? null : b ? 1 : 0;
+        if (b == null) return;
+        
+        int i = b ? 1 : 0;
+        
         if (isMultiple ()) {
             if (!record.containsKey (fName)) record.put (fName, new ArrayList ());
             ((List) record.get (fName)).add (i);
@@ -29,6 +34,7 @@ public final class NsiBooleanField extends NsiScalarField {
         else {
             record.put (fName, i);
         }        
+        
     }
     
     @Override
