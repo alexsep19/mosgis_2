@@ -7,7 +7,7 @@ public class VocGisStatus extends Table {
 
     public VocGisStatus () {
         
-        super ("vc_gis_status", "Статусы процессов утверждения в ГИС ЖКХ (из hcs-house-management-types.xsd)");
+        super ("vc_gis_status", "Статусы процессов утверждения в ГИС ЖКХ (из hcs-house-management-types.xsd + собственные)");
         
         pk    ("id",           Type.INTEGER, "Ключ");        
         col   ("name",         Type.STRING,  "Идентификатор");
@@ -19,19 +19,49 @@ public class VocGisStatus extends Table {
     
     public enum i {
 
-        PROJECT          (10,  "Project",         "проект"),
-        MUTATING         (11,  "_mutating",       "изменение"),
+        PROJECT              (10,  "Project",         "проект"),
         
-        APPROVAL_PROCESS (20,  "ApprovalProcess", "на утверждении"),
-        REVIEWED         (30,  "Reviewed",        "рассмотрен"),
-        APPROVED         (40,  "Approved",        "утвержден"),
-        RUNNING          (50,  "Running",         "действующий"),
-        EXPIRED          (60,  "Expired",         "истек срок действия"),
-        LOCKED           (70,  "Locked",          "заблокирован"),
-        NOT_RUNNING      (80,  "NotRunning",      "не действующий"),
-        REJECTED         (90,  "Rejected",        "отклонен"),
-        TERMINATED       (100, "Terminated",      "расторгнут/закрыт"),
-        ANNUL            (110, "Annul",           "аннулирован");
+        MUTATING             (11,  "_mutating",       "изменение"),
+
+        PENDING_RQ_PLACING   (12,  "_pending_rq_placing", "ожидание размещения"),
+        PENDING_RP_PLACING   (13,  "_pending_rp_placing", "ожидание подтверждения размещения"),
+        FAILED_PLACING       (14,  "_failed_placing", "ошибка размещения"),
+        
+        APPROVAL_PROCESS     (20,  "ApprovalProcess", "на утверждении"),
+
+        PENDING_RQ_REFRESH   (22,  "_pending_rq_refresh", "ожидание обновления"),
+        PENDING_RP_REFRESH   (23,  "_pending_rp_refresh", "ожидание подтверждения обновления"),
+        FAILED_REFRESH       (24,  "_failed_refresh", "ошибка обновления"),
+
+        REVIEWED             (30,  "Reviewed",        "рассмотрен"),
+        
+        PENDING_RQ_APPROVAL  (32,  "_pending_rq_approval", "ожидание утверждения"),
+        PENDING_RP_APPROVAL  (33,  "_pending_rp_approval", "ожидание подтверждения утверждения"),
+
+        FAILED_STATE         (34,  "_failed_state", "ошибка обмена"),
+        
+        APPROVED             (40,  "Approved",        "утвержден"),
+        
+        PENDING_RQ_EDIT      (42,  "_pending_rq_edit", "ожидание переразмещения"),
+        PENDING_RP_EDIT      (43,  "_pending_rp_edit", "ожидание подтверждения переразмещения"),
+        
+        RUNNING              (50,  "Running",         "действующий"),
+        EXPIRED              (60,  "Expired",         "истек срок действия"),
+        LOCKED               (70,  "Locked",          "заблокирован"),
+        NOT_RUNNING          (80,  "NotRunning",      "не действующий"),
+        REJECTED             (90,  "Rejected",        "отклонен"),
+        
+        PENDING_RQ_TERMINATE (92,  "_pending_rq_terminate", "ожидание расторжения"),
+        PENDING_RP_TERMINATE (93,  "_pending_rp_terminate", "ожидание подтверждения расторжения"),
+        FAILED_TERMINATE     (94,  "_failed_terminate", "ошибка расторжения"),
+        
+        TERMINATED           (100, "Terminated",      "расторгнут/закрыт"),
+        
+        PENDING_RQ_ANNULMENT (102,  "_pending_rq_annulment", "ожидание аннулирования"),
+        PENDING_RP_ANNULMENT (103,  "_pending_rp_annulment", "ожидание подтверждения аннулирования"),
+        FAILED_ANNULMENT     (104,  "_failed_annulment", "ошибка аннулирования"),
+        
+        ANNUL                (110, "Annul",           "аннулирован");
 
         byte id;
         String name;
@@ -54,12 +84,21 @@ public class VocGisStatus extends Table {
             this.name = name;
             this.label = label;            
         }
-        
+
         public static i forName (String name) {
             for (i i: values ()) if (i.name.equals (name)) return i;
             return null;
         }
-        
+
+        public static i forId (int id) {
+            for (i i: values ()) if (i.id == id) return i;
+            return null;
+        }
+
+        public static i forId (Object id) {
+            return forId (Integer.parseInt (id.toString ()));
+        }
+
     }
-    
+
 }

@@ -3,11 +3,13 @@ package ru.eludia.products.mosgis.jms.gis.send;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -74,7 +76,7 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
             
             return (Get) m
                 .get (getTable (), uuid, "*")
-                .toOne (Contract.class, "AS ctr").on ()
+                .toOne (Contract.class, "AS ctr", "id_ctr_status").on ()
                 .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("ctr.uuid_org")
                 .toOne (nsi58, "AS vc_nsi_58", "guid").on ("vc_nsi_58.code=ctr.code_vc_nsi_58 AND vc_nsi_58.isactual=1")
             ;
@@ -85,24 +87,39 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
         }
                 
     }
-
-    @Override
-    protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
-        
-        final UUID orgppaguid = (UUID) r.get ("org.orgppaguid");
-        
-        Model m = db.getModel ();
+    
+    private Map<Object, Map<String, Object>> getId2file (DB db, Model m, Map<String, Object> r) throws SQLException {
         
         Map<Object, Map<String, Object>> id2file = db.getIdx (m
-            .select (ContractFile.class, "*")
-            .toOne  (ContractFileLog.class, "AS log", "ts_start_sending").on ()
-            .where  ("uuid_contract", r.get ("uuid_object"))
-            .and    ("id_status", 1)
+                .select (ContractFile.class, "*")
+                .toOne  (ContractFileLog.class, "AS log", "ts_start_sending").on ()
+                .where  ("uuid_contract", r.get ("uuid_object"))
+                .and    ("id_status", 1)
         );
+        
+        return id2file;
+        
+    }  
+    
+    private class StaleFileException extends Exception {
+        
+        UUID uuid;
+
+        public StaleFileException (UUID uuid) {
+            this.uuid = uuid;
+        }        
+
+        public UUID getUuid () {
+            return uuid;
+        }
+        
+    }
+    
+    private UUID getFileUUIDwaitingFor (DB db, Collection <Map<String, Object>> files) throws SQLException, StaleFileException {
         
         UUID waitingFor = null;
         
-        for (Map<String, Object> file: id2file.values ()) {
+        for (Map<String, Object> file: files) {
             
             if (file.get ("attachmentguid") != null) continue;
             
@@ -119,131 +136,225 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
                 
             }
             else if (Timestamp.valueOf (ots.toString ()).getTime () < System.currentTimeMillis () - 1000L * 60 * 60) {
-                                                        
-                db.update (Contract.class, DB.HASH (
-                    "uuid",              r.get ("uuid_object"),
-                    "id_ctr_status",     VocGisStatus.i.MUTATING.getId () // !!!
-                ));
-                
-                logger.warning ("Stale contract file: " + file.get ("uuid"));
 
-                return;
-                
+                throw new StaleFileException ((UUID) file.get ("uuid"));
+
             }
             else if (waitingFor == null) {
-                
+
                 waitingFor = (UUID) file.get ("uuid");
-                
+
             }
             
+        }
+        
+        return waitingFor;
+        
+    }
+    
+    private boolean isFileSetReadyToContinue (DB db, Map<String, Object> r, Collection <Map<String, Object>> files) throws SQLException {
+        
+        UUID waitingFor = null;
+        
+        try {
+            waitingFor = getFileUUIDwaitingFor (db, files);
+        }
+        catch (StaleFileException ex) {
+            
+            db.update (Contract.class, DB.HASH (
+                "uuid",              r.get ("uuid_object"),
+                "id_ctr_status",     VocGisStatus.i.FAILED_PLACING.getId ()
+            ));
+                
+            logger.warning ("Stale contract file: " + ex.getUuid ());
+
+            return false;
+                
         }
         
         if (waitingFor != null) {
             
             logger.info ("Waiting for " + waitingFor + " to upload");
             
-            UUIDPublisher.publish (ownQueue, uuid);
+            UUIDPublisher.publish (ownQueue, (UUID) r.get ("uuid"));
             
+            return false;
+            
+        }        
+        
+        return true;
+        
+    }
+    
+    private enum Action {
+        
+        PLACING (VocGisStatus.i.PENDING_RP_PLACING, VocGisStatus.i.FAILED_PLACING)
+        ;
+        
+        VocGisStatus.i nextStatus;
+        VocGisStatus.i failStatus;
+
+        private Action (VocGisStatus.i nextStatus, VocGisStatus.i failStatus) {
+            this.nextStatus = nextStatus;
+            this.failStatus = failStatus;
+        }        
+        
+        static Action forStatus (VocGisStatus.i status) {
+            switch (status) {
+                case PENDING_RQ_PLACING: return PLACING;
+                default: return null;
+            }            
+        }
+                
+    };
+    
+    AckRequest.Ack invoke (Action action, UUID messageGUID,  Map<String, Object> r) throws Fault {
+            
+        final UUID orgPPAGuid = (UUID) r.get ("org.orgppaguid");
+            
+        switch (action) {
+            case PLACING: return wsGisHouseManagementClient.placeContractData (orgPPAGuid, messageGUID, r);
+            default: throw new IllegalArgumentException ("No action implemented for " + action);
+        }
+            
+    }
+    
+            
+    @Override
+    protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
+        
+        VocGisStatus.i status = VocGisStatus.i.forId (r.get ("ctr.id_ctr_status"));
+        
+        Action action = Action.forStatus (status);
+        
+        if (action == null) {
+            logger.warning ("No action is implemented for " + status);
             return;
-            
         }
 
-        r.put ("files", id2file.values ());
+        Model m = db.getModel ();
+        
+        if (someFileUploadIsInProgress (db, m, r)) return;
+                        
+        UUID messageGUID = UUID.randomUUID ();
+                                            
+        try {
 
-            NsiTable nsi3 = NsiTable.getNsiTable (db, 3);
+            AckRequest.Ack ack = invoke (action, messageGUID, r);
 
-            Map<UUID, Map<String, Object>> id2o = new HashMap <> ();
-            
-            db.forEach (m.select (ContractObject.class, "*").where ("uuid_contract", r.get ("uuid_object")).and ("is_deleted", 0), (rs) -> {                
-                Map<String, Object> object = db.HASH (rs);                                
-                object.put ("services", new ArrayList ());
-                UUID agr = (UUID) object.get ("uuid_contract_agreement");
-                if (agr != null) object.put ("contract_agreement", ContractFile.toAttachmentType (id2file.get (agr)));
-                id2o.put ((UUID) object.get ("uuid"), object);                
-            });
-            
-            r.put ("objects", id2o.values ());
-            
-            db.forEach (m
+            db.begin ();
+
+                db.update (OutSoap.class, DB.HASH (
+                    "uuid",     messageGUID,
+                    "uuid_ack", ack.getMessageGUID ()
+                ));
+
+                db.update (getTable (), DB.HASH (
+                    "uuid",          uuid,
+                    "uuid_out_soap", messageGUID,
+                    "uuid_message",  ack.getMessageGUID ()
+                ));
+
+                db.update (Contract.class, DB.HASH (
+                    "uuid",          r.get ("uuid_object"),
+                    "uuid_out_soap", messageGUID,
+                    "id_ctr_status", action.nextStatus.getId ()
+                ));
+
+            db.commit ();
+
+            UUIDPublisher.publish (queue, ack.getRequesterMessageGUID ());            
+
+        }
+        catch (Fault ex) {
+
+            logger.log (Level.SEVERE, "Can't place management contract", ex);
+
+            ru.gosuslugi.dom.schema.integration.base.Fault faultInfo = ex.getFaultInfo ();
+
+            db.begin ();
+
+                db.update (OutSoap.class, HASH (
+                    "uuid", messageGUID,
+                    "id_status", DONE.getId (),
+                    "is_failed", 1,
+                    "err_code",  faultInfo.getErrorCode (),
+                    "err_text",  faultInfo.getErrorMessage ()
+                ));
+
+                db.update (getTable (), DB.HASH (
+                    "uuid",          uuid,
+                    "uuid_out_soap", messageGUID
+                ));
+
+                db.update (Contract.class, DB.HASH (
+                    "uuid",              r.get ("uuid_object"),
+                    "uuid_out_soap",     messageGUID,
+                    "id_ctr_status",     action.failStatus.getId ()
+                ));
+
+            db.commit ();
+
+            return;
+
+        }
+        
+    }
+
+    private boolean someFileUploadIsInProgress (DB db, Model m, Map<String, Object> r) throws SQLException {
+        
+        Map <Object, Map <String, Object>> id2file = getId2file (db, m, r);
+        
+        final Collection <Map<String, Object>> files = id2file.values ();
+        
+        if (!isFileSetReadyToContinue (db, r, files)) return true;
+        
+        addFilesAndObjects (r, files, db, m, id2file);
+        
+        return false;
+        
+    }
+
+    private void addFilesAndObjects (Map<String, Object> r, final Collection<Map<String, Object>> files, DB db, Model m, Map<Object, Map<String, Object>> id2file) throws SQLException {
+        
+        r.put ("files", files);
+        
+        NsiTable nsi3 = NsiTable.getNsiTable (db, 3);
+        
+        Map<UUID, Map<String, Object>> id2o = new HashMap <> ();
+        
+        db.forEach (m.select (ContractObject.class, "*").where ("uuid_contract", r.get ("uuid_object")).and ("is_deleted", 0), (rs) -> {
+            Map<String, Object> object = db.HASH (rs);
+            object.put ("services", new ArrayList ());
+            UUID agr = (UUID) object.get ("uuid_contract_agreement");
+            if (agr != null) object.put ("contract_agreement", ContractFile.toAttachmentType (id2file.get (agr)));
+            id2o.put ((UUID) object.get ("uuid"), object);
+        });
+        
+        r.put ("objects", id2o.values ());
+        
+        db.forEach (m
                 .select (ContractObjectService.class, "AS root", "*")
                 .toMaybeOne (AdditionalService.class, "AS add_service", "uniquenumber", "elementguid").on ()
                 .toMaybeOne (nsi3, "AS vc_nsi_3", "code", "guid").on ("vc_nsi_3.code=root.code_vc_nsi_3 AND vc_nsi_3.isactual=1")
                 .where ("uuid_contract", r.get ("uuid_object"))
-                .and ("is_deleted", 0), 
-            (rs) -> {
+                .and ("is_deleted", 0),
                 
-                Map<String, Object> service = db.HASH (rs);                                
-                
-                UUID agr = (UUID) service.get ("uuid_contract_agreement");
-                
-                if (agr != null) service.put ("contract_agreement", ContractFile.toAttachmentType (id2file.get (agr)));
-            
-                final Map<String, Object> o = id2o.get (service.get ("uuid_contract_object"));
-                
-                if (o != null) ((List) o.get ("services")).add (service);
-                
-            });
-                        
-            UUID messageGUID = UUID.randomUUID ();
-                                    
-            try {
-                
-                AckRequest.Ack ack = wsGisHouseManagementClient.placeContractData (orgppaguid, messageGUID, r);
-                
-                db.begin ();
-
-                    db.update (OutSoap.class, DB.HASH (
-                        "uuid",     messageGUID,
-                        "uuid_ack", ack.getMessageGUID ()
-                    ));
-
-                    db.update (getTable (), DB.HASH (
-                        "uuid",          uuid,
-                        "uuid_out_soap", messageGUID,
-                        "uuid_message",  ack.getMessageGUID ()
-                    ));
+                (rs) -> {
                     
-                    db.update (Contract.class, DB.HASH (
-                        "uuid",          r.get ("uuid_object"),
-                        "uuid_out_soap", messageGUID
-                    ));
-
-                db.commit ();
-
-                UUIDPublisher.publish (queue, ack.getRequesterMessageGUID ());            
-                
-            }
-            catch (Fault ex) {
-
-                logger.log (Level.SEVERE, "Can't place management contract", ex);
-
-                ru.gosuslugi.dom.schema.integration.base.Fault faultInfo = ex.getFaultInfo ();
-
-                db.begin ();
-
-                    db.update (OutSoap.class, HASH (
-                        "uuid", messageGUID,
-                        "id_status", DONE.getId (),
-                        "is_failed", 1,
-                        "err_code",  faultInfo.getErrorCode (),
-                        "err_text",  faultInfo.getErrorMessage ()
-                    ));
-
-                    db.update (getTable (), DB.HASH (
-                        "uuid",          uuid,
-                        "uuid_out_soap", messageGUID
-                    ));
-                                        
-                    db.update (Contract.class, DB.HASH (
-                        "uuid",              r.get ("uuid_object"),
-                        "uuid_out_soap",     messageGUID
-                    ));
+                    Map<String, Object> service = db.HASH (rs);
                     
-                db.commit ();
-
-                return;
-
-            }
+                    UUID agr = (UUID) service.get ("uuid_contract_agreement");
+                    
+                    if (agr != null) service.put ("contract_agreement", ContractFile.toAttachmentType (id2file.get (agr)));
+                    
+                    final Map<String, Object> o = id2o.get (service.get ("uuid_contract_object"));
+                    
+                    if (o != null) ((List) o.get ("services")).add (service);
+                    
+                }
+                
+        );
     }
     
 }

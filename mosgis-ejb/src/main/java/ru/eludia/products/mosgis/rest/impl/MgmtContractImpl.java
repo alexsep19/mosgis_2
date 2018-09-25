@@ -10,11 +10,15 @@ import javax.json.JsonObjectBuilder;
 import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
+import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
+import ru.eludia.base.model.phys.PhysicalCol;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
+import ru.eludia.products.mosgis.db.model.tables.ContractFile;
+import ru.eludia.products.mosgis.db.model.tables.ContractFileLog;
 import ru.eludia.products.mosgis.db.model.tables.ContractLog;
 import ru.eludia.products.mosgis.db.model.tables.MgmtContract;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
@@ -194,9 +198,9 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
 
         db.update (getTable (), HASH (
             "uuid",           id,
-            "id_ctr_status",  VocGisStatus.i.APPROVED.getId ()
+            "id_ctr_status",  VocGisStatus.i.PENDING_RQ_PLACING.getId ()
         ));
-
+        
         logAction (db, user, id, "approve");
         
     });}
@@ -206,9 +210,28 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
 
         db.update (getTable (), HASH (
             "uuid",           id,
-            "id_ctr_status",  VocGisStatus.i.MUTATING.getId ()
+            "id_ctr_status",  VocGisStatus.i.MUTATING.getId (),
+            "uuid_out_soap",  null
         ));
+        
+        Table t = db.getModel ().t (ContractFile.class);
+        final PhysicalCol uCol = t.getColumn ("uuid_contract").toPhysical ();
+        
+        QP qp = new QP ("UPDATE ");
+        qp.append (t.getName ());
+        qp.append (" SET attachmentguid = NULL ");
+        qp.add ("WHERE uuid_contract = ?", id, uCol);
 
+        db.d0 (qp);        
+
+        Table tl = db.getModel ().t (ContractFileLog.class);
+        qp = new QP ("UPDATE ");
+        qp.append (tl.getName ());
+        qp.append (" SET ts_start_sending = NULL WHERE uuid_object IN (SELECT uuid FROM ");
+        qp.append (t.getName ());
+        qp.add (" WHERE uuid_contract = ?", id, uCol);
+        qp.append (")");
+        
         logAction (db, user, id, "alter");
         
     });}

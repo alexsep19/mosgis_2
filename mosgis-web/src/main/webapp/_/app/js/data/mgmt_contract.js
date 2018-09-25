@@ -39,8 +39,8 @@ define ([], function () {
                             it._can.edit    = 1
                             it._can.approve = 1
                             break;
-                        case 40:
-                            if (it.contractguid || it ['out_soap.err_text']) it._can.alter = 1
+                        case 14:
+                            it._can.alter = 1
                             break;
 
                     }

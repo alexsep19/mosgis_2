@@ -80,8 +80,8 @@ public class Contract extends Table {
 
             + "IF UPDATING "
             + " AND :OLD.id_ctr_status NOT IN (10, 11) "
-            + " AND :NEW.id_ctr_status NOT IN (10, 11) "
-            + " AND NVL (:OLD.id_log, '00') = NVL (:NEW.id_log, '00') "
+            + " AND :OLD.id_ctr_status = :NEW.id_ctr_status "
+            + " AND NVL (:OLD.id_log, '00')        = NVL (:NEW.id_log, '00') "
             + " AND NVL (:OLD.uuid_out_soap, '00') = NVL (:NEW.uuid_out_soap, '00') "
             + " AND NVL (:OLD.contractguid, '00')  = NVL (:NEW.contractguid, '00') "
             + "THEN "
@@ -107,10 +107,26 @@ public class Contract extends Table {
                 + "END IF; "
                         
             + "END IF; "
+                        
+            + "IF UPDATING "
+            + "  AND :OLD.id_ctr_status <> " + VocGisStatus.i.MUTATING.getId ()
+            + "  AND :NEW.id_ctr_status = " + VocGisStatus.i.MUTATING.getId ()
+            + " THEN BEGIN "
+                + "IF :OLD.id_ctr_status NOT IN ("
+                   + VocGisStatus.i.FAILED_PLACING.getId () + ","
+                   + VocGisStatus.i.FAILED_STATE.getId () + ","
+                   + VocGisStatus.i.APPROVED.getId () + ","
+                   + VocGisStatus.i.REJECTED.getId () + ","
+                   + VocGisStatus.i.FAILED_TERMINATE.getId () + 
+                ") THEN "
+                + " raise_application_error (-20000, 'Текущий статус договора не допускает внесения изменений. Операция отменена.'); "
+                + "END IF; "
+                + "IF :OLD.id_ctr_status = " + VocGisStatus.i.FAILED_PLACING.getId () + " THEN :NEW.id_ctr_status := " + VocGisStatus.i.PROJECT.getId () + "; END IF; "
+            + "END; END IF; "
 
             + "IF UPDATING "
-            + "  AND :OLD.id_ctr_status < " + VocGisStatus.i.APPROVED.getId ()
-            + "  AND :NEW.id_ctr_status = " + VocGisStatus.i.APPROVED.getId ()
+            + "  AND :OLD.id_ctr_status < " + VocGisStatus.i.PENDING_RQ_APPROVAL.getId ()
+            + "  AND :NEW.id_ctr_status = " + VocGisStatus.i.PENDING_RQ_APPROVAL.getId ()
             + " THEN "
 
                 + " IF :NEW.ddt_m_start IS NULL THEN raise_application_error (-20000, 'Не задано начало периода ввода показаний приборов учёта. Операция отменена.'); END IF; "
