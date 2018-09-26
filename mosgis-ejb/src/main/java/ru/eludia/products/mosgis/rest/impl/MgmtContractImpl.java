@@ -162,7 +162,11 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
 
                 model
                     .select (VocGisStatus.class, "id", "label")                    
-                    .orderBy ("id")
+                    .orderBy ("id"),
+                
+                model
+                    .select (VocOrganization.class, "AS customers", "uuid AS id", "label")
+                    .orderBy ("label")
 
             );
 
