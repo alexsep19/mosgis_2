@@ -24,6 +24,7 @@ import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
+import ru.eludia.products.mosgis.rest.api.MgmtContractLocal;
 import ru.gosuslugi.dom.schema.integration.base.CommonResultType;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportStatusCAChResultType;
@@ -48,59 +49,76 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
     @EJB
     protected UUIDPublisher UUIDPublisher;
     
+    @EJB
+    MgmtContractLocal mgmtContract;
+    
     @Override
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
-            .toOne (ContractLog.class,     "AS log", "uuid"      ).on ("log.uuid_out_soap=root.uuid")
-            .toOne (Contract.class,        "AS ctr", "uuid"      ).on ()
-            .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("ctr.uuid_org")
+            .toOne (ContractLog.class,     "AS log", "uuid", "id_ctr_status").on ("log.uuid_out_soap=root.uuid")
+            .toOne (Contract.class,        "AS ctr", "uuid"                 ).on ()
+            .toOne (VocOrganization.class, "AS org", "orgppaguid"           ).on ("ctr.uuid_org")
         ;
         
     }
         
-    private void assertLen1 (List l, String msg, VocGisStatus.i status) throws FU {
-        if (l == null || l.isEmpty ()) throw new FU ("0", msg + " вернулся пустой список", status);
+    private void assertLen1 (List l, String msg, VocGisStatus.i failStatus) throws FU {
+        if (l == null || l.isEmpty ()) throw new FU ("0", msg + " вернулся пустой список", failStatus);
         int len = l.size ();
-        if (len != 1) throw new FU ("0", msg + " вернулось " + len, status);
+        if (len != 1) throw new FU ("0", msg + " вернулось " + len, failStatus);
     }
     
-    private ImportContractResultType digImportContract (GetStateResult rp) throws FU {
+    private ImportContractResultType digImportContract (GetStateResult rp, VocGisStatus.i failStatus) throws FU {
         
-        ErrorMessageType e1 = rp.getErrorMessage (); if (e1 != null) throw new FU (e1, VocGisStatus.i.FAILED_PLACING);
+        ErrorMessageType e1 = rp.getErrorMessage (); if (e1 != null) throw new FU (e1, failStatus);
             
         List<ImportResult> importResult = rp.getImportResult ();            
-        assertLen1 (importResult, "Вместо 1 результата (importResult)", VocGisStatus.i.FAILED_PLACING);
+        assertLen1 (importResult, "Вместо 1 результата (importResult)", failStatus);
             
         ImportResult result = importResult.get (0);
             
-        final ErrorMessageType e2 = result.getErrorMessage (); if (e2 != null) throw new FU (e2, VocGisStatus.i.FAILED_PLACING);
+        final ErrorMessageType e2 = result.getErrorMessage (); if (e2 != null) throw new FU (e2, failStatus);
 
         List<ImportResult.CommonResult> commonResult = result.getCommonResult ();
-        assertLen1 (importResult, "Вместо 1 результата (commonResult)", VocGisStatus.i.FAILED_PLACING);
+        assertLen1 (importResult, "Вместо 1 результата (commonResult)", failStatus);
         
         ImportResult.CommonResult icr = commonResult.get (0);
         List<CommonResultType.Error> e3 = icr.getError ();
         
-        if (e3 != null && !e3.isEmpty ()) throw new FU (e3.get (0), VocGisStatus.i.FAILED_PLACING);
-            
+        if (e3 != null && !e3.isEmpty ()) throw new FU (e3.get (0), failStatus);
+                    
         ImportContractResultType importContract = icr.getImportContract ();
-        if (importContract == null) throw new FU ("0", "Тип ответа не соответствует передаче договора управления", VocGisStatus.i.FAILED_PLACING);
+        if (importContract == null) throw new FU ("0", "Тип ответа не соответствует передаче договора управления", failStatus);
             
-        ErrorMessageType e4 = importContract.getError (); if (e4 != null) throw new FU (e4, VocGisStatus.i.FAILED_PLACING);
-        
+        ErrorMessageType e4 = importContract.getError (); if (e4 != null) throw new FU (e4, failStatus);
+
         return importContract;
         
     }
 
     @Override
     protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
-                
-        UUID orgPPAGuid = (UUID) r.get ("org.orgppaguid");        
+
+        UUID orgPPAGuid = (UUID) r.get ("org.orgppaguid");
         
+        final VocGisStatus.i lastStatus = VocGisStatus.i.forId (r.get ("log.id_ctr_status"));
+        
+        if (lastStatus == null) {
+            logger.severe ("Cannot detect last status for " + r);
+            return;
+        }
+
+        final Contract.Action action = Contract.Action.forStatus (lastStatus);
+
+        if (action == null) {
+            logger.severe ("Cannot detect expected action for " + r);
+            return;
+        }
+
         try {
-                       
+
             GetStateResult rp;
-            
+
             try {
                 rp = wsGisHouseManagementClient.getState (orgPPAGuid, (UUID) r.get ("uuid_ack"));
             }
@@ -108,14 +126,14 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
                 final ru.gosuslugi.dom.schema.integration.base.Fault faultInfo = ex.getFaultInfo ();
                 throw new FU (faultInfo.getErrorCode (), faultInfo.getErrorMessage (), VocGisStatus.i.FAILED_STATE);
             }
-            
+
             if (rp.getRequestState () < DONE.getId ()) {
                 logger.info ("requestState = " + rp.getRequestState () + ", retry...");
                 UUIDPublisher.publish (queue, uuid);
                 return;
             }
 
-            ImportContractResultType importContract = digImportContract (rp);            
+            ImportContractResultType importContract = digImportContract (rp, action.getFailStatus ());            
 
             db.begin ();            
             
@@ -131,9 +149,13 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
                 if (state == null) state = VocGisStatus.i.NOT_RUNNING;
                 
                 final byte status = VocGisStatus.i.forName (importContract.getContractStatus ().value ()).getId ();
+            
+                final UUID uuidContract = (UUID) r.get ("ctr.uuid");
 
-                db.update (Contract.class, HASH ("uuid", r.get ("ctr.uuid"),
+                db.update (Contract.class, HASH (
+                    "uuid", uuidContract,
                     "contractguid", importContract.getContractGUID (),
+                    "contractversionguid", importContract.getContractVersionGUID (),
                     "id_ctr_status", status,
                     "id_ctr_status_gis", status,
                     "id_ctr_state_gis",  state.getId ()
@@ -148,6 +170,8 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
                     "uuid", uuid,
                     "id_status", DONE.getId ()
                 ));
+                
+                if (state == VocGisStatus.i.REVIEWED) mgmtContract.doPromote (uuidContract.toString ());
                                                     
             db.commit ();
             

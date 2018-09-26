@@ -206,6 +206,18 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
     });}
     
     @Override
+    public JsonObject doPromote (String id) {return doAction ((db) -> {
+
+        db.update (getTable (), HASH (
+            "uuid",           id,
+            "id_ctr_status",  VocGisStatus.i.PENDING_RQ_APPROVAL.getId ()
+        ));
+        
+        logAction (db, null, id, "promote");
+        
+    });}
+
+    @Override
     public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
 
         db.update (getTable (), HASH (

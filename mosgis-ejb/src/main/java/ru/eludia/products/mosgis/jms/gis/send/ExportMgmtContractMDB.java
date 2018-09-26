@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -76,7 +75,7 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
             
             return (Get) m
                 .get (getTable (), uuid, "*")
-                .toOne (Contract.class, "AS ctr", "id_ctr_status").on ()
+                .toOne (Contract.class, "AS ctr", "id_ctr_status", "contractversionguid").on ()
                 .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("ctr.uuid_org")
                 .toOne (nsi58, "AS vc_nsi_58", "guid").on ("vc_nsi_58.code=ctr.code_vc_nsi_58 AND vc_nsi_58.isactual=1")
             ;
@@ -185,35 +184,14 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
         return true;
         
     }
-    
-    private enum Action {
         
-        PLACING (VocGisStatus.i.PENDING_RP_PLACING, VocGisStatus.i.FAILED_PLACING)
-        ;
-        
-        VocGisStatus.i nextStatus;
-        VocGisStatus.i failStatus;
-
-        private Action (VocGisStatus.i nextStatus, VocGisStatus.i failStatus) {
-            this.nextStatus = nextStatus;
-            this.failStatus = failStatus;
-        }        
-        
-        static Action forStatus (VocGisStatus.i status) {
-            switch (status) {
-                case PENDING_RQ_PLACING: return PLACING;
-                default: return null;
-            }            
-        }
-                
-    };
-    
-    AckRequest.Ack invoke (Action action, UUID messageGUID,  Map<String, Object> r) throws Fault {
+    AckRequest.Ack invoke (Contract.Action action, UUID messageGUID,  Map<String, Object> r) throws Fault {
             
         final UUID orgPPAGuid = (UUID) r.get ("org.orgppaguid");
             
         switch (action) {
-            case PLACING: return wsGisHouseManagementClient.placeContractData (orgPPAGuid, messageGUID, r);
+            case PLACING:   return wsGisHouseManagementClient.placeContractData (orgPPAGuid, messageGUID, r);
+            case APPROVING: return wsGisHouseManagementClient.approveContractData (orgPPAGuid, messageGUID, (UUID) r.get ("ctr.contractversionguid"));
             default: throw new IllegalArgumentException ("No action implemented for " + action);
         }
             
@@ -225,7 +203,7 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
         
         VocGisStatus.i status = VocGisStatus.i.forId (r.get ("ctr.id_ctr_status"));
         
-        Action action = Action.forStatus (status);
+        Contract.Action action = Contract.Action.forStatus (status);
         
         if (action == null) {
             logger.warning ("No action is implemented for " + status);
@@ -258,7 +236,7 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
                 db.update (Contract.class, DB.HASH (
                     "uuid",          r.get ("uuid_object"),
                     "uuid_out_soap", messageGUID,
-                    "id_ctr_status", action.nextStatus.getId ()
+                    "id_ctr_status", action.getNextStatus ().getId ()
                 ));
 
             db.commit ();
@@ -290,7 +268,7 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
                 db.update (Contract.class, DB.HASH (
                     "uuid",              r.get ("uuid_object"),
                     "uuid_out_soap",     messageGUID,
-                    "id_ctr_status",     action.failStatus.getId ()
+                    "id_ctr_status",     action.getFailStatus ().getId ()
                 ));
 
             db.commit ();

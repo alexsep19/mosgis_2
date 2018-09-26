@@ -75,8 +75,6 @@ public class WsGisHouseManagementClient {
         for (Map<String, Object> file: (Collection<Map<String, Object>>) r.get ("files"))   ContractFile.add   (pc, file);
         for (Map<String, Object> o:    (Collection<Map<String, Object>>) r.get ("objects")) ContractObject.add (pc, o);
 
-logger.info ("pc=" + pc);
-
         ImportContractRequest importContractRequest = of.createImportContractRequest ();
         
         final ImportContractRequest.Contract c = of.createImportContractRequestContract ();
@@ -89,6 +87,24 @@ logger.info ("pc=" + pc);
         
     }
     
+    public AckRequest.Ack approveContractData (UUID orgPPAGuid, UUID messageGUID, UUID contractVersionGUID) throws Fault {
+        
+        final ImportContractRequest.Contract.ApprovalContract ac = of.createImportContractRequestContractApprovalContract ();
+        ac.setApproval (true);
+        ac.setContractVersionGUID (contractVersionGUID.toString ());
+        
+        ImportContractRequest importContractRequest = of.createImportContractRequest ();
+        
+        final ImportContractRequest.Contract c = of.createImportContractRequestContract ();
+        c.setApprovalContract (ac);
+        c.setTransportGUID (UUID.randomUUID ().toString ());
+        
+        importContractRequest.getContract ().add (c);
+
+        return getPort (orgPPAGuid, messageGUID).importContractData (importContractRequest).getAck ();
+        
+    }
+
     public GetStateResult getState (UUID orgPPAGuid, UUID uuid) throws Fault {
         GetStateRequest getStateRequest = new GetStateRequest ();
         getStateRequest.setMessageGUID (uuid.toString ());

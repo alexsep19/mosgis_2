@@ -11,6 +11,6 @@ public interface MgmtContractLocal extends CRUDBackend {
     JsonObject getVocs ();
     JsonObject doApprove (String id, User user);
     JsonObject doAlter (String id, User user);
-
+    JsonObject doPromote (String id);
 
 }

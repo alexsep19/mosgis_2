@@ -66,6 +66,7 @@ public class Contract extends Table {
         
         fk    ("uuid_out_soap",             OutSoap.class,             null,    "Последний запрос на импорт в ГИС ЖКХ");
         col   ("contractguid",              Type.UUID,                 null,    "UUID договора в ГИС ЖКХ");
+        col   ("contractversionguid",       Type.UUID,                 null,    "Идентификатор последней известной версии договора");
 
         fk    ("id_log",                    ContractLog.class,         null, "Последнее событие редактирования");
 
@@ -300,4 +301,36 @@ public class Contract extends Table {
                 
     }
     
+    public enum Action {
+        
+        PLACING   (VocGisStatus.i.PENDING_RP_PLACING,  VocGisStatus.i.FAILED_PLACING),
+        APPROVING (VocGisStatus.i.PENDING_RP_APPROVAL, VocGisStatus.i.FAILED_STATE)
+        ;
+        
+        VocGisStatus.i nextStatus;
+        VocGisStatus.i failStatus;
+
+        private Action (VocGisStatus.i nextStatus, VocGisStatus.i failStatus) {
+            this.nextStatus = nextStatus;
+            this.failStatus = failStatus;
+        }
+
+        public VocGisStatus.i getNextStatus () {
+            return nextStatus;
+        }
+
+        public VocGisStatus.i getFailStatus () {
+            return failStatus;
+        }
+        
+        public static Action forStatus (VocGisStatus.i status) {
+            switch (status) {
+                case PENDING_RQ_PLACING:  return PLACING;
+                case PENDING_RQ_APPROVAL: return APPROVING;
+                default: return null;
+            }            
+        }
+                
+    };
+
 }

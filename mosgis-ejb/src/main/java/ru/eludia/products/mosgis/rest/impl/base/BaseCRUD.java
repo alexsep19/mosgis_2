@@ -47,7 +47,7 @@ public abstract class BaseCRUD <T extends Table> extends Base<T> implements CRUD
         String id_log = db.insertId (logTable, HASH (
             "action", action,
             "uuid_object", id,
-            "uuid_user", user.getId ()
+            "uuid_user", user == null ? null : user.getId ()
         )).toString ();
         
         db.update (getTable (), HASH (
