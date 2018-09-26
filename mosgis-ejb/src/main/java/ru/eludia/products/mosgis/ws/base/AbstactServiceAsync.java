@@ -18,6 +18,8 @@ import javax.xml.soap.SOAPMessage;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.base.RequestHeader;
+import ru.gosuslugi.dom.schema.integration.base.HeaderType;
+import ru.gosuslugi.dom.schema.integration.base.ISRequestHeader;
 import ru.gosuslugi.dom.schema.integration.base.ResultHeader;
 
 public abstract class AbstactServiceAsync {
@@ -35,6 +37,7 @@ public abstract class AbstactServiceAsync {
         
         try {
             jc = JAXBContext.newInstance (
+                    ISRequestHeader.class, 
                     RequestHeader.class, 
                     ResultHeader.class, 
                     ru.gosuslugi.dom.schema.integration.organizations_registry_common.GetStateResult.class
@@ -46,7 +49,7 @@ public abstract class AbstactServiceAsync {
 
     }
     
-    public static final void setRequestHeader (SOAPMessage msg, RequestHeader rh) {
+    public static final void setRequestHeader (SOAPMessage msg, HeaderType rh) {
 
         try {
             

@@ -148,14 +148,17 @@ public abstract class BaseLoggingMessageHandler implements SOAPHandler<SOAPMessa
         
     }
     
+    @Override
     public final Set<QName> getHeaders () {
         return Collections.EMPTY_SET;
     }
     
+    @Override
     public final boolean handleFault (SOAPMessageContext messageContext) {
         return true;
     }
     
+    @Override
     public final void close (MessageContext context) {
     }
     

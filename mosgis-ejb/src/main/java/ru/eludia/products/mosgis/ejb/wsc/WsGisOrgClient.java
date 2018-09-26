@@ -19,7 +19,7 @@ public class WsGisOrgClient {
 
     private static final ObjectFactory of = new ObjectFactory ();
     
-    @HandlerChain (file="handler-chain-out.xml")
+    @HandlerChain (file="handler-chain-out-anon.xml")
     @WebServiceRef(wsdlLocation = "META-INF/wsdl/organizations-registry-common/hcs-organizations-registry-common-service-async.wsdl")
     private RegOrgServiceAsync service;
 

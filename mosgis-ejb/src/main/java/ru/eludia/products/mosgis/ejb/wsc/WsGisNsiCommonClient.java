@@ -26,7 +26,7 @@ public class WsGisNsiCommonClient {
     
     private static final ObjectFactory of = new ObjectFactory ();
     
-    @HandlerChain (file="handler-chain-out.xml")
+    @HandlerChain (file="handler-chain-out-anon.xml")
     @WebServiceRef(wsdlLocation = "META-INF/wsdl/nsi-common/hcs-nsi-common-service-async.wsdl")
     private NsiServiceAsync service;
         

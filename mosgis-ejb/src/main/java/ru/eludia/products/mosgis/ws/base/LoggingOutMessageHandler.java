@@ -10,28 +10,20 @@ import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
-import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
-import ru.eludia.products.mosgis.jmx.Conf;
 import ru.gosuslugi.dom.schema.integration.base.ObjectFactory;
-import ru.gosuslugi.dom.schema.integration.base.RequestHeader;
+import ru.gosuslugi.dom.schema.integration.base.HeaderType;
 import ru.gosuslugi.dom.schema.integration.base.ResultHeader;
 
-public class LoggingOutMessageHandler extends BaseLoggingMessageHandler implements SOAPHandler<SOAPMessageContext> {
+public abstract class LoggingOutMessageHandler extends BaseLoggingMessageHandler implements SOAPHandler<SOAPMessageContext> {
 
-    private static final String defaultCharSetName = "UTF-8";
-    private static final ObjectFactory of = new ObjectFactory ();
+    static final ObjectFactory of = new ObjectFactory ();
     public static final String FIELD_MESSAGE_GUID = "MessageGUID";
     public static final String FIELD_ORG_PPA_GUID = "OrgPPAGuid";
     
-    private UUID getMessageGUID (SOAPMessageContext messageContext) {
+    final UUID getMessageGUID (SOAPMessageContext messageContext) {
         UUID uuid = (UUID) messageContext.get (FIELD_MESSAGE_GUID);
         return uuid == null ? UUID.randomUUID () : uuid;
-    }
-
-    private UUID getOrgPPAGuid (SOAPMessageContext messageContext) {
-        UUID uuid = (UUID) messageContext.get (FIELD_ORG_PPA_GUID);
-        return uuid == null ? UUID.fromString (Conf.get (VocSetting.i.GIS_ID_ORGANIZATION)) : uuid;
     }
 
     private void update (ResultHeader rh, String s) {
@@ -50,7 +42,7 @@ public class LoggingOutMessageHandler extends BaseLoggingMessageHandler implemen
     
     }
             
-    private void store (MessageInfo messageInfo, RequestHeader rh, String s) {
+    private void store (MessageInfo messageInfo, HeaderType rh, String s) {
 
         try (DB db = ModelHolder.getModel ().getDb ()) {
 
@@ -80,7 +72,10 @@ public class LoggingOutMessageHandler extends BaseLoggingMessageHandler implemen
         
     }    
     
-    public boolean handleMessage (SOAPMessageContext messageContext) {
+    abstract HeaderType createRequestHeader (SOAPMessageContext messageContext);
+    
+    @Override
+    public final boolean handleMessage (SOAPMessageContext messageContext) {
 
         SOAPMessage msg = messageContext.getMessage ();
         
@@ -88,12 +83,9 @@ public class LoggingOutMessageHandler extends BaseLoggingMessageHandler implemen
         
         if (messageInfo.isOut) {
             
-            RequestHeader rh = of.createRequestHeader ();
-
+            HeaderType rh = createRequestHeader (messageContext);
             rh.setDate (DB.to.XMLGregorianCalendar (new java.sql.Timestamp (System.currentTimeMillis ())));
             rh.setMessageGUID (getMessageGUID (messageContext).toString ());
-            rh.setOrgPPAGUID (getOrgPPAGuid (messageContext).toString ());
-            rh.setIsOperatorSignature (Boolean.TRUE);
             
             try {
 
