@@ -254,11 +254,11 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
                             "ord",  i + 1
                         ));
                         
-                        db.d0 ("DELETE FROM " + sTable.getName ());
-
-                        db.insert (sTable, m2m);
-
                     }
+                    
+                    db.d0 ("DELETE FROM " + sTable.getName ());
+
+                    db.insert (sTable, m2m);
                     
                 }
             
