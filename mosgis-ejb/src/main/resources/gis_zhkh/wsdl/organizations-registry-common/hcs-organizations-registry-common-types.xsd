@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by S (H) -->
-<xs:schema xmlns:tns="http://dom.gosuslugi.ru/schema/integration/organizations-registry-common/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:organizations-base="http://dom.gosuslugi.ru/schema/integration/organizations-base/" xmlns:premises-base="http://dom.gosuslugi.ru/schema/integration/premises-base/" xmlns:nsi-base="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:organizations-registry-base="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/organizations-registry-common/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="11.2.1.1">
+<!-- edited with XMLSpy v2011 sp1 (http://www.altova.com) by End User (free.org) -->
+<xs:schema xmlns:tns="http://dom.gosuslugi.ru/schema/integration/organizations-registry-common/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:organizations-base="http://dom.gosuslugi.ru/schema/integration/organizations-base/" xmlns:premises-base="http://dom.gosuslugi.ru/schema/integration/premises-base/" xmlns:nsi-base="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:organizations-registry-base="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/organizations-registry-common/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="12.2.0.18">
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/base/" schemaLocation="../lib/hcs-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/organizations-base/" schemaLocation="../lib/hcs-organizations-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/premises-base/" schemaLocation="../lib/hcs-premises-base.xsd"/>
@@ -237,7 +237,7 @@
 						<xs:sequence>
 							<xs:element name="Page" minOccurs="0">
 								<xs:annotation>
-									<xs:documentation>Страница выборки. Возвращается по 1000 элементов.</xs:documentation>
+									<xs:documentation>Страница выборки. Возвращается по 100 элементов.</xs:documentation>
 								</xs:annotation>
 								<xs:simpleType>
 									<xs:restriction base="xs:int">

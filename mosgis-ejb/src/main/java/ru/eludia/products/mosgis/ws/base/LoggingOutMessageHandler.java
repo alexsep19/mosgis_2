@@ -41,6 +41,10 @@ public abstract class LoggingOutMessageHandler extends BaseLoggingMessageHandler
         }    
     
     }
+    
+    String getOrgPPAGUID (HeaderType rh) {
+        return null;
+    }
             
     private void store (MessageInfo messageInfo, HeaderType rh, String s) {
 
@@ -51,8 +55,9 @@ public abstract class LoggingOutMessageHandler extends BaseLoggingMessageHandler
                 "op",           messageInfo.getOperation (),
                 "is_out",       messageInfo.isOut (),
                 "uuid",         rh.getMessageGUID (),
-                "ts",           rh.getDate (),
-                "rq",           s
+                "orgppaguid",   getOrgPPAGUID (rh),
+                "ts",           rh.getDate (),                
+                "rq",           s                
             ));
 
         }

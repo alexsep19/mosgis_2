@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +55,10 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
     RestGisFilesClient restGisFilesClient;
     
     @Resource (mappedName = "mosgis.outExportHouseMgmtContractsQueue")
-    Queue queue;
+    Queue outExportHouseMgmtContractsQueue;
+    
+    @Resource (mappedName = "mosgis.outExportHouseMgmtContractStatusQueue")
+    Queue outExportHouseMgmtContractStatusQueue;
     
     @Resource (mappedName = "mosgis.inHouseMgmtContractFilesQueue")
     Queue filesQueue;
@@ -75,7 +79,7 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
             
             return (Get) m
                 .get (getTable (), uuid, "*")
-                .toOne (Contract.class, "AS ctr", "id_ctr_status", "contractversionguid").on ()
+                .toOne (Contract.class, "AS ctr", "id_ctr_status", "contractversionguid", "contractguid").on ()
                 .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("ctr.uuid_org")
                 .toOne (nsi58, "AS vc_nsi_58", "guid").on ("vc_nsi_58.code=ctr.code_vc_nsi_58 AND vc_nsi_58.isactual=1")
             ;
@@ -190,13 +194,13 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
         final UUID orgPPAGuid = (UUID) r.get ("org.orgppaguid");
             
         switch (action) {
-            case PLACING:   return wsGisHouseManagementClient.placeContractData (orgPPAGuid, messageGUID, r);
-            case APPROVING: return wsGisHouseManagementClient.approveContractData (orgPPAGuid, messageGUID, (UUID) r.get ("ctr.contractversionguid"));
+            case PLACING:    return wsGisHouseManagementClient.placeContractData    (orgPPAGuid, messageGUID, r);
+            case APPROVING:  return wsGisHouseManagementClient.approveContractData  (orgPPAGuid, messageGUID, (UUID) r.get ("ctr.contractversionguid"));
+            case REFRESHING: return wsGisHouseManagementClient.exportContractStatus (orgPPAGuid, messageGUID, Collections.singletonList ((UUID) r.get ("ctr.contractguid")));
             default: throw new IllegalArgumentException ("No action implemented for " + action);
         }
             
-    }
-    
+    }    
             
     @Override
     protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
@@ -213,35 +217,33 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
         Model m = db.getModel ();
         
         if (someFileUploadIsInProgress (db, m, r)) return;
-                        
-        UUID messageGUID = UUID.randomUUID ();
-                                            
+                                                                    
         try {
 
-            AckRequest.Ack ack = invoke (action, messageGUID, r);
+            AckRequest.Ack ack = invoke (action, uuid, r);
 
             db.begin ();
 
                 db.update (OutSoap.class, DB.HASH (
-                    "uuid",     messageGUID,
+                    "uuid",     uuid,
                     "uuid_ack", ack.getMessageGUID ()
                 ));
 
                 db.update (getTable (), DB.HASH (
                     "uuid",          uuid,
-                    "uuid_out_soap", messageGUID,
+                    "uuid_out_soap", uuid,
                     "uuid_message",  ack.getMessageGUID ()
                 ));
 
                 db.update (Contract.class, DB.HASH (
                     "uuid",          r.get ("uuid_object"),
-                    "uuid_out_soap", messageGUID,
+                    "uuid_out_soap", uuid,
                     "id_ctr_status", action.getNextStatus ().getId ()
                 ));
 
             db.commit ();
 
-            UUIDPublisher.publish (queue, ack.getRequesterMessageGUID ());            
+            UUIDPublisher.publish (getQueue (action), ack.getRequesterMessageGUID ());            
 
         }
         catch (Fault ex) {
@@ -253,7 +255,7 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
             db.begin ();
 
                 db.update (OutSoap.class, HASH (
-                    "uuid", messageGUID,
+                    "uuid", uuid,
                     "id_status", DONE.getId (),
                     "is_failed", 1,
                     "err_code",  faultInfo.getErrorCode (),
@@ -262,12 +264,12 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
 
                 db.update (getTable (), DB.HASH (
                     "uuid",          uuid,
-                    "uuid_out_soap", messageGUID
+                    "uuid_out_soap", uuid
                 ));
 
                 db.update (Contract.class, DB.HASH (
                     "uuid",              r.get ("uuid_object"),
-                    "uuid_out_soap",     messageGUID,
+                    "uuid_out_soap",     uuid,
                     "id_ctr_status",     action.getFailStatus ().getId ()
                 ));
 
@@ -275,6 +277,15 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
 
             return;
 
+        }
+        
+    }
+    
+    Queue getQueue (Contract.Action action) {
+        
+        switch (action) {
+            case REFRESHING: return outExportHouseMgmtContractStatusQueue;
+            default:         return outExportHouseMgmtContractsQueue;
         }
         
     }

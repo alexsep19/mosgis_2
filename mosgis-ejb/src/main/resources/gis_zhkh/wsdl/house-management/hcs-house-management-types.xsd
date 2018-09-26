@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by S (H) -->
-<!---->
-<!---->
-<!---->
-<!---->
-<!---->
-<!---->
-<xs:schema xmlns:tns="http://dom.gosuslugi.ru/schema/integration/house-management/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:premises-base="http://dom.gosuslugi.ru/schema/integration/premises-base/" xmlns:bills-base="http://dom.gosuslugi.ru/schema/integration/bills-base/" xmlns:account-base="http://dom.gosuslugi.ru/schema/integration/account-base/" xmlns:nsi-base="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:organizations-base="http://dom.gosuslugi.ru/schema/integration/organizations-base/" xmlns:organizations-registry-base="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" xmlns:metering-device-base="http://dom.gosuslugi.ru/schema/integration/metering-device-base/" xmlns:individual-registry-base="http://dom.gosuslugi.ru/schema/integration/individual-registry-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/house-management/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="11.14.0.13">
+<xs:schema xmlns:tns="http://dom.gosuslugi.ru/schema/integration/house-management/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:premises-base="http://dom.gosuslugi.ru/schema/integration/premises-base/" xmlns:bills-base="http://dom.gosuslugi.ru/schema/integration/bills-base/" xmlns:account-base="http://dom.gosuslugi.ru/schema/integration/account-base/" xmlns:nsi-base="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:organizations-base="http://dom.gosuslugi.ru/schema/integration/organizations-base/" xmlns:organizations-registry-base="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" xmlns:metering-device-base="http://dom.gosuslugi.ru/schema/integration/metering-device-base/" xmlns:individual-registry-base="http://dom.gosuslugi.ru/schema/integration/individual-registry-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/house-management/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="12.2.0.18">
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/base/" schemaLocation="../lib/hcs-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/premises-base/" schemaLocation="../lib/hcs-premises-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/bills-base/" schemaLocation="../lib/hcs-bills-base.xsd"/>
@@ -1537,7 +1530,7 @@
 							</xs:annotation>
 						</xs:element>
 					</xs:sequence>
-					<xs:attribute ref="base:version" use="required" fixed="11.1.0.1"/>
+					<xs:attribute ref="base:version" use="required"/>
 				</xs:extension>
 			</xs:complexContent>
 		</xs:complexType>
@@ -1553,7 +1546,7 @@
 						<xs:element name="exportHouseResult" type="tns:exportHouseResultType"/>
 						<xs:element ref="base:ErrorMessage"/>
 					</xs:choice>
-					<xs:attribute ref="base:version" use="required" fixed="11.0.0.1"/>
+					<xs:attribute ref="base:version" use="required"/>
 				</xs:extension>
 			</xs:complexContent>
 		</xs:complexType>
@@ -1824,6 +1817,69 @@
 					</xs:complexType>
 				</xs:element>
 			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<!--Снос дома-->
+	<xs:element name="demolishHouseRequest" type="tns:DemolishHouseRequestType">
+		<xs:annotation>
+			<xs:documentation>Снос дома. В ответ на запрос формируется статус обработки данных дома. ImportResult содержит результат обработки данных дома (В CRUDGUID содержится FIASHouseGuid входных данных, UniqueNumber содержит Уникальный номер дома).</xs:documentation>
+		</xs:annotation>
+		<xs:key name="demolishHouseRequest_TransportGUIDKey">
+			<xs:selector xpath=".//base:TransportGUID"/>
+			<xs:field xpath="."/>
+		</xs:key>
+	</xs:element>
+	<xs:complexType name="DemolishHouseRequestType">
+		<xs:annotation>
+			<xs:documentation>Тип, описывающий запрос на снос дома</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:BaseType">
+				<xs:sequence>
+					<xs:element name="HouseToDemolish" type="tns:HouseToDemolishType" maxOccurs="1000"/>
+				</xs:sequence>
+				<xs:attribute ref="base:version" use="required" fixed="11.1.0.1"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="HouseToDemolishType">
+		<xs:annotation>
+			<xs:documentation>Информация о сносе дома</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="FIASHouseGuid" type="premises-base:FIASHouseGUIDType">
+				<xs:annotation>
+					<xs:documentation>Глобальный уникальный идентификатор дома по ФИАС</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DemolishionDate" type="xs:date">
+				<xs:annotation>
+					<xs:documentation>Дата сноса</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DemolishionReason" type="tns:DemolishionReasonType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Основание сноса. Обязательно для домов, не признанных аварийными</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element ref="base:TransportGUID"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DemolishionReasonType">
+		<xs:annotation>
+			<xs:documentation>Причина сноса</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Document" type="base:AttachmentType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Документ</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Description" type="base:String500Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Описание</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 	<!--Импорт лицевых счетов-->
@@ -2666,6 +2722,11 @@ Archival-Архивный</xs:documentation>
 																</xs:complexType>
 															</xs:element>
 															<xs:element ref="tns:ContractVersionGUID"/>
+															<xs:element name="IndicationsAnyDay" type="xs:boolean" minOccurs="0">
+																<xs:annotation>
+																	<xs:documentation>Разрешить (true) или запретить (false) передачу гражданам текущих показаний по индивидуальным приборам учета в любой день месяца. Если признак не передан, исползуется значение глобальной настройки "Разрешить передачу гражданам показаний индивидуальных или общих (квартирных) приборов учета в любой день месяца по всем договорам". Может быть передан только если есть хотя бы один объект управления в статусе "Утвержден".</xs:documentation>
+																</xs:annotation>
+															</xs:element>
 														</xs:sequence>
 													</xs:extension>
 												</xs:complexContent>
@@ -3521,7 +3582,7 @@ Archival-Архивный</xs:documentation>
 										<xs:complexContent>
 											<xs:extension base="tns:TerminateType">
 												<xs:sequence>
-													<xs:element name="ReasonRef" type="nsi-base:nsiRef">
+													<xs:element name="ReasonRef" type="nsi-base:nsiRef" minOccurs="0">
 														<xs:annotation>
 															<xs:documentation>Ссылка на НСИ "54	Причина расторжения договор" (реестровый номер 54)</xs:documentation>
 														</xs:annotation>
@@ -5429,7 +5490,7 @@ P(roprietor)-Исполнитель коммунальных услуг. Зап�
 			</xs:choice>
 			<xs:element name="Period" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Период передачи текущих показаний по индивидуальным приборам учета. Обязателен для заполненияв следующих случаях:                       если вторая сторона отлична от "Управляющая организация" и в поле VolumeDepends = true  ИЛИ                                 если заполнено поле tns:MeteringDeviceInformation                                       Не заполняется, если в поле VolumeDepends = false</xs:documentation>
+					<xs:documentation>Период передачи текущих показаний по индивидуальным приборам учета. Обязателен для заполнения, если в поле VolumeDepends = true  ИЛИ если поле MeteringDeviceInformation = «true»</xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
 					<xs:sequence>
@@ -5486,6 +5547,12 @@ P(roprietor)-Исполнитель коммунальных услуг. Зап�
 						</xs:element>
 					</xs:sequence>
 				</xs:complexType>
+			</xs:element>
+			<xs:element name="IndicationsAnyDay" type="xs:boolean" fixed="true" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Разрешить передачу гражданам текущих показаний по индивидуальным приборам учета в любой день месяца.
+Заполнение возможно только если: в настройках организации установлена настройка «Разрешить передачу гражданам показаний индивидуальных или общих (квартирных) приборов учета в любой день месяца» ИЛИ в настройках организации установлена настройка «Разрешить передачу гражданам показаний индивидуальных или общих (квартирных) приборов учета только в сроки, установленные в договоре, или в любой день месяца, если в договоре установлен признак «Разрешить передачу показаний приборов учета в любой день месяца» И заполнен Period</xs:documentation>
+				</xs:annotation>
 			</xs:element>
 			<xs:element name="ContractBase" type="nsi-base:nsiRef" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
@@ -6079,11 +6146,18 @@ O - в разрезе объектов жилищного фонда.
 				</xs:annotation>
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="AddressObjectKey" type="base:GUIDType" maxOccurs="unbounded">
-							<xs:annotation>
-								<xs:documentation>Ссылка на ОЖФ</xs:documentation>
-							</xs:annotation>
-						</xs:element>
+						<xs:choice>
+							<xs:element name="AddressObjectKey" type="base:GUIDType" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Ссылка на ОЖФ</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ForAllAddressObjects" type="xs:boolean" fixed="true">
+								<xs:annotation>
+									<xs:documentation>Тариф применяется для всех ОЖФ договора</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:choice>
 						<xs:element name="PairKey" type="base:GUIDType">
 							<xs:annotation>
 								<xs:documentation>Ссылка на пару из коммунальной услуги и ресурса из предмета договора</xs:documentation>
@@ -6281,6 +6355,11 @@ O - в разрезе объектов жилищного фонда.
 						</xs:element>
 					</xs:sequence>
 				</xs:complexType>
+			</xs:element>
+			<xs:element name="IndicationsAnyDay" type="xs:boolean" fixed="true" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Разрешить передачу гражданам текущих показаний по индивидуальным приборам учета в любой день месяца</xs:documentation>
+				</xs:annotation>
 			</xs:element>
 			<xs:element name="ContractBase" type="nsi-base:nsiRef" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
@@ -7063,7 +7142,7 @@ P(roprietor)-Исполнитель коммунальных услуг. Зап�
 			</xs:choice>
 			<xs:element name="Period" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Период передачи текущих показаний по индивидуальным приборам учета. Обязателен для заполненияв следующих случаях:                       если вторая сторона отлична от "Управляющая организация" и в поле VolumeDepends = true  ИЛИ                                 если заполнено поле tns:MeteringDeviceInformation                                       Не заполняется, если в поле VolumeDepends = false</xs:documentation>
+					<xs:documentation>Период передачи текущих показаний по индивидуальным приборам учета. Обязателен для заполнения, если в поле VolumeDepends = true  ИЛИ если поле MeteringDeviceInformation = «true»</xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
 					<xs:sequence>
@@ -7120,6 +7199,12 @@ P(roprietor)-Исполнитель коммунальных услуг. Зап�
 						</xs:element>
 					</xs:sequence>
 				</xs:complexType>
+			</xs:element>
+			<xs:element name="IndicationsAnyDay" type="xs:boolean" fixed="true" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Разрешить передачу гражданам текущих показаний по индивидуальным приборам учета в любой день месяца.
+Заполнение возможно только если: в настройках организации установлена настройка «Разрешить передачу гражданам показаний индивидуальных или общих (квартирных) приборов учета в любой день месяца» ИЛИ в настройках организации установлена настройка «Разрешить передачу гражданам показаний индивидуальных или общих (квартирных) приборов учета только в сроки, установленные в договоре, или в любой день месяца, если в договоре установлен признак «Разрешить передачу показаний приборов учета в любой день месяца» И заполнен Period</xs:documentation>
+				</xs:annotation>
 			</xs:element>
 			<xs:element name="ContractBase" type="nsi-base:nsiRef" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
@@ -8356,6 +8441,14 @@ N (ext) - следующего месяца за расчетным. </xs:docume
 										</xs:extension>
 									</xs:complexContent>
 								</xs:complexType>
+								<xs:unique name="orgRootEntityGUID">
+									<xs:selector xpath=".//organizations-registry-base:orgRootEntityGUID"/>
+									<xs:field xpath="."/>
+								</xs:unique>
+								<xs:unique name="orgVersionGUID">
+									<xs:selector xpath=".//organizations-registry-base:orgVersionGUID"/>
+									<xs:field xpath="."/>
+								</xs:unique>
 							</xs:element>
 							<xs:element name="Placing" type="xs:boolean" fixed="true">
 								<xs:annotation>
@@ -8790,6 +8883,20 @@ STATE_(M)UNICIPAL_FUND - Договор найма жилого помещени
 													<xs:sequence>
 														<xs:element ref="account-base:UnifiedAccountNumber"/>
 														<xs:element ref="account-base:ServiceID"/>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="ImportSupplyResourceContractObjectAddress">
+												<xs:annotation>
+													<xs:documentation>Заполняется для операции importSuppleResourceContractObjectAddress</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element ref="tns:ContractGUID">
+															<xs:annotation>
+																<xs:documentation>Идентификатор версии договора ресурсоснабжения в ГИС ЖКХ  </xs:documentation>
+															</xs:annotation>
+														</xs:element>
 													</xs:sequence>
 												</xs:complexType>
 											</xs:element>
@@ -9242,6 +9349,11 @@ STATE_(M)UNICIPAL_FUND - Договор найма жилого помещени
 							<xs:documentation>Состояние (НСИ 24)</xs:documentation>
 						</xs:annotation>
 					</xs:element>
+					<xs:element name="LifeCycleStage" type="nsi-base:nsiRef" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Стадия жизненного цикла (НСИ 336)</xs:documentation>
+						</xs:annotation>
+					</xs:element>
 					<xs:element name="UsedYear" type="tns:UsedYearType">
 						<xs:annotation>
 							<xs:documentation>Год ввода в эксплуатацию</xs:documentation>
@@ -9322,6 +9434,11 @@ STATE_(M)UNICIPAL_FUND - Договор найма жилого помещени
 					<xs:element name="State" type="nsi-base:nsiRef" minOccurs="0">
 						<xs:annotation>
 							<xs:documentation>Состояние (НСИ 24)</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="LifeCycleStage" type="nsi-base:nsiRef" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Стадия жизненного цикла (НСИ 336)</xs:documentation>
 						</xs:annotation>
 					</xs:element>
 					<xs:element name="UsedYear" type="tns:UsedYearType" minOccurs="0">
@@ -9406,6 +9523,11 @@ STATE_(M)UNICIPAL_FUND - Договор найма жилого помещени
 							<xs:documentation>Состояние (НСИ 24)</xs:documentation>
 						</xs:annotation>
 					</xs:element>
+					<xs:element name="LifeCycleStage" type="nsi-base:nsiRef" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Стадия жизненного цикла (НСИ 336)</xs:documentation>
+						</xs:annotation>
+					</xs:element>
 					<xs:element name="UsedYear" type="tns:UsedYearType" minOccurs="0">
 						<xs:annotation>
 							<xs:documentation>Год ввода в эксплуатацию</xs:documentation>
@@ -9460,6 +9582,11 @@ STATE_(M)UNICIPAL_FUND - Договор найма жилого помещени
 					<xs:element name="State" type="nsi-base:nsiRef" minOccurs="0">
 						<xs:annotation>
 							<xs:documentation>Состояние (НСИ 24)</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="LifeCycleStage" type="nsi-base:nsiRef" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Стадия жизненного цикла (НСИ 336)</xs:documentation>
 						</xs:annotation>
 					</xs:element>
 					<xs:element name="UsedYear" type="tns:UsedYearType" minOccurs="0">
@@ -9518,6 +9645,11 @@ STATE_(M)UNICIPAL_FUND - Договор найма жилого помещени
 							<xs:documentation>Состояние (НСИ 24)</xs:documentation>
 						</xs:annotation>
 					</xs:element>
+					<xs:element name="LifeCycleStage" type="nsi-base:nsiRef" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Стадия жизненного цикла (НСИ 336)</xs:documentation>
+						</xs:annotation>
+					</xs:element>
 					<xs:element name="UsedYear" type="tns:UsedYearType" minOccurs="0">
 						<xs:annotation>
 							<xs:documentation>Год ввода в эксплуатацию</xs:documentation>
@@ -9559,6 +9691,16 @@ STATE_(M)UNICIPAL_FUND - Договор найма жилого помещени
 							<xs:documentation>Причина аннулирования.Дополнительная информация</xs:documentation>
 						</xs:annotation>
 					</xs:element>
+					<xs:element name="DemolishionDate" type="xs:date" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Дата сноса</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="DemolishionReason" type="tns:DemolishionReasonType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Основание сноса</xs:documentation>
+						</xs:annotation>
+					</xs:element>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -9596,6 +9738,11 @@ STATE_(M)UNICIPAL_FUND - Договор найма жилого помещени
 									<xs:element name="State" type="nsi-base:nsiRef">
 										<xs:annotation>
 											<xs:documentation>Состояние (НСИ 24)</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="LifeCycleStage" type="nsi-base:nsiRef" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Стадия жизненного цикла (НСИ 336)</xs:documentation>
 										</xs:annotation>
 									</xs:element>
 									<xs:element name="UsedYear" type="tns:UsedYearType">
@@ -9691,6 +9838,11 @@ STATE_(M)UNICIPAL_FUND - Договор найма жилого помещени
 										<xs:documentation>Состояние (НСИ 24)</xs:documentation>
 									</xs:annotation>
 								</xs:element>
+								<xs:element name="LifeCycleStage" type="nsi-base:nsiRef" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>Стадия жизненного цикла (НСИ 336)</xs:documentation>
+									</xs:annotation>
+								</xs:element>
 								<xs:element name="UsedYear" type="tns:UsedYearType" minOccurs="0">
 									<xs:annotation>
 										<xs:documentation>Год ввода в эксплуатацию</xs:documentation>
@@ -9769,6 +9921,11 @@ STATE_(M)UNICIPAL_FUND - Договор найма жилого помещени
 								<xs:element name="State" type="nsi-base:nsiRef">
 									<xs:annotation>
 										<xs:documentation>Состояние (НСИ 24)</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="LifeCycleStage" type="nsi-base:nsiRef" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>Стадия жизненного цикла (НСИ 336)</xs:documentation>
 									</xs:annotation>
 								</xs:element>
 								<xs:element name="UsedYear" type="tns:UsedYearType">
@@ -9943,7 +10100,7 @@ STATE_(M)UNICIPAL_FUND - Договор найма жилого помещени
 			</xs:element>
 			<xs:element name="OverhaulFormingKind" type="nsi-base:nsiRef" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Способ формирования фонда капитального ремонта (НСИ 241)</xs:documentation>
+					<xs:documentation>Вид счета\Способ формирования фонда (НСИ 62)</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
@@ -10258,6 +10415,11 @@ STATE_(M)UNICIPAL_FUND - Договор найма жилого помещени
 								<xs:element name="State" type="nsi-base:nsiRef" minOccurs="0">
 									<xs:annotation>
 										<xs:documentation>Состояние (НСИ 24)</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="LifeCycleStage" type="nsi-base:nsiRef" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>Стадия жизненного цикла (НСИ 336)</xs:documentation>
 									</xs:annotation>
 								</xs:element>
 								<xs:element name="UsedYear" type="tns:UsedYearType" minOccurs="0">
@@ -13739,6 +13901,11 @@ STATE_(M)UNICIPAL_FUND - Договор найма жилого помещени
 					<xs:documentation>Автоматически продлить срок оказания услуг на один год. Для автоматического продления указывается значение true.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="IndicationsAnyDay" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Разрешить (true) или запретить (false) передачу гражданам текущих показаний по индивидуальным приборам учета в любой день месяца. Если признак не передан, исползуется значение глобальной настройки "Разрешить передачу гражданам показаний индивидуальных или общих (квартирных) приборов учета в любой день месяца по всем договорам".</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="CharterExportType">
@@ -13788,6 +13955,11 @@ STATE_(M)UNICIPAL_FUND - Договор найма жилого помещени
 			<xs:element name="AutomaticRollOverOneYear" type="xs:boolean" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Автоматически продлить срок оказания услуг на один год. Для автоматического продления указывается значение true.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="IndicationsAnyDay" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Разрешить (true) или запретить (false) передачу гражданам текущих показаний по индивидуальным приборам учета в любой день месяца.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
@@ -14186,6 +14358,11 @@ STATE_(M)UNICIPAL_FUND - Договор найма жилого помещени
 					<xs:documentation>Автоматически пролонгировать договор на один год при наступлении даты окончания действия договора. Для автоматического пролонгирования указывается значение true.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="IndicationsAnyDay" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Разрешить (true) или запретить (false) передачу гражданам текущих показаний по индивидуальным приборам учета в любой день месяца.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="ExclusionType">
@@ -14340,11 +14517,21 @@ Annul-Сведения аннулированы
 					<xs:documentation>Размер платы (цена) за услуги, работы по управлению МКД (если утверждена протоколом обшего собрания собственников)/Размер платы за содержание жилого помещения, установленный по результатам открытого конкурса (если утверждена протоколом открытого конкурса)</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="Protocol" type="base:AttachmentType" minOccurs="0" maxOccurs="unbounded">
+			<xs:choice>
 				<xs:annotation>
-					<xs:documentation>Протокол общего собрания собственников помещений в многоквартирном доме об установлении размера платы за содержание жилого помещения</xs:documentation>
+					<xs:documentation>Если элемент не указан, выполняется попытка привязки к одному из протоколов, приложенному к ДУ</xs:documentation>
 				</xs:annotation>
-			</xs:element>
+				<xs:element name="Protocol" type="base:AttachmentType" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Протокол общего собрания собственников помещений в многоквартирном доме об установлении размера платы за содержание жилого помещения</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="VotingProtocolGUID" type="base:GUIDType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Идентификатор версии протокола голосования с решением с типом 12.1 «Текущий ремонт общего имущества» и(или) с типом 15.1 «Другие вопросы» адресом объекта управления.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
 			<xs:element name="ServicePayment" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>Информация о размере платы (цене, тарифе) за содержание и текущий ремонт общего имущества в многоквартирном доме/Информация о размере платы за содержание жилого помещения, установленном по результатам открытого конкурса по отбору управляющей организации для управления многоквартирным домом</xs:documentation>
@@ -14524,14 +14711,14 @@ Annul-Сведения аннулированы
 		</xs:annotation>
 		<xs:complexType>
 			<xs:choice>
-				<xs:element name="Ind" type="tns:VotingInitiatorIndType">
-					<xs:annotation>
-						<xs:documentation>Физическое лицо (собственник помещений)</xs:documentation>
-					</xs:annotation>
-				</xs:element>
 				<xs:element name="Org" type="organizations-registry-base:RegOrgRootAndVersionType">
 					<xs:annotation>
 						<xs:documentation>Организация инициатор собрания ИП или Юр. лицо (УО)</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Ind" type="tns:VotingInitiatorIndType">
+					<xs:annotation>
+						<xs:documentation>Физическое лицо (собственник помещений)</xs:documentation>
 					</xs:annotation>
 				</xs:element>
 			</xs:choice>
@@ -14922,7 +15109,7 @@ DECISION_IS_(N)OT_MADE - решение не принято</xs:documentation>
 									<xs:documentation>Дата и время окончания проведения голосования</xs:documentation>
 								</xs:annotation>
 							</xs:element>
-							<xs:element name="Discipline">
+							<xs:element name="Discipline" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>Порядок приема оформленных в письменной форме решений собственников</xs:documentation>
 								</xs:annotation>
@@ -15098,7 +15285,7 @@ DECISION_IS_(N)OT_MADE - решение не принято</xs:documentation>
 								</xs:annotation>
 							</xs:element>
 						</xs:sequence>
-						<xs:element name="votingResume">
+						<xs:element name="votingResume" minOccurs="0">
 							<xs:annotation>
 								<xs:documentation>Итог голосования
 Допустимые значения:

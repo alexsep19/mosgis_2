@@ -123,6 +123,11 @@ define ([], function () {
         if (!confirm ('Открыть этот договор на редактирование, Вы уверены?')) return
         query ({type: 'mgmt_contracts', action: 'alter'}, {}, reload_page)
     }
+    
+    $_DO.refresh_mgmt_contract_common = function (e) {
+        if (!confirm ('Послать в ГИС ЖКХ запрос на обновление статуса этого договора?')) return
+        query ({type: 'mgmt_contracts', action: 'refresh'}, {}, reload_page)
+    }
 
     $_DO.undelete_mgmt_contract_common = function (e) {   
         if (!confirm ('Восстановить эту запись, Вы уверены?')) return        

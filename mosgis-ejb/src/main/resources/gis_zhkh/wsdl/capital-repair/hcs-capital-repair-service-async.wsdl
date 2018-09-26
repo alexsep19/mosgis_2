@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!---->
 <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://dom.gosuslugi.ru/schema/integration/capital-repair-service-async/" xmlns:crp="http://dom.gosuslugi.ru/schema/integration/capital-repair/" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:ns="http://www.w3.org/2000/09/xmldsig#" xmlns:ns1="http://dom.gosuslugi.ru/schema/integration/account-base/" xmlns:ns2="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:ns3="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" xmlns:ns4="http://dom.gosuslugi.ru/schema/integration/bills-base/" xmlns:ns5="http://dom.gosuslugi.ru/schema/integration/organizations-base/" xmlns:ns6="http://dom.gosuslugi.ru/schema/integration/premises-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/capital-repair-service-async/">
 	<wsdl:types>
-		<xs:schema version="11.12.0.4" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+		<xs:schema version="12.2.0.7" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 			<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/base/" schemaLocation="../lib/hcs-base.xsd"/>
 			<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/capital-repair/" schemaLocation="hcs-capital-repair-types.xsd"/>
 		</xs:schema>
@@ -296,7 +295,7 @@
 		<wsdl:operation name="importDecisionsOrderOfProvidingPD">
 			<wsdl:documentation>Импорт решений/информации о порядке представления платежных документов</wsdl:documentation>
 			<wsdl:input message="tns:importDecisionsOrderOfProvidingPDRequest"/>
-			<wsdl:output message="tns:importContractsResult"/>
+			<wsdl:output message="tns:importDecisionsOrderOfProvidingPDResult"/>
 			<wsdl:fault name="InvalidRequest" message="tns:Fault"/>
 		</wsdl:operation>
 		<wsdl:operation name="exportDecisionsOrderOfProvidingPD">

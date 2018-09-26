@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:tns="http://dom.gosuslugi.ru/schema/integration/services/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:premises-base="http://dom.gosuslugi.ru/schema/integration/premises-base/" xmlns:nsi-base="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:organizations-registry-base="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/services/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="11.12.0.5">
+<xs:schema xmlns:tns="http://dom.gosuslugi.ru/schema/integration/services/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:premises-base="http://dom.gosuslugi.ru/schema/integration/premises-base/" xmlns:nsi-base="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:organizations-registry-base="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/services/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="12.2.0.6">
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/base/" schemaLocation="../lib/hcs-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/premises-base/" schemaLocation="../lib/hcs-premises-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/nsi-base/" schemaLocation="../lib/hcs-nsi-base.xsd"/>
@@ -346,7 +346,7 @@
 															<xs:documentation>Даты начала работ по плану</xs:documentation>
 														</xs:annotation>
 													</xs:element>
-													<xs:element name="WorkCount" type="xs:nonNegativeInteger">
+													<xs:element name="WorkCount" type="tns:MonthlyWorkCountType">
 														<xs:annotation>
 															<xs:documentation>Количество работ</xs:documentation>
 														</xs:annotation>
@@ -618,7 +618,7 @@
 							<xs:documentation>Цена</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="Amount" type="base:VolumeType" minOccurs="0">
+					<xs:element name="Amount" type="tns:WorkAmountType" minOccurs="0">
 						<xs:annotation>
 							<xs:documentation>Объём</xs:documentation>
 						</xs:annotation>
@@ -658,33 +658,6 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="WorkingListItemExportType">
-		<xs:annotation>
-			<xs:documentation>Работа/услуга в перечне</xs:documentation>
-		</xs:annotation>
-		<xs:sequence>
-			<xs:element name="Price" type="tns:WorkPriceType" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Цена</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="Amount" type="base:VolumeType" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Объём</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="TotalCost" type="tns:WorkCostType" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Общая стоимость</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="Count" type="tns:WorkCountType" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Количество</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
 	<xs:complexType name="WorkingPlanType">
 		<xs:annotation>
 			<xs:documentation>План по перечню работ/услуг</xs:documentation>
@@ -716,7 +689,7 @@
 								</xs:annotation>
 							</xs:element>
 							<xs:sequence>
-								<xs:element name="WorkCount" type="xs:nonNegativeInteger">
+								<xs:element name="WorkCount" type="tns:MonthlyWorkCountType">
 									<xs:annotation>
 										<xs:documentation>Количество работ</xs:documentation>
 									</xs:annotation>
@@ -730,6 +703,23 @@
 			<xs:element ref="base:TransportGUID"/>
 		</xs:sequence>
 	</xs:complexType>
+	<xs:complexType name="MonthlyWorkType">
+		<xs:annotation>
+			<xs:documentation>Базовый тип для запланированной или выполненной работы за месяц</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="count" type="tns:MonthlyWorkCountType">
+				<xs:annotation>
+					<xs:documentation>Количество работ</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="WorkDate" type="xs:date" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Даты начала работ</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
 	<xs:complexType name="CompletedWorkType">
 		<xs:annotation>
 			<xs:documentation>Базовый тип выполненной работы</xs:documentation>
@@ -740,24 +730,10 @@
 					<xs:documentation>Фото выполненной работы/услуги</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="MonthlyWork" minOccurs="0">
+			<xs:element name="MonthlyWork" type="tns:MonthlyWorkType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Количество выполненных работ (если не было указано в плане или изменилось)</xs:documentation>
 				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="count" type="xs:nonNegativeInteger">
-							<xs:annotation>
-								<xs:documentation>Количество работ</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="WorkDate" type="xs:date" minOccurs="0" maxOccurs="unbounded">
-							<xs:annotation>
-								<xs:documentation>Даты начала работ</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
 			</xs:element>
 			<xs:choice minOccurs="0">
 				<xs:element name="ActTransportGUID" type="base:GUIDType" minOccurs="0">
@@ -776,7 +752,7 @@
 					<xs:documentation>Фактическая цена (если не была указана в плане или изменилась).</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="Amount" type="base:VolumeType" minOccurs="0">
+			<xs:element name="Amount" type="tns:WorkAmountType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Фактический объём (если не был указан в плане или изменился)</xs:documentation>
 				</xs:annotation>
@@ -790,7 +766,7 @@
 	</xs:complexType>
 	<xs:complexType name="CompletedWorkExportType">
 		<xs:annotation>
-			<xs:documentation>Базовый тип выполненной работы</xs:documentation>
+			<xs:documentation>Базовый тип выполненной работы для экспорта</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="photos" type="base:AttachmentType" minOccurs="0" maxOccurs="unbounded">
@@ -798,24 +774,10 @@
 					<xs:documentation>Фото выполненной работы/услуги</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="MonthlyWork">
+			<xs:element name="MonthlyWork" type="tns:MonthlyWorkType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Количество выполненных работ</xs:documentation>
 				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="count" type="xs:nonNegativeInteger">
-							<xs:annotation>
-								<xs:documentation>Количество работ</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="WorkDate" type="xs:date" minOccurs="0" maxOccurs="unbounded">
-							<xs:annotation>
-								<xs:documentation>Даты начала работ</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
 			</xs:element>
 			<xs:element name="ActGUID" type="base:GUIDType" minOccurs="0">
 				<xs:annotation>
@@ -827,7 +789,7 @@
 					<xs:documentation>Фактическая цена</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="Amount" type="base:VolumeType" minOccurs="0">
+			<xs:element name="Amount" type="tns:WorkAmountType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Фактический объём</xs:documentation>
 				</xs:annotation>
@@ -1014,7 +976,7 @@
 				</xs:annotation>
 				<xs:complexType>
 					<xs:complexContent>
-						<xs:extension base="tns:CompletedWorkType">
+						<xs:extension base="tns:CompletedWorkExportType">
 							<xs:sequence>
 								<xs:choice minOccurs="0">
 									<xs:element name="Accident">
@@ -1163,17 +1125,34 @@
 			<xs:documentation>Тип для цены работ/услуг</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:decimal">
-			<xs:totalDigits value="12"/>
+			<xs:totalDigits value="14"/>
 			<xs:fractionDigits value="4"/>
 			<xs:minInclusive value="0"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="WorkAmountType">
+		<xs:annotation>
+			<xs:documentation>Тип для объема работ/услуг</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:totalDigits value="14"/>
+			<xs:fractionDigits value="3"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="WorkCountType">
 		<xs:annotation>
-			<xs:documentation>Тип для стоимости работ/услуг</xs:documentation>
+			<xs:documentation>Тип для количества работ/услуг в перечне</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:nonNegativeInteger">
-			<xs:maxInclusive value="999"/>
+			<xs:maxInclusive value="9999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="MonthlyWorkCountType">
+		<xs:annotation>
+			<xs:documentation>Тип для количества работ/услуг за месяц</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:nonNegativeInteger">
+			<xs:maxInclusive value="99"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="WorkCostType">

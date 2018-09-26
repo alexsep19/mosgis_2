@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!---->
-<!---->
-<!---->
-<!---->
-<!---->
-<xs:schema xmlns:tns="http://dom.gosuslugi.ru/schema/integration/bills/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:pm="http://dom.gosuslugi.ru/schema/integration/payment/" xmlns:premises-base="http://dom.gosuslugi.ru/schema/integration/premises-base/" xmlns:bills-base="http://dom.gosuslugi.ru/schema/integration/bills-base/" xmlns:account-base="http://dom.gosuslugi.ru/schema/integration/account-base/" xmlns:payments-base="http://dom.gosuslugi.ru/schema/integration/payments-base/" xmlns:nsi-base="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:organizations-base="http://dom.gosuslugi.ru/schema/integration/organizations-base/" xmlns:organizations-registry-base="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/bills/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="11.14.0.11">
+<xs:schema xmlns:tns="http://dom.gosuslugi.ru/schema/integration/bills/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:pm="http://dom.gosuslugi.ru/schema/integration/payment/" xmlns:premises-base="http://dom.gosuslugi.ru/schema/integration/premises-base/" xmlns:bills-base="http://dom.gosuslugi.ru/schema/integration/bills-base/" xmlns:account-base="http://dom.gosuslugi.ru/schema/integration/account-base/" xmlns:payments-base="http://dom.gosuslugi.ru/schema/integration/payments-base/" xmlns:nsi-base="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:organizations-base="http://dom.gosuslugi.ru/schema/integration/organizations-base/" xmlns:organizations-registry-base="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/bills/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="12.2.0.18">
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/base/" schemaLocation="../lib/hcs-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/premises-base/" schemaLocation="../lib/hcs-premises-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/bills-base/" schemaLocation="../lib/hcs-bills-base.xsd"/>
@@ -70,11 +65,38 @@
 											<xs:sequence>
 												<xs:element ref="base:TransportGUID"/>
 												<xs:element ref="bills-base:PaymentDocumentID" minOccurs="0"/>
-												<xs:element name="PaymentInformationKey" type="base:GUIDType">
-													<xs:annotation>
-														<xs:documentation>Ссылка на платежные реквизиты</xs:documentation>
-													</xs:annotation>
-												</xs:element>
+												<xs:choice>
+													<xs:element name="PaymentInformationKey" type="base:GUIDType">
+														<xs:annotation>
+															<xs:documentation>Ссылка на платежные реквизиты. Заполняется если в ПД только один платежный реквизит.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="DetailsPaymentInformation" maxOccurs="unbounded">
+														<xs:annotation>
+															<xs:documentation>Детализация информации о платежных реквизитах. Заполняется если в ПД несколько платежных реквизитов, и необходимо отразить сумму к оплате за расчетный период в рамках определенного платежного реквизита</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="PaymentInformationKey" type="base:GUIDType">
+																	<xs:annotation>
+																		<xs:documentation>Ссылка на платежные реквизиты</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element name="TotalPayableByPaymentInformation">
+																	<xs:annotation>
+																		<xs:documentation>Сумма к оплате за расчетный период (руб) в рамках платежного реквизита. Рассчитывается как сумма «Итого к оплате за расчетный период, руб» всех услуг, где указан данный платежный реквизит</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:decimal">
+																			<xs:totalDigits value="18"/>
+																			<xs:fractionDigits value="2"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:choice>
 											</xs:sequence>
 										</xs:extension>
 									</xs:complexContent>
@@ -124,6 +146,50 @@
 			<xs:selector xpath="tns:PaymentDocument/tns:PaymentInformationKey"/>
 			<xs:field xpath="."/>
 		</xs:keyref>
+		<xs:keyref name="importPaymentDocumentRequest_HS_PaymentInformationGUIDKeyRef" refer="tns:importPaymentDocumentRequest_PaymentInformationGUIDKey">
+			<xs:selector xpath="tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:PaymentInformationKey"/>
+			<xs:field xpath="."/>
+		</xs:keyref>
+		<xs:keyref name="importPaymentDocumentRequest_MS_PaymentInformationGUIDKeyRef" refer="tns:importPaymentDocumentRequest_PaymentInformationGUIDKey">
+			<xs:selector xpath="tns:PaymentDocument/tns:ChargeInfo/tns:MunicipalService/tns:PaymentInformationKey"/>
+			<xs:field xpath="."/>
+		</xs:keyref>
+		<xs:keyref name="importPaymentDocumentRequest_AS_PaymentInformationGUIDKeyRef" refer="tns:importPaymentDocumentRequest_PaymentInformationGUIDKey">
+			<xs:selector xpath="tns:PaymentDocument/tns:ChargeInfo/tns:AdditionalService/tns:PaymentInformationKey"/>
+			<xs:field xpath="."/>
+		</xs:keyref>
+		<xs:keyref name="importPaymentDocumentRequest_CR_PaymentInformationGUIDKeyRef" refer="tns:importPaymentDocumentRequest_PaymentInformationGUIDKey">
+			<xs:selector xpath="tns:PaymentDocument/tns:CapitalRepairCharge/tns:PaymentInformationKey"/>
+			<xs:field xpath="."/>
+		</xs:keyref>
+		<xs:keyref name="importPaymentDocumentRequest_I_PaymentInformationGUIDKeyRef" refer="tns:importPaymentDocumentRequest_PaymentInformationGUIDKey">
+			<xs:selector xpath="tns:PaymentDocument/tns:Insurance/tns:PaymentInformationKey"/>
+			<xs:field xpath="."/>
+		</xs:keyref>
+		<xs:keyref name="importPaymentDocumentRequest_PC_PaymentInformationGUIDKeyRef" refer="tns:importPaymentDocumentRequest_PaymentInformationGUIDKey">
+			<xs:selector xpath="tns:PaymentDocument/tns:PenaltiesAndCourtCosts/tns:PaymentInformationKey"/>
+			<xs:field xpath="."/>
+		</xs:keyref>
+		<xs:keyref name="importPaymentDocumentRequest_CRD_PaymentInformationGUIDKeyRef" refer="tns:importPaymentDocumentRequest_PaymentInformationGUIDKey">
+			<xs:selector xpath="tns:PaymentDocument/tns:CapitalRepairDebt/tns:PaymentInformationKey"/>
+			<xs:field xpath="."/>
+		</xs:keyref>
+		<xs:keyref name="importPaymentDocumentRequest_HSD_PaymentInformationGUIDKeyRef" refer="tns:importPaymentDocumentRequest_PaymentInformationGUIDKey">
+			<xs:selector xpath="tns:PaymentDocument/tns:ChargeDebt/tns:HousingService/tns:PaymentInformationKey"/>
+			<xs:field xpath="."/>
+		</xs:keyref>
+		<xs:keyref name="importPaymentDocumentRequest_ASD_PaymentInformationGUIDKeyRef" refer="tns:importPaymentDocumentRequest_PaymentInformationGUIDKey">
+			<xs:selector xpath="tns:PaymentDocument/tns:ChargeDebt/tns:AdditionalService/tns:PaymentInformationKey"/>
+			<xs:field xpath="."/>
+		</xs:keyref>
+		<xs:keyref name="importPaymentDocumentRequest_MSD_PaymentInformationGUIDKeyRef" refer="tns:importPaymentDocumentRequest_PaymentInformationGUIDKey">
+			<xs:selector xpath="tns:PaymentDocument/tns:ChargeDebt/tns:MunicipalService/tns:PaymentInformationKey"/>
+			<xs:field xpath="."/>
+		</xs:keyref>
+		<xs:keyref name="importPaymentDocumentRequest_DetailsPaymentInformationGUIDKeyRef" refer="tns:importPaymentDocumentRequest_PaymentInformationGUIDKey">
+			<xs:selector xpath="tns:PaymentDocument/tns:DetailsPaymentInformation/tns:PaymentInformationKey"/>
+			<xs:field xpath="."/>
+		</xs:keyref>
 	</xs:element>
 	<!--Экспорт платежных документов-->
 	<xs:element name="exportPaymentDocumentRequest">
@@ -160,7 +226,7 @@
 							</xs:choice>
 						</xs:sequence>
 					</xs:choice>
-					<xs:attribute ref="base:version" use="required" fixed="11.2.0.10"/>
+					<xs:attribute ref="base:version" use="required"/>
 				</xs:extension>
 			</xs:complexContent>
 		</xs:complexType>
@@ -176,7 +242,7 @@
 						<xs:element name="PaymentDocument" type="tns:exportPaymentDocumentResultType" maxOccurs="unbounded"/>
 						<xs:element ref="base:ErrorMessage"/>
 					</xs:choice>
-					<xs:attribute ref="base:version" use="required" fixed="11.2.0.10"/>
+					<xs:attribute ref="base:version" use="required"/>
 				</xs:extension>
 			</xs:complexContent>
 		</xs:complexType>
@@ -190,11 +256,35 @@
 						<xs:extension base="tns:PaymentDocumentExportType">
 							<xs:sequence>
 								<xs:element ref="bills-base:PaymentDocumentID"/>
-								<xs:element name="PaymentInformation" type="payments-base:PaymentInformationExportType">
+								<xs:element name="PaymentInformation" maxOccurs="unbounded">
 									<xs:annotation>
 										<xs:documentation>Сведения о платежных реквизитах получателя.
 Ссылка на пост. 924 – Приложение 2, параграф III.</xs:documentation>
 									</xs:annotation>
+									<xs:complexType>
+										<xs:complexContent>
+											<xs:extension base="payments-base:PaymentInformationExportType">
+												<xs:sequence minOccurs="0">
+													<xs:element name="TotalPayableByPaymentInformation" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Сумма к оплате за расчетный период (руб) в рамках платежного реквизита</xs:documentation>
+														</xs:annotation>
+														<xs:simpleType>
+															<xs:restriction base="xs:decimal">
+																<xs:totalDigits value="18"/>
+																<xs:fractionDigits value="2"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element name="PaymentInformationGuid" type="base:GUIDType">
+														<xs:annotation>
+															<xs:documentation>Идентификатор платежных реквизитов организации</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:sequence>
+											</xs:extension>
+										</xs:complexContent>
+									</xs:complexType>
 								</xs:element>
 							</xs:sequence>
 						</xs:extension>
@@ -916,7 +1006,7 @@
 					</xs:choice>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="ReportingPeriod" maxOccurs="unbounded">
+			<xs:element name="ReportingPeriod" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>Отчетный период</xs:documentation>
 				</xs:annotation>
@@ -1279,6 +1369,47 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+	<xs:complexType name="DebtImportCRType">
+		<xs:annotation>
+			<xs:documentation>Общий тип задолженности при импорте</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element ref="base:Month">
+				<xs:annotation>
+					<xs:documentation>Месяц
+Ссылка на пост. 924 – Приложение 2, п. 6 в).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element ref="base:Year">
+				<xs:annotation>
+					<xs:documentation>Год
+Ссылка на пост. 924 – Приложение 2, п. 6 в).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TotalPayable">
+				<xs:annotation>
+					<xs:documentation>К оплате за расчетный период, руб.
+Ссылка на пост. 924 – Приложение 2, п. 22.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="13"/>
+						<xs:fractionDigits value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="orgPPAGUID" type="base:GUIDType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Поставщик услуги. Идентификатор зарегистрированной организации. Обязателен, если тип ЛС "ЛС РЦ" (isRCAccount), запрещен для заполнения для остальных типов лицевых счетов.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PaymentInformationKey" type="base:GUIDType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Ссылка на платежные реквизиты</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
 	<xs:complexType name="ServicePDImportType">
 		<xs:annotation>
 			<xs:documentation>Потребление по услуге</xs:documentation>
@@ -1343,6 +1474,11 @@
 			<xs:element name="orgPPAGUID" type="base:GUIDType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Поставщик услуги. Идентификатор зарегистрированной организации. Обязателен, если тип ЛС "ЛС РЦ" (isRCAccount), запрещен для заполнения для остальных типов лицевых счетов.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PaymentInformationKey" type="base:GUIDType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Ссылка на платежные реквизиты</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
@@ -1413,6 +1549,11 @@
 					<xs:documentation>Поставщик услуги. Идентификатор зарегистрированной организации. Обязателен, если тип ЛС "ЛС РЦ" (isRCAccount), запрещен для заполнения для остальных типов лицевых счетов.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="PaymentInformationGuid" type="base:GUIDType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Идентификатор платежных реквизитов</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="DebtType">
@@ -1478,6 +1619,11 @@
 Ссылка на пост. 924 – Приложение 2, п. 12.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
+					<xs:element name="PaymentInformationGuid" type="base:GUIDType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Идентификатор платежных реквизитов</xs:documentation>
+						</xs:annotation>
+					</xs:element>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -1493,6 +1639,11 @@
 						<xs:annotation>
 							<xs:documentation>Код услуги (жилищной, коммунальной или дополнительной). НСИ 50, 3, 1.
 Ссылка на пост. 924 – Приложение 2, п. 12.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="PaymentInformationKey" type="base:GUIDType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Ссылка на платежные реквизиты</xs:documentation>
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
@@ -1560,7 +1711,7 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
-			<xs:element name="MoneyDiscount" minOccurs="0">
+			<xs:element name="MoneyDiscount">
 				<xs:annotation>
 					<xs:documentation>Льготы, субсидии, скидки (руб)
 Ссылка на пост. 924 – Приложение 2, п. 21.</xs:documentation>
@@ -1584,7 +1735,7 @@
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="bills-base:MoneyType">
-						<xs:totalDigits value="13"/>
+						<xs:totalDigits value="17"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
@@ -1594,8 +1745,9 @@
 Ссылка на пост. 924 – Приложение 2, п. 51.</xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
-					<xs:restriction base="bills-base:MoneyType">
-						<xs:totalDigits value="13"/>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="17"/>
+						<xs:fractionDigits value="2"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
@@ -1606,12 +1758,12 @@
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:decimal">
-						<xs:totalDigits value="13"/>
+						<xs:totalDigits value="17"/>
 						<xs:fractionDigits value="2"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
-			<xs:element name="MoneyDiscount">
+			<xs:element name="MoneyDiscount" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Льготы, субсидии, скидки (руб)
 Ссылка на пост. 924 – Приложение 2, п. 53.</xs:documentation>
@@ -1619,7 +1771,7 @@
 				<xs:simpleType>
 					<xs:restriction base="xs:decimal">
 						<xs:minInclusive value="0"/>
-						<xs:totalDigits value="13"/>
+						<xs:totalDigits value="17"/>
 						<xs:fractionDigits value="2"/>
 					</xs:restriction>
 				</xs:simpleType>
@@ -1631,7 +1783,7 @@
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:decimal">
-						<xs:totalDigits value="13"/>
+						<xs:totalDigits value="17"/>
 						<xs:fractionDigits value="2"/>
 					</xs:restriction>
 				</xs:simpleType>
@@ -1648,9 +1800,14 @@
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
 						<xs:minLength value="1"/>
-						<xs:maxLength value="4000"/>
+						<xs:maxLength value="2000"/>
 					</xs:restriction>
 				</xs:simpleType>
+			</xs:element>
+			<xs:element name="PaymentInformationKey" type="base:GUIDType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Ссылка на платежные реквизиты</xs:documentation>
+				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
@@ -1673,8 +1830,9 @@
 Ссылка на пост. 924 – Приложение 2, п. 51.</xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
-					<xs:restriction base="bills-base:MoneyType">
+					<xs:restriction base="xs:decimal">
 						<xs:totalDigits value="18"/>
+						<xs:fractionDigits value="2"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
@@ -3030,10 +3188,15 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 							</xs:complexContent>
 						</xs:complexType>
 					</xs:element>
-					<xs:element name="CapitalRepairCharge" type="tns:CapitalRepairImportType" minOccurs="0">
+					<xs:element name="CapitalRepairCharge" minOccurs="0">
 						<xs:annotation>
-							<xs:documentation>Начисление за капитальный ремонт</xs:documentation>
+							<xs:documentation>Начисление за капитальный ремонт.</xs:documentation>
 						</xs:annotation>
+						<xs:complexType>
+							<xs:complexContent>
+								<xs:extension base="tns:CapitalRepairImportType"/>
+							</xs:complexContent>
+						</xs:complexType>
 					</xs:element>
 					<xs:element name="Insurance" minOccurs="0">
 						<xs:annotation>
@@ -3135,6 +3298,11 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 										<xs:documentation>Поставщик услуги. Идентификатор зарегистрированной организации. Обязателен, если тип ЛС "ЛС РЦ" (isRCAccount), запрещен для заполнения для остальных типов лицевых счетов.</xs:documentation>
 									</xs:annotation>
 								</xs:element>
+								<xs:element name="PaymentInformationKey" type="base:GUIDType" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>Ссылка на платежные реквизиты</xs:documentation>
+									</xs:annotation>
+								</xs:element>
 							</xs:sequence>
 						</xs:complexType>
 					</xs:element>
@@ -3182,12 +3350,17 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 										<xs:documentation>Поставщик услуги. Идентификатор зарегистрированной организации. Обязателен, если тип ЛС "ЛС РЦ" (isRCAccount), запрещен для заполнения для остальных типов лицевых счетов.</xs:documentation>
 									</xs:annotation>
 								</xs:element>
+								<xs:element name="PaymentInformationKey" type="base:GUIDType" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>Ссылка на платежные реквизиты</xs:documentation>
+									</xs:annotation>
+								</xs:element>
 							</xs:sequence>
 						</xs:complexType>
 					</xs:element>
 				</xs:sequence>
 				<xs:sequence>
-					<xs:element name="CapitalRepairDebt" type="tns:DebtImportType" minOccurs="0" maxOccurs="unbounded">
+					<xs:element name="CapitalRepairDebt" type="tns:DebtImportCRType" minOccurs="0" maxOccurs="unbounded">
 						<xs:annotation>
 							<xs:documentation>Задолженность за капитальный ремонт</xs:documentation>
 						</xs:annotation>
@@ -3429,10 +3602,23 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 Ссылка на пост. 924 – Приложение 2, п. 12.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="CapitalRepairCharge" type="tns:CapitalRepairType" minOccurs="0">
+					<xs:element name="CapitalRepairCharge" minOccurs="0">
 						<xs:annotation>
 							<xs:documentation>Начисление за капитальный ремонт</xs:documentation>
 						</xs:annotation>
+						<xs:complexType>
+							<xs:complexContent>
+								<xs:extension base="tns:CapitalRepairType">
+									<xs:sequence>
+										<xs:element name="PaymentInformationGuid" type="base:GUIDType" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Идентификатор платежных реквизитов</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:extension>
+							</xs:complexContent>
+						</xs:complexType>
 					</xs:element>
 					<xs:element name="PenaltiesAndCourtCosts" minOccurs="0" maxOccurs="unbounded">
 						<xs:annotation>
@@ -3476,6 +3662,11 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 								<xs:element name="orgPPAGUID" type="base:GUIDType" minOccurs="0">
 									<xs:annotation>
 										<xs:documentation>Поставщик услуги. Идентификатор зарегистрированной организации. Обязателен, если тип ЛС "ЛС РЦ" (isRCAccount), запрещен для заполнения для остальных типов лицевых счетов.</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="PaymentInformationGuid" type="base:GUIDType" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>Идентификатор платежных реквизитов</xs:documentation>
 									</xs:annotation>
 								</xs:element>
 							</xs:sequence>
@@ -3581,15 +3772,33 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 										<xs:documentation>Поставщик услуги. Идентификатор зарегистрированной организации. Обязателен, если тип ЛС "ЛС РЦ" (isRCAccount), запрещен для заполнения для остальных типов лицевых счетов.</xs:documentation>
 									</xs:annotation>
 								</xs:element>
+								<xs:element name="PaymentInformationGuid" type="base:GUIDType" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>Идентификатор платежных реквизитов</xs:documentation>
+									</xs:annotation>
+								</xs:element>
 							</xs:sequence>
 						</xs:complexType>
 					</xs:element>
 				</xs:sequence>
 				<xs:sequence>
-					<xs:element name="CapitalRepairDebt" type="tns:DebtType" minOccurs="0" maxOccurs="unbounded">
+					<xs:element name="CapitalRepairDebt" minOccurs="0" maxOccurs="unbounded">
 						<xs:annotation>
 							<xs:documentation>Задолженность за капитальный ремонт</xs:documentation>
 						</xs:annotation>
+						<xs:complexType>
+							<xs:complexContent>
+								<xs:extension base="tns:DebtType">
+									<xs:sequence minOccurs="0">
+										<xs:element name="PaymentInformationGuid" type="base:GUIDType" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Идентификатор платежных реквизитов</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:extension>
+							</xs:complexContent>
+						</xs:complexType>
 					</xs:element>
 					<xs:element name="ChargeDebt" minOccurs="0" maxOccurs="unbounded">
 						<xs:annotation>

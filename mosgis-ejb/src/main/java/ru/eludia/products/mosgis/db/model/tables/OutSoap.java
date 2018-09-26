@@ -29,6 +29,7 @@ public class OutSoap extends Table {
         col ("is_failed",    Type.BOOLEAN,     FALSE, "1 для аварийных, 0 для остальных");
         col ("err_code",     Type.STRING,       null, "Код ошибки");
         col ("err_text",     Type.STRING,       null, "Текст ошибки");
+        col ("orgppaguid",     Type.UUID,       null, "Идентификатор зарегистрированной организации, с которым отправлялся запрос");
         col ("ym",           Type.STRING,       new Virt ("TO_CHAR(TS,'yyyy-mm')"), "Год-Месяц");
 
         fk ("id_status",     VocAsyncRequestState.class, new Num (IN_PROGRESS.getId ()), "Статус");

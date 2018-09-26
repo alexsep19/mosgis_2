@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by S (H) -->
+<!---->
 <!---->
 <!---->
 <!---->
@@ -3077,18 +3077,30 @@ Active - Действующая</xs:documentation>
 		<xs:complexType>
 			<xs:complexContent>
 				<xs:extension base="base:BaseType">
-					<xs:sequence>
-						<xs:element name="From" type="xs:date">
+					<xs:choice>
+						<xs:element name="ExaminationGuid" type="base:GUIDType">
 							<xs:annotation>
-								<xs:documentation>Начало периода даты начала проведения проверки (включительно).</xs:documentation>
+								<xs:documentation>Идентификатор проверки в ГИС ЖКХ.</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-						<xs:element name="To" type="xs:date" minOccurs="0">
+						<xs:element name="RegistryNumber" type="tns:String255Type">
 							<xs:annotation>
-								<xs:documentation>Конец периода даты начала проведения проверки (включительно). </xs:documentation>
+								<xs:documentation>Реестровый номер проверки.</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-					</xs:sequence>
+						<xs:sequence>
+							<xs:element name="From" type="xs:date">
+								<xs:annotation>
+									<xs:documentation>Начало периода даты начала проведения проверки (включительно).</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="To" type="xs:date" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Конец периода даты начала проведения проверки (включительно). </xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:choice>
 					<xs:attribute ref="base:version" use="required" fixed="11.2.0.1"/>
 				</xs:extension>
 			</xs:complexContent>

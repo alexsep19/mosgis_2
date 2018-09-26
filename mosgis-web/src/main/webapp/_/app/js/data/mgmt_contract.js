@@ -45,6 +45,10 @@ define ([], function () {
 
                     }
 
+                    if ((0 + it.id_ctr_status) % 10 == 0 && it.id_ctr_status > 10) {
+                        it._can.refresh = 1
+                    }
+
                     it._can.update = it._can.cancel = it._can.edit
 
                 }

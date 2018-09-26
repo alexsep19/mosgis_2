@@ -71,6 +71,7 @@ public class Contract extends Table {
         fk    ("id_log",                    ContractLog.class,         null, "Последнее событие редактирования");
 
         key   ("org_docnum", "uuid_org", "docnum");
+        key   ("contractguid", "contractguid");
 
         trigger ("BEFORE INSERT OR UPDATE", ""                
 
@@ -303,8 +304,9 @@ public class Contract extends Table {
     
     public enum Action {
         
-        PLACING   (VocGisStatus.i.PENDING_RP_PLACING,  VocGisStatus.i.FAILED_PLACING),
-        APPROVING (VocGisStatus.i.PENDING_RP_APPROVAL, VocGisStatus.i.FAILED_STATE)
+        PLACING    (VocGisStatus.i.PENDING_RP_PLACING,  VocGisStatus.i.FAILED_PLACING),
+        APPROVING  (VocGisStatus.i.PENDING_RP_APPROVAL, VocGisStatus.i.FAILED_STATE),
+        REFRESHING (VocGisStatus.i.PENDING_RP_REFRESH,  VocGisStatus.i.FAILED_STATE)
         ;
         
         VocGisStatus.i nextStatus;
@@ -327,6 +329,7 @@ public class Contract extends Table {
             switch (status) {
                 case PENDING_RQ_PLACING:  return PLACING;
                 case PENDING_RQ_APPROVAL: return APPROVING;
+                case PENDING_RQ_REFRESH:  return REFRESHING;
                 default: return null;
             }            
         }

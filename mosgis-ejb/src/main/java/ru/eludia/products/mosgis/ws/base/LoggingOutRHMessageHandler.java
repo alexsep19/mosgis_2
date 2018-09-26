@@ -24,4 +24,9 @@ public class LoggingOutRHMessageHandler extends LoggingOutMessageHandler impleme
         return rh;
     }
 
+    @Override
+    String getOrgPPAGUID (HeaderType rh) {
+        return ((RequestHeader) rh).getOrgPPAGUID ();
+    }
+
 }

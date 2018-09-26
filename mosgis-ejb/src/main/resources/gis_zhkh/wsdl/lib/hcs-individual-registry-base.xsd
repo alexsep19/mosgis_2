@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by S (H) -->
 <!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by S (j) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:nsi-base="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:tns="http://dom.gosuslugi.ru/schema/integration/individual-registry-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/individual-registry-base/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="11.2.0.2">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:nsi-base="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:tns="http://dom.gosuslugi.ru/schema/integration/individual-registry-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/individual-registry-base/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="12.2.0.1">
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/base/" schemaLocation="hcs-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/nsi-base/" schemaLocation="hcs-nsi-base.xsd"/>
 	<!--Физические лица (доли собственности)-->
@@ -82,7 +82,7 @@
 		<xs:simpleType>
 			<xs:restriction base="xs:string">
 				<xs:minLength value="1"/>
-				<xs:maxLength value="60"/>
+				<xs:maxLength value="256"/>
 			</xs:restriction>
 		</xs:simpleType>
 	</xs:element>
@@ -93,7 +93,7 @@
 		<xs:simpleType>
 			<xs:restriction base="xs:string">
 				<xs:minLength value="1"/>
-				<xs:maxLength value="60"/>
+				<xs:maxLength value="256"/>
 			</xs:restriction>
 		</xs:simpleType>
 	</xs:element>
@@ -104,7 +104,7 @@
 		<xs:simpleType>
 			<xs:restriction base="xs:string">
 				<xs:minLength value="1"/>
-				<xs:maxLength value="60"/>
+				<xs:maxLength value="256"/>
 			</xs:restriction>
 		</xs:simpleType>
 	</xs:element>

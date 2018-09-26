@@ -1,6 +1,7 @@
 package ru.eludia.products.mosgis.ejb.wsc;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -16,7 +17,10 @@ import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ws.base.LoggingOutMessageHandler;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.base.GetStateRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChAsyncRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChRequestCriteriaType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportHouseRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportStatusCAChRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ObjectFactory;
@@ -103,6 +107,22 @@ public class WsGisHouseManagementClient {
 
         return getPort (orgPPAGuid, messageGUID).importContractData (importContractRequest).getAck ();
         
+    }
+    
+    public AckRequest.Ack exportContractStatus (UUID orgPPAGuid, UUID messageGUID, List<UUID> ids) throws Fault {
+
+        final ExportStatusCAChRequest r = of.createExportStatusCAChRequest ();
+
+        List<ExportStatusCAChRequest.Criteria> criteria = r.getCriteria ();
+
+        for (UUID uuid: ids) {
+            final ExportStatusCAChRequest.Criteria c = of.createExportStatusCAChRequestCriteria ();            
+            c.setContractGUID (uuid.toString ());            
+            criteria.add (c);            
+        }
+
+        return getPort (orgPPAGuid, messageGUID).exportStatusCAChData (r).getAck ();
+
     }
 
     public GetStateResult getState (UUID orgPPAGuid, UUID uuid) throws Fault {

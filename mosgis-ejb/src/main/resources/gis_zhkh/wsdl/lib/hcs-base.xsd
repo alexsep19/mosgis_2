@@ -2,7 +2,7 @@
 <!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by S (H) -->
 <!---->
 <!---->
-<xs:schema xmlns:tns="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" targetNamespace="http://dom.gosuslugi.ru/schema/integration/base/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="11.10.0.3">
+<xs:schema xmlns:tns="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" targetNamespace="http://dom.gosuslugi.ru/schema/integration/base/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="12.2.0.1">
 	<xs:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="xmldsig-core-schema.xsd"/>
 	<xs:simpleType name="String2000Type">
 		<xs:annotation>
@@ -678,4 +678,22 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:simpleType name="OKTMOType">
+		<xs:annotation>
+			<xs:documentation>Код по ОКТМО</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="11"/>
+			<xs:pattern value="\d{11}|\d{8}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="OKTMOImportType">
+		<xs:annotation>
+			<xs:documentation>Код по ОКТМО</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="8"/>
+			<xs:pattern value="\d{8}"/>
+		</xs:restriction>
+	</xs:simpleType>
 </xs:schema>

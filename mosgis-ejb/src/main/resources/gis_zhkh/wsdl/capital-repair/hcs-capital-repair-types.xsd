@@ -1,17 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!---->
-<!---->
-<!---->
-<!---->
-<!---->
-<!---->
-<!---->
-<!---->
-<!---->
-<!---->
-<!---->
-<!---->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:tns="http://dom.gosuslugi.ru/schema/integration/capital-repair/" xmlns:premises-base="http://dom.gosuslugi.ru/schema/integration/premises-base/" xmlns:bills-base="http://dom.gosuslugi.ru/schema/integration/bills-base/" xmlns:nsi-base="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:organizations-registry-base="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" xmlns:organizations-base="http://dom.gosuslugi.ru/schema/integration/organizations-base/" xmlns:account-base="http://dom.gosuslugi.ru/schema/integration/account-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/capital-repair/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="11.13.0.2">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:tns="http://dom.gosuslugi.ru/schema/integration/capital-repair/" xmlns:premises-base="http://dom.gosuslugi.ru/schema/integration/premises-base/" xmlns:bills-base="http://dom.gosuslugi.ru/schema/integration/bills-base/" xmlns:nsi-base="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:organizations-registry-base="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" xmlns:organizations-base="http://dom.gosuslugi.ru/schema/integration/organizations-base/" xmlns:account-base="http://dom.gosuslugi.ru/schema/integration/account-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/capital-repair/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="12.2.0.17">
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/base/" schemaLocation="../lib/hcs-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/nsi-base/" schemaLocation="../lib/hcs-nsi-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/premises-base/" schemaLocation="../lib/hcs-premises-base.xsd"/>
@@ -97,6 +85,14 @@
 			<xs:maxLength value="50"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="String100Type">
+		<xs:annotation>
+			<xs:documentation>Строка не более 100 символов</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="100"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="String500Type">
 		<xs:annotation>
 			<xs:documentation>Строка не более 500 символов</xs:documentation>
@@ -175,12 +171,38 @@
 			<xs:enumeration value="PublishedAndProject"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="YearUpTo2060Type">
+	<xs:simpleType name="TermForGrantingType">
 		<xs:annotation>
-			<xs:documentation>Год не позднее 2060</xs:documentation>
+			<xs:documentation>Срок представления платежных документов</xs:documentation>
 		</xs:annotation>
-		<xs:restriction base="xs:gYear">
-			<xs:maxInclusive value="2060"/>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="COINCIDES">
+				<xs:annotation>
+					<xs:documentation>совпадает со сроком, установленным для внесения платы за жилое помещение и коммунальные услуги</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OTHER">
+				<xs:annotation>
+					<xs:documentation>иной срок</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TermQualificationType">
+		<xs:annotation>
+			<xs:documentation>Уточнение к сроку предоставления</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="CURRENTMONTH">
+				<xs:annotation>
+					<xs:documentation>текущего расчетного месяца</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NEXTMONTH">
+				<xs:annotation>
+					<xs:documentation>следующего месяца за расчетным</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 	<!--Объекты-->
@@ -367,7 +389,7 @@
 					<xs:documentation>Год начала периода реализации</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="EndYear" type="tns:YearUpTo2060Type">
+			<xs:element name="EndYear" type="xs:gYear">
 				<xs:annotation>
 					<xs:documentation>Год окончания периода реализации</xs:documentation>
 				</xs:annotation>
@@ -1227,11 +1249,14 @@
 						<xs:documentation>Дата протокола</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="Attachment" type="base:AttachmentType" maxOccurs="100">
-					<xs:annotation>
-						<xs:documentation>Файлы протокола</xs:documentation>
-					</xs:annotation>
-				</xs:element>
+				<xs:choice>
+					<xs:element name="Attachment" type="base:AttachmentType" maxOccurs="100">
+						<xs:annotation>
+							<xs:documentation>Файлы протокола</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="DocumentIsNotAvailable" type="xs:boolean" fixed="true"/>
+				</xs:choice>
 			</xs:sequence>
 		</xs:choice>
 	</xs:complexType>
@@ -1264,6 +1289,14 @@
 	<xs:annotation>
 		<xs:documentation>Решение/информация о порядке представления платежных документов</xs:documentation>
 	</xs:annotation>
+	<xs:simpleType name="TermDayType">
+		<xs:annotation>
+			<xs:documentation>День месяца от 1 до 30</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:positiveInteger">
+			<xs:maxInclusive value="30"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:complexType name="DecisionPDType">
 		<xs:annotation>
 			<xs:documentation>Тип данных для Решение/информация о порядке представления платежных документов</xs:documentation>
@@ -1317,6 +1350,21 @@
 					<xs:element name="Organization" type="organizations-registry-base:RegOrgType">
 						<xs:annotation>
 							<xs:documentation>Организация, уполномоченная на выставление платежных документов</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="TermForGranting" type="tns:TermForGrantingType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Срок представления платежных документов</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="TermDay" type="tns:TermDayType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Число к сроку предоставления</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="TermQualification" type="tns:TermQualificationType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Уточнение к сроку предоставления</xs:documentation>
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
@@ -1748,7 +1796,7 @@
 			</xs:element>
 			<xs:element name="PaymentPurpose" type="nsi-base:nsiRef" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Назначение денежных средств (НСИ 215) Обязателен для типа операции Списание денежных средств. (Значения с кодом 4, 6 и 7 могут быть выбраны только Региональным оператором капитального ремонта)</xs:documentation>
+					<xs:documentation>Назначение денежных средств (НСИ 215) Обязателен для типа операции Списание денежных средств. (Значение с кодом 7 может быть указано только Региональным оператором капитального ремонта)</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="Source" type="nsi-base:nsiRef" minOccurs="0">
@@ -3596,7 +3644,7 @@
 							</xs:element>
 						</xs:sequence>
 					</xs:choice>
-					<xs:attribute ref="base:version" use="required" fixed="11.10.0.2"/>
+					<xs:attribute ref="base:version" use="required"/>
 				</xs:extension>
 			</xs:complexContent>
 		</xs:complexType>
@@ -3616,7 +3664,7 @@
 							</xs:annotation>
 						</xs:element>
 					</xs:choice>
-					<xs:attribute ref="base:version" use="required" fixed="11.10.0.2"/>
+					<xs:attribute ref="base:version" use="required"/>
 				</xs:extension>
 			</xs:complexContent>
 		</xs:complexType>

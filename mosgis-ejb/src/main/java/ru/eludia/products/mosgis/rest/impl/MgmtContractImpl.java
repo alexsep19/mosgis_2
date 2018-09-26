@@ -48,10 +48,19 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
     public Queue getQueue () {
         return queue;
     }
-
+    
     @Override
     protected void publishMessage (String action, String id_log) {
-        if ("approve".equals (action)) super.publishMessage (action, id_log);
+        
+        switch (action) {
+            case "approve":
+            case "promote":
+            case "refresh":
+                super.publishMessage (action, id_log);
+            default:
+                return;
+        }
+        
     }
 
     private void filterOffDeleted (Select select) {
@@ -250,4 +259,16 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
         
     });}
 
+    @Override
+    public JsonObject doRefresh (String id, User user) {return doAction ((db) -> {
+        
+        db.update (getTable (), HASH (
+            "uuid",           id,
+            "id_ctr_status",  VocGisStatus.i.PENDING_RQ_REFRESH.getId ()
+        ));
+        
+        logAction (db, user, id, "refresh");
+        
+    });}
+    
 }
