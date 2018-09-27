@@ -59,7 +59,7 @@ public final class ComplexSearch extends Search {
                 
                 for (int j = 0; j < a.size (); j++) {
                     if (a.get (j) instanceof JsonString) {
-                        values [j] = ((JsonString) a.get(j)).getString ().trim ().toUpperCase ();
+                        values [j] = ((JsonString) a.get(j)).getString ();
                     } else {
                         JsonValue id = ((JsonObject) a.get (j)).get ("id");
                         values [j] = 

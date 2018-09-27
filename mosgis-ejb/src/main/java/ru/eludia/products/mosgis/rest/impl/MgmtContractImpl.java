@@ -167,6 +167,7 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
                 model
                     .select (VocOrganization.class, "AS customers", "uuid AS id", "label")
                     .orderBy ("label")
+                    .and ("uuid", model.select (Contract.class, "uuid_org_customer").where ("is_deleted", 0))
 
             );
 
