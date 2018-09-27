@@ -55,6 +55,8 @@ define ([], function () {
 
                     $('tr[recid]').each (function () {
                     
+                        if (data.item.id_customer_type == 1) grid.toolbar.hide ('w2ui-add');
+
                         var $this = $(this)
                         
                         var r = grid.get ($this.attr ('recid'))

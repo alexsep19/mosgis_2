@@ -11,6 +11,7 @@ import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Num;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import static ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType.i.OWNERS;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import static ru.eludia.products.mosgis.db.model.voc.VocGisStatus.i.MUTATING;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportStatusCAChResultType;
@@ -52,6 +53,12 @@ public class ContractObject extends Table {
             + " END LOOP; "
             + "END IF; "
 
+            + "IF INSERTING THEN "
+            + " FOR i IN (SELECT c.uuid FROM tb_contracts c INNER JOIN tb_contract_objects o ON (o.uuid_contract = c.uuid AND o.uuid <> :NEW.uuid AND o.is_deleted = 0) WHERE c.uuid=:NEW.uuid_contract AND c.id_customer_type=" + OWNERS.getId () + ") LOOP"
+            + "   raise_application_error (-20000, 'Поскольку заказчик — собственник объекта жилищного фонда, объект в договоре может быть только один. Операция отменена.'); "
+            + " END LOOP; "
+            + "END IF; "
+                
             + "IF :NEW.is_deleted = 0 THEN "
             + " FOR i IN ("
                 + "SELECT "

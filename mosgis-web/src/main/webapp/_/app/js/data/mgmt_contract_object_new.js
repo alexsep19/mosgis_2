@@ -12,11 +12,22 @@ define ([], function () {
         
         v.uuid_contract = $_REQUEST.id
 
+        var data = $('body').data ('data')
+
         query ({type: 'contract_objects', action: 'create', id: undefined}, {data: v}, function () {
         
-            w2popup.close ()
+            if (data.item.id_customer_type == 1) {
             
-            grid.reload (grid.refresh)
+                reload_page ()
+            
+            }
+            else {
+
+                w2popup.close ()
+
+                grid.reload (grid.refresh)
+
+            }
             
         })
 
