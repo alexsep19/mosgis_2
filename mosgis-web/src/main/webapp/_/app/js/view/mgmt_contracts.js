@@ -42,13 +42,20 @@ define ([], function () {
             }, 
 
             searches: [            
-//                {field: 'label_uc',  caption: 'Наименование',  type: 'text'},
+                
+                {field: 'docnum', caption: 'Номер',  type: 'text'},
+                {field: 'signingdate', caption: 'Дата заключения',  type: 'date'},
+                {field: 'id_status', caption: 'Статус договора', type: 'enum', options: {items: data.vc_gis_status.items}}, 
+                {field: 'uuid_org', caption: 'Договородержатель', type: 'enum', options: {items: data.vc_orgs.items}, off: $_USER.role.nsi_20_1},
+                {field: 'id_customer_type', caption: 'Сторона договора', type: 'enum', options: {items: data.vc_gis_customer_type.items}},
+                {field: 'uuid_org_customer', caption: 'Контрагент', type: 'enum', options: {items: data.customers.items}},
+                {field: 'contractbase', caption: 'Основание заключения', type: 'enum', options: {items: data.vc_nsi_58.items}},
+                {field: 'effectivedate', caption: 'Дата вступления в силу',  type: 'date'},
+                {field: 'plandatecomptetion', caption: 'Дата окончания',  type: 'date'},
                 {field: 'is_deleted', caption: 'Статус записи', type: 'enum', options: {items: [
                     {id: "0", text: "Актуальные"},
                     {id: "1", text: "Удалённые"},
                 ]}},
-//                {field: 'id_status', caption: 'Статус синхронизации',     type: 'enum', options: {items: data.vc_async_entity_states.items}},
-                {field: 'uuid_org', caption: 'Организации', type: 'enum', options: {items: data.vc_orgs.items}, off: $_USER.role.nsi_20_1},
             ].filter (not_off),
 
             columns: [                

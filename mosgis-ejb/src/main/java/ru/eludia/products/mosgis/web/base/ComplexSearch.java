@@ -58,10 +58,14 @@ public final class ComplexSearch extends Search {
                 values = new Object [a.size ()];
                 
                 for (int j = 0; j < a.size (); j++) {
-                    JsonValue id = ((JsonObject) a.get (j)).get ("id");
-                    values [j] = 
-                        (id instanceof JsonNumber) ? ((JsonNumber) id).intValue () : 
-                        ((JsonString) id).getString ();
+                    if (a.get (j) instanceof JsonString) {
+                        values [j] = ((JsonString) a.get(j)).getString ();
+                    } else {
+                        JsonValue id = ((JsonObject) a.get (j)).get ("id");
+                        values [j] = 
+                            (id instanceof JsonNumber) ? ((JsonNumber) id).intValue () : 
+                            ((JsonString) id).getString ();
+                    }
                 }
                 
                 for (Object oi: values) {
