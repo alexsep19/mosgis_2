@@ -13,7 +13,7 @@ import javax.ejb.MessageDriven;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
-import ru.eludia.products.mosgis.db.model.incoming.InNsiItem;
+import ru.eludia.products.mosgis.db.model.incoming.nsi.InNsiItem;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiList;

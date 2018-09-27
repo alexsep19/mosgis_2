@@ -1,4 +1,4 @@
-package ru.eludia.products.mosgis.db.model.incoming;
+package ru.eludia.products.mosgis.db.model.incoming.nsi;
 
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;

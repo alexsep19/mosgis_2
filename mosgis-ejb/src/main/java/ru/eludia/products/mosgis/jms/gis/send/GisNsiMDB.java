@@ -11,7 +11,7 @@ import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import javax.jms.Queue;
 import ru.eludia.base.DB;
-import ru.eludia.products.mosgis.db.model.incoming.InNsiGroup;
+import ru.eludia.products.mosgis.db.model.incoming.nsi.InNsiGroup;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiListGroup;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
