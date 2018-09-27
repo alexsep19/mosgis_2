@@ -278,6 +278,34 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
             return;
 
         }
+        catch (Exception ex) {
+            
+            db.begin ();
+
+                db.upsert (OutSoap.class, HASH (
+                    "uuid", uuid,
+                    "id_status", DONE.getId (),
+                    "is_failed", 1,
+                    "err_code",  "0",
+                    "err_text",  ex.getMessage ()
+                ));
+
+                db.update (getTable (), DB.HASH (
+                    "uuid",          uuid,
+                    "uuid_out_soap", uuid
+                ));
+
+                db.update (Contract.class, DB.HASH (
+                    "uuid",              r.get ("uuid_object"),
+                    "uuid_out_soap",     uuid,
+                    "id_ctr_status",     action.getFailStatus ().getId ()
+                ));
+
+            db.commit ();
+
+            return;
+            
+        }
         
     }
     

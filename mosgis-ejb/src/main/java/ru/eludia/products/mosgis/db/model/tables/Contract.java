@@ -127,8 +127,8 @@ public class Contract extends Table {
             + "END; END IF; "
 
             + "IF UPDATING "
-            + "  AND :OLD.id_ctr_status < " + VocGisStatus.i.PENDING_RQ_APPROVAL.getId ()
-            + "  AND :NEW.id_ctr_status = " + VocGisStatus.i.PENDING_RQ_APPROVAL.getId ()
+            + "  AND :OLD.id_ctr_status < " + VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+            + "  AND :NEW.id_ctr_status = " + VocGisStatus.i.PENDING_RQ_PLACING.getId ()
             + " THEN "
 
                 + " IF :NEW.ddt_m_start IS NULL THEN raise_application_error (-20000, 'Не задано начало периода ввода показаний приборов учёта. Операция отменена.'); END IF; "
