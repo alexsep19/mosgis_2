@@ -2,6 +2,7 @@ package ru.eludia.products.mosgis.jmx;
 
 import java.lang.management.ManagementFactory;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.UUID;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -11,6 +12,7 @@ import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.jms.Queue;
+import javax.json.JsonObject;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import ru.eludia.base.DB;
@@ -19,6 +21,7 @@ import ru.eludia.base.Model;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.incoming.nsi.InNsiGroup;
 import ru.eludia.products.mosgis.db.model.incoming.nsi.InNsiItem;
+import ru.eludia.products.mosgis.db.model.incoming.nsi.InNsiItemStatsOverview;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiListGroup;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
@@ -183,6 +186,68 @@ public class Nsi implements NsiMBean, NsiLocal {
         {
             throw new IllegalStateException("Ошибка доступа к справочнику ОКЕИ");
         }
+    }
+
+
+    @Override
+    public String getProgressStatusText () {
+        
+        JsonObject data = getProgressStatus ();
+
+        logger.info ("data=" + data);
+        
+        if (data == null || data.isEmpty ()) return "No import in progress";
+        
+        int done    = data.getInt ("done", 0);
+        int pending = data.getInt ("pending", 0);
+        int total   = done + pending;
+        
+        final String started = data.getString ("started");
+
+        StringBuilder sb = new StringBuilder ("Started at ");        
+        sb.append (started);
+        
+        if (total > 0) {
+
+            sb.append (' ');
+            sb.append (done);
+            sb.append ('/');
+            sb.append (total);
+            sb.append (" (");
+            sb.append (100 * done / total);
+            sb.append ("%) done.");
+
+            if (done > 0) {
+                
+                final long now = System.currentTimeMillis () + 3 * 60 * 60 * 1000L;
+                long elapsed = now - Timestamp.valueOf (started).getTime ();
+                long remaining = elapsed * pending / done;
+
+                sb.append (" Expected to complete by ");
+                sb.append (new Timestamp (now + remaining));
+                
+            }            
+            
+        }
+        
+        sb.append ("...");
+        
+        return sb.toString ();
+        
+    }
+
+    @Override
+    public JsonObject getProgressStatus () {
+        
+        final MosGisModel m = ModelHolder.getModel ();
+        
+        try (DB db = m.getDb ()) {            
+            return db.getJsonObject (m.select (InNsiItemStatsOverview.class, "*"));
+        }
+        catch (Exception e) {
+            throw new IllegalStateException ("Can't get NSI import status", e);
+        }        
+        
     }
     
 }

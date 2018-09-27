@@ -285,6 +285,7 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
             }
             else {
                 nsi.checkForPending ();
+                logger.info (nsi.getProgressStatusText ());
             }
             
         }

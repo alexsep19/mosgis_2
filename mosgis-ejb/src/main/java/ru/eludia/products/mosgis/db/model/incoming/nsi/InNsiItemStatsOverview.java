@@ -27,10 +27,9 @@ public class InNsiItemStatsOverview extends View {
             "  FROM " +
             "    " + getName (InNsiItemStatusView.class)    + " " +
             "  WHERE " +
-            "    uuid IN ( " +
-            "      SELECT uuid FROM in_nsi_items " +
-            "      MINUS " +
-            "      SELECT uuid FROM out_soap " +
+            "    uuid_in_nsi_group IN ( " +
+            "      SELECT DISTINCT uuid_in_nsi_group FROM in_nsi_items " +
+            "      WHERE uuid NOT IN (SELECT uuid FROM out_soap) " +
             "    ) " +
             ") " +
             ", stat AS ( " +
