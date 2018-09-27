@@ -240,6 +240,8 @@ public class InFiasMDB extends UUIDMDB<InFias> {
 
     private class StreetScanner extends BScanner<VocStreet, InFiasVocStreet> {
         
+        private final String FORMALNAME = "FORMALNAME";
+        
         public StreetScanner (Map<String, Object> r, DB db, UUID uuid, Set<String> aoGuids) {
             super (r, db, uuid, aoGuids);
             tagName = "Object";
@@ -261,7 +263,13 @@ public class InFiasMDB extends UUIDMDB<InFias> {
         
         @Override
         final String stringHandler (Attributes attributes, String field) {
-            return attributes.getValue (field).replace ('Ё', 'Е').replace ('ё', 'е');
+            
+            String value = attributes.getValue(field);
+            
+            if (FORMALNAME.equals (field)){
+                value = value.replace ('Ё', 'Е').replace ('ё', 'е');
+            }
+            return value;
         }        
     }
     
