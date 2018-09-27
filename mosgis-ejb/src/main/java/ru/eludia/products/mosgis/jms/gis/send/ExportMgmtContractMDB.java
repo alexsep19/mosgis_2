@@ -94,10 +94,10 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
     private Map<Object, Map<String, Object>> getId2file (DB db, Model m, Map<String, Object> r) throws SQLException {
         
         Map<Object, Map<String, Object>> id2file = db.getIdx (m
-                .select (ContractFile.class, "*")
-                .toOne  (ContractFileLog.class, "AS log", "ts_start_sending").on ()
-                .where  ("uuid_contract", r.get ("uuid_object"))
-                .and    ("id_status", 1)
+            .select (ContractFile.class, "*")
+            .toOne  (ContractFileLog.class, "AS log", "ts_start_sending", "err_text").on ()
+            .where  ("uuid_contract", r.get ("uuid_object"))
+            .and    ("id_status", 1)
         );
         
         return id2file;
@@ -106,11 +106,14 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
     
     private class StaleFileException extends Exception {
         
+        public static final String ERR_FIELD = "log.err_text";
+        
         UUID uuid;
 
-        public StaleFileException (UUID uuid) {
-            this.uuid = uuid;
-        }        
+        public StaleFileException (Map<String, Object> file) {
+            super (file.get (ERR_FIELD) != null ? file.get (ERR_FIELD).toString () : "Не удалось передать файл " + file.get ("label"));
+            this.uuid = (UUID) file.get ("uuid");
+        }
 
         public UUID getUuid () {
             return uuid;
@@ -123,6 +126,12 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
         UUID waitingFor = null;
         
         for (Map<String, Object> file: files) {
+            
+logger.info ("file=" + file);
+            
+            final String err = (String) file.get (StaleFileException.ERR_FIELD);
+            
+            if (err != null && !err.isEmpty ()) throw new StaleFileException (file);
             
             if (file.get ("attachmentguid") != null) continue;
             
@@ -138,9 +147,9 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
                 UUIDPublisher.publish (filesQueue, waitingFor = (UUID) file.get ("uuid"));
                 
             }
-            else if (Timestamp.valueOf (ots.toString ()).getTime () < System.currentTimeMillis () - 1000L * 60 * 60) {
+            else if (Timestamp.valueOf (ots.toString ()).getTime () < System.currentTimeMillis () - 1000L * 60) {
 
-                throw new StaleFileException ((UUID) file.get ("uuid"));
+                throw new StaleFileException (file);
 
             }
             else if (waitingFor == null) {
@@ -155,7 +164,7 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
         
     }
     
-    private boolean isFileSetReadyToContinue (DB db, Map<String, Object> r, Collection <Map<String, Object>> files) throws SQLException {
+    private boolean isFileSetReadyToContinue (DB db, Map<String, Object> r, Collection <Map<String, Object>> files, Contract.Action action) throws SQLException {
         
         UUID waitingFor = null;
         
@@ -163,12 +172,35 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
             waitingFor = getFileUUIDwaitingFor (db, files);
         }
         catch (StaleFileException ex) {
-            
-            db.update (Contract.class, DB.HASH (
-                "uuid",              r.get ("uuid_object"),
-                "id_ctr_status",     VocGisStatus.i.FAILED_PLACING.getId ()
-            ));
-                
+
+            UUID uuid = (UUID) r.get ("uuid");                   
+
+            db.begin ();
+
+                db.upsert (OutSoap.class, HASH (
+                    "uuid", uuid,
+                    "is_out",  1,
+                    "svc",  "REST",
+                    "op",   "file",
+                    "id_status", DONE.getId (),
+                    "is_failed", 1,
+                    "err_code",  "0",
+                    "err_text",  ex.getMessage ()
+                ));
+
+                db.update (getTable (), DB.HASH (
+                    "uuid",          uuid,
+                    "uuid_out_soap", uuid
+                ));
+
+                db.update (Contract.class, DB.HASH (
+                    "uuid",              r.get ("uuid_object"),
+                    "uuid_out_soap",     uuid,
+                    "id_ctr_status",     action.getFailStatus ().getId ()
+                ));
+
+            db.commit ();
+
             logger.warning ("Stale contract file: " + ex.getUuid ());
 
             return false;
@@ -216,7 +248,7 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
 
         Model m = db.getModel ();
         
-        if (someFileUploadIsInProgress (db, m, r)) return;
+        if (someFileUploadIsInProgress (db, m, r, action)) return;
                                                                     
         try {
 
@@ -284,6 +316,9 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
 
                 db.upsert (OutSoap.class, HASH (
                     "uuid", uuid,
+                    "svc",  getClass ().getName (),
+                    "op",   action.toString (),
+                    "is_out",  1,
                     "id_status", DONE.getId (),
                     "is_failed", 1,
                     "err_code",  "0",
@@ -318,13 +353,13 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
         
     }
 
-    private boolean someFileUploadIsInProgress (DB db, Model m, Map<String, Object> r) throws SQLException {
+    private boolean someFileUploadIsInProgress (DB db, Model m, Map<String, Object> r, Contract.Action action) throws SQLException {
         
         Map <Object, Map <String, Object>> id2file = getId2file (db, m, r);
         
         final Collection <Map<String, Object>> files = id2file.values ();
         
-        if (!isFileSetReadyToContinue (db, r, files)) return true;
+        if (!isFileSetReadyToContinue (db, r, files, action)) return true;
         
         addFilesAndObjects (r, files, db, m, id2file);
         

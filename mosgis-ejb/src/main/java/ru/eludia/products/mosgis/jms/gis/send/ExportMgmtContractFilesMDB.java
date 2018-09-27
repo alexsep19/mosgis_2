@@ -10,6 +10,7 @@ import javax.ejb.MessageDriven;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
+import static ru.eludia.base.model.def.Def.NOW;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractFile;
 import ru.eludia.products.mosgis.db.model.tables.ContractFileLog;
@@ -45,38 +46,51 @@ public class ExportMgmtContractFilesMDB extends UUIDMDB<ContractFile> {
         
         final UUID orgppaguid = (UUID) r.get ("org.orgppaguid");
         
-        try (
-                
-            GisRestStream out = new GisRestStream (
-                restGisFilesClient,
-                Context.HOMEMANAGEMENT,
-                orgppaguid, 
-                r.get ("label").toString (), 
-                Long.parseLong (r.get ("len").toString ()),
-                (uploadId, attachmentHash) -> {
-                    
-                    r.put ("attachmentguid", uploadId);
-                    r.put ("attachmenthash", attachmentHash);
-                    
-                    db.update (ContractFile.class, r);
-                    
-                    db.update (ContractFileLog.class, HASH (
-                        "uuid",           r.get ("id_log"),
-                        "attachmentguid", uploadId,
-                        "attachmenthash", attachmentHash
-                    ));
-                    
-                }
-            )
-                
-        ) {
-            db.getStream (ModelHolder.getModel ().get (ContractFile.class, uuid, "body"), out);
+        try {
+
+            try (
+
+                GisRestStream out = new GisRestStream (
+                    restGisFilesClient,
+                    Context.HOMEMANAGEMENT,
+                    orgppaguid, 
+                    r.get ("label").toString (), 
+                    Long.parseLong (r.get ("len").toString ()),
+                    (uploadId, attachmentHash) -> {
+
+                        r.put ("attachmentguid", uploadId);
+                        r.put ("attachmenthash", attachmentHash);
+
+                        db.update (ContractFile.class, r);
+
+                        db.update (ContractFileLog.class, HASH (
+                            "uuid",           r.get ("id_log"),
+                            "attachmentguid", uploadId,
+                            "attachmenthash", attachmentHash
+                        ));
+
+                    }
+                )
+
+            ) {
+                db.getStream (ModelHolder.getModel ().get (ContractFile.class, uuid, "body"), out);
+            }
+            
         }
         catch (Exception ex) {
+            
+            db.update (ContractFileLog.class, HASH (
+                "uuid",     r.get ("id_log"),
+                "ts_error", NOW,
+                "err_text", "Ошибка загрузки файла " + ex.getMessage ()
+            ));
+            
             logger.log (Level.SEVERE, "Cannot upload " + r, ex);
+            
             return;
+            
         }
-                        
+                                
     }
     
 }

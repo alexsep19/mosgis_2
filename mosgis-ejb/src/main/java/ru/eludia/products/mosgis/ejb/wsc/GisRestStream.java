@@ -36,8 +36,7 @@ public class GisRestStream extends OutputStream {
     }
 
     public void setUploadId (UUID uploadId) throws SQLException {
-        this.uploadId = uploadId;
-        setId.accept (uploadId, DB.to.hex (gost.digest ()));
+        this.uploadId = uploadId;        
     }
     
     @Override
@@ -107,12 +106,18 @@ public class GisRestStream extends OutputStream {
         
         flush ();
         
-        if (isLong) try {
-            restGisFilesClient.closeUpload (orgPPAGUID, context, uploadId);
+        try {
+            
+            if (isLong) restGisFilesClient.closeUpload (orgPPAGUID, context, uploadId);
+            
+            setId.accept (uploadId, DB.to.hex (gost.digest ()));
+            
         }
         catch (Exception ex) {
+            
             throw new IOException (ex);
-        }
+            
+        }        
         
     }
 

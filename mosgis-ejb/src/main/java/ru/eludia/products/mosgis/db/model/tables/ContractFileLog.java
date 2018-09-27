@@ -34,6 +34,9 @@ public class ContractFileLog extends Table {
         col    ("purchasenumber",        Type.STRING, 60,          null,        "Номер извещения (для протокола открытого конкурса)");
         col    ("agreementnumber",       Type.STRING, 255,         null,        "Номер дополнительного соглашения");
         col    ("agreementdate",         Type.DATE,                null,        "Дата дополнительного соглашения");
+        
+        col    ("ts_error",              Type.TIMESTAMP,           null,        "Дата/время ошибки передачи");
+        col    ("err_text",              Type.STRING,              null,        "Текст ошибки");
 
         trigger ("BEFORE INSERT", "BEGIN "
 
