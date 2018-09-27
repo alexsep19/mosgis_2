@@ -36,13 +36,14 @@ public class VocBuildingAddressesImpl extends Base implements VocBuildingAddress
                 select.and ("postalcode", token);
             }
             else {
-                sb.append (token.toUpperCase ());
+                sb.append (token.toUpperCase ().replace ('Ё', 'Е'));
                 sb.append ('%');
             }
-            
         }
-       
-        if (sb.length () > 0) select.and ("label_uc LIKE", sb.toString ());
+        
+        if (sb.length () > 0) {
+            select.and ("label_uc LIKE", sb.toString ());
+        }
         
         db.addJsonArrays (job, select);
 

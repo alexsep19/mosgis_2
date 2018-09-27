@@ -130,9 +130,13 @@ public class InFiasMDB extends UUIDMDB<InFias> {
             return false;
         }
 
+        String stringHandler (Attributes attributes, String field) {
+            return attributes.getValue (field);
+        }
+        
         @Override
         public void startElement (String uri, String localName, String qName, Attributes attributes) throws SAXException {
-
+            
             if (!tagName.equals (qName) || isOff (attributes)) return;            
             
             Map <String, Object> r = HASH (
@@ -142,7 +146,9 @@ public class InFiasMDB extends UUIDMDB<InFias> {
             
             extra (attributes);
                         
-            for (String i: fields) r.put (i.toLowerCase (), attributes.getValue (i));    
+            fields.forEach((i) -> {
+                r.put (i.toLowerCase (), stringHandler(attributes, i));
+            });    
 
             try {
                 b.add (r);
@@ -191,6 +197,7 @@ public class InFiasMDB extends UUIDMDB<InFias> {
                             });
 
                             final Long size = (Long) r.get ("sz_" + postfix);
+                            logger.log (Level.INFO, "SIZE " + size);
                             try (ProgressInputStream pis = new ProgressInputStream (pipeIS, size, PROGRESS_STEPS, (pos, len) -> {
                                 logger.log (Level.INFO, "{0}% of {1} read...", new Object[]{Double.valueOf ((100.0 * pos) / (1.0 * len)).intValue (), postfix});
                                 db.d0 (progressSQL, pos, uuid);
@@ -233,6 +240,8 @@ public class InFiasMDB extends UUIDMDB<InFias> {
 
     private class StreetScanner extends BScanner<VocStreet, InFiasVocStreet> {
         
+        private final String FORMALNAME = "FORMALNAME";
+        
         public StreetScanner (Map<String, Object> r, DB db, UUID uuid, Set<String> aoGuids) {
             super (r, db, uuid, aoGuids);
             tagName = "Object";
@@ -252,6 +261,16 @@ public class InFiasMDB extends UUIDMDB<InFias> {
             aoGuids.add (attributes.getValue ("AOGUID"));
         }
         
+        @Override
+        final String stringHandler (Attributes attributes, String field) {
+            
+            String value = attributes.getValue(field);
+            
+            if (FORMALNAME.equals (field)){
+                value = value.replace ('Ё', 'Е').replace ('ё', 'е');
+            }
+            return value;
+        }        
     }
     
     private class BuildingScanner extends BScanner<VocBuilding, InFiasVocBuilding> {
