@@ -32,9 +32,16 @@ define ([], function () {
 
             it._can = {}
 
-            if ($_USER.role.nsi_20_1 && it ['ctr.uuid_org'] == $_USER.uuid_org) {
+            if ($_USER.role.nsi_20_1 && it ['ctr.uuid_org'] == $_USER.uuid_org && !it.is_deleted) {
+            
+                switch (it ["ctr.id_ctr_status"]) {
 
-                if (!it.is_deleted) it._can.edit = 1
+                    case 10:
+                    case 11:
+                        it._can.edit    = 1
+                        break;
+                        
+                }
 
                 if (!it.contractobjectversionguid) it._can.delete = 1
 
