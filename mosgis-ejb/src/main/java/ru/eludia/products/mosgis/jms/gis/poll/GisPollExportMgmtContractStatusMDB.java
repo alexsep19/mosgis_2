@@ -29,7 +29,7 @@ import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class GisPollExportMgmtContractStatusMDB  extends UUIDMDB<OutSoap> {
+public class GisPollExportMgmtContractStatusMDB extends UUIDMDB<OutSoap> {
 
     @EJB
     WsGisHouseManagementClient wsGisHouseManagementClient;
@@ -73,37 +73,39 @@ public class GisPollExportMgmtContractStatusMDB  extends UUIDMDB<OutSoap> {
 
             UUID contractGUID = UUID.fromString (er.getContractGUID ());
 
-            VocGisStatus.i state = VocGisStatus.i.forName (er.getState ());
-
-            if (state == null) {
-                logger.warning ("Unknown state: " + er.getState ());
-                continue;
-            }                                
-
             VocGisStatus.i status = VocGisStatus.i.forName (er.getContractStatus ().value ());
 
             if (status == null) {
-                logger.warning ("Unknown status: " + er.getContractStatus ());
-                continue;
+                logger.warning ("Unknown status: '" + er.getContractStatus () + "'. Will use FAILED_STATE instead.");
+                status = VocGisStatus.i.FAILED_STATE;
             }                                
 
             if (status == VocGisStatus.i.REVIEWED) toPromote.add (contractGUID);                
-
-            records.add (HASH (
-                "contractguid", contractGUID,                    
-                "id_ctr_state_gis", state.getId (),
+            
+            final Map<String, Object> ctr = HASH (
+                "contractguid", contractGUID,
                 "id_ctr_status", status.getId (),
                 "id_ctr_status_gis", status.getId ()
-            ));                                
+            );
+            
+            VocGisStatus.i state = VocGisStatus.i.forName (er.getState ());
+            if (state != null) ctr.put ("id_ctr_state_gis", state.getId ());
+
+            records.add (ctr);                                
 
         }
 
-        String [] key = {"contractguid"};
-
         db.upsert (Contract.class, records, key);
+        
+        db.update (OutSoap.class, HASH (
+            "uuid", uuid,
+            "id_status", DONE.getId ()
+        ));
 
         for (UUID id: toPromote) mgmtContract.doPromote (id.toString ());
 
     }        
+    
+    private static String [] key = {"contractguid"};
 
 }
