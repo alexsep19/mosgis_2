@@ -219,7 +219,7 @@ public class Nsi implements NsiMBean, NsiLocal {
 
             if (done > 0) {
                 
-                final long now = System.currentTimeMillis () + 3 * 60 * 60 * 1000L;
+                final long now = System.currentTimeMillis ();
                 long elapsed = now - Timestamp.valueOf (started).getTime ();
                 long remaining = elapsed * pending / done;
 
