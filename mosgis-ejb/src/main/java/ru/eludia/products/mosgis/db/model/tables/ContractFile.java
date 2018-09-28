@@ -51,12 +51,12 @@ public class ContractFile extends Table {
             + " UPDATE tb_contract_files__log SET attachmentguid = :NEW.attachmentguid, attachmenthash = :NEW.attachmenthash WHERE uuid = :NEW.id_log; "
             + "END; END IF; "
                 
-            + " IF :NEW.id_status = 0 AND DBMS_LOB.GETLENGTH (:NEW.body) = :NEW.len THEN "
-            + "   :NEW.id_status := 1; "
-            + " END IF;"
-
             + " IF :NEW.id_status = 10 THEN "
             + "   :NEW.id_status := 0; "
+            + " END IF;"
+
+            + " IF :NEW.id_status = 0 AND DBMS_LOB.GETLENGTH (:NEW.body) = :NEW.len THEN "
+            + "   :NEW.id_status := 1; "
             + " END IF;"
 
         + "END;");        
