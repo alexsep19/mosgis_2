@@ -170,7 +170,7 @@ define ([], function () {
 
         if (it.id_ctr_status != 10) {
             if (it.id_ctr_status != it.id_ctr_status_gis) it.gis_status_label = data.vc_gis_status [it.id_ctr_status_gis]
-            if (it.id_ctr_state  != it.id_ctr_state_gis ) it.gis_state_label  = data.vc_gis_status [it.id_ctr_state_gis]
+            it.gis_state_label  = data.vc_gis_status [it.id_ctr_state_gis]
         }
 
         it.err_text = it ['out_soap.err_text']        
