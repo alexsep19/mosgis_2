@@ -12,6 +12,7 @@ import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -30,7 +31,7 @@ public abstract class BaseCRUD <T extends Table> extends Base<T> implements CRUD
         return null;
     }
     
-    protected void publishMessage (String action, String id_log) {
+    protected void publishMessage (VocAction.i action, String id_log) {
         
         Queue queue = getQueue ();
         
@@ -38,7 +39,7 @@ public abstract class BaseCRUD <T extends Table> extends Base<T> implements CRUD
         
     }
 
-    protected void logAction (DB db, User user, Object id, String action) throws SQLException {
+    protected void logAction (DB db, User user, Object id, VocAction.i action) throws SQLException {
 
         Table logTable = ModelHolder.getModel ().getLogTable (getTable ());
 
@@ -115,7 +116,7 @@ public abstract class BaseCRUD <T extends Table> extends Base<T> implements CRUD
 
         Object insertId = db.insertId (table, data);
         
-        logAction (db, user, insertId, "create");
+        logAction (db, user, insertId, VocAction.i.CREATE);
 
     });}
 
@@ -126,7 +127,7 @@ public abstract class BaseCRUD <T extends Table> extends Base<T> implements CRUD
             "uuid", id
         ));
         
-        logAction (db, user, id, "update");
+        logAction (db, user, id, VocAction.i.UPDATE);
                         
     });}
 
@@ -138,7 +139,7 @@ public abstract class BaseCRUD <T extends Table> extends Base<T> implements CRUD
             "is_deleted",  1
         ));
         
-        logAction (db, user, id, "delete");
+        logAction (db, user, id, VocAction.i.DELETE);
                 
     });}
 
@@ -150,7 +151,7 @@ public abstract class BaseCRUD <T extends Table> extends Base<T> implements CRUD
             "is_deleted",  0
         ));
         
-        logAction (db, user, id, "undelete");
+        logAction (db, user, id, VocAction.i.UNDELETE);
 
     });}
 

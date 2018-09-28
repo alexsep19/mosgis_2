@@ -22,6 +22,7 @@ import ru.eludia.products.mosgis.db.model.tables.ContractFileLog;
 import ru.eludia.products.mosgis.db.model.tables.ContractLog;
 import ru.eludia.products.mosgis.db.model.tables.MgmtContract;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractType;
@@ -50,12 +51,12 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
     }
     
     @Override
-    protected void publishMessage (String action, String id_log) {
+    protected void publishMessage (VocAction.i action, String id_log) {
         
         switch (action) {
-            case "approve":
-            case "promote":
-            case "refresh":
+            case APPROVE:
+            case PROMOTE:
+            case REFRESH:
                 super.publishMessage (action, id_log);
             default:
                 return;
@@ -146,6 +147,8 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
             
             db.addJsonArrays (jb,
                     
+                VocAction.getVocSelect (),
+
                 NsiTable.getNsiTable (db, 58).getVocSelect ()
                     .toMaybeOne (VocGisCustomerTypeNsi58.class, "AS it", "isdefault")
                         .when ("id", OWNERS.getId ())
@@ -201,7 +204,7 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
 
         Object insertId = db.insertId (table, data);
 
-        logAction (db, user, insertId, "create");
+        logAction (db, user, insertId, VocAction.i.CREATE);
 
         job.add ("id", insertId.toString ());
 
@@ -215,7 +218,7 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
             "id_ctr_status",  VocGisStatus.i.PENDING_RQ_PLACING.getId ()
         ));
         
-        logAction (db, user, id, "approve");
+        logAction (db, user, id, VocAction.i.APPROVE);
         
     });}
     
@@ -227,7 +230,7 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
             "id_ctr_status",  VocGisStatus.i.PENDING_RQ_APPROVAL.getId ()
         ));
         
-        logAction (db, null, id, "promote");
+        logAction (db, null, id, VocAction.i.PROMOTE);
         
     });}
 
@@ -260,7 +263,7 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
         
         db.d0 (qp);        
 
-        logAction (db, user, id, "alter");
+        logAction (db, user, id, VocAction.i.ALTER);
         
     });}
 
@@ -272,7 +275,7 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
             "id_ctr_status",  VocGisStatus.i.PENDING_RQ_REFRESH.getId ()
         ));
         
-        logAction (db, user, id, "refresh");
+        logAction (db, user, id, VocAction.i.REFRESH);
         
     });}
     

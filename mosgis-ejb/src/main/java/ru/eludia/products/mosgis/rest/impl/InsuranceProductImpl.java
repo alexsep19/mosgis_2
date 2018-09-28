@@ -22,6 +22,7 @@ import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.InsuranceProduct;
 import ru.eludia.products.mosgis.db.model.tables.InsuranceProductLog;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationInsurance;
@@ -190,7 +191,7 @@ public class InsuranceProductImpl extends BaseCRUD<InsuranceProduct> implements 
 
         final String uuid = id.replace ("-", "").toUpperCase ();
                 
-        String action = null;
+        VocAction.i action = null;
 
         try (PreparedStatement st = cn.prepareStatement ("SELECT body, DBMS_LOB.GETLENGTH(body), len, id_log FROM " + getTable ().getName () + " WHERE uuid = ? FOR UPDATE")) {
 
@@ -211,7 +212,7 @@ public class InsuranceProductImpl extends BaseCRUD<InsuranceProduct> implements 
                             
                     if (newLen == total) {
                         String id_log = rs.getString (4);                            
-                        action = rs.wasNull () ? "create" : "update";
+                        action = rs.wasNull () ? VocAction.i.CREATE : VocAction.i.UPDATE;
                     }
                             
                     try (OutputStream os = blob.setBinaryStream (len + 1)) {
@@ -256,7 +257,7 @@ public class InsuranceProductImpl extends BaseCRUD<InsuranceProduct> implements 
 
         db.update (getTable (), data);
 
-        if (!isFileBeingUpdated) logAction (db, user, id, "update");
+        if (!isFileBeingUpdated) logAction (db, user, id, VocAction.i.UPDATE);
 
     });}
     

@@ -11,6 +11,7 @@ import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractFile;
 import ru.eludia.products.mosgis.rest.api.ContractObjectsLocal;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -42,6 +43,8 @@ public class ContractObjectsImpl extends BaseCRUD<ContractObject> implements Con
                 
             NsiTable.getNsiTable (db, 3).getVocSelect (),                
                 
+            VocAction.getVocSelect (),
+            
             m.select (VocContractDocType.class, "id", "label").orderBy ("label"),
             
             m.select (VocGisStatus.class,       "id", "label").orderBy ("id"),

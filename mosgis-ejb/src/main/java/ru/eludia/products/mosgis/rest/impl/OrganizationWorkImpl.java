@@ -27,6 +27,7 @@ import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.OrganizationWork;
 import ru.eludia.products.mosgis.db.model.tables.OrganizationWorkLog;
 import ru.eludia.products.mosgis.db.model.tables.OrganizationWorkNsi67;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -188,7 +189,7 @@ public class OrganizationWorkImpl extends BaseCRUD<OrganizationWork> implements 
         
         setNsi67 (db, insertId, p);
 
-        logAction (db, user, insertId, "create");
+        logAction (db, user, insertId, VocAction.i.CREATE);
 
     });}
     
@@ -201,7 +202,7 @@ public class OrganizationWorkImpl extends BaseCRUD<OrganizationWork> implements 
         
         setNsi67 (db, id, p);
 
-        logAction (db, user, id, "update");
+        logAction (db, user, id, VocAction.i.UPDATE);
                         
     });}    
 

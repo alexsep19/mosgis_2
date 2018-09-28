@@ -18,6 +18,7 @@ import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.rest.api.ContractDocsLocal;
 import ru.eludia.products.mosgis.db.model.tables.ContractFile;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
@@ -55,7 +56,7 @@ public class ContractDocsImpl extends BaseCRUD<ContractFile> implements Contract
         
             job.add ("id", id.toString ());
 
-            logAction (db, user, id, "create");
+            logAction (db, user, id, VocAction.i.CREATE);
             
         db.commit ();
         
@@ -110,7 +111,7 @@ public class ContractDocsImpl extends BaseCRUD<ContractFile> implements Contract
             "id_status", 2
         ));
         
-        logAction (db, user, id, "delete");
+        logAction (db, user, id, VocAction.i.DELETE);
         
     });}
     
@@ -144,7 +145,7 @@ public class ContractDocsImpl extends BaseCRUD<ContractFile> implements Contract
             "agreementdate",   data.getString ("agreementdate",   null)
         ));
         
-        logAction (db, user, id, "update");
+        logAction (db, user, id, VocAction.i.UPDATE);
 
     });}
 

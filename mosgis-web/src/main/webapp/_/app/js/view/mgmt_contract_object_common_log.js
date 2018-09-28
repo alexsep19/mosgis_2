@@ -31,14 +31,7 @@ define ([], function () {
             
             columns: [                
                 {field: 'ts', caption: 'Дата/время',    size: 30, render: _ts},
-                {field: 'action', caption: 'Действие',    size: 30, voc: {
-                    alter:    'Изменение',
-                    approve:  'Утверждение',
-                    create:   'Создание',
-                    update:   'Редактирование',
-                    delete:   'Удаление',
-                    undelete: 'Восстановление',
-                }},
+                {field: 'action', caption: 'Действие',    size: 30, voc: data.vc_actions},
                 {field: 'vc_users.label', caption: 'Оператор',    size: 30},
 
                 {field: 'startdate', caption: 'Начало', size: 18, render: _dt},
