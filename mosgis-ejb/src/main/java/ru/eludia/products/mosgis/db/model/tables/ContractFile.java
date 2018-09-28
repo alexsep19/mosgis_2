@@ -115,22 +115,20 @@ public class ContractFile extends Table {
             case PROTOCOL_MEETING_BOARD:
             case PROTOCOL_MEETING_OWNERS:
             case PROTOCOL_OK:
-                c.setProtocol (toProtocol (file, type, at));
+                if (c.getProtocol ()                   == null)                   c.setProtocol (new ContractType.Protocol ());
+                if (c.getProtocol ().getProtocolAdd () == null) c.getProtocol ().setProtocolAdd (new ContractType.Protocol.ProtocolAdd ());
+                addProtocol (c.getProtocol ().getProtocolAdd (), file, type, at);
                 return;
             case OTHER:
                 // do nothing
-                return;                
+                return;
         }
         
 
     }    
 
-    private static ContractType.Protocol toProtocol (Map<String, Object> file, VocContractDocType.i type, AttachmentType at) {
-        
-        final ContractType.Protocol protocol = new ContractType.Protocol ();
-        
-        final ContractType.Protocol.ProtocolAdd protocolAdd = new ContractType.Protocol.ProtocolAdd ();
-        
+    private static void addProtocol (ContractType.Protocol.ProtocolAdd protocolAdd, Map<String, Object> file, VocContractDocType.i type, AttachmentType at) {
+                
         protocolAdd.setPurchaseNumber (file.get ("purchasenumber").toString ());
         
         switch (type) {
@@ -147,13 +145,9 @@ public class ContractFile extends Table {
             case PROTOCOL_OK:
                 protocolAdd.getProtocolOK ().add (at);
                 break;
-                
+
         }
-        
-        protocol.setProtocolAdd (protocolAdd);
-        
-        return protocol;
-        
+                
     }    
     
     public static BaseServiceType getBaseServiceType (Map<String, Object> r) {
