@@ -209,22 +209,7 @@ public class Contract extends Table {
                         + "   raise_application_error (-20000, 'К договору не приложен протокол собрания собственников. Операция отменена.'); "
                         + " END IF; "
                                 
-                    + "END; ELSE "
-                        
-                        + " FOR i IN ("
-                        + "  SELECT "
-                        + "    a.label "
-                        + "  FROM "
-                        + "    tb_contract_objects o"
-                        + "    LEFT JOIN tb_contract_files f ON (f.uuid_contract_object=o.uuid AND f.id_status = 1 AND f.id_type=" + VocContractDocType.i.SIGNED_OWNERS.getId () + ")"
-                        + "    LEFT JOIN vc_build_addresses a ON (o.fiashouseguid = a.houseguid)"
-                        + "  WHERE 1=1"
-                        + "    AND o.uuid_contract = :NEW.uuid"
-                        + "    AND o.is_deleted = 0"
-                        + "    AND f.uuid IS NULL"
-                        + "  ) LOOP"
-                        + "   raise_application_error (-20000, 'Для объекта по адресу ' || i.label || ' не приложен реестр собственников. Операция отменена.'); "
-                        + " END LOOP; "
+                    + "END; ELSE "                        
                                 
                         + " FOR i IN ("
                         + "  SELECT "
