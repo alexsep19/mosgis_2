@@ -12,7 +12,9 @@ import javax.ejb.MessageDriven;
 import javax.jms.Queue;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
+import ru.eludia.base.Model;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
+import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -66,12 +68,24 @@ public class GisPollExportMgmtContractStatusMDB extends UUIDMDB<OutSoap> {
             return;
         }
 
-        List <Map <String, Object>> records = new ArrayList<> (rp.getExportCAChResult ().size ());
+        List <Map <String, Object>> contractRecors = new ArrayList<> (rp.getExportCAChResult ().size ());
+        List <Map <String, Object>> objectRecors   = new ArrayList<> (rp.getExportCAChResult ().size ());
         List <UUID> toPromote = new ArrayList<> ();                    
+        
+        Model m = db.getModel ();
 
         for (ExportStatusCAChResultType er: rp.getExportStatusCAChResult ()) {
-
-            UUID contractGUID = UUID.fromString (er.getContractGUID ());
+            
+            final String contractGUID = er.getContractGUID ();
+            
+            String sUid = db.getString (m.select (Contract.class, "uuid").where ("contractguid", contractGUID));
+            
+            if (sUid == null) {
+                logger.warning ("Contract not found: " + contractGUID);
+                continue;
+            }
+            
+            UUID uuidContract = DB.to.UUIDFromHex (sUid);
 
             VocGisStatus.i status = VocGisStatus.i.forName (er.getContractStatus ().value ());
 
@@ -80,22 +94,40 @@ public class GisPollExportMgmtContractStatusMDB extends UUIDMDB<OutSoap> {
                 status = VocGisStatus.i.FAILED_STATE;
             }                                
 
-            if (status == VocGisStatus.i.REVIEWED) toPromote.add (contractGUID);                
+            if (status == VocGisStatus.i.REVIEWED) toPromote.add (uuidContract);                
             
             final Map<String, Object> ctr = HASH (
-                "contractguid", contractGUID,
-                "id_ctr_status", status.getId (),
+                "uuid",              uuidContract,
+                "id_ctr_status",     status.getId (),
                 "id_ctr_status_gis", status.getId ()
             );
             
             VocGisStatus.i state = VocGisStatus.i.forName (er.getState ());
             if (state != null) ctr.put ("id_ctr_state_gis", state.getId ());
 
-            records.add (ctr);                                
+            contractRecors.add (ctr);                                
+            
+            for (ExportStatusCAChResultType.ContractObject co: er.getContractObject ()) {
+                
+                VocGisStatus.i os = VocGisStatus.i.forName (co.getManagedObjectStatus ().value ());
+                if (os == null) {
+                    logger.warning ("Unknown status: '" + co.getManagedObjectStatus () + "'. Will use FAILED_STATE instead.");
+                    os = VocGisStatus.i.FAILED_STATE;
+                }
+                
+                objectRecors.add (HASH (
+                    "uuid_contract",             uuidContract,
+                    "fiashouseguid",             co.getFIASHouseGuid (),
+                    "id_ctr_status_gis",         os.getId (),
+                    "contractobjectversionguid", co.getContractObjectVersionGUID ()
+                ));                
+                
+            }
 
         }
 
-        db.upsert (Contract.class, records, key);
+        db.update (Contract.class, contractRecors);
+        db.upsert (ContractObject.class, objectRecors, objectKey);
         
         db.update (OutSoap.class, HASH (
             "uuid", uuid,
@@ -106,6 +138,6 @@ public class GisPollExportMgmtContractStatusMDB extends UUIDMDB<OutSoap> {
 
     }        
     
-    private static String [] key = {"contractguid"};
-
+    private static String [] objectKey   = {"uuid_contract", "fiashouseguid"};
+    
 }

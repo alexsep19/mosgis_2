@@ -34,7 +34,7 @@ define ([], function () {
                 {field: '_', caption: 'Основание', size: 50, render: function (r) {
                     return r.dt ? 'ДС от ' + dt_dmy (r.dt) + ' №' + r.no : 'договор'
                 }},
-                {field: 'id_ctr_status',  caption: 'Статус', size: 10, voc: data.vc_gis_status},
+                {field: 'id_ctr_status_gis',  caption: 'Статус', size: 10, voc: data.vc_gis_status},
             ],
             
             postData: {search: [
@@ -47,31 +47,16 @@ define ([], function () {
             
             onAdd: $_DO.create_mgmt_contract_objects,
             
-            onRefresh: function (e) {e.done (
-            
+            onRefresh: data.item.id_customer_type != 1 ? null : function (e) {e.done (
+
                 function (e) {
 
                     var grid = w2ui [e.target]
 
-                    $('tr[recid]').each (function () {
-                    
-                        if (data.item.id_customer_type == 1) grid.toolbar.hide ('w2ui-add');
-
-                        var $this = $(this)
-                        
-                        var r = grid.get ($this.attr ('recid'))
-                                                
-                        if (r.id_ctr_status != 10 && r.id_ctr_status_gis != r.id_ctr_status) {
-                            var p = {title: 'Статус не соответствует статусу объекта ГИС ЖКХ'}
-                            var $td = $('td[col=4]', $this)
-                            $td.css ({background: '#fdd'}).prop (p)
-                            $('div', $td).prop (p)
-                        }
-                                                
-                    })
+                    $('tr[recid]').each (function () {grid.toolbar.hide ('w2ui-add')})
 
                 }            
-            
+
             )},            
                         
         })
