@@ -97,9 +97,10 @@ public class GisPollExportMgmtContractStatusMDB extends UUIDMDB<OutSoap> {
             if (status == VocGisStatus.i.REVIEWED) toPromote.add (uuidContract);                
             
             final Map<String, Object> ctr = HASH (
-                "uuid",              uuidContract,
-                "id_ctr_status",     status.getId (),
-                "id_ctr_status_gis", status.getId ()
+                "uuid",                uuidContract,
+                "contractversionguid", er.getContractVersionGUID (),
+                "id_ctr_status",       status.getId (),
+                "id_ctr_status_gis",   status.getId ()
             );
             
             VocGisStatus.i state = VocGisStatus.i.forName (er.getState ());
