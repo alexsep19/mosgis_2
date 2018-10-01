@@ -18,9 +18,9 @@ define ([], function () {
                     tabs: {
 
                         tabs: [
-                            {id: 'out_soap',     caption: 'Запросы сервиса', text: 'Tab 1', tooltip: 'Tab 1 tooltip'},
-                            {id: 'voc_nsi_list', caption: 'Справочники', text: 'Tab 2', tooltip: 'Tab 2 tooltip'},
-                            {id: 'rosters',      caption: 'Реестры', text: 'Tab 3', tooltip: 'Tab 3 tooltip'},
+                            {id: 'out_soap',     caption: 'Запросы сервиса', text: 'Запросы сервиса', tooltip: ''},
+                            {id: 'voc_nsi_list', caption: 'Справочники', text: 'Справочники', tooltip: ''},
+                            {id: 'rosters',      caption: 'Реестры', text: 'Реестры', tooltip: 'Реестры'},
 //                            {id: 'admin',        caption: 'Администрирование'},
                         ],
 
