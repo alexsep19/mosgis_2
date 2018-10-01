@@ -35,9 +35,9 @@ define ([], function () {
 
                         case 10:
                             it._can.delete  = 1
-                            it._can.approve = 1
                         case 11:
                             it._can.edit    = 1
+                            it._can.approve = 1
                             break;
                         case 14:
                         case 34:

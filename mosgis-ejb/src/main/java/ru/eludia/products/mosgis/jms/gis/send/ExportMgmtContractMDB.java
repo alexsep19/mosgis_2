@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -38,7 +39,9 @@ import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.RestGisFilesClient;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
+import ru.eludia.products.mosgis.jms.gis.poll.GisPollExportMgmtContractStatusMDB;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 
 @MessageDriven(activationConfig = {
@@ -220,12 +223,67 @@ logger.info ("file=" + file);
         return true;
         
     }
+    
+    private void updateVersions (DB db, Map<String, Object> r) throws SQLException {
         
-    AckRequest.Ack invoke (Contract.Action action, UUID messageGUID,  Map<String, Object> r) throws Fault {
+        UUID rUID = UUID.randomUUID ();
+
+        final UUID ctrUuid = (UUID) r.get ("uuid_object");
+        
+        UUID orgPPAGuid = getOrgPPAGUID (r);
+
+        AckRequest.Ack exportContractStatus = null;
+
+        try {
+            exportContractStatus = wsGisHouseManagementClient.exportContractStatus (orgPPAGuid, rUID, Collections.singletonList ((UUID) r.get ("ctr.contractguid")));
+        }
+        catch (Exception ex) {
+            logger.log (Level.SEVERE, "wsGisHouseManagementClient.exportContractStatus", ex);
+        }                
+                
+        UUID mGUID = UUID.fromString (exportContractStatus.getMessageGUID ());
+
+        db.update (Contract.class, HASH (
+            "uuid", ctrUuid,
+            "contractversionguid", null
+        ));
+
+        for (int i = 0; i < 10; i ++) {
             
-        final UUID orgPPAGuid = (UUID) r.get ("org.orgppaguid");
+            try {
+                
+                Thread.sleep (2000L);
+                
+                GetStateResult state = null;
+                
+                try {
+                    state = wsGisHouseManagementClient.getState (orgPPAGuid, mGUID);
+                }
+                catch (Exception ex) {
+                    logger.log (Level.SEVERE, "wsGisHouseManagementClient.getState", ex);
+                }
+                
+                if (state.getRequestState () < 2) continue;
+                
+                GisPollExportMgmtContractStatusMDB.processGetStateResponse (state, db, rUID, true);
+                
+                break;
+                                
+            }
+            catch (InterruptedException ex) {
+                logger.log (Level.WARNING, "It's futile", ex);
+            }
+            
+        }  
+        
+    }
+    
+    AckRequest.Ack invoke (DB db, Contract.Action action, UUID messageGUID,  Map<String, Object> r) throws Fault, SQLException {
+            
+        UUID orgPPAGuid = getOrgPPAGUID (r);
             
         switch (action) {
+            case EDITING:    return wsGisHouseManagementClient.editContractData     (orgPPAGuid, messageGUID, r);
             case PLACING:    return wsGisHouseManagementClient.placeContractData    (orgPPAGuid, messageGUID, r);
             case APPROVING:  return wsGisHouseManagementClient.approveContractData  (orgPPAGuid, messageGUID, (UUID) r.get ("ctr.contractversionguid"));
             case REFRESHING: return wsGisHouseManagementClient.exportContractStatus (orgPPAGuid, messageGUID, Collections.singletonList ((UUID) r.get ("ctr.contractguid")));
@@ -233,6 +291,30 @@ logger.info ("file=" + file);
         }
             
     }    
+
+    private UUID getOrgPPAGUID (Map<String, Object> r) {
+        final UUID orgPPAGuid = (UUID) r.get ("org.orgppaguid");
+        return orgPPAGuid;
+    }
+    
+    private boolean isVersionUpdateNeeded (Contract.Action action) {
+        switch (action) {
+            case EDITING:    
+                return true;
+            default: 
+                return false;
+        }
+    }
+    
+    private boolean isFileUploadNeeded (Contract.Action action) {
+        switch (action) {
+            case PLACING:    
+            case EDITING:    
+                return true;
+            default: 
+                return false;
+        }
+    }
             
     @Override
     protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
@@ -248,11 +330,18 @@ logger.info ("file=" + file);
 
         Model m = db.getModel ();
         
-        if (someFileUploadIsInProgress (db, m, r, action)) return;
-                                                                    
+        if (isVersionUpdateNeeded (action)) {
+            updateVersions (db, r);
+            r = db.getMap (get (uuid));
+        }
+        
+        if (isFileUploadNeeded (action)) {
+            if (someFileUploadIsInProgress (db, m, r, action)) return;
+        }
+
         try {
 
-            AckRequest.Ack ack = invoke (action, uuid, r);
+            AckRequest.Ack ack = invoke (db, action, uuid, r);
 
             db.begin ();
 
@@ -386,27 +475,29 @@ logger.info ("file=" + file);
         r.put ("objects", id2o.values ());
         
         db.forEach (m
-                .select (ContractObjectService.class, "AS root", "*")
-                .toMaybeOne (AdditionalService.class, "AS add_service", "uniquenumber", "elementguid").on ()
-                .toMaybeOne (nsi3, "AS vc_nsi_3", "code", "guid").on ("vc_nsi_3.code=root.code_vc_nsi_3 AND vc_nsi_3.isactual=1")
-                .where ("uuid_contract", r.get ("uuid_object"))
-                .and ("is_deleted", 0),
                 
-                (rs) -> {
-                    
-                    Map<String, Object> service = db.HASH (rs);
-                    
-                    UUID agr = (UUID) service.get ("uuid_contract_agreement");
-                    
-                    if (agr != null) service.put ("contract_agreement", ContractFile.toAttachmentType (id2file.get (agr)));
-                    
-                    final Map<String, Object> o = id2o.get (service.get ("uuid_contract_object"));
-                    
-                    if (o != null) ((List) o.get ("services")).add (service);
-                    
-                }
-                
+            .select (ContractObjectService.class, "AS root", "*")
+            .toMaybeOne (AdditionalService.class, "AS add_service", "uniquenumber", "elementguid").on ()
+            .toMaybeOne (nsi3, "AS vc_nsi_3", "code", "guid").on ("vc_nsi_3.code=root.code_vc_nsi_3 AND vc_nsi_3.isactual=1")
+            .where ("uuid_contract", r.get ("uuid_object"))
+            .and ("is_deleted", 0),
+
+            (rs) -> {
+
+                Map<String, Object> service = db.HASH (rs);
+
+                UUID agr = (UUID) service.get ("uuid_contract_agreement");
+
+                if (agr != null) service.put ("contract_agreement", ContractFile.toAttachmentType (id2file.get (agr)));
+
+                final Map<String, Object> o = id2o.get (service.get ("uuid_contract_object"));
+
+                if (o != null) ((List) o.get ("services")).add (service);
+
+            }
+
         );
+
     }
-    
+
 }

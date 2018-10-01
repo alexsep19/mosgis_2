@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -32,6 +33,8 @@ import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
 public class GisPollExportMgmtContractStatusMDB extends UUIDMDB<OutSoap> {
+    
+    private static Logger logger = java.util.logging.Logger.getLogger (GisPollExportMgmtContractStatusMDB.class.getName ());    
 
     @EJB
     WsGisHouseManagementClient wsGisHouseManagementClient;
@@ -68,12 +71,18 @@ public class GisPollExportMgmtContractStatusMDB extends UUIDMDB<OutSoap> {
             return;
         }
 
+        List <UUID> toPromote = processGetStateResponse (rp, db, uuid, false);
+
+        for (UUID id: toPromote) mgmtContract.doPromote (id.toString ());
+
+    }        
+
+    public static List<UUID> processGetStateResponse (GetStateResult rp, DB db, UUID uuid, boolean versionsOnly) throws SQLException {
+        
         List <Map <String, Object>> contractRecors = new ArrayList<> (rp.getExportCAChResult ().size ());
         List <Map <String, Object>> objectRecors   = new ArrayList<> (rp.getExportCAChResult ().size ());
-        List <UUID> toPromote = new ArrayList<> ();                    
-        
+        List <UUID> toPromote = new ArrayList<> ();
         Model m = db.getModel ();
-
         for (ExportStatusCAChResultType er: rp.getExportStatusCAChResult ()) {
             
             final String contractGUID = er.getContractGUID ();
@@ -92,21 +101,26 @@ public class GisPollExportMgmtContractStatusMDB extends UUIDMDB<OutSoap> {
             if (status == null) {
                 logger.warning ("Unknown status: '" + er.getContractStatus () + "'. Will use FAILED_STATE instead.");
                 status = VocGisStatus.i.FAILED_STATE;
-            }                                
-
-            if (status == VocGisStatus.i.REVIEWED) toPromote.add (uuidContract);                
+            }                
+            
+            if (status == VocGisStatus.i.REVIEWED) toPromote.add (uuidContract);
             
             final Map<String, Object> ctr = HASH (
                 "uuid",                uuidContract,
-                "contractversionguid", er.getContractVersionGUID (),
-                "id_ctr_status",       status.getId (),
-                "id_ctr_status_gis",   status.getId ()
+                "contractversionguid", er.getContractVersionGUID ()
             );
             
-            VocGisStatus.i state = VocGisStatus.i.forName (er.getState ());
-            if (state != null) ctr.put ("id_ctr_state_gis", state.getId ());
-
-            contractRecors.add (ctr);                                
+            if (!versionsOnly) {
+                
+                ctr.put ("id_ctr_status", status.getId ());
+                ctr.put ("id_ctr_status_gis", status.getId ());
+                
+                VocGisStatus.i state = VocGisStatus.i.forName (er.getState ());
+                if (state != null) ctr.put ("id_ctr_state_gis", state.getId ());
+                
+            }
+            
+            contractRecors.add (ctr);
             
             for (ExportStatusCAChResultType.ContractObject co: er.getContractObject ()) {
                 
@@ -116,27 +130,28 @@ public class GisPollExportMgmtContractStatusMDB extends UUIDMDB<OutSoap> {
                     os = VocGisStatus.i.FAILED_STATE;
                 }
                 
-                objectRecors.add (HASH (
+                final Map<String, Object> or = HASH (
                     "uuid_contract",             uuidContract,
                     "fiashouseguid",             co.getFIASHouseGuid (),
-                    "id_ctr_status_gis",         os.getId (),
                     "contractobjectversionguid", co.getContractObjectVersionGUID ()
-                ));                
+                );                
+                
+                if (!versionsOnly) or.put ("id_ctr_status_gis", os.getId ());
+                                
+                objectRecors.add (or);                
                 
             }
 
         }
-
         db.update (Contract.class, contractRecors);
         db.upsert (ContractObject.class, objectRecors, objectKey);
-        
         db.update (OutSoap.class, HASH (
-            "uuid", uuid,
-            "id_status", DONE.getId ()
+                "uuid", uuid,
+                "id_status", DONE.getId ()
         ));
-
-        for (UUID id: toPromote) mgmtContract.doPromote (id.toString ());
-
+        
+        return toPromote;
+        
     }        
     
     private static String [] objectKey   = {"uuid_contract", "fiashouseguid"};

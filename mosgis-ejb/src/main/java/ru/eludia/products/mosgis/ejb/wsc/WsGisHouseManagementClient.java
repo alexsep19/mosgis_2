@@ -68,6 +68,28 @@ public class WsGisHouseManagementClient {
         
     }
     
+    public AckRequest.Ack editContractData (UUID orgPPAGuid, UUID messageGUID,  Map<String, Object> r) throws Fault {
+        
+        final ImportContractRequest.Contract.EditContract ec = (ImportContractRequest.Contract.EditContract) DB.to.javaBean (ImportContractRequest.Contract.EditContract.class, r);
+        
+        ec.setLicenseRequest (true);
+        Contract.fillContract (ec, r);
+        ec.setContractVersionGUID (r.get ("ctr.contractversionguid").toString ());
+
+        for (Map<String, Object> file: (Collection<Map<String, Object>>) r.get ("files"))   ContractFile.add   (ec, file);
+        for (Map<String, Object> o:    (Collection<Map<String, Object>>) r.get ("objects")) ContractObject.add (ec, o);
+        
+        ImportContractRequest importContractRequest = of.createImportContractRequest ();
+        final ImportContractRequest.Contract c = of.createImportContractRequestContract ();
+        c.setEditContract (ec);
+        c.setTransportGUID (UUID.randomUUID ().toString ());
+        
+        importContractRequest.getContract ().add (c);
+
+        return getPort (orgPPAGuid, messageGUID).importContractData (importContractRequest).getAck ();
+        
+    }
+    
     public AckRequest.Ack placeContractData (UUID orgPPAGuid, UUID messageGUID,  Map<String, Object> r) throws Fault {
         
         final ImportContractRequest.Contract.PlacingContract pc = (ImportContractRequest.Contract.PlacingContract) DB.to.javaBean (ImportContractRequest.Contract.PlacingContract.class, r);

@@ -126,6 +126,39 @@ public class ContractObject extends Table {
 
     }
     
+    public static void add (ImportContractRequest.Contract.EditContract ec, Map<String, Object> r) {
+        
+        final ImportContractRequest.Contract.EditContract.ContractObject co = (ImportContractRequest.Contract.EditContract.ContractObject) DB.to.javaBean (ImportContractRequest.Contract.EditContract.ContractObject.class, r);
+        
+        co.setTransportGUID (UUID.randomUUID ().toString ());
+        
+        if (r.get ("contractobjectversionguid") == null) {
+            
+            final ImportContractRequest.Contract.EditContract.ContractObject.Add add = (ImportContractRequest.Contract.EditContract.ContractObject.Add) DB.to.javaBean (ImportContractRequest.Contract.EditContract.ContractObject.Add.class, r);
+            
+            add.setBaseMService (ContractFile.getBaseServiceType (r));
+            
+            for (Map<String, Object> service: (List<Map<String, Object>>) r.get ("services")) ContractObjectService.add (add, service);            
+            
+            co.setAdd (add);
+        
+        }
+        else {
+            
+            ImportContractRequest.Contract.EditContract.ContractObject.Edit ed = (ImportContractRequest.Contract.EditContract.ContractObject.Edit) DB.to.javaBean (ImportContractRequest.Contract.EditContract.ContractObject.Edit.class, r);
+            
+            ed.setBaseMService (ContractFile.getBaseServiceType (r));
+
+            for (Map<String, Object> service: (List<Map<String, Object>>) r.get ("services")) ContractObjectService.add (ed, service);
+
+            co.setEdit (ed);
+            
+        }        
+        
+        ec.getContractObject ().add (co);
+        
+    }    
+    
     public QP updateStatus (UUID uuid_contract, ExportStatusCAChResultType.ContractObject co) {
     
         QP qp = new QP ("UPDATE ");

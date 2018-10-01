@@ -59,6 +59,43 @@ public class ContractObjectService extends Table {
         }
     }
     
+    static void add (ImportContractRequest.Contract.EditContract.ContractObject.Add co, Map<String, Object> r) {
+        switch (r.get ("is_additional").toString ()) {
+            case "0": addHouse (co, r); break;
+            case "1": addAdd   (co, r); break;
+        }
+    }
+    
+    static void add (ImportContractRequest.Contract.EditContract.ContractObject.Edit co, Map<String, Object> r) {
+        switch (r.get ("is_additional").toString ()) {
+            case "0": addHouse (co, r); break;
+            case "1": addAdd   (co, r); break;
+        }
+    }    
+    
+    private static void addAdd (ImportContractRequest.Contract.EditContract.ContractObject.Edit co, Map<String, Object> r) {
+
+        final ImportContractRequest.Contract.EditContract.ContractObject.Edit.AddService as = (ImportContractRequest.Contract.EditContract.ContractObject.Edit.AddService) DB.to.javaBean (ImportContractRequest.Contract.EditContract.ContractObject.Edit.AddService.class, r);
+        
+        as.setServiceType (NsiTable.toDom ((String) r.get ("add_service.uniquenumber"), (UUID) r.get ("add_service.elementguid")));
+        as.setBaseService (ContractFile.getBaseServiceType (r));
+                
+        co.getAddService ().add (as);
+
+    }
+    
+        
+    private static void addAdd (ImportContractRequest.Contract.EditContract.ContractObject.Add co, Map<String, Object> r) {
+
+        final ImportContractRequest.Contract.EditContract.ContractObject.Add.AddService as = (ImportContractRequest.Contract.EditContract.ContractObject.Add.AddService) DB.to.javaBean (ImportContractRequest.Contract.EditContract.ContractObject.Add.AddService.class, r);
+        
+        as.setServiceType (NsiTable.toDom ((String) r.get ("add_service.uniquenumber"), (UUID) r.get ("add_service.elementguid")));
+        as.setBaseService (ContractFile.getBaseServiceType (r));
+                
+        co.getAddService ().add (as);
+
+    }
+    
     private static void addAdd (ImportContractRequest.Contract.PlacingContract.ContractObject co, Map<String, Object> r) {
 
         final ImportContractRequest.Contract.PlacingContract.ContractObject.AddService as = (ImportContractRequest.Contract.PlacingContract.ContractObject.AddService) DB.to.javaBean (ImportContractRequest.Contract.PlacingContract.ContractObject.AddService.class, r);
@@ -69,7 +106,29 @@ public class ContractObjectService extends Table {
         co.getAddService ().add (as);
         
     }
+    
+    private static void addHouse (ImportContractRequest.Contract.EditContract.ContractObject.Edit co, Map<String, Object> r) {
+        
+        final ImportContractRequest.Contract.EditContract.ContractObject.Edit.HouseService hs = (ImportContractRequest.Contract.EditContract.ContractObject.Edit.HouseService) DB.to.javaBean (ImportContractRequest.Contract.EditContract.ContractObject.Edit.HouseService.class, r);
+        
+        hs.setServiceType (NsiTable.toDom ((String) r.get ("vc_nsi_3.code"), (UUID) r.get ("vc_nsi_3.guid")));
+        hs.setBaseService (ContractFile.getBaseServiceType (r));
+        
+        co.getHouseService ().add (hs);
+        
+    }    
 
+    private static void addHouse (ImportContractRequest.Contract.EditContract.ContractObject.Add co, Map<String, Object> r) {
+        
+        final ImportContractRequest.Contract.EditContract.ContractObject.Add.HouseService hs = (ImportContractRequest.Contract.EditContract.ContractObject.Add.HouseService) DB.to.javaBean (ImportContractRequest.Contract.EditContract.ContractObject.Add.HouseService.class, r);
+        
+        hs.setServiceType (NsiTable.toDom ((String) r.get ("vc_nsi_3.code"), (UUID) r.get ("vc_nsi_3.guid")));
+        hs.setBaseService (ContractFile.getBaseServiceType (r));
+        
+        co.getHouseService ().add (hs);
+        
+    }
+    
     private static void addHouse (ImportContractRequest.Contract.PlacingContract.ContractObject co, Map<String, Object> r) {
         
         final ImportContractRequest.Contract.PlacingContract.ContractObject.HouseService hs = (ImportContractRequest.Contract.PlacingContract.ContractObject.HouseService) DB.to.javaBean (ImportContractRequest.Contract.PlacingContract.ContractObject.HouseService.class, r);

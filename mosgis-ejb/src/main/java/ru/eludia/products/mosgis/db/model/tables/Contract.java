@@ -81,11 +81,19 @@ public class Contract extends Table {
         + "BEGIN "
 
             + "IF UPDATING "
+            + " AND :NEW.id_ctr_status = " + VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+            + " AND :OLD.id_ctr_status = " + VocGisStatus.i.MUTATING.getId () + ' '
+            + "THEN "
+            + "  :NEW.id_ctr_status := " + VocGisStatus.i.PENDING_RQ_EDIT.getId () + "; "
+            + "END IF; "
+
+            + "IF UPDATING "
             + " AND :OLD.id_ctr_status NOT IN (10, 11) "
             + " AND :OLD.id_ctr_status = :NEW.id_ctr_status "
             + " AND NVL (:OLD.id_log, '00')        = NVL (:NEW.id_log, '00') "
             + " AND NVL (:OLD.uuid_out_soap, '00') = NVL (:NEW.uuid_out_soap, '00') "
             + " AND NVL (:OLD.contractguid, '00')  = NVL (:NEW.contractguid, '00') "
+            + " AND NVL (:OLD.contractversionguid, '00') = NVL (:NEW.contractversionguid, '01') "
             + "THEN "
             + "   raise_application_error (-20000, 'Внесение изменений в договор в настоящее время запрещено. Операция отменена.'); "
             + "END IF; "
@@ -291,7 +299,8 @@ public class Contract extends Table {
         
         PLACING    (VocGisStatus.i.PENDING_RP_PLACING,  VocGisStatus.i.FAILED_PLACING),
         APPROVING  (VocGisStatus.i.PENDING_RP_APPROVAL, VocGisStatus.i.FAILED_STATE),
-        REFRESHING (VocGisStatus.i.PENDING_RP_REFRESH,  VocGisStatus.i.FAILED_STATE)
+        REFRESHING (VocGisStatus.i.PENDING_RP_REFRESH,  VocGisStatus.i.FAILED_STATE),
+        EDITING    (VocGisStatus.i.PENDING_RP_EDIT,     VocGisStatus.i.FAILED_STATE)
         ;
         
         VocGisStatus.i nextStatus;
@@ -315,6 +324,7 @@ public class Contract extends Table {
                 case PENDING_RQ_PLACING:  return PLACING;
                 case PENDING_RQ_APPROVAL: return APPROVING;
                 case PENDING_RQ_REFRESH:  return REFRESHING;
+                case PENDING_RQ_EDIT:     return EDITING;
                 default: return null;
             }            
         }
