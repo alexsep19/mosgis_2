@@ -23,6 +23,13 @@
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
     <jndi-name>mosgis.confTopic</jndi-name>
   </uniform-distributed-topic>
+  
+  <!-- topic для оповещения кластера об импорте справочника НСИ -->
+
+  <uniform-distributed-topic name="nsiTopic">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.nsiTopic</jndi-name>
+  </uniform-distributed-topic>
 
   <!-- очереди обработки SOAP-сообщений -->   
     

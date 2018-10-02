@@ -134,7 +134,7 @@ public class HousesImpl implements HousesLocal {
                 
             }
             
-            db.addJsonArrays (jb, NsiTable.getNsiTable (db, NSI_VOC_CONDITION).getVocSelect ());
+            db.addJsonArrays (jb, NsiTable.getNsiTable (NSI_VOC_CONDITION).getVocSelect ());
             
             House housesTable = new House ();
             housesTable.setModel (ModelHolder.getModel ());
@@ -286,7 +286,7 @@ public class HousesImpl implements HousesLocal {
                 if (i.getInt ("id_type", -1) != REF.getId ()) continue;
                 
                 try {
-                    db.addJsonArrays (jb, NsiTable.getNsiTable (db, i.getInt ("voc")).getVocSelect ());
+                    db.addJsonArrays (jb, NsiTable.getNsiTable (i.getInt ("voc")).getVocSelect ());
                 } 
                 catch (Exception ex) {
                     logger.log (Level.SEVERE, "Cannot fetch vocabulary for " + i, ex);

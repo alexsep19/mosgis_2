@@ -92,7 +92,7 @@ public class EntrancesImpl extends BasePassport<Entrance> implements EntrancesLo
         job.add ("item", db.getJsonObject (ModelHolder.getModel ().get (getTable (), id, "*")));
         
         db.addJsonArrays (job, 
-            NsiTable.getNsiTable (db, 330).getVocSelect ()
+            NsiTable.getNsiTable (330).getVocSelect ()
         );
         
     });}

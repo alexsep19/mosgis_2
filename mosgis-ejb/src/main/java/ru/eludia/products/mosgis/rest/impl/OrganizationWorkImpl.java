@@ -227,9 +227,9 @@ public class OrganizationWorkImpl extends BaseCRUD<OrganizationWork> implements 
             
             db.addJsonArrays (jb,
                     
-                NsiTable.getNsiTable (db, 56).getVocSelect (),
+                NsiTable.getNsiTable (56).getVocSelect (),
                 
-                NsiTable.getNsiTable (db, 67).getVocSelect (),
+                NsiTable.getNsiTable (67).getVocSelect (),
                                         
                 model
                     .select (VocOrganization.class, "uuid AS id", "label")                    

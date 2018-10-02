@@ -82,7 +82,7 @@ public abstract class BasePassport <T extends Table> extends BaseCRUD<T> impleme
                 if (i.getInt ("id_type", -1) != REF.getId ()) continue;
                 
                 try {
-                    db.addJsonArrays (jb, NsiTable.getNsiTable (db, i.getInt ("voc")).getVocSelect ());
+                    db.addJsonArrays (jb, NsiTable.getNsiTable (i.getInt ("voc")).getVocSelect ());
                 } 
                 catch (Exception ex) {
                     logger.log (Level.SEVERE, "Cannot fetch vocabulary for " + i, ex);

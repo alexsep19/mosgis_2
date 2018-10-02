@@ -115,9 +115,9 @@ public class MainMunicipalServiceImpl extends BaseCRUD<MainMunicipalService> imp
             
             db.addJsonArrays (jb,
                     
-                NsiTable.getNsiTable (db, 2).getVocSelect (),
+                NsiTable.getNsiTable (2).getVocSelect (),
                 
-                NsiTable.getNsiTable (db, 3).getVocSelect (),
+                NsiTable.getNsiTable (3).getVocSelect (),
                     
                 model
                     .select (VocOkei.class, "code AS id", "national AS label")
