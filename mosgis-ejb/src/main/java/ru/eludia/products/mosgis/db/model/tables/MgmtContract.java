@@ -50,6 +50,7 @@ public class MgmtContract extends View {
         col   ("contractguid",              Type.UUID,                 null,    "UUID договора в ГИС ЖКХ");
 
         fk    ("id_log",                    ContractLog.class,         null, "Последнее событие редактирования");
+        col   ("versionnumber",             Type.INTEGER,          10, null,    "Номер версии (по состоянию в ГИС ЖКХ)");
         
     }
 
@@ -84,6 +85,7 @@ public class MgmtContract extends View {
             ", t.id_ctr_state_gis"+
             ", t.id_log"+
             ", t.uuid_out_soap" +
+            ", t.versionnumber" +
             ", CASE" +
             "    WHEN ID_CTR_STATUS IN (100, 110) THEN 80 " +
             "    WHEN UUID_OUT_SOAP IS NULL THEN 80 " +

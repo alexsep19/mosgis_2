@@ -153,16 +153,18 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
                 final UUID uuidContract = (UUID) r.get ("ctr.uuid");
 
                 db.update (Contract.class, HASH (
-                    "uuid", uuidContract,
-                    "contractguid", importContract.getContractGUID (),
+                    "uuid",                uuidContract,
+                    "contractguid",        importContract.getContractGUID (),
                     "contractversionguid", importContract.getContractVersionGUID (),
-                    "id_ctr_status", status,
-                    "id_ctr_status_gis", status,
-                    "id_ctr_state_gis",  state.getId ()
+                    "versionnumber",       importContract.getVersionNumber (),
+                    "id_ctr_status",       status,
+                    "id_ctr_status_gis",   status,
+                    "id_ctr_state_gis",    state.getId ()
                 ));
 
                 db.update (ContractLog.class, HASH (
-                    "uuid", r.get ("log.uuid"),
+                    "uuid",                r.get ("log.uuid"),
+                    "versionnumber",       importContract.getVersionNumber (),
                     "contractversionguid", importContract.getContractVersionGUID ()
                 ));
 

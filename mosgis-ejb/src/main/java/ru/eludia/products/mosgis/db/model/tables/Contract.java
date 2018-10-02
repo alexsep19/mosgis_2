@@ -70,7 +70,9 @@ public class Contract extends Table {
         col   ("contractguid",              Type.UUID,                 null,    "UUID договора в ГИС ЖКХ");
         col   ("contractversionguid",       Type.UUID,                 null,    "Идентификатор последней известной версии договора");
 
-        fk    ("id_log",                    ContractLog.class,         null, "Последнее событие редактирования");
+        fk    ("id_log",                    ContractLog.class,         null,    "Последнее событие редактирования");
+        
+        col   ("versionnumber",             Type.INTEGER,          10, null,    "Номер версии (по состоянию в ГИС ЖКХ)");
 
         key   ("org_docnum", "uuid_org", "docnum");
         key   ("contractguid", "contractguid");

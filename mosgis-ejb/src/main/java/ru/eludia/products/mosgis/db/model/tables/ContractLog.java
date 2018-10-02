@@ -48,6 +48,7 @@ public class ContractLog extends Table {
         col   ("ddt_i_start_nxt",           Type.BOOLEAN,                       null, "1, если срок внесения платы за жилое помещение и (или) коммунальные услуги в следующем месяце; иначе 0");
 
         col   ("contractbase",              Type.STRING,                        new Virt ("(''||\"CODE_VC_NSI_58\")"),  "Основание заключения договора");
+        col   ("versionnumber",             Type.INTEGER,          10, null,    "Номер версии (по состоянию в ГИС ЖКХ)");
 
        trigger ("BEFORE INSERT", "BEGIN "
 
