@@ -29,6 +29,7 @@ public class VocContractDocType extends Table {
         PROTOCOL_OK                    ( 9, "Протокол открытого конкурса"),
         SIGNED_OWNERS                  (10, "Реестр собственников"),
         
+        TERMINATION_ATTACHMENT         (98, "Основание расторжения"),
         OTHER                          (99, "Прочие"); 
                 
         int id;

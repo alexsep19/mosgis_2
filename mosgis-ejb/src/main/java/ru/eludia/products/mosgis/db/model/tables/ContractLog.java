@@ -34,8 +34,10 @@ public class ContractLog extends Table {
         col   ("signingdate",               Type.DATE,                          null,   "Дата заключения");
         col   ("effectivedate",             Type.DATE,                          null,   "Дата вступления в силу");
         col   ("plandatecomptetion",        Type.DATE,                          null,   "Планируемая дата окончания");
+        col   ("terminate",                 Type.DATE,                          null,   "Дата расторжения");
         col   ("automaticrolloveroneyear",  Type.BOOLEAN,                       null,   "1, если запись удалена; иначе 0");
         col   ("code_vc_nsi_58",            Type.STRING,           20,          null,   "Ссылка на НСИ \"Основание заключения договора\" (реестровый номер 58)");
+        col   ("code_vc_nsi_54",            Type.STRING,           20,          null,  "Ссылка на НСИ \"Основание расторжения договора\" (реестровый номер 54)");
         col   ("ddt_m_start",               Type.NUMERIC,          2,           null,  "Начало периода ввода показаний ПУ (1..31 — конкретное число; 99 — последнее число)");
         col   ("ddt_m_start_nxt",           Type.BOOLEAN,                       null, "1, если начало периода ввода показаний ПУ в следующем месяце; иначе 0");
         col   ("ddt_m_end",                 Type.NUMERIC,          2,           null,  "Окончание периода ввода показаний ПУ (1..31 — конкретное число; 99 — последнее число)");
@@ -62,6 +64,8 @@ public class ContractLog extends Table {
            + "       , plandatecomptetion"
            + "       , automaticrolloveroneyear"
            + "       , code_vc_nsi_58"
+           + "       , code_vc_nsi_54"
+           + "       , terminate"
            + "       , ddt_m_start"
            + "       , ddt_m_start_nxt"
            + "       , ddt_m_end"
@@ -84,6 +88,8 @@ public class ContractLog extends Table {
            + "       , :NEW.plandatecomptetion"
            + "       , :NEW.automaticrolloveroneyear"
            + "       , :NEW.code_vc_nsi_58"
+           + "       , :NEW.code_vc_nsi_54"
+           + "       , :NEW.terminate"
            + "       , :NEW.ddt_m_start"
            + "       , :NEW.ddt_m_start_nxt"
            + "       , :NEW.ddt_m_end"

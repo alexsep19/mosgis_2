@@ -59,6 +59,7 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
             case APPROVE:
             case PROMOTE:
             case REFRESH:
+            case TERMINATE:
                 super.publishMessage (action, id_log);
             default:
                 return;
@@ -137,21 +138,19 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
             .toMaybeOne (ContractLog.class                                ).on ()
             .toMaybeOne (OutSoap.class,                         "err_text").on ()
         ));
-        
-        job.add ("last_approve",
-                
-            db.getJsonObject (m
-                .select  (ContractLog.class, "AS root", "*")
-                .and    ("uuid_object", id)
-                .and    ("action",      VocAction.i.APPROVE.getName ())
-                .orderBy ("root.ts DESC")
-                    .toOne  (OutSoap.class, "AS soap")
-                    .and ("id_status", VocAsyncRequestState.i.DONE.getId ())
-                    .and ("is_failed", 0)
-                    .on ()
-            )
 
-        );
+        JsonObject lastApprove = db.getJsonObject (m
+            .select  (ContractLog.class, "AS root", "*")
+            .and    ("uuid_object", id)
+            .and    ("action",      VocAction.i.APPROVE.getName ())
+            .orderBy ("root.ts DESC")
+            .toOne  (OutSoap.class, "AS soap")
+            .and ("id_status", VocAsyncRequestState.i.DONE.getId ())
+            .and ("is_failed", 0)
+            .on ()
+        );       
+
+        if (lastApprove != null) job.add ("last_approve", lastApprove);
 
     });}
 
@@ -174,6 +173,8 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
                     .on ("vc_nsi_58.code=it.code")
                 .where ("f_7d0f481f17", 1),
                     
+                NsiTable.getNsiTable (db, 54).getVocSelect (),
+
                 model
                     .select (VocOrganization.class, "uuid AS id", "label")                    
                     .orderBy ("label")
@@ -296,6 +297,18 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
         
         logAction (db, user, id, VocAction.i.REFRESH);
         
+    });}
+    
+    @Override
+    public JsonObject doTerminate (String id, JsonObject p, User user) {return doAction ((db) -> {
+        
+        db.update (getTable (), getData (p,
+            "uuid", id,
+            "id_ctr_status", VocGisStatus.i.PENDING_RQ_TERMINATE.getId ()
+        ));
+        
+        logAction (db, user, id, VocAction.i.TERMINATE);
+                        
     });}
 
 }

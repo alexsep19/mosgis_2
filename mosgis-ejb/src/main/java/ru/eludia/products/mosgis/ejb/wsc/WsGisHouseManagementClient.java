@@ -10,12 +10,15 @@ import javax.jws.HandlerChain;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
 import ru.eludia.base.DB;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractFile;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
+import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ws.base.LoggingOutMessageHandler;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
+import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
 import ru.gosuslugi.dom.schema.integration.base.GetStateRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportHouseRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportStatusCAChRequest;
@@ -68,6 +71,35 @@ public class WsGisHouseManagementClient {
         
     }
     
+
+    public AckRequest.Ack terminateContractData (UUID orgPPAGuid, UUID messageGUID,  Map<String, Object> r) throws Fault {
+        
+        final ImportContractRequest.Contract.TerminateContract tc = (ImportContractRequest.Contract.TerminateContract) DB.to.javaBean (ImportContractRequest.Contract.TerminateContract.class, r);
+        
+        tc.setLicenseRequest (true);
+        tc.setContractVersionGUID (r.get ("ctr.contractversionguid").toString ());
+        
+        List<AttachmentType> terminateAttachment = tc.getTerminateAttachment ();
+        
+        String idTerminationType = String.valueOf (VocContractDocType.i.TERMINATION_ATTACHMENT.getId ());        
+        for (Map<String, Object> file: (Collection<Map<String, Object>>) r.get ("files")) {
+            if (!idTerminationType.equals (file.get ("id_type").toString ())) continue;
+            terminateAttachment.add (ContractFile.toAttachmentType (file));
+        }
+        
+        tc.setReasonRef (NsiTable.toDom (r.get ("code_vc_nsi_54").toString (), (UUID) r.get ("vc_nsi_54.guid")));
+        
+        ImportContractRequest importContractRequest = of.createImportContractRequest ();
+        final ImportContractRequest.Contract c = of.createImportContractRequestContract ();
+        c.setTerminateContract (tc);
+        c.setTransportGUID (UUID.randomUUID ().toString ());
+        
+        importContractRequest.getContract ().add (c);
+
+        return getPort (orgPPAGuid, messageGUID).importContractData (importContractRequest).getAck ();
+        
+    }
+
     public AckRequest.Ack editContractData (UUID orgPPAGuid, UUID messageGUID,  Map<String, Object> r) throws Fault {
         
         final ImportContractRequest.Contract.EditContract ec = (ImportContractRequest.Contract.EditContract) DB.to.javaBean (ImportContractRequest.Contract.EditContract.class, r);

@@ -42,9 +42,11 @@ public class Contract extends Table {
         col   ("signingdate",               Type.DATE,                          "Дата заключения");
         col   ("effectivedate",             Type.DATE,                          "Дата вступления в силу");
         col   ("plandatecomptetion",        Type.DATE,                          "Планируемая дата окончания");
+        col   ("terminate",                 Type.DATE,             null,        "Дата расторжения");
 
         col   ("automaticrolloveroneyear",  Type.BOOLEAN,          Bool.FALSE,  "1, если запись удалена; иначе 0");
         col   ("code_vc_nsi_58",            Type.STRING,           20,   null,  "Ссылка на НСИ \"Основание заключения договора\" (реестровый номер 58)");
+        col   ("code_vc_nsi_54",            Type.STRING,           20,   null,  "Ссылка на НСИ \"Основание расторжения договора\" (реестровый номер 54)");
 
     //  DateDetailsType:
 
@@ -92,8 +94,9 @@ public class Contract extends Table {
             + " AND :OLD.id_ctr_status = :NEW.id_ctr_status "
             + " AND NVL (:OLD.id_log, '00')        = NVL (:NEW.id_log, '00') "
             + " AND NVL (:OLD.uuid_out_soap, '00') = NVL (:NEW.uuid_out_soap, '00') "
-            + " AND NVL (:OLD.contractguid, '00')  = NVL (:NEW.contractguid, '00') "
+            + " AND NVL (:OLD.contractguid, '00')  = NVL (:NEW.contractguid, '00') "                                        
             + " AND NVL (:OLD.contractversionguid, '00') = NVL (:NEW.contractversionguid, '01') "
+            + " AND NVL (:OLD.code_vc_nsi_54, '00') = NVL (:NEW.code_vc_nsi_54, '00') "
             + "THEN "
             + "   raise_application_error (-20000, 'Внесение изменений в договор в настоящее время запрещено. Операция отменена.'); "
             + "END IF; "
@@ -297,10 +300,11 @@ public class Contract extends Table {
     
     public enum Action {
         
-        PLACING    (VocGisStatus.i.PENDING_RP_PLACING,  VocGisStatus.i.FAILED_PLACING),
-        APPROVING  (VocGisStatus.i.PENDING_RP_APPROVAL, VocGisStatus.i.FAILED_STATE),
-        REFRESHING (VocGisStatus.i.PENDING_RP_REFRESH,  VocGisStatus.i.FAILED_STATE),
-        EDITING    (VocGisStatus.i.PENDING_RP_EDIT,     VocGisStatus.i.FAILED_STATE)
+        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.FAILED_PLACING),
+        APPROVING   (VocGisStatus.i.PENDING_RP_APPROVAL,  VocGisStatus.i.FAILED_STATE),
+        REFRESHING  (VocGisStatus.i.PENDING_RP_REFRESH,   VocGisStatus.i.FAILED_STATE),
+        TERMINATING (VocGisStatus.i.PENDING_RQ_TERMINATE, VocGisStatus.i.FAILED_STATE),
+        EDITING     (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.FAILED_STATE)
         ;
         
         VocGisStatus.i nextStatus;
@@ -321,13 +325,37 @@ public class Contract extends Table {
         
         public static Action forStatus (VocGisStatus.i status) {
             switch (status) {
-                case PENDING_RQ_PLACING:  return PLACING;
-                case PENDING_RQ_APPROVAL: return APPROVING;
-                case PENDING_RQ_REFRESH:  return REFRESHING;
-                case PENDING_RQ_EDIT:     return EDITING;
+                case PENDING_RQ_PLACING:   return PLACING;
+                case PENDING_RQ_APPROVAL:  return APPROVING;
+                case PENDING_RQ_REFRESH:   return REFRESHING;
+                case PENDING_RQ_EDIT:      return EDITING;
+                case PENDING_RQ_TERMINATE: return TERMINATING;
                 default: return null;
             }            
         }
+        
+        public final boolean needsUpload (VocContractDocType.i type) {
+            
+            if (type == VocContractDocType.i.OTHER) return false;
+            
+            boolean isTermination = type == VocContractDocType.i.TERMINATION_ATTACHMENT;
+            
+            switch (this) {
+                case TERMINATING:
+                    return isTermination;
+                case PLACING:    
+                case EDITING:    
+                    return !isTermination;
+                default: 
+                    return false;
+            }
+            
+        }
+        
+        public final boolean needsUpload () {
+            for (VocContractDocType.i type: VocContractDocType.i.values ()) if (this.needsUpload (type)) return true;
+            return false;            
+        }        
                 
     };
 

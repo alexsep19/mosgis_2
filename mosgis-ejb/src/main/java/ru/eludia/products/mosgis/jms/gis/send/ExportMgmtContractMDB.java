@@ -32,6 +32,7 @@ import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.ContractObjectService;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
+import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -79,12 +80,14 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
         try (DB db = m.getDb ()) {
             
             NsiTable nsi58 = NsiTable.getNsiTable (db, 58);
+            NsiTable nsi54 = NsiTable.getNsiTable (db, 54);
             
             return (Get) m
                 .get (getTable (), uuid, "*")
                 .toOne (Contract.class, "AS ctr", "id_ctr_status", "contractversionguid", "contractguid").on ()
                 .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("ctr.uuid_org")
-                .toOne (nsi58, "AS vc_nsi_58", "guid").on ("vc_nsi_58.code=ctr.code_vc_nsi_58 AND vc_nsi_58.isactual=1")
+                .toOne      (nsi58, "AS vc_nsi_58", "guid").on ("vc_nsi_58.code=ctr.code_vc_nsi_58 AND vc_nsi_58.isactual=1")
+                .toMaybeOne (nsi54, "AS vc_nsi_54", "guid").on ("vc_nsi_54.code=ctr.code_vc_nsi_54 AND vc_nsi_54.isactual=1")
             ;
             
         }
@@ -123,14 +126,16 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
         }
         
     }
-    
-    private UUID getFileUUIDwaitingFor (DB db, Collection <Map<String, Object>> files) throws SQLException, StaleFileException {
+        
+    private UUID getFileUUIDwaitingFor (DB db, Collection <Map<String, Object>> files, Contract.Action action) throws SQLException, StaleFileException {
         
         UUID waitingFor = null;
         
         for (Map<String, Object> file: files) {
             
-logger.info ("file=" + file);
+            VocContractDocType.i type = VocContractDocType.i.forId (file.get ("id_type"));
+            
+            if (!action.needsUpload (type)) continue;
             
             final String err = (String) file.get (StaleFileException.ERR_FIELD);
             
@@ -172,7 +177,7 @@ logger.info ("file=" + file);
         UUID waitingFor = null;
         
         try {
-            waitingFor = getFileUUIDwaitingFor (db, files);
+            waitingFor = getFileUUIDwaitingFor (db, files, action);
         }
         catch (StaleFileException ex) {
 
@@ -283,10 +288,11 @@ logger.info ("file=" + file);
         UUID orgPPAGuid = getOrgPPAGUID (r);
             
         switch (action) {
-            case EDITING:    return wsGisHouseManagementClient.editContractData     (orgPPAGuid, messageGUID, r);
-            case PLACING:    return wsGisHouseManagementClient.placeContractData    (orgPPAGuid, messageGUID, r);
-            case APPROVING:  return wsGisHouseManagementClient.approveContractData  (orgPPAGuid, messageGUID, (UUID) r.get ("ctr.contractversionguid"));
-            case REFRESHING: return wsGisHouseManagementClient.exportContractStatus (orgPPAGuid, messageGUID, Collections.singletonList ((UUID) r.get ("ctr.contractguid")));
+            case TERMINATING: return wsGisHouseManagementClient.terminateContractData (orgPPAGuid, messageGUID, r);
+            case EDITING:     return wsGisHouseManagementClient.editContractData      (orgPPAGuid, messageGUID, r);
+            case PLACING:     return wsGisHouseManagementClient.placeContractData     (orgPPAGuid, messageGUID, r);
+            case APPROVING:   return wsGisHouseManagementClient.approveContractData   (orgPPAGuid, messageGUID, (UUID) r.get ("ctr.contractversionguid"));
+            case REFRESHING:  return wsGisHouseManagementClient.exportContractStatus  (orgPPAGuid, messageGUID, Collections.singletonList ((UUID) r.get ("ctr.contractguid")));
             default: throw new IllegalArgumentException ("No action implemented for " + action);
         }
             
@@ -299,23 +305,14 @@ logger.info ("file=" + file);
     
     private boolean isVersionUpdateNeeded (Contract.Action action) {
         switch (action) {
+            case TERMINATING:    
             case EDITING:    
                 return true;
             default: 
                 return false;
         }
     }
-    
-    private boolean isFileUploadNeeded (Contract.Action action) {
-        switch (action) {
-            case PLACING:    
-            case EDITING:    
-                return true;
-            default: 
-                return false;
-        }
-    }
-            
+                
     @Override
     protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
         
@@ -335,7 +332,7 @@ logger.info ("file=" + file);
             r = db.getMap (get (uuid));
         }
         
-        if (isFileUploadNeeded (action)) {
+        if (action.needsUpload ()) {
             if (someFileUploadIsInProgress (db, m, r, action)) return;
         }
 
@@ -400,6 +397,8 @@ logger.info ("file=" + file);
 
         }
         catch (Exception ex) {
+            
+            logger.log (Level.SEVERE, "Cannot invoke WS", ex);
             
             db.begin ();
 
