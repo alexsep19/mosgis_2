@@ -67,6 +67,14 @@ public class ContractObjects extends EJBResource <ContractObjectsLocal> {
     public JsonObject doUpdate (@PathParam ("id") String id, JsonObject p) {
         return back.doUpdate (id, p, getUser ());
     }
+    
+    @POST
+    @Path("{id}/annul") 
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject doAnnul (@PathParam ("id") String id, JsonObject p) {
+        return back.doAnnul (id, p, getUser ());
+    }
 
     @POST
     @Path("{id}/delete") 

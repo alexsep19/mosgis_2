@@ -3,6 +3,7 @@ package ru.eludia.products.mosgis.rest.impl;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.json.JsonObject;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
@@ -74,6 +75,18 @@ public class ContractObjectsImpl extends BaseCRUD<ContractObject> implements Con
         
         db.addJsonArrays (job, s.filter (select, ""));
 
+    });}
+    
+    @Override
+    public JsonObject doAnnul (String id, JsonObject p, User user) {return doAction ((db) -> {
+                
+        db.update (getTable (), HASH (
+            "uuid",           id,
+            "annulmentinfo",  p.getJsonObject ("data").getString ("annulmentinfo")
+        ));
+        
+        logAction (db, user, id, VocAction.i.ANNUL);
+                        
     });}
 
 }

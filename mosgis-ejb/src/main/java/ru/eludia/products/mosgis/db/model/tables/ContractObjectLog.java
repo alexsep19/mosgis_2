@@ -5,6 +5,7 @@ import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import static ru.eludia.base.model.def.Def.NOW;
+import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
 
 public class ContractObjectLog extends Table {
@@ -24,6 +25,9 @@ public class ContractObjectLog extends Table {
         ref   ("uuid_contract_agreement",   ContractFile.class,    null,                "Ссылка на дополнительное соглашение");        
         col   ("startdate",                 Type.DATE,                                  "Дата начала предоставления услуг");
         col   ("enddate",                   Type.DATE,                                  "Дата окончания предоставления услуг");                
+        
+        col   ("annulmentinfo",             Type.STRING,           null,                "Причина аннулирования.");       
+        col   ("is_annuled",                Type.BOOLEAN,          new Virt ("DECODE(\"ANNULMENTINFO\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0");
 
         col   ("contractobjectversionguid", Type.UUID,             null,                "UUID этой версии данного объекта в ГИС ЖКХ");
         
@@ -32,11 +36,13 @@ public class ContractObjectLog extends Table {
            + "SELECT"
            + "       is_deleted,              "
            + "       uuid_contract_agreement, "
+           + "       annulmentinfo,           "
            + "       startdate,               "
            + "       enddate                  "
            + "INTO "                
            + "       :NEW.is_deleted,              "
            + "       :NEW.uuid_contract_agreement, "
+           + "       :NEW.annulmentinfo,           "
            + "       :NEW.startdate,               "
            + "       :NEW.enddate                  "
            + " FROM tb_contract_objects WHERE uuid=:NEW.uuid_object; "

@@ -25,7 +25,7 @@ define ([], function () {
 
             columnGroups : [
                 {span: 3, caption: 'Событие'},
-                {span: 3, caption: 'Значения полей'},
+                {span: 4, caption: 'Значения полей'},
                 {span: 4, caption: 'Запрос в ГИС ЖКХ'},
             ], 
             
@@ -39,6 +39,7 @@ define ([], function () {
                 {field: '_', caption: 'Основание', size: 50, render: function (r) {
                     return r.uuid_contract_agreement ? r ["contract_agreement.label"] : 'договор'
                 }},
+                {field: 'annulmentinfo', caption: 'Аннулирование', size: 18},
                 {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: 'data-ref=1'},
                 {field: 'soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: 'data-ref=1'},
                 {field: 'soap.id_status', caption: 'Статус',    size: 30, render: function (r, i, c, v) {return (

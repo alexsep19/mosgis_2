@@ -278,5 +278,5 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
         logAction (db, user, id, VocAction.i.REFRESH);
         
     });}
-    
+
 }

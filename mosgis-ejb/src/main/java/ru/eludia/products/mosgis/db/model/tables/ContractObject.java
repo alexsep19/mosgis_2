@@ -10,6 +10,7 @@ import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Num;
+import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import static ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType.i.OWNERS;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -33,6 +34,9 @@ public class ContractObject extends Table {
 
         col    ("startdate",               Type.DATE,                           "Дата начала предоставления услуг");
         col    ("enddate",                 Type.DATE,                           "Дата окончания предоставления услуг");        
+       
+        col    ("annulmentinfo",           Type.STRING,           null,       "Причина аннулирования.");
+        col    ("is_annuled",              Type.BOOLEAN,          new Virt ("DECODE(\"ANNULMENTINFO\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0");
         
         fk     ("id_ctr_status",           VocGisStatus.class,                  new Num (VocGisStatus.i.PROJECT.getId ()), "Статус объекта договора с точки зрения mosgis");
         fk     ("id_ctr_status_gis",       VocGisStatus.class,                  new Num (VocGisStatus.i.PROJECT.getId ()), "Статус объекта договора с точки зрения ГИС ЖКХ");
@@ -49,6 +53,7 @@ public class ContractObject extends Table {
                 
             + "IF INSERTING"
                 + " OR (NVL (:OLD.uuid_contract_agreement, '00') <> NVL (:NEW.uuid_contract_agreement, '00'))"
+                + " OR (NVL (:OLD.annulmentinfo, CHR(0)) <> NVL (:NEW.annulmentinfo, CHR(0)))"
                 + " OR (:OLD.startdate <> :NEW.startdate)"
                 + " OR (:OLD.enddate   <> :NEW.enddate)"
             + " THEN "
