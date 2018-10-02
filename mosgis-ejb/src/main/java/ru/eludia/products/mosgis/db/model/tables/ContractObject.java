@@ -14,7 +14,6 @@ import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import static ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType.i.OWNERS;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
-import static ru.eludia.products.mosgis.db.model.voc.VocGisStatus.i.MUTATING;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportStatusCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
 
@@ -63,7 +62,7 @@ public class ContractObject extends Table {
             + "END IF; "
 
             + "IF INSERTING THEN "
-            + " FOR i IN (SELECT c.uuid FROM tb_contracts c INNER JOIN tb_contract_objects o ON (o.uuid_contract = c.uuid AND o.uuid <> :NEW.uuid AND o.is_deleted = 0) WHERE c.uuid=:NEW.uuid_contract AND c.id_customer_type=" + OWNERS.getId () + ") LOOP"
+            + " FOR i IN (SELECT c.uuid FROM tb_contracts c INNER JOIN tb_contract_objects o ON (o.uuid_contract = c.uuid AND o.uuid <> :NEW.uuid AND o.is_deleted = 0 AND o.is_annuled = 0) WHERE c.uuid=:NEW.uuid_contract AND c.id_customer_type=" + OWNERS.getId () + ") LOOP"
             + "   raise_application_error (-20000, 'Поскольку заказчик — собственник объекта жилищного фонда, объект в договоре может быть только один. Операция отменена.'); "
             + " END LOOP; "
             + "END IF; "
@@ -111,7 +110,7 @@ public class ContractObject extends Table {
             + " COMMIT; "
             + "END IF; "
 
-            + "IF :OLD.contractobjectversionguid IS NOT NULL THEN :NEW.id_ctr_status := " + MUTATING.getId () + "; END IF; "
+//            + "IF :OLD.contractobjectversionguid IS NOT NULL THEN :NEW.id_ctr_status := " + MUTATING.getId () + "; END IF; "
                     
         + "END;");
 
@@ -147,6 +146,15 @@ public class ContractObject extends Table {
             
             co.setAdd (add);
         
+        }
+        else if (r.get ("annulmentinfo") != null) {
+            
+            final ImportContractRequest.Contract.EditContract.ContractObject.Annulment annulment = new ImportContractRequest.Contract.EditContract.ContractObject.Annulment ();
+            
+            annulment.setContractObjectVersionGUID (r.get ("contractobjectversionguid").toString ());
+            
+            co.setAnnulment (annulment);
+            
         }
         else {
             

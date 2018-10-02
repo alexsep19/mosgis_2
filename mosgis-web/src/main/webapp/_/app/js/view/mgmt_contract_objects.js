@@ -53,7 +53,23 @@ define ([], function () {
 
                     var grid = w2ui [e.target]
 
-                    $('tr[recid]').each (function () {grid.toolbar.hide ('w2ui-add')})
+                    $('tr[recid]').each (function () {
+                    
+                        var $this = $(this)
+                    
+                        var recid = $this.attr ('recid')
+                        
+                        var r = grid.get (recid)
+                        
+                        if (r ['log.ts'] > data.item.last_approve.ts) {
+                        
+                            $('td', $this).css ({background: '#ffc'})
+                        
+                        }
+                        
+                        if (!r.is_annuled) grid.toolbar.hide ('w2ui-add')
+                        
+                    })
 
                 }            
 

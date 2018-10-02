@@ -10,6 +10,7 @@ import javax.json.JsonObjectBuilder;
 import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
+import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
@@ -24,6 +25,7 @@ import ru.eludia.products.mosgis.db.model.tables.MgmtContract;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
+import ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType;
@@ -125,14 +127,31 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
 
     @Override
     public JsonObject getItem (String id) {return fetchData ((db, job) -> {
+        
+        Model m = ModelHolder.getModel ();
 
-        job.add ("item", db.getJsonObject (ModelHolder.getModel ()
+        job.add ("item", db.getJsonObject (m
             .get (MgmtContract.class, id, "*")
             .toOne      (VocOrganization.class,                    "label").on ("uuid_org")
             .toMaybeOne (VocOrganization.class, "AS org_customer", "label").on ("uuid_org_customer")
             .toMaybeOne (ContractLog.class                                ).on ()
             .toMaybeOne (OutSoap.class,                         "err_text").on ()
         ));
+        
+        job.add ("last_approve",
+                
+            db.getJsonObject (m
+                .select  (ContractLog.class, "AS root", "*")
+                .and    ("uuid_object", id)
+                .and    ("action",      VocAction.i.APPROVE.getName ())
+                .orderBy ("root.ts DESC")
+                    .toOne  (OutSoap.class, "AS soap")
+                    .and ("id_status", VocAsyncRequestState.i.DONE.getId ())
+                    .and ("is_failed", 0)
+                    .on ()
+            )
+
+        );
 
     });}
 

@@ -10,9 +10,13 @@ import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.AdditionalService;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractFile;
+import ru.eludia.products.mosgis.db.model.tables.ContractLog;
 import ru.eludia.products.mosgis.rest.api.ContractObjectsLocal;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
+import ru.eludia.products.mosgis.db.model.tables.ContractObjectLog;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -39,7 +43,7 @@ public class ContractObjectsImpl extends BaseCRUD<ContractObject> implements Con
         );
 
         job.add ("item", item);
-        
+                
         db.addJsonArrays (job,                
                 
             NsiTable.getNsiTable (db, 3).getVocSelect (),                
@@ -69,6 +73,7 @@ public class ContractObjectsImpl extends BaseCRUD<ContractObject> implements Con
             .select     (getTable (),              "AS root", "*", "uuid AS id")
             .toOne      (VocBuildingAddress.class, "AS fias",      "label"                                       ).on ("root.fiashouseguid=fias.houseguid")
             .toMaybeOne (ContractFile.class,       "AS agreement", "agreementnumber AS no", "agreementdate AS dt").on ()
+            .toMaybeOne (ContractObjectLog.class,  "AS log",       "ts"                                          ).on ()
             .where      ("is_deleted", 0)
             .orderBy    ("fias.label")
             .limit      (p.getInt ("offset"), p.getInt ("limit"));

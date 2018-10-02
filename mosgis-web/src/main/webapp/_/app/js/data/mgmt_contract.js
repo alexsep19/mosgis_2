@@ -24,8 +24,10 @@ define ([], function () {
             add_vocabularies (data, data)
 
             query ({type: 'mgmt_contracts'}, {}, function (d) {
-                            
+
                 var it = data.item = d.item
+                
+                it.last_approve = d.last_approve
 
                 it._can = {}
 
