@@ -285,11 +285,25 @@ public class HousesImpl implements HousesLocal {
                 
                 if (i.getInt ("id_type", -1) != REF.getId ()) continue;
                 
+                final int voc = i.getInt ("voc", -1);
+                
+                if (voc == -1) {
+                    logger.log (Level.WARNING, "Cannot detect vocabulary id for " + i);
+                    continue;
+                }
+                
+                final NsiTable nsiTable = NsiTable.getNsiTable (voc);
+
+                if (nsiTable == null) {
+                    logger.log (Level.SEVERE, "Cannot get NSI table vocabulary id for " + voc + ". Available tables are " + ModelHolder.getModel ().getTables ().stream ().map ((t) -> t.getName ()).sorted ().collect (Collectors.toList ()));
+                    continue;
+                }
+                    
                 try {
-                    db.addJsonArrays (jb, NsiTable.getNsiTable (i.getInt ("voc")).getVocSelect ());
+                    db.addJsonArrays (jb, nsiTable.getVocSelect ());
                 } 
                 catch (Exception ex) {
-                    logger.log (Level.SEVERE, "Cannot fetch vocabulary for " + i, ex);
+                    logger.log (Level.SEVERE, "Cannot fetch NSI vocabulary " + voc, ex);
                 }                                                
 
             }

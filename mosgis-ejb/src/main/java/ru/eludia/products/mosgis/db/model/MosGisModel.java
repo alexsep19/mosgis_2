@@ -15,7 +15,6 @@ public final class MosGisModel extends ru.eludia.base.Model {
     private static Logger logger = Logger.getLogger (MosGisModel.class.getName ());
     
     private static final String REGISTRYNUMBER = "registrynumber";
-    private static final String COLS_IS_NOT_NULL = "cols IS NOT NULL";
     private static final String VOCNSI58 = "vc_nsi_58";
     
     public Table getLogTable (Table t) {
@@ -45,15 +44,30 @@ public final class MosGisModel extends ru.eludia.base.Model {
         try (DB db = getDb ()) {
             
             try {
-                db.forEach ((select (VocNsiList.class, REGISTRYNUMBER))
-                        .and (COLS_IS_NOT_NULL), rs -> 
-                {
-                    NsiTable table = new NsiTable (db, rs.getInt (REGISTRYNUMBER));
-                    add (table);
+                
+                db.forEach ((
+                        
+                    select (VocNsiList.class, REGISTRYNUMBER))
+                        .and ("cols IS NOT NULL")
+                        .orderBy (REGISTRYNUMBER)
+
+                , rs -> {
+                    
+                    final int n = rs.getInt (REGISTRYNUMBER);
+                    
+                    if (tables.containsKey (NsiTable.getName (n))) return;                    
+
+                    try {
+                        add (new NsiTable (db, n));
+                    }
+                    catch (Exception ex) {
+                        logger.log (Level.WARNING, "Exception occured while adding NSI table " + n, ex);
+                    }
+                    
                 });
+                
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 logger.log (Level.WARNING, "Exception occured while adding NSI tables: " + ex.getLocalizedMessage ());
             }
             
