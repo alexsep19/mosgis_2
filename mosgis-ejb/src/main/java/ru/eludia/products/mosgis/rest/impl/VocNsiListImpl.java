@@ -107,7 +107,7 @@ public class VocNsiListImpl implements VocNsiListLocal {
 
             if (item.getInt ("out_soap.id_status", 0) < 3 || item.getString ("cols", "").isEmpty ()) return jb.build ();
 
-            NsiTable table = new NsiTable (db, registryNumber);
+            NsiTable table = NsiTable.getNsiTable(registryNumber);
 
             NsiOkeiRefField okeiField = table.getOkeiField ();
 
@@ -136,7 +136,7 @@ public class VocNsiListImpl implements VocNsiListLocal {
                 NsiTable t;
 
                 try {
-                    t = new NsiTable (db, ref.getRegistryNumber ());
+                    t = NsiTable.getNsiTable(ref.getRegistryNumber ());
                 }
                 catch (Exception ex) {
                     continue;
@@ -204,7 +204,7 @@ public class VocNsiListImpl implements VocNsiListLocal {
 
             if (item.getInt ("out_soap.id_status", 0) < 3 || item.getString ("cols", "").isEmpty ()) return jb.build ();
 
-            NsiTable table = new NsiTable (db, registryNumber);
+            NsiTable table = NsiTable.getNsiTable(registryNumber);
 
             db.adjustTable (table);
 
@@ -304,7 +304,7 @@ public class VocNsiListImpl implements VocNsiListLocal {
         Select [] sels = new Select [len];
 
         try (DB db = ModelHolder.getModel ().getDb ()) {
-            for (int i = 0; i < len; i ++) sels [i] = NsiTable.getNsiTable (db, ids.getInt (i)).getVocSelect ();
+            for (int i = 0; i < len; i ++) sels [i] = NsiTable.getNsiTable (ids.getInt (i)).getVocSelect ();
             db.addJsonArrays (jb, sels);
         }
         catch (SQLException ex) {

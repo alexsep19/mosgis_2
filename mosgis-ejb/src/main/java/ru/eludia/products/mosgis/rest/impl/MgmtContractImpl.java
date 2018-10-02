@@ -167,13 +167,13 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
                     
                 VocAction.getVocSelect (),
 
-                NsiTable.getNsiTable (db, 58).getVocSelect ()
+                NsiTable.getNsiTable (58).getVocSelect ()
                     .toMaybeOne (VocGisCustomerTypeNsi58.class, "AS it", "isdefault")
                         .when ("id", OWNERS.getId ())
                     .on ("vc_nsi_58.code=it.code")
                 .where ("f_7d0f481f17", 1),
                     
-                NsiTable.getNsiTable (db, 54).getVocSelect (),
+                NsiTable.getNsiTable (54).getVocSelect (),
 
                 model
                     .select (VocOrganization.class, "uuid AS id", "label")                    

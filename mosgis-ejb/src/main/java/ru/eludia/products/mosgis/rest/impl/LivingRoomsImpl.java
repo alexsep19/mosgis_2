@@ -44,8 +44,8 @@ public class LivingRoomsImpl extends BasePassport<LivingRoom> implements LivingR
 
         db.addJsonArrays (job, 
                 
-            NsiTable.getNsiTable (db, 330).getVocSelect (), // Причина аннулирования
-            NsiTable.getNsiTable (db, 273).getVocSelect () // Основания признания непригодности
+            NsiTable.getNsiTable (330).getVocSelect (), // Причина аннулирования
+            NsiTable.getNsiTable (273).getVocSelect () // Основания признания непригодности
                     
         );
         

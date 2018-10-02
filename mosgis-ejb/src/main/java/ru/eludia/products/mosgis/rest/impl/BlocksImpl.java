@@ -40,10 +40,10 @@ public class BlocksImpl extends BasePassport<Block> implements BlocksLocal {
 
         db.addJsonArrays (job, 
                 
-            NsiTable.getNsiTable (db, 14).getVocSelect (),  // К-во комнат
-            NsiTable.getNsiTable (db, 30).getVocSelect (),  // Характеристика помещения
-            NsiTable.getNsiTable (db, 330).getVocSelect (), // Причина аннулирования
-            NsiTable.getNsiTable (db, 273).getVocSelect () // Основания признания непригодности
+            NsiTable.getNsiTable (14).getVocSelect (),  // К-во комнат
+            NsiTable.getNsiTable (30).getVocSelect (),  // Характеристика помещения
+            NsiTable.getNsiTable (330).getVocSelect (), // Причина аннулирования
+            NsiTable.getNsiTable (273).getVocSelect () // Основания признания непригодности
                     
         );
         

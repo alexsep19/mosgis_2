@@ -46,7 +46,7 @@ public class ContractObjectsImpl extends BaseCRUD<ContractObject> implements Con
                 
         db.addJsonArrays (job,                
                 
-            NsiTable.getNsiTable (db, 3).getVocSelect (),                
+            NsiTable.getNsiTable (3).getVocSelect (),                
                 
             VocAction.getVocSelect (),
             

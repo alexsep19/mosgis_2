@@ -79,8 +79,8 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
         
         try (DB db = m.getDb ()) {
             
-            NsiTable nsi58 = NsiTable.getNsiTable (db, 58);
-            NsiTable nsi54 = NsiTable.getNsiTable (db, 54);
+            NsiTable nsi58 = NsiTable.getNsiTable (58);
+            NsiTable nsi54 = NsiTable.getNsiTable (54);
             
             return (Get) m
                 .get (getTable (), uuid, "*")
@@ -459,7 +459,7 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
         
         r.put ("files", files);
         
-        NsiTable nsi3 = NsiTable.getNsiTable (db, 3);
+        NsiTable nsi3 = NsiTable.getNsiTable (3);
         
         Map<UUID, Map<String, Object>> id2o = new HashMap <> ();
         

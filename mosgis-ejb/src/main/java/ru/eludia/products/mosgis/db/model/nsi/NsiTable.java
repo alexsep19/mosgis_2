@@ -28,6 +28,7 @@ import ru.eludia.products.mosgis.db.model.nsi.fields.NsiScalarField;
 import ru.eludia.products.mosgis.db.model.nsi.fields.NsiStringField;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiList;
 import static ru.eludia.products.mosgis.db.model.voc.VocPassportFields.PASSPORT_FIELDS_LIST_NSI_REGISTRY_NUMBER;
+import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementFieldType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
@@ -154,20 +155,14 @@ public class NsiTable extends Table {
     
     public static final NsiTable getPassportFieldsTable (DB db) throws SQLException {
         
-        return getNsiTable (db, PASSPORT_FIELDS_LIST_NSI_REGISTRY_NUMBER);
+        return getNsiTable (PASSPORT_FIELDS_LIST_NSI_REGISTRY_NUMBER);
         
     }
 
-    public static final NsiTable getNsiTable (DB db, int n) throws SQLException {
-        
-        NsiTable t = new NsiTable (db, n);
-        
-        db.adjustTable (t);
-        
-        return t;
-        
+    public static final NsiTable getNsiTable (int n) {
+        return (NsiTable) ModelHolder.getModel ().get(getName (n));
     }
-    
+
     public NsiTable (DB db, int n) throws SQLException {
         
         this (db.getMap (VocNsiList.class, n));

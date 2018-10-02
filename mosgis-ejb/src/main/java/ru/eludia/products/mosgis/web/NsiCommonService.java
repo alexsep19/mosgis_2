@@ -96,7 +96,7 @@ public class NsiCommonService {
 
         try (DB db = m.getDb ()) {                        
             
-            NsiTable nsiTable = NsiTable.getNsiTable (db, registryNumber.intValue ());
+            NsiTable nsiTable = NsiTable.getNsiTable (registryNumber.intValue ());
             
             final Select select = m.select (nsiTable, "AS root", "*");
             
@@ -108,7 +108,7 @@ public class NsiCommonService {
                 
                 int rn = nrf.getRegistryNumber ();
                 
-                NsiTable refTable = NsiTable.getNsiTable (db, rn);
+                NsiTable refTable = NsiTable.getNsiTable (rn);
                 
                 String alias = "nsi_" + rn;
                 
@@ -160,7 +160,7 @@ public class NsiCommonService {
                 
                 String name = mrt.getTargetField ().getName ();
                 
-                NsiTable refTable = NsiTable.getNsiTable (db, mrt.getTargetField ().getRegistryNumber ());
+                NsiTable refTable = NsiTable.getNsiTable (mrt.getTargetField ().getRegistryNumber ());
                 
                 db.forEach (m
                     
