@@ -52,6 +52,14 @@ define ([], function () {
 
                     }
 
+                    switch (it.id_ctr_status) {
+                        case 40:
+                        case 94:
+                        case 100:
+                            it._can.annul   = 1
+                            break;
+                    }
+
                     if ((0 + it.id_ctr_status) % 10 == 0 && it.id_ctr_status > 10) {
                         it._can.refresh = 1
                     }

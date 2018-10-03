@@ -60,6 +60,7 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
             case PROMOTE:
             case REFRESH:
             case TERMINATE:
+            case ANNUL:
                 super.publishMessage (action, id_log);
             default:
                 return;
@@ -308,6 +309,18 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
         ));
         
         logAction (db, user, id, VocAction.i.TERMINATE);
+                        
+    });}
+    
+    @Override
+    public JsonObject doAnnul (String id, JsonObject p, User user) {return doAction ((db) -> {
+        
+        db.update (getTable (), getData (p,
+            "uuid", id,
+            "id_ctr_status", VocGisStatus.i.PENDING_RQ_ANNULMENT.getId ()
+        ));
+        
+        logAction (db, user, id, VocAction.i.ANNUL);
                         
     });}
 

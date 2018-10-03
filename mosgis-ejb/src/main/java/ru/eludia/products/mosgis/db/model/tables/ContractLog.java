@@ -49,6 +49,8 @@ public class ContractLog extends Table {
 
         col   ("contractbase",              Type.STRING,                        new Virt ("(''||\"CODE_VC_NSI_58\")"),  "Основание заключения договора");
         col   ("versionnumber",             Type.INTEGER,          10, null,    "Номер версии (по состоянию в ГИС ЖКХ)");
+        col   ("reasonofannulment",         Type.STRING,         1000, null,    "Причина аннулирования");
+        col   ("is_annuled",                Type.BOOLEAN,          new Virt ("DECODE(\"REASONOFANNULMENT\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0");
 
        trigger ("BEFORE INSERT", "BEGIN "
 
@@ -75,7 +77,7 @@ public class ContractLog extends Table {
            + "       , ddt_d_start_nxt"
            + "       , ddt_i_start"
            + "       , ddt_i_start_nxt"
-               
+           + "       , reasonofannulment"
            + " INTO "
            + "       :NEW.is_deleted"
            + "       , :NEW.uuid_org"
@@ -99,6 +101,7 @@ public class ContractLog extends Table {
            + "       , :NEW.ddt_d_start_nxt"
            + "       , :NEW.ddt_i_start"
            + "       , :NEW.ddt_i_start_nxt"
+           + "       , :NEW.reasonofannulment"
            + " FROM tb_contracts WHERE uuid=:NEW.uuid_object; "
 
        + "END;");        

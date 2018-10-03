@@ -73,6 +73,8 @@ public class Contract extends Table {
         fk    ("id_log",                    ContractLog.class,         null,    "Последнее событие редактирования");
         
         col   ("versionnumber",             Type.INTEGER,          10, null,    "Номер версии (по состоянию в ГИС ЖКХ)");
+        col   ("reasonofannulment",         Type.STRING,         1000, null,    "Причина аннулирования");
+        col   ("is_annuled",                Type.BOOLEAN,          new Virt ("DECODE(\"REASONOFANNULMENT\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0");
 
         key   ("org_docnum", "uuid_org", "docnum");
         key   ("contractguid", "contractguid");
@@ -305,7 +307,8 @@ public class Contract extends Table {
         PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.FAILED_PLACING),
         APPROVING   (VocGisStatus.i.PENDING_RP_APPROVAL,  VocGisStatus.i.FAILED_STATE),
         REFRESHING  (VocGisStatus.i.PENDING_RP_REFRESH,   VocGisStatus.i.FAILED_STATE),
-        TERMINATING (VocGisStatus.i.PENDING_RQ_TERMINATE, VocGisStatus.i.FAILED_STATE),
+        TERMINATION (VocGisStatus.i.PENDING_RP_TERMINATE, VocGisStatus.i.FAILED_TERMINATE),
+        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.FAILED_ANNULMENT),
         EDITING     (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.FAILED_STATE)
         ;
         
@@ -331,7 +334,8 @@ public class Contract extends Table {
                 case PENDING_RQ_APPROVAL:  return APPROVING;
                 case PENDING_RQ_REFRESH:   return REFRESHING;
                 case PENDING_RQ_EDIT:      return EDITING;
-                case PENDING_RQ_TERMINATE: return TERMINATING;
+                case PENDING_RQ_TERMINATE: return TERMINATION;
+                case PENDING_RQ_ANNULMENT: return ANNULMENT;
                 default: return null;
             }            
         }
@@ -343,7 +347,7 @@ public class Contract extends Table {
             boolean isTermination = type == VocContractDocType.i.TERMINATION_ATTACHMENT;
             
             switch (this) {
-                case TERMINATING:
+                case TERMINATION:
                     return isTermination;
                 case PLACING:    
                 case EDITING:    

@@ -138,6 +138,10 @@ define ([], function () {
         use.block ('mgmt_contract_terminate_popup')
     }
     
+    $_DO.annul_mgmt_contract_common = function (e) {
+        use.block ('mgmt_contract_annul_popup')
+    }
+    
     $_DO.choose_tab_mgmt_contract_common = function (e) {
     
         var name = e.tab.id

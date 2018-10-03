@@ -288,7 +288,8 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
         UUID orgPPAGuid = getOrgPPAGUID (r);
             
         switch (action) {
-            case TERMINATING: return wsGisHouseManagementClient.terminateContractData (orgPPAGuid, messageGUID, r);
+            case ANNULMENT:   return wsGisHouseManagementClient.annulContractData     (orgPPAGuid, messageGUID, r);
+            case TERMINATION: return wsGisHouseManagementClient.terminateContractData (orgPPAGuid, messageGUID, r);
             case EDITING:     return wsGisHouseManagementClient.editContractData      (orgPPAGuid, messageGUID, r);
             case PLACING:     return wsGisHouseManagementClient.placeContractData     (orgPPAGuid, messageGUID, r);
             case APPROVING:   return wsGisHouseManagementClient.approveContractData   (orgPPAGuid, messageGUID, (UUID) r.get ("ctr.contractversionguid"));
@@ -305,7 +306,8 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
     
     private boolean isVersionUpdateNeeded (Contract.Action action) {
         switch (action) {
-            case TERMINATING:    
+            case ANNULMENT:    
+            case TERMINATION:    
             case EDITING:    
                 return true;
             default: 
