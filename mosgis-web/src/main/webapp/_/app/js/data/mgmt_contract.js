@@ -59,6 +59,17 @@ define ([], function () {
                             it._can.annul   = 1
                             break;
                     }
+                    
+                    if (it.id_ctr_state_gis) {
+                    
+                        switch (it.id_ctr_status) {
+                            case 40:
+                            case 94:
+                                it._can.rollover = 1
+                                break;
+                        }
+                        
+                    }
 
                     if ((0 + it.id_ctr_status) % 10 == 0 && it.id_ctr_status > 10) {
                         it._can.refresh = 1

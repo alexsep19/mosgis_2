@@ -46,6 +46,10 @@ public class VocGisStatus extends Table {
         PENDING_RP_EDIT      (43,  "_pending_rp_edit", "ожидание подтверждения переразмещения"),
         
         RUNNING              (50,  "Running",         "действующий"),
+        
+        PENDING_RQ_ROLLOVER  (52,  "_pending_rq_rollover", "ожидание пролонгации"),
+        PENDING_RP_ROLLOVER  (53,  "_pending_rp_rollover", "ожидание подтверждения пролонгации"),
+        
         EXPIRED              (60,  "Expired",         "истек срок действия"),
         LOCKED               (70,  "Locked",          "заблокирован"),
         NOT_RUNNING          (80,  "NotRunning",      "не действующий"),

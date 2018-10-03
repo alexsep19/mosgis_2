@@ -28,6 +28,7 @@ public class VocAction extends Table {
         TERMINATE ("terminate", "расторжение"),
         ALTER     ("alter",     "изменение"),
         ANNUL     ("annul",     "аннулирование"),
+        ROLLOVER  ("rollover",  "пролонгирование"),
         PROMOTE   ("promote",   "утверждение"),
         REFRESH   ("refresh",   "обновление");
                 

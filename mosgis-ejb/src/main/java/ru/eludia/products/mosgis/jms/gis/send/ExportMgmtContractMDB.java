@@ -288,6 +288,7 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
         UUID orgPPAGuid = getOrgPPAGUID (r);
             
         switch (action) {
+            case ROLLOVER:    return wsGisHouseManagementClient.rolloverContractData  (orgPPAGuid, messageGUID, r);
             case ANNULMENT:   return wsGisHouseManagementClient.annulContractData     (orgPPAGuid, messageGUID, r);
             case TERMINATION: return wsGisHouseManagementClient.terminateContractData (orgPPAGuid, messageGUID, r);
             case EDITING:     return wsGisHouseManagementClient.editContractData      (orgPPAGuid, messageGUID, r);
@@ -296,8 +297,8 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
             case REFRESHING:  return wsGisHouseManagementClient.exportContractStatus  (orgPPAGuid, messageGUID, Collections.singletonList ((UUID) r.get ("ctr.contractguid")));
             default: throw new IllegalArgumentException ("No action implemented for " + action);
         }
-            
-    }    
+
+    }
 
     private UUID getOrgPPAGUID (Map<String, Object> r) {
         final UUID orgPPAGuid = (UUID) r.get ("org.orgppaguid");
@@ -306,11 +307,12 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
     
     private boolean isVersionUpdateNeeded (Contract.Action action) {
         switch (action) {
-            case ANNULMENT:    
-            case TERMINATION:    
-            case EDITING:    
+            case ANNULMENT:
+            case TERMINATION:
+            case EDITING:
+            case ROLLOVER:
                 return true;
-            default: 
+            default:
                 return false;
         }
     }

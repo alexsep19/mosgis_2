@@ -43,6 +43,7 @@ public class Contract extends Table {
         col   ("effectivedate",             Type.DATE,                          "Дата вступления в силу");
         col   ("plandatecomptetion",        Type.DATE,                          "Планируемая дата окончания");
         col   ("terminate",                 Type.DATE,             null,        "Дата расторжения");
+        col   ("rolltodate",                Type.DATE,             null,        "Пролонгировать до даты");
 
         col   ("automaticrolloveroneyear",  Type.BOOLEAN,          Bool.FALSE,  "1, если запись удалена; иначе 0");
         col   ("code_vc_nsi_58",            Type.STRING,           20,   null,  "Ссылка на НСИ \"Основание заключения договора\" (реестровый номер 58)");
@@ -141,6 +142,45 @@ public class Contract extends Table {
                 + "IF :OLD.id_ctr_status = " + VocGisStatus.i.FAILED_PLACING.getId () + " THEN :NEW.id_ctr_status := " + VocGisStatus.i.PROJECT.getId () + "; END IF; "
             + "END; END IF; "
 
+            + "IF UPDATING "
+            + "  AND :NEW.rolltodate IS NOT NULL "
+            + "  AND :OLD.rolltodate IS NULL "
+            + " THEN "
+                + " FOR i IN ("
+                    + "SELECT "
+                    + " o.startdate"
+                    + " , o.enddate"
+                    + " , c.docnum"
+                    + " , c.signingdate"
+                    + " , org.label "
+                    + " , a.label address "
+                    + "FROM "
+                    + " tb_contract_objects o "
+                    + " INNER JOIN tb_contracts c ON o.uuid_contract = c.uuid"
+                    + " INNER JOIN vc_orgs org    ON c.uuid_org      = org.uuid "
+                    + " INNER JOIN vc_build_addresses a ON o.fiashouseguid = a.houseguid "
+                    + "WHERE o.is_deleted = 0"
+                    + " AND o.is_annuled = 0"
+                    + " AND o.fiashouseguid IN (SELECT fiashouseguid FROM tb_contract_objects WHERE is_deleted = 0 AND is_annuled = 0 AND uuid_contract = :NEW.uuid) "
+                    + " AND o.enddate   >= :NEW.effectivedate "
+                    + " AND o.startdate <= :NEW.rolltodate "
+                    + " AND o.uuid_contract <> :NEW.uuid "
+                    + ") LOOP"
+                + " raise_application_error (-20000, "
+                    + "'Дом по адресу ' || i.address || ' обслуживается с ' "
+                    + "|| TO_CHAR (i.startdate, 'DD.MM.YYYY')"
+                    + "||' по '"
+                    + "|| TO_CHAR (i.enddate, 'DD.MM.YYYY')"
+                    + "||' по договору управления от '"
+                    + "|| TO_CHAR (i.signingdate, 'DD.MM.YYYY')"
+                    + "||' №'"
+                    + "|| i.docnum"
+                    + "||' с '"
+                    + "|| i.label"
+                    + "|| '. Операция отменена.'); "
+                + " END LOOP; "                        
+            + " END IF; "
+                        
             + "IF UPDATING "
             + "  AND :OLD.id_ctr_status < " + VocGisStatus.i.PENDING_RQ_PLACING.getId ()
             + "  AND :NEW.id_ctr_status = " + VocGisStatus.i.PENDING_RQ_PLACING.getId ()
@@ -307,6 +347,7 @@ public class Contract extends Table {
         PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.FAILED_PLACING),
         APPROVING   (VocGisStatus.i.PENDING_RP_APPROVAL,  VocGisStatus.i.FAILED_STATE),
         REFRESHING  (VocGisStatus.i.PENDING_RP_REFRESH,   VocGisStatus.i.FAILED_STATE),
+        ROLLOVER    (VocGisStatus.i.PENDING_RP_ROLLOVER,  VocGisStatus.i.FAILED_STATE),
         TERMINATION (VocGisStatus.i.PENDING_RP_TERMINATE, VocGisStatus.i.FAILED_TERMINATE),
         ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.FAILED_ANNULMENT),
         EDITING     (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.FAILED_STATE)
@@ -336,6 +377,7 @@ public class Contract extends Table {
                 case PENDING_RQ_EDIT:      return EDITING;
                 case PENDING_RQ_TERMINATE: return TERMINATION;
                 case PENDING_RQ_ANNULMENT: return ANNULMENT;
+                case PENDING_RQ_ROLLOVER:  return ROLLOVER;
                 default: return null;
             }            
         }

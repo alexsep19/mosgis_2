@@ -20,6 +20,8 @@ import ru.eludia.products.mosgis.ws.base.LoggingOutMessageHandler;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
 import ru.gosuslugi.dom.schema.integration.base.GetStateRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChAsyncRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChRequestCriteriaType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportHouseRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportStatusCAChRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
@@ -68,6 +70,24 @@ public class WsGisHouseManagementClient {
         request.setFIASHouseGuid(fiasHouseGuid);
         
         return getPort ().exportHouseData(request).getAck();
+        
+    }
+
+    public AckRequest.Ack rolloverContractData (UUID orgPPAGuid, UUID messageGUID,  Map<String, Object> r) throws Fault {
+
+        final ImportContractRequest.Contract.RollOverContract rc = (ImportContractRequest.Contract.RollOverContract) DB.to.javaBean (ImportContractRequest.Contract.RollOverContract.class, r);
+        rc.setLicenseRequest (true);
+        rc.setContractVersionGUID (r.get ("ctr.contractversionguid").toString ());        
+        rc.setRollOver (true);
+
+        ImportContractRequest importContractRequest = of.createImportContractRequest ();
+        final ImportContractRequest.Contract c = of.createImportContractRequestContract ();
+        c.setRollOverContract (rc);
+        c.setTransportGUID (UUID.randomUUID ().toString ());
+        
+        importContractRequest.getContract ().add (c);
+        
+        return getPort (orgPPAGuid, messageGUID).importContractData (importContractRequest).getAck ();        
         
     }
     
@@ -190,6 +210,22 @@ public class WsGisHouseManagementClient {
         }
 
         return getPort (orgPPAGuid, messageGUID).exportStatusCAChData (r).getAck ();
+
+    }   
+
+    public AckRequest.Ack exportContractData (UUID orgPPAGuid, UUID messageGUID, List<UUID> ids) throws Fault {
+
+        final ExportCAChAsyncRequest r = of.createExportCAChAsyncRequest ();
+        
+        List<ExportCAChRequestCriteriaType> criteria = r.getCriteria ();
+
+        for (UUID uuid: ids) {
+            ExportCAChRequestCriteriaType c = of.createExportCAChRequestCriteriaType ();
+            c.setContractGUID (uuid.toString ());
+            criteria.add (c);
+        }
+
+        return getPort (orgPPAGuid, messageGUID).exportCAChData (r).getAck ();
 
     }
 
