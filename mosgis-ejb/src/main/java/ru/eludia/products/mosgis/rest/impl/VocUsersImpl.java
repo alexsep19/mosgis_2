@@ -138,7 +138,7 @@ public class VocUsersImpl extends Base<VocUser> implements VocUsersLocal {
                     .and ("uuid", ModelHolder.getModel ().select (VocUser.class, "uuid_org"))
                     .orderBy ("label"),
                 
-                NsiTable.getNsiTable (db, 20).getVocSelect ()
+                NsiTable.getNsiTable (20).getVocSelect ()
             
             );
 

@@ -37,7 +37,7 @@ public class ContractObjectServicesImpl extends BaseCRUD<ContractObjectService> 
         
         if (!s.getFilters ().containsKey ("uuid_contract_object")) throw new IllegalStateException ("uuid_contract_object filter is not set");
         
-        final NsiTable nsiTable = NsiTable.getNsiTable (db, 3);
+        final NsiTable nsiTable = NsiTable.getNsiTable (3);
                 
         Select select = db.getModel ()
             .select     (getTable (),              "AS root", "*", "uuid AS id")

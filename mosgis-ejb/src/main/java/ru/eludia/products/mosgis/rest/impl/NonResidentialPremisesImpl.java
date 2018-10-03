@@ -38,8 +38,8 @@ public class NonResidentialPremisesImpl extends BasePassport<NonResidentialPremi
         job.add ("item", item);                
 
         db.addJsonArrays (job, 
-            NsiTable.getNsiTable (db, 17).getVocSelect (),
-            NsiTable.getNsiTable (db, 330).getVocSelect ()
+            NsiTable.getNsiTable (17).getVocSelect (),
+            NsiTable.getNsiTable (330).getVocSelect ()
         );
         
         for (MultipleRefTable refTable: table.getRefTables ()) {                

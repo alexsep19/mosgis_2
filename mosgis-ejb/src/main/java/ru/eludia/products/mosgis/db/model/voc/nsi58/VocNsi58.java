@@ -1,4 +1,4 @@
-package ru.eludia.products.mosgis.db.model.voc;
+package ru.eludia.products.mosgis.db.model.voc.nsi58;
 
 import ru.eludia.base.model.def.Bool;
 import ru.eludia.base.model.Table;

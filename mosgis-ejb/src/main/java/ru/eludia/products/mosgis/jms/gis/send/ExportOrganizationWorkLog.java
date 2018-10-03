@@ -62,7 +62,7 @@ public class ExportOrganizationWorkLog extends UUIDMDB<OrganizationWorkLog> {
             
             return (Get) model
                 .get (getTable (), uuid, "AS root", "*")
-                .toOne (NsiTable.getNsiTable (db, 56), "guid").on ("(root.code_vc_nsi_56=vc_nsi_56.code AND vc_nsi_56.isactual=1)")
+                .toOne (NsiTable.getNsiTable (56), "guid").on ("(root.code_vc_nsi_56=vc_nsi_56.code AND vc_nsi_56.isactual=1)")
             ;
 
         }
@@ -92,7 +92,7 @@ public class ExportOrganizationWorkLog extends UUIDMDB<OrganizationWorkLog> {
                 
                 List <NsiRef> refs = len == 0 ? Collections.EMPTY_LIST : new ArrayList <> (len);
                 
-                if (len > 0) db.forEach (model.select (NsiTable.getNsiTable (db, 67), "code", "guid")
+                if (len > 0) db.forEach (model.select (NsiTable.getNsiTable (67), "code", "guid")
                         .and ("code IN", codes)
                         .and ("isactual", 1)
                     , (rs) -> {                        

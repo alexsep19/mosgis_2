@@ -41,9 +41,9 @@ public class ResidentialPremisesImpl extends BasePassport<ResidentialPremise> im
 
         db.addJsonArrays (job, 
                 
-            NsiTable.getNsiTable (db, 30).getVocSelect (),  // Характеристика помещения
-            NsiTable.getNsiTable (db, 273).getVocSelect (), // Основания признания непригодности
-            NsiTable.getNsiTable (db, 330).getVocSelect (), // Причина аннулирования
+            NsiTable.getNsiTable (30).getVocSelect (),  // Характеристика помещения
+            NsiTable.getNsiTable (273).getVocSelect (), // Основания признания непригодности
+            NsiTable.getNsiTable (330).getVocSelect (), // Причина аннулирования
             
             ModelHolder.getModel ().select (
                 Entrance.class, "uuid AS id", "entrancenum AS label")

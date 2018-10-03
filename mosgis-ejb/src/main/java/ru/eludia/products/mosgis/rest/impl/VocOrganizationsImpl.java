@@ -185,7 +185,7 @@ public class VocOrganizationsImpl extends Base<VocOrganization> implements VocOr
                     
                 ModelHolder.getModel ().select (VocOrganizationTypes.class, "*").orderBy ("label"),
                 
-                NsiTable.getNsiTable (db, 20).getVocSelect ()
+                NsiTable.getNsiTable (20).getVocSelect ()
             
             );
 
@@ -203,7 +203,7 @@ public class VocOrganizationsImpl extends Base<VocOrganization> implements VocOr
 
         db.addJsonArrays (job,
 
-            NsiTable.getNsiTable (db, 58).getVocSelect ()
+            NsiTable.getNsiTable (58).getVocSelect ()
 
             .toOne (VocGisCustomerTypeNsi58.class, "AS it", "isdefault")
                     

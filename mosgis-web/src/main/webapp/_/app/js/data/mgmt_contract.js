@@ -24,8 +24,10 @@ define ([], function () {
             add_vocabularies (data, data)
 
             query ({type: 'mgmt_contracts'}, {}, function (d) {
-                            
+
                 var it = data.item = d.item
+                
+                it.last_approve = d.last_approve
 
                 it._can = {}
 
@@ -39,14 +41,23 @@ define ([], function () {
                             it._can.edit    = 1
                             it._can.approve = 1
                             break;
+                        case 40:
+                            it._can.terminate = 1
                         case 14:
                         case 34:
-                        case 40:
                         case 90:
                         case 94:
                             it._can.alter   = 1
                             break;
 
+                    }
+
+                    switch (it.id_ctr_status) {
+                        case 40:
+                        case 94:
+                        case 100:
+                            it._can.annul   = 1
+                            break;
                     }
 
                     if ((0 + it.id_ctr_status) % 10 == 0 && it.id_ctr_status > 10) {

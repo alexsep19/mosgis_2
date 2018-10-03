@@ -69,7 +69,7 @@ public class VocRdVocImpl implements VocRdVocLocal {
                     NsiTable voc;
 
                     try {
-                        voc = NsiTable.getNsiTable (db, Integer.valueOf (ref));
+                        voc = NsiTable.getNsiTable (Integer.valueOf (ref));
                     }
                     catch (Exception ex) {
                         voc = null;

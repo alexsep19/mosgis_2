@@ -8,7 +8,6 @@ import static ru.eludia.base.model.def.Blob.EMPTY_BLOB;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import static ru.eludia.base.model.def.Num.ZERO;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
-import static ru.eludia.products.mosgis.db.model.voc.VocGisStatus.i.MUTATING;
 import ru.gosuslugi.dom.schema.integration.base.Attachment;
 import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
 import ru.gosuslugi.dom.schema.integration.house_management.BaseServiceType;
@@ -44,14 +43,14 @@ public class ContractFile extends Table {
        
         trigger ("BEFORE UPDATE", "BEGIN "
 
-            + "IF NVL (:OLD.attachmentguid, '00') = NVL (:NEW.attachmentguid, '00') THEN BEGIN"
-            + " FOR i IN (SELECT uuid FROM tb_contracts WHERE uuid=:NEW.uuid_contract AND id_ctr_status NOT IN (10, 11)) LOOP"
+            + "IF (NVL (:OLD.attachmentguid, '00') = NVL (:NEW.attachmentguid, '00')) THEN BEGIN"
+            + " IF :OLD.id_type <> " + VocContractDocType.i.TERMINATION_ATTACHMENT.getId () + " THEN FOR i IN (SELECT uuid FROM tb_contracts WHERE uuid=:NEW.uuid_contract AND id_ctr_status NOT IN (10, 11)) LOOP"
             + "   raise_application_error (-20000, 'Внесение изменений в договор в настоящее время запрещено. Операция отменена.'); "
-            + " END LOOP; "
+            + " END LOOP; END IF; "
             + " UPDATE tb_contract_files__log SET attachmentguid = :NEW.attachmentguid, attachmenthash = :NEW.attachmenthash WHERE uuid = :NEW.id_log; "
             + "END; END IF; "
                 
-            + " IF :NEW.id_status = 10 THEN "
+            + " IF :NEW.id_status = 10 AND :OLD.id_status <> 2 THEN "
             + "   :NEW.id_status := 0; "
             + " END IF;"
 
@@ -119,6 +118,7 @@ public class ContractFile extends Table {
                 if (c.getProtocol ().getProtocolAdd () == null) c.getProtocol ().setProtocolAdd (new ContractType.Protocol.ProtocolAdd ());
                 addProtocol (c.getProtocol ().getProtocolAdd (), file, type, at);
                 return;
+            case TERMINATION_ATTACHMENT:
             case OTHER:
                 // do nothing
                 return;

@@ -22,9 +22,11 @@ import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import javax.jms.Queue;
+import javax.jms.Topic;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
@@ -63,6 +65,9 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
     @EJB
     NsiLocal nsi;
 
+    @Resource (mappedName = "mosgis.nsiTopic")
+    Topic nsiTopic;
+    
     @Resource (mappedName = "mosgis.outExportNsiItemQueue")
     Queue outExportNsiItemQueue;
 
@@ -285,6 +290,12 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
             }
             else {
                 nsi.checkForPending ();
+                
+                JsonObject progressObject = nsi.getProgressStatus ();
+                if (progressObject == null || progressObject.isEmpty ()) {  
+                    UUIDPublisher.publish(nsiTopic, "Updating model");
+                }
+                
                 logger.info (nsi.getProgressStatusText ());
             }
             

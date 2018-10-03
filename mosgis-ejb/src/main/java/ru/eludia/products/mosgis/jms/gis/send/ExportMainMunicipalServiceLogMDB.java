@@ -52,8 +52,8 @@ public class ExportMainMunicipalServiceLogMDB extends UUIDMDB<MainMunicipalServi
             
             return (Get) model
                 .get (getTable (), uuid, "AS root", "*")
-                .toOne (NsiTable.getNsiTable (db, 2), "guid").on ("(root.code_vc_nsi_2=vc_nsi_2.code AND vc_nsi_2.isactual=1)")
-                .toOne (NsiTable.getNsiTable (db, 3), "guid").on ("(root.code_vc_nsi_3=vc_nsi_3.code AND vc_nsi_3.isactual=1)")
+                .toOne (NsiTable.getNsiTable (2), "guid").on ("(root.code_vc_nsi_2=vc_nsi_2.code AND vc_nsi_2.isactual=1)")
+                .toOne (NsiTable.getNsiTable (3), "guid").on ("(root.code_vc_nsi_3=vc_nsi_3.code AND vc_nsi_3.isactual=1)")
             ;
 
         }

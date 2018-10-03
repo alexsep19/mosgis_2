@@ -10,10 +10,10 @@ import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Num;
+import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import static ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType.i.OWNERS;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
-import static ru.eludia.products.mosgis.db.model.voc.VocGisStatus.i.MUTATING;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportStatusCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
 
@@ -33,6 +33,9 @@ public class ContractObject extends Table {
 
         col    ("startdate",               Type.DATE,                           "Дата начала предоставления услуг");
         col    ("enddate",                 Type.DATE,                           "Дата окончания предоставления услуг");        
+       
+        col    ("annulmentinfo",           Type.STRING,           null,       "Причина аннулирования.");
+        col    ("is_annuled",              Type.BOOLEAN,          new Virt ("DECODE(\"ANNULMENTINFO\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0");
         
         fk     ("id_ctr_status",           VocGisStatus.class,                  new Num (VocGisStatus.i.PROJECT.getId ()), "Статус объекта договора с точки зрения mosgis");
         fk     ("id_ctr_status_gis",       VocGisStatus.class,                  new Num (VocGisStatus.i.PROJECT.getId ()), "Статус объекта договора с точки зрения ГИС ЖКХ");
@@ -49,6 +52,7 @@ public class ContractObject extends Table {
                 
             + "IF INSERTING"
                 + " OR (NVL (:OLD.uuid_contract_agreement, '00') <> NVL (:NEW.uuid_contract_agreement, '00'))"
+                + " OR (NVL (:OLD.annulmentinfo, CHR(0)) <> NVL (:NEW.annulmentinfo, CHR(0)))"
                 + " OR (:OLD.startdate <> :NEW.startdate)"
                 + " OR (:OLD.enddate   <> :NEW.enddate)"
             + " THEN "
@@ -58,7 +62,7 @@ public class ContractObject extends Table {
             + "END IF; "
 
             + "IF INSERTING THEN "
-            + " FOR i IN (SELECT c.uuid FROM tb_contracts c INNER JOIN tb_contract_objects o ON (o.uuid_contract = c.uuid AND o.uuid <> :NEW.uuid AND o.is_deleted = 0) WHERE c.uuid=:NEW.uuid_contract AND c.id_customer_type=" + OWNERS.getId () + ") LOOP"
+            + " FOR i IN (SELECT c.uuid FROM tb_contracts c INNER JOIN tb_contract_objects o ON (o.uuid_contract = c.uuid AND o.uuid <> :NEW.uuid AND o.is_deleted = 0 AND o.is_annuled = 0) WHERE c.uuid=:NEW.uuid_contract AND c.id_customer_type=" + OWNERS.getId () + ") LOOP"
             + "   raise_application_error (-20000, 'Поскольку заказчик — собственник объекта жилищного фонда, объект в договоре может быть только один. Операция отменена.'); "
             + " END LOOP; "
             + "END IF; "
@@ -106,7 +110,7 @@ public class ContractObject extends Table {
             + " COMMIT; "
             + "END IF; "
 
-            + "IF :OLD.contractobjectversionguid IS NOT NULL THEN :NEW.id_ctr_status := " + MUTATING.getId () + "; END IF; "
+//            + "IF :OLD.contractobjectversionguid IS NOT NULL THEN :NEW.id_ctr_status := " + MUTATING.getId () + "; END IF; "
                     
         + "END;");
 
@@ -142,6 +146,15 @@ public class ContractObject extends Table {
             
             co.setAdd (add);
         
+        }
+        else if (r.get ("annulmentinfo") != null) {
+            
+            final ImportContractRequest.Contract.EditContract.ContractObject.Annulment annulment = new ImportContractRequest.Contract.EditContract.ContractObject.Annulment ();
+            
+            annulment.setContractObjectVersionGUID (r.get ("contractobjectversionguid").toString ());
+            
+            co.setAnnulment (annulment);
+            
         }
         else {
             

@@ -79,8 +79,8 @@ public class GisPollExportMgmtContractStatusMDB extends UUIDMDB<OutSoap> {
 
     public static List<UUID> processGetStateResponse (GetStateResult rp, DB db, UUID uuid, boolean versionsOnly) throws SQLException {
         
-        List <Map <String, Object>> contractRecors = new ArrayList<> (rp.getExportCAChResult ().size ());
-        List <Map <String, Object>> objectRecors   = new ArrayList<> (rp.getExportCAChResult ().size ());
+        List <Map <String, Object>> contractRecords = new ArrayList<> (rp.getExportCAChResult ().size ());
+        List <Map <String, Object>> objectRecords   = new ArrayList<> (rp.getExportCAChResult ().size ());
         List <UUID> toPromote = new ArrayList<> ();
         Model m = db.getModel ();
         for (ExportStatusCAChResultType er: rp.getExportStatusCAChResult ()) {
@@ -114,13 +114,14 @@ public class GisPollExportMgmtContractStatusMDB extends UUIDMDB<OutSoap> {
                 
                 ctr.put ("id_ctr_status", status.getId ());
                 ctr.put ("id_ctr_status_gis", status.getId ());
+                ctr.put ("versionnumber", er.getVersionNumber ());
                 
                 VocGisStatus.i state = VocGisStatus.i.forName (er.getState ());
                 if (state != null) ctr.put ("id_ctr_state_gis", state.getId ());
                 
             }
             
-            contractRecors.add (ctr);
+            contractRecords.add (ctr);
             
             for (ExportStatusCAChResultType.ContractObject co: er.getContractObject ()) {
                 
@@ -138,16 +139,16 @@ public class GisPollExportMgmtContractStatusMDB extends UUIDMDB<OutSoap> {
                 
                 if (!versionsOnly) or.put ("id_ctr_status_gis", os.getId ());
                                 
-                objectRecors.add (or);                
+                objectRecords.add (or);                
                 
             }
 
         }
-        db.update (Contract.class, contractRecors);
-        db.upsert (ContractObject.class, objectRecors, objectKey);
+        db.update (Contract.class, contractRecords);
+        db.upsert (ContractObject.class, objectRecords, objectKey);
         db.update (OutSoap.class, HASH (
-                "uuid", uuid,
-                "id_status", DONE.getId ()
+            "uuid", uuid,
+            "id_status", DONE.getId ()
         ));
         
         return toPromote;

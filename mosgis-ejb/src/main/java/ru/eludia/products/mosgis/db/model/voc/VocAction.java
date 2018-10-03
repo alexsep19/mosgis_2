@@ -20,14 +20,16 @@ public class VocAction extends Table {
     
     public enum i {
         
-        CREATE   ("create",   "создание"),
-        UPDATE   ("update",   "редактирование"),
-        DELETE   ("delete",   "удаление"),
-        UNDELETE ("undelete", "восстановление"),
-        APPROVE  ("approve",  "утверждение"),
-        ALTER    ("alter",    "изменение"),
-        PROMOTE  ("promote",  "утверждение"),
-        REFRESH  ("refresh",  "обновление");
+        CREATE    ("create",    "создание"),
+        UPDATE    ("update",    "редактирование"),
+        DELETE    ("delete",    "удаление"),
+        UNDELETE  ("undelete",  "восстановление"),
+        APPROVE   ("approve",   "утверждение"),
+        TERMINATE ("terminate", "расторжение"),
+        ALTER     ("alter",     "изменение"),
+        ANNUL     ("annul",     "аннулирование"),
+        PROMOTE   ("promote",   "утверждение"),
+        REFRESH   ("refresh",   "обновление");
                 
         String name;
         String label;
