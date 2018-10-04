@@ -7,6 +7,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.Table;
+import ru.eludia.base.model.def.Bool;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiItemInfoType;
 
@@ -18,13 +19,14 @@ public class VocNsiList extends Table {
         
         super ("vc_nsi_list", "Перечень справочников НСИ ГИС ЖКХ");
 
-        pk    ("registrynumber", Type.INTEGER,          "Реестровый номер справочника");        
-        col   ("name",           Type.STRING,           "Наименование справочника");
-        fk    ("listgroup",      VocNsiListGroup.class, "Группа");
-        col   ("cols",           Type.TEXT, null,       "Список столбцов в виде JSON");
-        col   ("ts_last_import", Type.DATETIME, null,   "Дата последнего импорта");
-        fk    ("uuid_out_soap",  OutSoap.class, null,   "Последний запрос на импорт из ГИС ЖКХ");
-
+        pk    ("registrynumber", Type.INTEGER,              "Реестровый номер справочника");        
+        col   ("name",           Type.STRING,               "Наименование справочника");
+        fk    ("listgroup",      VocNsiListGroup.class,     "Группа");
+        col   ("cols",           Type.TEXT, null,           "Список столбцов в виде JSON");
+        col   ("ts_last_import", Type.DATETIME, null,       "Дата последнего импорта");
+        fk    ("uuid_out_soap",  OutSoap.class, null,       "Последний запрос на импорт из ГИС ЖКХ");
+        col   ("is_nested",      Type.BOOLEAN, Bool.FALSE,  "Признак вложенности");
+        
         key   ("name", "name");
         
     }
