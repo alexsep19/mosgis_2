@@ -21,6 +21,7 @@ import ru.eludia.base.model.Type;
 import ru.eludia.base.model.abs.Roster;
 import ru.eludia.base.model.phys.PhysicalCol;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.base.model.def.Bool;
 import ru.eludia.products.mosgis.db.model.nsi.fields.NsiField;
 import ru.eludia.products.mosgis.db.model.nsi.fields.NsiNsiRefField;
 import ru.eludia.products.mosgis.db.model.nsi.fields.NsiOkeiRefField;
@@ -166,9 +167,7 @@ public class NsiTable extends Table {
     public NsiTable (DB db, int n) throws SQLException {
         
         this (db.getMap (VocNsiList.class, n));
-
-        db.forFirst (new QP ("SELECT column_name FROM user_tab_cols WHERE column_name=? AND table_name=?", "PARENT", "VC_NSI_" + n), (rs) -> {this.addParentCol ();});
-
+        
     }        
 
     public NsiTable (DB db, ResultSet rs) throws SQLException {
@@ -208,6 +207,8 @@ public class NsiTable extends Table {
         pk  ("guid",     Type.UUID, "Глобально-уникальный идентификатор элемента справочника");
         col ("code",     Type.STRING, 20, "Код элемента справочника, уникальный в пределах справочника");
         col ("isactual", Type.BOOLEAN, "Признак актуальности элемента справочника");
+        
+        if (Bool.TRUE.equals (record.get ("is_nested"))) { this.addParentCol (); }
         
         try (StringReader stringReader = new StringReader (record.get ("cols").toString ())) {
             
