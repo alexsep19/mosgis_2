@@ -38,7 +38,9 @@ public class VocBuilding extends Table {
         col   ("build_label",  Type.STRING,  new Virt ("DECODE(BUILDNUM,NULL,NULL,'корп. '||BUILDNUM)"),  "корп. ...");
         
         col   ("label",        Type.STRING,                                       "Адрес");
-        //key   ("label_uc", "label_uc");
+        col   ("label_uc",     Type.STRING,  new Virt ("UPPER(\"LABEL\")"),       "АДРЕС");
+        
+        key   ("label_uc", "label_uc");
         
         trigger ("BEFORE INSERT OR UPDATE",
                  "DECLARE "
