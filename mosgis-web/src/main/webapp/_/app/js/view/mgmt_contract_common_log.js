@@ -32,9 +32,9 @@ define ([], function () {
             columns: [                
                 {field: 'ts', caption: 'Дата/время',    size: 30, render: _ts},
                 {field: 'vc_users.label', caption: 'Оператор',    size: 30},
-                {field: 'id_ctr_status_gis',  caption: 'До',     size: 10, voc: data.vc_gis_status},                
                 {field: 'action', caption: 'Действие',    size: 30, voc: data.vc_actions},
-                {field: 'id_ctr_status_gis_next',  caption: 'После',     size: 10, voc: data.vc_gis_status},                
+                {field: 'id_ctr_status_gis',  caption: 'Статус до',     size: 10, voc: data.vc_gis_status},
+                {field: 'id_ctr_status_gis_next',  caption: 'Статус после',     size: 10, voc: data.vc_gis_status},
 
                 {field: 'docnum', caption: 'Номер', size: 20},
                 {field: 'signingdate', caption: 'Дата заключения', size: 18, render: _dt},
