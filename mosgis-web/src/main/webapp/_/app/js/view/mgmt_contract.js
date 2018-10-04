@@ -28,7 +28,7 @@ define ([], function () {
 
         fill (view, it, $('body'))
 
-        $('#container').w2layout ({
+        $('#container').w2lreayout ({
         
             name: 'topmost_layout',
             

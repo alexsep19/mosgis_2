@@ -7,7 +7,7 @@ define ([], function () {
         
         if (!$_USER) return use.block ('login') 
                 
-        $('main').w2layout ({
+        $('main').w2relayout ({
         
             name: 'topmost_layout',
             
@@ -18,9 +18,9 @@ define ([], function () {
                     tabs: {
 
                         tabs: [
-                            {id: 'out_soap',     caption: 'Запросы сервиса', text: 'Запросы сервиса', tooltip: ''},
-                            {id: 'voc_nsi_list', caption: 'Справочники', text: 'Справочники', tooltip: ''},
-                            {id: 'rosters',      caption: 'Реестры', text: 'Реестры', tooltip: 'Реестры'},
+                            {id: 'out_soap',     caption: 'Запросы сервиса', text: 'Запросы сервиса'},
+                            {id: 'voc_nsi_list', caption: 'Справочники', text: 'Справочники'},
+                            {id: 'rosters',      caption: 'Реестры', text: 'Реестры', tooltip: ''},
 //                            {id: 'admin',        caption: 'Администрирование'},
                         ],
 

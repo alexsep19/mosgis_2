@@ -76,7 +76,15 @@ function setup_request () {
 }
 
 $.fn.w2relayout = function (o) {
-
+     $.each(o.panels, function() {
+        if (this.tabs && this.tabs.tabs) {
+            
+            $.each(this.tabs.tabs, function() {
+                if (!('tooltip' in this))
+                    this.tooltip = ""
+            });
+        }
+    });
     if (w2ui [o.name]) w2ui [o.name].destroy ()
 
     return this.w2layout (o)
@@ -393,7 +401,7 @@ function color_passport_grid (e) {
 }
 
 function prettifyXml (sourceXml) {
-    var xmlDoc = new DOMParser().parseFromString(sourceXml.replace (/> +<n/g, '><n'), 'application/xml');
+    var xmlDoc = new DOMParser().parseFromString(sourceXml, 'application/xml');
     var xsltDoc = new DOMParser().parseFromString([
         // describes how we want to modify the XML - indent everything
         '<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform">',
