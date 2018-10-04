@@ -26,7 +26,15 @@ function setup_request () {
 }
 
 $.fn.w2relayout = function (o) {
-
+     $.each(o.panels, function() {
+        if (this.tabs && this.tabs.tabs) {
+            
+            $.each(this.tabs.tabs, function() {
+                if (!('tooltip' in this))
+                    this.tooltip = ""
+            });
+        }
+    });
     if (w2ui [o.name]) w2ui [o.name].destroy ()
 
     return this.w2layout (o)
