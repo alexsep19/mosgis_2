@@ -3,6 +3,7 @@ package ru.eludia.products.mosgis.db.model.tables;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Logger;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.base.model.Table;
@@ -131,11 +132,15 @@ public class ContractObject extends Table {
 
     }
     
+    private static Logger logger = java.util.logging.Logger.getLogger (ContractObject.class.getName ());
+    
     public static void add (ImportContractRequest.Contract.EditContract ec, Map<String, Object> r) {
         
         final ImportContractRequest.Contract.EditContract.ContractObject co = (ImportContractRequest.Contract.EditContract.ContractObject) DB.to.javaBean (ImportContractRequest.Contract.EditContract.ContractObject.class, r);
         
         co.setTransportGUID (UUID.randomUUID ().toString ());
+        
+logger.info ("r=" + r);
         
         if (r.get ("contractobjectversionguid") == null) {
             
@@ -148,26 +153,32 @@ public class ContractObject extends Table {
             co.setAdd (add);
         
         }
-        else if (r.get ("annulmentinfo") != null) {
-            
-            final ImportContractRequest.Contract.EditContract.ContractObject.Annulment annulment = new ImportContractRequest.Contract.EditContract.ContractObject.Annulment ();
-            
-            annulment.setContractObjectVersionGUID (r.get ("contractobjectversionguid").toString ());
-            
-            co.setAnnulment (annulment);
-            
-        }
         else {
             
-            ImportContractRequest.Contract.EditContract.ContractObject.Edit ed = (ImportContractRequest.Contract.EditContract.ContractObject.Edit) DB.to.javaBean (ImportContractRequest.Contract.EditContract.ContractObject.Edit.class, r);
+            final Object nul = r.get ("annulmentinfo");
             
-            ed.setBaseMService (ContractFile.getBaseServiceType (r));
+            if (nul != null && !nul.toString ().isEmpty ()) {
 
-            for (Map<String, Object> service: (List<Map<String, Object>>) r.get ("services")) ContractObjectService.add (ed, service);
+                final ImportContractRequest.Contract.EditContract.ContractObject.Annulment annulment = new ImportContractRequest.Contract.EditContract.ContractObject.Annulment ();
 
-            co.setEdit (ed);
+                annulment.setContractObjectVersionGUID (r.get ("contractobjectversionguid").toString ());
+
+                co.setAnnulment (annulment);
+
+            }
+            else {
+
+                ImportContractRequest.Contract.EditContract.ContractObject.Edit ed = (ImportContractRequest.Contract.EditContract.ContractObject.Edit) DB.to.javaBean (ImportContractRequest.Contract.EditContract.ContractObject.Edit.class, r);
+
+                ed.setBaseMService (ContractFile.getBaseServiceType (r));
+
+                for (Map<String, Object> service: (List<Map<String, Object>>) r.get ("services")) ContractObjectService.add (ed, service);
+
+                co.setEdit (ed);
+
+            }        
             
-        }        
+        }
         
         ec.getContractObject ().add (co);
         
