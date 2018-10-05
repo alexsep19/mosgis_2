@@ -108,10 +108,11 @@ public class Fias implements FiasMBean {
                         String[] part = headerName.split ("_");
                         String dt = part [2];
                         record.put ("dt", dt.substring (0, 4) + '-' + dt.substring (4, 6) + '-' + dt.substring (6, 8));
-                        record.put ("uri_archive", Conf.get (VocSetting.i.PATH_FIAS) + "\\fias_xml.rar");
+                        record.put ("uri_archive", Conf.get (VocSetting.i.PATH_FIAS) + File.separator + "fias_xml.rar");
                     }
-                    
+
                     add (name.toString ().toLowerCase (), header);
+                    
                 }
             }
             catch (Exception ex) {
