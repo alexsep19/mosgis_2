@@ -37,7 +37,7 @@ public class VocBuilding extends Table {
         col   ("house_label",  Type.STRING,  new Virt ("DECODE(HOUSENUM,NULL,NULL,'д. '||HOUSENUM)"),  "д. ...");
         col   ("build_label",  Type.STRING,  new Virt ("DECODE(BUILDNUM,NULL,NULL,'корп. '||BUILDNUM)"),  "корп. ...");
         
-        col   ("label",        Type.STRING,                                       "Адрес");
+        col   ("label",        Type.STRING,  null,                                "Адрес");
         col   ("label_uc",     Type.STRING,  new Virt ("UPPER(\"LABEL\")"),       "АДРЕС");
         
         key   ("label_uc", "label_uc");
