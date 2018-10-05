@@ -85,7 +85,6 @@ public class GisPollExportMgmtContractStatusMDB extends UUIDMDB<OutSoap> {
         List <UUID> toPromote = new ArrayList<> ();
         Model m = db.getModel ();        
         for (ExportStatusCAChResultType er: rp.getExportStatusCAChResult ()) processExportStatus (er, db, m, toPromote, versionsOnly, contractRecords, objectRecords);
-        for (ExportCAChResultType       er: rp.getExportCAChResult       ()) processExportData   (er, db, m, toPromote,               contractRecords, objectRecords);
         db.update (Contract.class, contractRecords);
         db.upsert (ContractObject.class, objectRecords, objectKey);
         db.update (OutSoap.class, HASH (
@@ -97,63 +96,6 @@ public class GisPollExportMgmtContractStatusMDB extends UUIDMDB<OutSoap> {
         
     }   
     
-    private static boolean processExportData (ExportCAChResultType er, DB db, Model m, List<UUID> toPromote, List<Map<String, Object>> contractRecords, List<Map<String, Object>> objectRecords) throws SQLException {
-        
-        ExportCAChResultType.Contract contract = er.getContract ();
-        
-        final String contractGUID = contract.getContractGUID ();
-        
-        String sUid = db.getString (m.select (Contract.class, "uuid").where ("contractguid", contractGUID));
-        if (sUid == null) {
-            logger.warning ("Contract not found: " + contractGUID);
-            return true;
-        }
-        
-        UUID uuidContract = DB.to.UUIDFromHex (sUid);
-        
-        VocGisStatus.i status = VocGisStatus.i.forName (contract.getContractStatus ().value ());
-        
-        if (status == null) {
-            logger.warning ("Unknown status: '" + contract.getContractStatus () + "'. Will use FAILED_STATE instead.");
-            status = VocGisStatus.i.FAILED_STATE;
-        }
-        
-        if (status == VocGisStatus.i.REVIEWED) toPromote.add (uuidContract);
-        
-        final Map<String, Object> ctr = HASH (
-            "uuid",                uuidContract,
-            "contractversionguid", contract.getContractVersionGUID ()
-        );
-                    
-        ctr.put ("id_ctr_status", status.getId ());
-        ctr.put ("id_ctr_status_gis", status.getId ());
-        
-        contractRecords.add (ctr);
-
-        for (ExportCAChResultType.Contract.ContractObject co: contract.getContractObject ()) {
-            
-            VocGisStatus.i os = VocGisStatus.i.forName (co.getStatusObject ().value ());
-            if (os == null) {
-                logger.warning ("Unknown status: '" + co.getStatusObject () + "'. Will use FAILED_STATE instead.");
-                os = VocGisStatus.i.FAILED_STATE;
-            }
-            
-            final Map<String, Object> or = HASH (
-                "uuid_contract",             uuidContract,
-                "fiashouseguid",             co.getFIASHouseGuid (),
-                "contractobjectversionguid", co.getContractObjectVersionGUID ()
-            );
-            
-            or.put ("id_ctr_status_gis", os.getId ());
-            
-            objectRecords.add (or);
-            
-        }
-        
-        return false;
-
-    }    
-
     private static boolean processExportStatus (ExportStatusCAChResultType er, DB db, Model m, List<UUID> toPromote, boolean versionsOnly, List<Map<String, Object>> contractRecords, List<Map<String, Object>> objectRecords) throws SQLException {
         
         final String contractGUID = er.getContractGUID ();

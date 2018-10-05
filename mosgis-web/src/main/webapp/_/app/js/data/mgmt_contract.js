@@ -60,7 +60,7 @@ define ([], function () {
                             break;
                     }
                     
-                    if (it.id_ctr_state_gis) {
+                    if (it.id_ctr_state_gis == 50) {
                     
                         switch (it.id_ctr_status) {
                             case 40:

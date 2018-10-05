@@ -216,12 +216,12 @@ public class WsGisHouseManagementClient {
     public AckRequest.Ack exportContractData (UUID orgPPAGuid, UUID messageGUID, List<UUID> ids) throws Fault {
 
         final ExportCAChAsyncRequest r = of.createExportCAChAsyncRequest ();
-        
+                
         List<ExportCAChRequestCriteriaType> criteria = r.getCriteria ();
 
         for (UUID uuid: ids) {
             ExportCAChRequestCriteriaType c = of.createExportCAChRequestCriteriaType ();
-            c.setContractGUID (uuid.toString ());
+            c.setContractVersionGUID (uuid.toString ());
             criteria.add (c);
         }
 

@@ -17,7 +17,7 @@ import static ru.eludia.products.mosgis.db.model.voc.VocGisStatus.i.ANNUL;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.gosuslugi.dom.schema.integration.house_management.ContractType;
 import ru.gosuslugi.dom.schema.integration.house_management.DateDetailsType;
-import ru.gosuslugi.dom.schema.integration.house_management.DeviceMeteringsDaySelectionType;
+import ru.gosuslugi.dom.schema.integration.house_management.DeviceMeteringsDaySelectionType;    
 
 public class Contract extends Table {
 
@@ -79,6 +79,55 @@ public class Contract extends Table {
 
         key   ("org_docnum", "uuid_org", "docnum");
         key   ("contractguid", "contractguid");
+        
+        trigger ("BEFORE UPDATE", ""
+                
+            + "DECLARE" 
+            + " PRAGMA AUTONOMOUS_TRANSACTION; "
+            + "BEGIN "
+
+            + "IF 1=1"
+            + "  AND :NEW.rolltodate IS NOT NULL "
+            + "  AND :OLD.rolltodate IS NULL "
+            + " THEN "
+                + " FOR i IN ("
+                    + "SELECT "
+                    + " o.startdate"
+                    + " , o.enddate"
+                    + " , c.docnum"
+                    + " , c.signingdate"
+                    + " , org.label "
+                    + " , a.label address "
+                    + "FROM "
+                    + " tb_contract_objects o "
+                    + " INNER JOIN tb_contracts c ON o.uuid_contract = c.uuid"
+                    + " INNER JOIN vc_orgs org    ON c.uuid_org      = org.uuid "
+                    + " INNER JOIN vc_build_addresses a ON o.fiashouseguid = a.houseguid "
+                    + "WHERE o.is_deleted = 0"
+                    + " AND o.is_annuled = 0"
+                    + " AND o.fiashouseguid IN (SELECT fiashouseguid FROM tb_contract_objects WHERE is_deleted = 0 AND is_annuled = 0 AND uuid_contract = :NEW.uuid) "
+                    + " AND o.enddate   >= :NEW.effectivedate "
+                    + " AND o.startdate <= :NEW.rolltodate "
+                    + " AND o.uuid_contract <> :NEW.uuid "
+                    + ") LOOP"
+                + " raise_application_error (-20000, "
+                    + "'Дом по адресу ' || i.address || ' обслуживается с ' "
+                    + "|| TO_CHAR (i.startdate, 'DD.MM.YYYY')"
+                    + "||' по '"
+                    + "|| TO_CHAR (i.enddate, 'DD.MM.YYYY')"
+                    + "||' по договору управления от '"
+                    + "|| TO_CHAR (i.signingdate, 'DD.MM.YYYY')"
+                    + "||' №'"
+                    + "|| i.docnum"
+                    + "||' с '"
+                    + "|| i.label"
+                    + "|| '. Операция отменена.'); "
+                + " END LOOP; "                        
+            + " END IF; "
+
+            + "END; "
+
+        );
 
         trigger ("BEFORE INSERT OR UPDATE", ""                
 
@@ -141,45 +190,6 @@ public class Contract extends Table {
                 + "END IF; "
                 + "IF :OLD.id_ctr_status = " + VocGisStatus.i.FAILED_PLACING.getId () + " THEN :NEW.id_ctr_status := " + VocGisStatus.i.PROJECT.getId () + "; END IF; "
             + "END; END IF; "
-
-            + "IF UPDATING "
-            + "  AND :NEW.rolltodate IS NOT NULL "
-            + "  AND :OLD.rolltodate IS NULL "
-            + " THEN "
-                + " FOR i IN ("
-                    + "SELECT "
-                    + " o.startdate"
-                    + " , o.enddate"
-                    + " , c.docnum"
-                    + " , c.signingdate"
-                    + " , org.label "
-                    + " , a.label address "
-                    + "FROM "
-                    + " tb_contract_objects o "
-                    + " INNER JOIN tb_contracts c ON o.uuid_contract = c.uuid"
-                    + " INNER JOIN vc_orgs org    ON c.uuid_org      = org.uuid "
-                    + " INNER JOIN vc_build_addresses a ON o.fiashouseguid = a.houseguid "
-                    + "WHERE o.is_deleted = 0"
-                    + " AND o.is_annuled = 0"
-                    + " AND o.fiashouseguid IN (SELECT fiashouseguid FROM tb_contract_objects WHERE is_deleted = 0 AND is_annuled = 0 AND uuid_contract = :NEW.uuid) "
-                    + " AND o.enddate   >= :NEW.effectivedate "
-                    + " AND o.startdate <= :NEW.rolltodate "
-                    + " AND o.uuid_contract <> :NEW.uuid "
-                    + ") LOOP"
-                + " raise_application_error (-20000, "
-                    + "'Дом по адресу ' || i.address || ' обслуживается с ' "
-                    + "|| TO_CHAR (i.startdate, 'DD.MM.YYYY')"
-                    + "||' по '"
-                    + "|| TO_CHAR (i.enddate, 'DD.MM.YYYY')"
-                    + "||' по договору управления от '"
-                    + "|| TO_CHAR (i.signingdate, 'DD.MM.YYYY')"
-                    + "||' №'"
-                    + "|| i.docnum"
-                    + "||' с '"
-                    + "|| i.label"
-                    + "|| '. Операция отменена.'); "
-                + " END LOOP; "                        
-            + " END IF; "
                         
             + "IF UPDATING "
             + "  AND :OLD.id_ctr_status < " + VocGisStatus.i.PENDING_RQ_PLACING.getId ()
