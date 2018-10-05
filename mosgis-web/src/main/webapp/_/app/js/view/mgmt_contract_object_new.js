@@ -30,7 +30,7 @@ define ([], function () {
                         onLoad: function (e) {
                             e.data = {
                                 status: "success", 
-                                records: e.data.content.vc_build_addresses.map (function (i) {return {
+                                records: e.data.content.vc_buildings.map (function (i) {return {
                                     id: i.id, 
                                     text: i.postalcode + ', ' + i.label
                                 }})
