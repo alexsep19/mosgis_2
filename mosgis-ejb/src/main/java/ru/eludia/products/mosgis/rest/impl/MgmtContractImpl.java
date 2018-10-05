@@ -146,8 +146,6 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
         try (DB db = model.getDb ()) {
             
             db.addJsonArrays (jb,
-                    
-                VocAction.getVocSelect (),
 
                 NsiTable.getNsiTable (db, 58).getVocSelect ()
                     .toMaybeOne (VocGisCustomerTypeNsi58.class, "AS it", "isdefault")

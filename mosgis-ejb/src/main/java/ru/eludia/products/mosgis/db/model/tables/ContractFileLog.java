@@ -4,6 +4,7 @@ import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import static ru.eludia.base.model.def.Def.NOW;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
 
 public class ContractFileLog extends Table {
@@ -13,7 +14,7 @@ public class ContractFileLog extends Table {
         super  ("tb_contract_files__log", "История изменения файлов, приложенных к договорам");
         
         pk     ("uuid",                  Type.UUID,                NEW_UUID,    "Ключ");
-        col    ("action",                Type.STRING,                           "Действие");
+        ref    ("action",                VocAction.class,                       "Действие");
         fk     ("uuid_object",           ContractFile.class,                    "Ссылка на запись");
         col    ("ts",                    Type.TIMESTAMP,           NOW,         "Дата/время события");
         fk     ("uuid_user",             VocUser.class,            null,        "Оператор");        

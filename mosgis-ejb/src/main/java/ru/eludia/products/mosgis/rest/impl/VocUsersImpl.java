@@ -128,7 +128,7 @@ public class VocUsersImpl extends Base<VocUser> implements VocUsersLocal {
     public JsonObject getVocs () {
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();
-
+        
         try (DB db = ModelHolder.getModel ().getDb ()) {
             
             db.addJsonArrays (jb, 

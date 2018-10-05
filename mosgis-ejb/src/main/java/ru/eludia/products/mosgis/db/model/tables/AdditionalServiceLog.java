@@ -7,6 +7,7 @@ import static ru.eludia.base.model.def.Def.NOW;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState.i.PENDING;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 
 public class AdditionalServiceLog extends Table {
 
@@ -15,7 +16,7 @@ public class AdditionalServiceLog extends Table {
         super ("tb_add_services__log",                                                  "Дополнительные услуги: история изменения");
 
         pk    ("uuid",                      Type.UUID,             NEW_UUID,            "Ключ");
-        col   ("action",                    Type.STRING,                                "Действие");
+        ref   ("action",                    VocAction.class,                            "Действие");
 
         fk    ("uuid_object",               AdditionalService.class,                    "Ссылка на запись");
         col   ("ts",                        Type.TIMESTAMP,        NOW,                 "Дата/время события");
