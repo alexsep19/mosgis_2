@@ -6,7 +6,7 @@ define ([], function () {
             .map (function (r) {return data.vc_nsi_20 [r.code]})
             .sort ()
             .join (',<br>')
-            
+darn (data)
         data.item.vc_organization_types_label = data.item ['vc_organization_types.label']
 
         $('title').text (data.item.label)
