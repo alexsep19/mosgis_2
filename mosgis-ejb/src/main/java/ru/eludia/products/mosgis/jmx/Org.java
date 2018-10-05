@@ -1,6 +1,8 @@
 package ru.eludia.products.mosgis.jmx;
 
-import java.lang.management.ManagementFactory;
+import java.sql.SQLException;
+import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
@@ -12,6 +14,12 @@ import javax.ejb.Startup;
 import javax.jms.Queue;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
+import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
+import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 
 @Startup
@@ -27,6 +35,9 @@ public class Org implements OrgMBean {
 
     @Resource (mappedName = "mosgis.inOrgQueue")
     Queue inOrgQueue;        
+    
+    @Resource (mappedName = "mosgis.inOrgByGUIDQueue")
+    Queue inOrgByGUIDQueue;        
         
     @PostConstruct
     public void registerInJMX () {
@@ -69,6 +80,29 @@ public class Org implements OrgMBean {
         
         UUIDPublisher.publish (inOrgQueue, ogrn);
     
+    }
+
+    @Override
+    public void refreshOrg (UUID id) {
+        
+        MosGisModel m = ModelHolder.getModel ();
+        
+        try (DB db = m.getDb ()) {
+            
+            UUIDPublisher.publish (inOrgByGUIDQueue, (UUID) 
+
+                db.insertId (VocOrganizationLog.class, HASH (
+                    "uuid_object", id,
+                    "action",      VocAction.i.REFRESH.getName ()
+                ))
+
+            );
+            
+        }
+        catch (SQLException ex) {
+            Logger.getLogger (Org.class.getName()).log (Level.SEVERE, null, ex);
+        }
+
     }
 
 }

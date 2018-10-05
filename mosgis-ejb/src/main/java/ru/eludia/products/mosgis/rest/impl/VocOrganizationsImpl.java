@@ -3,8 +3,10 @@ package ru.eludia.products.mosgis.rest.impl;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.jms.Queue;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -14,6 +16,7 @@ import ru.eludia.base.db.sql.gen.Predicate;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.rest.api.VocOrganizationsLocal;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerTypeNsi20;
 import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerTypeNsi58;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -21,18 +24,28 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTypes;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.jmx.OrgMBean;
-import ru.eludia.products.mosgis.rest.impl.base.Base;
+import ru.eludia.products.mosgis.rest.User;
+import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 import ru.eludia.products.mosgis.web.base.ComplexSearch;
 import ru.eludia.products.mosgis.web.base.Search;
 import ru.eludia.products.mosgis.web.base.SimpleSearch;
 
 @Stateless
-public class VocOrganizationsImpl extends Base<VocOrganization> implements VocOrganizationsLocal {
+public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements VocOrganizationsLocal {
 
     private static final Logger logger = Logger.getLogger (VocOrganizationsImpl.class.getName ());
     
     @EJB
     OrgMBean org;
+    
+    @Resource (mappedName = "mosgis.inOrgByGUIDQueue")
+    Queue queue;
+
+    @Override
+    public Queue getQueue () {
+        return queue;
+    }
+    
 
     private final static String DEFAULT_SEARCH = "label_uc LIKE %?%";
     
@@ -222,5 +235,17 @@ public class VocOrganizationsImpl extends Base<VocOrganization> implements VocOr
         );
 
     });}
+
+    @Override
+    public JsonObject doRefresh (String id, User user) {return doAction ((db) -> {
+
+        logAction (db, user, id, VocAction.i.REFRESH);
+        
+    });}
+
+    @Override
+    public JsonObject select (JsonObject p, User user) {
+        throw new UnsupportedOperationException ("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
 }

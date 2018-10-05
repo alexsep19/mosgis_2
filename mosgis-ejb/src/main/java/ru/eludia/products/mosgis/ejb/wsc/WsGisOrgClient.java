@@ -1,10 +1,13 @@
 package ru.eludia.products.mosgis.ejb.wsc;
 
+import java.util.Map;
 import java.util.UUID;
 import javax.ejb.Stateless;
 import javax.jws.HandlerChain;
+import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
+import ru.eludia.products.mosgis.ws.base.LoggingOutMessageHandler;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.base.GetStateRequest;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_common.ExportOrgRegistryRequest;
@@ -28,6 +31,16 @@ public class WsGisOrgClient {
         VocSetting.setPort (port, "WS_GIS_ORG_COMMON");
         return port;
     }
+    
+    private RegOrgPortsTypeAsync getPort (UUID messageGUID) {
+        RegOrgPortsTypeAsync port = service.getRegOrgAsyncPort ();
+        VocSetting.setPort (port, "WS_GIS_ORG_COMMON");
+        final Map<String, Object> requestContext = ((BindingProvider)port).getRequestContext ();
+        requestContext.put (LoggingOutMessageHandler.FIELD_MESSAGE_GUID, messageGUID);
+        return port;
+    }
+    
+    
 
     public GetStateResult getState (UUID uuid) throws Fault {
         GetStateRequest getStateRequest = new GetStateRequest ();
@@ -35,6 +48,7 @@ public class WsGisOrgClient {
         return getPort ().getState (getStateRequest);
     }    
 
+    
     public AckRequest.Ack exportOrgRegistry (String orgn) throws Fault {
         
         if (orgn == null) throw new IllegalArgumentException ("Null OGRN passed");
@@ -55,6 +69,17 @@ public class WsGisOrgClient {
         r.getSearchCriteria ().add (s);        
         return getPort ().exportOrgRegistry (r).getAck ();
         
+    }
+    
+    public AckRequest.Ack exportOrgRegistry (UUID orgrootentityguid, UUID messageGUID) throws Fault {
+
+        ExportOrgRegistryRequest.SearchCriteria s = of.createExportOrgRegistryRequestSearchCriteria ();
+        s.setOrgRootEntityGUID (orgrootentityguid.toString ());
+
+        ExportOrgRegistryRequest r = of.createExportOrgRegistryRequest ();
+        r.getSearchCriteria ().add (s);        
+        return getPort ().exportOrgRegistry (r).getAck ();
+
     }
 
 }

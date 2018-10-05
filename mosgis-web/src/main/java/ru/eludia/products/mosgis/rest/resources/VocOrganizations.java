@@ -49,4 +49,11 @@ public class VocOrganizations extends EJBResource <VocOrganizationsLocal> {
         return back.getMgmtNsi58 (id);
     }
     
+    @POST
+    @Path("{id}/refresh") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject doRefresh (@PathParam ("id") String id) { 
+        return back.doRefresh (id, getUser ());
+    }
+    
 }

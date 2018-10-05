@@ -3,20 +3,29 @@ package ru.eludia.products.mosgis.db.model.voc;
 import java.util.UUID;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
-import ru.eludia.base.model.def.Virt;
+import static ru.eludia.base.model.def.Def.NEW_UUID;
+import static ru.eludia.base.model.def.Def.NOW;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_base.ObjectFactory;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_base.RegOrgType;
 
-public class VocOrganization extends Table {
+public class VocOrganizationLog extends Table {
     
     private static final ObjectFactory of = new ObjectFactory ();
 
-    public VocOrganization () {
+    public VocOrganizationLog () {
 
-        super  ("vc_orgs",                                          "Юридические лица и частные предприниматели");
+        super  ("vc_orgs__log",                                     "Юридические лица и частные предприниматели: история");
 
-        pk     ("orgrootentityguid",  Type.UUID,                    "Ключ");
+        pk    ("uuid",                      Type.UUID,             NEW_UUID,            "Ключ");
+        col   ("action",                    Type.STRING,                                "Действие");
+        fk    ("uuid_object",               VocOrganization.class,                      "Ссылка на запись");
+        col   ("ts",                        Type.TIMESTAMP,        NOW,                 "Дата/время события");
+        fk    ("uuid_user",                 VocUser.class,                      null,   "Оператор");
 
+        col   ("uuid_message",              Type.UUID,                          null,   "UUID запроса в ГИС ЖКХ");
+        
+        col   ("is_deleted",                Type.BOOLEAN,                       null,   "1, если запись удалена; иначе 0");
+        
         col    ("orgppaguid",     Type.UUID,        null,           "Идентификатор зарегистрированной организации");
 
         col    ("shortname",      Type.STRING, 500, null,           "Сокращённое наименование");
@@ -39,16 +48,6 @@ public class VocOrganization extends Table {
         col    ("stateregistrationdate", Type.DATE, null,           "Дата государственной регистрации");
         col    ("activityenddate", Type.DATE,       null,           "Дата прекращения деятельности");
         
-        col    ("uuid",           Type.UUID,    new Virt ("''||ORGROOTENTITYGUID"),  "uuid");
-        col    ("label",          Type.STRING,  new Virt ("NVL(\"SHORTNAME\", \"SURNAME\"||' '||\"FIRSTNAME\"||' '||\"PATRONYMIC\")"),  "Наименование");
-        col    ("label_uc",       Type.STRING,  new Virt ("UPPER(NVL(\"SHORTNAME\", \"SURNAME\"||' '||\"FIRSTNAME\"||' '||\"PATRONYMIC\"))"),  "НАИМЕНОВАНИЕ В ВЕРХНЕМ РЕГИСТРЕ");
-
-        fk     ("id_type", VocOrganizationTypes.class, null, "Тип организации");
-        
-        fk     ("id_log",                    VocOrganizationLog.class,          null, "Последний запрос");
-
-        key    ("label", "label");
-
     }
     
     public static final RegOrgType regOrgType (UUID uuid) {
