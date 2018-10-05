@@ -45,7 +45,7 @@ public class Contract extends Table {
         col   ("terminate",                 Type.DATE,             null,        "Дата расторжения");
         col   ("rolltodate",                Type.DATE,             null,        "Пролонгировать до даты");
 
-        col   ("automaticrolloveroneyear",  Type.BOOLEAN,          Bool.FALSE,  "1, если запись удалена; иначе 0");
+        col   ("automaticrolloveroneyear",  Type.BOOLEAN,          Bool.FALSE,  "Автоматически продлить срок оказания услуг на один год");
         col   ("code_vc_nsi_58",            Type.STRING,           20,   null,  "Ссылка на НСИ \"Основание заключения договора\" (реестровый номер 58)");
         col   ("code_vc_nsi_54",            Type.STRING,           20,   null,  "Ссылка на НСИ \"Основание расторжения договора\" (реестровый номер 54)");
 
