@@ -56,4 +56,12 @@ public class VocOrganizations extends EJBResource <VocOrganizationsLocal> {
         return back.doRefresh (id, getUser ());
     }
     
+    @POST
+    @Path("{id}/log") 
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
+        return back.getLog (id, p, getUser ());
+    }
+    
 }

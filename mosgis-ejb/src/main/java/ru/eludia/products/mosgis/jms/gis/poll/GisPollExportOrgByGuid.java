@@ -31,7 +31,7 @@ import ru.gosuslugi.dom.schema.integration.organizations_registry_common_service
     , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
     , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class GisPollExportOrgByGuid extends UUIDMDB<VocOrganizationLog> {
+public class GisPollExportOrgByGuid extends UUIDMDB<OutSoap> {
     
     @EJB
     protected WsGisOrgClient wsGisOrgClient;
@@ -115,12 +115,11 @@ logger.info ("" + jo);
         });
         
 logger.info ("" + record);
-        
-        db.update (VocOrganizationLog.class, record);
+        db.update (VocOrganization.class, record);        
         
         record.put ("uuid", logUuid);        
 logger.info ("" + record);
-        db.update (VocOrganization.class, record);
+        db.update (VocOrganizationLog.class, record);
         
         db.dupsert (
             VocOrganizationNsi20.class, 

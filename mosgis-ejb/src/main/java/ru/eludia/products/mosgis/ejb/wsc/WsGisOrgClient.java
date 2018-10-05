@@ -78,7 +78,7 @@ public class WsGisOrgClient {
 
         ExportOrgRegistryRequest r = of.createExportOrgRegistryRequest ();
         r.getSearchCriteria ().add (s);        
-        return getPort ().exportOrgRegistry (r).getAck ();
+        return getPort (messageGUID).exportOrgRegistry (r).getAck ();
 
     }
 

@@ -16,6 +16,11 @@ define ([], function () {
         use.block (name)
             
     }        
+    
+    $_DO.refresh_voc_organization_legal = function (e) {
+        if (!confirm ('Послать в ГИС ЖКХ запрос на обновление данных об этом юридическом лице?')) return
+        query ({type: 'voc_organizations', action: 'refresh'}, {}, reload_page)
+    }
 
     return function (done) {
 

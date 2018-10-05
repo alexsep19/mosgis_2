@@ -44,6 +44,11 @@ public class GisOrgByGuidMDB extends UUIDMDB<VocOrganizationLog> {
                 "uuid",     uuid,
                 "uuid_ack", wsGisOrgClient.exportOrgRegistry ((UUID) r.get ("uuid_object"), uuid).getMessageGUID ()
             ));
+            
+            db.update (getTable (), DB.HASH (
+                "uuid",          uuid,
+                "uuid_out_soap", uuid
+            ));
                 
             UUIDPublisher.publish (q, uuid);
             

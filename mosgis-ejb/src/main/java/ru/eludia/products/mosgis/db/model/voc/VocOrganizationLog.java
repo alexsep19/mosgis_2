@@ -5,6 +5,7 @@ import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import static ru.eludia.base.model.def.Def.NOW;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_base.ObjectFactory;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_base.RegOrgType;
 
@@ -21,8 +22,7 @@ public class VocOrganizationLog extends Table {
         fk    ("uuid_object",               VocOrganization.class,                      "Ссылка на запись");
         col   ("ts",                        Type.TIMESTAMP,        NOW,                 "Дата/время события");
         fk    ("uuid_user",                 VocUser.class,                      null,   "Оператор");
-
-        col   ("uuid_message",              Type.UUID,                          null,   "UUID запроса в ГИС ЖКХ");
+        fk    ("uuid_out_soap",             OutSoap.class,                      null,   "Последний запрос на импорт в ГИС ЖКХ");
         
         col   ("is_deleted",                Type.BOOLEAN,                       null,   "1, если запись удалена; иначе 0");
         

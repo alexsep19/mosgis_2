@@ -13,6 +13,8 @@ define ([], function () {
 
         fill (view, data.item, $('body'))
         
+        $('#the_form').w2reform ({name: 'voc_organization_legal_form'})
+        
         $('#container').w2relayout ({
         
             name: 'topmost_layout',
@@ -25,6 +27,7 @@ define ([], function () {
 
                         tabs: [
                             {id: 'voc_organization_legal_users', caption: 'Учётные записи', off: !$_USER.role.admin && $_USER.uuid_org != $_REQUEST.id},
+                            {id: 'voc_organization_legal_log', caption: 'История'},
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_voc_organization_legal
@@ -40,7 +43,17 @@ define ([], function () {
             },
 
         });
+                
+        if (data.item.id_log && data.item ['out_soap.id_status'] != 3) {
         
+            w2utils.lock ($('#the_form'), {
+                msg     : 'Ждём ответ ГИС ЖКХ...',       
+                spinner : false,    
+            })
+        
+            setTimeout (reload_page, 2000)
+        
+        }
 
     }
 
