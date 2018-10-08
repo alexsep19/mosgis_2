@@ -27,15 +27,16 @@ public class CharterLog extends Table {
         fk    ("id_ctr_status_gis",         VocGisStatus.class,                 null,   "Статус договора с точки зрения ГИС ЖКХ");        
         col   ("date_",                     Type.DATE,                          null,   "Дата регистрации TCН/ТСЖ/кооператива (Организации Поставщика данных)");
         col   ("automaticrolloveroneyear",  Type.BOOLEAN,                       null,   "Автоматически продлить срок оказания услуг на один год");
-        col   ("ddt_m_start",               Type.NUMERIC,          2,           null,  "Начало периода ввода показаний ПУ (1..31 — конкретное число; 99 — последнее число)");
-        col   ("ddt_m_start_nxt",           Type.BOOLEAN,                       null, "1, если начало периода ввода показаний ПУ в следующем месяце; иначе 0");
-        col   ("ddt_m_end",                 Type.NUMERIC,          2,           null,  "Окончание периода ввода показаний ПУ (1..31 — конкретное число; 99 — последнее число)");
-        col   ("ddt_m_end_nxt",             Type.BOOLEAN,                       null, "1, если окончание периода ввода показаний ПУ в следующем месяце; иначе 0");
-        col   ("ddt_d_start",               Type.NUMERIC,          2,           null,  "Срок представления (выставления) платежных документов для внесения платы за жилое помещение и (или) коммунальные услуги (1..30 — конкретное число; 99 — последнее число)");
-        col   ("ddt_d_start_nxt",           Type.BOOLEAN,                       null, "1, если срок представления (выставления) платежных документов для внесения платы за жилое помещение и (или) коммунальные услуги в следующем месяце; иначе 0");
-        col   ("ddt_i_start",               Type.NUMERIC,          2,           null,  "Срок внесения платы за жилое помещение и (или) коммунальные услуги (1..30 — конкретное число; 99 — последнее число)");
-        col   ("ddt_i_start_nxt",           Type.BOOLEAN,                       null, "1, если срок внесения платы за жилое помещение и (или) коммунальные услуги в следующем месяце; иначе 0");
-        col   ("reasonofannulment",         Type.STRING,         1000, null,    "Причина аннулирования");
+        col   ("nocharterapproveprotocol",  Type.BOOLEAN,                       null,   "Протокол, содержащий решение об утверждении устава, отсутствует");
+        col   ("ddt_m_start",               Type.NUMERIC,          2,           null,   "Начало периода ввода показаний ПУ (1..31 — конкретное число; 99 — последнее число)");
+        col   ("ddt_m_start_nxt",           Type.BOOLEAN,                       null,   "1, если начало периода ввода показаний ПУ в следующем месяце; иначе 0");
+        col   ("ddt_m_end",                 Type.NUMERIC,          2,           null,   "Окончание периода ввода показаний ПУ (1..31 — конкретное число; 99 — последнее число)");
+        col   ("ddt_m_end_nxt",             Type.BOOLEAN,                       null,   "1, если окончание периода ввода показаний ПУ в следующем месяце; иначе 0");
+        col   ("ddt_d_start",               Type.NUMERIC,          2,           null,   "Срок представления (выставления) платежных документов для внесения платы за жилое помещение и (или) коммунальные услуги (1..30 — конкретное число; 99 — последнее число)");
+        col   ("ddt_d_start_nxt",           Type.BOOLEAN,                       null,   "1, если срок представления (выставления) платежных документов для внесения платы за жилое помещение и (или) коммунальные услуги в следующем месяце; иначе 0");
+        col   ("ddt_i_start",               Type.NUMERIC,          2,           null,   "Срок внесения платы за жилое помещение и (или) коммунальные услуги (1..30 — конкретное число; 99 — последнее число)");
+        col   ("ddt_i_start_nxt",           Type.BOOLEAN,                       null,   "1, если срок внесения платы за жилое помещение и (или) коммунальные услуги в следующем месяце; иначе 0");
+        col   ("reasonofannulment",         Type.STRING,         1000,          null,    "Причина аннулирования");
 
         col   ("versionnumber",             Type.INTEGER,          10, null,    "Номер версии (по состоянию в ГИС ЖКХ)");
         col   ("is_annuled",                Type.BOOLEAN,          new Virt ("DECODE(\"REASONOFANNULMENT\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0");
@@ -48,6 +49,7 @@ public class CharterLog extends Table {
            + "  ,id_ctr_status_gis"
            + "  ,date_"
            + "  ,automaticrolloveroneyear"
+           + "  ,nocharterapproveprotocol"                              
            + "  ,ddt_m_start"
            + "  ,ddt_m_start_nxt"
            + "  ,ddt_m_end"
@@ -63,6 +65,7 @@ public class CharterLog extends Table {
            + "  ,:NEW.id_ctr_status_gis"
            + "  ,:NEW.date_"
            + "  ,:NEW.automaticrolloveroneyear"
+           + "  ,:NEW.nocharterapproveprotocol"                              
            + "  ,:NEW.ddt_m_start"
            + "  ,:NEW.ddt_m_start_nxt"
            + "  ,:NEW.ddt_m_end"
@@ -75,6 +78,7 @@ public class CharterLog extends Table {
            + " FROM tb_charters WHERE uuid=:NEW.uuid_object; "
 
        + "END;");
+       
     }
     
 }
