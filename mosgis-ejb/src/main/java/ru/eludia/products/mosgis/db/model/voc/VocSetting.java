@@ -26,6 +26,9 @@ public class VocSetting extends Table {
         c.put (BindingProvider.ENDPOINT_ADDRESS_PROPERTY, url);
         c.put (com.sun.xml.ws.developer.JAXWSProperties.CONNECT_TIMEOUT, connectTimeout);
         c.put ("com.sun.xml.ws.request.timeout", responseTimeout);
+        
+        c.put (BindingProvider.USERNAME_PROPERTY, "sit");
+        c.put (BindingProvider.PASSWORD_PROPERTY, "xw{p&&Ee3b9r8?amJv*]");
                       
     }
     

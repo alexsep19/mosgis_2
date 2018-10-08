@@ -1530,7 +1530,7 @@
 							</xs:annotation>
 						</xs:element>
 					</xs:sequence>
-					<xs:attribute ref="base:version" use="required"/>
+					<xs:attribute ref="base:version" use="required" fixed = "12.2.0.1"/>
 				</xs:extension>
 			</xs:complexContent>
 		</xs:complexType>
@@ -8824,7 +8824,7 @@ STATE_(M)UNICIPAL_FUND - Договор найма жилого помещени
 		<xs:complexType>
 			<xs:complexContent>
 				<xs:extension base="base:BaseType">
-					<xs:choice>
+					<xs:choice minOccurs="0">
 						<xs:element ref="base:ErrorMessage"/>
 						<xs:element name="CommonResult" maxOccurs="unbounded">
 							<xs:complexType>
@@ -8984,73 +8984,75 @@ STATE_(M)UNICIPAL_FUND - Договор найма жилого помещени
 		<xs:complexType>
 			<xs:complexContent>
 				<xs:extension base="base:BaseAsyncResponseType">
-					<xs:choice minOccurs="0">
-						<xs:element ref="base:ErrorMessage"/>
-						<xs:element ref="tns:ImportResult" maxOccurs="unbounded"/>
-						<xs:element name="exportHouseResult" type="tns:exportHouseResultType"/>
-						<xs:element name="exportMeteringDeviceDataResult" type="tns:exportMeteringDeviceDataResultType" maxOccurs="unbounded"/>
-						<xs:element name="exportStatusCAChResult" type="tns:exportStatusCAChResultType" minOccurs="0" maxOccurs="unbounded"/>
-						<xs:element name="exportCAChResult" type="tns:exportCAChResultType" minOccurs="0" maxOccurs="unbounded"/>
-						<xs:element name="exportStatusPublicPropertyContractResult" type="tns:exportStatusPublicPropertyContractResultType" maxOccurs="unbounded"/>
-						<xs:element name="exportAccountResult" type="tns:exportAccountResultType" maxOccurs="unbounded"/>
-						<xs:element name="VotingProtocol" type="tns:exportVotingProtocolResultType" maxOccurs="unbounded"/>
-						<xs:element name="exportSupplyResourceContractResult" maxOccurs="unbounded">
-							<xs:complexType>
-								<xs:sequence>
-									<xs:element name="Contract" type="tns:exportSupplyResourceContractResultType" maxOccurs="1000">
-										<xs:annotation>
-											<xs:documentation>Договор ресурсоснабжения</xs:documentation>
-										</xs:annotation>
-									</xs:element>
-									<xs:choice>
-										<xs:element name="IsLastPage" type="xs:boolean" fixed="true">
+					<xs:sequence>
+						<xs:element ref="base:ErrorMessage" minOccurs="0" />
+						<xs:choice minOccurs="0">
+							<xs:element ref="tns:ImportResult" maxOccurs="unbounded"/>
+							<xs:element name="exportHouseResult" type="tns:exportHouseResultType"/>
+							<xs:element name="exportMeteringDeviceDataResult" type="tns:exportMeteringDeviceDataResultType" maxOccurs="unbounded"/>
+							<xs:element name="exportStatusCAChResult" type="tns:exportStatusCAChResultType" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="exportCAChResult" type="tns:exportCAChResultType" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="exportStatusPublicPropertyContractResult" type="tns:exportStatusPublicPropertyContractResultType" maxOccurs="unbounded"/>
+							<xs:element name="exportAccountResult" type="tns:exportAccountResultType" maxOccurs="unbounded"/>
+							<xs:element name="VotingProtocol" type="tns:exportVotingProtocolResultType" maxOccurs="unbounded"/>
+							<xs:element name="exportSupplyResourceContractResult" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Contract" type="tns:exportSupplyResourceContractResultType" maxOccurs="1000">
 											<xs:annotation>
-												<xs:documentation>Последняя страница экспорта </xs:documentation>
+												<xs:documentation>Договор ресурсоснабжения</xs:documentation>
 											</xs:annotation>
 										</xs:element>
-										<xs:element name="ExportContractRootGUID" type="base:GUIDType">
+										<xs:choice>
+											<xs:element name="IsLastPage" type="xs:boolean" fixed="true">
+												<xs:annotation>
+													<xs:documentation>Последняя страница экспорта </xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="ExportContractRootGUID" type="base:GUIDType">
+												<xs:annotation>
+													<xs:documentation>Идентификатор договора ресурсоснабжения для  экспорта следующей 1000 договоров</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:choice>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="exportAccountIndividualServicesResult" type="tns:exportAccountIndividualServicesResultType" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="exportSupplyResourceContractObjectAddress" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Объект жилищного фонда в договоре ресурсоснабжения</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="ObjectAddress" type="tns:exportSupplyResourceContractObjectAddressResultType" maxOccurs="1000">
 											<xs:annotation>
-												<xs:documentation>Идентификатор договора ресурсоснабжения для  экспорта следующей 1000 договоров</xs:documentation>
+												<xs:documentation>Объект жилищного фонда в договоре ресурсоснабжения</xs:documentation>
 											</xs:annotation>
 										</xs:element>
-									</xs:choice>
-								</xs:sequence>
-							</xs:complexType>
-						</xs:element>
-						<xs:element name="exportAccountIndividualServicesResult" type="tns:exportAccountIndividualServicesResultType" minOccurs="0" maxOccurs="unbounded"/>
-						<xs:element name="exportSupplyResourceContractObjectAddress" maxOccurs="unbounded">
-							<xs:annotation>
-								<xs:documentation>Объект жилищного фонда в договоре ресурсоснабжения</xs:documentation>
-							</xs:annotation>
-							<xs:complexType>
-								<xs:sequence>
-									<xs:element name="ObjectAddress" type="tns:exportSupplyResourceContractObjectAddressResultType" maxOccurs="1000">
-										<xs:annotation>
-											<xs:documentation>Объект жилищного фонда в договоре ресурсоснабжения</xs:documentation>
-										</xs:annotation>
-									</xs:element>
-									<xs:choice>
-										<xs:element name="ExportObjectGUID" type="base:GUIDType">
-											<xs:annotation>
-												<xs:documentation>Идентификатор объекта жилищного фонда в ГИС ЖКХ для установки экспорта следующей 1000 ОЖФ</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="IsLastPage" type="xs:boolean" fixed="true">
-											<xs:annotation>
-												<xs:documentation>Последняя страница экспорта</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-									</xs:choice>
-								</xs:sequence>
-							</xs:complexType>
-						</xs:element>
-						<xs:element name="rolloverCAChStatus" type="tns:exportRolloverStatusCAChResultType">
-							<xs:annotation>
-								<xs:documentation>Статус пролонгации ДУ/уставов</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="exportBriefSocialHireContract" type="tns:exportBriefSocialHireContractResultType" minOccurs="0" maxOccurs="unbounded"/>
-					</xs:choice>
+										<xs:choice>
+											<xs:element name="ExportObjectGUID" type="base:GUIDType">
+												<xs:annotation>
+													<xs:documentation>Идентификатор объекта жилищного фонда в ГИС ЖКХ для установки экспорта следующей 1000 ОЖФ</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="IsLastPage" type="xs:boolean" fixed="true">
+												<xs:annotation>
+													<xs:documentation>Последняя страница экспорта</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:choice>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="rolloverCAChStatus" type="tns:exportRolloverStatusCAChResultType">
+								<xs:annotation>
+									<xs:documentation>Статус пролонгации ДУ/уставов</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="exportBriefSocialHireContract" type="tns:exportBriefSocialHireContractResultType" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:choice>
+					</xs:sequence>
 					<xs:attribute ref="base:version" use="required" fixed="11.0.0.1"/>
 				</xs:extension>
 			</xs:complexContent>

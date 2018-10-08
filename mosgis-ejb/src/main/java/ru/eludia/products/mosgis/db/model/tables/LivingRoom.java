@@ -30,9 +30,14 @@ public class LivingRoom extends Passport {
         ref    ("uuid_premise",       ResidentialPremise.class, null,  "Квартира");
         ref    ("uuid_block",         Block.class,              null,  "Блок");
         
-        col    ("roomnumber",         Type.STRING, 255,    null,        "Номер комнаты");
+        col    ("roomnumber",         Type.STRING, 255,    null,       "Номер комнаты");
         col    ("cadastralnumber",    Type.STRING,         null,       "Кадастровый номер");
         col    ("square",             Type.NUMERIC, 25, 4, null,       "Площадь");
+        col    ("floor",              Type.STRING,         null,       "Этаж");
+        
+        col    ("gis_unique_number",       Type.STRING,                     "Уникальный номер");
+        col    ("gis_modification_date",   Type.TIMESTAMP,      null,       "Дата модификации данных в ГИС ЖКХ");
+        col    ("information_confirmed",   Type.BOOLEAN,        Bool.TRUE,  "Информация подтверждена поставщиком");
         
         trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
                 

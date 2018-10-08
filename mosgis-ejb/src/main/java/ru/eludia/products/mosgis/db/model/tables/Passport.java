@@ -6,15 +6,13 @@ import java.util.List;
 import java.util.logging.Logger;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Table;
-import ru.eludia.products.mosgis.db.model.gis.HouseGis;
-import ru.eludia.products.mosgis.db.model.gis.PremiseGis;
 import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
 
 public abstract class Passport extends Table {
     
     protected Logger logger = java.util.logging.Logger.getLogger (this.getClass ().getName ());
 
-    public static final Class [] classes = new Class [] {HouseGis.class, PremiseGis.class, House.class, ResidentialPremise.class, NonResidentialPremise.class, Block.class, LivingRoom.class};
+    public static final Class [] classes = new Class [] {House.class, ResidentialPremise.class, NonResidentialPremise.class, Block.class, LivingRoom.class};
     
     List<MultipleRefTable> refTables = new ArrayList ();
 

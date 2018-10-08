@@ -31,7 +31,7 @@ public class ExportHouse implements ExportHouseMBean {
         
     @PostConstruct
     public void registerInJMX () {
-        /*
+        
         try {
             objectName = new ObjectName ("ru.eludia:Name=MosGis,Type=ExportHouse");
             platformMBeanServer = ManagementFactory.getPlatformMBeanServer ();
@@ -40,18 +40,18 @@ public class ExportHouse implements ExportHouseMBean {
         catch (Exception e) {
             throw new IllegalStateException ("Problem during registration of Monitoring into JMX:" + e);
         }
-        */
+        
     }
 
     @PreDestroy
     public void unregisterFromJMX () {
-        /*
+        
         try {
             platformMBeanServer.unregisterMBean (this.objectName);
         } catch (Exception e) {
             throw new IllegalStateException ("Problem during unregistration of Monitoring into JMX:" + e);
         }
-        */
+        
     }   
             
     @Override

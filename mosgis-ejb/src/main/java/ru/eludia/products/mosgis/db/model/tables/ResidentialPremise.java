@@ -36,6 +36,11 @@ public class ResidentialPremise extends Passport {
         col    ("totalarea",          Type.NUMERIC, 25, 4, null,       "Общая площадь жилого помещения");
         col    ("grossarea",          Type.NUMERIC, 25, 4, null,       "Жилая площадь жилого помещения");
         col    ("f_20002",            Type.INTEGER,        null,       "Количество комнат");
+        col    ("floor",              Type.STRING,         null,       "Этаж");
+        
+        col    ("gis_unique_number",       Type.STRING,                     "Уникальный номер");
+        col    ("gis_modification_date",   Type.TIMESTAMP,      null,       "Дата модификации данных в ГИС ЖКХ");
+        col    ("information_confirmed",   Type.BOOLEAN,        Bool.TRUE,  "Информация подтверждена поставщиком");
         
         trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
                 

@@ -1221,7 +1221,7 @@
 		<xs:complexType>
 			<xs:complexContent>
 				<xs:extension base="base:BaseAsyncResponseType">
-					<xs:choice>
+					<xs:choice minOccurs="0">
 						<xs:element name="ImportResult" type="base:CommonResultType" maxOccurs="unbounded">
 							<xs:annotation>
 								<xs:documentation>Результат импорта</xs:documentation>
