@@ -19,6 +19,7 @@ import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.rest.api.VocOrganizationsLocal;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerTypeNsi20;
@@ -166,10 +167,11 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
         try (DB db = ModelHolder.getModel ().getDb ()) {
 
             JsonObject item = db.getJsonObject (ModelHolder.getModel ()
-                .get (VocOrganization.class, id, "*")
+                .get (VocOrganization.class, id, "AS root", "*")
                 .toMaybeOne (VocOrganizationTypes.class, "label").on ()
                 .toMaybeOne (VocOrganizationLog.class).on ()
                 .toMaybeOne (OutSoap.class, "id_status").on ()
+                .toMaybeOne (Charter.class, "AS charter", "uuid").on ("root.uuid=charter.uuid_org")
             );
 
             jb.add ("item", item);
