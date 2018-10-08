@@ -26,6 +26,8 @@ define ([], function () {
             query ({type: 'charters'}, {}, function (d) {
 
                 var it = data.item = d.item
+                
+                $('body').data ('data', data)                
 
                 done (data) 
             
