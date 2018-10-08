@@ -1,6 +1,5 @@
 package ru.eludia.products.mosgis.rest.resources;
 
-import javax.annotation.security.RolesAllowed;
 import ru.eludia.products.mosgis.rest.misc.EJBResource;
 import javax.json.JsonObject;
 import javax.ws.rs.Consumes;
@@ -37,7 +36,7 @@ public class Charters extends EJBResource <CharterLocal> {
     }    
     
     private void checkOrg (JsonObject item) {
-/*
+        
         String itemOrg = item.getString ("uuid_org", null);
 
         if (itemOrg == null) throw new InternalServerErrorException ("Wrong Charter, no org: " + item);
@@ -48,14 +47,14 @@ public class Charters extends EJBResource <CharterLocal> {
             logger.warning ("Org mismatch: " + userOrg + " vs. " + itemOrg);
             throw new ValidationException ("foo", "Доступ запрещён");
         }
-*/
+
     }
 
     @POST
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject select (JsonObject p) { 
-        
+/*        
         if (securityContext.isUserInRole ("nsi_20_1")) {
             
             String toBe = getUser ().getUuidOrg ();
@@ -69,6 +68,9 @@ public class Charters extends EJBResource <CharterLocal> {
         }
 
         return back.select (p, getUser ()); 
+*/        
+
+        return null;
         
     }
 
@@ -77,16 +79,7 @@ public class Charters extends EJBResource <CharterLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject getVocs () { 
         return back.getVocs (); 
-    }
-    
-    @POST
-    @Path("create") 
-    @Produces (APPLICATION_JSON)
-    @RolesAllowed ("nsi_20_1")
-    public JsonObject doCreate (JsonObject p) {
-        getUserOrg ();
-        return back.doCreate (p, getUser ());
-    }
+    }    
 
     @POST
     @Path("{id}/update") 
@@ -162,23 +155,14 @@ public class Charters extends EJBResource <CharterLocal> {
         final JsonObject item = getInnerItem (id);
         checkOrg (item);
         return back.doRefresh (id, getUser ());
-    }
-    
-    @POST
-    @Path("{id}/undelete") 
-    @Produces (APPLICATION_JSON)
-    public JsonObject doUndelete (@PathParam ("id") String id) { 
-        final JsonObject item = getInnerItem (id);
-        checkOrg (item);
-        return back.doUndelete (id, getUser ());
-    }
+    }    
         
     @POST
     @Path("{id}") 
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) { 
         final JsonObject item = back.getItem (id);
-        if (!securityContext.isUserInRole ("admin") && !securityContext.isUserInRole ("nsi_20_4")) checkOrg (item.getJsonObject ("item"));
+        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
         return item;
     }
     
@@ -188,7 +172,7 @@ public class Charters extends EJBResource <CharterLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
         final JsonObject item = back.getItem (id);
-        if (!securityContext.isUserInRole ("admin") && !securityContext.isUserInRole ("nsi_20_4")) checkOrg (item.getJsonObject ("item"));
+        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
         return back.getLog (id, p, getUser ());
     }
     

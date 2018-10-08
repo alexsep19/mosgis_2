@@ -26,7 +26,27 @@ define ([], function () {
             query ({type: 'charters'}, {}, function (d) {
 
                 var it = data.item = d.item
-                
+
+                it._can = {}
+
+                if (it.uuid_org == $_USER.uuid_org) {
+
+                    switch (it.id_ctr_status) {
+
+                        case 10:
+                        case 11:
+                            it._can.edit    = 1
+                            if (it.id_ctr_status_gis == 40 && !it.is_annuled) it._can.annul = 1
+                            break;
+
+                    }
+
+                    if (!it.contractobjectversionguid) it._can.delete = 1
+
+                    it._can.update = it._can.cancel = it._can.edit
+
+                }
+
                 $('body').data ('data', data)                
 
                 done (data) 
