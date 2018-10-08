@@ -6,7 +6,7 @@ define ([], function () {
             .map (function (r) {return data.vc_nsi_20 [r.code]})
             .sort ()
             .join (',<br>')
-darn (data)
+
         data.item.vc_organization_types_label = data.item ['vc_organization_types.label']
 
         $('title').text (data.item.label)
@@ -52,6 +52,18 @@ darn (data)
             })
         
             setTimeout (reload_page, 2000)
+        
+        }
+        
+        var charter_uuid = data.item ['charter.uuid']
+        
+        if (charter_uuid) {
+        
+            clickOn ($('div[data-text=stateregistrationdate]'), function () {
+                openTab ('/charter/' + charter_uuid)
+            })
+        
+//            .css ({color: 'red'})
         
         }
 
