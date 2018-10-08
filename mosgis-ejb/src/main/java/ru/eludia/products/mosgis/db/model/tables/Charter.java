@@ -1,23 +1,13 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
-import java.util.Map;
-import java.util.UUID;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Num;
 import ru.eludia.base.model.def.Virt;
-import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
-import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
-import ru.eludia.products.mosgis.db.model.voc.VocGisContractType;
-import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
-import static ru.eludia.products.mosgis.db.model.voc.VocGisStatus.i.ANNUL;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
-import ru.gosuslugi.dom.schema.integration.house_management.ContractType;
-import ru.gosuslugi.dom.schema.integration.house_management.DateDetailsType;
-import ru.gosuslugi.dom.schema.integration.house_management.DeviceMeteringsDaySelectionType;    
 
 public class Charter extends Table {
 
@@ -51,21 +41,21 @@ public class Charter extends Table {
         //    PaymentInterval
         col   ("ddt_i_start",               Type.NUMERIC,          2,   null,  "Срок внесения платы за жилое помещение и (или) коммунальные услуги (1..30 — конкретное число; 99 — последнее число)");
         col   ("ddt_i_start_nxt",           Type.BOOLEAN,          Bool.FALSE, "1, если срок внесения платы за жилое помещение и (или) коммунальные услуги в следующем месяце; иначе 0");
-        
-        
+
         fk    ("uuid_out_soap",             OutSoap.class,             null,    "Последний запрос на импорт в ГИС ЖКХ");
         col   ("charterguid",               Type.UUID,                 null,    "UUID устава в ГИС ЖКХ");
         col   ("charterversionguid",        Type.UUID,                 null,    "Идентификатор последней известной версии устава");
 
         fk    ("id_log",                    CharterLog.class,          null,    "Последнее событие редактирования");
-        
+
         col   ("versionnumber",             Type.INTEGER,          10, null,    "Номер версии (по состоянию в ГИС ЖКХ)");
 
         col   ("reasonofannulment",         Type.STRING,         1000, null,    "Причина аннулирования");
         col   ("is_annuled",                Type.BOOLEAN,          new Virt ("DECODE(\"REASONOFANNULMENT\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0");
 
-        key   ("charterguid", "charterguid");
-        
+        key    ("charterguid", "charterguid");
+        unique ("uuid_org", "uuid_org");
+
     }
 
 }

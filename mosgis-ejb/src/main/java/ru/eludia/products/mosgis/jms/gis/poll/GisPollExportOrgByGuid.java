@@ -124,7 +124,10 @@ logger.info ("" + record);
         db.dupsert (
             VocOrganizationNsi20.class, 
             HASH ("uuid", uuid), 
-            i.getOrganizationRoles ().stream ().map ((t) -> {return HASH ("code", t.getCode ());}).collect (Collectors.toList ()),
+            i.getOrganizationRoles ().stream ().map ((t) -> {return HASH (
+                "is_deleted", 0,
+                "code",       t.getCode ()
+            );}).collect (Collectors.toList ()),
             "code"
         );
 
