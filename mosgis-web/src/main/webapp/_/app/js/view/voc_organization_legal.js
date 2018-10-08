@@ -2,19 +2,23 @@ define ([], function () {
 
     return function (data, view) {
     
-        data.item.vc_nsi_20 = data.vc_orgs_nsi_20
+        var it = data.item
+        
+        it.vc_nsi_20 = data.vc_orgs_nsi_20
             .map (function (r) {return data.vc_nsi_20 [r.code]})
             .sort ()
             .join (',<br>')
 
-        data.item.vc_organization_types_label = data.item ['vc_organization_types.label']
+        it.vc_organization_types_label = it ['vc_organization_types.label']
 
-        $('title').text (data.item.label)
+        $('title').text (it.label)
 
-        fill (view, data.item, $('body'))
+        fill (view, it, $('body'))
         
-        $('#the_form').w2reform ({name: 'voc_organization_legal_form'})
-        
+        $('div.w2ui-field:hidden').remove ()
+
+        $('#the_form').w2form ({name: 'voc_organization_legal_form'})
+                
         $('#container').w2relayout ({
         
             name: 'topmost_layout',
@@ -44,7 +48,7 @@ define ([], function () {
 
         });
                 
-        if (data.item.id_log && data.item ['out_soap.id_status'] != 3) {
+        if (it.id_log && it ['out_soap.id_status'] != 3) {
         
             w2utils.lock ($('#the_form'), {
                 msg     : 'Ждём ответ ГИС ЖКХ...',       
@@ -55,16 +59,14 @@ define ([], function () {
         
         }
         
-        var charter_uuid = data.item ['charter.uuid']
+        var charter_uuid = it ['charter.uuid']
         
         if (charter_uuid) {
         
             clickOn ($('div[data-text=stateregistrationdate]'), function () {
                 openTab ('/charter/' + charter_uuid)
             })
-        
-//            .css ({color: 'red'})
-        
+
         }
 
     }
