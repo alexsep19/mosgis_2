@@ -43,6 +43,8 @@ define ([], function () {
             f.record = r
             
             $('div[data-block-name=charter_common] input').prop ({disabled: data.__read_only})
+          
+            if ($('body').data ('data').item ['vc_orgs.stateregistrationdate']) $('#date_').prop ({disabled: 1})
 
             f.refresh ()
 
@@ -58,7 +60,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 460},
+                {type: 'top', size: 280},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
@@ -92,18 +94,11 @@ define ([], function () {
             record : data.item,                
             
             fields : [                     
-                    {name: 'docnum', type: 'text'},
-                    {name: 'signingdate', type: 'date'},
-                    {name: 'effectivedate', type: 'date'},
-                    {name: 'plandatecomptetion', type: 'date'},
-                    {name: 'code_vc_nsi_58', type: 'list', options: {items: data.vc_nsi_58.items}},
-                    {name: 'automaticrolloveroneyear', type: 'list', options: {items: [
-                        {id: "0", text: "нет"},
-                        {id: "1", text: "на 1 год при наступлении даты окончания"},
+                    {name: 'date_', type: 'date'},
+                    {name: 'nocharterapproveprotocol', type: 'list', options: {items: [
+                        {id: "0", text: "имеется в наличии"},
+                        {id: "1", text: "отсутствует"},
                     ]}},                    
-                    {name: 'vc_orgs.label', type: 'text'},
-                    {name: 'uuid_org_customer', type: 'hidden'},
-                    {name: 'label_org_customer', type: 'text'},
                     
                     {name: 'ddt_m_start', type: 'list', options: {items: ddt_31_from}},
                     {name: 'ddt_m_end',   type: 'list', options: {items: ddt_31}},
