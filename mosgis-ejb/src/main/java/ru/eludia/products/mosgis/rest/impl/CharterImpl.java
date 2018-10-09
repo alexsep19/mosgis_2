@@ -180,6 +180,9 @@ public class CharterImpl extends BaseCRUD<Charter> implements CharterLocal {
                 
                 model
                     .select (VocContractDocType.class, "id", "label")                    
+                    .where ("id IN", 
+                        VocContractDocType.i.CHARTER.getId (),
+                        VocContractDocType.i.OTHER.getId ())
                     .orderBy ("label"),
 
                 model
