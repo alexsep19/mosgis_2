@@ -7,7 +7,6 @@ import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Num;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
-import static ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType.i.OWNERS;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 
 public class CharterObject extends Table {
@@ -35,28 +34,23 @@ public class CharterObject extends Table {
 
         col    ("contractobjectversionguid",     Type.UUID,       null,          "UUID последней версии данного объекта в ГИС ЖКХ");
         
-//        fk     ("id_log",                  CharterObjectLog.class,  null,      "Последнее событие редактирования");
+        fk     ("id_log",                  CharterObjectLog.class,  null,      "Последнее событие редактирования");
  
         trigger ("BEFORE INSERT OR UPDATE", ""
                 
             + "DECLARE" 
             + " PRAGMA AUTONOMOUS_TRANSACTION; "
             + "BEGIN "
-                
+            + " :NEW.id_log := :NEW.id_log; "
+/*                
             + "IF INSERTING"
-                + " OR (NVL (:OLD.uuid_charter_agreement, '00') <> NVL (:NEW.uuid_charter_agreement, '00'))"
+//                + " OR (NVL (:OLD.uuid_charter_agreement, '00') <> NVL (:NEW.uuid_charter_agreement, '00'))"
                 + " OR (NVL (:OLD.annulmentinfo, CHR(0)) <> NVL (:NEW.annulmentinfo, CHR(0)))"
                 + " OR (:OLD.startdate <> :NEW.startdate)"
                 + " OR (:OLD.enddate   <> :NEW.enddate)"
             + " THEN "
             + " FOR i IN (SELECT uuid FROM tb_charters WHERE uuid=:NEW.uuid_charter AND id_ctr_status NOT IN (10, 11) AND charterversionguid IS NOT NULL) LOOP"
             + "   raise_application_error (-20000, 'Внесение изменений в договор в настоящее время запрещено. Операция отменена.'); "
-            + " END LOOP; "
-            + "END IF; "
-
-            + "IF INSERTING THEN "
-            + " FOR i IN (SELECT c.uuid FROM tb_charters c INNER JOIN tb_charter_objects o ON (o.uuid_charter = c.uuid AND o.uuid <> :NEW.uuid AND o.is_deleted = 0 AND o.is_annuled = 0) WHERE c.uuid=:NEW.uuid_charter AND c.id_customer_type=" + OWNERS.getId () + ") LOOP"
-            + "   raise_application_error (-20000, 'Поскольку заказчик — собственник объекта жилищного фонда, объект в договоре может быть только один. Операция отменена.'); "
             + " END LOOP; "
             + "END IF; "
                 
@@ -103,9 +97,9 @@ public class CharterObject extends Table {
             + " UPDATE tb_charter_objects__log SET contractobjectversionguid = :NEW.contractobjectversionguid WHERE uuid = :NEW.id_log; "
             + " COMMIT; "
             + "END IF; "
+*/
                     
         + "END;");
-
     }
 /*
     public static void add (ImportCharterRequest.Charter.PlacingCharter pc, Map<String, Object> r) {
