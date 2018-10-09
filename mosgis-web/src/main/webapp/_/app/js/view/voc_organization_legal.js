@@ -15,9 +15,9 @@ define ([], function () {
 
         fill (view, it, $('body'))
         
-        $('div.w2ui-field:hidden').remove ()
+//        $('div.w2ui-field:hidden').remove ()
 
-        $('#the_form').w2form ({name: 'voc_organization_legal_form'})
+        $('#the_form').w2reform ({name: 'voc_organization_legal_form', record: it})
                 
         $('#container').w2relayout ({
         
