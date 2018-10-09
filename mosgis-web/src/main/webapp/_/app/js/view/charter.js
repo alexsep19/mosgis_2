@@ -41,7 +41,7 @@ define ([], function () {
                         tabs: [
                             {id: 'charter_common',   caption: 'Общие'},
 //                            {id: 'charter_docs',     caption: 'Документы'},
-//                            {id: 'charter_objects',  caption: 'Объекты управления'},
+                            {id: 'charter_objects',  caption: 'Объекты управления'},
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_charter
