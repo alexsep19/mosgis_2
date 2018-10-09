@@ -15,6 +15,7 @@ import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.CharterObjectLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
+import ru.eludia.products.mosgis.db.model.voc.VocCharterObjectReason;
 //import ru.eludia.products.mosgis.db.model.voc.VocCharterDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -50,6 +51,8 @@ public class CharterObjectsImpl extends BaseCRUD<CharterObject> implements Chart
 //            m.select (VocCharterDocType.class, "id", "label").orderBy ("label"),
             
             m.select (VocGisStatus.class,       "id", "label").orderBy ("id"),
+            
+            m.select (VocCharterObjectReason.class, "id", "label").orderBy ("label"),
             
             m.select (AdditionalService.class, "uuid AS id", "label").orderBy ("label")
                 .and ("is_deleted", 0)
