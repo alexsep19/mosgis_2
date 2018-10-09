@@ -43,12 +43,12 @@ public class ContractObjectsImpl extends BaseCRUD<ContractObject> implements Con
         );
 
         job.add ("item", item);
-                
+        
+        job.add("vc_action", VocAction.getVocJson ());
+        
         db.addJsonArrays (job,                
                 
             NsiTable.getNsiTable (3).getVocSelect (),                
-                
-            VocAction.getVocSelect (),
             
             m.select (VocContractDocType.class, "id", "label").orderBy ("label"),
             
@@ -59,7 +59,7 @@ public class ContractObjectsImpl extends BaseCRUD<ContractObject> implements Con
                 .and ("uuid_org", item.getString ("ctr.uuid_org"))
 
         );
-
+        
     });}
 
     @Override

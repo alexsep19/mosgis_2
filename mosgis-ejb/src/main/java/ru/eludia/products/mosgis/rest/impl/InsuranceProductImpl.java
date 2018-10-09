@@ -112,14 +112,16 @@ public class InsuranceProductImpl extends BaseCRUD<InsuranceProduct> implements 
             .toMaybeOne (InsuranceProductLog.class                            ).on ()
             .toMaybeOne (OutSoap.class,                             "err_text").on ()
         ));
-
+        
     });}
 
     @Override
     public JsonObject getVocs () {
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();
-
+        
+        jb.add("vc_actions", VocAction.getVocJson ());
+        
         try (DB db = ModelHolder.getModel ().getDb ()) {
             
             db.addJsonArrays (jb,
