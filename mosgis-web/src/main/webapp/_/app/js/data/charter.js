@@ -29,7 +29,7 @@ define ([], function () {
 
                 it._can = {}
 
-                if (it.uuid_org == $_USER.uuid_org) {
+                if (it.uuid_org == $_USER.uuid_org || $_USER.role.admin) {
 
                     switch (it.id_ctr_status) {
 

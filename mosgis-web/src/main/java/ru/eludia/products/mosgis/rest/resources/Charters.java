@@ -37,6 +37,8 @@ public class Charters extends EJBResource <CharterLocal> {
     
     private void checkOrg (JsonObject item) {
         
+        if (securityContext.isUserInRole ("admin")) return;
+        
         String itemOrg = item.getString ("uuid_org", null);
 
         if (itemOrg == null) throw new InternalServerErrorException ("Wrong Charter, no org: " + item);
@@ -162,7 +164,7 @@ public class Charters extends EJBResource <CharterLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) { 
         final JsonObject item = back.getItem (id);
-        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
+        checkOrg (item.getJsonObject ("item"));
         return item;
     }
     
@@ -172,7 +174,7 @@ public class Charters extends EJBResource <CharterLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
         final JsonObject item = back.getItem (id);
-        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
+        checkOrg (item.getJsonObject ("item"));
         return back.getLog (id, p, getUser ());
     }
     

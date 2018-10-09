@@ -15,8 +15,6 @@ define ([], function () {
 
         fill (view, it, $('body'))
         
-//        $('div.w2ui-field:hidden').remove ()
-
         $('#the_form').w2reform ({name: 'voc_organization_legal_form', record: it})
                 
         $('#container').w2relayout ({
@@ -61,7 +59,7 @@ define ([], function () {
         
         var charter_uuid = it ['charter.uuid']
         
-        if (charter_uuid) {
+        if (charter_uuid && ($_USER.uuid_org == it.uuid || $_USER.role.admin || $_USER.role.nsi_20_4)) {
         
             clickOn ($('div[data-text=stateregistrationdate]'), function () {
                 openTab ('/charter/' + charter_uuid)
