@@ -1,9 +1,6 @@
 package ru.eludia.products.mosgis.rest.impl;
 
-import java.util.Map;
-import javax.annotation.Resource;
 import javax.ejb.Stateless;
-import javax.jms.Queue;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -11,10 +8,7 @@ import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
-import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.base.db.sql.gen.Select;
-import ru.eludia.base.model.Table;
-import ru.eludia.base.model.phys.PhysicalCol;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.CharterLog;
@@ -23,8 +17,8 @@ import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState;
+import ru.eludia.products.mosgis.db.model.voc.VocCharterObjectReason;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
-import ru.eludia.products.mosgis.db.model.voc.VocGisContractType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType;
 import static ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType.i.OWNERS;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -174,6 +168,10 @@ public class CharterImpl extends BaseCRUD<Charter> implements CharterLocal {
                 
                 model
                     .select (VocAsyncEntityState.class, "id", "label")                    
+                    .orderBy ("label"),
+                
+                model
+                    .select (VocCharterObjectReason.class, "id", "label")                    
                     .orderBy ("label"),
                 
                 model

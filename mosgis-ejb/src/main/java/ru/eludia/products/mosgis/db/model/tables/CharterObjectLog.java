@@ -6,6 +6,7 @@ import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import static ru.eludia.base.model.def.Def.NOW;
 import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.model.voc.VocCharterObjectReason;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
 
 public class CharterObjectLog extends Table {
@@ -28,6 +29,8 @@ public class CharterObjectLog extends Table {
         
         col   ("annulmentinfo",             Type.STRING,           null,                "Причина аннулирования.");       
         col   ("is_annuled",                Type.BOOLEAN,          new Virt ("DECODE(\"ANNULMENTINFO\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0");
+        fk    ("id_reason",                 VocCharterObjectReason.class, null, "Основание");
+        col   ("ismanagedbycontract",       Type.BOOLEAN,          null,   "Управление многоквартирным домом осуществляется управляющей организацией по договору управления");
 
         col   ("contractobjectversionguid", Type.UUID,             null,                "UUID этой версии данного объекта в ГИС ЖКХ");
         
@@ -37,12 +40,16 @@ public class CharterObjectLog extends Table {
            + "       is_deleted,              "
 //           + "       uuid_charter_agreement, "
            + "       annulmentinfo,           "
+           + "       id_reason,               "
+           + "       ismanagedbycontract,     "
            + "       startdate,               "
            + "       enddate                  "
            + "INTO "                
            + "       :NEW.is_deleted,              "
 //           + "       :NEW.uuid_charter_agreement, "
            + "       :NEW.annulmentinfo,           "
+           + "       :NEW.id_reason,               "
+           + "       :NEW.ismanagedbycontract,     "
            + "       :NEW.startdate,               "
            + "       :NEW.enddate                  "
            + " FROM tb_charter_objects WHERE uuid=:NEW.uuid_object; "

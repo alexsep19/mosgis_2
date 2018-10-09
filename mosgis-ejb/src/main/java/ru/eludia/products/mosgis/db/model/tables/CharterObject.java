@@ -7,6 +7,7 @@ import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Num;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import ru.eludia.products.mosgis.db.model.voc.VocCharterObjectReason;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 
 public class CharterObject extends Table {
@@ -22,6 +23,9 @@ public class CharterObject extends Table {
 //        ref    ("uuid_charter_agreement", CharterFile.class,    null,         "Ссылка на дополнительное соглашение");
         
         fk     ("fiashouseguid",           VocBuilding.class,                   "Глобальный уникальный идентификатор дома по ФИАС");
+        
+        fk     ("id_reason",               VocCharterObjectReason.class, new Num (VocCharterObjectReason.i.CHARTER.getId ()), "Основание");
+        col    ("ismanagedbycontract",     Type.BOOLEAN,          Bool.FALSE,   "Управление многоквартирным домом осуществляется управляющей организацией по договору управления");
 
         col    ("startdate",               Type.DATE,                           "Дата начала предоставления услуг");
         col    ("enddate",                 Type.DATE,                           "Дата окончания предоставления услуг");        

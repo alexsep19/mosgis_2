@@ -31,19 +31,16 @@ define ([], function () {
                 {field: 'fias.label', caption: 'Адрес', size: 100},
                 {field: 'startdate', caption: 'Начало', size: 18, render: _dt},
                 {field: 'enddate', caption: 'Окончание', size: 18, render: _dt},
-/*                
-                {field: '_', caption: 'Основание', size: 50, render: function (r) {
-                    return r.dt ? 'ДС от ' + dt_dmy (r.dt) + ' №' + r.no : 'договор'
-                }},
-*/                
+                {field: 'id_reason', caption: 'Основание', size: 18, voc: data.vc_charter_object_reasons},
+                {field: 'ismanagedbycontract', caption: 'Обслуживание', size: 18, voc: {0: "без договора", 1: "по договору"}},
                 {field: 'id_ctr_status_gis',  caption: 'Статус', size: 10, voc: data.vc_gis_status},
             ],
             
             postData: {search: [
-                {field: "uuid_contract", operator: "is", value: $_REQUEST.id},
+                {field: "uuid_charter", operator: "is", value: $_REQUEST.id},
             ]},
 
-            url: '/mosgis/_rest/?type=contract_objects',
+            url: '/mosgis/_rest/?type=charter_objects',
                         
             onDblClick: function (e) {openTab ('/charter_object/' + e.recid)},
             

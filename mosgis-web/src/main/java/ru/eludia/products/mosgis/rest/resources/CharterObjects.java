@@ -1,6 +1,5 @@
 package ru.eludia.products.mosgis.rest.resources;
 
-import javax.annotation.security.RolesAllowed;
 import ru.eludia.products.mosgis.rest.misc.EJBResource;
 import javax.json.JsonObject;
 import javax.ws.rs.Consumes;
@@ -53,7 +52,6 @@ public class CharterObjects extends EJBResource <CharterObjectsLocal> {
 
     @POST
     @Path("create") 
-    @RolesAllowed ("nsi_20_1")
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject doCreate (JsonObject p) {
