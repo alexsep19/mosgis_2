@@ -11,24 +11,34 @@ public class VocAction extends Table {
 
     private static JsonArray jsonArray;
     
-    public VocAction () {
-        
-        super ("vc_actions", "Действия пользователей системы");
-        
-        pk    ("name",         Type.STRING,  "Идентификатор");
-        col   ("label",        Type.STRING,  "Наименование");
-        
-        data  (i.class);
+    static {
         
         JsonArrayBuilder builder = Json.createArrayBuilder ();
         
         for (i value: i.values ()) builder.add (Json.createObjectBuilder ()
-            .add ("id", value.name)
+            .add ("id",    value.name)
             .add ("label", value.label)
         );
                     
         jsonArray = builder.build ();
         
+    }
+    
+    private static final String TABLE_NAME = "vc_actions";
+    
+    public static final void addTo (JsonObjectBuilder job) {
+        job.add (TABLE_NAME, jsonArray);
+    }   
+
+    public VocAction () {
+        
+        super (TABLE_NAME, "Действия пользователей системы");
+        
+        pk    ("name",         Type.STRING,  "Идентификатор");
+        col   ("label",        Type.STRING,  "Наименование");
+        
+        data  (i.class);
+                
     }
     
     public enum i {
@@ -72,9 +82,5 @@ public class VocAction extends Table {
         }
 
     }
-    
-    public static void addTo (JsonObjectBuilder job) {
-        job.add ("vc_actions", jsonArray);
-    }
-    
+        
 }
