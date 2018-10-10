@@ -42,11 +42,11 @@ public class CharterObjectsImpl extends BaseCRUD<CharterObject> implements Chart
 
         job.add ("item", item);
                 
+        job.add("vc_actions", VocAction.getVocJson ());
+        
         db.addJsonArrays (job,                
                 
             NsiTable.getNsiTable (3).getVocSelect (),                
-                
-            VocAction.getVocSelect (),
             
 //            m.select (VocCharterDocType.class, "id", "label").orderBy ("label"),
             

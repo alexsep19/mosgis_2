@@ -12,6 +12,7 @@ import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.AdditionalService;
 import ru.eludia.products.mosgis.db.model.tables.AdditionalServiceLog;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -107,6 +108,8 @@ public class AdditionalServiceImpl extends BaseCRUD<AdditionalService> implement
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();
 
+        jb.add("vc_actions", VocAction.getVocJson ());
+        
         try (DB db = ModelHolder.getModel ().getDb ()) {
             
             db.addJsonArrays (jb,

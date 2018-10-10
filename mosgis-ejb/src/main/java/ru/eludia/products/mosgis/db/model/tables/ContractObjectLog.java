@@ -6,6 +6,7 @@ import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import static ru.eludia.base.model.def.Def.NOW;
 import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
 
 public class ContractObjectLog extends Table {
@@ -15,7 +16,7 @@ public class ContractObjectLog extends Table {
         super  ("tb_contract_objects__log", "История изменения объектов договоров управления");
         
         pk    ("uuid",                      Type.UUID,             NEW_UUID,            "Ключ");
-        col   ("action",                    Type.STRING,                                "Действие");
+        ref   ("action",                    VocAction.class,                            "Действие");
         fk    ("uuid_object",               ContractObject.class,                       "Ссылка на запись");
         col   ("ts",                        Type.TIMESTAMP,        NOW,                 "Дата/время события");
         fk    ("uuid_user",                 VocUser.class,         null,                "Оператор");

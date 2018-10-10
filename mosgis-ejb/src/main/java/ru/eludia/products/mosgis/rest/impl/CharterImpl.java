@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.math.BigDecimal;
 import javax.ejb.Stateless;
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -151,12 +152,12 @@ public class CharterImpl extends BaseCRUD<Charter> implements CharterLocal {
         JsonObjectBuilder jb = Json.createObjectBuilder ();
         
         final MosGisModel model = ModelHolder.getModel ();
+        
+        jb.add("vc_actions", VocAction.getVocJson ());
 
         try (DB db = model.getDb ()) {
             
             db.addJsonArrays (jb,
-                    
-                VocAction.getVocSelect (),
 
                 NsiTable.getNsiTable (58).getVocSelect ()
                     .toMaybeOne (VocGisCustomerTypeNsi58.class, "AS it", "isdefault")
