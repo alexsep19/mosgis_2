@@ -44,7 +44,7 @@ public class ContractObjectsImpl extends BaseCRUD<ContractObject> implements Con
 
         job.add ("item", item);
         
-        job.add("vc_action", VocAction.getVocJson ());
+        VocAction.addTo (job);
         
         db.addJsonArrays (job,                
                 

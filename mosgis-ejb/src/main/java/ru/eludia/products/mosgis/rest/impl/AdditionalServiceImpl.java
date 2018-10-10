@@ -107,8 +107,8 @@ public class AdditionalServiceImpl extends BaseCRUD<AdditionalService> implement
     public JsonObject getVocs () {
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();
-
-        jb.add("vc_actions", VocAction.getVocJson ());
+        
+        VocAction.addTo (jb);
         
         try (DB db = ModelHolder.getModel ().getDb ()) {
             

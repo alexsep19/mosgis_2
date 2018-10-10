@@ -153,7 +153,7 @@ public class CharterImpl extends BaseCRUD<Charter> implements CharterLocal {
         
         final MosGisModel model = ModelHolder.getModel ();
         
-        jb.add("vc_actions", VocAction.getVocJson ());
+        VocAction.addTo (jb);
 
         try (DB db = model.getDb ()) {
             

@@ -120,7 +120,7 @@ public class InsuranceProductImpl extends BaseCRUD<InsuranceProduct> implements 
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();
         
-        jb.add("vc_actions", VocAction.getVocJson ());
+        VocAction.addTo (jb);
         
         try (DB db = ModelHolder.getModel ().getDb ()) {
             

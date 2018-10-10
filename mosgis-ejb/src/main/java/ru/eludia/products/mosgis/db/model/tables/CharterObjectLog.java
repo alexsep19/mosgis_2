@@ -6,6 +6,7 @@ import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import static ru.eludia.base.model.def.Def.NOW;
 import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocCharterObjectReason;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
 
@@ -16,8 +17,8 @@ public class CharterObjectLog extends Table {
         super  ("tb_charter_objects__log", "История изменения объектов договоров управления");
         
         pk    ("uuid",                      Type.UUID,             NEW_UUID,            "Ключ");
-        col   ("action",                    Type.STRING,                                "Действие");
-        fk    ("uuid_object",               CharterObject.class,                       "Ссылка на запись");
+        ref   ("action",                    VocAction.class,                            "Действие");
+        fk    ("uuid_object",               CharterObject.class,                        "Ссылка на запись");
         col   ("ts",                        Type.TIMESTAMP,        NOW,                 "Дата/время события");
         fk    ("uuid_user",                 VocUser.class,         null,                "Оператор");
         fk    ("uuid_out_soap",             OutSoap.class,         null,                "Последний запрос на импорт в ГИС ЖКХ");

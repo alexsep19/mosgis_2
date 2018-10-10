@@ -35,14 +35,14 @@ public class CharterObjectsImpl extends BaseCRUD<CharterObject> implements Chart
         
         final JsonObject item = db.getJsonObject (m
             .get   (getTable (), id,          "AS root", "*"    )
-            .toOne (Charter.class,           "AS ctr",  "*"    ).on ()
+            .toOne (Charter.class,            "AS ctr",  "*"    ).on ()
             .toOne (VocOrganization.class,    "AS org",  "label").on ("ctr.uuid_org")
             .toOne (VocBuildingAddress.class, "AS fias", "label").on ("root.fiashouseguid=fias.houseguid")
         );
 
         job.add ("item", item);
                 
-        job.add("vc_actions", VocAction.getVocJson ());
+        VocAction.addTo (job);
         
         db.addJsonArrays (job,                
                 

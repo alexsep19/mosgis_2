@@ -3,7 +3,6 @@ package ru.eludia.products.mosgis.db.model.voc;
 import javax.json.Json;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.Table;
-import javax.json.JsonObject;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
@@ -23,14 +22,11 @@ public class VocAction extends Table {
         
         JsonArrayBuilder builder = Json.createArrayBuilder ();
         
-        for (i value: i.values ()) {
-            
-            JsonObjectBuilder jsonBuilder = Json.createObjectBuilder ();
-            jsonBuilder.add("id", value.name).add ("label", value.label);
-            builder.add (jsonBuilder.build ());
-            
-        }
-        
+        for (i value: i.values ()) builder.add (Json.createObjectBuilder ()
+            .add ("id", value.name)
+            .add ("label", value.label)
+        );
+                    
         jsonArray = builder.build ();
         
     }
@@ -76,9 +72,9 @@ public class VocAction extends Table {
         }
 
     }
-
-    public static JsonArray getVocJson () {
-        return jsonArray;
+    
+    public static void addTo (JsonObjectBuilder job) {
+        job.add ("vc_actions", jsonArray);
     }
     
 }
