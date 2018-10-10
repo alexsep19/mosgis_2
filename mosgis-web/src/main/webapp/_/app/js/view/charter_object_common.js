@@ -34,9 +34,9 @@ define ([], function () {
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
-                            {id: 'charter_object_common_services', caption: 'Услуги'},
+                            {id: 'charter_object_common_services', caption: 'Услуги', off: data.item.ismanagedbycontract},
                             {id: 'charter_object_common_log', caption: 'История изменений'},
-                        ],
+                        ].filter (not_off),
                         onClick: $_DO.choose_tab_charter_object_common
                     }                
                 },

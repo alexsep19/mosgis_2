@@ -41,7 +41,6 @@ public class CharterObjectServicesImpl extends BaseCRUD<CharterObjectService> im
                 
         Select select = db.getModel ()
             .select     (getTable (),              "AS root", "*", "uuid AS id")
-            .toMaybeOne (CharterFile.class,       "AS agreement", "agreementnumber AS no", "agreementdate AS dt").on ()
             .toMaybeOne (AdditionalService.class,  "AS adds", "label").on ()
             .toMaybeOne (nsiTable, nsiTable.getLabelField ().getfName () + " AS nsi_label").on ("(root.code_vc_nsi_3=vc_nsi_3.code AND vc_nsi_3.isactual=1)")
             .where      ("is_deleted", 0)
