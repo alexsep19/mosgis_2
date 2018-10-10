@@ -9,7 +9,7 @@ define ([], function () {
         if (!v.fiashouseguid) die ('fiashouseguid', 'Укажите, пожалуйста, адрес обслуживаемого дома')
 
         if (v.enddate) {
-            if (v.enddate < v.startdate) die ('enddate', 'Окончание периода не может предшествовать его началу')
+            if (v.enddate < v.startdate) die ('enddate', ' Дата начала управления превышает дату окончания управления')
         }
         
         var grid = w2ui ['charter_objects_grid']

@@ -43,6 +43,10 @@ define ([], function () {
 
         var v = f.values ()
         
+        if (v.enddate) {
+            if (v.enddate < v.startdate) die ('enddate', ' Дата начала управления превышает дату окончания управления')
+        }
+
         query ({type: 'charter_objects', action: 'update'}, {data: v}, reload_page)
 
     }

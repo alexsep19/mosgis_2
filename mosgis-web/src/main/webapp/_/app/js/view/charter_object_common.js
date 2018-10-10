@@ -62,13 +62,11 @@ define ([], function () {
             fields : [                     
                     {name: 'startdate', type: 'date', options: {
                         keyboard: false,
-                        start:    dt_dmy (data.item ['ctr.effectivedate']),
-                        end:      dt_dmy (data.item ['ctr.plandatecomptetion']),
+                        start:    dt_dmy (data.item ['ctr.date_']),
                     }},
                     {name: 'enddate',   type: 'date', options: {
                         keyboard: false,
-                        start:    dt_dmy (data.item ['ctr.effectivedate']),
-                        end:      dt_dmy (data.item ['ctr.plandatecomptetion']),
+                        start:    dt_dmy (data.item ['ctr.date_']),
                     }},
                     {name: 'id_reason', type: 'list', options: {items: data.vc_charter_object_reasons.items}},
                     {name: 'ismanagedbycontract', type: 'list', options: {items: [
