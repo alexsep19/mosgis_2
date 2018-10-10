@@ -40,8 +40,8 @@ public class VocOrganization extends Table {
         col    ("activityenddate", Type.DATE,       null,           "Дата прекращения деятельности");
         
         col    ("uuid",           Type.UUID,    new Virt ("''||ORGROOTENTITYGUID"),  "uuid");
-        col    ("label",          Type.STRING,  new Virt ("NVL(\"SHORTNAME\", \"SURNAME\"||' '||\"FIRSTNAME\"||' '||\"PATRONYMIC\")"),  "Наименование");
-        col    ("label_uc",       Type.STRING,  new Virt ("UPPER(NVL(\"SHORTNAME\", \"SURNAME\"||' '||\"FIRSTNAME\"||' '||\"PATRONYMIC\"))"),  "НАИМЕНОВАНИЕ В ВЕРХНЕМ РЕГИСТРЕ");
+        col    ("label",          Type.STRING,        new Virt ("NVL(NVL(\"SHORTNAME\",\"FULLNAME\"), \"SURNAME\"||' '||\"FIRSTNAME\"||' '||\"PATRONYMIC\")"),  "Наименование");
+        col    ("label_uc",       Type.STRING,  new Virt ("UPPER(NVL(NVL(\"SHORTNAME\",\"FULLNAME\"), \"SURNAME\"||' '||\"FIRSTNAME\"||' '||\"PATRONYMIC\"))"),  "НАИМЕНОВАНИЕ В ВЕРХНЕМ РЕГИСТРЕ");
 
         fk     ("id_type", VocOrganizationTypes.class, null, "Тип организации");
         
