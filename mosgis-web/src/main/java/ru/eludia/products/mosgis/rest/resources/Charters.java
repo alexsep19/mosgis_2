@@ -38,7 +38,8 @@ public class Charters extends EJBResource <CharterLocal> {
     private void checkOrg (JsonObject item) {
         
         if (securityContext.isUserInRole ("admin")) return;
-        
+        if (securityContext.isUserInRole ("nsi_20_4")) return;
+
         String itemOrg = item.getString ("uuid_org", null);
 
         if (itemOrg == null) throw new InternalServerErrorException ("Wrong Charter, no org: " + item);
