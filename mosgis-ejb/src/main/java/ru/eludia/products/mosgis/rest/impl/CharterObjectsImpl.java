@@ -16,7 +16,7 @@ import ru.eludia.products.mosgis.db.model.tables.CharterObjectLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.db.model.voc.VocCharterObjectReason;
-//import ru.eludia.products.mosgis.db.model.voc.VocCharterDocType;
+import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.rest.User;
@@ -48,7 +48,7 @@ public class CharterObjectsImpl extends BaseCRUD<CharterObject> implements Chart
                 
             NsiTable.getNsiTable (3).getVocSelect (),                
             
-//            m.select (VocCharterDocType.class, "id", "label").orderBy ("label"),
+            m.select (VocContractDocType.class, "id", "label").orderBy ("label"),
             
             m.select (VocGisStatus.class,       "id", "label").orderBy ("id"),
             
