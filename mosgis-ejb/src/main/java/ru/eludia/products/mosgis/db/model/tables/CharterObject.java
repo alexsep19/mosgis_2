@@ -28,7 +28,7 @@ public class CharterObject extends Table {
         col    ("ismanagedbycontract",     Type.BOOLEAN,          Bool.FALSE,   "Управление многоквартирным домом осуществляется управляющей организацией по договору управления");
 
         col    ("startdate",               Type.DATE,                           "Дата начала предоставления услуг");
-        col    ("enddate",                 Type.DATE,                           "Дата окончания предоставления услуг");        
+        col    ("enddate",                 Type.DATE,             null,         "Дата окончания предоставления услуг");        
        
         col    ("annulmentinfo",           Type.STRING,           null,       "Причина аннулирования.");
         col    ("is_annuled",              Type.BOOLEAN,          new Virt ("DECODE(\"ANNULMENTINFO\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0");

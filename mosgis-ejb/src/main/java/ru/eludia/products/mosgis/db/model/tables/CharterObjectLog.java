@@ -25,8 +25,8 @@ public class CharterObjectLog extends Table {
         
         col   ("is_deleted",                Type.BOOLEAN,          Bool.FALSE,          "1, если запись удалена; иначе 0");        
 //        ref   ("uuid_charter_agreement",   CharterFile.class,    null,                "Ссылка на дополнительное соглашение");        
-        col   ("startdate",                 Type.DATE,                                  "Дата начала предоставления услуг");
-        col   ("enddate",                   Type.DATE,                                  "Дата окончания предоставления услуг");                
+        col   ("startdate",                 Type.DATE,             null,                "Дата начала предоставления услуг");
+        col   ("enddate",                   Type.DATE,             null,                "Дата окончания предоставления услуг");                
         
         col   ("annulmentinfo",             Type.STRING,           null,                "Причина аннулирования.");       
         col   ("is_annuled",                Type.BOOLEAN,          new Virt ("DECODE(\"ANNULMENTINFO\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0");
