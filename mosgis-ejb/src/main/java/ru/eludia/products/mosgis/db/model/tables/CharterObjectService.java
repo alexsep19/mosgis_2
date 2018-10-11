@@ -22,7 +22,7 @@ public class CharterObjectService extends Table {
         col    ("code_vc_nsi_3",           Type.STRING,  20,        null,       "Коммунальная услуга");
         ref    ("uuid_add_service",        AdditionalService.class, null,       "Дополнительная услуга");
 
-        col    ("is_additional",           Type.BOOLEAN,            new Virt    ("DECODE(\"UUID_ADD_SERVICE\",NULL,0,1)"),  "1, для дополнительной услуги, 0 для коммунальной");
+        col    ("is_additional",           Type.BOOLEAN,            new Virt    ("DECODE(RAWTOHEX(\"UUID_ADD_SERVICE\"),NULL,0,1)"),  "1, для дополнительной услуги, 0 для коммунальной");
 
         col    ("startdate",               Type.DATE,                           "Дата начала предоставления услуги");
         col    ("enddate",                 Type.DATE,                           "Дата окончания предоставления услуги");
