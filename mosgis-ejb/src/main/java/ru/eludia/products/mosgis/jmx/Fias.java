@@ -246,7 +246,7 @@ public class Fias implements FiasMBean, FiasLocal {
                 
                 final long now = System.currentTimeMillis ();
                 long elapsed = now - Timestamp.valueOf (started).getTime ();
-                long remaining = elapsed * (totalSize - totalDone) / totalSize;
+                long remaining = elapsed * (totalSize - totalDone) / totalDone;
 
                 sb.append (" Expected to complete by ");
                 sb.append (new Timestamp (now + remaining));
