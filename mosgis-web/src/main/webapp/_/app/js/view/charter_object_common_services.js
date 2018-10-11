@@ -50,7 +50,7 @@ define ([], function () {
                 {field: 'startdate', caption: 'Начало', size: 18, render: _dt},
                 {field: 'enddate', caption: 'Окончание', size: 18, render: _dt},
                 {field: '_', caption: 'Основание', size: 50, render: function (r) {
-                    return r.dt ? 'ДС от ' + dt_dmy (r.dt) + ' №' + r.no : 'договор'
+                    return r.uuid_charter_file ? 'Протокол ' + r ['proto.label'] : 'устав'
                 }},
                 
             ],

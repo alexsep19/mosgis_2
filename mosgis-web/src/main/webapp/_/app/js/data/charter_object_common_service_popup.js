@@ -1,27 +1,21 @@
 define ([], function () {
 
-    $_DO.update_charter_object_common_service_house_new = function (e) {
+    $_DO.update_charter_object_common_service_popup = function (e) {
 
         var form = w2ui ['voc_user_form']
 
         var v = form.values ()
-
-        if (!v.code_vc_nsi_3) die ('code_vc_nsi_3', 'Укажите, пожалуйста, вид услуги')
         
-        if (v.enddate) {
-            if (v.enddate < v.startdate) die ('enddate', ' Дата начала превышает дату окончания управления')
-        }
-
         var grid = w2ui ['charter_object_common_services_grid']
         
         v.uuid_charter_object = $_REQUEST.id
 
-        query ({type: 'charter_object_services', action: 'create', id: undefined}, {data: v}, function () {
-        
+        query ({type: 'charter_object_services', action: 'update', id: form.record.uuid}, {data: v}, function () {
+
             w2popup.close ()
-            
+
             grid.reload (grid.refresh)
-            
+
         })
 
     }
@@ -29,13 +23,14 @@ define ([], function () {
     return function (done) {
 
         var data = clone ($('body').data ('data'))
+        var grid = w2ui ['charter_object_common_services_grid']
 
-        data.record = {
-            uuid_charter_file: "",
-            startdate: dt_dmy (data.item.startdate),
-            enddate:   dt_dmy (data.item.enddate),
-        }
+        var r = grid.get (grid.getSelection () [0])
+        r.startdate = dt_dmy (r.startdate)
+        r.enddate = dt_dmy (r.enddate)
         
+        data.record = r
+
         query ({type: "charter_docs", id: undefined}, {search: [
         
             {field: "uuid_charter", operator: "is", value: data.item.uuid_charter},

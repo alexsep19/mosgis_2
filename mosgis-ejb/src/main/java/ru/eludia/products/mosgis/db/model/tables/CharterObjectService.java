@@ -18,6 +18,7 @@ public class CharterObjectService extends Table {
 
         ref    ("uuid_charter_object",     CharterObject.class,                 "Ссылка на объект устава");
         fk     ("uuid_charter",            Charter.class,                       "Ссылка на устав");
+        ref    ("uuid_charter_file",       CharterFile.class,    null,          "Ссылка на протокол");
                 
         col    ("code_vc_nsi_3",           Type.STRING,  20,        null,       "Коммунальная услуга");
         ref    ("uuid_add_service",        AdditionalService.class, null,       "Дополнительная услуга");

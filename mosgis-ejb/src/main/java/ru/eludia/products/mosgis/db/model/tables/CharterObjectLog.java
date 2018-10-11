@@ -24,7 +24,6 @@ public class CharterObjectLog extends Table {
         fk    ("uuid_out_soap",             OutSoap.class,         null,                "Последний запрос на импорт в ГИС ЖКХ");
         
         col   ("is_deleted",                Type.BOOLEAN,          Bool.FALSE,          "1, если запись удалена; иначе 0");        
-//        ref   ("uuid_charter_agreement",   CharterFile.class,    null,                "Ссылка на дополнительное соглашение");        
         col   ("startdate",                 Type.DATE,             null,                "Дата начала предоставления услуг");
         col   ("enddate",                   Type.DATE,             null,                "Дата окончания предоставления услуг");                
         
@@ -39,7 +38,6 @@ public class CharterObjectLog extends Table {
                 
            + "SELECT"
            + "       is_deleted,              "
-//           + "       uuid_charter_agreement, "
            + "       annulmentinfo,           "
            + "       id_reason,               "
            + "       ismanagedbycontract,     "
@@ -47,7 +45,6 @@ public class CharterObjectLog extends Table {
            + "       enddate                  "
            + "INTO "                
            + "       :NEW.is_deleted,              "
-//           + "       :NEW.uuid_charter_agreement, "
            + "       :NEW.annulmentinfo,           "
            + "       :NEW.id_reason,               "
            + "       :NEW.ismanagedbycontract,     "

@@ -20,7 +20,6 @@ public class CharterObject extends Table {
         col    ("is_deleted",              Type.BOOLEAN,          Bool.FALSE,   "1, если запись удалена; иначе 0");
         
         ref    ("uuid_charter",           Charter.class,                      "Ссылка на договор");
-//        ref    ("uuid_charter_agreement", CharterFile.class,    null,         "Ссылка на дополнительное соглашение");
         
         fk     ("fiashouseguid",           VocBuilding.class,                   "Глобальный уникальный идентификатор дома по ФИАС");
         
