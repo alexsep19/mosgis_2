@@ -26,7 +26,7 @@ public class CharterObjectService extends Table {
         col    ("is_additional",           Type.BOOLEAN,            new Virt    ("DECODE(RAWTOHEX(\"UUID_ADD_SERVICE\"),NULL,0,1)"),  "1, для дополнительной услуги, 0 для коммунальной");
 
         col    ("startdate",               Type.DATE,                           "Дата начала предоставления услуги");
-        col    ("enddate",                 Type.DATE,                           "Дата окончания предоставления услуги");
+        col    ("enddate",                 Type.DATE,               null,       "Дата окончания предоставления услуги");
         
         fk     ("id_log",                  CharterObjectServiceLog.class,      null, "Последнее событие редактирования");        
 
