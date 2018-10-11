@@ -144,11 +144,13 @@ public class GisPollExportMgmtContractStatusMDB extends UUIDMDB<OutSoap> {
             }
             
             final Map<String, Object> or = HASH (
-                    "uuid_contract",             uuidContract,
-                    "fiashouseguid",             co.getFIASHouseGuid (),
-                    "contractobjectversionguid", co.getContractObjectVersionGUID ()
+                "uuid_contract",             uuidContract,
+                "fiashouseguid",             co.getFIASHouseGuid (),
+                "isconflicted",              Boolean.TRUE.equals (co.isIsConflicted ()) ? 1 : 0,
+                "isblocked",                 Boolean.TRUE.equals (co.isIsBlocked ()) ? 1 : 0,
+                "contractobjectversionguid", co.getContractObjectVersionGUID ()
             );
-            
+                        
             if (!versionsOnly) or.put ("id_ctr_status_gis", os.getId ());
             
             objectRecords.add (or);

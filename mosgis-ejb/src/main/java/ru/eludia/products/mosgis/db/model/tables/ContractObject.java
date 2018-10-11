@@ -41,6 +41,9 @@ public class ContractObject extends Table {
         fk     ("id_ctr_status",           VocGisStatus.class,                  new Num (VocGisStatus.i.PROJECT.getId ()), "Статус объекта договора с точки зрения mosgis");
         fk     ("id_ctr_status_gis",       VocGisStatus.class,                  new Num (VocGisStatus.i.PROJECT.getId ()), "Статус объекта договора с точки зрения ГИС ЖКХ");
 
+        col    ("isconflicted",            Type.BOOLEAN,          Bool.FALSE,   "Признак расхождения с Реестром инфомрации об управлении МКД");
+        col    ("isblocked",               Type.BOOLEAN,          Bool.FALSE,   "Признак заблокированного дома");
+
         col    ("contractobjectversionguid",     Type.UUID,       null,          "UUID последней версии данного объекта в ГИС ЖКХ");
         
         fk     ("id_log",                  ContractObjectLog.class,  null,      "Последнее событие редактирования");

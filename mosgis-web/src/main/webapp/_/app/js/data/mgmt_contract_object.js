@@ -32,8 +32,17 @@ define ([], function () {
             var it = data.item
 
             it._can = {}
+            
+            var is_locked = it.is_deleted || it.isblocked || it.isconflicted
+            
+            if (!is_locked) switch (it.id_ctr_status_gis) {
+                case 20:
+                case 70:
+                case 110:
+                    is_locked = true
+            }
 
-            if ($_USER.role.nsi_20_1 && it ['ctr.uuid_org'] == $_USER.uuid_org && !it.is_deleted) {
+            if (!is_locked && $_USER.role.nsi_20_1 && it ['ctr.uuid_org'] == $_USER.uuid_org) {
             
                 switch (it ["ctr.id_ctr_status"]) {
 

@@ -29,6 +29,8 @@ public class ContractObjectLog extends Table {
         
         col   ("annulmentinfo",             Type.STRING,           null,                "Причина аннулирования.");       
         col   ("is_annuled",                Type.BOOLEAN,          new Virt ("DECODE(\"ANNULMENTINFO\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0");
+        col   ("isconflicted",              Type.BOOLEAN,          null,                "Признак расхождения с Реестром инфомрации об управлении МКД");
+        col   ("isblocked",                 Type.BOOLEAN,          null,                "Признак заблокированного дома");
 
         col   ("contractobjectversionguid", Type.UUID,             null,                "UUID этой версии данного объекта в ГИС ЖКХ");
         
@@ -38,12 +40,16 @@ public class ContractObjectLog extends Table {
            + "       is_deleted,              "
            + "       uuid_contract_agreement, "
            + "       annulmentinfo,           "
+           + "       isconflicted,            "
+           + "       isblocked,               "
            + "       startdate,               "
            + "       enddate                  "
            + "INTO "                
            + "       :NEW.is_deleted,              "
            + "       :NEW.uuid_contract_agreement, "
            + "       :NEW.annulmentinfo,           "
+           + "       :NEW.isconflicted,            "
+           + "       :NEW.isblocked,               "
            + "       :NEW.startdate,               "
            + "       :NEW.enddate                  "
            + " FROM tb_contract_objects WHERE uuid=:NEW.uuid_object; "
