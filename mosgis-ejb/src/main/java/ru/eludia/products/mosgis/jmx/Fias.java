@@ -192,7 +192,12 @@ public class Fias implements FiasMBean, FiasLocal {
 
         logger.info ("data=" + data);
         
-        if (data == null || data.isEmpty ()) return "No import in progress";
+        if (data == null || data.isEmpty () || 
+           ((JsonNumber) data.get ("total_read")).longValue () == ((JsonNumber) data.get ("total_size")).longValue ()) {
+            
+            return "No import in progress";
+        
+        }
         
         long totalDone = ((JsonNumber) data.get ("total_read")).longValue ();
         long totalSize = ((JsonNumber) data.get ("total_size")).longValue ();
