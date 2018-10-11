@@ -161,6 +161,8 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();
         
+        VocAction.addTo (jb);
+        
         final MosGisModel model = ModelHolder.getModel ();
 
         try (DB db = model.getDb ()) {
