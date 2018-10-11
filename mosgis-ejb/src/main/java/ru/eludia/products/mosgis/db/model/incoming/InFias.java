@@ -39,7 +39,7 @@ public class InFias extends Table {
         col   ("sz_total",    Type.NUMERIC, 12, 0, new Virt ("SZ_ADDROBJ+SZ_HOUSE+SZ_ESTSTAT+SZ_STRSTAT"), "Общий размер архива, в байтах");
         col   ("rd_total",    Type.NUMERIC, 12, 0, new Virt ("RD_ADDROBJ+RD_HOUSE+RD_ESTSTAT+RD_STRSTAT"), "Сколько всего прочитано, в байтах");
         
-        col   ("prc", Type.NUMERIC, 3, 2, new Virt ("100*(RD_ADDROBJ+RD_HOUSE+RD_ESTSTAT+RD_STRSTAT)/(SZ_ADDROBJ+SZ_HOUSE+SZ_ESTSTAT+SZ_STRSTAT)"), "% прочитано");
+        col   ("prc", Type.NUMERIC, 5, 2, new Virt ("100*(RD_ADDROBJ+RD_HOUSE+RD_ESTSTAT+RD_STRSTAT)/(SZ_ADDROBJ+SZ_HOUSE+SZ_ESTSTAT+SZ_STRSTAT)"), "% прочитано");
 
     }
     
