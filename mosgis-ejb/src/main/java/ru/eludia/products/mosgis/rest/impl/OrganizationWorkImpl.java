@@ -222,6 +222,8 @@ public class OrganizationWorkImpl extends BaseCRUD<OrganizationWork> implements 
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();
         
+        VocAction.addTo (jb);
+        
         final MosGisModel model = ModelHolder.getModel ();
 
         try (DB db = model.getDb ()) {

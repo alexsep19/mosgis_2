@@ -34,7 +34,7 @@ define ([], function () {
         
             var org_vocs = []
                         
-            if (one_of_roles (1, 19, 20, 21, 36, 2)) org_vocs.push ({
+            if (one_of_roles (1, 19, 20, 21, 22, 36, 2)) org_vocs.push ({
                 id: 'add_services',
                 text: 'Дополнительные услуги',
             })

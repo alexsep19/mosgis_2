@@ -68,6 +68,16 @@ public class ContractObject extends Table {
             + " END LOOP; "
             + "END IF; "
                 
+
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
             + "IF :NEW.is_deleted = 0 THEN "
             + " FOR i IN ("
                 + "SELECT "
@@ -101,7 +111,40 @@ public class ContractObject extends Table {
                 + "|| '. Операция отменена.'); "
             + " END LOOP; "
             + "END IF; "
-                
+
+                    
+            + "IF :NEW.is_deleted = 0 THEN "
+            + " FOR i IN ("
+                + "SELECT "
+                + " o.startdate"
+                + " , o.enddate"
+                + " , org.label "
+                + "FROM "
+                + " tb_charter_objects o "
+                + " INNER JOIN tb_charters c ON o.uuid_charter = c.uuid"
+                + " INNER JOIN vc_orgs org    ON c.uuid_org      = org.uuid "
+                + "WHERE o.is_deleted = 0"
+                + " AND o.is_annuled = 0"
+                + " AND o.fiashouseguid = :NEW.fiashouseguid "
+                + " AND (o.enddate IS NULL OR o.enddate >= :NEW.startdate) "
+                + " AND o.startdate <= :NEW.enddate "
+                + ") LOOP"
+            + " raise_application_error (-20000, "
+                + "'Этот адрес обслуживается с ' "
+                + "|| TO_CHAR (i.startdate, 'DD.MM.YYYY')"
+                + "|| CASE WHEN i.enddate IS NULL THEN NULL ELSE ' по '"
+                + "|| TO_CHAR (i.enddate, 'DD.MM.YYYY') END"
+                + "||' согласно уставу '"
+                + "|| i.label"
+                + "|| '. Операция отменена.'); "
+            + " END LOOP; "
+            + "END IF; "
+                    
+                    
+                    
+                    
+                    
+                    
             + "IF :OLD.is_deleted = 0 AND :NEW.is_deleted = 1 THEN "
             + " UPDATE tb_contract_services SET is_deleted = 1 WHERE uuid_contract_object = :NEW.uuid; "
             + " COMMIT; "

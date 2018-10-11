@@ -19,7 +19,7 @@ public class VocContractDocType extends Table {
     public enum i {
         
         AGREEMENT_ATTACHMENT           ( 1, "Дополнительное соглашение"),
-        CHARTER                        ( 2, "Устав"),
+        CHARTER                        ( 2, "Документы устава"),
         COMMISSIONING_PERMIT_AGREEMENT ( 3, "Разрешение на ввод в эксплуатацию"),
         CONTRACT                       ( 4, "Договор"),
         CONTRACT_ATTACHMENT            ( 5, "Приложение к договору"),

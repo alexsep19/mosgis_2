@@ -5,6 +5,7 @@ import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import static ru.eludia.base.model.def.Def.NOW;
 import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState.i.PENDING;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
@@ -16,7 +17,7 @@ public class OrganizationWorkLog extends Table {
         super ("tb_org_works__log", "Работы и услуги организации: история изменения");
 
         pk    ("uuid",                      Type.UUID,             NEW_UUID,            "Ключ");
-        col   ("action",                    Type.STRING,                                "Действие");
+        ref   ("action",                    VocAction.class,                            "Действие");
         fk    ("uuid_object",               OrganizationWork.class,                     "Ссылка на запись");
         col   ("ts",                        Type.TIMESTAMP,        NOW,                 "Дата/время события");
         fk    ("uuid_user",                 VocUser.class,                      null,   "Оператор");

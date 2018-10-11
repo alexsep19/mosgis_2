@@ -24,7 +24,7 @@ define ([], function () {
 
     return function (done) {
 
-        query ({type: 'voc_organizations'}, {}, function (data) {
+        query ({type: 'voc_organizations'}, {}, function (data) {               
 
             $('body').data ('data', data)
 

@@ -1,9 +1,7 @@
 package ru.eludia.products.mosgis.rest.impl;
 
-import java.util.Map;
-import javax.annotation.Resource;
+import java.math.BigDecimal;
 import javax.ejb.Stateless;
-import javax.jms.Queue;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -11,23 +9,17 @@ import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
-import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.base.db.sql.gen.Select;
-import ru.eludia.base.model.Table;
-import ru.eludia.base.model.phys.PhysicalCol;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
-import ru.eludia.products.mosgis.db.model.tables.Contract;
-import ru.eludia.products.mosgis.db.model.tables.ContractFile;
-import ru.eludia.products.mosgis.db.model.tables.ContractFileLog;
 import ru.eludia.products.mosgis.db.model.tables.CharterLog;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState;
+import ru.eludia.products.mosgis.db.model.voc.VocCharterObjectReason;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
-import ru.eludia.products.mosgis.db.model.voc.VocGisContractType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType;
 import static ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType.i.OWNERS;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -42,7 +34,7 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 import ru.eludia.products.mosgis.rest.api.CharterLocal;
 
 @Stateless
-public class CharterImpl extends BaseCRUD<Contract> implements CharterLocal {
+public class CharterImpl extends BaseCRUD<Charter> implements CharterLocal {
 /*
     @Resource (mappedName = "mosgis.inHouseChartersQueue")
     Queue queue;
@@ -134,9 +126,9 @@ public class CharterImpl extends BaseCRUD<Contract> implements CharterLocal {
 
         job.add ("item", db.getJsonObject (m
             .get (Charter.class, id, "*")
-            .toOne      (VocOrganization.class,                    "label").on ("uuid_org")
-            .toMaybeOne (CharterLog.class                                ).on ()
-            .toMaybeOne (OutSoap.class,                         "err_text").on ()
+            .toOne      (VocOrganization.class, "label", "stateregistrationdate").on ("uuid_org")
+            .toMaybeOne (CharterLog.class                                       ).on ()
+            .toMaybeOne (OutSoap.class,                               "err_text").on ()
         ));
 
         JsonObject lastApprove = db.getJsonObject (m
@@ -160,12 +152,12 @@ public class CharterImpl extends BaseCRUD<Contract> implements CharterLocal {
         JsonObjectBuilder jb = Json.createObjectBuilder ();
         
         final MosGisModel model = ModelHolder.getModel ();
+        
+        VocAction.addTo (jb);
 
         try (DB db = model.getDb ()) {
             
             db.addJsonArrays (jb,
-                    
-                VocAction.getVocSelect (),
 
                 NsiTable.getNsiTable (58).getVocSelect ()
                     .toMaybeOne (VocGisCustomerTypeNsi58.class, "AS it", "isdefault")
@@ -174,14 +166,13 @@ public class CharterImpl extends BaseCRUD<Contract> implements CharterLocal {
                 .where ("f_7d0f481f17", 1),
                     
                 NsiTable.getNsiTable (54).getVocSelect (),
-
-                model
-                    .select (VocOrganization.class, "uuid AS id", "label")                    
-                    .orderBy ("label")
-                    .and ("uuid", model.select (Contract.class, "uuid_org").where ("is_deleted", 0)),
-
+                
                 model
                     .select (VocAsyncEntityState.class, "id", "label")                    
+                    .orderBy ("label"),
+                
+                model
+                    .select (VocCharterObjectReason.class, "id", "label")                    
                     .orderBy ("label"),
                 
                 model
@@ -190,17 +181,15 @@ public class CharterImpl extends BaseCRUD<Contract> implements CharterLocal {
                 
                 model
                     .select (VocContractDocType.class, "id", "label")                    
+                    .where ("id IN", 
+                        VocContractDocType.i.CHARTER.getId (),
+                        VocContractDocType.i.OTHER.getId ())
                     .orderBy ("label"),
 
                 model
                     .select (VocGisStatus.class, "id", "label")                    
-                    .orderBy ("id"),
+                    .orderBy ("id")
                 
-                model
-                    .select (VocOrganization.class, "AS customers", "uuid AS id", "label")
-                    .orderBy ("label")
-                    .and ("uuid", model.select (Contract.class, "uuid_org_customer").where ("is_deleted", 0))
-
             );
 
         }
@@ -212,24 +201,6 @@ public class CharterImpl extends BaseCRUD<Contract> implements CharterLocal {
         
     }
     
-    @Override
-    public JsonObject doCreate (JsonObject p, User user) {return fetchData ((db, job) -> {
-
-        final Table table = getTable ();
-
-        Map<String, Object> data = getData (p);
-
-        data.put ("id_contract_type", VocGisContractType.i.MGMT.getId ());
-        data.put (UUID_ORG, user.getUuidOrg ());
-
-        Object insertId = db.insertId (table, data);
-
-        logAction (db, user, insertId, VocAction.i.CREATE);
-
-        job.add ("id", insertId.toString ());
-
-    });}
-
     @Override
     public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
 
@@ -262,7 +233,7 @@ public class CharterImpl extends BaseCRUD<Contract> implements CharterLocal {
             "id_ctr_status",  VocGisStatus.i.MUTATING.getId (),
             "uuid_out_soap",  null
         ));
-        
+/*        
         Table t = db.getModel ().t (ContractFile.class);
         final PhysicalCol uCol = t.getColumn ("uuid_contract").toPhysical ();
         
@@ -282,7 +253,7 @@ public class CharterImpl extends BaseCRUD<Contract> implements CharterLocal {
         qp.append (")");
         
         db.d0 (qp);        
-
+*/
         logAction (db, user, id, VocAction.i.ALTER);
         
     });}

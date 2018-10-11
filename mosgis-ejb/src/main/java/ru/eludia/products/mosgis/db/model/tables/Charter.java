@@ -25,6 +25,7 @@ public class Charter extends Table {
         
         col   ("date_",                     Type.DATE,             null,        "Дата регистрации TCН/ТСЖ/кооператива (Организации Поставщика данных)");
         col   ("automaticrolloveroneyear",  Type.BOOLEAN,          Bool.FALSE,  "Автоматически продлить срок оказания услуг на один год");
+        col   ("nocharterapproveprotocol",  Type.BOOLEAN,          Bool.FALSE,  "Протокол, содержащий решение об утверждении устава, отсутствует");              
         
     //  DateDetailsType:
 
@@ -55,6 +56,28 @@ public class Charter extends Table {
 
         key    ("charterguid", "charterguid");
         unique ("uuid_org", "uuid_org");
+        
+        trigger ("BEFORE INSERT OR UPDATE", ""                
+                
+        + "BEGIN "
+
+            + "IF UPDATING "
+            + "  AND :OLD.id_ctr_status < " + VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+            + "  AND :NEW.id_ctr_status = " + VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+            + " THEN "
+
+                + " IF :NEW.ddt_m_start IS NULL THEN raise_application_error (-20000, 'Не задано начало периода ввода показаний приборов учёта. Операция отменена.'); END IF; "
+                + " IF :NEW.ddt_m_end   IS NULL THEN raise_application_error (-20000, 'Не задано окончание периода ввода показаний приборов учёта. Операция отменена.'); END IF; "
+
+                + " IF (:NEW.ddt_m_end_nxt > :NEW.ddt_m_start_nxt) AND (:NEW.ddt_m_end > :NEW.ddt_m_start) THEN raise_application_error (-20000, 'Период сдачи показаний по ИПУ указан некорректно: обнаружено пересечение периодов. Операция отменена.'); END IF; "
+                    
+                + " IF :NEW.ddt_d_start IS NULL THEN raise_application_error (-20000, 'Не задан срок выставления платежных документов. Операция отменена.'); END IF; "
+                + " IF :NEW.ddt_i_start IS NULL THEN raise_application_error (-20000, 'Не задан срок внесения платы за помещение / услуги. Операция отменена.'); END IF; "
+
+            + "END IF; " // UPDATING and approving
+                        
+        + "END;");
+        
 
     }
 

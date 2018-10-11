@@ -1,21 +1,44 @@
 package ru.eludia.products.mosgis.db.model.voc;
 
-import ru.eludia.base.db.sql.gen.Select;
+import javax.json.Json;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.Table;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 
 public class VocAction extends Table {
 
+    private static JsonArray jsonArray;
+    
+    static {
+        
+        JsonArrayBuilder builder = Json.createArrayBuilder ();
+        
+        for (i value: i.values ()) builder.add (Json.createObjectBuilder ()
+            .add ("id",    value.name)
+            .add ("label", value.label)
+        );
+                    
+        jsonArray = builder.build ();
+        
+    }
+    
+    private static final String TABLE_NAME = "vc_actions";
+    
+    public static final void addTo (JsonObjectBuilder job) {
+        job.add (TABLE_NAME, jsonArray);
+    }   
+
     public VocAction () {
         
-        super ("vc_actions", "Действия пользователей системы");
+        super (TABLE_NAME, "Действия пользователей системы");
         
         pk    ("name",         Type.STRING,  "Идентификатор");
         col   ("label",        Type.STRING,  "Наименование");
         
         data  (i.class);
-
+                
     }
     
     public enum i {
@@ -34,7 +57,7 @@ public class VocAction extends Table {
                 
         String name;
         String label;
-
+        
         public String getName () {
             return name;
         }
@@ -59,9 +82,5 @@ public class VocAction extends Table {
         }
 
     }
-    
-    public static Select getVocSelect () {
-        return ModelHolder.getModel ().select (VocAction.class, "name AS id", "label");        
-    }
-
+        
 }
