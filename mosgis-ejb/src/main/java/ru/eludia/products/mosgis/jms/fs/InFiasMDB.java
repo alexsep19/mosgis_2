@@ -42,6 +42,9 @@ import ru.eludia.products.mosgis.db.model.voc.VocBuildingEstate;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingStructure;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import com.github.junrar.Archive;
+import javax.ejb.EJB;
+import ru.eludia.products.mosgis.jmx.Fias;
+import ru.eludia.products.mosgis.jmx.FiasLocal;
 
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inFiasQueue")
@@ -50,6 +53,9 @@ import com.github.junrar.Archive;
 })
 public class InFiasMDB extends UUIDMDB<InFias> {
     
+    @EJB
+    FiasLocal fias;
+    
     SAXParserFactory spf = SAXParserFactory.newInstance ();
     private static final int PROGRESS_STEPS = 100;
     private static final int PACK_SIZE = 100;
@@ -57,7 +63,23 @@ public class InFiasMDB extends UUIDMDB<InFias> {
     
     @Override
     protected Get get (UUID uuid) {
-        return (Get) ModelHolder.getModel ().get (getTable (), uuid, "*");        
+        return (Get) ModelHolder.getModel ().get (getTable (), uuid, "uuid", 
+                                                                     "dt", "dt_from", "dt_to_fact",
+                                                                     "uri_addrobj",
+                                                                     "uri_house",
+                                                                     "uri_eststat",
+                                                                     "uri_strstat",
+                                                                     "uri_archive",
+                                                                     "sz_addrobj",
+                                                                     "sz_house",
+                                                                     "sz_strstat",
+                                                                     "sz_eststat",
+                                                                     "sz_total",
+                                                                     "rd_addrobj",
+                                                                     "rd_house",
+                                                                     "rd_strstat",
+                                                                     "rd_eststat",
+                                                                     "rd_total");        
     }    
 
     @Override
@@ -199,8 +221,9 @@ public class InFiasMDB extends UUIDMDB<InFias> {
                             final Long size = (Long) r.get ("sz_" + postfix);
                             logger.log (Level.INFO, "SIZE " + size);
                             try (ProgressInputStream pis = new ProgressInputStream (pipeIS, size, PROGRESS_STEPS, (pos, len) -> {
-                                logger.log (Level.INFO, "{0}% of {1} read...", new Object[]{Double.valueOf ((100.0 * pos) / (1.0 * len)).intValue (), postfix});
+                                //logger.log (Level.INFO, "{0}% of {1} read...", new Object[]{Double.valueOf ((100.0 * pos) / (1.0 * len)).intValue (), postfix});
                                 db.d0 (progressSQL, pos, uuid);
+                                logger.log (Level.INFO, fias.getProgressStatusText ());
                             }))
                             {
                                 spf.newSAXParser ().parse (pis, this);

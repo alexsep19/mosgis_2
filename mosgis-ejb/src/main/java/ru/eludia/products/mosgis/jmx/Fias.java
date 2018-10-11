@@ -31,11 +31,16 @@ import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import com.github.junrar.Archive;
 import com.github.junrar.rarfile.FileHeader;
+import java.sql.Timestamp;
+import javax.json.JsonNumber;
+import javax.json.JsonObject;
+import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.incoming.fias.InFiasStatsOverview;
 
 @Startup
 @Singleton
 //@DependsOn ("Conf")
-public class Fias implements FiasMBean {
+public class Fias implements FiasMBean, FiasLocal {
 
     private ObjectName objectName = null;
     private MBeanServer platformMBeanServer;
@@ -177,6 +182,96 @@ public class Fias implements FiasMBean {
         public FileHeader getHeader (Fias.Names s) {
             return n2h.get(s);
         }
+        
+    }
+    
+    @Override
+    public String getProgressStatusText () {
+        
+        JsonObject data = getProgressStatus ();
+
+        logger.info ("data=" + data);
+        
+        if (data == null || data.isEmpty ()) return "No import in progress";
+        
+        long totalDone = ((JsonNumber) data.get ("total_read")).longValue ();
+        long totalSize = ((JsonNumber) data.get ("total_size")).longValue ();
+        
+        long addrobjDone = ((JsonNumber) data.get ("addrobj_read")).longValue ();
+        long addrobjSize = ((JsonNumber) data.get ("addrobj_size")).longValue ();
+        
+        long houseDone = ((JsonNumber) data.get ("house_read")).longValue ();
+        long houseSize = ((JsonNumber) data.get ("house_size")).longValue ();
+        
+        long eststatDone = ((JsonNumber) data.get ("eststat_read")).longValue ();
+        long eststatSize = ((JsonNumber) data.get ("eststat_size")).longValue ();
+        
+        long strstatDone = ((JsonNumber) data.get ("strstat_read")).longValue ();
+        long strstatSize = ((JsonNumber) data.get ("strstat_size")).longValue ();
+        
+        final String started = data.getString ("started");
+
+        StringBuilder sb = new StringBuilder ("Started at ");        
+        sb.append (started);
+        
+        if (totalSize > 0) {
+
+            sb.append ("| total: ");
+            sb.append (totalDone);
+            sb.append ('/');
+            sb.append (totalSize);
+            sb.append (" (");
+            sb.append (100 * totalDone / totalSize);
+            sb.append ("%) done ");
+            
+            sb.append ("| " + Fias.Names.HOUSE + ": ");
+            sb.append (100 * houseDone / houseSize);
+            sb.append ("% done ");
+            
+            sb.append ("| " + Fias.Names.ADDROBJ + ": ");
+            sb.append (100 * addrobjDone / addrobjSize);
+            sb.append ("% done ");
+            
+            sb.append ("| " + Fias.Names.ESTSTAT + ": ");
+            sb.append (100 * eststatDone / eststatSize);
+            sb.append ("% done ");
+
+            sb.append ("| " + Fias.Names.STRSTAT + ": ");
+            sb.append (100 * strstatDone / strstatSize);
+            sb.append ("% done ");
+            
+            sb.append (" | ");
+            
+            if (totalSize > 0) {
+                
+                final long now = System.currentTimeMillis ();
+                long elapsed = now - Timestamp.valueOf (started).getTime ();
+                long remaining = elapsed * (totalSize - totalDone) / totalSize;
+
+                sb.append (" Expected to complete by ");
+                sb.append (new Timestamp (now + remaining));
+                
+            }            
+            
+        }
+        
+        sb.append ("...");
+        
+        return sb.toString ();
+        
+    }
+    
+    @Override
+    public JsonObject getProgressStatus () {
+        
+        final MosGisModel m = ModelHolder.getModel ();
+        
+        try (DB db = m.getDb ()) {            
+            return db.getJsonObject (m.select (InFiasStatsOverview.class, "*"));
+        }
+        catch (Exception e) {
+            throw new IllegalStateException ("Can't get FIAS import status", e);
+        }        
         
     }
 }
