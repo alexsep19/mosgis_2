@@ -2,7 +2,6 @@ package ru.eludia.products.mosgis.db.model.tables;
 
 import ru.eludia.base.model.View;
 import ru.eludia.base.model.Type;
-import ru.eludia.base.model.def.Num;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -51,6 +50,7 @@ public class MgmtContract extends View {
 
         fk    ("id_log",                    ContractLog.class,         null, "Последнее событие редактирования");
         col   ("versionnumber",             Type.INTEGER,          10, null,    "Номер версии (по состоянию в ГИС ЖКХ)");
+        col   ("reasonofannulment",         Type.STRING,         1000, null,    "Причина аннулирования");
         
     }
 
@@ -86,6 +86,7 @@ public class MgmtContract extends View {
             ", t.id_log"+
             ", t.uuid_out_soap" +
             ", t.versionnumber" +
+            ", t.reasonofannulment" +
             ", CASE" +
             "    WHEN ID_CTR_STATUS IN (100, 110) THEN 80 " +
             "    WHEN UUID_OUT_SOAP IS NULL THEN 80 " +
