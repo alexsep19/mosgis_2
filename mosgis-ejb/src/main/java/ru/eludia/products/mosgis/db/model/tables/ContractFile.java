@@ -59,9 +59,10 @@ public class ContractFile extends Table {
     }
     
     private static void fill (AttachmentType result, Map<String, Object> r) {        
-        result.setName (r.get ("label").toString ());
-        final String desc = r.get ("description").toString ();
-        result.setDescription (desc == null || desc.isEmpty () ? " " : desc);
+        final String label = r.get ("label").toString ();
+        result.setName (label);
+        final String desc = DB.to.String (r.get ("description")).trim ();
+        result.setDescription (desc.isEmpty () ? label : desc);
         result.setAttachmentHASH (r.get ("attachmenthash").toString ());
         final Attachment attachment = new Attachment ();
         attachment.setAttachmentGUID (r.get ("attachmentguid").toString ());
