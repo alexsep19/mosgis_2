@@ -3,6 +3,7 @@ package ru.eludia.products.mosgis.jms.gis.poll;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -14,11 +15,14 @@ import javax.ejb.MessageDriven;
 import javax.jms.Queue;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
+import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.base.model.Table;
+import ru.eludia.products.mosgis.db.model.tables.AdditionalService;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractLog;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
+import ru.eludia.products.mosgis.db.model.tables.ContractObjectService;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
@@ -269,6 +273,70 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
             "uuid", ctrUuid,
             "contractversionguid", null
         ));
+        
+        Model m = db.getModel ();
+        
+        Map<Object, Map<String, Object>> uuid2contractObject = new HashMap <> ();
+        Map<String, Map<String, Object>> fias2contractObject = new HashMap <> ();
+        
+        db.forEach (m
+                
+            .select (ContractObject.class, "*")
+            .where ("uuid_contract", ctrUuid), 
+                
+            (rs) -> {
+                
+                Map<String, Object> i = db.HASH (rs);
+                
+                i.put ("nsi2uuid", HASH ());
+                i.put ("un2uuid", HASH ());
+
+                uuid2contractObject.put (i.get ("uuid").toString (), i);
+                fias2contractObject.put (i.get ("fiashouseguid").toString (), i);
+            
+            }
+                
+        );
+        
+        db.forEach (m                
+                
+            .select (ContractObjectService.class, "uuid", "uuid_contract_object", "code_vc_nsi_3", "is_additional")
+            .where ("uuid_contract", ctrUuid)
+            .toMaybeOne (AdditionalService.class, "AS a", "uniquenumber").on ()
+                
+        , (rs) -> {
+            
+            DB.ResultGet rg = new DB.ResultGet (rs);
+
+            final String uuid_contract_object = rg.getUUIDString ("uuid_contract_object");
+                                
+            Map<String, Object> contract_object = uuid2contractObject.get (uuid_contract_object);
+            
+            if (contract_object == null) {
+                logger.warning ("contract_object not found: " + uuid_contract_object);
+                return;
+            }
+                        
+            if (rs.getInt ("is_additional") == 1) {
+                
+                ((Map<String, String>) contract_object.get ("un2uuid")).put (
+                    rs.getString ("a.uniquenumber"), 
+                    rg.getUUIDString ("uuid")
+                );
+                
+            }
+            else {
+                
+                ((Map<String, String>) contract_object.get ("nsi2uuid")).put (
+                    rs.getString ("code_vc_nsi_3"), 
+                    rg.getUUIDString ("uuid")
+                );                
+                
+            }
+            
+        });
+        
+        logger.info ("uuid2contractObject = " + uuid2contractObject);
 
         for (int i = 0; i < 10; i ++) {
             
@@ -288,6 +356,7 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
                 if (state.getRequestState () < 2) continue;
                 
                 List<Map<String, Object>> objectRecords = new ArrayList ();
+                List<Map<String, Object>> serviceRecords = new ArrayList ();
                                 
                 for (ExportCAChResultType er: state.getExportCAChResult ()) {
                     
@@ -311,21 +380,44 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
                     }                                       
                                         
                     for (ExportCAChResultType.Contract.ContractObject co: contract.getContractObject ()) {
+                        
+                        Map<String, Object> contract_object = fias2contractObject.get (co.getFIASHouseGuid ());
+                        
+                        String objUuid = contract_object.get ("uuid").toString ();
 
-                        final Map<String, Object> or = HASH (
-                            "uuid_contract",             ctrUuid,
-                            "fiashouseguid",             co.getFIASHouseGuid (),
-                            "startdate",                 co.getStartDate (),
-                            "enddate",                   co.getEndDate ()
-                        );
+                        objectRecords.add (HASH (
+                            "uuid",      objUuid,
+                            "startdate", co.getStartDate (),
+                            "enddate",   co.getEndDate ()
+                        ));
+                        
+                        for (ExportCAChResultType.Contract.ContractObject.HouseService hs: co.getHouseService ()) {
+                            
+                            serviceRecords.add (HASH (
+                                "uuid",      ((Map<String, String>) contract_object.get ("nsi2uuid")).get (hs.getServiceType ().getCode ()),
+                                "startdate", hs.getStartDate (),
+                                "enddate",   hs.getEndDate ()
+                            ));
+                            
+                        }                        
 
-                        objectRecords.add (or);
+                        for (ExportCAChResultType.Contract.ContractObject.AddService as: co.getAddService ()) {
+                            
+                            serviceRecords.add (HASH (
+                                "uuid",      ((Map<String, String>) contract_object.get ("un2uuid")).get (as.getServiceType ().getCode ()),
+                                "startdate", as.getStartDate (),
+                                "enddate",   as.getEndDate ()
+                            ));
+                            
+                        }                        
 
                     }            
                     
                     db.begin ();
                     
-                        db.upsert (ContractObject.class, objectRecords, objectKey);
+                        db.update (ContractObjectService.class, serviceRecords);
+                        
+                        db.update (ContractObject.class, objectRecords);
 
                         db.update (Contract.class, HASH (
                             "uuid",                ctrUuid,
@@ -350,10 +442,8 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
             
         }  
         
-    }    
-    
-    private static String [] objectKey   = {"uuid_contract", "fiashouseguid"};
-    
+    }
+        
     private class FU extends Exception {
         
         String code;
