@@ -8,9 +8,8 @@ define ([], function () {
 
         if (!v.code_vc_nsi_3) die ('code_vc_nsi_3', 'Укажите, пожалуйста, вид услуги')
         
-        if (v.enddate) {
-            if (v.enddate < v.startdate) die ('enddate', ' Дата начала превышает дату окончания управления')
-        }
+        if (!v.enddate) die ('enddate', 'Укажите, пожалуйста дату окончания управления')
+        if (v.enddate < v.startdate) die ('enddate', 'Дата начала превышает дату окончания управления')
 
         var grid = w2ui ['charter_object_common_services_grid']
         

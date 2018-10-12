@@ -6,6 +6,9 @@ define ([], function () {
 
         var v = form.values ()
         
+        if (!v.enddate) die ('enddate', 'Укажите, пожалуйста дату окончания управления')
+        if (v.enddate < v.startdate) die ('enddate', 'Дата начала превышает дату окончания управления')
+
         var grid = w2ui ['charter_object_common_services_grid']
         
         v.uuid_charter_object = $_REQUEST.id
