@@ -104,6 +104,7 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
             .toOne  (ContractFileLog.class, "AS log", "ts_start_sending", "err_text").on ()
             .where  ("uuid_contract", r.get ("uuid_object"))
             .and    ("id_status", 1)
+            .and    ("id_type <>", VocContractDocType.i.OTHER.getId ())
         );
         
         return id2file;
