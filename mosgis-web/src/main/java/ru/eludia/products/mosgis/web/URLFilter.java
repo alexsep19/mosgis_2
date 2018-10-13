@@ -70,7 +70,7 @@ public class URLFilter implements Filter {
     public void init (FilterConfig filterConfig) {  
         
         try {
-            ver = ic.lookup ("mosgis.confTopic").toString ().substring (7, 25);
+            ver = ic.lookup ("mosgis.confTopic").toString ().substring (7, 31);
         }
         catch (Exception ex) {
             logger.log (Level.SEVERE, "Cannot get application version", ex);
