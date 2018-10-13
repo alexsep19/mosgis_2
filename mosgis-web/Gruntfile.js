@@ -68,18 +68,18 @@ module.exports = function (grunt) {
         push: false
       }
     },
-    
+/*        
     replace: {
       versionNumber: {
         src: ['src/main/webapp/index.html'],
         overwrite: true,
         replacements: [{
-          from: /var ver.*/,
+          from: /var ver.* /,
           to: "var ver = '<%= grunt.file.readJSON ('package.json') ['version'] %>';"
         }]
       }
     },
-/*    
+
     requirejs: {
       compile: {
         options: {
@@ -137,7 +137,7 @@ module.exports = function (grunt) {
 
       general: {
         files: ['src/main/webapp/_/app/**/*.*'],
-        tasks: ['bump', 'replace'],
+        tasks: ['bump'],
         options: {nospawn: true}
       },
 

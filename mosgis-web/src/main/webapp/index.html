@@ -12,9 +12,10 @@
 
 			window.autoExec = function () {};
 
-			var ver = '1.0.6099';
+			var ver = '${buildNumber}';                        
+                        if (ver.charAt (0) == '$') ver = "1-0-0"
 
-			sessionStorage.setItem ('staticRoot', '/mosgis/__' + ver.replace (/\./g, '_'));
+			sessionStorage.setItem ('staticRoot', '/mosgis/__' + ver.replace (/-/g, '_'));
 			sessionStorage.setItem ('dynamicRoot', '/mosgis/_rest');
 
 			(function () {
