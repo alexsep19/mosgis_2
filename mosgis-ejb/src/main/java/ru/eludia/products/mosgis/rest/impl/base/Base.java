@@ -22,7 +22,7 @@ public abstract class Base <T extends Table> {
 
     final protected Logger logger = Logger.getLogger (getClass ().getName ());
     
-    private static final JsonObject EMPTY_JSON_OBJECT = Json.createObjectBuilder ().build ();
+    public static final JsonObject EMPTY_JSON_OBJECT = Json.createObjectBuilder ().build ();
     
     public final Table getTable () throws SQLException {
         Class c = getClass ();

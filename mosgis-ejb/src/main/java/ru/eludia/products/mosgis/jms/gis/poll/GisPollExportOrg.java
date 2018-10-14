@@ -84,7 +84,7 @@ public class GisPollExportOrg extends UUIDMDB<OutSoap> {
                     ));
 
                 }                
-
+                
                 return;
 
             }
@@ -96,11 +96,14 @@ public class GisPollExportOrg extends UUIDMDB<OutSoap> {
                 "id_status", DONE.getId ()
             ));
             
-            db.commit ();
-
         }
         catch (Fault ex) {
             logger.log (Level.SEVERE, null, ex);
+        }
+        finally {
+
+            db.commit ();
+            
         }
         
     }
