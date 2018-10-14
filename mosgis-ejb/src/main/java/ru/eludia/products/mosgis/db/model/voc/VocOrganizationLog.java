@@ -18,7 +18,7 @@ public class VocOrganizationLog extends Table {
         super  ("vc_orgs__log",                                     "Юридические лица и частные предприниматели: история");
 
         pk    ("uuid",                      Type.UUID,             NEW_UUID,            "Ключ");
-        col   ("action",                    Type.STRING,                                "Действие");
+        ref   ("action",                    VocAction.class,                            "Действие");
         fk    ("uuid_object",               VocOrganization.class,                      "Ссылка на запись");
         col   ("ts",                        Type.TIMESTAMP,        NOW,                 "Дата/время события");
         fk    ("uuid_user",                 VocUser.class,                      null,   "Оператор");
