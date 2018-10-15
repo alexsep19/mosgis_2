@@ -218,6 +218,8 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
 
             }
 
+            db.adjustTable (table);
+            
             db.updateSchema (table.getTables ());
 
             db.begin ();
