@@ -119,6 +119,8 @@ public class CharterObject extends Table {
 
         final ImportCharterRequest.PlacingCharter.ContractObject co = (ImportCharterRequest.PlacingCharter.ContractObject) DB.to.javaBean (ImportCharterRequest.PlacingCharter.ContractObject.class, r);
         
+        if (Boolean.FALSE.equals (co.isIsManagedByContract ())) co.setIsManagedByContract (null);
+        
         co.setTransportGUID (UUID.randomUUID ().toString ());
         
         co.setBaseMService (CharterFile.getBaseServiceType (r));

@@ -57,7 +57,7 @@ public class GisPollExportCharterMDB  extends UUIDMDB<OutSoap> {
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
             .toOne (CharterLog.class,     "AS log", "uuid", "id_ctr_status", "action").on ("log.uuid_out_soap=root.uuid")
             .toOne (Charter.class,        "AS ctr", "uuid", "charterguid" ).on ()
-            .toOne (VocOrganization.class, "AS org", "orgppaguid"           ).on ("ctr.uuid_org")
+            .toOne (VocOrganization.class, "AS org", "orgppaguid"         ).on ("ctr.uuid_org=org.uuid")
         ;
         
     }
