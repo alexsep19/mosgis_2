@@ -1,5 +1,9 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
@@ -9,6 +13,7 @@ import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocCharterObjectReason;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportCharterRequest;
 
 public class CharterObject extends Table {
 
@@ -109,20 +114,22 @@ public class CharterObject extends Table {
                     
         + "END;");
     }
-/*
-    public static void add (ImportCharterRequest.Charter.PlacingCharter pc, Map<String, Object> r) {
+    
+    public static void add (ImportCharterRequest.PlacingCharter pc, Map<String, Object> r) {
 
-        final ImportCharterRequest.Charter.PlacingCharter.CharterObject co = (ImportCharterRequest.Charter.PlacingCharter.CharterObject) DB.to.javaBean (ImportCharterRequest.Charter.PlacingCharter.CharterObject.class, r);
+        final ImportCharterRequest.PlacingCharter.ContractObject co = (ImportCharterRequest.PlacingCharter.ContractObject) DB.to.javaBean (ImportCharterRequest.PlacingCharter.ContractObject.class, r);
         
         co.setTransportGUID (UUID.randomUUID ().toString ());
-
+        
         co.setBaseMService (CharterFile.getBaseServiceType (r));
         
         for (Map<String, Object> service: (List<Map<String, Object>>) r.get ("services")) CharterObjectService.add (co, service);
 
-        pc.getCharterObject ().add (co);        
-
+        pc.getContractObject ().add (co);                        
+        
     }
+    
+/*
     
     private static Logger logger = java.util.logging.Logger.getLogger (CharterObject.class.getName ());
     

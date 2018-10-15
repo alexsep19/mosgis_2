@@ -36,8 +36,9 @@ define ([], function () {
                         case 10:
                         case 11:
                             it._can.edit    = 1
+                            it._can.approve = 1
                             if (it.id_ctr_status_gis == 40 && !it.is_annuled) it._can.annul = 1
-                            break;
+                            break
 
                     }
 

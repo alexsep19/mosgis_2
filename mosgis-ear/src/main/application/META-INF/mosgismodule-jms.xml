@@ -244,9 +244,7 @@
         <time-to-deliver>2000</time-to-deliver>
         <redelivery-delay>10000</redelivery-delay>
     </delivery-params-overrides>
-  </uniform-distributed-queue>
-  
- 
+  </uniform-distributed-queue>   
   <!-- на выход — пока без очереди -->
 
   <!-- очередь опроса статуса исходящих запросов на статусы договоров управления-->
@@ -258,5 +256,54 @@
         <redelivery-delay>10000</redelivery-delay>
     </delivery-params-overrides>
   </uniform-distributed-queue>
+  
+  
+  
+  
+  
+  <!-- очередь обработки запросов на экспорт уставов -->
+  <uniform-distributed-queue name="inHouseChartersQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.inHouseChartersQueue</jndi-name>
+    <delivery-params-overrides>
+        <time-to-deliver>2000</time-to-deliver>
+        <redelivery-delay>10000</redelivery-delay>
+    </delivery-params-overrides>
+  </uniform-distributed-queue>
+
+  <!-- очередь обработки запросов на экспорт документов, приложенных к уставам -->
+  <uniform-distributed-queue name="inHouseCharterFilesQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.inHouseCharterFilesQueue</jndi-name>
+  </uniform-distributed-queue>
+
+  <!-- очередь опроса статуса исходящих запросов на экспорт уставов -->
+  <uniform-distributed-queue name="outExportHouseChartersQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.outExportHouseChartersQueue</jndi-name>
+    <delivery-params-overrides>
+        <time-to-deliver>2000</time-to-deliver>
+        <redelivery-delay>10000</redelivery-delay>
+    </delivery-params-overrides>
+  </uniform-distributed-queue>   
+  <!-- на выход — пока без очереди -->
+
+  <!-- очередь опроса статуса исходящих запросов на статусы уставов -->
+  <uniform-distributed-queue name="outExportHouseCharterStatusQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.outExportHouseCharterStatusQueue</jndi-name>
+    <delivery-params-overrides>
+        <time-to-deliver>2000</time-to-deliver>
+        <redelivery-delay>10000</redelivery-delay>
+    </delivery-params-overrides>
+  </uniform-distributed-queue>
+  
+  
+  
+  
+  
+  
+  
+  
 
 </weblogic-jms>

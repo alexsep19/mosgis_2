@@ -11,6 +11,9 @@ import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.Charter;
+import ru.eludia.products.mosgis.db.model.tables.CharterFile;
+import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractFile;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
@@ -25,6 +28,7 @@ import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChRequestCri
 import ru.gosuslugi.dom.schema.integration.house_management.ExportHouseRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportStatusCAChRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportCharterRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ObjectFactory;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
@@ -212,6 +216,22 @@ public class WsGisHouseManagementClient {
         return getPort (orgPPAGuid, messageGUID).exportStatusCAChData (r).getAck ();
 
     }   
+    
+    public AckRequest.Ack exportCharterStatus (UUID orgPPAGuid, UUID messageGUID, List<UUID> ids) throws Fault {
+
+        final ExportStatusCAChRequest r = of.createExportStatusCAChRequest ();
+
+        List<ExportStatusCAChRequest.Criteria> criteria = r.getCriteria ();
+
+        for (UUID uuid: ids) {
+            final ExportStatusCAChRequest.Criteria c = of.createExportStatusCAChRequestCriteria ();            
+            c.setCharterGUID (uuid.toString ());
+            criteria.add (c);            
+        }
+
+        return getPort (orgPPAGuid, messageGUID).exportStatusCAChData (r).getAck ();
+
+    }   
 
     public AckRequest.Ack exportContractData (UUID orgPPAGuid, UUID messageGUID, List<UUID> ids) throws Fault {
 
@@ -234,5 +254,27 @@ public class WsGisHouseManagementClient {
         getStateRequest.setMessageGUID (uuid.toString ());
         return getPort (orgPPAGuid, UUID.randomUUID ()).getState (getStateRequest);
     }    
+    
+    
+    
+    
+    public AckRequest.Ack placeCharterData (UUID orgPPAGuid, UUID messageGUID,  Map<String, Object> r) throws Fault {
+        
+        r.put ("date", r.get ("date_"));
+        final ImportCharterRequest.PlacingCharter pc = (ImportCharterRequest.PlacingCharter) DB.to.javaBean (ImportCharterRequest.PlacingCharter.class, r);
+        Charter.fillCharter (pc, r);
+        
+        for (Map<String, Object> file: (Collection<Map<String, Object>>) r.get ("files")) CharterFile.add (pc, file);
+        for (Map<String, Object> o:    (Collection<Map<String, Object>>) r.get ("objects")) CharterObject.add (pc, o);
+
+        ImportCharterRequest importCharterRequest = of.createImportCharterRequest ();
+                
+        importCharterRequest.setPlacingCharter (pc);
+        importCharterRequest.setTransportGUID (r.get ("uuid").toString ());
+
+        return getPort (orgPPAGuid, messageGUID).importCharterData (importCharterRequest).getAck ();
+        
+    }
+    
 
 }

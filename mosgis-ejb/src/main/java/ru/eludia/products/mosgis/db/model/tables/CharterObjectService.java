@@ -1,11 +1,15 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Map;
+import java.util.UUID;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import static ru.eludia.products.mosgis.db.model.voc.VocGisStatus.i.MUTATING;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportCharterRequest;
 
 public class CharterObjectService extends Table {
 
@@ -45,93 +49,26 @@ public class CharterObjectService extends Table {
         + "END;");
 
     }
-/*    
-    public static void add (ImportCharterRequest.Charter.PlacingCharter.CharterObject co, Map<String, Object> r) {
+    
+    static void add (ImportCharterRequest.PlacingCharter.ContractObject co, Map<String, Object> r) {
         switch (r.get ("is_additional").toString ()) {
             case "0": addHouse (co, r); break;
             case "1": addAdd   (co, r); break;
         }
     }
     
-    static void add (ImportCharterRequest.Charter.EditCharter.CharterObject.Add co, Map<String, Object> r) {
-        switch (r.get ("is_additional").toString ()) {
-            case "0": addHouse (co, r); break;
-            case "1": addAdd   (co, r); break;
-        }
+    private static void addHouse (ImportCharterRequest.PlacingCharter.ContractObject co, Map<String, Object> r) {
+        ImportCharterRequest.PlacingCharter.ContractObject.HouseService hs = new ImportCharterRequest.PlacingCharter.ContractObject.HouseService ();
+        hs.setServiceType (NsiTable.toDom ((String) r.get ("vc_nsi_3.code"), (UUID) r.get ("vc_nsi_3.guid")));
+        hs.setBaseServiceCharter (CharterFile.getBaseServiceType (r));
+        co.getHouseService ().add (hs);
     }
     
-    static void add (ImportCharterRequest.Charter.EditCharter.CharterObject.Edit co, Map<String, Object> r) {
-        switch (r.get ("is_additional").toString ()) {
-            case "0": addHouse (co, r); break;
-            case "1": addAdd   (co, r); break;
-        }
+    private static void addAdd (ImportCharterRequest.PlacingCharter.ContractObject co, Map<String, Object> r) {
+        ImportCharterRequest.PlacingCharter.ContractObject.AddService as = new ImportCharterRequest.PlacingCharter.ContractObject.AddService ();
+        as.setServiceType (NsiTable.toDom ((String) r.get ("add_service.uniquenumber"), (UUID) r.get ("add_service.elementguid")));
+        as.setBaseServiceCharter (CharterFile.getBaseServiceType (r));
+        co.getAddService ().add (as);
     }    
     
-    private static void addAdd (ImportCharterRequest.Charter.EditCharter.CharterObject.Edit co, Map<String, Object> r) {
-
-        final ImportCharterRequest.Charter.EditCharter.CharterObject.Edit.AddService as = (ImportCharterRequest.Charter.EditCharter.CharterObject.Edit.AddService) DB.to.javaBean (ImportCharterRequest.Charter.EditCharter.CharterObject.Edit.AddService.class, r);
-        
-        as.setServiceType (NsiTable.toDom ((String) r.get ("add_service.uniquenumber"), (UUID) r.get ("add_service.elementguid")));
-        as.setBaseService (CharterFile.getBaseServiceType (r));
-                
-        co.getAddService ().add (as);
-
-    }
-    
-        
-    private static void addAdd (ImportCharterRequest.Charter.EditCharter.CharterObject.Add co, Map<String, Object> r) {
-
-        final ImportCharterRequest.Charter.EditCharter.CharterObject.Add.AddService as = (ImportCharterRequest.Charter.EditCharter.CharterObject.Add.AddService) DB.to.javaBean (ImportCharterRequest.Charter.EditCharter.CharterObject.Add.AddService.class, r);
-        
-        as.setServiceType (NsiTable.toDom ((String) r.get ("add_service.uniquenumber"), (UUID) r.get ("add_service.elementguid")));
-        as.setBaseService (CharterFile.getBaseServiceType (r));
-                
-        co.getAddService ().add (as);
-
-    }
-    
-    private static void addAdd (ImportCharterRequest.Charter.PlacingCharter.CharterObject co, Map<String, Object> r) {
-
-        final ImportCharterRequest.Charter.PlacingCharter.CharterObject.AddService as = (ImportCharterRequest.Charter.PlacingCharter.CharterObject.AddService) DB.to.javaBean (ImportCharterRequest.Charter.PlacingCharter.CharterObject.AddService.class, r);
-        
-        as.setServiceType (NsiTable.toDom ((String) r.get ("add_service.uniquenumber"), (UUID) r.get ("add_service.elementguid")));
-        as.setBaseService (CharterFile.getBaseServiceType (r));
-                
-        co.getAddService ().add (as);
-        
-    }
-    
-    private static void addHouse (ImportCharterRequest.Charter.EditCharter.CharterObject.Edit co, Map<String, Object> r) {
-        
-        final ImportCharterRequest.Charter.EditCharter.CharterObject.Edit.HouseService hs = (ImportCharterRequest.Charter.EditCharter.CharterObject.Edit.HouseService) DB.to.javaBean (ImportCharterRequest.Charter.EditCharter.CharterObject.Edit.HouseService.class, r);
-        
-        hs.setServiceType (NsiTable.toDom ((String) r.get ("vc_nsi_3.code"), (UUID) r.get ("vc_nsi_3.guid")));
-        hs.setBaseService (CharterFile.getBaseServiceType (r));
-        
-        co.getHouseService ().add (hs);
-        
-    }    
-
-    private static void addHouse (ImportCharterRequest.Charter.EditCharter.CharterObject.Add co, Map<String, Object> r) {
-        
-        final ImportCharterRequest.Charter.EditCharter.CharterObject.Add.HouseService hs = (ImportCharterRequest.Charter.EditCharter.CharterObject.Add.HouseService) DB.to.javaBean (ImportCharterRequest.Charter.EditCharter.CharterObject.Add.HouseService.class, r);
-        
-        hs.setServiceType (NsiTable.toDom ((String) r.get ("vc_nsi_3.code"), (UUID) r.get ("vc_nsi_3.guid")));
-        hs.setBaseService (CharterFile.getBaseServiceType (r));
-        
-        co.getHouseService ().add (hs);
-        
-    }
-    
-    private static void addHouse (ImportCharterRequest.Charter.PlacingCharter.CharterObject co, Map<String, Object> r) {
-        
-        final ImportCharterRequest.Charter.PlacingCharter.CharterObject.HouseService hs = (ImportCharterRequest.Charter.PlacingCharter.CharterObject.HouseService) DB.to.javaBean (ImportCharterRequest.Charter.PlacingCharter.CharterObject.HouseService.class, r);
-        
-        hs.setServiceType (NsiTable.toDom ((String) r.get ("vc_nsi_3.code"), (UUID) r.get ("vc_nsi_3.guid")));
-        hs.setBaseService (CharterFile.getBaseServiceType (r));
-        
-        co.getHouseService ().add (hs);
-
-    }
-*/
 }

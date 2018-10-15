@@ -1,11 +1,17 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Map;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.def.Blob.EMPTY_BLOB;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import static ru.eludia.base.model.def.Num.ZERO;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
+import ru.gosuslugi.dom.schema.integration.base.Attachment;
+import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
+import ru.gosuslugi.dom.schema.integration.house_management.BaseServiceCharterType;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportCharterRequest;
 
 public class CharterFile extends Table {
 
@@ -46,105 +52,50 @@ public class CharterFile extends Table {
         + "END;");        
 
     }
-/*    
-    private static void fill (AttachmentType result, Map<String, Object> r) {        
-        result.setName (r.get ("label").toString ());
-        final String desc = r.get ("description").toString ();
-        result.setDescription (desc == null || desc.isEmpty () ? " " : desc);
-        result.setAttachmentHASH (r.get ("attachmenthash").toString ());
-        final Attachment attachment = new Attachment ();
-        attachment.setAttachmentGUID (r.get ("attachmentguid").toString ());
-        result.setAttachment (attachment);
-    }
-    
-    private static CharterType.AgreementAttachment toAgreementAttachment (Map<String, Object> r) {
-        final CharterType.AgreementAttachment result = new CharterType.AgreementAttachment ();
-        fill (result, r);
-        result.setImprintAgreement ((ImprintAgreementType) DB.to.javaBean (ImprintAgreementType.class, r));
-        return result;
-    }
     
     public static AttachmentType toAttachmentType (Map<String, Object> r) {
         final AttachmentType result = new AttachmentType ();
         fill (result, r);
         return result;
     }
-
-    public static void add (CharterType c, Map<String, Object> file) {
-
-        VocCharterDocType.i type = VocCharterDocType.i.forId (file.get ("id_type"));
-
-        if (type == VocCharterDocType.i.AGREEMENT_ATTACHMENT) {
-            c.getAgreementAttachment ().add (toAgreementAttachment (file));
-            return;
-        }
+    
+    private static void fill (AttachmentType result, Map<String, Object> r) {        
+        final String label = r.get ("label").toString ();
+        result.setName (label);
+        final String desc = DB.to.String (r.get ("description")).trim ();
+        result.setDescription (desc.isEmpty () ? label : desc);
+        result.setAttachmentHASH (r.get ("attachmenthash").toString ());
+        final Attachment attachment = new Attachment ();
+        attachment.setAttachmentGUID (r.get ("attachmentguid").toString ());
+        result.setAttachment (attachment);
+    }
+    
+    public static void add (ImportCharterRequest.PlacingCharter pc, Map<String, Object> file) {
+        
+        VocContractDocType.i type = VocContractDocType.i.forId (file.get ("id_type"));
         
         AttachmentType at = toAttachmentType (file);
         
         switch (type) {
             case CHARTER:
-                c.getCharter ().add (at);
+                pc.getAttachmentCharter ().add (at);
                 return;
-            case COMMISSIONING_PERMIT_AGREEMENT:
-                c.getCommissioningPermitAgreement ().add (at);
-                return;
-            case CONTRACT:
-            case CONTRACT_ATTACHMENT:
-                c.getCharterAttachment ().add (at);
-                return;                
-            case SIGNED_OWNERS:
-                c.getSignedOwners ().add (at);
-                return;
-            case PROTOCOL_BUILDING_OWNER:
-            case PROTOCOL_MEETING_BOARD:
-            case PROTOCOL_MEETING_OWNERS:
-            case PROTOCOL_OK:
-                if (c.getProtocol ()                   == null)                   c.setProtocol (new CharterType.Protocol ());
-                if (c.getProtocol ().getProtocolAdd () == null) c.getProtocol ().setProtocolAdd (new CharterType.Protocol.ProtocolAdd ());
-                addProtocol (c.getProtocol ().getProtocolAdd (), file, type, at);
-                return;
-            case TERMINATION_ATTACHMENT:
-            case OTHER:
+            default:
                 // do nothing
-                return;
         }
         
+    }
 
-    }    
-
-    private static void addProtocol (CharterType.Protocol.ProtocolAdd protocolAdd, Map<String, Object> file, VocCharterDocType.i type, AttachmentType at) {
-                
-        protocolAdd.setPurchaseNumber (file.get ("purchasenumber").toString ());
+    static BaseServiceCharterType getBaseServiceType (Map<String, Object> r) {
         
-        switch (type) {
-            
-            case PROTOCOL_BUILDING_OWNER:
-                protocolAdd.getProtocolBuildingOwner ().add (at);
-                break;
-            case PROTOCOL_MEETING_BOARD:
-                protocolAdd.getProtocolMeetingBoard ().add (at);
-                break;
-            case PROTOCOL_MEETING_OWNERS:
-                protocolAdd.getProtocolMeetingOwners ().add (at);
-                break;
-            case PROTOCOL_OK:
-                protocolAdd.getProtocolOK ().add (at);
-                break;
+        AttachmentType a = null;//(AttachmentType) r.get ("charter_agreement");
 
-        }
-                
-    }    
-    
-    public static BaseServiceType getBaseServiceType (Map<String, Object> r) {
-        
-        AttachmentType a = (AttachmentType) r.get ("charter_agreement");
+        final BaseServiceCharterType result = new BaseServiceCharterType ();
 
-        final BaseServiceType result = new BaseServiceType ();
-
-        if (a != null) result.setAgreement (a); else result.setCurrentDoc (true);
+        if (a != null) result.setProtocolMeetingOwners (a); else result.setCurrentCharter (true);
         
         return result;
-
+        
     }
-*/
+    
 }

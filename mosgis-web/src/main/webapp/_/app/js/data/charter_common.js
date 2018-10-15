@@ -2,40 +2,6 @@ define ([], function () {
 
     var form_name = 'charter_common_form'
     
-    $_DO.open_orgs_charter_common = function (e) {
-    
-        var f = w2ui [form_name]
-            
-        function done () {
-            f.refresh ()
-        }
-
-        $('body').data ('voc_organizations_popup.callback', function (r) {
-            
-            if (!r) return done ()
-            
-            query ({type: 'voc_organizations', id: r.uuid, part: 'mgmt_nsi_58'}, {}, function (d) {
-
-                if (!d.vc_nsi_58.length) {
-                    alert ('Указанная организация не зарегистрирована в ГИС ЖКХ как возможный заказчик договора управления: ТСЖ, ЖСК и т. п.')
-                }
-                else {                
-                    add_vocabularies (d, d)                                        
-                    f.get ('code_vc_nsi_58').options.items = d.vc_nsi_58.items
-                    f.record.uuid_org_customer = r.uuid
-                    f.record.label_org_customer = r.label                    
-                }
-
-                done ()
-
-            })
-
-        })
-
-        use.block ('voc_organizations_popup')
-
-    }
-
     $_DO.cancel_charter_common = function (e) {
         
         if (!confirm ('Отменить несохранённые правки?')) return
@@ -112,17 +78,17 @@ define ([], function () {
     }
     
     $_DO.approve_charter_common = function (e) {
-        if (!confirm ('Утвердить этот договор, Вы уверены?\n\n(дальнейшая правка станет невозможна)')) return        
+        if (!confirm ('Утвердить этот устав, Вы уверены?\n\n(дальнейшая правка станет невозможна)')) return
         query ({type: 'charters', action: 'approve'}, {}, reload_page)
     }
     
     $_DO.alter_charter_common = function (e) {
-        if (!confirm ('Открыть этот договор на редактирование, Вы уверены?')) return
+        if (!confirm ('Открыть этот устав на редактирование, Вы уверены?')) return
         query ({type: 'charters', action: 'alter'}, {}, reload_page)
     }
     
     $_DO.refresh_charter_common = function (e) {
-        if (!confirm ('Послать в ГИС ЖКХ запрос на обновление статуса этого договора?')) return
+        if (!confirm ('Послать в ГИС ЖКХ запрос на обновление статуса этого устава?')) return
         query ({type: 'charters', action: 'refresh'}, {}, reload_page)
     }
 

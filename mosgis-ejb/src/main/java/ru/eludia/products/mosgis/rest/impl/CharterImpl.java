@@ -1,7 +1,8 @@
 package ru.eludia.products.mosgis.rest.impl;
 
-import java.math.BigDecimal;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
+import javax.jms.Queue;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -35,7 +36,7 @@ import ru.eludia.products.mosgis.rest.api.CharterLocal;
 
 @Stateless
 public class CharterImpl extends BaseCRUD<Charter> implements CharterLocal {
-/*
+
     @Resource (mappedName = "mosgis.inHouseChartersQueue")
     Queue queue;
 
@@ -43,7 +44,7 @@ public class CharterImpl extends BaseCRUD<Charter> implements CharterLocal {
     public Queue getQueue () {
         return queue;
     }
-*/    
+
     @Override
     protected void publishMessage (VocAction.i action, String id_log) {
         
