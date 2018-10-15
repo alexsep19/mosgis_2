@@ -33,6 +33,7 @@ import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.model.abs.NamedObject;
 import static ru.eludia.base.model.def.Def.NOW;
 import ru.eludia.base.db.sql.gen.Get;
+import ru.eludia.base.model.Table;
 import ru.eludia.base.model.def.Bool;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.nsi.NsiMultipleRefTable;
@@ -218,6 +219,10 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
 
             }
 
+            db.adjustTable (table);
+            
+            for (Table t: table.getTables ()) db.adjustTable (t);
+            
             db.updateSchema (table.getTables ());
 
             db.begin ();
