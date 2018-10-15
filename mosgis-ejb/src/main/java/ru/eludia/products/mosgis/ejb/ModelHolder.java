@@ -36,7 +36,6 @@ public class ModelHolder {
         
         try {
             newModel = new MosGisModel (ds);
-            newModel.update ();
             modelReference.getAndSet (newModel);
         }
         catch (SQLException ex) {
@@ -51,7 +50,7 @@ public class ModelHolder {
         
         try {            
             model = new MosGisModel (ds);
-            model.update ();
+            model.update();
             modelReference.set (model);
         }
         catch (SQLException ex) {
