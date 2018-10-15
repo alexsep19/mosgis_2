@@ -186,6 +186,8 @@ define ([], function () {
         }
 
         it.err_text = it ['out_soap.err_text']        
+        
+        if (it.id_ctr_status_gis == 110) it.is_annuled = 1
 
         done (data)
         

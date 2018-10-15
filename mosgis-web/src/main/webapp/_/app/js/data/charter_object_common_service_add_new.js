@@ -8,9 +8,8 @@ define ([], function () {
 
         if (!v.uuid_add_service) die ('uuid_add_service', 'Укажите, пожалуйста, вид услуги')
         
-        if (v.enddate) {
-            if (v.enddate < v.startdate) die ('enddate', ' Дата начала превышает дату окончания управления')
-        }
+        if (!v.enddate) die ('enddate', 'Укажите, пожалуйста дату окончания управления')
+        if (v.enddate < v.startdate) die ('enddate', 'Дата начала превышает дату окончания управления')
 
         var grid = w2ui ['charter_object_common_services_grid']
         

@@ -1,11 +1,12 @@
 package ru.eludia.products.mosgis.rest.impl;
 
 import java.sql.SQLException;
+import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Resource;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.jms.Queue;
 import javax.json.Json;
@@ -17,6 +18,8 @@ import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Predicate;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
+import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.incoming.InVocOrganization;
 import ru.eludia.products.mosgis.rest.api.VocOrganizationsLocal;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
@@ -29,7 +32,6 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTypes;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
-import ru.eludia.products.mosgis.jmx.OrgMBean;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 import ru.eludia.products.mosgis.web.base.ComplexSearch;
@@ -41,8 +43,8 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
 
     private static final Logger logger = Logger.getLogger (VocOrganizationsImpl.class.getName ());
     
-    @EJB
-    OrgMBean org;
+    @Resource (mappedName = "mosgis.inOrgQueue")
+    Queue inOrgQueue;
     
     @Resource (mappedName = "mosgis.inOrgByGUIDQueue")
     Queue queue;
@@ -51,7 +53,6 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
     public Queue getQueue () {
         return queue;
     }
-    
 
     private final static String DEFAULT_SEARCH = "label_uc LIKE %?%";
     
@@ -188,11 +189,25 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
     }
 
     @Override
-    public JsonObject doImport (JsonObject p) {
-
-        org.importOrg (p.getJsonObject ("data").getString ("ogrn"));
-
-        return Json.createObjectBuilder ().build ();
+    public JsonObject doImport (JsonObject p, User user) {
+        
+        MosGisModel m = ModelHolder.getModel ();
+        
+        try (DB db = m.getDb ()) {
+            
+            UUID uuid = (UUID) db.insertId (InVocOrganization.class, HASH (
+                "uuid_user", user.getId (),
+                "ogrn",      p.getJsonObject ("data").getString ("ogrn")
+            ));
+            
+            UUIDPublisher.publish (inOrgQueue, uuid);
+            
+            return Json.createObjectBuilder ().add ("id", uuid.toString ()).build ();
+            
+        }
+        catch (Exception ex) {
+            throw new InternalServerErrorException (ex);
+        }
 
     }
 

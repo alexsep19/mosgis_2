@@ -49,7 +49,7 @@ public class WsGisOrgClient {
     }    
 
     
-    public AckRequest.Ack exportOrgRegistry (String orgn) throws Fault {
+    public AckRequest.Ack exportOrgRegistry (String orgn, UUID messageGUID) throws Fault {
         
         if (orgn == null) throw new IllegalArgumentException ("Null OGRN passed");
         
@@ -67,7 +67,7 @@ public class WsGisOrgClient {
         
         ExportOrgRegistryRequest r = of.createExportOrgRegistryRequest ();
         r.getSearchCriteria ().add (s);        
-        return getPort ().exportOrgRegistry (r).getAck ();
+        return getPort (messageGUID).exportOrgRegistry (r).getAck ();
         
     }
     

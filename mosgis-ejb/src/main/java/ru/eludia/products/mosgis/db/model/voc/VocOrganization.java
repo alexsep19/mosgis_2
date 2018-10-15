@@ -47,7 +47,7 @@ public class VocOrganization extends Table {
         
         fk     ("id_log",                    VocOrganizationLog.class,          null, "Последний запрос");
 
-        key    ("label", "label");
+        key    ("label_uc", "label_uc");
 
     }
     

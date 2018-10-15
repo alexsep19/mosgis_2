@@ -114,11 +114,10 @@ logger.info ("" + jo);
             record.put (f, ((JsonString) v).getString ());
         });
         
-logger.info ("" + record);
         db.update (VocOrganization.class, record);        
         
         record.put ("uuid", logUuid);        
-logger.info ("" + record);
+
         db.update (VocOrganizationLog.class, record);
         
         db.dupsert (

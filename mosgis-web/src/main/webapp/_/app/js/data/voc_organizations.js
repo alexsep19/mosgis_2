@@ -15,13 +15,23 @@ define ([], function () {
                 $_SESSION.set ('importing', 1)
                 grid.lock ('Запрос в ГИС ЖКХ...', true)
 
-                query ({type: 'voc_organizations', action: 'import', id: undefined}, {data: {ogrn: ogrn}}, function () {
+                query ({type: 'voc_organizations', action: 'import', id: undefined}, {data: {ogrn: ogrn}}, function (d) {
 
-                    setTimeout (function () {
+darn (d)
+                    
+                    var clock = setInterval (function () {
+                    
+                        query ({type: 'out_soap_export_nsi_item', part: 'rq', id: d.id}, {data: {ogrn: ogrn}}, function (out_soap) {
+darn (out_soap)                        
+                            if (out_soap.id_status < 3) return
+                            
+                            clearInterval (clock)
+                            
+                            grid.request ('get')
+                        
+                        })
 
-                        grid.request ('get')
-
-                    }, 5000)
+                    }, 1000)
 
                 })
 

@@ -60,12 +60,15 @@
                 <version>2.3</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
-                    <archive>
-                      <manifestEntries>
-                        <Weblogic-Application-Version>${buildNumber}</Weblogic-Application-Version>
-                        <Implementation-Version>${buildNumber}</Implementation-Version>
-                      </manifestEntries>
-                    </archive>
+                    <webResources>
+                        <resource>
+                            <directory>src/main/webapp</directory>
+                            <filtering>true</filtering>
+                            <includes>
+                                <include>index.html</include>
+                            </includes>
+                        </resource>
+                    </webResources>
                 </configuration>
             </plugin>
             <plugin>

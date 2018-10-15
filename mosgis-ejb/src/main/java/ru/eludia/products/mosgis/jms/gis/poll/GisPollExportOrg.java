@@ -13,9 +13,12 @@ import javax.json.JsonString;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
+import ru.eludia.products.mosgis.db.model.incoming.InVocOrganization;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTypes;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -40,7 +43,8 @@ public class GisPollExportOrg extends UUIDMDB<OutSoap> {
     @Override
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ()
-            .get    (getTable (), uuid, "*")
+            .get   (getTable (), uuid, "AS root", "*")
+            .toOne (InVocOrganization.class, "AS i", "uuid_user").on ("root.uuid=i.uuid")
         ;        
     }
 
@@ -80,28 +84,31 @@ public class GisPollExportOrg extends UUIDMDB<OutSoap> {
                     ));
 
                 }                
-
+                
                 return;
 
             }
 
-            for (ExportOrgRegistryResultType i: rp.getExportOrgRegistryResult ()) if (handleOrgRegistryResult (i.getOrgVersion (), rp, i, db)) continue;
+            for (ExportOrgRegistryResultType i: rp.getExportOrgRegistryResult ()) if (handleOrgRegistryResult (i.getOrgVersion (), rp, i, db, uuid, (UUID) r.get ("i.uuid_user"))) continue;
 
             db.update (OutSoap.class, HASH (
                 "uuid", uuid,
                 "id_status", DONE.getId ()
             ));
             
-            db.commit ();
-
         }
         catch (Fault ex) {
             logger.log (Level.SEVERE, null, ex);
         }
+        finally {
+
+            db.commit ();
+            
+        }
         
     }
 
-    private boolean handleOrgRegistryResult (ExportOrgRegistryResultType.OrgVersion orgVersion, GetStateResult rp, ExportOrgRegistryResultType i, DB db) throws SQLException {
+    private boolean handleOrgRegistryResult (ExportOrgRegistryResultType.OrgVersion orgVersion, GetStateResult rp, ExportOrgRegistryResultType i, DB db, UUID uuidOutSoap, UUID uuidUser) throws SQLException {
         
         Object o = null;
         
@@ -114,13 +121,9 @@ public class GisPollExportOrg extends UUIDMDB<OutSoap> {
             logger.warning ("Cannot import org: " + AbstactServiceAsync.toJSON (rp));
             return true;        
         }
-        
-logger.info ("" + o.getClass ().getSimpleName ());
-        
+                
         JsonObject jo = DB.to.JsonObject (AbstactServiceAsync.toJSON (o));
-        
-logger.info ("" + jo);
-        
+                
         final String uuid = i.getOrgRootEntityGUID ();
         
         Map<String, Object> record = DB.HASH (
@@ -140,10 +143,15 @@ logger.info ("" + jo);
             record.put (f, ((JsonString) v).getString ());
             
         });
-        
-logger.info ("" + record);
-        
+                
         db.upsert (VocOrganization.class, record);
+        
+        record.put ("uuid_object", uuid);
+        record.put ("uuid_user", uuidUser);
+        record.put ("uuid_out_soap", uuidOutSoap);
+        record.put ("action", VocAction.i.REFRESH);
+        
+        db.insert (VocOrganizationLog.class, record);
         
         db.dupsert (
             VocOrganizationNsi20.class, 

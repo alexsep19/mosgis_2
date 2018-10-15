@@ -104,6 +104,7 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
             .toOne  (ContractFileLog.class, "AS log", "ts_start_sending", "err_text").on ()
             .where  ("uuid_contract", r.get ("uuid_object"))
             .and    ("id_status", 1)
+            .and    ("id_type <>", VocContractDocType.i.OTHER.getId ())
         );
         
         return id2file;
@@ -467,12 +468,20 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
         
         Map<UUID, Map<String, Object>> id2o = new HashMap <> ();
         
-        db.forEach (m.select (ContractObject.class, "*").where ("uuid_contract", r.get ("uuid_object")).and ("is_deleted", 0), (rs) -> {
-            Map<String, Object> object = db.HASH (rs);
-            object.put ("services", new ArrayList ());
-            UUID agr = (UUID) object.get ("uuid_contract_agreement");
-            if (agr != null) object.put ("contract_agreement", ContractFile.toAttachmentType (id2file.get (agr)));
-            id2o.put ((UUID) object.get ("uuid"), object);
+        db.forEach (m
+                
+            .select (ContractObject.class, "*")
+                .where  ("uuid_contract", r.get ("uuid_object"))
+                .and    ("is_deleted", 0)
+                .and    ("id_ctr_status_gis <>", VocGisStatus.i.ANNUL.getId ())
+                
+            , (rs) -> {
+                Map<String, Object> object = db.HASH (rs);
+                object.put ("services", new ArrayList ());
+                UUID agr = (UUID) object.get ("uuid_contract_agreement");
+                if (agr != null) object.put ("contract_agreement", ContractFile.toAttachmentType (id2file.get (agr)));
+                id2o.put ((UUID) object.get ("uuid"), object);
+                
         });
         
         r.put ("objects", id2o.values ());
