@@ -10,7 +10,7 @@ public class VocPerson extends Table {
     
     public VocPerson () {
         
-        super ("vc_person", "Физические лица");
+        super ("vc_persons", "Физические лица");
         
         pk  ("uuid",     Type.UUID,         NEW_UUID, "Ключ");
         
