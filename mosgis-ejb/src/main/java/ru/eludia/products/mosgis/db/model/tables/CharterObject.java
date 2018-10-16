@@ -50,10 +50,6 @@ public class CharterObject extends Table {
             + "DECLARE" 
             + " PRAGMA AUTONOMOUS_TRANSACTION; "
             + "BEGIN "
-
-            + "IF UPDATING AND :NEW.uuid_charter_file IS NULL THEN :NEW.id_reason := " + VocCharterObjectReason.i.CHARTER.getId () + "; "
-            + " ELSE :NEW.id_reason := " + VocCharterObjectReason.i.PROTOCOL.getId () + "; "
-            + "END IF;"
                 
             + "IF :NEW.is_deleted = 0 THEN "
             + " FOR i IN ("
