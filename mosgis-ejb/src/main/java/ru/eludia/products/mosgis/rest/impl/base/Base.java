@@ -52,6 +52,49 @@ public abstract class Base <T extends Table> {
     }
     
     private static final Pattern re = Pattern.compile ("^#(\\w+)#: (.*)");
+    
+    public JsonObject doAction (DataFetcher h) {
+       
+        JsonObjectBuilder job = Json.createObjectBuilder ();
+
+        try (DB db = ModelHolder.getModel ().getDb ()) {            
+            db.begin ();
+            h.accept (db, job);
+            db.commit ();
+        }
+        catch (ValidationException ex) {
+            throw ex;
+        }
+        catch (SQLException ex) {
+
+            if (ex.getErrorCode () == 20000) {                
+                StringTokenizer st = new StringTokenizer (ex.getMessage (), "\n\r");
+                String s = st.nextToken ().replace ("ORA-20000: ", "");
+                Matcher matcher = re.matcher (s);
+                throw matcher.matches () ? 
+                    new ValidationException (matcher.group (1), matcher.group (2)) :
+                    new ValidationException ("foo", s);
+            }
+            else {
+                throw new InternalServerErrorException (ex);
+            }
+                
+        }
+        catch (Exception ex) {
+            
+            Throwable t = ex;
+            
+            while (true) {
+                Throwable c = t.getCause ();
+                if (c == null) throw new InternalServerErrorException (t);
+                t = c;
+            }
+            
+        }
+        
+        return job.build ();
+
+    }    
 
     public JsonObject doAction (ActionHandler h) {
        

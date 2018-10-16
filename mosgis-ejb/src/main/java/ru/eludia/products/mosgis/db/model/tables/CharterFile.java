@@ -7,6 +7,7 @@ import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.def.Blob.EMPTY_BLOB;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import static ru.eludia.base.model.def.Num.ZERO;
+import ru.eludia.products.mosgis.db.model.voc.VocCharterObjectReason;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.gosuslugi.dom.schema.integration.base.Attachment;
 import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
@@ -45,28 +46,34 @@ public class CharterFile extends Table {
             + " UPDATE tb_charter_files__log SET attachmentguid = :NEW.attachmentguid, attachmenthash = :NEW.attachmenthash WHERE uuid = :NEW.id_log; "
             + "END; END IF; "
 */
-            + " IF :NEW.id_status = 0 AND DBMS_LOB.GETLENGTH (:NEW.body) = :NEW.len THEN "
+            + " IF :NEW.id_status = 0 AND DBMS_LOB.GETLENGTH (:NEW.body) = :NEW.len THEN BEGIN "
             + "   :NEW.id_status := 1; "
-            + " END IF;"
+            + "   IF :NEW.uuid_charter_object IS NOT NULL THEN "
+            + "     UPDATE tb_charter_objects SET uuid_charter_file = :NEW.uuid WHERE "
+                + "   uuid = :NEW.uuid_charter_object "
+                + "   AND id_reason = " + VocCharterObjectReason.i.PROTOCOL.getId ()
+                + "   AND uuid_charter_file IS NULL; "
+            + "   END IF;"
+            + " END; END IF;"
 
         + "END;");        
 
     }
     
-    public static AttachmentType toAttachmentType (Map<String, Object> r) {
+    public static AttachmentType toAttachmentType (Map<String, Object> r, String prefix) {
         final AttachmentType result = new AttachmentType ();
-        fill (result, r);
+        fill (result, r, prefix);
         return result;
     }
     
-    private static void fill (AttachmentType result, Map<String, Object> r) {        
-        final String label = r.get ("label").toString ();
+    private static void fill (AttachmentType result, Map<String, Object> r, String prefix) {        
+        final String label = r.get (prefix + "label").toString ();
         result.setName (label);
-        final String desc = DB.to.String (r.get ("description")).trim ();
+        final String desc = DB.to.String (r.get (prefix + "description")).trim ();
         result.setDescription (desc.isEmpty () ? label : desc);
-        result.setAttachmentHASH (r.get ("attachmenthash").toString ());
+        result.setAttachmentHASH (r.get (prefix + "attachmenthash").toString ());
         final Attachment attachment = new Attachment ();
-        attachment.setAttachmentGUID (r.get ("attachmentguid").toString ());
+        attachment.setAttachmentGUID (r.get (prefix + "attachmentguid").toString ());
         result.setAttachment (attachment);
     }
     
@@ -74,7 +81,7 @@ public class CharterFile extends Table {
         
         VocContractDocType.i type = VocContractDocType.i.forId (file.get ("id_type"));
         
-        AttachmentType at = toAttachmentType (file);
+        AttachmentType at = toAttachmentType (file, "");
         
         switch (type) {
             case CHARTER:
@@ -88,11 +95,12 @@ public class CharterFile extends Table {
 
     static BaseServiceCharterType getBaseServiceType (Map<String, Object> r) {
         
-        AttachmentType a = null;//(AttachmentType) r.get ("charter_agreement");
-
         final BaseServiceCharterType result = new BaseServiceCharterType ();
-
-        if (a != null) result.setProtocolMeetingOwners (a); else result.setCurrentCharter (true);
+        
+        if (r.get ("doc.attachmenthash") == null)
+            result.setCurrentCharter (true);
+        else
+            result.setProtocolMeetingOwners (toAttachmentType (r, "doc."));
         
         return result;
         

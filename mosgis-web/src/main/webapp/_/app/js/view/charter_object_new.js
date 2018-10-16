@@ -1,12 +1,42 @@
 define ([], function () {
 
+    var name = 'voc_user_form'
+
+    function recalc () {
+
+        var v = w2ui [name].values ()
+        
+        var on = v.id_reason - 1
+        
+        var $protocol = $('.protocol')
+        
+        if (on) {
+            $protocol.show ()
+            if (!v.files) $('.file-input').click ()
+        }
+        else {
+            $protocol.hide ()
+        }
+        
+        var o = {
+            form:  205,
+            page:  125,
+            box:   225,
+            popup: 260,
+            'form-box': 210,
+        }
+        
+        for (var k in o) $protocol.closest ('.w2ui-' + k).height (o [k] + 85 * on)
+
+    }
+
     return function (data, view) {
 
         $(fill (view, data.record)).w2uppop ({}, function () {
 
             $('#w2ui-popup .w2ui-form').w2reform ({
 
-                name: 'voc_user_form',
+                name: name,
 
                 record: data.record,
 
@@ -42,7 +72,15 @@ define ([], function () {
                             }
                         }
                     }},
+                    
+                    {name: 'description',  type: 'textarea' },
+                    {name: 'files', type: 'file', options: {max: 1}},                    
+                    
                 ],
+                
+                onChange: function (e) {if (e.target == "id_reason") e.done (recalc)},
+                        
+                onRender: function (e) {e.done (setTimeout (recalc, 100))}                
                 
             })
 

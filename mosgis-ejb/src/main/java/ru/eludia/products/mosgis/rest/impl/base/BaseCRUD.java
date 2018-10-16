@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.rest.impl.base;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Map;
 import javax.ejb.EJB;
@@ -106,7 +107,7 @@ public abstract class BaseCRUD <T extends Table> extends Base<T> implements CRUD
     });}
 
     @Override
-    public JsonObject doCreate (JsonObject p, User user) {return doAction ((db) -> {
+    public JsonObject doCreate (JsonObject p, User user) {return doAction ((db, job) -> {
 
         final Table table = getTable ();
 
@@ -115,6 +116,8 @@ public abstract class BaseCRUD <T extends Table> extends Base<T> implements CRUD
         if (table.getColumn (UUID_ORG) != null && !data.containsKey (UUID_ORG)) data.put (UUID_ORG, user.getUuidOrg ());
 
         Object insertId = db.insertId (table, data);
+        
+        job.add ("id", insertId.toString ());
         
         logAction (db, user, insertId, VocAction.i.CREATE);
 

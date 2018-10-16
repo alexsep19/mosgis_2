@@ -1,6 +1,6 @@
 <span
 	data-popup-width=500
-	data-popup-height=260
+	data-popup-height=340
 	data-popup-title='Добавить объект управления'
 >
 
@@ -21,7 +21,7 @@
 
 	</style>
 
-	<div class="w2ui-reset w2ui-form" style="height:205px; margin:8px 0 0 0;">
+	<div class="w2ui-reset w2ui-form" style="height:285px; margin:8px 0 0 0;">
 
         <div class="w2ui-page page-0">
 
@@ -42,22 +42,37 @@
             </div>
 
             <div class="w2ui-field">
-                <label>Основание</label>
-                <div>
-                	<input name=id_reason>
-                </div>
-            </div>
-
-            <div class="w2ui-field">
                 <label>Управление</label>
                 <div>
                 	<input name=ismanagedbycontract>
                 </div>
             </div>
 
+            <div class="w2ui-field">
+                <label>Основание</label>
+                <div>
+                	<input name=id_reason>
+                </div>
+            </div>
+
+            <div class="w2ui-field protocol">
+                <label>Протокол</label>
+                <div>
+                    <input name=files style="width:300px" />
+                </div>
+            </div>
+
+            <div class="w2ui-field protocol">
+                <label>Описание</label>
+                <div>
+                    <textarea name=description style="width:320px" /></textarea>
+                </div>
+            </div>
+
         </div>
 
         <div class="w2ui-buttons">
+        	<progress style="width:440px;display:none"/>
 			<button class=w2ui-btn name=update>Сохранить</button>
         </div>
 

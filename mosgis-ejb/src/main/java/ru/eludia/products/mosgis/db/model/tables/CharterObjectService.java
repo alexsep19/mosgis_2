@@ -2,6 +2,7 @@ package ru.eludia.products.mosgis.db.model.tables;
 
 import java.util.Map;
 import java.util.UUID;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
@@ -58,14 +59,14 @@ public class CharterObjectService extends Table {
     }
     
     private static void addHouse (ImportCharterRequest.PlacingCharter.ContractObject co, Map<String, Object> r) {
-        ImportCharterRequest.PlacingCharter.ContractObject.HouseService hs = new ImportCharterRequest.PlacingCharter.ContractObject.HouseService ();
+        ImportCharterRequest.PlacingCharter.ContractObject.HouseService hs = (ImportCharterRequest.PlacingCharter.ContractObject.HouseService) DB.to.javaBean (ImportCharterRequest.PlacingCharter.ContractObject.HouseService.class, r);
         hs.setServiceType (NsiTable.toDom ((String) r.get ("vc_nsi_3.code"), (UUID) r.get ("vc_nsi_3.guid")));
         hs.setBaseServiceCharter (CharterFile.getBaseServiceType (r));
         co.getHouseService ().add (hs);
     }
     
     private static void addAdd (ImportCharterRequest.PlacingCharter.ContractObject co, Map<String, Object> r) {
-        ImportCharterRequest.PlacingCharter.ContractObject.AddService as = new ImportCharterRequest.PlacingCharter.ContractObject.AddService ();
+        ImportCharterRequest.PlacingCharter.ContractObject.AddService as = (ImportCharterRequest.PlacingCharter.ContractObject.AddService) DB.to.javaBean (ImportCharterRequest.PlacingCharter.ContractObject.AddService.class, r);
         as.setServiceType (NsiTable.toDom ((String) r.get ("add_service.uniquenumber"), (UUID) r.get ("add_service.elementguid")));
         as.setBaseServiceCharter (CharterFile.getBaseServiceType (r));
         co.getAddService ().add (as);

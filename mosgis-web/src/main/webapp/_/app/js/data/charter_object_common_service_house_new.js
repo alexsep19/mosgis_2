@@ -38,6 +38,7 @@ define ([], function () {
         query ({type: "charter_docs", id: undefined}, {search: [
         
             {field: "uuid_charter", operator: "is", value: data.item.uuid_charter},
+            {field: "uuid_charter_object", operator: "is", value: data.item.uuid},
             
         ]}, function (d) {
         

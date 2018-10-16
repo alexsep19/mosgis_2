@@ -147,6 +147,7 @@ public class Charter extends Table {
     public static void fillCharter (CharterType c, Map<String, Object> r) {
         
         if (Boolean.FALSE.equals (c.isNoCharterApproveProtocol ())) c.setNoCharterApproveProtocol (null);
+        if (Boolean.FALSE.equals (c.isAutomaticRollOverOneYear ())) c.setAutomaticRollOverOneYear (null);
        
         final CharterDateDetailsType dd = new CharterDateDetailsType ();
         

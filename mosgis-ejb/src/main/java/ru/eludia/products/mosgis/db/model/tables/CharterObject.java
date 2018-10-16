@@ -29,6 +29,7 @@ public class CharterObject extends Table {
         fk     ("fiashouseguid",           VocBuilding.class,                   "Глобальный уникальный идентификатор дома по ФИАС");
         
         fk     ("id_reason",               VocCharterObjectReason.class, new Num (VocCharterObjectReason.i.CHARTER.getId ()), "Основание");
+        ref    ("uuid_charter_file",       CharterFile.class,     null,          "Ссылка на протокол");
         col    ("ismanagedbycontract",     Type.BOOLEAN,          Bool.FALSE,   "Управление многоквартирным домом осуществляется управляющей организацией по договору управления");
 
         col    ("startdate",               Type.DATE,                           "Дата начала предоставления услуг");
@@ -50,6 +51,10 @@ public class CharterObject extends Table {
             + " PRAGMA AUTONOMOUS_TRANSACTION; "
             + "BEGIN "
 
+            + "IF UPDATING AND :NEW.uuid_charter_file IS NULL THEN :NEW.id_reason := " + VocCharterObjectReason.i.CHARTER.getId () + "; "
+            + " ELSE :NEW.id_reason := " + VocCharterObjectReason.i.PROTOCOL.getId () + "; "
+            + "END IF;"
+                
             + "IF :NEW.is_deleted = 0 THEN "
             + " FOR i IN ("
                 + "SELECT "

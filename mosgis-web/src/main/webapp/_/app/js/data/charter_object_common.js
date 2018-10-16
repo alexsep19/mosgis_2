@@ -102,7 +102,27 @@ define ([], function () {
         it.startdate = dt_dmy (it.startdate)
         it.enddate = dt_dmy (it.enddate)
         
-        done (data)
+//        done (data)
+
+
+        query ({type: "charter_docs", id: undefined}, {search: [
+        
+            {field: "uuid_charter", operator: "is", value: data.item.uuid_charter},
+            {field: "uuid_charter_object", operator: "is", value: data.item.uuid},
+            
+        ]}, function (d) {
+        
+            var a = [{id: "", text: "Текущий устав"}]
+            
+            $.each (d.tb_charter_files, function () {
+                a.push ({id: this.id, text: "Протокол собрания " + this.label})
+            })
+            
+            data.agreements = a
+            
+            done (data)
+
+        })                      
         
     }
 

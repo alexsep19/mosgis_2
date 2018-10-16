@@ -30,6 +30,7 @@ public class CharterObjectLog extends Table {
         col   ("annulmentinfo",             Type.STRING,           null,                "Причина аннулирования.");       
         col   ("is_annuled",                Type.BOOLEAN,          new Virt ("DECODE(\"ANNULMENTINFO\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0");
         fk    ("id_reason",                 VocCharterObjectReason.class, null, "Основание");
+        ref   ("uuid_charter_file",         CharterFile.class,    null,          "Ссылка на протокол");
         col   ("ismanagedbycontract",       Type.BOOLEAN,          null,   "Управление многоквартирным домом осуществляется управляющей организацией по договору управления");
 
         col   ("contractobjectversionguid", Type.UUID,             null,                "UUID этой версии данного объекта в ГИС ЖКХ");
@@ -40,6 +41,7 @@ public class CharterObjectLog extends Table {
            + "       is_deleted,              "
            + "       annulmentinfo,           "
            + "       id_reason,               "
+           + "       uuid_charter_file,       "                
            + "       ismanagedbycontract,     "
            + "       startdate,               "
            + "       enddate                  "
@@ -47,6 +49,7 @@ public class CharterObjectLog extends Table {
            + "       :NEW.is_deleted,              "
            + "       :NEW.annulmentinfo,           "
            + "       :NEW.id_reason,               "
+           + "       :NEW.uuid_charter_file,       "                
            + "       :NEW.ismanagedbycontract,     "
            + "       :NEW.startdate,               "
            + "       :NEW.enddate                  "

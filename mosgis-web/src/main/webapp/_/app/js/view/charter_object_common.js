@@ -68,7 +68,7 @@ define ([], function () {
                         keyboard: false,
                         start:    dt_dmy (data.item ['ctr.date_']),
                     }},
-                    {name: 'id_reason', type: 'list', options: {items: data.vc_charter_object_reasons.items}},
+                    {name: 'uuid_charter_file', type: 'list', options: {items: data.agreements}},
                     {name: 'ismanagedbycontract', type: 'list', options: {items: [
                         {id: 0, text: 'без договора'},
                         {id: 1, text: 'по договору управления'},
