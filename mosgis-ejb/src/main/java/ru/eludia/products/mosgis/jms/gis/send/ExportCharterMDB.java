@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,9 +39,9 @@ import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.RestGisFilesClient;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
-//import ru.eludia.products.mosgis.jms.gis.poll.GisPollExportCharterStatusMDB;
+import ru.eludia.products.mosgis.jms.gis.poll.GisPollExportCharterStatusMDB;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
-//import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
+import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 
 @MessageDriven(activationConfig = {
@@ -222,8 +223,8 @@ public class ExportCharterMDB extends UUIDMDB<CharterLog> {
         return true;
         
     }
-/*    
-    private void updateVersions (DB db, Map<String, Object> r) throws SQLException {
+
+    private void updateVersions (DB db, Map<String, Object> r) throws SQLException {    
         
         UUID rUID = UUID.randomUUID ();
 
@@ -234,7 +235,7 @@ public class ExportCharterMDB extends UUIDMDB<CharterLog> {
         AckRequest.Ack exportCharterStatus = null;
 
         try {
-            exportCharterStatus = wsGisHouseManagementClient.exportCharterStatus (orgPPAGuid, rUID, Collections.singletonList ((UUID) r.get ("ctr.contractguid")));
+            exportCharterStatus = wsGisHouseManagementClient.exportCharterStatus (orgPPAGuid, rUID, Collections.singletonList ((UUID) r.get ("ctr.charterguid")));
         }
         catch (Exception ex) {
             logger.log (Level.SEVERE, "wsGisHouseManagementClient.exportCharterStatus", ex);
@@ -244,7 +245,7 @@ public class ExportCharterMDB extends UUIDMDB<CharterLog> {
 
         db.update (Charter.class, HASH (
             "uuid", ctrUuid,
-            "contractversionguid", null
+            "charterversionguid", null
         ));
 
         for (int i = 0; i < 10; i ++) {
@@ -276,13 +277,14 @@ public class ExportCharterMDB extends UUIDMDB<CharterLog> {
         }  
         
     }
-*/    
+
     AckRequest.Ack invoke (DB db, Charter.Action action, UUID messageGUID,  Map<String, Object> r) throws Fault, SQLException {
             
         UUID orgPPAGuid = getOrgPPAGUID (r);
             
         switch (action) {
             case PLACING:     return wsGisHouseManagementClient.placeCharterData (orgPPAGuid, messageGUID, r);
+            case EDITING:     return wsGisHouseManagementClient.editCharterData  (orgPPAGuid, messageGUID, r);
             default: throw new IllegalArgumentException ("No action implemented for " + action);
         }
 
@@ -292,19 +294,18 @@ public class ExportCharterMDB extends UUIDMDB<CharterLog> {
         final UUID orgPPAGuid = (UUID) r.get ("org.orgppaguid");
         return orgPPAGuid;
     }
-/*    
+
     private boolean isVersionUpdateNeeded (Charter.Action action) {
         switch (action) {
-            case ANNULMENT:
-            case TERMINATION:
             case EDITING:
-            case ROLLOVER:
+//            case ANNULMENT:
+//            case TERMINATION:
+//            case ROLLOVER:
                 return true;
             default:
                 return false;
         }
     }
-*/                
     @Override
     protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
         
@@ -318,12 +319,12 @@ public class ExportCharterMDB extends UUIDMDB<CharterLog> {
         }
 
         Model m = db.getModel ();
-/*        
+
         if (isVersionUpdateNeeded (action)) {
             updateVersions (db, r);
             r = db.getMap (get (uuid));
         }
-*/        
+
         if (action.needsUpload ()) {
             if (someFileUploadIsInProgress (db, m, r, action)) return;
         }

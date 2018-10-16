@@ -275,6 +275,20 @@ public class WsGisHouseManagementClient {
         return getPort (orgPPAGuid, messageGUID).importCharterData (importCharterRequest).getAck ();
         
     }
-    
+
+    public AckRequest.Ack editCharterData (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        
+        r.put ("date", r.get ("date_"));
+        final ImportCharterRequest.EditCharter ec = (ImportCharterRequest.EditCharter) DB.to.javaBean (ImportCharterRequest.EditCharter.class, r);
+        Charter.fillCharter (ec, r);
+
+        ImportCharterRequest importCharterRequest = of.createImportCharterRequest ();
+        
+        importCharterRequest.setEditCharter (ec);
+        importCharterRequest.setTransportGUID (r.get ("uuid").toString ());
+        
+        return getPort (orgPPAGuid, messageGUID).importCharterData (importCharterRequest).getAck ();
+
+    }
 
 }

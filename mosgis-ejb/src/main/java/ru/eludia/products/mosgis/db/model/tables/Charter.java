@@ -71,6 +71,13 @@ public class Charter extends Table {
         + "BEGIN "
 
             + "IF UPDATING "
+            + " AND :NEW.id_ctr_status = " + VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+            + " AND :OLD.id_ctr_status = " + VocGisStatus.i.MUTATING.getId () + ' '
+            + "THEN "
+            + "  :NEW.id_ctr_status := " + VocGisStatus.i.PENDING_RQ_EDIT.getId () + "; "
+            + "END IF; "
+                
+            + "IF UPDATING "
             + "  AND :OLD.id_ctr_status < " + VocGisStatus.i.PENDING_RQ_PLACING.getId ()
             + "  AND :NEW.id_ctr_status = " + VocGisStatus.i.PENDING_RQ_PLACING.getId ()
             + " THEN "
@@ -165,13 +172,13 @@ public class Charter extends Table {
     
     public enum Action {
         
-        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.FAILED_PLACING)//,
+        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.FAILED_PLACING),
+        EDITING     (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.FAILED_STATE)
 //        APPROVING   (VocGisStatus.i.PENDING_RP_APPROVAL,  VocGisStatus.i.FAILED_STATE),
 //        REFRESHING  (VocGisStatus.i.PENDING_RP_REFRESH,   VocGisStatus.i.FAILED_STATE),
 //        ROLLOVER    (VocGisStatus.i.PENDING_RP_ROLLOVER,  VocGisStatus.i.FAILED_STATE),
 //        TERMINATION (VocGisStatus.i.PENDING_RP_TERMINATE, VocGisStatus.i.FAILED_TERMINATE),
 //        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.FAILED_ANNULMENT),
-//        EDITING     (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.FAILED_STATE)
         ;
         
         VocGisStatus.i nextStatus;
@@ -193,9 +200,9 @@ public class Charter extends Table {
         public static Action forStatus (VocGisStatus.i status) {
             switch (status) {
                 case PENDING_RQ_PLACING:   return PLACING;
+                case PENDING_RQ_EDIT:      return EDITING;
 //                case PENDING_RQ_APPROVAL:  return APPROVING;
 //                case PENDING_RQ_REFRESH:   return REFRESHING;
-//                case PENDING_RQ_EDIT:      return EDITING;
 //                case PENDING_RQ_TERMINATE: return TERMINATION;
 //                case PENDING_RQ_ANNULMENT: return ANNULMENT;
 //                case PENDING_RQ_ROLLOVER:  return ROLLOVER;
