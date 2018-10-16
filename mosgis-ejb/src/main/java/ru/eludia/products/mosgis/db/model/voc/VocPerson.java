@@ -14,7 +14,7 @@ public class VocPerson extends Table {
         
         pk  ("uuid",     Type.UUID,         NEW_UUID, "Ключ");
         
-        fk  ("uuid_org",       VocOrganization.class,       "Поставщик информации");
+        fk  ("uuid_org",       VocOrganization.class,        "Поставщик информации");
         
         col ("is_female",      Type.BOOLEAN,       null,     "Пол");
         col ("birthdate",      Type.DATE,          null,     "Дата рождения");
@@ -29,11 +29,13 @@ public class VocPerson extends Table {
         
         col ("placebirth",     Type.STRING,  255,  null,     "Место рождения");
         
-        col ("surname",        Type.STRING,  256,           "Фамилия");
-        col ("firstname",      Type.STRING,  256,           "Имя");
+        col ("surname",        Type.STRING,  256,            "Фамилия");
+        col ("firstname",      Type.STRING,  256,            "Имя");
         col ("patronymic",     Type.STRING,  256,  null,     "Отчество");
         
         col ("sex",            Type.STRING,  1, new Virt("DECODE(IS_FEMALE, 1, 'F', 0, 'M', NULL)"), "Пол (ГИС)");
+        
+        fk  ("id_log",         VocPersonLog.class, null,     "Последнее событие редактирования");
         
         key ("uuid_org", "uuid_org");
         
