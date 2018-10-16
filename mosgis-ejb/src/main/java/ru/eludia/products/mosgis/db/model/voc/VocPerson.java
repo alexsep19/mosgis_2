@@ -12,7 +12,7 @@ public class VocPerson extends Table {
         
         super ("vc_person", "Физические лица");
         
-        pk  ("personuuid",     Type.UUID,         NEW_UUID, "Ключ");
+        pk  ("uuid",     Type.UUID,         NEW_UUID, "Ключ");
         
         col ("is_female",      Type.BOOLEAN,      null,     "Пол");
         col ("birthdate",      Type.DATE,         null,     "Дата рождения");
