@@ -25,7 +25,7 @@ public class VocPerson extends Table {
         col ("series",         Type.STRING,  45,   null,     "Серия документа, удостоверяющего дичность");
         col ("number_",        Type.STRING,  45,   null,     "Номер документа, удостоверяющего личность");
         col ("issuedate",      Type.DATE,          null,     "Дата выдачи документа, удостоверяющего личность");
-        col ("document_name",  Type.STRING,  1200, null,     "Кем выдан документ, удостоверяющий личность");
+        col ("issuer",         Type.STRING,        null,     "Кем выдан документ, удостоверяющий личность");
         
         col ("placebirth",     Type.STRING,  255,  null,     "Место рождения");
         
