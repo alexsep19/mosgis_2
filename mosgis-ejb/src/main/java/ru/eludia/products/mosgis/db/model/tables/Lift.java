@@ -43,6 +43,7 @@ public class Lift extends Table {
         
         ref    ("fias_child_house_guid",   VocBuilding.class, null, "ГУИД дочернего дома по ФИАС, к которому относится подъезд для группирующих домов");
         col    ("gis_modification_date",   Type.TIMESTAMP,    null, "Дата модификации данных в ГИС ЖКХ");
+        col    ("guid_gis",                Type.UUID,         null, "Идентификатор в ГИС ЖКХ");
         
         trigger ("BEFORE INSERT", 
             "BEGIN "

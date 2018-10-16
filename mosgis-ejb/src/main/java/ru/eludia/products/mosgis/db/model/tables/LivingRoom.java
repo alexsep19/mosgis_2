@@ -35,9 +35,10 @@ public class LivingRoom extends Passport {
         col    ("square",             Type.NUMERIC, 25, 4, null,       "Площадь");
         col    ("floor",              Type.STRING,         null,       "Этаж");
         
-        col    ("gis_unique_number",       Type.STRING,                     "Уникальный номер");
-        col    ("gis_modification_date",   Type.TIMESTAMP,      null,       "Дата модификации данных в ГИС ЖКХ");
-        col    ("information_confirmed",   Type.BOOLEAN,        Bool.TRUE,  "Информация подтверждена поставщиком");
+        col    ("gis_unique_number",       Type.STRING,    null,       "Уникальный номер");
+        col    ("gis_modification_date",   Type.TIMESTAMP, null,       "Дата модификации данных в ГИС ЖКХ");
+        col    ("information_confirmed",   Type.BOOLEAN,   Bool.TRUE,  "Информация подтверждена поставщиком");
+        col    ("guid_gis",                Type.UUID,      null,       "Идентификатор в ГИС ЖКХ");
         
         trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
                 

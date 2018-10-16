@@ -30,9 +30,10 @@ public class Entrance extends Table {
         col    ("annulmentreason",    Type.STRING,         new Virt ("''||\"CODE_VC_NSI_330\""),  "Причина аннулирования");
         col    ("is_annuled",         Type.BOOLEAN,        new Virt ("DECODE(\"CODE_VC_NSI_330\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0");
 
-        ref    ("fias_child_house_guid",   VocBuilding.class,   null,      "ГУИД дочернего дома по ФИАС, к которому относится подъезд для группирующих домов");
-        col    ("gis_modification_date",   Type.TIMESTAMP,      null,      "Дата модификации данных подъезда в ГИС ЖКХ");
-        col    ("information_confirmed",   Type.BOOLEAN,        Bool.TRUE, "Информация подтверждена поставщиком");
+        ref    ("fias_child_house_guid",   VocBuilding.class, null,      "ГУИД дочернего дома по ФИАС, к которому относится подъезд для группирующих домов");
+        col    ("gis_modification_date",   Type.TIMESTAMP,    null,      "Дата модификации данных подъезда в ГИС ЖКХ");
+        col    ("information_confirmed",   Type.BOOLEAN,      Bool.TRUE, "Информация подтверждена поставщиком");
+        col    ("guid_gis",                Type.UUID,         null,      "Идентификатор в ГИС ЖКХ");
         
         trigger ("BEFORE UPDATE", ""
                 

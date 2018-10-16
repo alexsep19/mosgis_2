@@ -17,7 +17,7 @@ public class Block extends Passport {
         
         super  ("tb_blocks", "Блоки (для жилого дома блокированной застройки)");
         
-        pk     ("uuid",               Type.UUID,   NEW_UUID,           "Ключ");
+        pk     ("uuid",               Type.UUID,           NEW_UUID,   "Ключ");
         col    ("is_deleted",         Type.BOOLEAN,        Bool.FALSE, "1, если запись удалена; иначе 0");
 
         col    ("terminationdate",    Type.DATE,           null,       "Дата прекращения существования объекта");
@@ -37,8 +37,10 @@ public class Block extends Passport {
         col    ("totalarea",          Type.NUMERIC, 25, 4, null,       "Общая площадь помещения");
         col    ("grossarea",          Type.NUMERIC, 25, 4, null,       "Жилая площадь помещения");
         
-        col    ("gis_modification_date",   Type.TIMESTAMP,      null,       "Дата модификации данных в ГИС ЖКХ");
-        col    ("information_confirmed",   Type.BOOLEAN,        Bool.TRUE,  "Информация подтверждена поставщиком");
+        col    ("gis_unique_number",       Type.STRING,    null,       "Уникальный номер");
+        col    ("gis_modification_date",   Type.TIMESTAMP, null,       "Дата модификации данных в ГИС ЖКХ");
+        col    ("information_confirmed",   Type.BOOLEAN,   Bool.TRUE,  "Информация подтверждена поставщиком");
+        col    ("guid_gis",                Type.UUID,      null,       "Идентификатор в ГИС ЖКХ");
         
         trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
                 

@@ -44,14 +44,14 @@ public class House extends Passport {
         col    ("code_vc_nsi_24",        Type.STRING, 20, null,            "Состояние дома");
         col    ("kad_n",                 Type.STRING, null,                "Кадастровый номер");
         
-        col    ("gis_unique_number",     Type.STRING,                     "Уникальный номер дома из ГИС ЖКХ");
+        col    ("gis_unique_number",     Type.STRING,         null,       "Уникальный номер дома из ГИС ЖКХ");
         col    ("gis_modification_date", Type.TIMESTAMP,      null,       "Дата модификации данных дома в ГИС ЖКХ");
-        col    ("code_vc_nsi_32",        Type.STRING,  20,    null,       "Часовая зона");
         col    ("terminationdate",       Type.DATE,           null,       "Дата аннулирования объекта в ГИС ЖКХ");
         col    ("code_vc_nsi_330",       Type.STRING,  20,    null,       "Причина аннулирования объекта жилищного фонда (НСИ 330)");
         col    ("annulmentinfo",         Type.STRING,         null,       "Причина аннулирования.Дополнительная информация");
         col    ("code_vc_nsi_241",       Type.STRING,  20,    null,       "Способ формирования фонда капитального ремонта (НСИ 241)");
         col    ("code_vc_nsi_25",        Type.STRING,  20,    null,       "Способ управления домом (НСИ 25)");
+        col    ("code_vc_nsi_336",       Type.STRING,  20,    null,       "Стадия жизненного цикла (НСИ 336)");
         
         col    ("ts",                    Type.TIMESTAMP,                   "Дата/время последнего изменения в БД");
 //        fk     ("uuid_in_open_data",     InOpenData.class,                 "Последний пакет импорта");

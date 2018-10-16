@@ -1,6 +1,7 @@
 package ru.eludia.products.mosgis.jmx;
 
 import java.lang.management.ManagementFactory;
+import java.math.BigDecimal;
 import java.util.UUID;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -11,23 +12,29 @@ import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.jms.Queue;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 
 @Startup
 @Singleton
-public class ExportHouse implements ExportHouseMBean {
+public class House implements HouseMBean {
 
     private ObjectName objectName = null;
     private MBeanServer platformMBeanServer;
-    private static Logger logger = Logger.getLogger (ExportHouse.class.getName ());
+    private static Logger logger = Logger.getLogger (House.class.getName ());
     
     @EJB
     protected UUIDPublisher UUIDPublisher;    
 
     @Resource (mappedName = "mosgis.inExportHouseQueue")
-    Queue inExportHouseQueue;        
+    Queue inExportHouseQueue;   
+    
+    @Resource (mappedName = "mosgis.inImportHouseQueue")
+    Queue inImportHouseQueue;   
         
     @PostConstruct
     public void registerInJMX () {
@@ -65,6 +72,19 @@ public class ExportHouse implements ExportHouseMBean {
         } catch (IllegalArgumentException e){
             throw new IllegalArgumentException ("Invalid FIASHouseGUID passed: '" + fiasHouseGuid + "'");
         }
+    }
+
+    @Override
+    public void importHouseData(String uuid, String orgPPAGuid) {
+     
+        if (uuid == null) throw new IllegalArgumentException ("Empty uuid passed");
+        
+        if (orgPPAGuid == null) throw new IllegalArgumentException ("Empty orgPPAGuid passed");
+
+        JsonObjectBuilder jb = Json.createObjectBuilder ();
+        JsonObject jo = jb.add("uuid", uuid).add("orgPPAGuid", orgPPAGuid).build();
+        
+        UUIDPublisher.publish (inImportHouseQueue, jo.toString());
     }
 
 }

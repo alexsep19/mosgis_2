@@ -10,20 +10,26 @@ import javax.jws.HandlerChain;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
 import ru.eludia.base.DB;
+import ru.eludia.base.db.util.TypeConverter;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractFile;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
+import ru.eludia.products.mosgis.util.StringUtils;
 import ru.eludia.products.mosgis.ws.base.LoggingOutMessageHandler;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
 import ru.gosuslugi.dom.schema.integration.base.GetStateRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ApartmentHouseUOType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportHouseRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportStatusCAChRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
+import ru.gosuslugi.dom.schema.integration.house_management.HouseBasicUOType;
+import ru.gosuslugi.dom.schema.integration.house_management.HouseBasicUpdateUOType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseUORequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ObjectFactory;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.HouseManagementPortsTypeAsync;
@@ -197,6 +203,49 @@ public class WsGisHouseManagementClient {
         GetStateRequest getStateRequest = new GetStateRequest ();
         getStateRequest.setMessageGUID (uuid.toString ());
         return getPort (orgPPAGuid, UUID.randomUUID ()).getState (getStateRequest);
-    }    
+    }
+    
+    public AckRequest.Ack importHouseUOData (UUID orgPPAGuid, Map<String, Object> r) throws Fault {
+        
+        ImportHouseUORequest importHouseUORequest = of.createImportHouseUORequest();
+        
+        if (TypeConverter.bool(r.get("is_condo"))) {
+            //МКД
+            ImportHouseUORequest.ApartmentHouse house = new ImportHouseUORequest.ApartmentHouse();
+            importHouseUORequest.setApartmentHouse(house);
+            if (StringUtils.isBlank((String) r.get("gis_unique_number"))) {
+                //Создание
+                ImportHouseUORequest.ApartmentHouse.ApartmentHouseToCreate apartmentHouse
+                        = (ImportHouseUORequest.ApartmentHouse.ApartmentHouseToCreate) TypeConverter.javaBean(ImportHouseUORequest.ApartmentHouse.ApartmentHouseToCreate.class, r);
+                apartmentHouse.setBasicCharacteristicts((ApartmentHouseUOType.BasicCharacteristicts) TypeConverter.javaBean(ApartmentHouseUOType.BasicCharacteristicts.class, r));
+                house.setApartmentHouseToCreate(apartmentHouse);
+            } else {
+                //Обновление
+                ImportHouseUORequest.ApartmentHouse.ApartmentHouseToUpdate apartmentHouse
+                        = (ImportHouseUORequest.ApartmentHouse.ApartmentHouseToUpdate) TypeConverter.javaBean(ImportHouseUORequest.ApartmentHouse.ApartmentHouseToUpdate.class, r);
+                apartmentHouse.setBasicCharacteristicts((HouseBasicUpdateUOType) TypeConverter.javaBean(HouseBasicUpdateUOType.class, r));
+                house.setApartmentHouseToUpdate(apartmentHouse);
+            }
+        } else {
+            //ЖД
+            ImportHouseUORequest.LivingHouse house = new ImportHouseUORequest.LivingHouse();
+            importHouseUORequest.setLivingHouse(house);
+            if (r.get("gis_unique_number") == null) {
+                //Создание
+                ImportHouseUORequest.LivingHouse.LivingHouseToCreate livingHouse
+                        = (ImportHouseUORequest.LivingHouse.LivingHouseToCreate) TypeConverter.javaBean(ImportHouseUORequest.LivingHouse.LivingHouseToCreate.class, r);
+                livingHouse.setBasicCharacteristicts((HouseBasicUOType) TypeConverter.javaBean(HouseBasicUOType.class, r));
+                house.setLivingHouseToCreate(livingHouse);
+            } else {
+                //Обновление
+                ImportHouseUORequest.LivingHouse.LivingHouseToUpdate livingHouse
+                        = (ImportHouseUORequest.LivingHouse.LivingHouseToUpdate) TypeConverter.javaBean(ImportHouseUORequest.LivingHouse.LivingHouseToUpdate.class, r);
+                livingHouse.setBasicCharacteristicts((HouseBasicUpdateUOType) TypeConverter.javaBean(HouseBasicUpdateUOType.class, r));
+                house.setLivingHouseToUpdate(livingHouse);
+            }
+        }
+        
+        return getPort (orgPPAGuid, UUID.randomUUID()).importHouseUOData(importHouseUORequest).getAck ();       
+    }
 
 }
