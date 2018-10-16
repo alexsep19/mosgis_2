@@ -70,9 +70,10 @@ public class Charter extends Table {
                 
         + "BEGIN "
 
-            + "IF UPDATING "
+            + "IF UPDATING "                
             + " AND :NEW.id_ctr_status = " + VocGisStatus.i.PENDING_RQ_PLACING.getId ()
             + " AND :OLD.id_ctr_status = " + VocGisStatus.i.MUTATING.getId () + ' '
+            + " AND :NEW.charterguid IS NOT NULL "
             + "THEN "
             + "  :NEW.id_ctr_status := " + VocGisStatus.i.PENDING_RQ_EDIT.getId () + "; "
             + "END IF; "
