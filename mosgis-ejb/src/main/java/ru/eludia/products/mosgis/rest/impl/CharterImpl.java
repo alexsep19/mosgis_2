@@ -10,11 +10,16 @@ import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
+import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.base.model.Table;
+import ru.eludia.base.model.phys.PhysicalCol;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.CharterLog;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
+import ru.eludia.products.mosgis.db.model.tables.CharterFile;
+import ru.eludia.products.mosgis.db.model.tables.CharterFileLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
@@ -234,27 +239,27 @@ public class CharterImpl extends BaseCRUD<Charter> implements CharterLocal {
             "id_ctr_status",  VocGisStatus.i.MUTATING.getId (),
             "uuid_out_soap",  null
         ));
-/*        
-        Table t = db.getModel ().t (ContractFile.class);
-        final PhysicalCol uCol = t.getColumn ("uuid_contract").toPhysical ();
+
+        Table t = db.getModel ().t (CharterFile.class);
+        final PhysicalCol uCol = t.getColumn ("uuid_charter").toPhysical ();
         
         QP qp = new QP ("UPDATE ");
         qp.append (t.getName ());
         qp.append (" SET attachmentguid = NULL ");
-        qp.add ("WHERE uuid_contract = ?", id, uCol);
+        qp.add ("WHERE uuid_charter = ?", id, uCol);
 
         db.d0 (qp);        
 
-        Table tl = db.getModel ().t (ContractFileLog.class);
+        Table tl = db.getModel ().t (CharterFileLog.class);
         qp = new QP ("UPDATE ");
         qp.append (tl.getName ());
         qp.append (" SET ts_start_sending = NULL WHERE uuid_object IN (SELECT uuid FROM ");
         qp.append (t.getName ());
-        qp.add (" WHERE uuid_contract = ?", id, uCol);
+        qp.add (" WHERE uuid_charter = ?", id, uCol);
         qp.append (")");
         
-        db.d0 (qp);        
-*/
+        db.d0 (qp);
+
         logAction (db, user, id, VocAction.i.ALTER);
         
     });}
