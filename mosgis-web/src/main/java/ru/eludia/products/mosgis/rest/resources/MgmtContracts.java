@@ -67,6 +67,23 @@ public class MgmtContracts extends EJBResource <MgmtContractLocal> {
             }
             
         }
+        
+        if (false
+            || securityContext.isUserInRole ("nsi_20_19")
+            || securityContext.isUserInRole ("nsi_20_20")
+            || securityContext.isUserInRole ("nsi_20_21")
+            || securityContext.isUserInRole ("nsi_20_22")
+        ) {
+            
+            String toBe = getUser ().getUuidOrg ();
+            String asIs = p.getJsonObject ("data").getString ("uuid_org_customer", null);
+            
+            if (!toBe.equals (asIs)) {
+                logger.warning ("Security violation: data.uuid_org_customer must be " + toBe + ", received " + asIs);
+                throw new ValidationException ("foo", "Доступ запрещён");
+            }
+            
+        }
 
         return back.select (p, getUser ()); 
         
