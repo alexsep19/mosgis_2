@@ -12,7 +12,7 @@ public class VocPersonLog extends Table {
         super ("vc_persons__log", "История редактирования физических лиц");
         
         pk    ("uuid",               Type.UUID,         NEW_UUID, "Ключ");
-        col   ("action",             Type.STRING,                 "Действие");
+        ref   ("action",             VocAction.class,             "Действие");
         fk    ("uuid_object",        VocPerson.class,             "Ссылка на запись");
         col   ("ts",                 Type.TIMESTAMP,    NOW,      "Дата/время события");
         fk    ("uuid_user",          VocUser.class,     null,     "Оператор");
