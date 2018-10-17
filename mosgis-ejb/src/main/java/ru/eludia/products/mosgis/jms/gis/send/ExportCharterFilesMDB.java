@@ -52,7 +52,7 @@ public class ExportCharterFilesMDB extends UUIDMDB<CharterFile> {
 
                 GisRestStream out = new GisRestStream (
                     restGisFilesClient,
-                    Context.HOMEMANAGEMENT,
+                    Context.AGREEMENTS,
                     orgppaguid, 
                     r.get ("label").toString (), 
                     Long.parseLong (r.get ("len").toString ()),

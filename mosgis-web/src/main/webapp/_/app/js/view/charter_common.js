@@ -60,7 +60,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 280},
+                {type: 'top', size: 300},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [

@@ -16,7 +16,11 @@ define ([], function () {
         t.enable (b [g.get (g.getSelection () [0]).is_deleted])
 
     })}
-
+    
+    var postData = {}
+    if ($_USER.role.nsi_20_1)          postData.uuid_org          = $_USER.uuid_org
+    if ($_USER.is_building_society ()) postData.uuid_org_customer = $_USER.uuid_org
+    
     return function (data, view) {
     
         data = $('body').data ('data')
@@ -46,9 +50,9 @@ define ([], function () {
                 {field: 'docnum', caption: 'Номер',  type: 'text'},
                 {field: 'signingdate', caption: 'Дата заключения',  type: 'date'},
                 {field: 'id_status', caption: 'Статус договора', type: 'enum', options: {items: data.vc_gis_status.items}}, 
-                {field: 'uuid_org', caption: 'Договородержатель', type: 'enum', options: {items: data.vc_orgs.items}, off: $_USER.role.nsi_20_1},
-                {field: 'id_customer_type', caption: 'Сторона договора', type: 'enum', options: {items: data.vc_gis_customer_type.items}},
-                {field: 'uuid_org_customer', caption: 'Контрагент', type: 'enum', options: {items: data.customers.items}},
+                {field: 'uuid_org', caption: 'Исполнитель', type: 'enum', options: {items: data.vc_orgs.items}, off: $_USER.role.nsi_20_1},
+                {field: 'id_customer_type', caption: 'Тип заказчика', type: 'enum', options: {items: data.vc_gis_customer_type.items}, off: !($_USER.role.admin || $_USER.role.nsi_20_1)},
+                {field: 'uuid_org_customer', caption: 'Заказчик', type: 'enum', options: {items: data.customers.items}, off: !($_USER.role.admin || $_USER.role.nsi_20_1)},
                 {field: 'contractbase', caption: 'Основание заключения', type: 'enum', options: {items: data.vc_nsi_58.items}},
                 {field: 'effectivedate', caption: 'Дата вступления в силу',  type: 'date'},
                 {field: 'plandatecomptetion', caption: 'Дата окончания',  type: 'date'},
@@ -72,7 +76,7 @@ define ([], function () {
                 
             ].filter (not_off),
             
-            postData: {data: $_USER.role.nsi_20_1 ? {uuid_org: $_USER.uuid_org} : {}},
+            postData: {data: postData},
 
             url: '/mosgis/_rest/?type=mgmt_contracts',
                         

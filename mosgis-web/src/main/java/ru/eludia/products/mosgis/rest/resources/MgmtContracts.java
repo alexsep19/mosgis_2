@@ -36,13 +36,18 @@ public class MgmtContracts extends EJBResource <MgmtContractLocal> {
         
     }    
     
-    private void checkOrg (JsonObject item) {
+    private void checkOrg (JsonObject item, boolean allowCustomer) {
+
+        String userOrg = getUserOrg ();
+        
+        if (allowCustomer) {
+            String itemOrgCustomer = item.getString ("uuid_org_customer", null);
+            if (itemOrgCustomer != null && itemOrgCustomer.equals (userOrg)) return;
+        }
 
         String itemOrg = item.getString ("uuid_org", null);
 
         if (itemOrg == null) throw new InternalServerErrorException ("Wrong MgmtContract, no org: " + item);
-
-        String userOrg = getUserOrg ();
 
         if (!userOrg.equals (itemOrg)) {
             logger.warning ("Org mismatch: " + userOrg + " vs. " + itemOrg);
@@ -63,6 +68,23 @@ public class MgmtContracts extends EJBResource <MgmtContractLocal> {
             
             if (!toBe.equals (asIs)) {
                 logger.warning ("Security violation: data.uuid_org must be " + toBe + ", received " + asIs);
+                throw new ValidationException ("foo", "Доступ запрещён");
+            }
+            
+        }
+        
+        if (false
+            || securityContext.isUserInRole ("nsi_20_19")
+            || securityContext.isUserInRole ("nsi_20_20")
+            || securityContext.isUserInRole ("nsi_20_21")
+            || securityContext.isUserInRole ("nsi_20_22")
+        ) {
+            
+            String toBe = getUser ().getUuidOrg ();
+            String asIs = p.getJsonObject ("data").getString ("uuid_org_customer", null);
+            
+            if (!toBe.equals (asIs)) {
+                logger.warning ("Security violation: data.uuid_org_customer must be " + toBe + ", received " + asIs);
                 throw new ValidationException ("foo", "Доступ запрещён");
             }
             
@@ -94,7 +116,7 @@ public class MgmtContracts extends EJBResource <MgmtContractLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject doUpdate (@PathParam ("id") String id, JsonObject p) {
         final JsonObject item = getInnerItem (id);
-        checkOrg (item);
+        checkOrg (item, false);
         return back.doUpdate (id, p, getUser ());
     }
     
@@ -104,7 +126,7 @@ public class MgmtContracts extends EJBResource <MgmtContractLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject doTerminate (@PathParam ("id") String id, JsonObject p) {
         final JsonObject item = getInnerItem (id);
-        checkOrg (item);
+        checkOrg (item, false);
         return back.doTerminate (id, p, getUser ());
     }
     
@@ -114,7 +136,7 @@ public class MgmtContracts extends EJBResource <MgmtContractLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject doAnnul (@PathParam ("id") String id, JsonObject p) {
         final JsonObject item = getInnerItem (id);
-        checkOrg (item);
+        checkOrg (item, false);
         return back.doAnnul (id, p, getUser ());
     }
     
@@ -124,7 +146,7 @@ public class MgmtContracts extends EJBResource <MgmtContractLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject doRollover (@PathParam ("id") String id, JsonObject p) {
         final JsonObject item = getInnerItem (id);
-        checkOrg (item);
+        checkOrg (item, false);
         return back.doRollover (id, p, getUser ());
     }
     
@@ -133,7 +155,7 @@ public class MgmtContracts extends EJBResource <MgmtContractLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject doDelete (@PathParam ("id") String id) { 
         final JsonObject item = getInnerItem (id);
-        checkOrg (item);
+        checkOrg (item, false);
         return back.doDelete (id, getUser ());
     }
     
@@ -142,7 +164,7 @@ public class MgmtContracts extends EJBResource <MgmtContractLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject doApprove (@PathParam ("id") String id) { 
         final JsonObject item = getInnerItem (id);
-        checkOrg (item);
+        checkOrg (item, false);
         return back.doApprove (id, getUser ());
     }
     
@@ -151,7 +173,7 @@ public class MgmtContracts extends EJBResource <MgmtContractLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject doAlter (@PathParam ("id") String id) { 
         final JsonObject item = getInnerItem (id);
-        checkOrg (item);
+        checkOrg (item, false);
         return back.doAlter (id, getUser ());
     }
     
@@ -160,7 +182,7 @@ public class MgmtContracts extends EJBResource <MgmtContractLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject doRefresh (@PathParam ("id") String id) { 
         final JsonObject item = getInnerItem (id);
-        checkOrg (item);
+        checkOrg (item, false);
         return back.doRefresh (id, getUser ());
     }
     
@@ -169,7 +191,7 @@ public class MgmtContracts extends EJBResource <MgmtContractLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject doUndelete (@PathParam ("id") String id) { 
         final JsonObject item = getInnerItem (id);
-        checkOrg (item);
+        checkOrg (item, false);
         return back.doUndelete (id, getUser ());
     }
         
@@ -178,7 +200,7 @@ public class MgmtContracts extends EJBResource <MgmtContractLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) { 
         final JsonObject item = back.getItem (id);
-        if (!securityContext.isUserInRole ("admin") && !securityContext.isUserInRole ("nsi_20_4")) checkOrg (item.getJsonObject ("item"));
+        if (!securityContext.isUserInRole ("admin") && !securityContext.isUserInRole ("nsi_20_4")) checkOrg (item.getJsonObject ("item"), true);
         return item;
     }
     
@@ -188,7 +210,7 @@ public class MgmtContracts extends EJBResource <MgmtContractLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
         final JsonObject item = back.getItem (id);
-        if (!securityContext.isUserInRole ("admin") && !securityContext.isUserInRole ("nsi_20_4")) checkOrg (item.getJsonObject ("item"));
+        if (!securityContext.isUserInRole ("admin") && !securityContext.isUserInRole ("nsi_20_4")) checkOrg (item.getJsonObject ("item"), true);
         return back.getLog (id, p, getUser ());
     }
     
