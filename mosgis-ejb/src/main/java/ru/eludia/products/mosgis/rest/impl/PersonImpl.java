@@ -82,7 +82,6 @@ public class PersonImpl extends BaseCRUD<VocPerson> implements PersonLocal {
             .toMaybeOne (VocPersonLog.class         ).on ()
             .and ("uuid_org", user.getUuidOrg ())
             .orderBy ("org.label")
-            .orderBy ("root.sortorder")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
         applySearch (Search.from (p), select);
