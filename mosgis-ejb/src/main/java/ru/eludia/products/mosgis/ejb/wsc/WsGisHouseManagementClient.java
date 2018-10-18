@@ -264,7 +264,6 @@ public class WsGisHouseManagementClient {
         final ImportCharterRequest.PlacingCharter pc = (ImportCharterRequest.PlacingCharter) DB.to.javaBean (ImportCharterRequest.PlacingCharter.class, r);
         Charter.fillCharter (pc, r);
         
-        for (Map<String, Object> file: (Collection<Map<String, Object>>) r.get ("files")) CharterFile.add (pc, file);
         for (Map<String, Object> o:    (Collection<Map<String, Object>>) r.get ("objects")) CharterObject.add (pc, o);
 
         ImportCharterRequest importCharterRequest = of.createImportCharterRequest ();
@@ -281,6 +280,8 @@ public class WsGisHouseManagementClient {
         r.put ("date", r.get ("date_"));
         final ImportCharterRequest.EditCharter ec = (ImportCharterRequest.EditCharter) DB.to.javaBean (ImportCharterRequest.EditCharter.class, r);
         Charter.fillCharter (ec, r);
+        
+        for (Map<String, Object> o:    (Collection<Map<String, Object>>) r.get ("objects")) CharterObject.add (ec, o);        
 
         ImportCharterRequest importCharterRequest = of.createImportCharterRequest ();
         

@@ -132,25 +132,19 @@ public class CharterObject extends Table {
         
     }
     
-/*
-    
-    private static Logger logger = java.util.logging.Logger.getLogger (CharterObject.class.getName ());
-    
-    public static void add (ImportCharterRequest.Charter.EditCharter ec, Map<String, Object> r) {
+    public static void add (ImportCharterRequest.EditCharter ec, Map<String, Object> r) {
         
-        final ImportCharterRequest.Charter.EditCharter.CharterObject co = (ImportCharterRequest.Charter.EditCharter.CharterObject) DB.to.javaBean (ImportCharterRequest.Charter.EditCharter.CharterObject.class, r);
-        
+        final ImportCharterRequest.EditCharter.ContractObject co = (ImportCharterRequest.EditCharter.ContractObject) DB.to.javaBean (ImportCharterRequest.EditCharter.ContractObject.class, r);
+                
         co.setTransportGUID (UUID.randomUUID ().toString ());
-        
-logger.info ("r=" + r);
         
         if (r.get ("contractobjectversionguid") == null) {
             
-            final ImportCharterRequest.Charter.EditCharter.CharterObject.Add add = (ImportCharterRequest.Charter.EditCharter.CharterObject.Add) DB.to.javaBean (ImportCharterRequest.Charter.EditCharter.CharterObject.Add.class, r);
+            final ImportCharterRequest.EditCharter.ContractObject.Add add = (ImportCharterRequest.EditCharter.ContractObject.Add) DB.to.javaBean (ImportCharterRequest.EditCharter.ContractObject.Add.class, r);
             
             add.setBaseMService (CharterFile.getBaseServiceType (r));
             
-            for (Map<String, Object> service: (List<Map<String, Object>>) r.get ("services")) CharterObjectService.add (add, service);            
+            for (Map<String, Object> service: (List<Map<String, Object>>) r.get ("services")) CharterObjectService.add (add, service);
             
             co.setAdd (add);
         
@@ -161,16 +155,16 @@ logger.info ("r=" + r);
             
             if (nul != null && !nul.toString ().isEmpty ()) {
 
-                final ImportCharterRequest.Charter.EditCharter.CharterObject.Annulment annulment = new ImportCharterRequest.Charter.EditCharter.CharterObject.Annulment ();
+                final ImportCharterRequest.EditCharter.ContractObject.Annulment annulment = new ImportCharterRequest.EditCharter.ContractObject.Annulment ();
 
-                annulment.setCharterObjectVersionGUID (r.get ("contractobjectversionguid").toString ());
+                annulment.setContractObjectVersionGUID (r.get ("contractobjectversionguid").toString ());
 
                 co.setAnnulment (annulment);
 
             }
             else {
 
-                ImportCharterRequest.Charter.EditCharter.CharterObject.Edit ed = (ImportCharterRequest.Charter.EditCharter.CharterObject.Edit) DB.to.javaBean (ImportCharterRequest.Charter.EditCharter.CharterObject.Edit.class, r);
+                ImportCharterRequest.EditCharter.ContractObject.Edit ed = (ImportCharterRequest.EditCharter.ContractObject.Edit) DB.to.javaBean (ImportCharterRequest.EditCharter.ContractObject.Edit.class, r);
 
                 ed.setBaseMService (CharterFile.getBaseServiceType (r));
 
@@ -182,24 +176,8 @@ logger.info ("r=" + r);
             
         }
         
-        ec.getCharterObject ().add (co);
+        ec.getContractObject ().add (co);
         
-    }    
-    
-    public QP updateStatus (UUID uuid_charter, ExportStatusCAChResultType.CharterObject co) {
-    
-        QP qp = new QP ("UPDATE ");
-                    
-        qp.append (getName ());
-        qp.add (" SET id_ctr_status_gis         = ?", VocGisStatus.i.forName (co.getManagedObjectStatus ().value ()).getId (), getColumn ("id_ctr_status_gis").toPhysical ());
-        qp.add (",    contractobjectversionguid = ?", co.getCharterObjectVersionGUID (),                                      getColumn ("contractobjectversionguid").toPhysical ());
-
-        qp.append (" WHERE is_deleted = 0");
-        qp.add (" AND uuid_charter   = ?", uuid_charter,          getColumn ("uuid_charter").toPhysical ());
-        qp.add (" AND fiashouseguid   = ?", co.getFIASHouseGuid (), getColumn ("fiashouseguid").toPhysical ());
-                    
-        return qp;
-    
     }
-*/
+    
 }

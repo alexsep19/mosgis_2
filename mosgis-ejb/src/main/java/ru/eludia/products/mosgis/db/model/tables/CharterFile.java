@@ -12,7 +12,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.gosuslugi.dom.schema.integration.base.Attachment;
 import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
 import ru.gosuslugi.dom.schema.integration.house_management.BaseServiceCharterType;
-import ru.gosuslugi.dom.schema.integration.house_management.ImportCharterRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.CharterType;
 
 public class CharterFile extends Table {
 
@@ -77,7 +77,7 @@ public class CharterFile extends Table {
         result.setAttachment (attachment);
     }
     
-    public static void add (ImportCharterRequest.PlacingCharter pc, Map<String, Object> file) {
+    public static void add (CharterType pc, Map<String, Object> file) {
         
         VocContractDocType.i type = VocContractDocType.i.forId (file.get ("id_type"));
         
@@ -86,7 +86,10 @@ public class CharterFile extends Table {
         switch (type) {
             case CHARTER:
                 pc.getAttachmentCharter ().add (at);
-                return;
+                break;
+            case PROTOCOL_MEETING_OWNERS:
+                pc.getMeetingProtocol ().getProtocolMeetingOwners ().add (at);
+                break;
             default:
                 // do nothing
         }
