@@ -46,7 +46,6 @@ define ([], function () {
                         case 14:
                         case 34:
                         case 90:
-                        case 94:
                             it._can.alter   = 1
                             break;
 
@@ -64,7 +63,6 @@ define ([], function () {
                     
                         switch (it.id_ctr_status) {
                             case 40:
-                            case 94:
                                 it._can.rollover = 1
                                 break;
                         }
