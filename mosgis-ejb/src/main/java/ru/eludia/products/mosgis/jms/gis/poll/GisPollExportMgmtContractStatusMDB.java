@@ -23,7 +23,7 @@ import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import ru.eludia.products.mosgis.rest.api.MgmtContractLocal;
-import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
+import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportStatusCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
@@ -59,17 +59,58 @@ public class GisPollExportMgmtContractStatusMDB extends UUIDMDB<OutSoap> {
             rp = wsGisHouseManagementClient.getState ((UUID) r.get ("orgppaguid"), (UUID) r.get ("uuid_ack"));
         }
         catch (Fault ex) {
-            throw new IllegalStateException (ex);
-/*                
+
             final ru.gosuslugi.dom.schema.integration.base.Fault faultInfo = ex.getFaultInfo ();
-            throw new FU (faultInfo.getErrorCode (), faultInfo.getErrorMessage (), VocGisStatus.i.FAILED_STATE);
-*/                
+                        
+            db.update (OutSoap.class, HASH (
+                "uuid", uuid,
+                "id_status", DONE.getId (),
+                "is_failed", 1,
+                "err_code",  faultInfo.getErrorCode (),
+                "err_text",  faultInfo.getErrorMessage ()
+            ));
+            
+            return;
+            
+        }
+        catch (Throwable ex) {
+            
+            Throwable x = ex;
+            
+            while (x.getCause () != null) x = x.getCause ();
+                        
+            db.update (OutSoap.class, HASH (
+                "uuid", uuid,
+                "id_status", DONE.getId (),
+                "is_failed", 1,
+                "err_code",  "0",
+                "err_text",  x.getMessage ()
+            ));
+            
+            return;
+            
         }
 
         if (rp.getRequestState () < DONE.getId ()) {
             logger.info ("requestState = " + rp.getRequestState () + ", retry...");
             UUIDPublisher.publish (queue, uuid);
             return;
+        }
+
+        ErrorMessageType errorMessage = rp.getErrorMessage ();        
+        
+        if (errorMessage != null) {
+            
+            db.update (OutSoap.class, HASH (
+                "uuid", uuid,
+                "id_status", DONE.getId (),
+                "is_failed", 1,
+                "err_code",  errorMessage.getErrorCode (),
+                "err_text",  errorMessage.getDescription ()
+            ));
+            
+            return;
+            
         }
 
         List <UUID> toPromote = processGetStateResponse (rp, db, uuid, false);

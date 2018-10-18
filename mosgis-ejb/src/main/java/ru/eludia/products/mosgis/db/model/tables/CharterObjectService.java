@@ -9,7 +9,6 @@ import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
-import static ru.eludia.products.mosgis.db.model.voc.VocGisStatus.i.MUTATING;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportCharterRequest;
 
 public class CharterObjectService extends Table {
@@ -39,14 +38,40 @@ public class CharterObjectService extends Table {
             + "SELECT uuid_charter INTO :NEW.uuid_charter FROM tb_charter_objects WHERE uuid = :NEW.uuid_charter_object; "
         + "END;");
         
-        trigger ("BEFORE INSERT OR UPDATE", " BEGIN "
+        trigger ("BEFORE INSERT OR UPDATE", ""
+                
+            + "DECLARE" 
+            + " PRAGMA AUTONOMOUS_TRANSACTION; "
+            + "BEGIN "
                 
             + "IF :NEW.startdate > :NEW.enddate THEN "
             + " raise_application_error (-20000, '#enddate#: Дата начала предоставления услуги должна быть раньше даты окончания');"
             + "END IF; "
-                
-            + " UPDATE tb_charter_objects SET id_ctr_status = " + MUTATING.getId () + " WHERE uuid = :NEW.uuid_charter_object AND contractobjectversionguid IS NOT NULL; "
-                
+
+            + "IF :NEW.is_deleted = 0 THEN "
+            + " FOR i IN ("
+                + "SELECT "
+                + " o.startdate "
+                + " , o.enddate "
+                + "FROM "
+                + " tb_charter_services o "
+                + "WHERE o.is_deleted = 0"
+                + " AND o.uuid_charter_object         =     :NEW.uuid_charter_object "
+                + " AND o.uuid                        <>    :NEW.uuid "
+                + " AND NVL(o.code_vc_nsi_3, ' ')     = NVL(:NEW.code_vc_nsi_3, ' ') "
+                + " AND NVL(o.uuid_add_service, '00') = NVL(:NEW.uuid_add_service, '00') "
+                + " AND o.enddate   >= :NEW.startdate "
+                + " AND o.startdate <= :NEW.enddate "
+                + ") LOOP"
+            + " raise_application_error (-20000, "
+                + "'Эта услуга по данному адресу уже указана — с периодом с ' "
+                + "|| TO_CHAR (i.startdate, 'DD.MM.YYYY')"
+                + "||' по '"
+                + "|| TO_CHAR (i.enddate, 'DD.MM.YYYY')"
+                + "|| '. Операция отменена.'); "
+            + " END LOOP; "
+            + "END IF; "                
+
         + "END;");
 
     }
