@@ -32,7 +32,7 @@ define ([], function () {
 
     $_DO.create_vc_persons = function (e) {       
         $_SESSION.set ('record', {})
-        use.block ('vc_person_popup')
+        use.block ('vc_person_new')
     }
 
     $_DO.edit_vc_persons = function (e) {       

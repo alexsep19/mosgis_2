@@ -36,8 +36,8 @@ define ([], function () {
             toolbar: {
             
                 items: [
-                    {type: 'button', id: 'edit', caption: 'Изменить', onClick: $_DO.edit_vc_persons, disabled: true, off: $_USER.role.admin, icon: 'w2ui-icon-pencil'},
-                    {type: 'button', id: 'delete', caption: 'Удалить', onClick: $_DO.delete_vc_persons, disabled: true, off: $_USER.role.admin, icon: 'w2ui-icon-cross'},
+                    {type: 'button', id: 'edit', caption: 'Изменить', onClick: $_DO.edit_vc_persons, disabled: false, off: $_USER.role.admin, icon: 'w2ui-icon-pencil'},
+                    {type: 'button', id: 'delete', caption: 'Удалить', onClick: $_DO.delete_vc_persons, disabled: false, off: $_USER.role.admin, icon: 'w2ui-icon-cross'},
                 ].filter (not_off),
                 
             }, 
