@@ -28,14 +28,6 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 @Stateless
 public class PersonImpl extends BaseCRUD<VocPerson> implements PersonLocal {
     
-    @Resource (mappedName = "mosgis.inNsiPersonQueue")
-    Queue queue;
-
-    @Override
-    public Queue getQueue () {
-        return queue;
-    }
-    
     private void filterOffDeleted (Select select) {
         select.and ("is_deleted", 0);
     }

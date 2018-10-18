@@ -298,12 +298,6 @@
     </delivery-params-overrides>
   </uniform-distributed-queue>
   
-  <!-- очередь обработки запросов на экспорт работ/услуг организации -->
-  <uniform-distributed-queue name="inNsiPersonQueue">
-    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-    <jndi-name>mosgis.inNsiPersonQueue</jndi-name>
-  </uniform-distributed-queue>
-  
   
   
   
