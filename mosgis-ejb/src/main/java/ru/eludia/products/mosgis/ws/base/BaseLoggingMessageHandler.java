@@ -106,30 +106,32 @@ public abstract class BaseLoggingMessageHandler implements SOAPHandler<SOAPMessa
         try {
             
             String s = new String (bytes, charSetName);
-            
-            char [] b = null;
-            
-            int l = s.length ();
-            
-            for (int i = 0; i < l; i ++) {
+
+            logger.log (Level.INFO, () -> {
                 
-                char c = s.charAt (i);
+                StringBuilder sb = new StringBuilder (messageInfo.toString ());
                 
-                switch (c) {
-                    case '\r':
-                    case '\n':
-                        if (b == null) b = s.toCharArray ();
-                        b [i] = ' ';
-                        break;
-                    default:
-                        continue;
+                char last = '0';
+                
+                for (int i = 0; i < s.length (); i ++) {
+                    
+                    char c = s.charAt (i);
+                    
+                    switch (c) {
+                        case '\n':
+                        case '\r':
+                            c = ' ';
+                    }
+                    
+                    if (c == ' ' && last == ' ') continue;
+                    
+                    sb.append (last = c);
+                    
                 }
                 
-            }
-            
-            if (b != null) s = new String (b);
-            
-            logger.log (Level.INFO, "{0}{1}", new Object [] {messageInfo.toString (), s});
+                return sb.toString ();
+                
+            });
             
             return s;
 
