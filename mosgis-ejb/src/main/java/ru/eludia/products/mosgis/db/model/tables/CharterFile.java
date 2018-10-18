@@ -88,6 +88,7 @@ public class CharterFile extends Table {
                 pc.getAttachmentCharter ().add (at);
                 break;
             case PROTOCOL_MEETING_OWNERS:
+                if (pc.getMeetingProtocol () == null) pc.setMeetingProtocol (new CharterType.MeetingProtocol ());
                 pc.getMeetingProtocol ().getProtocolMeetingOwners ().add (at);
                 break;
             default:
