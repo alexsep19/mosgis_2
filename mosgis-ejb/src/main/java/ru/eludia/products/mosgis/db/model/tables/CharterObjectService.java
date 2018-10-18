@@ -64,7 +64,7 @@ public class CharterObjectService extends Table {
                 + " AND o.startdate <= :NEW.enddate "
                 + ") LOOP"
             + " raise_application_error (-20000, "
-                + "'Эта услуга по данному адресу уже указана — с периодом с ' "
+                + "'В уставе по указанной услуге в рамках объекта управления уже есть запись с пересекающимся периодом действия: с ' "
                 + "|| TO_CHAR (i.startdate, 'DD.MM.YYYY')"
                 + "||' по '"
                 + "|| TO_CHAR (i.enddate, 'DD.MM.YYYY')"
