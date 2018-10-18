@@ -197,13 +197,13 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
             
             db.getConnection ().setAutoCommit (true);
 
-            updateDates (db, orgPPAGuid, (UUID) r.get ("ctr.uuid"), (UUID) r.get ("ctr.contractguid"));
+            updateDates (db, orgPPAGuid, (UUID) r.get ("ctr.uuid"), (UUID) r.get ("ctr.contractguid"), uuid);
 
         }
 
     }
 
-    private void updateDates (DB db, UUID orgPPAGuid, UUID ctrUuid, UUID contractGUID) throws SQLException {
+    private void updateDates (DB db, UUID orgPPAGuid, UUID ctrUuid, UUID contractGUID, UUID uuidOutSoap) throws SQLException {
         
         UUID rUID = UUID.randomUUID ();
 
@@ -418,15 +418,20 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
                         db.update (ContractObjectService.class, serviceRecords);
                         
                         db.update (ContractObject.class, objectRecords);
-
-                        db.update (Contract.class, HASH (
-                            "uuid",                ctrUuid,
+                        
+                        final Map<String, Object> r = HASH (
                             "contractversionguid", scontractversionguid,
-                            "signingdate",         contract.getSigningDate (),      
+                            "signingdate",         contract.getSigningDate (),
                             "effectivedate",       contract.getEffectiveDate (),      
                             "plandatecomptetion",  contract.getPlanDateComptetion ()
-                        ));
-                    
+                        );
+                        
+                        r.put ("uuid", ctrUuid);
+                        db.update (Contract.class, r);
+
+                        r.put ("uuid", uuidOutSoap);
+                        db.update (ContractLog.class, r);
+                        
                     db.commit ();
                     
                     break;
