@@ -53,6 +53,11 @@ define ([], function () {
                 id: 'insurance_products',
                 text: 'Страховые продукты',
             })
+            
+            if (one_of_roles (1, 19, 20, 21, 22, 36, 2)) org_vocs.push ({
+                id: 'persons',
+                text: 'Физические лица',
+            })
 
             if (org_vocs.length) data.vc_nsi_list_group.unshift ({
                 name: '_ORG',
