@@ -12,9 +12,15 @@ import javax.xml.ws.WebServiceRef;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.util.TypeConverter;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.Block;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractFile;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
+import ru.eludia.products.mosgis.db.model.tables.Entrance;
+import ru.eludia.products.mosgis.db.model.tables.Lift;
+import ru.eludia.products.mosgis.db.model.tables.LivingRoom;
+import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
+import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.util.StringUtils;
@@ -216,16 +222,20 @@ public class WsGisHouseManagementClient {
             if (StringUtils.isBlank((String) r.get("gis_unique_number"))) {
                 //Создание
                 ImportHouseUORequest.ApartmentHouse.ApartmentHouseToCreate apartmentHouse
-                        = (ImportHouseUORequest.ApartmentHouse.ApartmentHouseToCreate) TypeConverter.javaBean(ImportHouseUORequest.ApartmentHouse.ApartmentHouseToCreate.class, r);
-                apartmentHouse.setBasicCharacteristicts((ApartmentHouseUOType.BasicCharacteristicts) TypeConverter.javaBean(ApartmentHouseUOType.BasicCharacteristicts.class, r));
+                        = TypeConverter.javaBean(ImportHouseUORequest.ApartmentHouse.ApartmentHouseToCreate.class, r);
+                apartmentHouse.setBasicCharacteristicts(TypeConverter.javaBean(ApartmentHouseUOType.BasicCharacteristicts.class, r));
                 house.setApartmentHouseToCreate(apartmentHouse);
             } else {
                 //Обновление
                 ImportHouseUORequest.ApartmentHouse.ApartmentHouseToUpdate apartmentHouse
-                        = (ImportHouseUORequest.ApartmentHouse.ApartmentHouseToUpdate) TypeConverter.javaBean(ImportHouseUORequest.ApartmentHouse.ApartmentHouseToUpdate.class, r);
-                apartmentHouse.setBasicCharacteristicts((HouseBasicUpdateUOType) TypeConverter.javaBean(HouseBasicUpdateUOType.class, r));
+                        = TypeConverter.javaBean(ImportHouseUORequest.ApartmentHouse.ApartmentHouseToUpdate.class, r);
+                apartmentHouse.setBasicCharacteristicts(TypeConverter.javaBean(HouseBasicUpdateUOType.class, r));
                 house.setApartmentHouseToUpdate(apartmentHouse);
             }
+            ((Collection<Map<String, Object>>) r.get("entrances")).forEach((item) -> Entrance.add(house, item));
+            ((Collection<Map<String, Object>>) r.get("lifts")).forEach((item) -> Lift.add(house, item));
+            ((Collection<Map<String, Object>>) r.get("residentialpremises")).forEach((item) -> ResidentialPremise.add(house, item));
+            ((Collection<Map<String, Object>>) r.get("nonresidentialpremises")).forEach((item) -> NonResidentialPremise.add(house, item));
         } else {
             //ЖД
             ImportHouseUORequest.LivingHouse house = new ImportHouseUORequest.LivingHouse();
@@ -233,16 +243,19 @@ public class WsGisHouseManagementClient {
             if (r.get("gis_unique_number") == null) {
                 //Создание
                 ImportHouseUORequest.LivingHouse.LivingHouseToCreate livingHouse
-                        = (ImportHouseUORequest.LivingHouse.LivingHouseToCreate) TypeConverter.javaBean(ImportHouseUORequest.LivingHouse.LivingHouseToCreate.class, r);
-                livingHouse.setBasicCharacteristicts((HouseBasicUOType) TypeConverter.javaBean(HouseBasicUOType.class, r));
+                        = TypeConverter.javaBean(ImportHouseUORequest.LivingHouse.LivingHouseToCreate.class, r);
+                livingHouse.setBasicCharacteristicts(TypeConverter.javaBean(HouseBasicUOType.class, r));
                 house.setLivingHouseToCreate(livingHouse);
             } else {
                 //Обновление
                 ImportHouseUORequest.LivingHouse.LivingHouseToUpdate livingHouse
-                        = (ImportHouseUORequest.LivingHouse.LivingHouseToUpdate) TypeConverter.javaBean(ImportHouseUORequest.LivingHouse.LivingHouseToUpdate.class, r);
-                livingHouse.setBasicCharacteristicts((HouseBasicUpdateUOType) TypeConverter.javaBean(HouseBasicUpdateUOType.class, r));
+                        = TypeConverter.javaBean(ImportHouseUORequest.LivingHouse.LivingHouseToUpdate.class, r);
+                livingHouse.setBasicCharacteristicts(TypeConverter.javaBean(HouseBasicUpdateUOType.class, r));
                 house.setLivingHouseToUpdate(livingHouse);
             }
+            
+            ((Collection<Map<String, Object>>) r.get("blocks")).forEach((item) -> Block.add(house, item));
+            ((Collection<Map<String, Object>>) r.get("livingrooms")).forEach((item) -> LivingRoom.add(house, item));
         }
         
         return getPort (orgPPAGuid, UUID.randomUUID()).importHouseUOData(importHouseUORequest).getAck ();       

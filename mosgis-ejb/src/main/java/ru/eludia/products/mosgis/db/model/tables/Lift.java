@@ -1,11 +1,17 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Map;
+import ru.eludia.base.db.util.TypeConverter;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseESPRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseOMSRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseRSORequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseUORequest;
 
 public class Lift extends Table {
 
@@ -41,9 +47,9 @@ public class Lift extends Table {
         col    ("annulmentreason",    Type.STRING,         new Virt ("''||\"CODE_VC_NSI_330\""),  "Причина аннулирования");
         col    ("is_annuled",         Type.BOOLEAN,        new Virt ("DECODE(\"CODE_VC_NSI_330\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0");
         
-        ref    ("fias_child_house_guid",   VocBuilding.class, null, "ГУИД дочернего дома по ФИАС, к которому относится подъезд для группирующих домов");
+        ref    ("fiaschildhouseguid",      VocBuilding.class, null, "ГУИД дочернего дома по ФИАС, к которому относится подъезд для группирующих домов");
         col    ("gis_modification_date",   Type.TIMESTAMP,    null, "Дата модификации данных в ГИС ЖКХ");
-        col    ("guid_gis",                Type.UUID,         null, "Идентификатор в ГИС ЖКХ");
+        col    ("liftguid",                Type.UUID,         null, "Идентификатор в ГИС ЖКХ");
         
         trigger ("BEFORE INSERT", 
             "BEGIN "
@@ -64,6 +70,36 @@ public class Lift extends Table {
 
         + "END;");
 
+    }
+    
+    public static void add(ImportHouseUORequest.ApartmentHouse house, Map<String, Object> r) {
+        if (r.get("liftguid") == null) {
+            ImportHouseUORequest.ApartmentHouse.LiftToCreate lift = TypeConverter.javaBean(ImportHouseUORequest.ApartmentHouse.LiftToCreate.class, r);
+            house.getLiftToCreate().add(lift);
+        } else {
+            ImportHouseUORequest.ApartmentHouse.LiftToUpdate lift = TypeConverter.javaBean(ImportHouseUORequest.ApartmentHouse.LiftToUpdate.class, r);
+            house.getLiftToUpdate().add(lift);
+        }
+    }
+    
+    public static void add(ImportHouseOMSRequest.ApartmentHouse house, Map<String, Object> r) {
+        if (r.get("liftguid") == null) {
+            ImportHouseOMSRequest.ApartmentHouse.LiftToCreate lift = TypeConverter.javaBean(ImportHouseOMSRequest.ApartmentHouse.LiftToCreate.class, r);
+            house.getLiftToCreate().add(lift);
+        } else {
+            ImportHouseOMSRequest.ApartmentHouse.LiftToUpdate lift = TypeConverter.javaBean(ImportHouseOMSRequest.ApartmentHouse.LiftToUpdate.class, r);
+            house.getLiftToUpdate().add(lift);
+        }
+    }
+    
+    public static void add(ImportHouseESPRequest.ApartmentHouse house, Map<String, Object> r) {
+        if (r.get("liftguid") == null) {
+            ImportHouseESPRequest.ApartmentHouse.LiftToCreate lift = TypeConverter.javaBean(ImportHouseESPRequest.ApartmentHouse.LiftToCreate.class, r);
+            house.getLiftToCreate().add(lift);
+        } else {
+            ImportHouseESPRequest.ApartmentHouse.LiftToUpdate lift = TypeConverter.javaBean(ImportHouseESPRequest.ApartmentHouse.LiftToUpdate.class, r);
+            house.getLiftToUpdate().add(lift);
+        }
     }
 
 }

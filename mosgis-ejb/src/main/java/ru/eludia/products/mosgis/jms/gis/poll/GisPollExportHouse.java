@@ -15,6 +15,7 @@ import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Get;
+import ru.eludia.base.db.util.TypeConverter;
 import ru.eludia.base.model.def.Bool;
 import ru.eludia.products.mosgis.db.model.tables.Block;
 import ru.eludia.products.mosgis.db.model.tables.Entrance;
@@ -208,16 +209,16 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                     rooms.put(premise.getPremisesGUID(), 
                             premise.getLivingRoom().stream().map(room -> {
                                 return HASH(
-                                    "gis_guid",              room.getLivingRoomGUID(),
+                                    "livingroomguid",        room.getLivingRoomGUID(),
                                     "gis_unique_number",     room.getLivingRoomUniqueNumber(),
                                     "cadastralnumber",       room.getCadastralNumber(),
                                     "roomnumber",            room.getRoomNumber(),
                                     "terminationdate",       room.getTerminationDate(),
                                     "code_vc_nsi_330",       room.getAnnulmentReason() != null ? room.getAnnulmentReason().getCode() : null,
                                     "floor",                 room.getFloor(),
-                                    "totalarea",             room.getSquare(),
+                                    "square",                room.getSquare(),
                                     "gis_modification_date", room.getModificationDate(),
-                                    "information_confirmed", room.isInformationConfirmed()
+                                    "informationconfirmed",  room.isInformationConfirmed()
                                 );
                             }).collect(Collectors.toList()));
                 }
@@ -238,7 +239,7 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                         HASH (
                             "uuid_premise",   premiseGuid
                         ),
-                        roomList, "gis_guid"
+                        roomList, "livingroomguid"
                     );
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex.getMessage(), ex);
@@ -300,16 +301,16 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                     rooms.put(block.getBlockGUID(), 
                         block.getLivingRoom().stream().map(room -> {
                             return HASH(
-                                "gis_guid",              room.getLivingRoomGUID(),
+                                "livingroomguid",        room.getLivingRoomGUID(),
                                 "gis_unique_number",     room.getLivingRoomUniqueNumber(),
                                 "cadastralnumber",       room.getCadastralNumber(),
                                 "roomnumber",            room.getRoomNumber(),
                                 "terminationdate",       room.getTerminationDate(),
                                 "code_vc_nsi_330",       room.getAnnulmentReason() != null ? room.getAnnulmentReason().getCode() : null,
                                 "floor",                 room.getFloor(),
-                                "totalarea",             room.getSquare(),
+                                "square",                room.getSquare(),
                                 "gis_modification_date", room.getModificationDate(),
-                                "information_confirmed", room.isInformationConfirmed()
+                                "informationconfirmed",  room.isInformationConfirmed()
                             );
                         }).collect(Collectors.toList()));
                 }
@@ -330,7 +331,7 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                         HASH (
                             "uuid_block",     premiseGuid
                         ),
-                        roomList, "gis_guid"
+                        roomList, "livingroomguid"
                     );
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex.getMessage(), ex);
@@ -344,19 +345,19 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                 ),
                 house.getLivingRoom().stream().map(room -> {
                     return HASH(
-                        "gis_guid",              room.getLivingRoomGUID(),
+                        "livingroomguid",        room.getLivingRoomGUID(),
                         "gis_unique_number",     room.getLivingRoomUniqueNumber(),
                         "cadastralnumber",       room.getCadastralNumber(),
                         "roomnumber",            room.getRoomNumber(),
                         "terminationdate",       room.getTerminationDate(),
                         "code_vc_nsi_330",       room.getAnnulmentReason() != null ? room.getAnnulmentReason().getCode() : null,
                         "floor",                 room.getFloor(),
-                        "totalarea",             room.getSquare(),
+                        "square",                room.getSquare(),
                         "gis_modification_date", room.getModificationDate(),
-                        "information_confirmed", room.isInformationConfirmed()
+                        "informationconfirmed",  room.isInformationConfirmed()
                     );
                 }).collect(Collectors.toList()), 
-                "gis_guid"
+                "livingroomguid"
             );
         }
     }

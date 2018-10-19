@@ -1,7 +1,10 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Map;
 import ru.eludia.base.DB;
+import ru.eludia.base.db.util.TypeConverter;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
@@ -10,6 +13,9 @@ import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
 import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
 import ru.eludia.products.mosgis.db.model.voc.VocRdColType;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseOMSRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseRSORequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseUORequest;
 
 public class Block extends Passport {
     
@@ -37,10 +43,10 @@ public class Block extends Passport {
         col    ("totalarea",          Type.NUMERIC, 25, 4, null,       "Общая площадь помещения");
         col    ("grossarea",          Type.NUMERIC, 25, 4, null,       "Жилая площадь помещения");
         
-        col    ("gis_unique_number",       Type.STRING,    null,       "Уникальный номер");
-        col    ("gis_modification_date",   Type.TIMESTAMP, null,       "Дата модификации данных в ГИС ЖКХ");
-        col    ("information_confirmed",   Type.BOOLEAN,   Bool.TRUE,  "Информация подтверждена поставщиком");
-        col    ("guid_gis",                Type.UUID,      null,       "Идентификатор в ГИС ЖКХ");
+        col    ("gis_unique_number",     Type.STRING,      null,       "Уникальный номер");
+        col    ("gis_modification_date", Type.TIMESTAMP,   null,       "Дата модификации данных в ГИС ЖКХ");
+        col    ("informationconfirmed",  Type.BOOLEAN,     Bool.TRUE,  "Информация подтверждена поставщиком");
+        col    ("blockguid",             Type.UUID,        null,       "Идентификатор в ГИС ЖКХ");
         
         trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
                 
@@ -91,6 +97,60 @@ public class Block extends Passport {
             
             db.adjustTable (this);
             
+    }
+    
+    public static void add(ImportHouseUORequest.LivingHouse house, Map<String, Object> r) {
+        
+        ImportHouseUORequest.LivingHouse.Blocks block = new ImportHouseUORequest.LivingHouse.Blocks();
+        house.getBlocks().add(block);
+        
+        if (r.get("blockguid") == null) {
+            ImportHouseUORequest.LivingHouse.Blocks.BlockToCreate blockToCreate = 
+                    TypeConverter.javaBean(ImportHouseUORequest.LivingHouse.Blocks.BlockToCreate.class, r);
+            block.setBlockToCreate(blockToCreate);
+        } else {
+            ImportHouseUORequest.LivingHouse.Blocks.BlockToUpdate blockToUpdate = 
+                    TypeConverter.javaBean(ImportHouseUORequest.LivingHouse.Blocks.BlockToUpdate.class, r);
+            block.setBlockToUpdate(blockToUpdate);
+        }
+        
+        ((Collection<Map<String, Object>>) r.get("livingrooms")).forEach((room) -> LivingRoom.add(block, room));
+    }
+    
+    public static void add(ImportHouseOMSRequest.LivingHouse house, Map<String, Object> r) {
+        
+        ImportHouseOMSRequest.LivingHouse.Blocks block = new ImportHouseOMSRequest.LivingHouse.Blocks();
+        house.getBlocks().add(block);
+        
+        if (r.get("blockguid") == null) {
+            ImportHouseOMSRequest.LivingHouse.Blocks.BlockToCreate blockToCreate = 
+                    TypeConverter.javaBean(ImportHouseOMSRequest.LivingHouse.Blocks.BlockToCreate.class, r);
+            block.setBlockToCreate(blockToCreate);
+        } else {
+            ImportHouseOMSRequest.LivingHouse.Blocks.BlockToUpdate blockToUpdate = 
+                    TypeConverter.javaBean(ImportHouseOMSRequest.LivingHouse.Blocks.BlockToUpdate.class, r);
+            block.setBlockToUpdate(blockToUpdate);
+        }
+        
+        ((Collection<Map<String, Object>>) r.get("livingrooms")).forEach((room) -> LivingRoom.add(block, room));
+    }
+    
+    public static void add(ImportHouseRSORequest.LivingHouse house, Map<String, Object> r) {
+        
+        ImportHouseRSORequest.LivingHouse.Blocks block = new ImportHouseRSORequest.LivingHouse.Blocks();
+        house.getBlocks().add(block);
+        
+        if (r.get("blockguid") == null) {
+            ImportHouseRSORequest.LivingHouse.Blocks.BlockToCreate blockToCreate = 
+                    TypeConverter.javaBean(ImportHouseRSORequest.LivingHouse.Blocks.BlockToCreate.class, r);
+            block.setBlockToCreate(blockToCreate);
+        } else {
+            ImportHouseRSORequest.LivingHouse.Blocks.BlockToUpdate blockToUpdate = 
+                    TypeConverter.javaBean(ImportHouseRSORequest.LivingHouse.Blocks.BlockToUpdate.class, r);
+            block.setBlockToUpdate(blockToUpdate);
+        }
+        
+        ((Collection<Map<String, Object>>) r.get("livingrooms")).forEach((room) -> LivingRoom.add(block, room));
     }
     
 }

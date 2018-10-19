@@ -1,15 +1,23 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Map;
 import ru.eludia.base.DB;
+import ru.eludia.base.db.util.TypeConverter;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
+import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
 import ru.eludia.products.mosgis.db.model.voc.VocRdColType;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseESPRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseOMSRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseRSORequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseUORequest;
 
 public class ResidentialPremise extends Passport {
     
@@ -38,10 +46,11 @@ public class ResidentialPremise extends Passport {
         col    ("f_20002",            Type.INTEGER,        null,       "Количество комнат");
         col    ("floor",              Type.STRING,         null,       "Этаж");
         
-        col    ("gis_unique_number",       Type.STRING,    null,       "Уникальный номер");
-        col    ("gis_modification_date",   Type.TIMESTAMP, null,       "Дата модификации данных в ГИС ЖКХ");
-        col    ("information_confirmed",   Type.BOOLEAN,   Bool.TRUE,  "Информация подтверждена поставщиком");
-        col    ("guid_gis",                Type.UUID,      null,       "Идентификатор в ГИС ЖКХ");
+        ref    ("fiaschildhouseguid",    VocBuilding.class, null,      "ГУИД дочернего дома по ФИАС, к которому относится подъезд для группирующих домов");
+        col    ("gis_unique_number",     Type.STRING,       null,      "Уникальный номер");
+        col    ("gis_modification_date", Type.TIMESTAMP,    null,      "Дата модификации данных в ГИС ЖКХ");
+        col    ("informationconfirmed",  Type.BOOLEAN,      Bool.TRUE, "Информация подтверждена поставщиком");
+        col    ("premisesguid",          Type.UUID,         null,      "Идентификатор в ГИС ЖКХ");
         
         trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
                 
@@ -118,6 +127,78 @@ public class ResidentialPremise extends Passport {
             
             db.adjustTable (this);
             
+    }
+    
+    public static void add(ImportHouseUORequest.ApartmentHouse house, Map<String, Object> r) {
+        
+        ImportHouseUORequest.ApartmentHouse.ResidentialPremises premise = new ImportHouseUORequest.ApartmentHouse.ResidentialPremises();
+        house.getResidentialPremises().add(premise);
+        
+        if (r.get("premisesguid") == null) {
+            ImportHouseUORequest.ApartmentHouse.ResidentialPremises.ResidentialPremisesToCreate premisesToCreate = 
+                    TypeConverter.javaBean(ImportHouseUORequest.ApartmentHouse.ResidentialPremises.ResidentialPremisesToCreate.class, r);
+            premise.setResidentialPremisesToCreate(premisesToCreate);
+        } else {
+            ImportHouseUORequest.ApartmentHouse.ResidentialPremises.ResidentialPremisesToUpdate  premisesToUpdate = 
+                    TypeConverter.javaBean(ImportHouseUORequest.ApartmentHouse.ResidentialPremises.ResidentialPremisesToUpdate.class, r);
+            premise.setResidentialPremisesToUpdate(premisesToUpdate);
+        }
+        
+        ((Collection<Map<String, Object>>) r.get("livingrooms")).forEach((room) -> LivingRoom.add(premise, room));
+    }
+    
+    public static void add(ImportHouseOMSRequest.ApartmentHouse house, Map<String, Object> r) {
+        
+        ImportHouseOMSRequest.ApartmentHouse.ResidentialPremises premise = new ImportHouseOMSRequest.ApartmentHouse.ResidentialPremises();
+        house.getResidentialPremises().add(premise);
+        
+        if (r.get("premisesguid") == null) {
+            ImportHouseOMSRequest.ApartmentHouse.ResidentialPremises.ResidentialPremisesToCreate premisesToCreate = 
+                    TypeConverter.javaBean(ImportHouseOMSRequest.ApartmentHouse.ResidentialPremises.ResidentialPremisesToCreate.class, r);
+            premise.setResidentialPremisesToCreate(premisesToCreate);
+        } else {
+            ImportHouseOMSRequest.ApartmentHouse.ResidentialPremises.ResidentialPremisesToUpdate  premisesToUpdate = 
+                    TypeConverter.javaBean(ImportHouseOMSRequest.ApartmentHouse.ResidentialPremises.ResidentialPremisesToUpdate.class, r);
+            premise.setResidentialPremisesToUpdate(premisesToUpdate);
+        }
+        
+        ((Collection<Map<String, Object>>) r.get("livingrooms")).forEach((room) -> LivingRoom.add(premise, room));
+    }
+    
+    public static void add(ImportHouseRSORequest.ApartmentHouse house, Map<String, Object> r) {
+        
+        ImportHouseRSORequest.ApartmentHouse.ResidentialPremises premise = new ImportHouseRSORequest.ApartmentHouse.ResidentialPremises();
+        house.getResidentialPremises().add(premise);
+        
+        if (r.get("premisesguid") == null) {
+            ImportHouseRSORequest.ApartmentHouse.ResidentialPremises.ResidentialPremisesToCreate premisesToCreate = 
+                    TypeConverter.javaBean(ImportHouseRSORequest.ApartmentHouse.ResidentialPremises.ResidentialPremisesToCreate.class, r);
+            premise.setResidentialPremisesToCreate(premisesToCreate);
+        } else {
+            ImportHouseRSORequest.ApartmentHouse.ResidentialPremises.ResidentialPremisesToUpdate  premisesToUpdate = 
+                    TypeConverter.javaBean(ImportHouseRSORequest.ApartmentHouse.ResidentialPremises.ResidentialPremisesToUpdate.class, r);
+            premise.setResidentialPremisesToUpdate(premisesToUpdate);
+        }
+        
+        ((Collection<Map<String, Object>>) r.get("livingrooms")).forEach((room) -> LivingRoom.add(premise, room));
+    }
+    
+    public static void add(ImportHouseESPRequest.ApartmentHouse house, Map<String, Object> r) {
+        
+        ImportHouseESPRequest.ApartmentHouse.ResidentialPremises premise = new ImportHouseESPRequest.ApartmentHouse.ResidentialPremises();
+        house.getResidentialPremises().add(premise);
+        
+        if (r.get("premisesguid") == null) {
+            ImportHouseESPRequest.ApartmentHouse.ResidentialPremises.ResidentialPremisesToCreate premisesToCreate = 
+                    TypeConverter.javaBean(ImportHouseESPRequest.ApartmentHouse.ResidentialPremises.ResidentialPremisesToCreate.class, r);
+            premise.setResidentialPremisesToCreate(premisesToCreate);
+        } else {
+            ImportHouseESPRequest.ApartmentHouse.ResidentialPremises.ResidentialPremisesToUpdate  premisesToUpdate = 
+                    TypeConverter.javaBean(ImportHouseESPRequest.ApartmentHouse.ResidentialPremises.ResidentialPremisesToUpdate.class, r);
+            premise.setResidentialPremisesToUpdate(premisesToUpdate);
+        }
+        
+        ((Collection<Map<String, Object>>) r.get("livingrooms")).forEach((room) -> LivingRoom.add(premise, room));
     }
     
 }
