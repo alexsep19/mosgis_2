@@ -2,22 +2,17 @@ package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Level;
-import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
-import javax.jms.Queue;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Get;
-import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.tables.AdditionalService;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractLog;
@@ -29,11 +24,11 @@ import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
-import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
-import ru.eludia.products.mosgis.jms.base.UUIDMDB;
+import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
+import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
+import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.eludia.products.mosgis.rest.api.MgmtContractLocal;
-import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.base.CommonResultType;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
@@ -48,17 +43,11 @@ import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
+public class GisPollExportMgmtContractMDB extends GisPollMDB {
 
     @EJB
     WsGisHouseManagementClient wsGisHouseManagementClient;
-
-    @Resource (mappedName = "mosgis.outExportHouseMgmtContractsQueue")
-    Queue queue;
-    
-    @EJB
-    protected UUIDPublisher UUIDPublisher;
-    
+        
     @EJB
     MgmtContractLocal mgmtContract;
 
@@ -109,7 +98,8 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
     @Override
     protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
 
-        UUID orgPPAGuid = (UUID) r.get ("org.orgppaguid");
+        UUID orgPPAGuid   = (UUID) r.get ("org.orgppaguid");
+        UUID uuidContract = (UUID) r.get ("ctr.uuid");
         
         final VocGisStatus.i lastStatus = VocGisStatus.i.forId (r.get ("log.id_ctr_status"));
         
@@ -127,41 +117,23 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
 
         try {
 
-            GetStateResult rp;
-
-            try {
-                rp = wsGisHouseManagementClient.getState (orgPPAGuid, (UUID) r.get ("uuid_ack"));
-            }
-            catch (Fault ex) {
-                final ru.gosuslugi.dom.schema.integration.base.Fault faultInfo = ex.getFaultInfo ();
-                throw new FU (faultInfo.getErrorCode (), faultInfo.getErrorMessage (), VocGisStatus.i.FAILED_STATE);
-            }
-
-            if (rp.getRequestState () < DONE.getId ()) {
-                logger.info ("requestState = " + rp.getRequestState () + ", retry...");
-                UUIDPublisher.publish (queue, uuid);
-                return;
-            }
+            GetStateResult rp = getState (orgPPAGuid, r);
 
             ImportContractResultType importContract = digImportContract (rp, action.getFailStatus ());            
 
-            db.begin ();            
-            
-                final Table t = db.getModel ().t (ContractObject.class);
-                                
-                ContractObject contractObjectTableDefinition = (ContractObject) t;
+            VocGisStatus.i state = VocGisStatus.i.forName (importContract.getState ());                
+            if (state == null) state = VocGisStatus.i.NOT_RUNNING;
+
+            final byte status = VocGisStatus.i.forName (importContract.getContractStatus ().value ()).getId ();
+                
+            ContractObject contractObjectTableDefinition = (ContractObject) db.getModel ().t (ContractObject.class);
+
+            db.begin ();
                 
                 for (ExportStatusCAChResultType.ContractObject co: importContract.getContractObject ()) 
                     
                     db.d0 (contractObjectTableDefinition.updateStatus ((UUID) r.get ("ctr.uuid"), co));            
-
-                VocGisStatus.i state = VocGisStatus.i.forName (importContract.getState ());                
-                if (state == null) state = VocGisStatus.i.NOT_RUNNING;
-                
-                final byte status = VocGisStatus.i.forName (importContract.getContractStatus ().value ()).getId ();
             
-                final UUID uuidContract = (UUID) r.get ("ctr.uuid");
-
                 db.update (Contract.class, HASH (
                     "uuid",                uuidContract,
                     "rolltodate",          null,    
@@ -183,97 +155,55 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
                     "uuid", uuid,
                     "id_status", DONE.getId ()
                 ));
-                
-                if (state == VocGisStatus.i.REVIEWED) mgmtContract.doPromote (uuidContract.toString ());
-                                                    
+                                                                    
             db.commit ();
+
+            if (state == VocGisStatus.i.REVIEWED) mgmtContract.doPromote (uuidContract.toString ());
+            
+            if (VocAction.i.ROLLOVER.getName ().equals (r.get ("log.action"))) updateDates (db, orgPPAGuid, (UUID) r.get ("ctr.uuid"), (UUID) r.get ("ctr.contractguid"), uuid);
             
         }
         catch (FU fu) {
-            fu.register (db, uuid, r);
-        }
-
-        if (VocAction.i.ROLLOVER.getName ().equals (r.get ("log.action"))) {
             
             db.getConnection ().setAutoCommit (true);
-
-            updateDates (db, orgPPAGuid, (UUID) r.get ("ctr.uuid"), (UUID) r.get ("ctr.contractguid"), uuid);
-
+            
+            fu.register (db, uuid, r);
+            
+        }
+        catch (GisPollRetryException ex) {
+            return;
         }
 
     }
 
-    private void updateDates (DB db, UUID orgPPAGuid, UUID ctrUuid, UUID contractGUID, UUID uuidOutSoap) throws SQLException {
+    private GetStateResult getState (UUID orgPPAGuid, Map<String, Object> r) throws GisPollRetryException, FU {
         
-        UUID rUID = UUID.randomUUID ();
-
-        AckRequest.Ack exportContractStatus = null;
+        GetStateResult rp;
         
         try {
-            exportContractStatus = wsGisHouseManagementClient.exportContractStatus (orgPPAGuid, rUID, Collections.singletonList (contractGUID));
+            rp = wsGisHouseManagementClient.getState (orgPPAGuid, (UUID) r.get ("uuid_ack"));
         }
-        catch (Exception ex) {
-            logger.log (Level.SEVERE, "wsGisHouseManagementClient.exportContractStatus", ex);
-        }                
-                
-        UUID mGUID = UUID.fromString (exportContractStatus.getMessageGUID ());
+        catch (Fault ex) {
+            throw new FU (ex.getFaultInfo (), VocGisStatus.i.FAILED_STATE);
+        }
+        catch (Throwable ex) {            
+            throw new FU (ex, VocGisStatus.i.FAILED_STATE);
+        }
+        
+        checkIfResponseReady (rp);
+        
+        return rp;
+        
+    }
 
-        db.update (Contract.class, HASH (
-            "uuid", ctrUuid,
-            "contractversionguid", null
-        ));
-
-        for (int i = 0; i < 10; i ++) {
-            
-            try {
-                
-                Thread.sleep (2000L);
-                
-                GetStateResult state = null;
-                
-                try {
-                    state = wsGisHouseManagementClient.getState (orgPPAGuid, mGUID);
-                }
-                catch (Exception ex) {
-                    logger.log (Level.SEVERE, "wsGisHouseManagementClient.getState", ex);
-                }
-                
-                if (state.getRequestState () < 2) continue;
-                
-                GisPollExportMgmtContractStatusMDB.processGetStateResponse (state, db, rUID, true);
-                
-                break;
-                                
-            }
-            catch (InterruptedException ex) {
-                logger.log (Level.WARNING, "It's futile", ex);
-            }
-            
-        }  
+    private void updateDates (DB db, UUID orgPPAGuid, UUID ctrUuid, UUID contractGUID, UUID uuidOutSoap) throws SQLException {
+        
+        wsGisHouseManagementClient.refreshContractStatus (orgPPAGuid, contractGUID, db, ctrUuid);
         
         UUID contractversionguid = DB.to.UUIDFromHex (db.getString (Contract.class, ctrUuid, "contractversionguid"));
         
         String scontractversionguid = contractversionguid.toString ();
-        
-
-        
-        
-        rUID = UUID.randomUUID ();        
-
-        try {
-            exportContractStatus = wsGisHouseManagementClient.exportContractData (orgPPAGuid, rUID, Collections.singletonList (contractversionguid));
-        }
-        catch (Exception ex) {
-            logger.log (Level.SEVERE, "wsGisHouseManagementClient.exportContractStatus", ex);
-        }                
-                
-        mGUID = UUID.fromString (exportContractStatus.getMessageGUID ());
-
-        db.update (Contract.class, HASH (
-            "uuid", ctrUuid,
-            "contractversionguid", null
-        ));
-        
+                                
         Model m = db.getModel ();
         
         Map<Object, Map<String, Object>> uuid2contractObject = new HashMap <> ();
@@ -337,153 +267,131 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
         });
         
         logger.info ("uuid2contractObject = " + uuid2contractObject);
-
-        for (int i = 0; i < 10; i ++) {
+        
+        List<Map<String, Object>> objectRecords = new ArrayList ();
+        List<Map<String, Object>> serviceRecords = new ArrayList ();
+        
+        wsGisHouseManagementClient.doAfterExportContractStatus (db, orgPPAGuid, contractGUID, ctrUuid, (state) -> {
             
-            try {
-                
-                Thread.sleep (2000L);
-                
-                GetStateResult state = null;
-                
-                try {
-                    state = wsGisHouseManagementClient.getState (orgPPAGuid, mGUID);
-                }
-                catch (Exception ex) {
-                    logger.log (Level.SEVERE, "wsGisHouseManagementClient.getState", ex);
-                }
-                
-                if (state.getRequestState () < 2) continue;
-                
-                List<Map<String, Object>> objectRecords = new ArrayList ();
-                List<Map<String, Object>> serviceRecords = new ArrayList ();
-                                
-                for (ExportCAChResultType er: state.getExportCAChResult ()) {
-                    
-                    ExportCAChResultType.Contract contract = er.getContract ();
-                    
-                    if (contract == null) {
-                        logger.warning ("Not a Contract? Bizarre, bizarre...");
-                        continue;
-                    }                                       
-                    
-                    String v = contract.getContractVersionGUID ();
-                    
-                    if (v == null) {
-                        logger.warning ("Empty ContractVersionGUID? Bizarre, bizarre...");
-                        continue;
-                    }                                       
-                    
-                    if (!v.equals (scontractversionguid)) {
-                        logger.warning ("We requested " + scontractversionguid + ". Why did they send back " + v + "?");
-                        continue;
-                    }                                       
-                                        
-                    for (ExportCAChResultType.Contract.ContractObject co: contract.getContractObject ()) {
-                        
-                        Map<String, Object> contract_object = fias2contractObject.get (co.getFIASHouseGuid ());
-                        
-                        String objUuid = contract_object.get ("uuid").toString ();
+            for (ExportCAChResultType er: state.getExportCAChResult ()) {
 
-                        objectRecords.add (HASH (
-                            "uuid",      objUuid,
-                            "startdate", co.getStartDate (),
-                            "enddate",   co.getEndDate ()
+                ExportCAChResultType.Contract contract = er.getContract ();
+
+                if (contract == null) {
+                    logger.warning ("Not a Contract? Bizarre, bizarre...");
+                    continue;
+                }                                       
+
+                String v = contract.getContractVersionGUID ();
+
+                if (v == null) {
+                    logger.warning ("Empty ContractVersionGUID? Bizarre, bizarre...");
+                    continue;
+                }                                       
+
+                if (!v.equals (scontractversionguid)) {
+                    logger.warning ("We requested " + scontractversionguid + ". Why did they send back " + v + "?");
+                    continue;
+                }                                       
+
+                for (ExportCAChResultType.Contract.ContractObject co: contract.getContractObject ()) {
+
+                    Map<String, Object> contract_object = fias2contractObject.get (co.getFIASHouseGuid ());
+
+                    String objUuid = contract_object.get ("uuid").toString ();
+
+                    objectRecords.add (HASH (
+                        "uuid",      objUuid,
+                        "startdate", co.getStartDate (),
+                        "enddate",   co.getEndDate ()
+                    ));
+
+                    for (ExportCAChResultType.Contract.ContractObject.HouseService hs: co.getHouseService ()) {
+
+                        serviceRecords.add (HASH (
+                            "uuid",      ((Map<String, String>) contract_object.get ("nsi2uuid")).get (hs.getServiceType ().getCode ()),
+                            "startdate", hs.getStartDate (),
+                            "enddate",   hs.getEndDate ()
                         ));
-                        
-                        for (ExportCAChResultType.Contract.ContractObject.HouseService hs: co.getHouseService ()) {
-                            
-                            serviceRecords.add (HASH (
-                                "uuid",      ((Map<String, String>) contract_object.get ("nsi2uuid")).get (hs.getServiceType ().getCode ()),
-                                "startdate", hs.getStartDate (),
-                                "enddate",   hs.getEndDate ()
-                            ));
-                            
-                        }                        
 
-                        for (ExportCAChResultType.Contract.ContractObject.AddService as: co.getAddService ()) {
-                            
-                            serviceRecords.add (HASH (
-                                "uuid",      ((Map<String, String>) contract_object.get ("un2uuid")).get (as.getServiceType ().getCode ()),
-                                "startdate", as.getStartDate (),
-                                "enddate",   as.getEndDate ()
-                            ));
-                            
-                        }                        
+                    }                        
 
-                    }            
-                    
-                    db.begin ();
-                    
-                        db.update (ContractObjectService.class, serviceRecords);
-                        
-                        db.update (ContractObject.class, objectRecords);
-                        
-                        final Map<String, Object> r = HASH (
-                            "contractversionguid", scontractversionguid,
-                            "signingdate",         contract.getSigningDate (),
-                            "effectivedate",       contract.getEffectiveDate (),      
-                            "plandatecomptetion",  contract.getPlanDateComptetion ()
-                        );
-                        
-                        r.put ("uuid", ctrUuid);
-                        db.update (Contract.class, r);
+                    for (ExportCAChResultType.Contract.ContractObject.AddService as: co.getAddService ()) {
 
-                        r.put ("uuid", uuidOutSoap);
-                        db.update (ContractLog.class, r);
-                        
-                    db.commit ();
-                    
-                    break;
-                    
-                }
-                
+                        serviceRecords.add (HASH (
+                            "uuid",      ((Map<String, String>) contract_object.get ("un2uuid")).get (as.getServiceType ().getCode ()),
+                            "startdate", as.getStartDate (),
+                            "enddate",   as.getEndDate ()
+                        ));
+
+                    }                        
+
+                }            
+
+                db.begin ();
+
+                    db.update (ContractObjectService.class, serviceRecords);
+
+                    db.update (ContractObject.class, objectRecords);
+
+                    final Map<String, Object> r = HASH (
+                        "contractversionguid", scontractversionguid,
+                        "signingdate",         contract.getSigningDate (),
+                        "effectivedate",       contract.getEffectiveDate (),      
+                        "plandatecomptetion",  contract.getPlanDateComptetion ()
+                    );
+
+                    r.put ("uuid", ctrUuid);
+                    db.update (Contract.class, r);
+
+                    r.put ("uuid", uuidOutSoap);
+                    db.update (ContractLog.class, r);
+
+                db.commit ();
+
                 break;
-                                
-            }
-            catch (InterruptedException ex) {
-                logger.log (Level.WARNING, "It's futile", ex);
+
             }
             
-        }  
+        });
         
-    }
+    }        
         
-    private class FU extends Exception {
+    private class FU extends GisPollException {
         
         String code;
         String text;
         VocGisStatus.i status;
 
         FU (String code, String text, VocGisStatus.i status) {
-            super (code + " " + text);
-            this.code = code;
-            this.text = text;
+            super (code, text);
             this.status = status;
         }
         
         FU (ErrorMessageType errorMessage, VocGisStatus.i status) {
-            this (errorMessage.getErrorCode (), errorMessage.getDescription (), status);
+            super (errorMessage);
+            this.status = status;
+        }
+
+        FU (ru.gosuslugi.dom.schema.integration.base.Fault fault, VocGisStatus.i status) {
+            super (fault);
+            this.status = status;
         }
         
-        private void register (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
+        FU (Throwable t, VocGisStatus.i status) {
+            super (t);
+            this.status = status;
+        }
+        
+        @Override
+        public void register (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
             
-            logger.warning (getMessage ());
-            
-            db.update (OutSoap.class, HASH (
-                "uuid", uuid,
-                "id_status", DONE.getId (),
-                "is_failed", 1,
-                "err_code",  code,
-                "err_text",  text
-            ));
+            super.register (db, uuid, r);
 
             db.update (Contract.class, HASH (
                 "uuid",          r.get ("ctr.uuid"),
                 "id_ctr_status", status.getId ()
             ));
-
-            db.commit ();            
             
         }
         

@@ -1,24 +1,31 @@
 package ru.eludia.products.mosgis.ejb.wsc;
 
+import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.jws.HandlerChain;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
 import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
+import ru.eludia.base.db.util.JDBCConsumer;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
-import ru.eludia.products.mosgis.db.model.tables.CharterFile;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractFile;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
+import ru.eludia.products.mosgis.jms.gis.poll.GisPollExportMgmtContractStatusMDB;
 import ru.eludia.products.mosgis.ws.base.LoggingOutMessageHandler;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
@@ -289,6 +296,74 @@ public class WsGisHouseManagementClient {
         importCharterRequest.setTransportGUID (r.get ("uuid").toString ());
         
         return getPort (orgPPAGuid, messageGUID).importCharterData (importCharterRequest).getAck ();
+
+    }
+    
+    public void doAfterExportContractStatus (DB db, UUID orgPPAGuid, UUID contractGUID, UUID ctrUuid, JDBCConsumer<GetStateResult> done) throws SQLException {
+       
+        UUID requestGuid = UUID.randomUUID ();
+        UUID messageGuid = null;
+                
+        try {
+            messageGuid = UUID.fromString (exportContractStatus (orgPPAGuid, requestGuid, Collections.singletonList (contractGUID)).getMessageGUID ());
+        }
+        catch (Exception ex) {
+            throw new IllegalStateException (ex);
+        }
+        
+        logger.info ("Synchronous exportContractStatus for contract " + ctrUuid + ": " + requestGuid + " - " + messageGuid);
+                
+        db.update (Contract.class, HASH (
+            "uuid", ctrUuid,
+            "contractversionguid", null
+        ));
+        
+        for (int i = 0; i < 10; i ++) {
+            
+            try {
+                
+                Thread.sleep (2000L);
+                
+                GetStateResult state = null;
+                
+                try {
+                    state = getState (orgPPAGuid, messageGuid);
+                }
+                catch (Exception ex) {
+                    logger.log (Level.WARNING, "wsGisHouseManagementClient.getState failed", ex);
+                    continue;
+                }
+                
+                if (state.getRequestState () < 2) {
+                    logger.log (Level.WARNING, "wsGisHouseManagementClient.getState is not ready");
+                    continue;
+                }
+                
+                done.accept (state);
+                
+                db.update (OutSoap.class, HASH (
+                    "uuid", requestGuid,
+                    "id_status", DONE.getId ()
+                ));                
+                
+                return;
+                
+            }
+            catch (InterruptedException ex) {
+                logger.log (Level.WARNING, "It's futile", ex);
+            }
+            
+        }        
+        
+        throw new IllegalStateException ("Synchronous exportContractStatus for contract " + ctrUuid + " failed. See previous log lines.");
+        
+    }    
+    
+    public void refreshContractStatus (UUID orgPPAGuid, UUID contractGUID, DB db, UUID ctrUuid) throws SQLException {
+        
+        doAfterExportContractStatus (db, orgPPAGuid, contractGUID, ctrUuid, (state) -> {
+            GisPollExportMgmtContractStatusMDB.processGetStateResponse (state, db, true);            
+        });        
 
     }
 

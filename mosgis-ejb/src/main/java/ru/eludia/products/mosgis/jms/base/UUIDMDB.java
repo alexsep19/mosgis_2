@@ -16,8 +16,8 @@ public abstract class UUIDMDB<T extends Table> extends TextMDB {
     
     protected abstract void handleRecord (DB db, final UUID uuid, Map<String, Object> r) throws SQLException;    
     
-    private final Class<Table> getTableClass () {
-        return (Class<Table>) ((ParameterizedType)getClass ().getGenericSuperclass ()).getActualTypeArguments () [0];
+    protected Class getTableClass () {
+        return (Class) ((ParameterizedType)getClass ().getGenericSuperclass ()).getActualTypeArguments () [0];
     }
     
     protected final Table getTable () {
@@ -28,13 +28,17 @@ public abstract class UUIDMDB<T extends Table> extends TextMDB {
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "*");
     }
     
+    private UUID uuid = null;    
+
+    protected UUID getUuid () {
+        return uuid;
+    }
+    
     @Override
     protected final void onTextMessage (TextMessage message) throws SQLException, JMSException {
                         
         String txt = message.getText ();
-            
-        UUID uuid = null;
-        
+                    
         try {
             uuid = UUID.fromString (txt);
         }
@@ -62,11 +66,12 @@ public abstract class UUIDMDB<T extends Table> extends TextMDB {
             }
             
             try {
-                logger.log (Level.INFO, r.toString ());
+                logger.log (Level.INFO, "Started handling " + uuid + " " + r);
                 handleRecord (db, uuid, r);
+                logger.log (Level.INFO, "Done handling " + uuid + " " + r);
             }
             catch (SQLException e) {
-                logger.log (Level.SEVERE, "Cannot handle '" + uuid + '"', e);
+                logger.log (Level.SEVERE, "Failed handling " + uuid + " " + r, e);
                 return;
             }
             
