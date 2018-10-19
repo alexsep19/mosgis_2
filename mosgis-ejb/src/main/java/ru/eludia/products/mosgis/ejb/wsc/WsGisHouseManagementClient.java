@@ -299,18 +299,8 @@ public class WsGisHouseManagementClient {
 
     }
     
-    public void doAfterExportContractStatus (DB db, UUID orgPPAGuid, UUID contractGUID, UUID ctrUuid, JDBCConsumer<GetStateResult> done) throws SQLException {
-       
-        UUID requestGuid = UUID.randomUUID ();
-        UUID messageGuid = null;
-                
-        try {
-            messageGuid = UUID.fromString (exportContractStatus (orgPPAGuid, requestGuid, Collections.singletonList (contractGUID)).getMessageGUID ());
-        }
-        catch (Exception ex) {
-            throw new IllegalStateException (ex);
-        }
-        
+    public void doWithGetState (DB db, UUID orgPPAGuid, UUID requestGuid, UUID messageGuid, UUID ctrUuid, JDBCConsumer<GetStateResult> done) throws SQLException {
+
         logger.info ("Synchronous exportContractStatus for contract " + ctrUuid + ": " + requestGuid + " - " + messageGuid);
                 
         db.update (Contract.class, HASH (
@@ -361,7 +351,17 @@ public class WsGisHouseManagementClient {
     
     public void refreshContractStatus (UUID orgPPAGuid, UUID contractGUID, DB db, UUID ctrUuid) throws SQLException {
         
-        doAfterExportContractStatus (db, orgPPAGuid, contractGUID, ctrUuid, (state) -> {
+        UUID requestGuid = UUID.randomUUID ();
+        UUID messageGuid = null;
+                
+        try {
+            messageGuid = UUID.fromString (exportContractStatus (orgPPAGuid, requestGuid, Collections.singletonList (contractGUID)).getMessageGUID ());
+        }
+        catch (Exception ex) {
+            throw new IllegalStateException (ex);
+        }
+        
+        doWithGetState (db, orgPPAGuid, requestGuid, messageGuid, ctrUuid, (state) -> {
             GisPollExportMgmtContractStatusMDB.processGetStateResponse (state, db, true);            
         });        
 

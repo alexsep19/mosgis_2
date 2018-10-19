@@ -2,6 +2,7 @@ package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -158,6 +159,8 @@ public class GisPollExportMgmtContractMDB extends GisPollMDB {
                                                                     
             db.commit ();
 
+            db.getConnection ().setAutoCommit (true);
+
             if (state == VocGisStatus.i.REVIEWED) mgmtContract.doPromote (uuidContract.toString ());
             
             if (VocAction.i.ROLLOVER.getName ().equals (r.get ("log.action"))) updateDates (db, orgPPAGuid, (UUID) r.get ("ctr.uuid"), (UUID) r.get ("ctr.contractguid"), uuid);
@@ -197,7 +200,7 @@ public class GisPollExportMgmtContractMDB extends GisPollMDB {
     }
 
     private void updateDates (DB db, UUID orgPPAGuid, UUID ctrUuid, UUID contractGUID, UUID uuidOutSoap) throws SQLException {
-        
+                
         wsGisHouseManagementClient.refreshContractStatus (orgPPAGuid, contractGUID, db, ctrUuid);
         
         UUID contractversionguid = DB.to.UUIDFromHex (db.getString (Contract.class, ctrUuid, "contractversionguid"));
@@ -271,7 +274,17 @@ public class GisPollExportMgmtContractMDB extends GisPollMDB {
         List<Map<String, Object>> objectRecords = new ArrayList ();
         List<Map<String, Object>> serviceRecords = new ArrayList ();
         
-        wsGisHouseManagementClient.doAfterExportContractStatus (db, orgPPAGuid, contractGUID, ctrUuid, (state) -> {
+        UUID requestGuid = UUID.randomUUID ();
+        UUID messageGuid = null;
+                
+        try {
+            messageGuid = UUID.fromString (wsGisHouseManagementClient.exportContractData (orgPPAGuid, requestGuid, Collections.singletonList (contractversionguid)).getMessageGUID ());
+        }
+        catch (Exception ex) {
+            throw new IllegalStateException (ex);
+        }        
+        
+        wsGisHouseManagementClient.doWithGetState (db, orgPPAGuid, requestGuid, messageGuid, ctrUuid, (state) -> {
             
             for (ExportCAChResultType er: state.getExportCAChResult ()) {
 
