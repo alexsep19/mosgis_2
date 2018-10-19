@@ -112,6 +112,11 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
                     addObjects (fias2contractObject, co, objectRecords, serviceRecords);
                     addServices (fias2contractObject, co, serviceRecords);
                 }
+                
+                db.update (Contract.class, HASH (
+                    "uuid", ctrUuid,
+                    "contractversionguid", null
+                ));                
 
                 db.begin ();
 

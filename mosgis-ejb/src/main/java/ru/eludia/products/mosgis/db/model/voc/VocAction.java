@@ -53,7 +53,7 @@ public class VocAction extends Table {
         ANNUL     ("annul",     "аннулирование"),
         ROLLOVER  ("rollover",  "пролонгирование"),
         PROMOTE   ("promote",   "утверждение"),
-        RELOAD    ("refresh",   "обновление данных"),
+        RELOAD    ("reload",    "обновление данных"),
         REFRESH   ("refresh",   "обновление статусов");
                 
         String name;
