@@ -187,6 +187,15 @@ public class MgmtContracts extends EJBResource <MgmtContractLocal> {
     }
     
     @POST
+    @Path("{id}/reload") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject doReload (@PathParam ("id") String id) { 
+        final JsonObject item = getInnerItem (id);
+        checkOrg (item, false);
+        return back.doReload (id, getUser ());
+    }
+    
+    @POST
     @Path("{id}/undelete") 
     @Produces (APPLICATION_JSON)
     public JsonObject doUndelete (@PathParam ("id") String id) { 

@@ -80,6 +80,7 @@ define ([], function () {
                                     break;
                                 default:
                                     it._can.refresh = 1
+                                    it._can.reload = 1
                             }
                     }
 

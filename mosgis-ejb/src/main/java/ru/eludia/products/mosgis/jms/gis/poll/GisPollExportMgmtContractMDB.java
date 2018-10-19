@@ -1,9 +1,6 @@
 package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -12,13 +9,10 @@ import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
-import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Get;
-import ru.eludia.products.mosgis.db.model.tables.AdditionalService;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractLog;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
-import ru.eludia.products.mosgis.db.model.tables.ContractObjectService;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
@@ -32,7 +26,6 @@ import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.eludia.products.mosgis.rest.api.MgmtContractLocal;
 import ru.gosuslugi.dom.schema.integration.base.CommonResultType;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
-import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportStatusCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractResultType;
@@ -163,7 +156,7 @@ public class GisPollExportMgmtContractMDB extends GisPollMDB {
 
             if (state == VocGisStatus.i.REVIEWED) mgmtContract.doPromote (uuidContract.toString ());
             
-            if (VocAction.i.ROLLOVER.getName ().equals (r.get ("log.action"))) updateDates (db, orgPPAGuid, (UUID) r.get ("ctr.uuid"), (UUID) r.get ("ctr.contractguid"), uuid);
+            if (VocAction.i.ROLLOVER.getName ().equals (r.get ("log.action"))) mgmtContract.doReload (r.get ("ctr.uuid").toString (), null);
             
         }
         catch (FU fu) {
@@ -198,177 +191,6 @@ public class GisPollExportMgmtContractMDB extends GisPollMDB {
         return rp;
         
     }
-
-    private void updateDates (DB db, UUID orgPPAGuid, UUID ctrUuid, UUID contractGUID, UUID uuidOutSoap) throws SQLException {
-                
-        wsGisHouseManagementClient.refreshContractStatus (orgPPAGuid, contractGUID, db, ctrUuid);
-        
-        UUID contractversionguid = DB.to.UUIDFromHex (db.getString (Contract.class, ctrUuid, "contractversionguid"));
-        
-        String scontractversionguid = contractversionguid.toString ();
-                                
-        Model m = db.getModel ();
-        
-        Map<Object, Map<String, Object>> uuid2contractObject = new HashMap <> ();
-        Map<String, Map<String, Object>> fias2contractObject = new HashMap <> ();
-        
-        db.forEach (m
-                
-            .select (ContractObject.class, "*")
-            .where ("uuid_contract", ctrUuid), 
-                
-            (rs) -> {
-                
-                Map<String, Object> i = db.HASH (rs);
-                
-                i.put ("nsi2uuid", HASH ());
-                i.put ("un2uuid", HASH ());
-
-                uuid2contractObject.put (i.get ("uuid").toString (), i);
-                fias2contractObject.put (i.get ("fiashouseguid").toString (), i);
-            
-            }
-                
-        );
-        
-        db.forEach (m                
-                
-            .select (ContractObjectService.class, "uuid", "uuid_contract_object", "code_vc_nsi_3", "is_additional")
-            .where ("uuid_contract", ctrUuid)
-            .toMaybeOne (AdditionalService.class, "AS a", "uniquenumber").on ()
-                
-        , (rs) -> {
-            
-            DB.ResultGet rg = new DB.ResultGet (rs);
-
-            final String uuid_contract_object = rg.getUUIDString ("uuid_contract_object");
-                                
-            Map<String, Object> contract_object = uuid2contractObject.get (uuid_contract_object);
-            
-            if (contract_object == null) {
-                logger.warning ("contract_object not found: " + uuid_contract_object);
-                return;
-            }
-                        
-            if (rs.getInt ("is_additional") == 1) {
-                
-                ((Map<String, String>) contract_object.get ("un2uuid")).put (
-                    rs.getString ("a.uniquenumber"), 
-                    rg.getUUIDString ("uuid")
-                );
-                
-            }
-            else {
-                
-                ((Map<String, String>) contract_object.get ("nsi2uuid")).put (
-                    rs.getString ("code_vc_nsi_3"), 
-                    rg.getUUIDString ("uuid")
-                );                
-                
-            }
-            
-        });
-        
-        logger.info ("uuid2contractObject = " + uuid2contractObject);
-        
-        List<Map<String, Object>> objectRecords = new ArrayList ();
-        List<Map<String, Object>> serviceRecords = new ArrayList ();
-        
-        UUID requestGuid = UUID.randomUUID ();
-        UUID messageGuid = null;
-                
-        try {
-            messageGuid = UUID.fromString (wsGisHouseManagementClient.exportContractData (orgPPAGuid, requestGuid, Collections.singletonList (contractversionguid)).getMessageGUID ());
-        }
-        catch (Exception ex) {
-            throw new IllegalStateException (ex);
-        }        
-        
-        wsGisHouseManagementClient.doWithGetState (db, orgPPAGuid, requestGuid, messageGuid, ctrUuid, (state) -> {
-            
-            for (ExportCAChResultType er: state.getExportCAChResult ()) {
-
-                ExportCAChResultType.Contract contract = er.getContract ();
-
-                if (contract == null) {
-                    logger.warning ("Not a Contract? Bizarre, bizarre...");
-                    continue;
-                }                                       
-
-                String v = contract.getContractVersionGUID ();
-
-                if (v == null) {
-                    logger.warning ("Empty ContractVersionGUID? Bizarre, bizarre...");
-                    continue;
-                }                                       
-
-                if (!v.equals (scontractversionguid)) {
-                    logger.warning ("We requested " + scontractversionguid + ". Why did they send back " + v + "?");
-                    continue;
-                }                                       
-
-                for (ExportCAChResultType.Contract.ContractObject co: contract.getContractObject ()) {
-
-                    Map<String, Object> contract_object = fias2contractObject.get (co.getFIASHouseGuid ());
-
-                    String objUuid = contract_object.get ("uuid").toString ();
-
-                    objectRecords.add (HASH (
-                        "uuid",      objUuid,
-                        "startdate", co.getStartDate (),
-                        "enddate",   co.getEndDate ()
-                    ));
-
-                    for (ExportCAChResultType.Contract.ContractObject.HouseService hs: co.getHouseService ()) {
-
-                        serviceRecords.add (HASH (
-                            "uuid",      ((Map<String, String>) contract_object.get ("nsi2uuid")).get (hs.getServiceType ().getCode ()),
-                            "startdate", hs.getStartDate (),
-                            "enddate",   hs.getEndDate ()
-                        ));
-
-                    }                        
-
-                    for (ExportCAChResultType.Contract.ContractObject.AddService as: co.getAddService ()) {
-
-                        serviceRecords.add (HASH (
-                            "uuid",      ((Map<String, String>) contract_object.get ("un2uuid")).get (as.getServiceType ().getCode ()),
-                            "startdate", as.getStartDate (),
-                            "enddate",   as.getEndDate ()
-                        ));
-
-                    }                        
-
-                }            
-
-                db.begin ();
-
-                    db.update (ContractObjectService.class, serviceRecords);
-
-                    db.update (ContractObject.class, objectRecords);
-
-                    final Map<String, Object> r = HASH (
-                        "contractversionguid", scontractversionguid,
-                        "signingdate",         contract.getSigningDate (),
-                        "effectivedate",       contract.getEffectiveDate (),      
-                        "plandatecomptetion",  contract.getPlanDateComptetion ()
-                    );
-
-                    r.put ("uuid", ctrUuid);
-                    db.update (Contract.class, r);
-
-                    r.put ("uuid", uuidOutSoap);
-                    db.update (ContractLog.class, r);
-
-                db.commit ();
-
-                break;
-
-            }
-            
-        });
-        
-    }        
         
     private class FU extends GisPollException {
         

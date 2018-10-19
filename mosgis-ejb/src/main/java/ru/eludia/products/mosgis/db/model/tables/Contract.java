@@ -357,6 +357,7 @@ public class Contract extends Table {
         PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.FAILED_PLACING),
         APPROVING   (VocGisStatus.i.PENDING_RP_APPROVAL,  VocGisStatus.i.FAILED_STATE),
         REFRESHING  (VocGisStatus.i.PENDING_RP_REFRESH,   VocGisStatus.i.FAILED_STATE),
+        RELOADING   (VocGisStatus.i.PENDING_RP_RELOAD,    VocGisStatus.i.FAILED_STATE),
         ROLLOVER    (VocGisStatus.i.PENDING_RP_ROLLOVER,  VocGisStatus.i.FAILED_STATE),
         TERMINATION (VocGisStatus.i.PENDING_RP_TERMINATE, VocGisStatus.i.FAILED_TERMINATE),
         ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.FAILED_ANNULMENT),
@@ -388,6 +389,7 @@ public class Contract extends Table {
                 case PENDING_RQ_TERMINATE: return TERMINATION;
                 case PENDING_RQ_ANNULMENT: return ANNULMENT;
                 case PENDING_RQ_ROLLOVER:  return ROLLOVER;
+                case PENDING_RQ_RELOAD:    return RELOADING;
                 default: return null;
             }            
         }

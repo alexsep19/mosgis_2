@@ -257,6 +257,16 @@
     </delivery-params-overrides>
   </uniform-distributed-queue>
   
+  <!-- очередь опроса статуса исходящих запросов на данные договоров управления-->
+  <uniform-distributed-queue name="outExportHouseMgmtContractDataQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.outExportHouseMgmtContractDataQueue</jndi-name>
+    <delivery-params-overrides>
+        <time-to-deliver>2000</time-to-deliver>
+        <redelivery-delay>10000</redelivery-delay>
+    </delivery-params-overrides>
+  </uniform-distributed-queue>
+  
   
   
   

@@ -61,6 +61,9 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
     @Resource (mappedName = "mosgis.outExportHouseMgmtContractsQueue")
     Queue outExportHouseMgmtContractsQueue;
     
+    @Resource (mappedName = "mosgis.outExportHouseMgmtContractDataQueue")
+    Queue outExportHouseMgmtContractDataQueue;
+    
     @Resource (mappedName = "mosgis.outExportHouseMgmtContractStatusQueue")
     Queue outExportHouseMgmtContractStatusQueue;
     
@@ -242,6 +245,7 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
             case PLACING:     return wsGisHouseManagementClient.placeContractData     (orgPPAGuid, messageGUID, r);
             case APPROVING:   return wsGisHouseManagementClient.approveContractData   (orgPPAGuid, messageGUID, (UUID) r.get ("ctr.contractversionguid"));
             case REFRESHING:  return wsGisHouseManagementClient.exportContractStatus  (orgPPAGuid, messageGUID, Collections.singletonList ((UUID) r.get ("ctr.contractguid")));
+            case RELOADING:   return wsGisHouseManagementClient.exportContractData    (orgPPAGuid, messageGUID, Collections.singletonList ((UUID) r.get ("ctr.contractversionguid")));
             default: throw new IllegalArgumentException ("No action implemented for " + action);
         }
 
@@ -258,6 +262,7 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
             case TERMINATION:
             case EDITING:
             case ROLLOVER:
+            case RELOADING:
                 return true;
             default:
                 return false;
@@ -386,6 +391,7 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
     Queue getQueue (Contract.Action action) {
         
         switch (action) {
+            case RELOADING:  return outExportHouseMgmtContractDataQueue;
             case REFRESHING: return outExportHouseMgmtContractStatusQueue;
             default:         return outExportHouseMgmtContractsQueue;
         }
