@@ -187,15 +187,13 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
 
     private void addObjects (Map<String, Map<String, Object>> fias2contractObject, ExportCAChResultType.Contract.ContractObject co, List<Map<String, Object>> objectRecords, List<Map<String, Object>> serviceRecords) {
         
-        Map<String, Object> contract_object = fias2contractObject.get (co.getFIASHouseGuid ());
+        final Map<String, Object> h = HASH (
+            "uuid", fias2contractObject.get (co.getFIASHouseGuid ()).get ("uuid").toString ()
+        );
         
-        String objUuid = contract_object.get ("uuid").toString ();
-        
-        objectRecords.add (HASH (
-            "uuid",      objUuid,
-            "startdate", co.getStartDate (),
-            "enddate",   co.getEndDate ()
-        ));
+        ContractObject.setDateFields (h, co);
+                        
+        objectRecords.add (h);
         
     }
     
@@ -205,25 +203,29 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
                         
         for (ExportCAChResultType.Contract.ContractObject.HouseService hs: co.getHouseService ()) {
             
-            serviceRecords.add (HASH (
-                "uuid",      ((Map<String, String>) contract_object.get ("nsi2uuid")).get (hs.getServiceType ().getCode ()),
-                "startdate", hs.getStartDate (),
-                "enddate",   hs.getEndDate ()
-            ));
+            final Map<String, Object> h = HASH (
+                "uuid", ((Map<String, String>) contract_object.get ("nsi2uuid")).get (hs.getServiceType ().getCode ())
+            );
+            
+            ContractObjectService.setDateFields (h, hs);
+
+            serviceRecords.add (h);            
             
         }
         
         for (ExportCAChResultType.Contract.ContractObject.AddService as: co.getAddService ()) {
-            
-            serviceRecords.add (HASH (
-                "uuid",      ((Map<String, String>) contract_object.get ("un2uuid")).get (as.getServiceType ().getCode ()),
-                "startdate", as.getStartDate (),
-                "enddate",   as.getEndDate ()
-            ));
-            
+
+            final Map<String, Object> h = HASH (
+                "uuid", ((Map<String, String>) contract_object.get ("un2uuid")).get (as.getServiceType ().getCode ())
+            );
+
+            ContractObjectService.setDateFields (h, as);
+
+            serviceRecords.add (h);
+
         }
-        
-    }        
+
+    }
 
     private void fetchServices (DB db, Model m, UUID ctrUuid, Map<Object, Map<String, Object>> uuid2contractObject) throws SQLException {
         

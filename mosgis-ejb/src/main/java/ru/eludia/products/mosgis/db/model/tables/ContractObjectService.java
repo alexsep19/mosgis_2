@@ -9,6 +9,7 @@ import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.gosuslugi.dom.schema.integration.house_management.ContractServiceType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
 
 public class ContractObjectService extends Table {
@@ -165,6 +166,11 @@ public class ContractObjectService extends Table {
         
         co.getHouseService ().add (hs);
 
+    }
+    
+    public static void setDateFields (Map<String, Object> h, ContractServiceType cs) {
+        h.put ("startdate", cs.getStartDate ());
+        h.put ("enddate", cs.getEndDate ());
     }
 
 }
