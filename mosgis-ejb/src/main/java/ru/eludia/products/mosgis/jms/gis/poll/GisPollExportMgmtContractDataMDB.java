@@ -128,12 +128,11 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
 
                     final Map<String, Object> h = HASH (
                         "id_ctr_status",       status.getId (),
-                        "id_ctr_status_gis",   status.getId (),
-                        "contractversionguid", scontractversionguid,
-                        "signingdate",         contract.getSigningDate (),
-                        "effectivedate",       contract.getEffectiveDate (),      
-                        "plandatecomptetion",  contract.getPlanDateComptetion ()
+                        "id_ctr_status_gis",   status.getId ()                    
                     );
+                    
+                    Contract.setDateFields (h, contract);
+                    if (!isAnonymous) Contract.setExtraFields (h, contract);
 
                     h.put ("uuid", ctrUuid);
                     db.update (Contract.class, h);
