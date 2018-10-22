@@ -1,16 +1,10 @@
 package ru.eludia.products.mosgis.rest.impl;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.annotation.Resource;
 import javax.ejb.Stateless;
-import javax.jms.Queue;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
-import javax.json.JsonValue;
 import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Select;
@@ -18,7 +12,6 @@ import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
-import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
@@ -33,8 +26,6 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 
 @Stateless
 public class PersonImpl extends BaseCRUD<VocPerson> implements PersonLocal {
-    
-    private static final Logger logger = Logger.getLogger (PersonImpl.class.getName ());
     
     private void filterOffDeleted (Select select) {
         select.and ("is_deleted", 0);
@@ -78,22 +69,15 @@ public class PersonImpl extends BaseCRUD<VocPerson> implements PersonLocal {
     public JsonObject doCreate (JsonObject p, User user) {return doAction ((db, job) -> {
 
         final Table table = getTable ();
+
+        Map<String, Object> data = getData (p);
         
-        JsonObject data = p.getJsonObject ("data");
-        
-        Map<String, Object> map = new HashMap<String, Object> ();
-        
-        for (String key: data.keySet ()) {
-            JsonValue val = data.get(key);
-            if (!"\"\"".equals(val.toString()))
-                map.put(key, DB.to.object(val));
-            else
-                map.put(key, null);
-        }
-        
-        if (table.getColumn (UUID_ORG) != null && !data.containsKey (UUID_ORG)) map.put (UUID_ORG, user.getUuidOrg ());
-        
-        Object insertId = db.insertId (table, map);
+        if ("".equals(data.get("is_female")))
+            data.put("is_female", null);
+
+        if (table.getColumn (UUID_ORG) != null && !data.containsKey (UUID_ORG)) data.put (UUID_ORG, user.getUuidOrg ());
+
+        Object insertId = db.insertId (table, data);
         
         job.add ("id", insertId.toString ());
         
