@@ -16,7 +16,6 @@ import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.base.db.util.TypeConverter;
-import ru.eludia.base.model.def.Bool;
 import ru.eludia.products.mosgis.db.model.tables.Block;
 import ru.eludia.products.mosgis.db.model.tables.Entrance;
 import ru.eludia.products.mosgis.db.model.tables.House;
@@ -130,27 +129,22 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                 "minfloorcount",         house.getMinFloorCount(),
                 "code_vc_nsi_241",       house.getOverhaulFormingKind(),
                 "undergroundfloorcount", house.getUndergroundFloorCount(),
-                "address", db.getJsonObject(VocBuildingAddress.class, fiasHouseGuid).getString("label")
+                "address",               db.getJsonObject(VocBuildingAddress.class, fiasHouseGuid).getString("label")
             ));
             
             db.upsert (House.class, record, "fiashouseguid");
             String houseUuid = db.getString(m.select (House.class, "uuid").where ("fiashouseguid", fiasHouseGuid));
                     
             //Подъезды
-            Map<String, String> entranceGuidByNum = house.getEntrance().stream().collect(
-                    Collectors.toMap(
-                            ExportHouseResultType.ApartmentHouse.Entrance::getEntranceNum, 
-                            ExportHouseResultType.ApartmentHouse.Entrance::getEntranceGUID
-                    )
-            );
+            Map<UUID, Map<String, Object>> entrances = new HashMap<>();
             
             db.dupsert (
                 Entrance.class, 
                 HASH ("uuid_house", houseUuid), 
                     house.getEntrance().stream().map(entrance -> {
-                        return HASH(
-                            "gis_guid",              entrance.getEntranceGUID(),
-                            "fias_child_house_guid", entrance.getFIASChildHouseGuid(),
+                        Map<String, Object> data = HASH(
+                            "entranceguid",          entrance.getEntranceGUID(),
+                            "fiaschildhouseguid",    entrance.getFIASChildHouseGuid(),
                             "entrancenum",           entrance.getEntranceNum(),
                             "storeyscount",          entrance.getStoreysCount(),
                             "creationyear",          entrance.getCreationYear(),
@@ -158,19 +152,32 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                             "code_vc_nsi_330",       entrance.getAnnulmentReason() != null ? entrance.getAnnulmentReason().getCode() : null,
                             "annulmentinfo",         entrance.getAnnulmentInfo(),
                             "gis_modification_date", entrance.getModificationDate(),
-                            "information_confirmed", entrance.isInformationConfirmed()
+                            "informationconfirmed",  Boolean.TRUE.equals(entrance.isInformationConfirmed())
                         );
+                        entrances.put(UUID.fromString(entrance.getEntranceGUID()), data);
+
+                        return data;
                     }).collect(Collectors.toList()),
-                "gis_guid"
+                "entranceguid"
             );
+            
+            Map<String, Object> entranceUuidByNum = new HashMap<>();
+            
+            db.forEach(m.select(Entrance.class, "uuid", "entranceguid", "entrancenum").where("uuid_house", houseUuid), (rs) -> {
+                UUID uuid = TypeConverter.UUID(rs.getBytes("uuid"));
+                entranceUuidByNum.put(rs.getString("entrancenum"), uuid);
+                
+                entrances.get(TypeConverter.UUID(rs.getBytes("entranceguid"))).put("uuid", uuid);
+            });
+            
             //Нежилые помещения
             db.dupsert (
                 NonResidentialPremise.class, 
                 HASH ("uuid_house", houseUuid), 
                 house.getNonResidentialPremises().stream().map(nonResisentialPremise -> {
                     return HASH(
-                        "gis_guid",              nonResisentialPremise.getPremisesGUID(),
-                        "fias_child_house_guid", nonResisentialPremise.getFIASChildHouseGuid(),
+                        "premisesguid",          nonResisentialPremise.getPremisesGUID(),
+                        "fiaschildhouseguid",    nonResisentialPremise.getFIASChildHouseGuid(),
                         "gis_unique_number",     nonResisentialPremise.getPremisesUniqueNumber(),
                         "cadastralnumber",       nonResisentialPremise.getCadastralNumber(),
                         "premisesnum",           nonResisentialPremise.getPremisesNum(),
@@ -178,50 +185,49 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                         "code_vc_nsi_330",       nonResisentialPremise.getAnnulmentReason() != null ? nonResisentialPremise.getAnnulmentReason().getCode() : null,
                         "floor",                 nonResisentialPremise.getFloor(),
                         "totalarea",             nonResisentialPremise.getTotalArea(),
-                        "iscommonproperty",      nonResisentialPremise.isIsCommonProperty(),
+                        "iscommonproperty",      Boolean.TRUE.equals(nonResisentialPremise.isIsCommonProperty()),
                         "gis_modification_date", nonResisentialPremise.getModificationDate(),
-                        "information_confirmed", nonResisentialPremise.isInformationConfirmed()
+                        "informationconfirmed",  Boolean.TRUE.equals(nonResisentialPremise.isInformationConfirmed())
                     );
                 }).collect(Collectors.toList()),
-                "gis_guid"
+                "premisesguid"
             );
             //Жилые помещения
-            List<Map<String, Object>> premises = new ArrayList<>();
-            Map<String, List<Map<String, Object>>> rooms = new HashMap<>();
+            Map<UUID, Map<String, Object>> premises = new HashMap<>();
             house.getResidentialPremises().forEach( premise -> {
-                premises.add(HASH(
-                    "gis_guid",              premise.getPremisesGUID(),
-                    "fias_child_house_guid", premise.getFIASChildHouseGuid(),
+                
+                List<Map<String, Object>> rooms = premise.getLivingRoom().stream().map(room -> {
+                    return HASH(
+                        "livingroomguid",        room.getLivingRoomGUID(),
+                        "gis_unique_number",     room.getLivingRoomUniqueNumber(),
+                        "cadastralnumber",       room.getCadastralNumber(),
+                        "roomnumber",            room.getRoomNumber(),
+                        "terminationdate",       room.getTerminationDate(),
+                        "code_vc_nsi_330",       room.getAnnulmentReason() != null ? room.getAnnulmentReason().getCode() : null,
+                        "floor",                 room.getFloor(),
+                        "square",                room.getSquare(),
+                        "gis_modification_date", room.getModificationDate(),
+                        "informationconfirmed",  Boolean.TRUE.equals(room.isInformationConfirmed())
+                    );
+                }).collect(Collectors.toList());
+                
+                premises.put(UUID.fromString(premise.getPremisesGUID()), HASH(
+                    "premisesguid",          premise.getPremisesGUID(),
+                    "fiaschildhouseguid",    premise.getFIASChildHouseGuid(),
                     "gis_unique_number",     premise.getPremisesUniqueNumber(),
                     "cadastralnumber",       premise.getCadastralNumber(),
                     "premisesnum",           premise.getPremisesNum(),
                     "terminationdate",       premise.getTerminationDate(),
                     "code_vc_nsi_330",       premise.getAnnulmentReason() != null ? premise.getAnnulmentReason().getCode() : null,
                     "floor",                 premise.getFloor(),
-                    "uuid_entrance",         entranceGuidByNum.get(premise.getEntranceNum()),
+                    "uuid_entrance",         entranceUuidByNum.get(premise.getEntranceNum()),
                     "code_vc_nsi_30",        premise.getPremisesCharacteristic() != null ? premise.getPremisesCharacteristic().getCode() : null,
                     "totalarea",             premise.getTotalArea(),
                     "grossarea",             premise.getGrossArea(),
                     "gis_modification_date", premise.getModificationDate(),
-                    "information_confirmed", premise.isInformationConfirmed()
+                    "informationconfirmed",  Boolean.TRUE.equals(premise.isInformationConfirmed()),
+                    "livingrooms",           rooms
                 ));
-                if (!premise.getLivingRoom().isEmpty()) {
-                    rooms.put(premise.getPremisesGUID(), 
-                            premise.getLivingRoom().stream().map(room -> {
-                                return HASH(
-                                    "livingroomguid",        room.getLivingRoomGUID(),
-                                    "gis_unique_number",     room.getLivingRoomUniqueNumber(),
-                                    "cadastralnumber",       room.getCadastralNumber(),
-                                    "roomnumber",            room.getRoomNumber(),
-                                    "terminationdate",       room.getTerminationDate(),
-                                    "code_vc_nsi_330",       room.getAnnulmentReason() != null ? room.getAnnulmentReason().getCode() : null,
-                                    "floor",                 room.getFloor(),
-                                    "square",                room.getSquare(),
-                                    "gis_modification_date", room.getModificationDate(),
-                                    "informationconfirmed",  room.isInformationConfirmed()
-                                );
-                            }).collect(Collectors.toList()));
-                }
             });
             
             db.dupsert (
@@ -229,17 +235,21 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                 HASH (
                     "uuid_house", houseUuid
                 ), 
-                premises, "gis_guid"
+                new ArrayList<> (premises.values()), "premisesguid"
             );
             
-            rooms.forEach((premiseGuid, roomList) -> {
+            db.forEach(m.select(ResidentialPremise.class, "uuid", "premisesguid").where("uuid_house", houseUuid), (rs) -> {
+                premises.get(TypeConverter.UUID(rs.getBytes("premisesguid"))).put("uuid", TypeConverter.UUID(rs.getBytes("uuid")));
+            });
+            
+            premises.values().forEach((premise) -> {
                 try {
                     db.dupsert (
                         LivingRoom.class,
                         HASH (
-                            "uuid_premise",   premiseGuid
+                            "uuid_premise",   premise.get("uuid")
                         ),
-                        roomList, "livingroomguid"
+                        (List<Map<String, Object>>) premise.get("livingrooms"), "livingroomguid"
                     );
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex.getMessage(), ex);
@@ -251,10 +261,10 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                 HASH ("uuid_house", houseUuid), 
                     house.getLift().stream().map(lift -> {
                         return HASH(
-                            "gis_guid",              lift.getLiftGUID(),
-                            "fias_child_house_guid", lift.getFIASChildHouseGuid(),
-                            "uuid_entrance",         entranceGuidByNum.get(lift.getEntranceNum()),
-                            "entrancenum",           entranceGuidByNum.get(lift.getEntranceNum()) == null ? lift.getEntranceNum() : null,
+                            "liftguid",              lift.getLiftGUID(),
+                            "fiaschildhouseguid",    lift.getFIASChildHouseGuid(),
+                            "uuid_entrance",         entranceUuidByNum.get(lift.getEntranceNum()),
+                            "entrancenum",           entranceUuidByNum.get(lift.getEntranceNum()) == null ? lift.getEntranceNum() : null,
                             "factorynum",            lift.getFactoryNum(),
                             "code_vc_nsi_192",       lift.getType().getCode(),
                             "terminationdate",       lift.getTerminationDate(),
@@ -263,7 +273,7 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                             "gis_modification_date", lift.getModificationDate()
                         );
                     }).collect(Collectors.toList()),
-                "gis_guid"
+                "liftguid"
             );
         } else {
             //ЖД
@@ -280,11 +290,26 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
             String houseUuid = db.getString(m.select (House.class, "uuid").where ("fiashouseguid", fiasHouseGuid));
             
             //Помещения
-            List<Map<String, Object>> blocks = new ArrayList<>();
-            Map<String, List<Map<String, Object>>> rooms = new HashMap<>();
+            Map<UUID, Map<String, Object>> blocks = new HashMap<>();
             house.getBlock().forEach( block -> {
-                blocks.add(HASH(
-                    "gis_guid",              block.getBlockGUID(),
+                
+                List<Map<String, Object>> rooms = block.getLivingRoom().stream().map(room -> {
+                    return HASH(
+                        "livingroomguid",        room.getLivingRoomGUID(),
+                        "gis_unique_number",     room.getLivingRoomUniqueNumber(),
+                        "cadastralnumber",       room.getCadastralNumber(),
+                        "roomnumber",            room.getRoomNumber(),
+                        "terminationdate",       room.getTerminationDate(),
+                        "code_vc_nsi_330",       room.getAnnulmentReason() != null ? room.getAnnulmentReason().getCode() : null,
+                        "floor",                 room.getFloor(),
+                        "square",                room.getSquare(),
+                        "gis_modification_date", room.getModificationDate(),
+                        "informationconfirmed",  Boolean.TRUE.equals(room.isInformationConfirmed())
+                    );
+                }).collect(Collectors.toList());
+                
+                blocks.put(UUID.fromString(block.getBlockGUID()), HASH(
+                    "blockguid",             block.getBlockGUID(),
                     "gis_unique_number",     block.getBlockUniqueNumber(),
                     "cadastralnumber",       block.getCadastralNumber(),
                     "blocknum",              block.getBlockNum(),
@@ -294,44 +319,32 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                     "totalarea",             block.getTotalArea(),
                     "grossarea",             block.getGrossArea(),
                     "gis_modification_date", block.getModificationDate(),
-                    "information_confirmed", block.isInformationConfirmed(),
-                    "is_nrs",        BlockCategoryType.NON_RESIDENTIAL.equals(block.getCategory()) ? Bool.TRUE : Bool.FALSE
+                    "informationconfirmed",  Boolean.TRUE.equals(block.isInformationConfirmed()),
+                    "is_nrs",                BlockCategoryType.NON_RESIDENTIAL.equals(block.getCategory()),
+                    "livingrooms",           rooms
                 ));
-                if (!block.getLivingRoom().isEmpty()) {
-                    rooms.put(block.getBlockGUID(), 
-                        block.getLivingRoom().stream().map(room -> {
-                            return HASH(
-                                "livingroomguid",        room.getLivingRoomGUID(),
-                                "gis_unique_number",     room.getLivingRoomUniqueNumber(),
-                                "cadastralnumber",       room.getCadastralNumber(),
-                                "roomnumber",            room.getRoomNumber(),
-                                "terminationdate",       room.getTerminationDate(),
-                                "code_vc_nsi_330",       room.getAnnulmentReason() != null ? room.getAnnulmentReason().getCode() : null,
-                                "floor",                 room.getFloor(),
-                                "square",                room.getSquare(),
-                                "gis_modification_date", room.getModificationDate(),
-                                "informationconfirmed",  room.isInformationConfirmed()
-                            );
-                        }).collect(Collectors.toList()));
-                }
             });
             
             db.dupsert (
                 Block.class, 
                 HASH (
-                    "uuid_house", houseUuid 
+                    "uuid_house", houseUuid
                 ), 
-                blocks, "gis_guid"
+                new ArrayList<> (blocks.values()), "blockguid"
             );
             
-            rooms.forEach((premiseGuid, roomList) -> {
+            db.forEach(m.select(Block.class, "uuid", "blockguid").where("uuid_house", houseUuid), (rs) -> {
+                blocks.get(TypeConverter.UUID(rs.getBytes("blockguid"))).put("uuid", TypeConverter.UUID(rs.getBytes("uuid")));
+            });
+            
+            blocks.values().forEach((block) -> {
                 try {
                     db.dupsert (
                         LivingRoom.class,
                         HASH (
-                            "uuid_block",     premiseGuid
+                            "uuid_premise",   block.get("uuid")
                         ),
-                        roomList, "livingroomguid"
+                        (List<Map<String, Object>>) block.get("livingrooms"), "livingroomguid"
                     );
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex.getMessage(), ex);
@@ -354,7 +367,7 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                         "floor",                 room.getFloor(),
                         "square",                room.getSquare(),
                         "gis_modification_date", room.getModificationDate(),
-                        "informationconfirmed",  room.isInformationConfirmed()
+                        "informationconfirmed",  Boolean.TRUE.equals(room.isInformationConfirmed())
                     );
                 }).collect(Collectors.toList()), 
                 "livingroomguid"
@@ -375,7 +388,8 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
             "terminationdate",  basic.getTerminationDate(),
             "totalsquare",      basic.getTotalSquare(),
             "usedyear",         basic.getUsedYear(),
-            "culturalheritage", basic.isCulturalHeritage() != null ? basic.isCulturalHeritage() : Boolean.FALSE
+            "culturalheritage", Boolean.TRUE.equals(basic.isCulturalHeritage()),
+            "code_vc_nsi_336",  basic.getLifeCycleStage() != null ? basic.getLifeCycleStage().getCode() : null
         );
     }
 

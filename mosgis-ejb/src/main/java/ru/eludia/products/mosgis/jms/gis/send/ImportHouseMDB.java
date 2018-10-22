@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -122,11 +123,11 @@ logger.info(params.toString());
             if (orgRoles.contains(OrgRoles.UO)) {
                 ack = wsGisHouseManagementClient.importHouseUOData(orgPPAGuid, r);
             } else if (orgRoles.contains(OrgRoles.OMS)) {
-
+                ack = wsGisHouseManagementClient.importHouseOMSData(orgPPAGuid, r);
             } else if (orgRoles.contains(OrgRoles.ESP)) {
-
+                ack = wsGisHouseManagementClient.importHouseESPData(orgPPAGuid, r);
             } else if (orgRoles.contains(OrgRoles.RSO)) {
-
+                ack = wsGisHouseManagementClient.importHouseRSOData(orgPPAGuid, r);
             }
             if (ack == null)
                 return;
@@ -141,9 +142,9 @@ logger.info(params.toString());
             UUIDPublisher.publish (outImportHouseQueue, ack.getRequesterMessageGUID ()); 
             
         } catch (Fault ex) {
-            
+            logger.log (Level.SEVERE, ex.getMessage(), ex);
         } catch (Exception ex) {
-            
+            logger.log (Level.SEVERE, ex.getMessage(), ex);
         }
     }
     
@@ -191,7 +192,7 @@ logger.info(params.toString());
         List<Map<String, Object>> lifts = new ArrayList<>();
         
         db.forEach(db.getModel()
-                .select (Lift.class, "*")
+                .select (Lift.class, "AS root", "*")
                 .toOne(Entrance.class, "AS entrance", "entrancenum").on()
                 .toOne (nsi192, "AS vc_nsi_192", "guid").on ("vc_nsi_192.code=root.code_vc_nsi_192 AND vc_nsi_192.isactual=1")
                 .where ("uuid_house", r.get ("uuid")).and ("is_deleted", 0), (rs) -> {
@@ -222,7 +223,7 @@ logger.info(params.toString());
         premises.values().forEach(premise -> {
             
             String entranceNum = (String)premise.get("entrance.entrancenum");
-            if(StringUtils.isNotBlank(entranceNum))
+            if(StringUtils.isBlank(entranceNum))
                 premise.put("hasnoentrance", true);
             else
                 premise.put("entrancenum", entranceNum);
@@ -232,7 +233,9 @@ logger.info(params.toString());
             if (premise.get("grossarea") == null) 
                 premise.put("nogrossares", true);
             
-            premise.putAll(getCadastralNumber((String) r.get("cadastralnumber")));
+            premise.put("livingrooms", new ArrayList<>());
+            
+            premise.putAll(getCadastralNumber((String) premise.get("cadastralnumber")));
             premise.put("transportguid", premise.get("uuid"));
         });
         
@@ -247,7 +250,7 @@ logger.info(params.toString());
             
             Map<String, Object> premise = db.HASH (rs);
             
-            premise.putAll(getCadastralNumber((String) r.get("cadastralnumber")));
+            premise.putAll(getCadastralNumber((String) premise.get("cadastralnumber")));
             premise.put("transportguid", premise.get("uuid"));
        
             premises.add(premise);
@@ -265,18 +268,15 @@ logger.info(params.toString());
         db.forEach(db.getModel().select (LivingRoom.class, "*").where ("uuid_house", r.get ("uuid")).and ("is_deleted", 0), (rs) -> {
             Map<String, Object> room = db.HASH (rs);
             
-            room.putAll(getCadastralNumber((String) r.get("cadastralnumber")));
+            room.putAll(getCadastralNumber((String) room.get("cadastralnumber")));
             room.put("transportguid", room.get("uuid"));
             
             UUID premiseUuid = (UUID)(isCondo ? room.get("uuid_premise") : room.get("uuid_block"));
             
-            if (premiseUuid != null) {
-                Map<String, Object> premise = premises.get(premiseUuid);
-                if (premise.get("livingrooms") == null) premise.put("livingrooms", new ArrayList<>());
-                ((List<Map<String, Object>>)premise.get("livingrooms")).add(room);
-            } else {
+            if (premiseUuid != null)
+                ((List<Map<String, Object>>)premises.get(premiseUuid).get("livingrooms")).add(room);
+            else
                 houseRooms.add(room);
-            }
         });
         r.put ("livingrooms", houseRooms);
     }
@@ -292,13 +292,15 @@ logger.info(params.toString());
                         .where ("uuid_house", r.get ("uuid")).and ("is_deleted", 0));
         
         blocks.values().forEach(block -> {
-            block.putAll(getCadastralNumber((String) r.get("cadastralnumber")));
+            block.putAll(getCadastralNumber((String) block.get("cadastralnumber")));
             block.put("transportguid", block.get("uuid"));
             block.put("premisescharacteristic", NsiTable.toDom((String) block.get("code_vc_nsi_30"), (UUID) block.get("vc_nsi_30.guid")));
             if (block.get("grossarea") == null) 
                 block.put("nogrossares", true);
             if (TypeConverter.bool(block.get("is_nrs")))
                 block.put("category", BlockCategoryType.NON_RESIDENTIAL);
+            
+            block.put("livingrooms", new ArrayList<>());
         });
         
         r.put ("blocks", blocks);
