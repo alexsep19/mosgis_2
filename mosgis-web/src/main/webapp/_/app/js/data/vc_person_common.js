@@ -49,7 +49,7 @@ define ([], function () {
         if (v.is_female=="") v.is_female=null
         
         if (v.code_vc_nsi_95) {
-            if (!v.number_) die ('number_', 'Пожалуйста, укажите номер документа')
+            if (v.number_===null) die ('number_', 'Пожалуйста, укажите номер документа')
             if (!v.issuedate) die ('issuedate', 'Пожалуйста, укажите дату выдачи документа')
             if (!v.issuer) die ('issuer', 'Пожалуйста, укажите, кем выдан документ')
         }
