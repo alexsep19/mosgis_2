@@ -1,7 +1,5 @@
 package ru.eludia.products.mosgis.rest.impl;
 
-import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.json.Json;
@@ -10,6 +8,8 @@ import javax.json.JsonObjectBuilder;
 import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.base.model.Col;
+import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
@@ -18,6 +18,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.voc.VocPersonLog;
+import ru.eludia.products.mosgis.db.model.voc.VocUser;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.PersonLocal;
@@ -94,6 +95,48 @@ public class PersonImpl extends BaseCRUD<VocPerson> implements PersonLocal {
             .toMaybeOne (VocPersonLog.class        ).on ()
         ));
 
+    });}
+    
+    @Override
+    public JsonObject getLog (String id, JsonObject p, User user) {return fetchData ((db, job) -> {
+        
+        Table logTable = ModelHolder.getModel ().getLogTable (getTable ());
+        
+        if (logTable == null) return;
+        
+        Select select = ModelHolder.getModel ().select (logTable, "AS log", "*", "uuid AS id")
+            .and ("uuid_object", id)
+            .toMaybeOne (VocUser.class, "label").on ()
+            .orderBy ("log.ts DESC")
+            .limit (p.getInt ("offset"), p.getInt ("limit"));
+        
+        logTable.getColumns ().forEachEntry (0, (i) -> {
+            final Col value = i.getValue ();
+            if (!(value instanceof Ref)) return;
+            Ref ref = (Ref) value;
+            switch (i.getKey ()) {
+                case "uuid_user":
+                    return;
+                default:
+                    final Table targetTable = ref.getTargetTable ();
+                    if (!targetTable.getColumns ().containsKey ("label")) return;
+                    final String name = ref.getName ();
+                    StringBuilder sb = new StringBuilder ("AS ");
+                    if (name.startsWith ("uuid_")) {
+                        sb.append (name.substring (5));
+                    }
+                    else if (name.startsWith ("id_")) {
+                        sb.append (name.substring (3));
+                    }
+                    else {
+                        sb.append (name);
+                    }                            
+                    select.toMaybeOne (targetTable, sb.toString (), "label").on (ref.getName ());
+            }
+        });
+
+        db.addJsonArrayCnt (job, select);
+        
     });}
     
     @Override
