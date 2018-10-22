@@ -47,6 +47,10 @@ define ([], function () {
         if (v.patronymic && (!re.test (v.patronymic) || !/[ач]$/.test (v.patronymic))) die ('patronymic', 'Отчество указано некорректно')
 
         if (v.is_female=="") v.is_female=null
+        
+        if (v.code_vc_nsi_95 && !v.number_) die ('number_', 'Пожалуйста, укажите номер документа')
+        if (v.code_vc_nsi_95 && !v.issuedate) die ('number_', 'Пожалуйста, укажите дату выдачи документа')
+        if (v.code_vc_nsi_95 && !v.issuer) die ('number_', 'Пожалуйста, укажите, кем выдан документ')
 
         query ({type: 'vc_persons', action: 'update'}, {data: v}, reload_page)
 
