@@ -25,9 +25,11 @@ define ([], function () {
 
         var grid = w2ui ['vc_persons_grid']
 
-        query (tia, {data: v}, function () {
+        query (tia, {data: v}, function (data) {
         
             w2popup.close ()
+            
+            if (data.id) w2confirm ('Перейти на страницу договора?').yes (function () {openTab ('/vc_person/' + data.id)})
             
             grid.reload (grid.refresh)
             
