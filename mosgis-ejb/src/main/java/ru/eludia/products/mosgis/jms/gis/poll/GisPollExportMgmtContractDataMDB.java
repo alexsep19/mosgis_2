@@ -124,7 +124,38 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
                     db.update (ContractObjectService.class, serviceRecords);
 
                     db.update (ContractObject.class, objectRecords);
-                   
+                    
+                    if (!isAnonymous) { 
+                        
+                        Map<UUID, Map<String, Object>> attachmentguid2file = ContractFile.toHashes (contract, HASH (
+                            "uuid_contract", ctrUuid
+                        ));
+                        
+logger.info ("attachmentguid2file = " + attachmentguid2file);
+
+                        db.forEach (m
+                            .select (ContractFile.class, "attachmentguid", "uuid", "uuid_contract_object")
+                            .where ("uuid_contract", ctrUuid)
+                            .and   ("attachmentguid IS NOT NULL")
+                               
+                            , (rs) -> {
+                                
+                                UUID a = (UUID) db.getValue (rs, 1);
+                                Map<String, Object> file = attachmentguid2file.get (a);
+                                
+                                if (file == null) return;
+                                
+                                file.put ("uuid",                 (UUID) db.getValue (rs, 2));
+                                file.put ("uuid_contract_object", (UUID) db.getValue (rs, 3));
+                                
+                            }
+                                
+                        );
+                        
+logger.info ("attachmentguid2file = " + attachmentguid2file);
+
+                    }
+
                     VocGisStatus.i status = VocGisStatus.i.forName (contract.getContractStatus ().value ());
 
                     final Map<String, Object> h = HASH (
@@ -133,18 +164,8 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
                         "contractversionguid", contract.getContractVersionGUID ()
                     );
                     
-                    Contract.setDateFields (h, contract);
-                    
-                    if (!isAnonymous) {                        
-                        
-                        Contract.setExtraFields (h, contract);
-                        
-                        db.update (ContractFile.class, HASH (
-                           "uuid_contract", ctrUuid,
-                           "id_status",     1
-                        ), "uuid_contract");
-                        
-                    }
+                    Contract.setDateFields (h, contract);                    
+                    if (!isAnonymous) Contract.setExtraFields (h, contract);                                                
 
                     h.put ("uuid", ctrUuid);
                     db.update (Contract.class, h);
