@@ -53,7 +53,7 @@ public class InRdHousesMDB extends TextMDB {
 
         try (DB db = ModelHolder.getModel ().getDb ()) {
 
-            try (DB.RecordBuffer buffer = db.new TableUpsertBuffer (VocRd1.class, 100, VocRd1Buf.class, 1000, null)) {
+            try (DB.RecordBuffer buffer = db.new TableUpsertBuffer (VocRd1.class, 100, VocRd1Buf.class, 1000)) {
                 
                 buffer.setOnFlush (n -> {
                     
