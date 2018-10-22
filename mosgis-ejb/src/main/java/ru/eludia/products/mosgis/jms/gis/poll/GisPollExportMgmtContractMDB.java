@@ -119,14 +119,23 @@ public class GisPollExportMgmtContractMDB extends GisPollMDB {
             if (state == null) state = VocGisStatus.i.NOT_RUNNING;
 
             final byte status = VocGisStatus.i.forName (importContract.getContractStatus ().value ()).getId ();
-                
-            ContractObject contractObjectTableDefinition = (ContractObject) db.getModel ().t (ContractObject.class);
 
             db.begin ();
-                
-                for (ExportStatusCAChResultType.ContractObject co: importContract.getContractObject ()) 
-                    
-                    db.d0 (contractObjectTableDefinition.updateStatus ((UUID) r.get ("ctr.uuid"), co));            
+
+                for (ExportStatusCAChResultType.ContractObject co: importContract.getContractObject ()) {
+
+                    db.update (ContractObject.class, HASH (
+
+                        "uuid_contract",             uuidContract,
+                        "fiashouseguid",             co.getFIASHouseGuid (),
+                        "is_deleted",                0,
+
+                        "id_ctr_status_gis",         VocGisStatus.i.forName (co.getManagedObjectStatus ().value ()).getId (),
+                        "contractobjectversionguid", co.getContractObjectVersionGUID ()                  
+
+                    ), "uuid_contract", "fiashouseguid", "is_deleted");
+
+                }
             
                 db.update (Contract.class, HASH (
                     "uuid",                uuidContract,

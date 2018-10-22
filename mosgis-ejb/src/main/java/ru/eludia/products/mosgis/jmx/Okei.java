@@ -93,9 +93,7 @@ public class Okei implements OkeiMBean {
                             "name",     o.getString ("NAME"),
                             "national", o.getString ("NATIONAL")
                         ))
-                        .collect (Collectors.toList ()),
-
-                        null
+                        .collect (Collectors.toList ())
 
                     );
                     

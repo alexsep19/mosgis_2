@@ -1,6 +1,5 @@
 package ru.eludia.products.mosgis.jmx;
 
-import java.lang.management.ManagementFactory;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +10,6 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
-import javax.ejb.DependsOn;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
@@ -139,7 +137,7 @@ public class Rd implements RdMBean {
         try (DB db = ModelHolder.getModel ().getDb ()) {
             List<Map<String, Object>> records = new ArrayList <> ();
             add (records, wsRdClient.getAllModelsTreeByRootId (1));
-            db.upsert (VocRdList.class, records, null);
+            db.upsert (VocRdList.class, records);
             
             records.forEach (i -> {importRdModel (Integer.valueOf (i.get ("modelid").toString ()));});
             
@@ -166,7 +164,7 @@ public class Rd implements RdMBean {
                     "name", i.getName ().getValue ()
                 )).collect (Collectors.toList ())
                     
-            , null);
+            );
             
         }
         catch (SQLException ex) {

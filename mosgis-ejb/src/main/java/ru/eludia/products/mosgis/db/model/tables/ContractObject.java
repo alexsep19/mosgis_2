@@ -230,23 +230,7 @@ logger.info ("r=" + r);
         ec.getContractObject ().add (co);
         
     }    
-    
-    public QP updateStatus (UUID uuid_contract, ExportStatusCAChResultType.ContractObject co) {
-    
-        QP qp = new QP ("UPDATE ");
-                    
-        qp.append (getName ());
-        qp.add (" SET id_ctr_status_gis         = ?", VocGisStatus.i.forName (co.getManagedObjectStatus ().value ()).getId (), getColumn ("id_ctr_status_gis").toPhysical ());
-        qp.add (",    contractobjectversionguid = ?", co.getContractObjectVersionGUID (),                                      getColumn ("contractobjectversionguid").toPhysical ());
-
-        qp.append (" WHERE is_deleted = 0");
-        qp.add (" AND uuid_contract   = ?", uuid_contract,          getColumn ("uuid_contract").toPhysical ());
-        qp.add (" AND fiashouseguid   = ?", co.getFIASHouseGuid (), getColumn ("fiashouseguid").toPhysical ());
-                    
-        return qp;
-    
-    }
-    
+        
     public static void setDateFields (Map<String, Object> h, ExportCAChResultType.Contract.ContractObject co) {        
         h.put ("startdate", co.getStartDate ());
         h.put ("enddate", co.getEndDate ());

@@ -15,6 +15,7 @@ import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.tables.AdditionalService;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
+import ru.eludia.products.mosgis.db.model.tables.ContractFile;
 import ru.eludia.products.mosgis.db.model.tables.ContractLog;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.ContractObjectService;
@@ -128,11 +129,22 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
 
                     final Map<String, Object> h = HASH (
                         "id_ctr_status",       status.getId (),
-                        "id_ctr_status_gis",   status.getId ()                    
+                        "id_ctr_status_gis",   status.getId (),
+                        "contractversionguid", contract.getContractVersionGUID ()
                     );
                     
                     Contract.setDateFields (h, contract);
-                    if (!isAnonymous) Contract.setExtraFields (h, contract);
+                    
+                    if (!isAnonymous) {                        
+                        
+                        Contract.setExtraFields (h, contract);
+                        
+                        db.update (ContractFile.class, HASH (
+                           "uuid_contract", ctrUuid,
+                           "id_status",     1
+                        ), "uuid_contract");
+                        
+                    }
 
                     h.put ("uuid", ctrUuid);
                     db.update (Contract.class, h);

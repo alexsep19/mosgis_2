@@ -72,7 +72,7 @@ public class GisPollExportNsi extends UUIDMDB<OutSoap> {
                 
             }
             
-            db.upsert (VocNsiList.class, vocNsiList, null);
+            db.upsert (VocNsiList.class, vocNsiList);
             
             db.insert (InNsiItem.class, inNsiItem);
             

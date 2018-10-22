@@ -161,7 +161,7 @@ public class VocRdListImpl implements VocRdListLocal {
                     RD_NSI_REF_COL_NAME, i.getString (RD_NSI_REF_COL_NAME)
                 )).collect (Collectors.toList ())
 
-            , null);
+            );
             
         }
         catch (SQLException ex) {
