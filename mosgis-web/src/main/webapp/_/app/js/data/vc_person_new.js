@@ -15,6 +15,8 @@ define ([], function () {
         
         if (v.patronymic && (!re.test (v.patronymic) || !/[ач]$/.test (v.patronymic))) die ('patronymic', 'Отчество указано некорректно')
         
+        if (v.is_female=="") v.is_female=null
+        
         var tia = {type: 'vc_persons'}
         tia.id = form.record.id
         tia.action = tia.id ? 'update' : 'create'

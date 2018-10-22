@@ -1,6 +1,8 @@
 package ru.eludia.products.mosgis.rest.impl;
 
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -26,6 +28,8 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 
 @Stateless
 public class PersonImpl extends BaseCRUD<VocPerson> implements PersonLocal {
+    
+    private static final Logger logger = Logger.getLogger (PersonImpl.class.getName ());    
     
     private void filterOffDeleted (Select select) {
         select.and ("is_deleted", 0);
@@ -64,26 +68,6 @@ public class PersonImpl extends BaseCRUD<VocPerson> implements PersonLocal {
         }
 
     }
-
-    @Override
-    public JsonObject doCreate (JsonObject p, User user) {return doAction ((db, job) -> {
-
-        final Table table = getTable ();
-
-        Map<String, Object> data = getData (p);
-        
-        if ("".equals(data.get("is_female")))
-            data.put("is_female", null);
-
-        if (table.getColumn (UUID_ORG) != null && !data.containsKey (UUID_ORG)) data.put (UUID_ORG, user.getUuidOrg ());
-
-        Object insertId = db.insertId (table, data);
-        
-        job.add ("id", insertId.toString ());
-        
-        logAction (db, user, insertId, VocAction.i.CREATE);
-        
-    });}
     
     @Override
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
