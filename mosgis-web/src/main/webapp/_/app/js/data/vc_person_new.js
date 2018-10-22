@@ -9,9 +9,9 @@ define ([], function () {
         var re = /^[А-ЯЁ][а-яё\-]*$/
         
         if (!v.surname) die ('surname', 'Укажите, пожалуйста, фамилию')
-        if (!re.test (v.surname)) ('surname', 'Фамилия содержит не корректные символы')
+        if (!re.test (v.surname)) die ('surname', 'Фамилия содержит не корректные символы')
         if (!v.firstname) die ('firstname', 'Укажите, пожалуйста, имя')
-        if (!re.test (v.firstname)) ('firstname', 'Имя содержит некорректные символы')
+        if (!re.test (v.firstname)) die ('firstname', 'Имя содержит некорректные символы')
         
         if (v.patronymic && (!re.test (v.patronymic) || !/[ач]$/.test (v.patronymic))) die ('patronymic', 'Отчество указано некорректно')
         
