@@ -59,6 +59,7 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
             case APPROVE:
             case PROMOTE:
             case REFRESH:
+            case RELOAD:
             case TERMINATE:
             case ANNUL:
             case ROLLOVER:
@@ -301,6 +302,18 @@ logger.info ("data=" + data);
         ));
         
         logAction (db, user, id, VocAction.i.REFRESH);
+        
+    });}
+    
+    @Override
+    public JsonObject doReload (String id, User user) {return doAction ((db) -> {
+        
+        db.update (getTable (), HASH (
+            "uuid",           id,
+            "id_ctr_status",  VocGisStatus.i.PENDING_RQ_RELOAD.getId ()
+        ));
+        
+        logAction (db, user, id, VocAction.i.RELOAD);
         
     });}
     

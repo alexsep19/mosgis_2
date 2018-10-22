@@ -29,9 +29,9 @@ public class VocGisStatus extends Table {
         
         APPROVAL_PROCESS     (20,  "ApprovalProcess", "на утверждении"),
 
-        PENDING_RQ_REFRESH   (22,  "_pending_rq_refresh", "ожидание обновления"),
-        PENDING_RP_REFRESH   (23,  "_pending_rp_refresh", "ожидание подтверждения обновления"),
-        FAILED_REFRESH       (24,  "_failed_refresh", "ошибка обновления"),
+        PENDING_RQ_REFRESH   (22,  "_pending_rq_refresh", "ожидание обновления статуса"),
+        PENDING_RP_REFRESH   (23,  "_pending_rp_refresh", "ожидание результата обновления статуса"),
+        FAILED_REFRESH       (24,  "_failed_refresh", "ошибка обновления статуса"),
 
         REVIEWED             (30,  "Reviewed",        "рассмотрен"),
         
@@ -51,6 +51,11 @@ public class VocGisStatus extends Table {
         PENDING_RP_ROLLOVER  (53,  "_pending_rp_rollover", "ожидание подтверждения пролонгации"),
         
         EXPIRED              (60,  "Expired",         "истек срок действия"),
+        
+        PENDING_RQ_RELOAD    (62,  "_pending_rq_reload", "ожидание обновления данных"),
+        PENDING_RP_RELOAD    (63,  "_pending_rp_reload", "ожидание результата обновления данных"),
+        FAILED_RELOAD        (64,  "_failed_reload", "ошибка обновления данных"),
+        
         LOCKED               (70,  "Locked",          "заблокирован"),
         NOT_RUNNING          (80,  "NotRunning",      "не действующий"),
         REJECTED             (90,  "Rejected",        "отклонен"),

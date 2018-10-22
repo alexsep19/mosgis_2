@@ -46,7 +46,6 @@ define ([], function () {
                         case 14:
                         case 34:
                         case 90:
-                        case 94:
                             it._can.alter   = 1
                             break;
 
@@ -64,15 +63,25 @@ define ([], function () {
                     
                         switch (it.id_ctr_status) {
                             case 40:
-                            case 94:
                                 it._can.rollover = 1
                                 break;
                         }
                         
                     }
-
-                    if ((0 + it.id_ctr_status) % 10 == 0 && it.id_ctr_status > 10) {
-                        it._can.refresh = 1
+                    
+                    switch (it.id_ctr_status) {
+                        case 10: // Project
+                        case 14: // _failed_placing
+                            break;
+                        default:
+                            switch ((0 + it.id_ctr_status) % 10) {
+                                case 2: // _pending_rq_...
+                                case 3: // _pending_rp_...
+                                    break;
+                                default:
+                                    it._can.refresh = 1
+                                    it._can.reload = 1
+                            }
                     }
 
                     it._can.update = it._can.cancel = it._can.edit

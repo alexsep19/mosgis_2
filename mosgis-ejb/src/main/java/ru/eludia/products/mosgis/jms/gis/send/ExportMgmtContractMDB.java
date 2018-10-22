@@ -61,6 +61,9 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
     @Resource (mappedName = "mosgis.outExportHouseMgmtContractsQueue")
     Queue outExportHouseMgmtContractsQueue;
     
+    @Resource (mappedName = "mosgis.outExportHouseMgmtContractDataQueue")
+    Queue outExportHouseMgmtContractDataQueue;
+    
     @Resource (mappedName = "mosgis.outExportHouseMgmtContractStatusQueue")
     Queue outExportHouseMgmtContractStatusQueue;
     
@@ -229,61 +232,7 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
         return true;
         
     }
-    
-    private void updateVersions (DB db, Map<String, Object> r) throws SQLException {
         
-        UUID rUID = UUID.randomUUID ();
-
-        final UUID ctrUuid = (UUID) r.get ("uuid_object");
-        
-        UUID orgPPAGuid = getOrgPPAGUID (r);
-
-        AckRequest.Ack exportContractStatus = null;
-
-        try {
-            exportContractStatus = wsGisHouseManagementClient.exportContractStatus (orgPPAGuid, rUID, Collections.singletonList ((UUID) r.get ("ctr.contractguid")));
-        }
-        catch (Exception ex) {
-            logger.log (Level.SEVERE, "wsGisHouseManagementClient.exportContractStatus", ex);
-        }                
-                
-        UUID mGUID = UUID.fromString (exportContractStatus.getMessageGUID ());
-
-        db.update (Contract.class, HASH (
-            "uuid", ctrUuid,
-            "contractversionguid", null
-        ));
-
-        for (int i = 0; i < 10; i ++) {
-            
-            try {
-                
-                Thread.sleep (2000L);
-                
-                GetStateResult state = null;
-                
-                try {
-                    state = wsGisHouseManagementClient.getState (orgPPAGuid, mGUID);
-                }
-                catch (Exception ex) {
-                    logger.log (Level.SEVERE, "wsGisHouseManagementClient.getState", ex);
-                }
-                
-                if (state.getRequestState () < 2) continue;
-                
-                GisPollExportMgmtContractStatusMDB.processGetStateResponse (state, db, rUID, true);
-                
-                break;
-                                
-            }
-            catch (InterruptedException ex) {
-                logger.log (Level.WARNING, "It's futile", ex);
-            }
-            
-        }  
-        
-    }
-    
     AckRequest.Ack invoke (DB db, Contract.Action action, UUID messageGUID,  Map<String, Object> r) throws Fault, SQLException {
             
         UUID orgPPAGuid = getOrgPPAGUID (r);
@@ -296,6 +245,7 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
             case PLACING:     return wsGisHouseManagementClient.placeContractData     (orgPPAGuid, messageGUID, r);
             case APPROVING:   return wsGisHouseManagementClient.approveContractData   (orgPPAGuid, messageGUID, (UUID) r.get ("ctr.contractversionguid"));
             case REFRESHING:  return wsGisHouseManagementClient.exportContractStatus  (orgPPAGuid, messageGUID, Collections.singletonList ((UUID) r.get ("ctr.contractguid")));
+            case RELOADING:   return wsGisHouseManagementClient.exportContractData    (orgPPAGuid, messageGUID, Collections.singletonList ((UUID) r.get ("ctr.contractversionguid")));
             default: throw new IllegalArgumentException ("No action implemented for " + action);
         }
 
@@ -312,6 +262,7 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
             case TERMINATION:
             case EDITING:
             case ROLLOVER:
+            case RELOADING:
                 return true;
             default:
                 return false;
@@ -332,17 +283,17 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
 
         Model m = db.getModel ();
         
-        if (isVersionUpdateNeeded (action)) {
-            updateVersions (db, r);
-            r = db.getMap (get (uuid));
-        }
-        
-        if (action.needsUpload ()) {
-            if (someFileUploadIsInProgress (db, m, r, action)) return;
-        }
-
         try {
+            
+            if (isVersionUpdateNeeded (action)) {
+                wsGisHouseManagementClient.refreshContractStatus (getOrgPPAGUID (r), (UUID) r.get ("ctr.contractguid"), db, (UUID) r.get ("uuid_object"));
+                r = db.getMap (get (uuid));
+            }
 
+            if (action.needsUpload ()) {
+                if (someFileUploadIsInProgress (db, m, r, action)) return;
+            }
+            
             AckRequest.Ack ack = invoke (db, action, uuid, r);
 
             db.begin ();
@@ -440,6 +391,7 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
     Queue getQueue (Contract.Action action) {
         
         switch (action) {
+            case RELOADING:  return outExportHouseMgmtContractDataQueue;
             case REFRESHING: return outExportHouseMgmtContractStatusQueue;
             default:         return outExportHouseMgmtContractsQueue;
         }

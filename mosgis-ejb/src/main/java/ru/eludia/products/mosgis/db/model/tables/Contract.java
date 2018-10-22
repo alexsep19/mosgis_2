@@ -2,6 +2,7 @@ package ru.eludia.products.mosgis.db.model.tables;
 
 import java.util.Map;
 import java.util.UUID;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
@@ -16,8 +17,11 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import static ru.eludia.products.mosgis.db.model.voc.VocGisStatus.i.ANNUL;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.gosuslugi.dom.schema.integration.house_management.ContractType;
+import ru.gosuslugi.dom.schema.integration.house_management.DateDetailsExportType;
 import ru.gosuslugi.dom.schema.integration.house_management.DateDetailsType;
+import ru.gosuslugi.dom.schema.integration.house_management.DaySelectionExportType;
 import ru.gosuslugi.dom.schema.integration.house_management.DeviceMeteringsDaySelectionType;    
+import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
 
 public class Contract extends Table {
 
@@ -351,12 +355,73 @@ public class Contract extends Table {
         c.setDateDetails (dd);
                 
     }
+        
+    public static void setDateFields (Map<String, Object> h, ExportCAChResultType.Contract contract) {
+        h.put ("signingdate",        contract.getSigningDate ());
+        h.put ("effectivedate",      contract.getEffectiveDate ());
+        h.put ("plandatecomptetion", contract.getPlanDateComptetion ());
+    }
+    
+    private static void setExtraFields (Map<String, Object> h, ExportCAChResultType.Contract.Terminate terminate) {
+        if (terminate == null) {
+            h.put ("terminate",      null);
+            h.put ("code_vc_nsi_54", null);
+        }
+        else {
+            h.put ("terminate",      terminate.getTerminate ());
+            h.put ("code_vc_nsi_54", terminate.getReasonRef ().getCode ());
+        }
+    }
+    
+    private static byte day (Byte d, Boolean last) {
+        return DB.ok (last) ? 99 : d;
+    }
+
+    private static void setExtraFields (Map<String, Object> h, String field, DaySelectionExportType p) {
+        h.put ("ddt_m_" + field,          day   (p.getDate (), p.isLastDay ()));
+        h.put ("ddt_m_" + field + "_nxt", DB.ok (p.isIsNextMonth ()));
+    }
+    
+    private static void setExtraFields (Map<String, Object> h, DateDetailsExportType.PeriodMetering p) {
+        setExtraFields (h, "start", p.getStartDate ());
+        setExtraFields (h, "end",   p.getEndDate ());
+    }
+
+    private static void setExtraFields (Map<String, Object> h, DateDetailsExportType.PaymentDocumentInterval p) {
+        h.put ("ddt_d_start",     day   (p.getStartDate (), p.isLastDay ()));
+        h.put ("ddt_d_start_nxt", DB.ok (p.isNextMounth ()));
+    }
+
+    private static void setExtraFields (Map<String, Object> h, DateDetailsExportType.PaymentInterval p) {
+        h.put ("ddt_i_start",     day   (p.getStartDate (), p.isLastDay ()));
+        h.put ("ddt_i_start_nxt", DB.ok (p.isNextMounth ()));
+    }
+        
+    private static void setExtraFields (Map<String, Object> h, DateDetailsExportType dateDetails) {
+        setExtraFields (h, dateDetails.getPeriodMetering ());
+        setExtraFields (h, dateDetails.getPaymentDocumentInterval ());
+        setExtraFields (h, dateDetails.getPaymentInterval ());
+    }
+    
+    public static void setExtraFields (Map<String, Object> h, ExportCAChResultType.Contract contract) {
+        h.put ("docnum",                   contract.getDocNum ());
+        h.put ("automaticrolloveroneyear", DB.ok (contract.isAutomaticRollOverOneYear ()));
+        h.put ("code_vc_nsi_58",           contract.getContractBase ().getCode ());
+        setExtraFields (h, contract.getTerminate ());
+        setExtraFields (h, contract.getDateDetails ());
+        /*
+        fk    ("uuid_org",                  VocOrganization.class,                      "Исполнитель");
+        fk    ("uuid_org_customer",         VocOrganization.class,              null,   "Заказчик");
+        fk    ("id_customer_type",          VocGisCustomerType.class,                   "Тип заказчика");
+         */
+    }
     
     public enum Action {
         
         PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.FAILED_PLACING),
         APPROVING   (VocGisStatus.i.PENDING_RP_APPROVAL,  VocGisStatus.i.FAILED_STATE),
         REFRESHING  (VocGisStatus.i.PENDING_RP_REFRESH,   VocGisStatus.i.FAILED_STATE),
+        RELOADING   (VocGisStatus.i.PENDING_RP_RELOAD,    VocGisStatus.i.FAILED_STATE),
         ROLLOVER    (VocGisStatus.i.PENDING_RP_ROLLOVER,  VocGisStatus.i.FAILED_STATE),
         TERMINATION (VocGisStatus.i.PENDING_RP_TERMINATE, VocGisStatus.i.FAILED_TERMINATE),
         ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.FAILED_ANNULMENT),
@@ -388,6 +453,7 @@ public class Contract extends Table {
                 case PENDING_RQ_TERMINATE: return TERMINATION;
                 case PENDING_RQ_ANNULMENT: return ANNULMENT;
                 case PENDING_RQ_ROLLOVER:  return ROLLOVER;
+                case PENDING_RQ_RELOAD:    return RELOADING;
                 default: return null;
             }            
         }

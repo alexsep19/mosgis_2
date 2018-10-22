@@ -15,6 +15,7 @@ import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import static ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType.i.OWNERS;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportStatusCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
 
@@ -244,6 +245,11 @@ logger.info ("r=" + r);
                     
         return qp;
     
+    }
+    
+    public static void setDateFields (Map<String, Object> h, ExportCAChResultType.Contract.ContractObject co) {        
+        h.put ("startdate", co.getStartDate ());
+        h.put ("enddate", co.getEndDate ());
     }
 
 }

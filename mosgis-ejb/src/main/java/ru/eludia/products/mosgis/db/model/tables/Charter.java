@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Collection;
 import java.util.Map;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
@@ -168,6 +169,10 @@ public class Charter extends Table {
         dd.setPaymentInterval         (paymentInterval         (r, "ddt_i_start"));
                 
         c.setDateDetails (dd);
+        
+        for (Map<String, Object> file: (Collection<Map<String, Object>>) r.get ("files")) CharterFile.add (c, file);
+        
+        if (c.getMeetingProtocol ().getProtocolMeetingOwners ().isEmpty ()) c.setNoCharterApproveProtocol (true);
                 
     }
     

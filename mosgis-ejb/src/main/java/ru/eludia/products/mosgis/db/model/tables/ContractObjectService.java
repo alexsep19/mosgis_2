@@ -9,7 +9,7 @@ import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
-import static ru.eludia.products.mosgis.db.model.voc.VocGisStatus.i.MUTATING;
+import ru.gosuslugi.dom.schema.integration.house_management.ContractServiceType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
 
 public class ContractObjectService extends Table {
@@ -36,8 +36,38 @@ public class ContractObjectService extends Table {
         
         fk     ("id_log",                  ContractObjectServiceLog.class,      null, "Последнее событие редактирования");        
 
-        trigger ("BEFORE INSERT", "BEGIN "
+        trigger ("BEFORE INSERT", ""
+                
+        + "DECLARE" 
+            + " PRAGMA AUTONOMOUS_TRANSACTION; "
+        + "BEGIN "
+                
+            + "IF :NEW.is_deleted = 0 THEN "
+            + " FOR i IN ("
+                + "SELECT "
+                + " o.startdate "
+                + " , o.enddate "
+                + "FROM "
+                + " tb_contract_services o "
+                + "WHERE o.is_deleted = 0"
+                + " AND o.uuid_contract_object         =     :NEW.uuid_contract_object "
+                + " AND o.uuid                        <>    :NEW.uuid "
+                + " AND NVL(o.code_vc_nsi_3, ' ')     = NVL(:NEW.code_vc_nsi_3, ' ') "
+                + " AND NVL(o.uuid_add_service, '00') = NVL(:NEW.uuid_add_service, '00') "
+                + " AND o.enddate   >= :NEW.startdate "
+                + " AND o.startdate <= :NEW.enddate "
+                + ") LOOP"
+            + " raise_application_error (-20000, "
+                + "'В договоре по указанной услуге в рамках объекта управления уже есть запись с пересекающимся периодом действия: с ' "
+                + "|| TO_CHAR (i.startdate, 'DD.MM.YYYY')"
+                + "||' по '"
+                + "|| TO_CHAR (i.enddate, 'DD.MM.YYYY')"
+                + "|| '. Операция отменена.'); "
+            + " END LOOP; "
+            + "END IF; "                
+
             + "SELECT uuid_contract INTO :NEW.uuid_contract FROM tb_contract_objects WHERE uuid = :NEW.uuid_contract_object; "
+                
         + "END;");
         
         trigger ("BEFORE INSERT OR UPDATE", " BEGIN "
@@ -45,9 +75,7 @@ public class ContractObjectService extends Table {
             + "IF :NEW.startdate > :NEW.enddate THEN "
             + " raise_application_error (-20000, '#enddate#: Дата начала предоставления услуги должна быть раньше даты окончания');"
             + "END IF; "
-                
-            + " UPDATE tb_contract_objects SET id_ctr_status = " + MUTATING.getId () + " WHERE uuid = :NEW.uuid_contract_object AND contractobjectversionguid IS NOT NULL; "
-                
+                                
         + "END;");
 
     }
@@ -138,6 +166,11 @@ public class ContractObjectService extends Table {
         
         co.getHouseService ().add (hs);
 
+    }
+    
+    public static void setDateFields (Map<String, Object> h, ContractServiceType cs) {
+        h.put ("startdate", cs.getStartDate ());
+        h.put ("enddate", cs.getEndDate ());
     }
 
 }

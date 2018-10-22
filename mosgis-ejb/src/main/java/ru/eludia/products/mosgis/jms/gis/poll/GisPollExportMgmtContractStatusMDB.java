@@ -21,9 +21,10 @@ import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
-import ru.eludia.products.mosgis.jms.base.UUIDMDB;
+import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
+import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
+import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.eludia.products.mosgis.rest.api.MgmtContractLocal;
-import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportStatusCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
@@ -33,7 +34,7 @@ import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class GisPollExportMgmtContractStatusMDB extends UUIDMDB<OutSoap> {
+public class GisPollExportMgmtContractStatusMDB extends GisPollMDB {
     
     private static Logger logger = java.util.logging.Logger.getLogger (GisPollExportMgmtContractStatusMDB.class.getName ());    
 
@@ -48,37 +49,56 @@ public class GisPollExportMgmtContractStatusMDB extends UUIDMDB<OutSoap> {
 
     @EJB
     MgmtContractLocal mgmtContract;
-
+    
+    private GetStateResult getState (UUID orgPPAGuid, Map<String, Object> r) throws GisPollRetryException, GisPollException {
+        
+        GetStateResult rp;
+        
+        try {
+            rp = wsGisHouseManagementClient.getState (orgPPAGuid, (UUID) r.get ("uuid_ack"));
+        }
+        catch (Fault ex) {
+            throw new GisPollException (ex.getFaultInfo ());
+        }
+        catch (Throwable ex) {            
+            throw new GisPollException (ex);
+        }
+        
+        checkIfResponseReady (rp);
+        
+        return rp;
+        
+    }    
 
     @Override
     protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
-
-        GetStateResult rp;
-
+        
+        UUID orgPPAGuid = (UUID) r.get ("orgppaguid");
+        
         try {
-            rp = wsGisHouseManagementClient.getState ((UUID) r.get ("orgppaguid"), (UUID) r.get ("uuid_ack"));
-        }
-        catch (Fault ex) {
-            throw new IllegalStateException (ex);
-/*                
-            final ru.gosuslugi.dom.schema.integration.base.Fault faultInfo = ex.getFaultInfo ();
-            throw new FU (faultInfo.getErrorCode (), faultInfo.getErrorMessage (), VocGisStatus.i.FAILED_STATE);
-*/                
-        }
+            
+            GetStateResult rp = getState (orgPPAGuid, r);
+            
+            List <UUID> toPromote = processGetStateResponse (rp, db, false);
+            
+            db.update (OutSoap.class, HASH (
+                "uuid", uuid,
+                "id_status", DONE.getId ()
+            ));                            
 
-        if (rp.getRequestState () < DONE.getId ()) {
-            logger.info ("requestState = " + rp.getRequestState () + ", retry...");
-            UUIDPublisher.publish (queue, uuid);
+            for (UUID id: toPromote) mgmtContract.doPromote (id.toString ());
+            
+        }
+        catch (GisPollRetryException ex) {
             return;
         }
-
-        List <UUID> toPromote = processGetStateResponse (rp, db, uuid, false);
-
-        for (UUID id: toPromote) mgmtContract.doPromote (id.toString ());
+        catch (GisPollException ex) {
+            ex.register (db, uuid, r);
+        }
 
     }        
 
-    public static List<UUID> processGetStateResponse (GetStateResult rp, DB db, UUID uuid, boolean versionsOnly) throws SQLException {
+    public static List<UUID> processGetStateResponse (GetStateResult rp, DB db, boolean versionsOnly) throws SQLException {
         
         List <Map <String, Object>> contractRecords = new ArrayList<> (rp.getExportCAChResult ().size ());
         List <Map <String, Object>> objectRecords   = new ArrayList<> (rp.getExportCAChResult ().size ());
@@ -86,12 +106,7 @@ public class GisPollExportMgmtContractStatusMDB extends UUIDMDB<OutSoap> {
         Model m = db.getModel ();        
         for (ExportStatusCAChResultType er: rp.getExportStatusCAChResult ()) processExportStatus (er, db, m, toPromote, versionsOnly, contractRecords, objectRecords);
         db.update (Contract.class, contractRecords);
-        db.upsert (ContractObject.class, objectRecords, objectKey);
-        db.update (OutSoap.class, HASH (
-            "uuid", uuid,
-            "id_status", DONE.getId ()
-        ));
-        
+        db.upsert (ContractObject.class, objectRecords, objectKey);        
         return toPromote;
         
     }   
