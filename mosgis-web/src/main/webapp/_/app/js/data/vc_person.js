@@ -1,6 +1,6 @@
 define ([], function () {
 
-    $_DO.choose_tab_add_service = function (e) {
+    $_DO.choose_tab_vc_person = function (e) {
 
         var name = e.tab.id
                 
