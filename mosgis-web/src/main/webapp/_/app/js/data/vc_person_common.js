@@ -48,9 +48,11 @@ define ([], function () {
 
         if (v.is_female=="") v.is_female=null
         
-        if (v.code_vc_nsi_95 && !v.number_) die ('number_', 'Пожалуйста, укажите номер документа')
-        if (v.code_vc_nsi_95 && !v.issuedate) die ('number_', 'Пожалуйста, укажите дату выдачи документа')
-        if (v.code_vc_nsi_95 && !v.issuer) die ('number_', 'Пожалуйста, укажите, кем выдан документ')
+        if (v.code_vc_nsi_95) {
+            if (!v.number_) die ('number_', 'Пожалуйста, укажите номер документа')
+            if (!v.issuedate) die ('issuedate', 'Пожалуйста, укажите дату выдачи документа')
+            if (!v.issuer) die ('issuer', 'Пожалуйста, укажите, кем выдан документ')
+        }
 
         query ({type: 'vc_persons', action: 'update'}, {data: v}, reload_page)
 
