@@ -16,7 +16,7 @@ define ([], function () {
 
             columnGroups : [
                 {span: 3, caption: 'Событие'},
-                {span: 7, caption: 'Значения полей'},
+                {span: 12, caption: 'Значения полей'},
             ], 
             
             columns: [                
