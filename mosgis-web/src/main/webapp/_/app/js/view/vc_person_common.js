@@ -28,7 +28,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 150},
+                {type: 'top', size: 400},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
@@ -64,7 +64,7 @@ define ([], function () {
                 {name: 'placebirth', type: 'text'},
                 {name: 'birthdate', type: 'date'},
                 {name: 'snils', type: 'text'},
-                {name: 'code_vc_nsi_95', type: 'text'},
+                {name: 'code_vc_nsi_95', type: 'list', options: {items: data.vc_nsi_95.items}},
                 {name: 'series', type: 'text'},
                 {name: 'number_', type: 'text'},
                 {name: 'issuedate', type: 'date'},
