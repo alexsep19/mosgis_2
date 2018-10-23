@@ -29,7 +29,7 @@ define ([], function () {
         
             w2popup.close ()
             
-            if (data.id) w2confirm ('Перейти на страницу договора?').yes (function () {openTab ('/vc_person/' + data.id)})
+            if (data.id) w2confirm ('Перейти на страницу физического лица?').yes (function () {openTab ('/vc_person/' + data.id)})
             
             grid.reload (grid.refresh)
             
