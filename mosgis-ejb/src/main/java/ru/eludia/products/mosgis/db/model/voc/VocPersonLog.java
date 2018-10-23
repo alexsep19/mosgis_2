@@ -4,6 +4,7 @@ import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import static ru.eludia.base.model.def.Def.NOW;
+import ru.eludia.base.model.def.Virt;
 
 public class VocPersonLog extends Table {
     
@@ -35,6 +36,9 @@ public class VocPersonLog extends Table {
         col   ("surname",            Type.STRING,  256,           "Фамилия");
         col   ("firstname",          Type.STRING,  256,           "Имя");
         col   ("patronymic",         Type.STRING,  256,  null,    "Отчество");
+        
+        col   ("label",              Type.STRING,     new Virt("DECODE(\"PATRONYMIC\", NULL, (\"SURNAME\" || ' ' || \"FIRSTNAME\"), (\"SURNAME\" || ' ' || \"FIRSTNAME\" || ' ' || \"PATRONYMIC\"))"), "ФИО");
+        col   ("label_uc",           Type.STRING,     new Virt("UPPER(DECODE(\"PATRONYMIC\", NULL, (\"SURNAME\" || ' ' || \"FIRSTNAME\"), (\"SURNAME\" || ' ' || \"FIRSTNAME\" || ' ' || \"PATRONYMIC\")))"), "ФИО (в верхнем регистре)");
         
         trigger ("BEFORE INSERT", 
                  "BEGIN "
