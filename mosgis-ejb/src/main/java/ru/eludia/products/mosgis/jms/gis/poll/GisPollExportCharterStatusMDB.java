@@ -85,7 +85,7 @@ public class GisPollExportCharterStatusMDB extends UUIDMDB<OutSoap> {
         Model m = db.getModel ();        
         for (ExportStatusCAChResultType er: rp.getExportStatusCAChResult ()) processExportStatus (er, db, m, toPromote, versionsOnly, charterRecords, objectRecords);
         db.update (Charter.class, charterRecords);
-        db.upsert (CharterObject.class, objectRecords, objectKey);
+        db.upsert (CharterObject.class, objectRecords, "uuid_charter", "fiashouseguid");
         db.update (OutSoap.class, HASH (
             "uuid", uuid,
             "id_status", DONE.getId ()
@@ -160,6 +160,6 @@ public class GisPollExportCharterStatusMDB extends UUIDMDB<OutSoap> {
         
     }
     
-    private static String [] objectKey   = {"uuid_charter", "fiashouseguid"};
+//    private static String [] objectKey   = {"uuid_charter", "fiashouseguid"};
     
 }

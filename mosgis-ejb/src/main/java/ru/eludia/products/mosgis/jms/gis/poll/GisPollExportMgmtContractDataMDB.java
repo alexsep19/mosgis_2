@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
@@ -75,6 +76,34 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
         ;
         
     }    
+    
+    private void refecthContractFiles (DB db, UUID ctrUuid, Map<UUID, Map<String, Object>> attachmentguid2file, List<UUID> uuidsToDelete) throws SQLException {
+        
+        db.forEach (db.getModel ()
+                
+            .select (ContractFile.class, "attachmentguid", "uuid", "uuid_contract_object")
+                .and ("uuid_contract", ctrUuid)
+                .and ("id_status", 1)
+                .and ("attachmentguid IS NOT NULL")
+
+            , (rs) -> {
+
+                Map<String, Object> h = db.HASH (rs);
+
+                Map<String, Object> file = attachmentguid2file.get (h.get ("attachmentguid"));
+                
+                if (file == null) {
+                    uuidsToDelete.add ((UUID) h.get ("uuid"));
+                }
+                else {
+                    file.putAll (h);
+                }
+
+            }
+                
+        );
+        
+    }    
 
     @Override
     protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
@@ -133,24 +162,14 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
                         
 logger.info ("attachmentguid2file = " + attachmentguid2file);
 
-                        db.forEach (m
-                            .select (ContractFile.class, "attachmentguid", "uuid", "uuid_contract_object")
-                            .where ("uuid_contract", ctrUuid)
-                            .and   ("attachmentguid IS NOT NULL")
-                               
-                            , (rs) -> {
-                                
-                                UUID a = (UUID) db.getValue (rs, 1);
-                                Map<String, Object> file = attachmentguid2file.get (a);
-                                
-                                if (file == null) return;
-                                
-                                file.put ("uuid",                 (UUID) db.getValue (rs, 2));
-                                file.put ("uuid_contract_object", (UUID) db.getValue (rs, 3));
-                                
-                            }
-                                
-                        );
+                        List<UUID> uuidsToDelete = new ArrayList<> ();
+
+                        refecthContractFiles (db, ctrUuid, attachmentguid2file, uuidsToDelete);
+                        
+                        if (!uuidsToDelete.isEmpty ()) db.update (ContractFile.class, uuidsToDelete.stream ().map (id -> HASH (
+                            "uuid",      id,
+                            "id_status", 2
+                        )).collect (Collectors.toList ()));
                         
 logger.info ("attachmentguid2file = " + attachmentguid2file);
 
