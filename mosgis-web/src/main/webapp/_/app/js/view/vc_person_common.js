@@ -9,7 +9,17 @@ define ([], function () {
             data.item.__read_only = data.__read_only
             
             var r = clone (data.item)
-
+            
+            $.each (w2ui [form_name].fields, function () {
+            
+                if (this.type != 'date') return
+                
+                var dt = r [this.name]
+                
+                if (dt != undefined && dt.charAt (3) != '.') r [this.name] = dt_dmy (dt)
+                        
+            })
+            
             w2ui [form_name].record = r
             
             $('div[data-block-name=vc_person_common] input').prop ({disabled: data.__read_only})
