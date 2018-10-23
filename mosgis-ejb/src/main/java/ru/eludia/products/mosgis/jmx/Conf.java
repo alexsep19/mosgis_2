@@ -99,7 +99,7 @@ public class Conf implements ConfMBean, ConfLocal {
             db.upsert (SettingValue.class, HASH (
                 "id_vc_setting", key,
                 "value",         value
-            ), null);
+            ));
             
             UUIDPublisher.publish (confTopic, UUID.fromString ("00000000-0000-0000-0000-000000000000"));
 

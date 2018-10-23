@@ -249,7 +249,7 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
 
                     db.d0 ("UPDATE " + refTable.getName () + " SET ord = -1");
                         
-                    db.upsert (refTable, m2m, null);
+                    db.upsert (refTable, m2m);
 
                     db.d0 ("DELETE FROM " + refTable.getName () + " WHERE ord = -1");
                                         
@@ -281,7 +281,7 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
                     
                 }
             
-                db.upsert (table, records, null);
+                db.upsert (table, records);
 
                 db.update (OutSoap.class, HASH (
                     "uuid", uuid,

@@ -109,7 +109,7 @@ public class InFiasMDB extends UUIDMDB<InFias> {
 
         @Override
         DB.RecordBuffer createBuffer () throws SQLException {
-            return db.new TableUpsertBuffer (t, PACK_SIZE, tb, TB_SIZE, null);
+            return db.new TableUpsertBuffer (t, PACK_SIZE, tb, TB_SIZE);
         }
         
     }
@@ -182,7 +182,7 @@ public class InFiasMDB extends UUIDMDB<InFias> {
         }   
         
         DB.RecordBuffer createBuffer () throws SQLException {
-            return db.new UpsertBuffer (t, PACK_SIZE, null);
+            return db.new UpsertBuffer (t, PACK_SIZE);
         }
         
         public void run () {

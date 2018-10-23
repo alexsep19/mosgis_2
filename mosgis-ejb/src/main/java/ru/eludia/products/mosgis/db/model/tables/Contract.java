@@ -413,7 +413,7 @@ public class Contract extends Table {
         fk    ("uuid_org",                  VocOrganization.class,                      "Исполнитель");
         fk    ("uuid_org_customer",         VocOrganization.class,              null,   "Заказчик");
         fk    ("id_customer_type",          VocGisCustomerType.class,                   "Тип заказчика");
-         */
+         */ 
     }
     
     public enum Action {
