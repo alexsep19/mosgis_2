@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
+import javax.jms.Queue;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
@@ -46,6 +48,9 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
     
     @EJB
     MgmtContractLocal mgmtContract;
+        
+    @Resource (mappedName = "mosgis.outExportHouseMgmtContractFilesQueue")
+    Queue outExportHouseMgmtContractFilesQueue;    
     
     private GetStateResult getState (UUID orgPPAGuid, Map<String, Object> r) throws GisPollRetryException, GisPollException {
         
@@ -92,11 +97,14 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
 
                 Map<String, Object> file = attachmentguid2file.get (h.get ("attachmentguid"));
                 
+                final UUID uuid = (UUID) h.get ("uuid");
+                
                 if (file == null) {
-                    uuidsToDelete.add ((UUID) h.get ("uuid"));
+                    uuidsToDelete.add (uuid);
                 }
                 else {
                     file.putAll (h);
+                    download (uuid);
                 }
 
             }
@@ -104,6 +112,10 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
         );
         
     }    
+
+    private void download (final UUID uuid) {
+        UUIDPublisher.publish (outExportHouseMgmtContractFilesQueue, uuid);
+    }
 
     @Override
     protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
@@ -161,6 +173,8 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
                         ));
                         
 logger.info ("attachmentguid2file = " + attachmentguid2file);
+
+                        db.upsert (ContractFile.class, attachmentguid2file.entrySet ().stream ().map ((t) -> t.getValue ()), "attachmentguid");
 
                         List<UUID> uuidsToDelete = new ArrayList<> ();
 
