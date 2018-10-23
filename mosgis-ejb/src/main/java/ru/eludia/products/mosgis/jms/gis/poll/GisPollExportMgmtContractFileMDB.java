@@ -1,9 +1,17 @@
 package ru.eludia.products.mosgis.jms.gis.poll;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.sql.Blob;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
@@ -40,13 +48,52 @@ public class GisPollExportMgmtContractFileMDB extends UUIDMDB<ContractFile> {
         
         Response rp = restGisFilesClient.get ((UUID) r.get ("org.orgppaguid"), RestGisFilesClient.Context.HOMEMANAGEMENT, (UUID) r.get ("attachmentguid"));
 
-logger.info ("rp=" + rp);
-
-        db.update (ContractFile.class, HASH (
+        db.update (getTable (), HASH (
             "uuid", uuid,
             "mime", rp.getHeaderString ("Content-Type"),
             "len",  rp.getHeaderString ("Content-Length")
         ));
+        
+        InputStream in = rp.readEntity (InputStream.class);
+        
+        try (PreparedStatement st = db.getConnection ().prepareStatement ("SELECT body FROM " + getTable ().getName () + " WHERE uuid = ? FOR UPDATE")) {
+
+            st.setString (1, uuid.toString ().replace ("-", "").toUpperCase ());
+
+            try (ResultSet rs = st.executeQuery ()) {
+
+                if (rs.next ()) {
+
+                    Blob blob = rs.getBlob (1);
+                    
+                    long sum = 0L;
+
+                    try (OutputStream out = blob.setBinaryStream (0L)) {
+
+                        byte [] buffer = new byte [8 * 1024];
+                        int len;
+                        while ((len = in.read (buffer)) > 0) {
+                            out.write (buffer, 0, len);
+                            sum += len;
+                        }
+                        
+                    }
+                    catch (IOException ex) {
+                        logger.log (Level.SEVERE, "Can't set BLOB stream", ex);
+                    }
+                    
+                    logger.info (sum + " bytes wrote");
+
+                }
+
+            }
+                
+            db.update (getTable (), HASH (
+                "uuid",      uuid,
+                "id_status", 0
+            ));
+
+        }                    
 
     }
     

@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 import ru.eludia.base.DB;
-import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
@@ -16,7 +15,6 @@ import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import static ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType.i.OWNERS;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
-import ru.gosuslugi.dom.schema.integration.house_management.ExportStatusCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
 
 public class ContractObject extends Table {
@@ -46,6 +44,8 @@ public class ContractObject extends Table {
         col    ("isblocked",               Type.BOOLEAN,          Bool.FALSE,   "Признак заблокированного дома");
 
         col    ("contractobjectversionguid",     Type.UUID,       null,          "UUID последней версии данного объекта в ГИС ЖКХ");
+        
+        col    ("fias_start",              Type.STRING,          new Virt ("CONCAT(RAWTOHEX(\"FIASHOUSEGUID\"),TO_CHAR(\"STARTDATE\",'YYYY-MM-DD'))"),  "ключ для различения объектов внутри договора");
         
         fk     ("id_log",                  ContractObjectLog.class,  null,      "Последнее событие редактирования");
  

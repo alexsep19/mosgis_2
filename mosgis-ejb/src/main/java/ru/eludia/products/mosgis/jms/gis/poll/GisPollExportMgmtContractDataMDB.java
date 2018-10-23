@@ -82,29 +82,38 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
         
     }    
     
-    private void refecthContractFiles (DB db, UUID ctrUuid, Map<UUID, Map<String, Object>> attachmentguid2file, List<UUID> uuidsToDelete) throws SQLException {
+    private void refecthContractFiles (DB db, UUID ctrUuid, Map<UUID, Map<String, Object>> attachmentguid2file, List<UUID> uuidsToDelete, List<UUID> uuidsToDownload) throws SQLException {
         
         db.forEach (db.getModel ()
                 
-            .select (ContractFile.class, "attachmentguid", "uuid", "uuid_contract_object")
+            .select (ContractFile.class, "attachmentguid", "uuid", "uuid_contract_object", ATTACHMENTHASH)
                 .and ("uuid_contract", ctrUuid)
                 .and ("id_status", 1)
                 .and ("attachmentguid IS NOT NULL")
 
             , (rs) -> {
 
-                Map<String, Object> h = db.HASH (rs);
+                Map<String, Object> asIs = db.HASH (rs);
 
-                Map<String, Object> file = attachmentguid2file.get (h.get ("attachmentguid"));
+                Map<String, Object> toBe = attachmentguid2file.get (asIs.get ("attachmentguid"));
                 
-                final UUID uuid = (UUID) h.get ("uuid");
+                final UUID uuid = (UUID) asIs.get ("uuid");
                 
-                if (file == null) {
+                if (toBe == null) {
                     uuidsToDelete.add (uuid);
                 }
                 else {
-                    file.putAll (h);
-                    download (uuid);
+                    
+                    Object hashAsIs = asIs.get (ATTACHMENTHASH);
+                    Object hashToBe = toBe.get (ATTACHMENTHASH);
+                    
+                    if (!DB.eq (hashAsIs, hashToBe)) {
+                        logger.info ("Scheduling download for " + uuid + ": " + hashToBe + " <> " + hashAsIs);
+                        uuidsToDownload.add (uuid);
+                    }
+                    
+                    toBe.putAll (asIs);
+                    
                 }
 
             }
@@ -112,6 +121,7 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
         );
         
     }    
+    private static final String ATTACHMENTHASH = "attachmenthash";
 
     private void download (final UUID uuid) {
         UUIDPublisher.publish (outExportHouseMgmtContractFilesQueue, uuid);
@@ -177,13 +187,16 @@ logger.info ("attachmentguid2file = " + attachmentguid2file);
                         db.upsert (ContractFile.class, attachmentguid2file.entrySet ().stream ().map ((t) -> t.getValue ()), "attachmentguid");
 
                         List<UUID> uuidsToDelete = new ArrayList<> ();
+                        List<UUID> uuidsToDownload = new ArrayList<> ();
 
-                        refecthContractFiles (db, ctrUuid, attachmentguid2file, uuidsToDelete);
-                        
+                        refecthContractFiles (db, ctrUuid, attachmentguid2file, uuidsToDelete, uuidsToDownload);
+
                         if (!uuidsToDelete.isEmpty ()) db.update (ContractFile.class, uuidsToDelete.stream ().map (id -> HASH (
                             "uuid",      id,
                             "id_status", 2
                         )).collect (Collectors.toList ()));
+                        
+                        uuidsToDownload.forEach (this::download);
                         
 logger.info ("attachmentguid2file = " + attachmentguid2file);
 
