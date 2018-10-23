@@ -14,9 +14,11 @@ import ru.eludia.products.mosgis.db.model.tables.ContractLog;
 import ru.eludia.products.mosgis.rest.api.ContractObjectsLocal;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.ContractObjectLog;
+import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState;
+import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -36,10 +38,11 @@ public class ContractObjectsImpl extends BaseCRUD<ContractObject> implements Con
         final Model m = db.getModel ();
         
         final JsonObject item = db.getJsonObject (m
-            .get   (getTable (), id,          "AS root", "*"    )
-            .toOne (Contract.class,           "AS ctr",  "*"    ).on ()
-            .toOne (VocOrganization.class,    "AS org",  "label").on ("ctr.uuid_org")
-            .toOne (VocBuildingAddress.class, "AS fias", "label").on ("root.fiashouseguid=fias.houseguid")
+            .get   (getTable (), id,          "AS root",  "*"    )
+            .toOne (Contract.class,           "AS ctr",   "*"    ).on ()
+            .toOne (VocOrganization.class,    "AS org",   "label").on ("ctr.uuid_org")
+            .toOne (VocBuildingAddress.class, "AS fias",  "label").on ("root.fiashouseguid=fias.houseguid")
+            .toOne (House.class,              "AS house", "uuid" ).on ("root.fiashouseguid=house.uuid")
         );
 
         job.add ("item", item);
@@ -72,6 +75,7 @@ public class ContractObjectsImpl extends BaseCRUD<ContractObject> implements Con
         Select select = db.getModel ()
             .select     (getTable (),              "AS root", "*", "uuid AS id")
             .toOne      (VocBuildingAddress.class, "AS fias",      "label"                                       ).on ("root.fiashouseguid=fias.houseguid")
+            .toOne      (House.class,              "AS house",     "uuid"                                        ).on ("root.fiashouseguid=house.uuid")
             .toMaybeOne (ContractFile.class,       "AS agreement", "agreementnumber AS no", "agreementdate AS dt").on ()
             .toMaybeOne (ContractObjectLog.class,  "AS log",       "ts"                                          ).on ()
             .where      ("is_deleted", 0)
