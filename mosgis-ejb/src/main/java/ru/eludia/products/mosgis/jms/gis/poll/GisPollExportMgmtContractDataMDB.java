@@ -12,6 +12,7 @@ import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Get;
+import ru.eludia.products.mosgis.db.model.tables.AdditionalService;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractFile;
 import ru.eludia.products.mosgis.db.model.tables.ContractLog;
@@ -71,7 +72,7 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
             .toOne (ContractLog.class,     "AS log", "uuid", "id_ctr_status", "action", "uuid_user").on ("log.uuid_out_soap=root.uuid")
-            .toOne (Contract.class,        "AS ctr", "uuid", "contractguid", "contractversionguid").on ()
+            .toOne (Contract.class,        "AS ctr", "uuid", "contractguid", "contractversionguid", "uuid_org").on ()
             .toOne (VocOrganization.class, "AS org", "orgppaguid"           ).on ("ctr.uuid_org")
         ;
         
@@ -88,6 +89,7 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
         
         UUID orgPPAGuid          = (UUID) r.get ("org.orgppaguid");
         UUID ctrUuid             = (UUID) r.get ("ctr.uuid");
+        UUID orgUuid             = (UUID) r.get ("ctr.uuid_org");
         UUID contractversionguid = (UUID) r.get ("ctr.contractversionguid");
         String scontractversionguid = contractversionguid.toString ();
                 
@@ -108,7 +110,7 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
 
                 db.begin ();
                 
-                    updateContract  (db, ctrUuid, contract, isAnonymous);
+                    updateContract  (db, orgUuid, ctrUuid, contract, isAnonymous);
 
                 db.commit ();
 
@@ -126,9 +128,12 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
 
     }        
 
-    private void updateContract (DB db, UUID ctrUuid, ExportCAChResultType.Contract contract, boolean isAnonymous) throws SQLException {
+    private void updateContract (DB db, UUID orgUuid, UUID ctrUuid, ExportCAChResultType.Contract contract, boolean isAnonymous) throws SQLException {
         
         Model m = db.getModel ();
+        
+        AdditionalService.Sync adds = ((AdditionalService) m.get (AdditionalService.class)).new Sync (db, orgUuid);
+        adds.reload ();
                 
         ContractFile.Sync contractFiles = ((ContractFile) m.get (ContractFile.class)).new Sync (db, ctrUuid, this);
         contractFiles.addFrom (contract);
@@ -140,11 +145,12 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
         
         final ContractObjectService srvTable = (ContractObjectService) m.get (ContractObjectService.class);
         ContractObjectService.SyncH contractObjectServicesH = (srvTable).new SyncH (db, ctrUuid, contractFiles);
-        ContractObjectService.SyncA contractObjectServicesA = (srvTable).new SyncA (db, ctrUuid, contractFiles);
+        ContractObjectService.SyncA contractObjectServicesA = (srvTable).new SyncA (db, ctrUuid, contractFiles, adds);
         
         contract.getContractObject ().forEach ((co) -> {
-            contractObjectServicesH.addAll (co.getHouseService ());
-            contractObjectServicesA.addAll (co.getAddService ());
+            Map<String, Object> parent = HASH ("uuid_contract_object", contractObjects.getPk (co));
+            contractObjectServicesH.addAll (co.getHouseService (), parent);
+            contractObjectServicesA.addAll (co.getAddService (), parent);
         });
         
         contractObjectServicesH.sync ();

@@ -1,5 +1,9 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Map;
+import java.util.UUID;
+import ru.eludia.base.DB;
+import ru.eludia.base.db.util.SyncMap;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
@@ -10,6 +14,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState.i.PENDING;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
 
 public class AdditionalService extends Table {
 
@@ -48,6 +53,36 @@ public class AdditionalService extends Table {
 
         + "END;");        
 
+    }
+    
+    private final static String [] keyFields = {"uniquenumber"};
+
+    public class Sync extends SyncMap<NsiRef> {
+        
+        UUID uuid_org;
+
+        public Sync (DB db, UUID uuid_org) {
+            super (db);
+            this.uuid_org = uuid_org;
+            commonPart.put ("uuid_org", uuid_org);
+            commonPart.put ("is_deleted", 0);
+        }                
+
+        @Override
+        public String[] getKeyFields () {
+            return keyFields;
+        }
+
+        @Override
+        public void setFields (Map<String, Object> h, NsiRef o) {
+            h.put ("uniquenumber", o.getCode ());
+        }
+
+        @Override
+        public Table getTable () {
+            return AdditionalService.this;
+        }
+        
     }
 
 }

@@ -269,25 +269,8 @@ logger.info ("r=" + r);
         public void setFields (Map<String, Object> h, ExportCAChResultType.Contract.ContractObject co) {
             h.put ("fiashouseguid", co.getFIASHouseGuid ());
             h.put ("startdate", co.getStartDate ());
-            h.put ("enddate", co.getEndDate ());
-            
-            AttachmentType agreement = co.getBaseMService ().getAgreement ();
-            
-            if (agreement != null) {
-                
-                final String au = agreement.getAttachment ().getAttachmentGUID ();
-                
-                final Map<String, Object> ar = contractFiles.get (au);
-                
-                if (ar == null) {
-                    logger.warning ("contract attachemt not found by AttachmentGUID: " + au);
-                }
-                else {
-                    h.put ("uuid_contract_agreement", ar.get ("uuid"));
-                }
-                
-            }
-            
+            h.put ("enddate", co.getEndDate ());            
+            h.put ("uuid_contract_agreement", contractFiles.getPk (co.getBaseMService ().getAgreement ()));            
         }
 
         @Override
