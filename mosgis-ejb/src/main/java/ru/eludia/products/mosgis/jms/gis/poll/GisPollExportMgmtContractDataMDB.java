@@ -105,7 +105,7 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
                 else {
                     
                     Object hashAsIs = asIs.get (ATTACHMENTHASH);
-                    Object hashToBe = toBe.get (ATTACHMENTHASH);
+                    Object hashToBe = toBe.get (ATTACHMENTHASH).toString ().toUpperCase ();
                     
                     if (!DB.eq (hashAsIs, hashToBe)) {
                         logger.info ("Scheduling download for " + uuid + ": " + hashToBe + " <> " + hashAsIs);
@@ -136,20 +136,7 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
         UUID ctrUuid             = (UUID) r.get ("ctr.uuid");
         UUID contractversionguid = (UUID) r.get ("ctr.contractversionguid");
         String scontractversionguid = contractversionguid.toString ();
-        
-        Model m = db.getModel ();
-        
-        Map<Object, Map<String, Object>> uuid2contractObject = new HashMap <> ();
-        Map<String, Map<String, Object>> fias2contractObject = new HashMap <> ();
-        
-        List<Map<String, Object>> objectRecords = new ArrayList ();
-        List<Map<String, Object>> serviceRecords = new ArrayList ();
-        
-        fetchObjects  (db, m, ctrUuid, uuid2contractObject, fias2contractObject);                    
-        fetchServices (db, m, ctrUuid, uuid2contractObject);
-        
-        logger.info ("uuid2contractObject = " + uuid2contractObject);
-        
+                
         try {
             
             GetStateResult state = getState (orgPPAGuid, r);        
@@ -160,69 +147,14 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
 
                 if (isWrong (contract, scontractversionguid)) continue;                                       
 
-                for (ExportCAChResultType.Contract.ContractObject co: contract.getContractObject ()) {
-                    addObjects (fias2contractObject, co, objectRecords, serviceRecords);
-                    addServices (fias2contractObject, co, serviceRecords);
-                }
-                
                 db.update (Contract.class, HASH (
                     "uuid", ctrUuid,
                     "contractversionguid", null
                 ));                
 
                 db.begin ();
-
-                    db.update (ContractObjectService.class, serviceRecords);
-
-                    db.update (ContractObject.class, objectRecords);
-                    
-                    if (!isAnonymous) { 
-                        
-                        Map<UUID, Map<String, Object>> attachmentguid2file = ContractFile.toHashes (contract, HASH (
-                            "uuid_contract", ctrUuid
-                        ));
-                        
-logger.info ("attachmentguid2file = " + attachmentguid2file);
-
-                        db.upsert (ContractFile.class, attachmentguid2file.entrySet ().stream ().map ((t) -> t.getValue ()), "attachmentguid");
-
-                        List<UUID> uuidsToDelete = new ArrayList<> ();
-                        List<UUID> uuidsToDownload = new ArrayList<> ();
-
-                        refecthContractFiles (db, ctrUuid, attachmentguid2file, uuidsToDelete, uuidsToDownload);
-
-                        if (!uuidsToDelete.isEmpty ()) db.update (ContractFile.class, uuidsToDelete.stream ().map (id -> HASH (
-                            "uuid",      id,
-                            "id_status", 2
-                        )).collect (Collectors.toList ()));
-                        
-                        uuidsToDownload.forEach (this::download);
-                        
-logger.info ("attachmentguid2file = " + attachmentguid2file);
-
-                    }
-
-                    VocGisStatus.i status = VocGisStatus.i.forName (contract.getContractStatus ().value ());
-
-                    final Map<String, Object> h = HASH (
-                        "id_ctr_status",       status.getId (),
-                        "id_ctr_status_gis",   status.getId (),
-                        "contractversionguid", contract.getContractVersionGUID ()
-                    );
-                    
-                    Contract.setDateFields (h, contract);                    
-                    if (!isAnonymous) Contract.setExtraFields (h, contract);                                                
-
-                    h.put ("uuid", ctrUuid);
-                    db.update (Contract.class, h);
-
-                    h.put ("uuid", uuid);
-                    db.update (ContractLog.class, h);
-                    
-                    db.update (OutSoap.class, HASH (
-                        "uuid", uuid,
-                        "id_status", DONE.getId ()
-                    ));                    
+                
+                    updateContract  (db, ctrUuid, contract, isAnonymous);
 
                 db.commit ();
 
@@ -239,6 +171,74 @@ logger.info ("attachmentguid2file = " + attachmentguid2file);
         }        
 
     }        
+
+    private void updateContract (DB db, UUID ctrUuid, ExportCAChResultType.Contract contract, boolean isAnonymous) throws SQLException {
+        
+        Map<Object, Map<String, Object>> uuid2contractObject = new HashMap <> ();
+        Map<String, Map<String, Object>> fias2contractObject = new HashMap <> ();
+        
+        fetchObjects  (db, ctrUuid, uuid2contractObject, fias2contractObject);
+        fetchServices (db, ctrUuid, uuid2contractObject);
+        
+        logger.info ("uuid2contractObject = " + uuid2contractObject);
+        
+        List<Map<String, Object>> objectRecords = new ArrayList ();
+        for (ExportCAChResultType.Contract.ContractObject co: contract.getContractObject ()) addObject   (fias2contractObject, co, objectRecords);
+        db.update (ContractObject.class, objectRecords);
+        
+        List<Map<String, Object>> serviceRecords = new ArrayList ();
+        for (ExportCAChResultType.Contract.ContractObject co: contract.getContractObject ()) addServices (fias2contractObject, co, serviceRecords);
+        db.update (ContractObjectService.class, serviceRecords);
+        
+        if (!isAnonymous) {
+            
+            Map<UUID, Map<String, Object>> attachmentguid2file = ContractFile.toHashes (contract, HASH (
+                "uuid_contract", ctrUuid
+            ));
+            
+            logger.info ("attachmentguid2file = " + attachmentguid2file);
+            
+            db.upsert (ContractFile.class, attachmentguid2file.entrySet ().stream ().map ((t) -> t.getValue ()), "attachmentguid");
+            
+            List<UUID> uuidsToDelete = new ArrayList<> ();
+            List<UUID> uuidsToDownload = new ArrayList<> ();
+            
+            refecthContractFiles (db, ctrUuid, attachmentguid2file, uuidsToDelete, uuidsToDownload);
+            
+            if (!uuidsToDelete.isEmpty ()) db.update (ContractFile.class, uuidsToDelete.stream ().map (id -> HASH (
+                "uuid",      id,
+                "id_status", 2
+            )).collect (Collectors.toList ()));
+            
+            uuidsToDownload.forEach (this::download);
+            
+            logger.info ("attachmentguid2file = " + attachmentguid2file);
+            
+        }
+        
+        VocGisStatus.i status = VocGisStatus.i.forName (contract.getContractStatus ().value ());
+        
+        final Map<String, Object> h = HASH (
+            "id_ctr_status",       status.getId (),
+            "id_ctr_status_gis",   status.getId (),
+            "contractversionguid", contract.getContractVersionGUID ()
+        );
+        
+        Contract.setDateFields (h, contract);
+        if (!isAnonymous) Contract.setExtraFields (h, contract);
+        
+        h.put ("uuid", ctrUuid);
+        db.update (Contract.class, h);
+        
+        h.put ("uuid", getUuid ());
+        db.update (ContractLog.class, h);
+        
+        db.update (OutSoap.class, HASH (
+            "uuid", getUuid (),
+            "id_status", DONE.getId ()
+        ));
+        
+    }
 
     private boolean isWrong (ExportCAChResultType.Contract contract, String scontractversionguid) {
         
@@ -263,10 +263,10 @@ logger.info ("attachmentguid2file = " + attachmentguid2file);
         
     }
 
-    private void addObjects (Map<String, Map<String, Object>> fias2contractObject, ExportCAChResultType.Contract.ContractObject co, List<Map<String, Object>> objectRecords, List<Map<String, Object>> serviceRecords) {
+    private void addObject (Map<String, Map<String, Object>> fias2contractObject, ExportCAChResultType.Contract.ContractObject co, List<Map<String, Object>> objectRecords) {
         
         final Map<String, Object> h = HASH (
-            "uuid", fias2contractObject.get (co.getFIASHouseGuid ()).get ("uuid").toString ()
+            "uuid", ContractObject.getByKey (fias2contractObject, co).get ("uuid").toString ()
         );
         
         ContractObject.setDateFields (h, co);
@@ -277,8 +277,8 @@ logger.info ("attachmentguid2file = " + attachmentguid2file);
     
     private void addServices (Map<String, Map<String, Object>> fias2contractObject, ExportCAChResultType.Contract.ContractObject co, List<Map<String, Object>> serviceRecords) {
         
-        Map<String, Object> contract_object = fias2contractObject.get (co.getFIASHouseGuid ());
-                        
+        Map<String, Object> contract_object = ContractObject.getByKey (fias2contractObject, co);
+                                        
         for (ExportCAChResultType.Contract.ContractObject.HouseService hs: co.getHouseService ()) {
             
             final Map<String, Object> h = HASH (
@@ -305,9 +305,9 @@ logger.info ("attachmentguid2file = " + attachmentguid2file);
 
     }
 
-    private void fetchServices (DB db, Model m, UUID ctrUuid, Map<Object, Map<String, Object>> uuid2contractObject) throws SQLException {
+    private void fetchServices (DB db, UUID ctrUuid, Map<Object, Map<String, Object>> uuid2contractObject) throws SQLException {
         
-        db.forEach (m
+        db.forEach (db.getModel ()
                 
         .select (ContractObjectService.class, "uuid", "uuid_contract_object", "code_vc_nsi_3", "is_additional")
         .where ("uuid_contract", ctrUuid)
@@ -347,9 +347,9 @@ logger.info ("attachmentguid2file = " + attachmentguid2file);
         
     }
 
-    private void fetchObjects (DB db, Model m, UUID ctrUuid, Map<Object, Map<String, Object>> uuid2contractObject, Map<String, Map<String, Object>> fias2contractObject) throws SQLException {
+    private void fetchObjects (DB db, UUID ctrUuid, Map<Object, Map<String, Object>> uuid2contractObject, Map<String, Map<String, Object>> fias2contractObject) throws SQLException {
         
-        db.forEach (m
+        db.forEach (db.getModel ()
                 
             .select (ContractObject.class, "*")
             .where ("uuid_contract", ctrUuid),
@@ -362,7 +362,7 @@ logger.info ("attachmentguid2file = " + attachmentguid2file);
                 i.put ("un2uuid", HASH ());
 
                 uuid2contractObject.put (i.get ("uuid").toString (), i);
-                fias2contractObject.put (i.get ("fiashouseguid").toString (), i);
+                fias2contractObject.put (i.get ("fias_start").toString (), i);
 
             }
                 

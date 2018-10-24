@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
+import javax.xml.datatype.XMLGregorianCalendar;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
@@ -45,7 +46,7 @@ public class ContractObject extends Table {
 
         col    ("contractobjectversionguid",     Type.UUID,       null,          "UUID последней версии данного объекта в ГИС ЖКХ");
         
-        col    ("fias_start",              Type.STRING,          new Virt ("CONCAT(RAWTOHEX(\"FIASHOUSEGUID\"),TO_CHAR(\"STARTDATE\",'YYYY-MM-DD'))"),  "ключ для различения объектов внутри договора");
+        col    ("fias_start",              Type.STRING,          new Virt ("CONCAT(LOWER(RAWTOHEX(\"FIASHOUSEGUID\")),TO_CHAR(\"STARTDATE\",'YYYY-MM-DD'))"),  "ключ для различения объектов внутри договора");
         
         fk     ("id_log",                  ContractObjectLog.class,  null,      "Последнее событие редактирования");
  
@@ -235,5 +236,39 @@ logger.info ("r=" + r);
         h.put ("startdate", co.getStartDate ());
         h.put ("enddate", co.getEndDate ());
     }
+    
+    private static void append_00 (StringBuilder sb, int i) {
+        sb.append ('-');
+        if (i < 10) sb.append ('0');
+        sb.append (i);
+    }
+    
+    private static String getKey (ExportCAChResultType.Contract.ContractObject co) {
+               
+        StringBuilder sb = new StringBuilder ();
+        
+        String fiasHouseGuid = co.getFIASHouseGuid ();
+        
+        for (int i = 0; i < fiasHouseGuid.length (); i ++) {
+            
+            char c = fiasHouseGuid.charAt (i);
 
+            if (c != '-') sb.append (c);
+
+        }
+        
+        XMLGregorianCalendar startDate = co.getStartDate ();
+        
+        sb.append (startDate.getYear ());
+        append_00 (sb, startDate.getMonth ());
+        append_00 (sb, startDate.getDay ());
+                
+        return sb.toString ();
+        
+    }
+    
+    public final static Map<String, Object> getByKey (Map<String, Map<String, Object>> fias2contractObject, ExportCAChResultType.Contract.ContractObject co) {
+        return fias2contractObject.get (getKey (co));
+    }
+            
 }
