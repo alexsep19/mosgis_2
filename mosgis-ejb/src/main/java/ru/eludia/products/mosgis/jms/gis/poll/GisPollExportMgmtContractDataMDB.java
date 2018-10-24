@@ -183,8 +183,8 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
         logger.info ("uuid2contractObject = " + uuid2contractObject);
         
         List<Map<String, Object>> objectRecords = new ArrayList ();
-        for (ExportCAChResultType.Contract.ContractObject co: contract.getContractObject ()) addObject   (fias2contractObject, co, objectRecords);
-        db.update (ContractObject.class, objectRecords);
+        for (ExportCAChResultType.Contract.ContractObject co: contract.getContractObject ()) addObject (ctrUuid, co, objectRecords);
+        db.upsert (ContractObject.class, objectRecords, "uuid_contract", "fiashouseguid", "startdate");
         
         List<Map<String, Object>> serviceRecords = new ArrayList ();
         for (ExportCAChResultType.Contract.ContractObject co: contract.getContractObject ()) addServices (fias2contractObject, co, serviceRecords);
@@ -263,12 +263,11 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
         
     }
 
-    private void addObject (Map<String, Map<String, Object>> fias2contractObject, ExportCAChResultType.Contract.ContractObject co, List<Map<String, Object>> objectRecords) {
+    private void addObject (UUID ctrUuid, ExportCAChResultType.Contract.ContractObject co, List<Map<String, Object>> objectRecords) {
         
-        final Map<String, Object> h = HASH (
-            "uuid", ContractObject.getByKey (fias2contractObject, co).get ("uuid").toString ()
-        );
+        final Map<String, Object> h = HASH ();
         
+        ContractObject.setKeyFields  (h, ctrUuid, co);
         ContractObject.setDateFields (h, co);
                         
         objectRecords.add (h);

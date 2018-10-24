@@ -232,6 +232,12 @@ logger.info ("r=" + r);
         
     }    
         
+    public static void setKeyFields (Map<String, Object> h, UUID ctrUuid, ExportCAChResultType.Contract.ContractObject co) {        
+        h.put ("uuid_contract", ctrUuid);
+        h.put ("fiashouseguid", co.getFIASHouseGuid ());
+        h.put ("startdate", co.getStartDate ());
+    }
+    
     public static void setDateFields (Map<String, Object> h, ExportCAChResultType.Contract.ContractObject co) {        
         h.put ("startdate", co.getStartDate ());
         h.put ("enddate", co.getEndDate ());
