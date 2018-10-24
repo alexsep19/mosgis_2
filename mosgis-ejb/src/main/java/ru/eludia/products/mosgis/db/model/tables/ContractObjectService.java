@@ -1,15 +1,22 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import ru.eludia.base.DB;
+import ru.eludia.base.Model;
+import ru.eludia.base.db.util.SyncMap;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
 import ru.gosuslugi.dom.schema.integration.house_management.ContractServiceType;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
 
 public class ContractObjectService extends Table {
@@ -166,11 +173,133 @@ public class ContractObjectService extends Table {
         
         co.getHouseService ().add (hs);
 
+    }    
+        
+    abstract class Sync<T> extends SyncMap<T> {
+        
+        UUID uuid_contract;
+        ContractFile.Sync contractFiles;
+        
+        public Sync (DB db, UUID uuid_contract, ContractFile.Sync contractFiles) {
+            super (db);
+            this.uuid_contract = uuid_contract;
+            this.contractFiles = contractFiles;
+            commonPart.put ("uuid_contract", uuid_contract);
+            commonPart.put ("is_deleted", 0);
+        }                
+        
+        void setFile (Map<String, Object> h, AttachmentType agreement) {
+            
+            if (agreement == null) return;
+                
+            final String au = agreement.getAttachment ().getAttachmentGUID ();
+
+            final Map<String, Object> ar = contractFiles.get (au);
+
+            if (ar == null) {
+                logger.warning ("contract attachemt not found by AttachmentGUID: " + au);
+            }
+            else {
+                h.put ("uuid_contract_agreement", ar.get ("uuid"));
+            }
+                
+        }
+        
+        @Override
+        public void processDeleted (List<Map<String, Object>> deleted) throws SQLException {
+            
+            deleted.forEach ((h) -> {
+                Object u = h.get ("uuid");
+                h.clear ();
+                h.put ("uuid", u);
+                h.put ("is_deleted", 1);
+            });
+            
+            db.update (getTable (), deleted);
+
+        }
+        
+        @Override
+        public Table getTable () {
+            return ContractObjectService.this;
+        }
+        
+        void setDateFields (Map<String, Object> h, ContractServiceType cs) {
+            h.put ("startdate", cs.getStartDate ());
+            h.put ("enddate", cs.getEndDate ());
+        }
+        
+    }    
+
+    private final static String [] keyFieldsH = {"code_vc_nsi_3"};
+    
+    public class SyncH extends Sync<ExportCAChResultType.Contract.ContractObject.HouseService> {
+        
+        UUID uuid_contract;
+        ContractFile.Sync contractFiles;
+
+        public SyncH (DB db, UUID uuid_contract, ContractFile.Sync contractFiles) {
+            super (db, uuid_contract, contractFiles);
+            commonPart.put ("is_additional", 0);            
+        }                
+
+        @Override
+        public String[] getKeyFields () {
+            return keyFieldsH;
+        }
+
+        @Override
+        public void setFields (Map<String, Object> h, ExportCAChResultType.Contract.ContractObject.HouseService co) {
+            setDateFields (h, co);
+            h.put ("code_vc_nsi_3", co.getServiceType ().getCode ());
+            setFile (h, co.getBaseService ().getAgreement ());            
+        }
+        
     }
     
-    public static void setDateFields (Map<String, Object> h, ContractServiceType cs) {
-        h.put ("startdate", cs.getStartDate ());
-        h.put ("enddate", cs.getEndDate ());
-    }
+    private final static String [] keyFieldsA = {"uuid_add_service"};
+    
+    public class SyncA extends Sync<ExportCAChResultType.Contract.ContractObject.AddService> {
+        
+        UUID uuid_contract;
+        ContractFile.Sync contractFiles;
+        Map<String, String> code2uuid = new HashMap<> ();
+
+        public SyncA (DB db, UUID uuid_contract, ContractFile.Sync contractFiles) throws SQLException {
+            
+            super (db, uuid_contract, contractFiles);
+            
+            commonPart.put ("is_additional", 1);                                    
+            
+            Model m = db.getModel ();
+            
+            db.forEach (m          
+                .select (AdditionalService.class, "uniquenumber AS code", "uuid")
+                .and ("uuid_org IN", m.select (Contract.class, "uuid_org").where ("uuid", uuid_contract)),
+                    
+                (rs) -> {
+                    code2uuid.put (
+                        rs.getString ("code"), 
+                        DB.to.UUID (rs.getBytes ("uuid")).toString ()
+                    );
+                }
+            
+            );
+            
+        }                
+
+        @Override
+        public String[] getKeyFields () {
+            return keyFieldsA;
+        }
+
+        @Override
+        public void setFields (Map<String, Object> h, ExportCAChResultType.Contract.ContractObject.AddService co) {
+            setDateFields (h, co);
+            h.put ("uuid_add_service", code2uuid.get (co.getServiceType ().getCode ()));
+            setFile (h, co.getBaseService ().getAgreement ());
+        }
+
+    }    
 
 }

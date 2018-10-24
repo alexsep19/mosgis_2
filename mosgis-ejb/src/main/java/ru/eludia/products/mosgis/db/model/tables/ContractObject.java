@@ -1,11 +1,12 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
-import javax.xml.datatype.XMLGregorianCalendar;
 import ru.eludia.base.DB;
+import ru.eludia.base.db.util.SyncMap;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
@@ -15,6 +16,7 @@ import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import static ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType.i.OWNERS;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
 
@@ -243,38 +245,70 @@ logger.info ("r=" + r);
         h.put ("enddate", co.getEndDate ());
     }
     
-    private static void append_00 (StringBuilder sb, int i) {
-        sb.append ('-');
-        if (i < 10) sb.append ('0');
-        sb.append (i);
-    }
-    
-    private static String getKey (ExportCAChResultType.Contract.ContractObject co) {
-               
-        StringBuilder sb = new StringBuilder ();
-        
-        String fiasHouseGuid = co.getFIASHouseGuid ();
-        
-        for (int i = 0; i < fiasHouseGuid.length (); i ++) {
-            
-            char c = fiasHouseGuid.charAt (i);
+    private final static String [] keyFields = {"fiashouseguid", "startdate"};
 
-            if (c != '-') sb.append (c);
+    public class Sync extends SyncMap<ExportCAChResultType.Contract.ContractObject> {
+        
+        UUID uuid_contract;
+        ContractFile.Sync contractFiles;
+
+        public Sync (DB db, UUID uuid_contract, ContractFile.Sync contractFiles) {
+            super (db);
+            this.uuid_contract = uuid_contract;
+            this.contractFiles = contractFiles;
+            commonPart.put ("uuid_contract", uuid_contract);
+            commonPart.put ("is_deleted", 0);
+        }                
+
+        @Override
+        public String[] getKeyFields () {
+            return keyFields;
+        }
+
+        @Override
+        public void setFields (Map<String, Object> h, ExportCAChResultType.Contract.ContractObject co) {
+            h.put ("fiashouseguid", co.getFIASHouseGuid ());
+            h.put ("startdate", co.getStartDate ());
+            h.put ("enddate", co.getEndDate ());
+            
+            AttachmentType agreement = co.getBaseMService ().getAgreement ();
+            
+            if (agreement != null) {
+                
+                final String au = agreement.getAttachment ().getAttachmentGUID ();
+                
+                final Map<String, Object> ar = contractFiles.get (au);
+                
+                if (ar == null) {
+                    logger.warning ("contract attachemt not found by AttachmentGUID: " + au);
+                }
+                else {
+                    h.put ("uuid_contract_agreement", ar.get ("uuid"));
+                }
+                
+            }
+            
+        }
+
+        @Override
+        public Table getTable () {
+            return ContractObject.this;
+        }
+
+        @Override
+        public void processDeleted (List<Map<String, Object>> deleted) throws SQLException {
+            
+            deleted.forEach ((h) -> {
+                Object u = h.get ("uuid");
+                h.clear ();
+                h.put ("uuid", u);
+                h.put ("is_deleted", 1);
+            });
+            
+            db.update (getTable (), deleted);
 
         }
         
-        XMLGregorianCalendar startDate = co.getStartDate ();
-        
-        sb.append (startDate.getYear ());
-        append_00 (sb, startDate.getMonth ());
-        append_00 (sb, startDate.getDay ());
-                
-        return sb.toString ();
-        
-    }
-    
-    public final static Map<String, Object> getByKey (Map<String, Map<String, Object>> fias2contractObject, ExportCAChResultType.Contract.ContractObject co) {
-        return fias2contractObject.get (getKey (co));
     }
             
 }
