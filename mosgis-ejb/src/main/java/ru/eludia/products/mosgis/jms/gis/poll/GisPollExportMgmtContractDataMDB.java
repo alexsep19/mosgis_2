@@ -91,6 +91,12 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
         UUID ctrUuid             = (UUID) r.get ("ctr.uuid");
         UUID orgUuid             = (UUID) r.get ("ctr.uuid_org");
         UUID contractversionguid = (UUID) r.get ("ctr.contractversionguid");
+        
+        if (contractversionguid == null) {
+            logger.warning ("Empty contractversionguid, bailing out");
+            return;
+        }
+        
         String scontractversionguid = contractversionguid.toString ();
                 
         try {
