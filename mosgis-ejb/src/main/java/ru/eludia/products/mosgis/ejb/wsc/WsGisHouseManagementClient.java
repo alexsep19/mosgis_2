@@ -287,6 +287,7 @@ public class WsGisHouseManagementClient {
         r.put ("date", r.get ("date_"));
         final ImportCharterRequest.EditCharter ec = (ImportCharterRequest.EditCharter) DB.to.javaBean (ImportCharterRequest.EditCharter.class, r);
         Charter.fillCharter (ec, r);
+        ec.setCharterVersionGUID (r.get ("ctr.charterversionguid").toString ());
         
         for (Map<String, Object> o:    (Collection<Map<String, Object>>) r.get ("objects")) CharterObject.add (ec, o);        
 
