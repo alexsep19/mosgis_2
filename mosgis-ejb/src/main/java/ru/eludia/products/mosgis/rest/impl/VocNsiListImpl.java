@@ -107,7 +107,7 @@ public class VocNsiListImpl implements VocNsiListLocal {
 
             if (item.getInt ("out_soap.id_status", 0) < 3 || item.getString ("cols", "").isEmpty ()) return jb.build ();
 
-            NsiTable table = NsiTable.getNsiTable(registryNumber);
+            NsiTable table = getNsiTable (registryNumber, db);
 
             NsiOkeiRefField okeiField = table.getOkeiField ();
 
@@ -136,7 +136,7 @@ public class VocNsiListImpl implements VocNsiListLocal {
                 NsiTable t;
 
                 try {
-                    t = NsiTable.getNsiTable(ref.getRegistryNumber ());
+                    t = getNsiTable (ref.getRegistryNumber (), db);
                 }
                 catch (Exception ex) {
                     continue;
@@ -186,6 +186,17 @@ public class VocNsiListImpl implements VocNsiListLocal {
 
     }
 
+    private NsiTable getNsiTable (int registryNumber, final DB db) throws SQLException {
+
+        try {
+            return NsiTable.getNsiTable (registryNumber);
+        }
+        catch (ClassCastException ex) { // VocNsiPassportFieldsSrcTable
+            return new NsiTable (db, registryNumber);
+        }
+
+    }
+
     private static final String [] absurd = {};
 
     @Override
@@ -204,7 +215,7 @@ public class VocNsiListImpl implements VocNsiListLocal {
 
             if (item.getInt ("out_soap.id_status", 0) < 3 || item.getString ("cols", "").isEmpty ()) return jb.build ();
 
-            NsiTable table = NsiTable.getNsiTable(registryNumber);
+            NsiTable table = getNsiTable (registryNumber, db);
 
             db.adjustTable (table);
 
@@ -304,7 +315,7 @@ public class VocNsiListImpl implements VocNsiListLocal {
         Select [] sels = new Select [len];
 
         try (DB db = ModelHolder.getModel ().getDb ()) {
-            for (int i = 0; i < len; i ++) sels [i] = NsiTable.getNsiTable (ids.getInt (i)).getVocSelect ();
+            for (int i = 0; i < len; i ++) sels [i] = getNsiTable (ids.getInt (i), db).getVocSelect ();
             db.addJsonArrays (jb, sels);
         }
         catch (SQLException ex) {
