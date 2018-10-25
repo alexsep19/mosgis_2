@@ -2,6 +2,30 @@ define ([], function () {
 
     var form_name = 'mgmt_contract_common_form'
     
+    $_DO.download_mgmt_contract_common = function (e) {    
+        
+        var box = $('body')
+
+        function label (cur, max) {return String (Math.round (100 * cur / max)) + '%'}
+
+        w2utils.lock (box, label (0, 1))
+
+        download ({
+
+            type:   'contract_docs', 
+            id:     $('body').data ('data').item.last_termination.file.uuid,
+            action: 'download',
+
+        }, {}, {
+
+            onprogress: function (cur, max) {$('.w2ui-lock-msg').html ('<br><br>' + label (cur, max))},
+
+            onload: function () {w2utils.unlock (box)},
+
+        })
+    
+    }    
+    
     $_DO.open_orgs_mgmt_contract_common = function (e) {
     
         var f = w2ui [form_name]

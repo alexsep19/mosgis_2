@@ -28,6 +28,13 @@ define ([], function () {
                 var it = data.item = d.item
                 
                 it.last_approve = d.last_approve
+                
+                var term = d.last_termination
+                if (term) {
+                    term.reason = data.vc_nsi_54 [term.code_vc_nsi_54]
+                    term.file = d.termination_file
+                    it.last_termination = term
+                }                
 
                 it._can = {}
 
