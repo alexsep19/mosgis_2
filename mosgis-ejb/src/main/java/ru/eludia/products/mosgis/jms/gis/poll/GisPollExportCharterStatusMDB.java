@@ -143,7 +143,7 @@ public class GisPollExportCharterStatusMDB extends UUIDMDB<OutSoap> {
             }
             
             final Map<String, Object> or = HASH (
-                "uuid_contract",             uuidCharter,
+                "uuid_charter",              uuidCharter,
                 "fiashouseguid",             co.getFIASHouseGuid (),
                 "isconflicted",              Boolean.TRUE.equals (co.isIsConflicted ()) ? 1 : 0,
                 "isblocked",                 Boolean.TRUE.equals (co.isIsBlocked ()) ? 1 : 0,
