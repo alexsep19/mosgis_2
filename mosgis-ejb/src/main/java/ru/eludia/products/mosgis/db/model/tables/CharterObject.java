@@ -142,6 +142,8 @@ public class CharterObject extends Table {
             
             final ImportCharterRequest.EditCharter.ContractObject.Add add = (ImportCharterRequest.EditCharter.ContractObject.Add) DB.to.javaBean (ImportCharterRequest.EditCharter.ContractObject.Add.class, r);
             
+            if (Boolean.FALSE.equals (add.isIsManagedByContract ())) add.setIsManagedByContract (null);
+        
             add.setBaseMService (CharterFile.getBaseServiceType (r));
             
             for (Map<String, Object> service: (List<Map<String, Object>>) r.get ("services")) CharterObjectService.add (add, service);
@@ -166,6 +168,8 @@ public class CharterObject extends Table {
 
                 ImportCharterRequest.EditCharter.ContractObject.Edit ed = (ImportCharterRequest.EditCharter.ContractObject.Edit) DB.to.javaBean (ImportCharterRequest.EditCharter.ContractObject.Edit.class, r);
 
+                if (Boolean.FALSE.equals (ed.isIsManagedByContract ())) ed.setIsManagedByContract (null);
+            
                 ed.setBaseMService (CharterFile.getBaseServiceType (r));
 
                 for (Map<String, Object> service: (List<Map<String, Object>>) r.get ("services")) CharterObjectService.add (ed, service);
