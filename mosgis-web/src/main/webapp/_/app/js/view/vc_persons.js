@@ -49,7 +49,7 @@ define ([], function () {
                 {field: 'surname', caption: 'Фамилия', size: 50},
                 {field: 'firstname', caption: 'Имя', size: 50},
                 {field: 'patronymic', caption: 'Отчество', size: 50},
-                {field: 'sex', caption: 'Пол', size: 10},
+                {field: 'is_female', caption: 'Пол', size: 20, voc: {0: "Мужской", 1: "Женский"}},
                 {field: 'placebirth', caption: 'Место рождения', size: 20, hidden: 1},
                 {field: 'birthdate', caption: 'Дата рождения', size: 18, render: _dt},
                 {field: 'snils', caption: 'СНИЛС', size: 20, hidden: 1},
