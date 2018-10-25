@@ -137,13 +137,7 @@ public class GisPollExportCharterMDB  extends UUIDMDB<OutSoap> {
 
             db.begin ();            
             
-                final Table t = db.getModel ().t (CharterObject.class);
-                                
-                CharterObject contractObjectTableDefinition = (CharterObject) t;
-                
-//                for (ExportStatusCAChResultType.ContractObject co: importCharter.getContractObject ()) 
-//                    
-//                    db.d0 (contractObjectTableDefinition.updateStatus ((UUID) r.get ("ctr.uuid"), co));            
+                final Table t = db.getModel ().t (CharterObject.class);                               
 
                 VocGisStatus.i state = VocGisStatus.i.forName (importCharter.getState ());                
                 if (state == null) state = VocGisStatus.i.NOT_RUNNING;
@@ -151,6 +145,21 @@ public class GisPollExportCharterMDB  extends UUIDMDB<OutSoap> {
                 final byte status = VocGisStatus.i.forName (importCharter.getCharterStatus ().value ()).getId ();
             
                 final UUID uuidCharter = (UUID) r.get ("ctr.uuid");
+                
+                for (ExportStatusCAChResultType.ContractObject co: importCharter.getContractObject ()) {
+
+                    db.update (CharterObject.class, HASH (
+
+                        "uuid_charter",              uuidCharter,
+                        "fiashouseguid",             co.getFIASHouseGuid (),
+                        "is_deleted",                0,
+
+                        "id_ctr_status_gis",         VocGisStatus.i.forName (co.getManagedObjectStatus ().value ()).getId (),
+                        "contractobjectversionguid", co.getContractObjectVersionGUID ()                  
+
+                    ), "uuid_contract", "fiashouseguid", "is_deleted");
+
+                }                
 
                 db.update (Charter.class, HASH (
                     "uuid",                uuidCharter,
