@@ -75,6 +75,17 @@
 									<span data-text=gis_state_label/>
 								</td>
 							</tr>
+
+							<tr data-on=last_termination>
+								<td>Прекратил действие:</td>
+								<td data-text=last_termination.terminate data-date/>
+							</tr>
+
+							<tr data-on=last_termination>
+								<td>Причина:</td>
+								<td data-text=last_termination.reason/>
+							</tr>
+
 							<tr>
 								<th colspan=2 data-text=err_text></th>
 							</tr>
@@ -166,7 +177,9 @@
 				<button class=w2ui-btn name=alter   data-on=__read_only>Изменить</button>
 <!--
 				<button class=w2ui-btn name=rollover   data-on=__read_only>Продлить</button>
-				<button class=w2ui-btn name=terminate  data-on=__read_only>Расторгнуть</button>
+-->
+				<button class=w2ui-btn name=terminate  data-on=__read_only>Прекратить</button>
+<!--
 				<button class=w2ui-btn name=annul  data-on=__read_only>Аннулировать</button>
 				<button class=w2ui-btn name=delete  data-on=__read_only>Удалить</button>
 -->

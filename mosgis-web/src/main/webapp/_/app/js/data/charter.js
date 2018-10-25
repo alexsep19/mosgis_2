@@ -26,6 +26,8 @@ define ([], function () {
             query ({type: 'charters'}, {}, function (d) {
 
                 var it = data.item = d.item
+                
+                it.last_termination = d.last_termination
 
                 it._can = {}
 
@@ -48,6 +50,13 @@ define ([], function () {
 
                     }
 
+                    switch (it.id_ctr_status) {
+                        case 40:
+                        case 94:
+                            it._can.terminate = 1
+                            break;
+                    }
+
                     if (!it.contractobjectversionguid) it._can.delete = 1
 
                     it._can.update = it._can.cancel = it._can.edit
@@ -55,7 +64,7 @@ define ([], function () {
                 }
 
                 $('body').data ('data', data)                
-
+                
                 done (data) 
             
             })

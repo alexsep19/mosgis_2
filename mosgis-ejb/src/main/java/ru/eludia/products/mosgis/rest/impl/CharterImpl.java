@@ -129,13 +129,15 @@ public class CharterImpl extends BaseCRUD<Charter> implements CharterLocal {
     public JsonObject getItem (String id) {return fetchData ((db, job) -> {
         
         Model m = ModelHolder.getModel ();
-
-        job.add ("item", db.getJsonObject (m
+        
+        JsonObject item = db.getJsonObject (m
             .get (Charter.class, id, "*")
             .toOne      (VocOrganization.class, "label", "stateregistrationdate").on ("uuid_org")
             .toMaybeOne (CharterLog.class                                       ).on ()
             .toMaybeOne (OutSoap.class,                               "err_text").on ()
-        ));
+        ); 
+
+        job.add ("item", item);
 
         JsonObject lastApprove = db.getJsonObject (m
             .select  (CharterLog.class, "AS root", "*")
@@ -149,6 +151,23 @@ public class CharterImpl extends BaseCRUD<Charter> implements CharterLocal {
         );       
 
         if (lastApprove != null) job.add ("last_approve", lastApprove);
+        
+        if (item.getInt ("id_ctr_status_gis", 0) == VocGisStatus.i.TERMINATED.getId ()) {
+            
+            JsonObject lastTermination = db.getJsonObject (m
+                .select  (CharterLog.class, "AS root", "*")
+                .and    ("uuid_object", id)
+                .and    ("action",      VocAction.i.TERMINATE.getName ())
+                .orderBy ("root.ts DESC")
+                .toOne  (OutSoap.class, "AS soap")
+                .and ("id_status", VocAsyncRequestState.i.DONE.getId ())
+                .and ("is_failed", 0)
+                .on ()
+            );
+            
+            if (lastTermination != null) job.add ("last_termination", lastTermination);
+            
+        }        
 
     });}
 
