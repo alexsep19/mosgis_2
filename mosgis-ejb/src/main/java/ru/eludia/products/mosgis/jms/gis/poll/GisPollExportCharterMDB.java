@@ -157,7 +157,7 @@ public class GisPollExportCharterMDB  extends UUIDMDB<OutSoap> {
                         "id_ctr_status_gis",         VocGisStatus.i.forName (co.getManagedObjectStatus ().value ()).getId (),
                         "contractobjectversionguid", co.getContractObjectVersionGUID ()                  
 
-                    ), "uuid_contract", "fiashouseguid", "is_deleted");
+                    ), "uuid_charter", "fiashouseguid", "is_deleted");
 
                 }                
 
