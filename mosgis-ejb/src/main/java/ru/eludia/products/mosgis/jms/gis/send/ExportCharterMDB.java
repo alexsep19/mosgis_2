@@ -283,8 +283,9 @@ public class ExportCharterMDB extends UUIDMDB<CharterLog> {
         UUID orgPPAGuid = getOrgPPAGUID (r);
             
         switch (action) {
-            case PLACING:     return wsGisHouseManagementClient.placeCharterData (orgPPAGuid, messageGUID, r);
-            case EDITING:     return wsGisHouseManagementClient.editCharterData  (orgPPAGuid, messageGUID, r);
+            case PLACING:     return wsGisHouseManagementClient.placeCharterData     (orgPPAGuid, messageGUID, r);
+            case EDITING:     return wsGisHouseManagementClient.editCharterData      (orgPPAGuid, messageGUID, r);
+            case TERMINATION: return wsGisHouseManagementClient.terminateCharterData (orgPPAGuid, messageGUID, r);
             default: throw new IllegalArgumentException ("No action implemented for " + action);
         }
 
@@ -298,8 +299,8 @@ public class ExportCharterMDB extends UUIDMDB<CharterLog> {
     private boolean isVersionUpdateNeeded (Charter.Action action) {
         switch (action) {
             case EDITING:
+            case TERMINATION:
 //            case ANNULMENT:
-//            case TERMINATION:
 //            case ROLLOVER:
                 return true;
             default:

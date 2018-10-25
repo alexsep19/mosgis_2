@@ -58,6 +58,9 @@ public class Charter extends Table {
 
         col   ("versionnumber",             Type.INTEGER,          10, null,    "Номер версии (по состоянию в ГИС ЖКХ)");
 
+        col   ("terminate",                 Type.DATE,                 null,    "Дата прекращения");
+        col   ("reason",                    Type.STRING,         255,  null,    "Причина прекращения");
+        
         col   ("reasonofannulment",         Type.STRING,         1000, null,    "Причина аннулирования");
         col   ("is_annuled",                Type.BOOLEAN,          new Virt ("DECODE(\"REASONOFANNULMENT\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0");
 
@@ -179,11 +182,11 @@ public class Charter extends Table {
     public enum Action {
         
         PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.FAILED_PLACING),
-        EDITING     (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.FAILED_STATE)
+        EDITING     (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.FAILED_STATE),
+        TERMINATION (VocGisStatus.i.PENDING_RP_TERMINATE, VocGisStatus.i.FAILED_TERMINATE)
 //        APPROVING   (VocGisStatus.i.PENDING_RP_APPROVAL,  VocGisStatus.i.FAILED_STATE),
 //        REFRESHING  (VocGisStatus.i.PENDING_RP_REFRESH,   VocGisStatus.i.FAILED_STATE),
 //        ROLLOVER    (VocGisStatus.i.PENDING_RP_ROLLOVER,  VocGisStatus.i.FAILED_STATE),
-//        TERMINATION (VocGisStatus.i.PENDING_RP_TERMINATE, VocGisStatus.i.FAILED_TERMINATE),
 //        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.FAILED_ANNULMENT),
         ;
         
@@ -207,9 +210,9 @@ public class Charter extends Table {
             switch (status) {
                 case PENDING_RQ_PLACING:   return PLACING;
                 case PENDING_RQ_EDIT:      return EDITING;
+                case PENDING_RQ_TERMINATE: return TERMINATION;
 //                case PENDING_RQ_APPROVAL:  return APPROVING;
 //                case PENDING_RQ_REFRESH:   return REFRESHING;
-//                case PENDING_RQ_TERMINATE: return TERMINATION;
 //                case PENDING_RQ_ANNULMENT: return ANNULMENT;
 //                case PENDING_RQ_ROLLOVER:  return ROLLOVER;
                 default: return null;
