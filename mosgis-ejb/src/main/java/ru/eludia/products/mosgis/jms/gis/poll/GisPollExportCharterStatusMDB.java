@@ -117,8 +117,8 @@ public class GisPollExportCharterStatusMDB extends UUIDMDB<OutSoap> {
         if (status == VocGisStatus.i.REVIEWED) toPromote.add (uuidCharter);
         
         final Map<String, Object> ctr = HASH (
-                "uuid",                uuidCharter,
-                "contractversionguid", er.getCharterVersionGUID ()
+            "uuid",               uuidCharter,
+            "charterversionguid", er.getCharterVersionGUID ()
         );
         
         if (!versionsOnly) {
