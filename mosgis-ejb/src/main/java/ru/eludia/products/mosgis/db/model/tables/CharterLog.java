@@ -37,7 +37,10 @@ public class CharterLog extends Table {
         col   ("ddt_d_start_nxt",           Type.BOOLEAN,                       null,   "1, если срок представления (выставления) платежных документов для внесения платы за жилое помещение и (или) коммунальные услуги в следующем месяце; иначе 0");
         col   ("ddt_i_start",               Type.NUMERIC,          2,           null,   "Срок внесения платы за жилое помещение и (или) коммунальные услуги (1..30 — конкретное число; 99 — последнее число)");
         col   ("ddt_i_start_nxt",           Type.BOOLEAN,                       null,   "1, если срок внесения платы за жилое помещение и (или) коммунальные услуги в следующем месяце; иначе 0");
-        col   ("reasonofannulment",         Type.STRING,         1000,          null,    "Причина аннулирования");
+        col   ("reasonofannulment",         Type.STRING,         1000,          null,   "Причина аннулирования");
+        
+        col   ("terminate",                 Type.DATE,                          null,   "Дата прекращения");
+        col   ("reason",                    Type.STRING,         255,           null,   "Причина прекращения");
 
         col   ("versionnumber",             Type.INTEGER,          10, null,    "Номер версии (по состоянию в ГИС ЖКХ)");
         col   ("is_annuled",                Type.BOOLEAN,          new Virt ("DECODE(\"REASONOFANNULMENT\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0");
@@ -60,6 +63,8 @@ public class CharterLog extends Table {
            + "  ,ddt_i_start"
            + "  ,ddt_i_start_nxt"
            + "  ,reasonofannulment"
+           + "  ,terminate"
+           + "  ,reason"
            + " INTO "
            + "   :NEW.is_deleted"
            + "  ,:NEW.id_ctr_status"
@@ -76,6 +81,8 @@ public class CharterLog extends Table {
            + "  ,:NEW.ddt_i_start"
            + "  ,:NEW.ddt_i_start_nxt"
            + "  ,:NEW.reasonofannulment"
+           + "  ,:NEW.terminate"
+           + "  ,:NEW.reason"
            + " FROM tb_charters WHERE uuid=:NEW.uuid_object; "
 
        + "END;");

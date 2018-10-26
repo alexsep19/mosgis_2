@@ -85,7 +85,7 @@ public class GisPollExportCharterStatusMDB extends UUIDMDB<OutSoap> {
         Model m = db.getModel ();        
         for (ExportStatusCAChResultType er: rp.getExportStatusCAChResult ()) processExportStatus (er, db, m, toPromote, versionsOnly, charterRecords, objectRecords);
         db.update (Charter.class, charterRecords);
-        db.upsert (CharterObject.class, objectRecords, objectKey);
+        db.upsert (CharterObject.class, objectRecords, "uuid_charter", "fiashouseguid");
         db.update (OutSoap.class, HASH (
             "uuid", uuid,
             "id_status", DONE.getId ()
@@ -117,8 +117,8 @@ public class GisPollExportCharterStatusMDB extends UUIDMDB<OutSoap> {
         if (status == VocGisStatus.i.REVIEWED) toPromote.add (uuidCharter);
         
         final Map<String, Object> ctr = HASH (
-                "uuid",                uuidCharter,
-                "contractversionguid", er.getCharterVersionGUID ()
+            "uuid",               uuidCharter,
+            "charterversionguid", er.getCharterVersionGUID ()
         );
         
         if (!versionsOnly) {
@@ -143,7 +143,7 @@ public class GisPollExportCharterStatusMDB extends UUIDMDB<OutSoap> {
             }
             
             final Map<String, Object> or = HASH (
-                "uuid_contract",             uuidCharter,
+                "uuid_charter",              uuidCharter,
                 "fiashouseguid",             co.getFIASHouseGuid (),
                 "isconflicted",              Boolean.TRUE.equals (co.isIsConflicted ()) ? 1 : 0,
                 "isblocked",                 Boolean.TRUE.equals (co.isIsBlocked ()) ? 1 : 0,
@@ -160,6 +160,6 @@ public class GisPollExportCharterStatusMDB extends UUIDMDB<OutSoap> {
         
     }
     
-    private static String [] objectKey   = {"uuid_charter", "fiashouseguid"};
+//    private static String [] objectKey   = {"uuid_charter", "fiashouseguid"};
     
 }

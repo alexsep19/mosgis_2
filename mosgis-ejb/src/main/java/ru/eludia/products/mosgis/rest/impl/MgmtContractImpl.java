@@ -136,14 +136,16 @@ logger.info ("data=" + data);
     public JsonObject getItem (String id) {return fetchData ((db, job) -> {
         
         Model m = ModelHolder.getModel ();
-
-        job.add ("item", db.getJsonObject (m
+        
+        JsonObject item = db.getJsonObject (m
             .get (MgmtContract.class, id, "*")
             .toOne      (VocOrganization.class,                    "label").on ("uuid_org")
             .toMaybeOne (VocOrganization.class, "AS org_customer", "label").on ("uuid_org_customer")
             .toMaybeOne (ContractLog.class                                ).on ()
             .toMaybeOne (OutSoap.class,                         "err_text").on ()
-        ));
+        );
+
+        job.add ("item", item);
 
         JsonObject lastApprove = db.getJsonObject (m
             .select  (ContractLog.class, "AS root", "*")
@@ -157,6 +159,31 @@ logger.info ("data=" + data);
         );       
 
         if (lastApprove != null) job.add ("last_approve", lastApprove);
+        
+        if (item.getInt ("id_ctr_status_gis", 0) == VocGisStatus.i.TERMINATED.getId ()) {
+            
+            JsonObject lastTermination = db.getJsonObject (m
+                .select  (ContractLog.class, "AS root", "*")
+                .and    ("uuid_object", id)
+                .and    ("action",      VocAction.i.TERMINATE.getName ())
+                .orderBy ("root.ts DESC")
+                .toOne  (OutSoap.class, "AS soap")
+                .and ("id_status", VocAsyncRequestState.i.DONE.getId ())
+                .and ("is_failed", 0)
+                .on ()
+            );
+            
+            if (lastTermination != null) job.add ("last_termination", lastTermination);
+            
+            JsonObject terminationFile = db.getJsonObject (m
+                .select  (ContractFile.class, "uuid", "label")
+                .and    ("uuid_contract", id)
+                .and    ("id_type", VocContractDocType.i.TERMINATION_ATTACHMENT.getId ())
+            );            
+            
+            if (terminationFile != null) job.add ("termination_file", terminationFile);
+
+        }
 
     });}
 

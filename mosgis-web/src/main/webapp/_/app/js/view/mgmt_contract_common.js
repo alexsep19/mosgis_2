@@ -125,6 +125,8 @@ define ([], function () {
                 
                 if (data.item.id_ctr_status == 10 && !$('#docnum').prop ('disabled')) clickOn ($('#label_org_customer'), $_DO.open_orgs_mgmt_contract_common)
                 
+                clickOn ($('#termination_file'), $_DO.download_mgmt_contract_common)                
+                
             })}
 
         })

@@ -106,7 +106,7 @@ public class GisPollExportMgmtContractStatusMDB extends GisPollMDB {
         Model m = db.getModel ();        
         for (ExportStatusCAChResultType er: rp.getExportStatusCAChResult ()) processExportStatus (er, db, m, toPromote, versionsOnly, contractRecords, objectRecords);
         db.update (Contract.class, contractRecords);
-        db.upsert (ContractObject.class, objectRecords, objectKey);        
+        db.upsert (ContractObject.class, objectRecords, "uuid_contract", "fiashouseguid");        
         return toPromote;
         
     }   
@@ -176,6 +176,6 @@ public class GisPollExportMgmtContractStatusMDB extends GisPollMDB {
         
     }
     
-    private static String [] objectKey   = {"uuid_contract", "fiashouseguid"};
+//    private static String [] objectKey   = {"uuid_contract", "fiashouseguid"};
     
 }

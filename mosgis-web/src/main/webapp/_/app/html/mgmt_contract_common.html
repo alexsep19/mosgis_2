@@ -114,17 +114,35 @@
 								<td data-text=status_label />
 							</tr>
 
-							<tr data-on=is_annuled>
-								<td>Причина аннулирования:</td>
-								<td data-text=reasonofannulment />
-							</tr>
-
 							<tr data-on=gis_state_label>
 								<td>Состояние:</td>
 								<td>
 									<span data-text=gis_state_label/>
 								</td>
 							</tr>
+
+							<tr data-on=is_annuled>
+								<td>Причина аннулирования:</td>
+								<td data-text=reasonofannulment />
+							</tr>
+
+							<tr data-on=last_termination>
+								<td>Расторгнут:</td>
+								<td data-text=last_termination.terminate data-date/>
+							</tr>
+
+							<tr data-on=last_termination>
+								<td>Причина:</td>
+								<td data-text=last_termination.reason/>
+							</tr>
+
+							<tr data-on=last_termination>
+								<td>Основание:</td>
+								<td>
+									<div id=termination_file data-text=last_termination.file.label/>
+								</td>
+							</tr>
+
 							<tr>
 								<th colspan=2 data-text=err_text></th>
 							</tr>

@@ -26,6 +26,8 @@ define ([], function () {
             query ({type: 'charters'}, {}, function (d) {
 
                 var it = data.item = d.item
+                
+                it.last_termination = d.last_termination
 
                 it._can = {}
 
@@ -39,13 +41,20 @@ define ([], function () {
                             it._can.approve = 1
                             if (it.id_ctr_status_gis == 40 && !it.is_annuled) it._can.annul = 1
                             break
+                        case 40:
                         case 14:
                         case 34:
                         case 90:
-                        case 94:
                             it._can.alter   = 1
                             break;
 
+                    }
+
+                    switch (it.id_ctr_status) {
+                        case 40:
+                        case 94:
+                            it._can.terminate = 1
+                            break;
                     }
 
                     if (!it.contractobjectversionguid) it._can.delete = 1
@@ -55,7 +64,7 @@ define ([], function () {
                 }
 
                 $('body').data ('data', data)                
-
+                
                 done (data) 
             
             })

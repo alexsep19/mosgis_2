@@ -1,11 +1,12 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 import ru.eludia.base.DB;
-import ru.eludia.base.db.sql.build.QP;
+import ru.eludia.base.db.util.SyncMap;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
@@ -15,8 +16,8 @@ import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import static ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType.i.OWNERS;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
-import ru.gosuslugi.dom.schema.integration.house_management.ExportStatusCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
 
 public class ContractObject extends Table {
@@ -46,6 +47,8 @@ public class ContractObject extends Table {
         col    ("isblocked",               Type.BOOLEAN,          Bool.FALSE,   "Признак заблокированного дома");
 
         col    ("contractobjectversionguid",     Type.UUID,       null,          "UUID последней версии данного объекта в ГИС ЖКХ");
+        
+        col    ("fias_start",              Type.STRING,          new Virt ("CONCAT(LOWER(RAWTOHEX(\"FIASHOUSEGUID\")),TO_CHAR(\"STARTDATE\",'YYYY-MM-DD'))"),  "ключ для различения объектов внутри договора");
         
         fk     ("id_log",                  ContractObjectLog.class,  null,      "Последнее событие редактирования");
  
@@ -231,9 +234,64 @@ logger.info ("r=" + r);
         
     }    
         
+    public static void setKeyFields (Map<String, Object> h, UUID ctrUuid, ExportCAChResultType.Contract.ContractObject co) {        
+        h.put ("uuid_contract", ctrUuid);
+        h.put ("fiashouseguid", co.getFIASHouseGuid ());
+        h.put ("startdate", co.getStartDate ());
+    }
+    
     public static void setDateFields (Map<String, Object> h, ExportCAChResultType.Contract.ContractObject co) {        
         h.put ("startdate", co.getStartDate ());
         h.put ("enddate", co.getEndDate ());
     }
+    
+    private final static String [] keyFields = {"fiashouseguid", "startdate"};
 
+    public class Sync extends SyncMap<ExportCAChResultType.Contract.ContractObject> {
+        
+        UUID uuid_contract;
+        ContractFile.Sync contractFiles;
+
+        public Sync (DB db, UUID uuid_contract, ContractFile.Sync contractFiles) {
+            super (db);
+            this.uuid_contract = uuid_contract;
+            this.contractFiles = contractFiles;
+            commonPart.put ("uuid_contract", uuid_contract);
+            commonPart.put ("is_deleted", 0);
+        }                
+
+        @Override
+        public String[] getKeyFields () {
+            return keyFields;
+        }
+
+        @Override
+        public void setFields (Map<String, Object> h, ExportCAChResultType.Contract.ContractObject co) {
+            h.put ("fiashouseguid", co.getFIASHouseGuid ());
+            h.put ("startdate", co.getStartDate ());
+            h.put ("enddate", co.getEndDate ());            
+            h.put ("uuid_contract_agreement", contractFiles.getPk (co.getBaseMService ().getAgreement ()));            
+        }
+
+        @Override
+        public Table getTable () {
+            return ContractObject.this;
+        }
+
+        @Override
+        public void processDeleted (List<Map<String, Object>> deleted) throws SQLException {
+            
+            deleted.forEach ((h) -> {
+                Object u = h.get ("uuid");
+                h.clear ();
+                h.put ("uuid", u);
+                h.put ("is_deleted", 1);
+            });
+            
+            db.update (getTable (), deleted);
+
+        }
+        
+    }
+            
 }

@@ -287,6 +287,7 @@ public class WsGisHouseManagementClient {
         r.put ("date", r.get ("date_"));
         final ImportCharterRequest.EditCharter ec = (ImportCharterRequest.EditCharter) DB.to.javaBean (ImportCharterRequest.EditCharter.class, r);
         Charter.fillCharter (ec, r);
+        ec.setCharterVersionGUID (r.get ("ctr.charterversionguid").toString ());
         
         for (Map<String, Object> o:    (Collection<Map<String, Object>>) r.get ("objects")) CharterObject.add (ec, o);        
 
@@ -365,6 +366,16 @@ public class WsGisHouseManagementClient {
             GisPollExportMgmtContractStatusMDB.processGetStateResponse (state, db, true);            
         });        
 
+    }
+    
+    public AckRequest.Ack terminateCharterData (UUID orgPPAGuid, UUID messageGUID,  Map<String, Object> r) throws Fault {
+        
+        final ImportCharterRequest.TerminateCharter tc = (ImportCharterRequest.TerminateCharter) DB.to.javaBean (ImportCharterRequest.TerminateCharter.class, r);
+        tc.setCharterVersionGUID (r.get ("ctr.charterversionguid").toString ());
+        ImportCharterRequest importCharterRequest = of.createImportCharterRequest ();
+        importCharterRequest.setTerminateCharter (tc);
+        return getPort (orgPPAGuid, messageGUID).importCharterData (importCharterRequest).getAck ();
+        
     }
 
 }

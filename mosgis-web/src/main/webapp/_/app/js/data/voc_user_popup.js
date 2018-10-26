@@ -24,7 +24,7 @@ define ([], function () {
 
         if (v.o && (!re.test (v.o) || !/[ач]$/.test (v.o))) die ('o', 'Отчество указано некорректно')
         
-        var tia = {type: 'voc_users'}        
+        var tia = {type: 'voc_users'}
         tia.id = form.record.id
         tia.action = tia.id ? 'update' : 'create'
         

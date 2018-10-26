@@ -53,6 +53,10 @@ public class RestGisFilesClient {
     }
 
     private WebTarget getWebTarget (Context context, UUID uploadId) {
+        return getWebTarget (context, uploadId, "");
+    }
+    
+    private WebTarget getWebTarget (Context context, UUID uploadId, String postfix) {
 
         client.property ("jersey.config.client.connectTimeout", Conf.getInt (VocSetting.i.WS_GIS_FILES_TMT_CONN));
         client.property ("jersey.config.client.readTimeout", Conf.getInt (VocSetting.i.WS_GIS_FILES_TMT_RESP));
@@ -65,6 +69,8 @@ public class RestGisFilesClient {
             sb.append (uploadId.toString ());
             sb.append ('/');
         }
+        
+        sb.append (postfix);
 
         return client.target (sb.toString ());
 
@@ -106,6 +112,15 @@ public class RestGisFilesClient {
         final MessageDigest md5 = MessageDigest.getInstance ("MD5");        
         md5.update (b, 0, len);
         return Base64.getEncoder ().encodeToString (md5.digest ());
+    }
+    
+    public Response get (UUID orgPPAGUID, Context context, UUID uploadId) {
+        
+        return getWebTarget (context, uploadId, "?getfile")
+            .request ()
+            .header ("X-Upload-OrgPPAGUID", orgPPAGUID.toString ())
+            .get ();
+
     }
     
     public UUID sendFull (UUID orgPPAGUID, Context context, String name, byte [] b, int len) throws Exception {
