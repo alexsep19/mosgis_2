@@ -160,29 +160,33 @@ logger.info ("data=" + data);
 
         if (lastApprove != null) job.add ("last_approve", lastApprove);
         
-        if (item.getInt ("id_ctr_status_gis", 0) == VocGisStatus.i.TERMINATED.getId ()) {
+        switch (VocGisStatus.i.forId (item.getInt ("id_ctr_status_gis", 10))) {
             
-            JsonObject lastTermination = db.getJsonObject (m
-                .select  (ContractLog.class, "AS root", "*")
-                .and    ("uuid_object", id)
-                .and    ("action",      VocAction.i.TERMINATE.getName ())
-                .orderBy ("root.ts DESC")
-                .toOne  (OutSoap.class, "AS soap")
-                .and ("id_status", VocAsyncRequestState.i.DONE.getId ())
-                .and ("is_failed", 0)
-                .on ()
-            );
-            
-            if (lastTermination != null) job.add ("last_termination", lastTermination);
-            
-            JsonObject terminationFile = db.getJsonObject (m
-                .select  (ContractFile.class, "uuid", "label")
-                .and    ("uuid_contract", id)
-                .and    ("id_type", VocContractDocType.i.TERMINATION_ATTACHMENT.getId ())
-            );            
-            
-            if (terminationFile != null) job.add ("termination_file", terminationFile);
+            case APPROVAL_PROCESS:
+            case PENDING_RQ_TERMINATE:
+            case PENDING_RP_TERMINATE:
+            case TERMINATED:
+                
+                JsonObject lastTermination = db.getJsonObject (m
+                    .select  (ContractLog.class, "AS root", "*")
+                    .and    ("uuid_object", id)
+                    .and    ("action",      VocAction.i.TERMINATE.getName ())
+                    .orderBy ("root.ts DESC")
+                );
 
+                if (lastTermination != null) job.add ("last_termination", lastTermination);
+
+                JsonObject terminationFile = db.getJsonObject (m
+                    .select  (ContractFile.class, "uuid", "label")
+                    .and    ("uuid_contract", id)
+                    .and    ("id_type", VocContractDocType.i.TERMINATION_ATTACHMENT.getId ())
+                );
+
+                if (terminationFile != null) job.add ("termination_file", terminationFile);
+
+            default:
+                // do nothing
+                
         }
 
     });}

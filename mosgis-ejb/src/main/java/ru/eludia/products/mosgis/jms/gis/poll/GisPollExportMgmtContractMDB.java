@@ -164,9 +164,15 @@ public class GisPollExportMgmtContractMDB extends GisPollMDB {
             db.getConnection ().setAutoCommit (true);
 
             if (state == VocGisStatus.i.REVIEWED) mgmtContract.doPromote (uuidContract.toString ());
-            
-            if (VocAction.i.ROLLOVER.getName ().equals (r.get ("log.action"))) mgmtContract.doReload (r.get ("ctr.uuid").toString (), null);
-            
+                        
+            switch (VocAction.i.forName (r.get ("log.action").toString ())) {
+                case ROLLOVER:
+                case TERMINATE:
+                    mgmtContract.doReload (r.get ("ctr.uuid").toString (), null);
+                default:
+                    // do nothing
+            }
+                        
         }
         catch (FU fu) {
             
