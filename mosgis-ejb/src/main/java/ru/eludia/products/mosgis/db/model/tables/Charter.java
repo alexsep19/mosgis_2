@@ -183,11 +183,11 @@ public class Charter extends Table {
         
         PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.FAILED_PLACING),
         EDITING     (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.FAILED_STATE),
+        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.FAILED_ANNULMENT),
         TERMINATION (VocGisStatus.i.PENDING_RP_TERMINATE, VocGisStatus.i.FAILED_TERMINATE)
 //        APPROVING   (VocGisStatus.i.PENDING_RP_APPROVAL,  VocGisStatus.i.FAILED_STATE),
 //        REFRESHING  (VocGisStatus.i.PENDING_RP_REFRESH,   VocGisStatus.i.FAILED_STATE),
 //        ROLLOVER    (VocGisStatus.i.PENDING_RP_ROLLOVER,  VocGisStatus.i.FAILED_STATE),
-//        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.FAILED_ANNULMENT),
         ;
         
         VocGisStatus.i nextStatus;
@@ -211,9 +211,9 @@ public class Charter extends Table {
                 case PENDING_RQ_PLACING:   return PLACING;
                 case PENDING_RQ_EDIT:      return EDITING;
                 case PENDING_RQ_TERMINATE: return TERMINATION;
+                case PENDING_RQ_ANNULMENT: return ANNULMENT;
 //                case PENDING_RQ_APPROVAL:  return APPROVING;
 //                case PENDING_RQ_REFRESH:   return REFRESHING;
-//                case PENDING_RQ_ANNULMENT: return ANNULMENT;
 //                case PENDING_RQ_ROLLOVER:  return ROLLOVER;
                 default: return null;
             }            

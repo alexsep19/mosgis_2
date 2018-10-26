@@ -49,6 +49,13 @@ define ([], function () {
                             break;
 
                     }
+                    
+                    switch (it.id_ctr_status) {
+                        case 11:
+                        case 40:
+                            it._can.annul   = 1
+                            break;
+                    }
 
                     switch (it.id_ctr_status) {
                         case 40:
@@ -62,6 +69,8 @@ define ([], function () {
                     it._can.update = it._can.cancel = it._can.edit
 
                 }
+                
+it._can.annul   = 1
 
                 $('body').data ('data', data)                
                 
