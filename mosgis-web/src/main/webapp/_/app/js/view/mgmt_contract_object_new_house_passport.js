@@ -2,24 +2,42 @@ define ([], function () {
 
     return function (data, view) {
 
-        $(fill (view, data.record)).w2uppop ({}, function () {
+        $(view).w2popup ('open', {
 
-            $('#w2ui-popup .w2ui-form').w2reform ({
+            width  : 200,
+            height : 190,
 
-                name: 'mgmt_contract_object_new_house_passport_form',
+            title   : 'Выберите тип дома',
 
-                record: data.record,
+            onOpen: function (event) {
 
-                fields : [                                
-                    {name: 'type', type: 'radio'},
-                ],
+                event.onComplete = function () {                   
 
-            })
+                    var name = 'mgmt_contract_object_new_house_passport_form'
 
-       })
+                    if (w2ui [name]) w2ui [name].destroy ()
 
+                    $('#w2ui-popup .w2ui-form').w2form ({
+
+                        name: name,
+
+                        record: data,
+
+                        fields : [
+                            {name: 'type',  type: 'radio' },
+                        ],
+
+                        focus: -1
+
+                    });
+
+                    //clickOn ($('#w2ui-popup button'), $_DO.create_house_mgmt_contract_object_common)
+
+                }
+
+            }
+
+        })
     }
-    
-    $('button[name=create]').click ($_DO.create_mgmt_contract_object_new_house_passport)
 
 })
