@@ -63,12 +63,29 @@ define ([], function () {
                             it._can.terminate = 1
                             break;
                     }
+                    
+                    switch (it.id_ctr_status) {
+                        case 10: // Project
+                        case 14: // _failed_placing
+                            break;
+                        default:
+                            switch ((0 + it.id_ctr_status) % 10) {
+                                case 2: // _pending_rq_...
+                                case 3: // _pending_rp_...
+                                    break;
+                                default:
+                                    it._can.refresh = 1
+                                    it._can.reload = 1
+                            }
+                    }                    
 
                     if (!it.contractobjectversionguid) it._can.delete = 1
 
                     it._can.update = it._can.cancel = it._can.edit
 
                 }
+                
+it._can.reload = 1
 
                 $('body').data ('data', data)                
                 

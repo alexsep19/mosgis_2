@@ -60,6 +60,9 @@ public class ExportCharterMDB extends UUIDMDB<CharterLog> {
     @Resource (mappedName = "mosgis.outExportHouseChartersQueue")
     Queue outExportHouseChartersQueue;
     
+    @Resource (mappedName = "mosgis.outExportHouseChartersDataQueue")
+    Queue outExportHouseChartersDataQueue;
+    
     @Resource (mappedName = "mosgis.outExportHouseCharterStatusQueue")
     Queue outExportHouseCharterStatusQueue;
     
@@ -287,6 +290,7 @@ public class ExportCharterMDB extends UUIDMDB<CharterLog> {
             case EDITING:     return wsGisHouseManagementClient.editCharterData      (orgPPAGuid, messageGUID, r);
             case TERMINATION: return wsGisHouseManagementClient.terminateCharterData (orgPPAGuid, messageGUID, r);
             case ANNULMENT:   return wsGisHouseManagementClient.annulCharterData     (orgPPAGuid, messageGUID, r);
+            case RELOADING:   return wsGisHouseManagementClient.exportCharterData    (orgPPAGuid, messageGUID, Collections.singletonList ((UUID) r.get ("ctr.charterversionguid")));
             default: throw new IllegalArgumentException ("No action implemented for " + action);
         }
 
@@ -302,6 +306,7 @@ public class ExportCharterMDB extends UUIDMDB<CharterLog> {
             case EDITING:
             case TERMINATION:
             case ANNULMENT:
+            case RELOADING:
 //            case ROLLOVER:
                 return true;
             default:
@@ -431,6 +436,7 @@ public class ExportCharterMDB extends UUIDMDB<CharterLog> {
         
         switch (action) {
 //            case REFRESHING: return outExportHouseCharterStatusQueue;
+            case RELOADING:  return outExportHouseChartersDataQueue;
             default:         return outExportHouseChartersQueue;
         }
         

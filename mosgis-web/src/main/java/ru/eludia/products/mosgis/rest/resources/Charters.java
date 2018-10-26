@@ -179,4 +179,13 @@ public class Charters extends EJBResource <CharterLocal> {
         return back.getLog (id, p, getUser ());
     }
     
+    @POST
+    @Path("{id}/reload") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject doReload (@PathParam ("id") String id) { 
+        final JsonObject item = getInnerItem (id);
+        checkOrg (item);
+        return back.doReload (id, getUser ());
+    }
+
 }

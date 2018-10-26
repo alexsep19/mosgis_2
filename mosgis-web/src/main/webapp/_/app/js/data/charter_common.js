@@ -91,6 +91,11 @@ define ([], function () {
         if (!confirm ('Послать в ГИС ЖКХ запрос на обновление статуса этого устава?')) return
         query ({type: 'charters', action: 'refresh'}, {}, reload_page)
     }
+    
+    $_DO.reload_charter_common = function (e) {
+        if (!confirm ('Все изменения, не переданные в ГИС ЖКХ, будут потеряны. Вы действительно хотите обновить данные из ГИС ЖКХ?')) return
+        query ({type: 'charters', action: 'reload'}, {}, reload_page)
+    }
 
     $_DO.undelete_charter_common = function (e) {   
         if (!confirm ('Восстановить эту запись, Вы уверены?')) return        

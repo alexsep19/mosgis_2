@@ -60,6 +60,7 @@ public class CharterImpl extends BaseCRUD<Charter> implements CharterLocal {
             case TERMINATE:
             case ANNUL:
             case ROLLOVER:
+            case RELOAD:
                 super.publishMessage (action, id_log);
             default:
                 return;
@@ -329,6 +330,18 @@ public class CharterImpl extends BaseCRUD<Charter> implements CharterLocal {
         
         logAction (db, user, id, VocAction.i.ROLLOVER);
                         
+    });}
+    
+    @Override
+    public JsonObject doReload (String id, User user) {return doAction ((db) -> {
+        
+        db.update (getTable (), HASH (
+            "uuid",           id,
+            "id_ctr_status",  VocGisStatus.i.PENDING_RQ_RELOAD.getId ()
+        ));
+        
+        logAction (db, user, id, VocAction.i.RELOAD);
+        
     });}
 
 }

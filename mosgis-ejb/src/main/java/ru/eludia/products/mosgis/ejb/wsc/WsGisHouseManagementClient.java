@@ -390,4 +390,20 @@ public class WsGisHouseManagementClient {
         
     }
     
+    public AckRequest.Ack exportCharterData (UUID orgPPAGuid, UUID messageGUID, List<UUID> ids) throws Fault {
+
+        final ExportCAChAsyncRequest r = of.createExportCAChAsyncRequest ();
+                
+        List<ExportCAChRequestCriteriaType> criteria = r.getCriteria ();
+
+        for (UUID uuid: ids) {
+            ExportCAChRequestCriteriaType c = of.createExportCAChRequestCriteriaType ();
+            c.setCharterVersionGUID (uuid.toString ());
+            criteria.add (c);
+        }
+
+        return getPort (orgPPAGuid, messageGUID).exportCAChData (r).getAck ();
+
+    }
+    
 }
