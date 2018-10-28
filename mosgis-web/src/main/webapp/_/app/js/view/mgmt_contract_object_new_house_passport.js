@@ -31,7 +31,7 @@ define ([], function () {
 
                     });
 
-                    //clickOn ($('#w2ui-popup button'), $_DO.create_house_mgmt_contract_object_common)
+                    clickOn ($('#w2ui-popup button'), $_DO.create_mgmt_contract_object_house_passport)
 
                 }
 

@@ -34,6 +34,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
 import static ru.eludia.products.mosgis.db.model.voc.VocRdColType.i.REF;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.ValidationException;
+import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 import ru.eludia.products.mosgis.web.base.Search;
 
 @Stateless
@@ -99,7 +100,7 @@ public class HousesImpl implements HousesLocal {
     public JsonObject getItem (String id) {
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();
-
+        
         try (DB db = ModelHolder.getModel ().getDb ()) {
             
             JsonObject item = db.getJsonObject (ModelHolder.getModel ()
@@ -387,6 +388,14 @@ public class HousesImpl implements HousesLocal {
         
         return jb.build ();
         
+    }
+    
+    @Override
+    public JsonObject doCreate (JsonObject p) {
+        
+        logger.log (Level.INFO, "HOUSE_CREATE");
+        return null;
+    
     }
     
 }

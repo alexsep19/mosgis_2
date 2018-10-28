@@ -28,6 +28,13 @@ public class Houses extends EJBResource <HousesLocal> {
     }
 
     @POST
+    @Path("create") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject doCreate (JsonObject p) {
+        return back.doCreate (p);
+    }
+    
+    @POST
     @Path("{id}/update") 
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)

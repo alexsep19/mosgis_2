@@ -6,19 +6,23 @@ define ([], function () {
 
         var v = form.values ()
         
-        console.log (v)
+        if (!v.type) die ('type', 'Пожалуйста, укажите тип дома')
         
-        var tia = {type: 'mgmt_contract_object'}
+        var tia = {type: 'houses'}
         tia.id = form.record.id
-        tia.action = tia.id ? 'update' : 'create'
+        tia.action = 'create'
         
         var done = reload_page
 
-        query (tia, {data: v}, function (data) {
+        var data = clone ($('body').data ('data'))
+        
+        var new_data = {'type': v.type, "fiashouseguid": data.item.fiashouseguid}
+
+        query (tia, {data: new_data}, function (data) {
         
             w2popup.close ()
             
-            if (data.id) w2confirm ('Перейти на страницу паспорта дома?').yes (function () {openTab ('/house_passport/' + data.id)})
+            //if (data.id) w2confirm ('Перейти на страницу паспорта дома?').yes (function () {openTab ('/houses/' + data.id)})
             
         })
 
