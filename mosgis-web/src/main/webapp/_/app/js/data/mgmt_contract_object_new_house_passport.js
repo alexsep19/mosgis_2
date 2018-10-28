@@ -6,7 +6,7 @@ define ([], function () {
 
         var v = form.values ()
         
-        if (!v.type) die ('type', 'Пожалуйста, укажите тип дома')
+        if (!v.is_condo) die ('type', 'Пожалуйста, укажите тип дома')
         
         var tia = {type: 'houses'}
         tia.id = form.record.id
@@ -16,7 +16,9 @@ define ([], function () {
 
         var data = clone ($('body').data ('data'))
         
-        var new_data = {'type': v.type, "fiashouseguid": data.item.fiashouseguid}
+        console.log (data)
+        
+        var new_data = {'type': v.is_condo, "fiashouseguid": data.item.fiashouseguid, "address": data.item ["fias.label"]}
 
         query (tia, {data: new_data}, function (data) {
         

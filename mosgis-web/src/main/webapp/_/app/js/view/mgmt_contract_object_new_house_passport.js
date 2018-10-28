@@ -24,7 +24,7 @@ define ([], function () {
                         record: data,
 
                         fields : [
-                            {name: 'type',  type: 'radio' },
+                            {name: 'is_condo',  type: 'radio' },
                         ],
 
                         focus: -1
