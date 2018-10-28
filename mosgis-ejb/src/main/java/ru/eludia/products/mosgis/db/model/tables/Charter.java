@@ -3,6 +3,8 @@ package ru.eludia.products.mosgis.db.model.tables;
 import java.util.Collection;
 import java.util.Map;
 import ru.eludia.base.DB;
+import ru.eludia.base.model.Col;
+import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
@@ -21,6 +23,24 @@ import ru.gosuslugi.dom.schema.integration.house_management.DeviceMeteringsDaySe
 import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
 
 public class Charter extends Table {
+/*    
+    public enum c implements ColEnum {
+        
+        ;
+        
+        private Col col;        
+
+        private c (Object... p) {
+            col = new Col (p);
+        }
+
+        @Override
+        public Col getCol () {
+            return col;
+        }
+        
+    }
+*/
 
     public Charter () {
 

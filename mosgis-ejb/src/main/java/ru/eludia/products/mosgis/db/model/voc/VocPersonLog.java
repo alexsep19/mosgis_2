@@ -33,8 +33,8 @@ public class VocPersonLog extends Table {
         
         col   ("placebirth",         Type.STRING,  255,  null,    "Место рождения");
         
-        col   ("surname",            Type.STRING,  256,           "Фамилия");
-        col   ("firstname",          Type.STRING,  256,           "Имя");
+        col   ("surname",            Type.STRING,  256,  null,    "Фамилия");
+        col   ("firstname",          Type.STRING,  256,  null,    "Имя");
         col   ("patronymic",         Type.STRING,  256,  null,    "Отчество");
         
         col   ("label",              Type.STRING,     new Virt("DECODE(\"PATRONYMIC\", NULL, (\"SURNAME\" || ' ' || \"FIRSTNAME\"), (\"SURNAME\" || ' ' || \"FIRSTNAME\" || ' ' || \"PATRONYMIC\"))"), "ФИО");

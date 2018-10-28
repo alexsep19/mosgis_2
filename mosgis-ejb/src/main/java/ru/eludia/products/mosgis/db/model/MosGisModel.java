@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.db.model;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,7 +25,7 @@ public final class MosGisModel extends ru.eludia.base.Model {
         return get (t.getName () + "__log");
     }
     
-    public MosGisModel (DataSource ds) throws SQLException {
+    public MosGisModel (DataSource ds) throws SQLException, IOException {
         
         super (ds
             , "ru.eludia.products.mosgis.db.model.gis"
