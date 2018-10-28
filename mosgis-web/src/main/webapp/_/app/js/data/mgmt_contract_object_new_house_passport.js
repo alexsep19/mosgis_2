@@ -14,13 +14,11 @@ define ([], function () {
         
         var done = reload_page
 
-        var data = clone ($('body').data ('data'))
+        var item = (clone ($('body').data ('data'))).item
         
-        console.log (data)
-        
-        var new_data = {'type': v.is_condo, "fiashouseguid": data.item.fiashouseguid, "address": data.item ["fias.label"]}
+        var data = {'is_condo': v.is_condo, "fiashouseguid": item.fiashouseguid, "address": item ["fias.label"]}
 
-        query (tia, {data: new_data}, function (data) {
+        query (tia, {'data': data}, function (data) {
         
             w2popup.close ()
             
