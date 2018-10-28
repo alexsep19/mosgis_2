@@ -35,9 +35,9 @@ define ([], function () {
 
         });
         
-        if (data.item.house) {
+        if (data.item ['house.uuid']) {
             $(('#house_link')).attr({title: 'Перейти на страницу паспорта дома'})
-            clickOn ($('#house_link'), function () { openTab ('/house/' + data.item.house.uuid) })
+            clickOn ($('#house_link'), function () { openTab ('/house/' + data.item ['house.uuid']) })
         }
         
         clickOn ($('#ctr_link'), function () {

@@ -22,7 +22,7 @@ define ([], function () {
         
             w2popup.close ()
             
-            //if (data.id) w2confirm ('Перейти на страницу паспорта дома?').yes (function () {openTab ('/houses/' + data.id)})
+            if (data.id) w2confirm ('Перейти на страницу паспорта дома?').yes (function () {openTab ('/house/' + data.id)})
             
         })
 

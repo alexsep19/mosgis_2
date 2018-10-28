@@ -42,7 +42,7 @@ public class ContractObjectsImpl extends BaseCRUD<ContractObject> implements Con
             .toOne      (Contract.class,           "AS ctr",   "*"    ).on ()
             .toOne      (VocOrganization.class,    "AS org",   "label").on ("ctr.uuid_org")
             .toOne      (VocBuildingAddress.class, "AS fias",  "label").on ("root.fiashouseguid=fias.houseguid")
-            .toMaybeOne (House.class,              "AS house", "uuid" ).on ("root.fiashouseguid=house.uuid")
+            .toMaybeOne (House.class,              "AS house", "uuid" ).on ("root.fiashouseguid=house.fiashouseguid")
         );
 
         job.add ("item", item);
@@ -75,7 +75,7 @@ public class ContractObjectsImpl extends BaseCRUD<ContractObject> implements Con
         Select select = db.getModel ()
             .select     (getTable (),              "AS root", "*", "uuid AS id")
             .toOne      (VocBuildingAddress.class, "AS fias",      "label"                                       ).on ("root.fiashouseguid=fias.houseguid")
-            .toMaybeOne (House.class,              "AS house",     "uuid"                                        ).on ("root.fiashouseguid=house.uuid")
+            .toMaybeOne (House.class,              "AS house",     "uuid"                                        ).on ("root.fiashouseguid=house.fiashouseguid")
             .toMaybeOne (ContractFile.class,       "AS agreement", "agreementnumber AS no", "agreementdate AS dt").on ()
             .toMaybeOne (ContractObjectLog.class,  "AS log",       "ts"                                          ).on ()
             .where      ("is_deleted", 0)
