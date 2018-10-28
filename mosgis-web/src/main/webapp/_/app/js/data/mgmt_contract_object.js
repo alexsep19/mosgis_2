@@ -69,7 +69,7 @@ define ([], function () {
                     can_create_house = true
             }
             
-            if (!it.house && can_create_house && ($_USER.role.admin || it ['ctr.uuid_org'] == $_USER.uuid_org)) {
+            if (!it ['house.uuid'] && can_create_house && ($_USER.role.admin || it ['ctr.uuid_org'] == $_USER.uuid_org)) {
                 
                 it._can.create_house = 1
                 
