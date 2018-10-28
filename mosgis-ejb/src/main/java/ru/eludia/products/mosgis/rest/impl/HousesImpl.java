@@ -17,6 +17,7 @@ import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.PassportKind;
 import static ru.eludia.products.mosgis.PassportKind.CONDO;
 import static ru.eludia.products.mosgis.PassportKind.COTTAGE;
@@ -34,11 +35,11 @@ import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
 import static ru.eludia.products.mosgis.db.model.voc.VocRdColType.i.REF;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.ValidationException;
-import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 import ru.eludia.products.mosgis.web.base.Search;
+import ru.eludia.products.mosgis.rest.impl.base.Base;
 
 @Stateless
-public class HousesImpl implements HousesLocal {
+public class HousesImpl extends Base<House> implements HousesLocal {
 
     private static final Logger logger = Logger.getLogger (HousesImpl.class.getName ());
         
@@ -391,11 +392,16 @@ public class HousesImpl implements HousesLocal {
     }
     
     @Override
-    public JsonObject doCreate (JsonObject p) {
-        
-        logger.log (Level.INFO, "HOUSE_CREATE");
-        return null;
-    
-    }
+    public JsonObject doCreate (JsonObject p) {return fetchData ((db, job) -> {
+
+        final Table table = getTable ();
+
+        Map<String, Object> data = getData (p);
+
+        Object insertId = db.insertId (table, data);
+
+        job.add ("id", insertId.toString ());
+
+    });}
     
 }
