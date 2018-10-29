@@ -85,6 +85,8 @@ public class Charter extends Table {
         col   ("terminate",                 Type.DATE,                 null,    "Дата прекращения");
         col   ("reason",                    Type.STRING,         255,  null,    "Причина прекращения");
         
+        col   ("rolltodate",                Type.DATE,             null,        "Пролонгировать до даты");
+        
         col   ("reasonofannulment",         Type.STRING,         1000, null,    "Причина аннулирования");
         col   ("is_annuled",                Type.BOOLEAN,          new Virt ("DECODE(\"REASONOFANNULMENT\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0");
 
@@ -258,10 +260,10 @@ public class Charter extends Table {
         EDITING     (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.FAILED_STATE),
         ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.FAILED_ANNULMENT),
         TERMINATION (VocGisStatus.i.PENDING_RP_TERMINATE, VocGisStatus.i.FAILED_TERMINATE),
+        ROLLOVER    (VocGisStatus.i.PENDING_RP_ROLLOVER,  VocGisStatus.i.FAILED_STATE),
         RELOADING   (VocGisStatus.i.PENDING_RP_RELOAD,    VocGisStatus.i.FAILED_STATE)
 //        APPROVING   (VocGisStatus.i.PENDING_RP_APPROVAL,  VocGisStatus.i.FAILED_STATE),
 //        REFRESHING  (VocGisStatus.i.PENDING_RP_REFRESH,   VocGisStatus.i.FAILED_STATE),
-//        ROLLOVER    (VocGisStatus.i.PENDING_RP_ROLLOVER,  VocGisStatus.i.FAILED_STATE),
         ;
         
         VocGisStatus.i nextStatus;
@@ -287,9 +289,9 @@ public class Charter extends Table {
                 case PENDING_RQ_TERMINATE: return TERMINATION;
                 case PENDING_RQ_ANNULMENT: return ANNULMENT;
                 case PENDING_RQ_RELOAD:    return RELOADING;
+                case PENDING_RQ_ROLLOVER:  return ROLLOVER;
 //                case PENDING_RQ_APPROVAL:  return APPROVING;
 //                case PENDING_RQ_REFRESH:   return REFRESHING;
-//                case PENDING_RQ_ROLLOVER:  return ROLLOVER;
                 default: return null;
             }            
         }

@@ -406,4 +406,18 @@ public class WsGisHouseManagementClient {
 
     }
     
+    public AckRequest.Ack rolloverCharterData (UUID orgPPAGuid, UUID messageGUID,  Map<String, Object> r) throws Fault {
+
+        final ImportCharterRequest.RollOverCharter rc = (ImportCharterRequest.RollOverCharter) DB.to.javaBean (ImportCharterRequest.RollOverCharter.class, r);
+        rc.setCharterVersionGUID (r.get ("ctr.charterversionguid").toString ());        
+        rc.setRollOver (true);
+
+        ImportCharterRequest importCharterRequest = of.createImportCharterRequest ();
+        importCharterRequest.setRollOverCharter (rc);
+        importCharterRequest.setTransportGUID (UUID.randomUUID ().toString ());
+        
+        return getPort (orgPPAGuid, messageGUID).importCharterData (importCharterRequest).getAck ();        
+        
+    }    
+    
 }

@@ -42,6 +42,8 @@ public class CharterLog extends Table {
         col   ("terminate",                 Type.DATE,                          null,   "Дата прекращения");
         col   ("reason",                    Type.STRING,         255,           null,   "Причина прекращения");
 
+        col   ("rolltodate",                Type.DATE,                          null,   "Пролонгировать до даты");
+
         col   ("versionnumber",             Type.INTEGER,          10, null,    "Номер версии (по состоянию в ГИС ЖКХ)");
         col   ("is_annuled",                Type.BOOLEAN,          new Virt ("DECODE(\"REASONOFANNULMENT\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0");
 
@@ -65,6 +67,7 @@ public class CharterLog extends Table {
            + "  ,reasonofannulment"
            + "  ,terminate"
            + "  ,reason"
+           + "  ,rolltodate"
            + " INTO "
            + "   :NEW.is_deleted"
            + "  ,:NEW.id_ctr_status"
@@ -83,6 +86,7 @@ public class CharterLog extends Table {
            + "  ,:NEW.reasonofannulment"
            + "  ,:NEW.terminate"
            + "  ,:NEW.reason"
+           + "  ,:NEW.rolltodate"
            + " FROM tb_charters WHERE uuid=:NEW.uuid_object; "
 
        + "END;");
