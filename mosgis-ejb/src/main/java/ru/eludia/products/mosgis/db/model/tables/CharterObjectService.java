@@ -49,10 +49,6 @@ public class CharterObjectService extends Table {
             + "DECLARE" 
             + " PRAGMA AUTONOMOUS_TRANSACTION; "
             + "BEGIN "
-                
-            + "IF :NEW.startdate > :NEW.enddate THEN "
-            + " raise_application_error (-20000, '#enddate#: Дата начала предоставления услуги должна быть раньше даты окончания');"
-            + "END IF; "
 
             + "IF :NEW.is_deleted = 0 THEN "
             + " FOR i IN ("
