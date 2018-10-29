@@ -370,10 +370,10 @@ public class WsGisHouseManagementClient {
     
     public AckRequest.Ack terminateCharterData (UUID orgPPAGuid, UUID messageGUID,  Map<String, Object> r) throws Fault {
         
-        final ImportCharterRequest.AnnulmentCharter tc = (ImportCharterRequest.AnnulmentCharter) DB.to.javaBean (ImportCharterRequest.AnnulmentCharter.class, r);
+        final ImportCharterRequest.TerminateCharter tc = (ImportCharterRequest.TerminateCharter) DB.to.javaBean (ImportCharterRequest.TerminateCharter.class, r);
         tc.setCharterVersionGUID (r.get ("ctr.charterversionguid").toString ());
         ImportCharterRequest importCharterRequest = of.createImportCharterRequest ();        
-        importCharterRequest.setAnnulmentCharter (tc);
+        importCharterRequest.setTerminateCharter (tc);
         importCharterRequest.setTransportGUID (UUID.randomUUID ().toString ());
         return getPort (orgPPAGuid, messageGUID).importCharterData (importCharterRequest).getAck ();
         
