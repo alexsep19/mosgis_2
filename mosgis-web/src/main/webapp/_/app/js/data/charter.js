@@ -56,6 +56,16 @@ define ([], function () {
                             it._can.annul   = 1
                             break;
                     }
+                                        
+                    if (it.id_ctr_state_gis == 50) {
+                    
+                        switch (it.id_ctr_status) {
+                            case 40:
+                                it._can.rollover = 1
+                                break;
+                        }
+                        
+                    }
 
                     switch (it.id_ctr_status) {
                         case 40:
@@ -84,6 +94,7 @@ define ([], function () {
                     it._can.update = it._can.cancel = it._can.edit
 
                 }
+it._can.rollover   = 1
 
                 $('body').data ('data', data)                
                 
