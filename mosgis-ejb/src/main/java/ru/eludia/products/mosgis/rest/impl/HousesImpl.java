@@ -392,7 +392,6 @@ public class HousesImpl extends Base<House> implements HousesLocal {
     }
     
     private final String FIASHOUSEGUID = "fiashouseguid";
-    private final String UUID = "uuid";
     
     @Override
     public JsonObject doCreate (JsonObject p) {return fetchData ((db, job) -> {
@@ -403,9 +402,9 @@ public class HousesImpl extends Base<House> implements HousesLocal {
 
         db.upsert (table, data, FIASHOUSEGUID);
 
-        JsonObject upsertId = db.getJsonObject( new Select (table, UUID).where(FIASHOUSEGUID, data.get(FIASHOUSEGUID)));
+        JsonObject upsertId = db.getJsonObject( new Select (table, "uuid").where(FIASHOUSEGUID, data.get(FIASHOUSEGUID)));
         
-        job.add ("id", upsertId.getString(UUID));
+        job.add ("id", upsertId.getString("uuid"));
 
     });}
     
