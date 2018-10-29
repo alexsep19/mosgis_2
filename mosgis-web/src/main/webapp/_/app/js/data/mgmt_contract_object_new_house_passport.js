@@ -6,7 +6,7 @@ define ([], function () {
 
         var v = form.values ()
         
-        if (!v.is_condo) die ('type', 'Пожалуйста, укажите тип дома')
+        if (!v.is_condo) die ('is_condo', 'Пожалуйста, укажите тип дома')
         
         var tia = {type: 'houses'}
         tia.id = form.record.id
