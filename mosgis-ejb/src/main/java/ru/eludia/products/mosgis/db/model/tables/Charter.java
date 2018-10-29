@@ -2,6 +2,9 @@ package ru.eludia.products.mosgis.db.model.tables;
 
 import java.util.Collection;
 import java.util.Map;
+import ru.eludia.base.DB;
+import ru.eludia.base.model.Col;
+import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
@@ -12,11 +15,32 @@ import ru.eludia.products.mosgis.db.model.voc.VocCharterObjectReason;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.gosuslugi.dom.schema.integration.house_management.CharterDateDetailsExportType;
 import ru.gosuslugi.dom.schema.integration.house_management.CharterDateDetailsType;
 import ru.gosuslugi.dom.schema.integration.house_management.CharterType;
+import ru.gosuslugi.dom.schema.integration.house_management.DaySelectionExportType;
 import ru.gosuslugi.dom.schema.integration.house_management.DeviceMeteringsDaySelectionType;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
 
 public class Charter extends Table {
+/*    
+    public enum c implements ColEnum {
+        
+        ;
+        
+        private Col col;        
+
+        private c (Object... p) {
+            col = new Col (p);
+        }
+
+        @Override
+        public Col getCol () {
+            return col;
+        }
+        
+    }
+*/
 
     public Charter () {
 
@@ -60,6 +84,8 @@ public class Charter extends Table {
 
         col   ("terminate",                 Type.DATE,                 null,    "Дата прекращения");
         col   ("reason",                    Type.STRING,         255,  null,    "Причина прекращения");
+        
+        col   ("rolltodate",                Type.DATE,             null,        "Пролонгировать до даты");
         
         col   ("reasonofannulment",         Type.STRING,         1000, null,    "Причина аннулирования");
         col   ("is_annuled",                Type.BOOLEAN,          new Virt ("DECODE(\"REASONOFANNULMENT\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0");
@@ -179,15 +205,65 @@ public class Charter extends Table {
                 
     }
     
+    public static void setExtraFields (Map<String, Object> h, ExportCAChResultType.Charter charter) {
+        h.put ("automaticrolloveroneyear", DB.ok (charter.isAutomaticRollOverOneYear ()));
+        setExtraFields (h, charter.getTerminate ());
+        setExtraFields (h, charter.getDateDetails ());
+    }   
+    
+    private static void setExtraFields (Map<String, Object> h, CharterDateDetailsExportType dateDetails) {
+        setExtraFields (h, dateDetails.getPeriodMetering ());
+        setExtraFields (h, dateDetails.getPaymentDocumentInterval ());
+        setExtraFields (h, dateDetails.getPaymentInterval ());
+    }    
+    
+    private static void setExtraFields (Map<String, Object> h, CharterDateDetailsExportType.PeriodMetering p) {
+        setExtraFields (h, "start", p.getStartDate ());
+        setExtraFields (h, "end",   p.getEndDate ());
+    }
+    
+    private static byte day (Byte d, Boolean last) {
+        return DB.ok (last) ? 99 : d;
+    }
+
+    private static void setExtraFields (Map<String, Object> h, String field, DaySelectionExportType p) {
+        h.put ("ddt_m_" + field,          day   (p.getDate (), p.isLastDay ()));
+        h.put ("ddt_m_" + field + "_nxt", DB.ok (p.isIsNextMonth ()));
+    }
+
+    private static void setExtraFields (Map<String, Object> h, CharterDateDetailsExportType.PaymentDocumentInterval p) {
+        h.put ("ddt_d_start",     day   (p.getStartDate (), p.isLastDay ()));
+        h.put ("ddt_d_start_nxt", DB.ok (p.isNextMounth ()));
+    }
+
+    private static void setExtraFields (Map<String, Object> h, CharterDateDetailsExportType.PaymentInterval p) {
+        h.put ("ddt_i_start",     day   (p.getStartDate (), p.isLastDay ()));
+        h.put ("ddt_i_start_nxt", DB.ok (p.isNextMounth ()));
+    }    
+    
+    private static void setExtraFields (Map<String, Object> h, ExportCAChResultType.Charter.Terminate terminate) {
+        
+        if (terminate == null) {
+            h.put ("terminate", null);
+            h.put ("reason",    null);
+        }
+        else {
+            h.put ("terminate", terminate.getTerminate ());
+            h.put ("reason",    terminate.getReason ());
+        }
+        
+    }
+
     public enum Action {
         
         PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.FAILED_PLACING),
         EDITING     (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.FAILED_STATE),
-        TERMINATION (VocGisStatus.i.PENDING_RP_TERMINATE, VocGisStatus.i.FAILED_TERMINATE)
+        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.FAILED_ANNULMENT),
+        TERMINATION (VocGisStatus.i.PENDING_RP_TERMINATE, VocGisStatus.i.FAILED_TERMINATE),
+        ROLLOVER    (VocGisStatus.i.PENDING_RP_ROLLOVER,  VocGisStatus.i.FAILED_STATE),
+        RELOADING   (VocGisStatus.i.PENDING_RP_RELOAD,    VocGisStatus.i.FAILED_STATE)
 //        APPROVING   (VocGisStatus.i.PENDING_RP_APPROVAL,  VocGisStatus.i.FAILED_STATE),
 //        REFRESHING  (VocGisStatus.i.PENDING_RP_REFRESH,   VocGisStatus.i.FAILED_STATE),
-//        ROLLOVER    (VocGisStatus.i.PENDING_RP_ROLLOVER,  VocGisStatus.i.FAILED_STATE),
-//        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.FAILED_ANNULMENT),
         ;
         
         VocGisStatus.i nextStatus;
@@ -211,10 +287,11 @@ public class Charter extends Table {
                 case PENDING_RQ_PLACING:   return PLACING;
                 case PENDING_RQ_EDIT:      return EDITING;
                 case PENDING_RQ_TERMINATE: return TERMINATION;
+                case PENDING_RQ_ANNULMENT: return ANNULMENT;
+                case PENDING_RQ_RELOAD:    return RELOADING;
+                case PENDING_RQ_ROLLOVER:  return ROLLOVER;
 //                case PENDING_RQ_APPROVAL:  return APPROVING;
 //                case PENDING_RQ_REFRESH:   return REFRESHING;
-//                case PENDING_RQ_ANNULMENT: return ANNULMENT;
-//                case PENDING_RQ_ROLLOVER:  return ROLLOVER;
                 default: return null;
             }            
         }
@@ -230,6 +307,5 @@ public class Charter extends Table {
         }        
                 
     };
-    
-    
+            
 }

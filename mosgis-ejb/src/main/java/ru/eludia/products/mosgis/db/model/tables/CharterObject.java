@@ -1,9 +1,11 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import ru.eludia.base.DB;
+import ru.eludia.base.db.util.SyncMap;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
@@ -13,6 +15,7 @@ import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocCharterObjectReason;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportCharterRequest;
 
 public class CharterObject extends Table {
@@ -32,7 +35,7 @@ public class CharterObject extends Table {
         ref    ("uuid_charter_file",       CharterFile.class,     null,          "Ссылка на протокол");
         col    ("ismanagedbycontract",     Type.BOOLEAN,          Bool.FALSE,   "Управление многоквартирным домом осуществляется управляющей организацией по договору управления");
 
-        col    ("startdate",               Type.DATE,                           "Дата начала предоставления услуг");
+        col    ("startdate",               Type.DATE,             null,         "Дата начала предоставления услуг");
         col    ("enddate",                 Type.DATE,             null,         "Дата окончания предоставления услуг");        
        
         col    ("annulmentinfo",           Type.STRING,           null,       "Причина аннулирования.");
@@ -182,6 +185,55 @@ public class CharterObject extends Table {
         
         ec.getContractObject ().add (co);
         
+    }
+
+    private final static String [] keyFields = {"fiashouseguid", "startdate"};
+
+    public class Sync extends SyncMap<ExportCAChResultType.Charter.ContractObject>{
+
+        UUID uuid_contract;
+        CharterFile.Sync files;
+
+        public Sync (DB db, UUID uuid_contract, CharterFile.Sync files) {
+            super (db);
+            this.uuid_contract = uuid_contract;
+            this.files = files;
+            commonPart.put ("uuid_charter", uuid_contract);
+            commonPart.put ("is_deleted", 0);
+        }
+
+        @Override
+        public String[] getKeyFields () {
+            return keyFields;
+        }
+
+        @Override
+        public void setFields (Map<String, Object> h, ExportCAChResultType.Charter.ContractObject co) {
+            h.put ("fiashouseguid", co.getFIASHouseGuid ());
+            h.put ("startdate", co.getStartDate ());
+            h.put ("enddate", co.getEndDate ());            
+            h.put ("uuid_charter_file", files.getPk (co.getBaseMService ().getAgreement ()));            
+        }
+
+        @Override
+        public Table getTable () {
+            return CharterObject.this;
+        }
+
+        @Override
+        public void processDeleted (List<Map<String, Object>> deleted) throws SQLException {
+            
+            deleted.forEach ((h) -> {
+                Object u = h.get ("uuid");
+                h.clear ();
+                h.put ("uuid", u);
+                h.put ("is_deleted", 1);
+            });
+            
+            db.update (getTable (), deleted);
+
+        }
+
     }
     
 }

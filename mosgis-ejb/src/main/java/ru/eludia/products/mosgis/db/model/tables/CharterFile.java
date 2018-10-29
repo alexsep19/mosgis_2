@@ -1,7 +1,13 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import ru.eludia.base.DB;
+import ru.eludia.base.db.util.SyncMap;
+import static ru.eludia.base.db.util.SyncMap.ACTUAL;
+import static ru.eludia.base.db.util.SyncMap.WANTED;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.def.Blob.EMPTY_BLOB;
@@ -9,10 +15,12 @@ import static ru.eludia.base.model.def.Def.NEW_UUID;
 import static ru.eludia.base.model.def.Num.ZERO;
 import ru.eludia.products.mosgis.db.model.voc.VocCharterObjectReason;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
+import ru.eludia.products.mosgis.jms.gis.poll.GisPollExportCharterDataMDB;
 import ru.gosuslugi.dom.schema.integration.base.Attachment;
 import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
 import ru.gosuslugi.dom.schema.integration.house_management.BaseServiceCharterType;
 import ru.gosuslugi.dom.schema.integration.house_management.CharterType;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
 
 public class CharterFile extends Table {
 
@@ -27,8 +35,8 @@ public class CharterFile extends Table {
         ref    ("id_type",               VocContractDocType.class,              "Ссылка на тип документа");
         
         col    ("label",                 Type.STRING,                           "Имя файла");
-        col    ("mime",                  Type.STRING,                           "Тип содержимого");
-        col    ("len",                   Type.INTEGER,                          "Размер, байт");
+        col    ("mime",                  Type.STRING,              null,        "Тип содержимого");
+        col    ("len",                   Type.INTEGER,             null,        "Размер, байт");
         col    ("body",                  Type.BLOB,                EMPTY_BLOB,  "Содержимое");
         col    ("description",           Type.TEXT,                null,        "Примечание");
         col    ("attachmentguid",        Type.UUID,                null,        "Идентификатор сохраненного вложения");
@@ -46,6 +54,8 @@ public class CharterFile extends Table {
             + " UPDATE tb_charter_files__log SET attachmentguid = :NEW.attachmentguid, attachmenthash = :NEW.attachmenthash WHERE uuid = :NEW.id_log; "
             + "END; END IF; "
 */
+            + " IF :NEW.len IS NULL THEN :NEW.len := -1; END IF; "
+                
             + " IF :NEW.id_status = 0 AND DBMS_LOB.GETLENGTH (:NEW.body) = :NEW.len THEN BEGIN "
             + "   :NEW.id_status := 1; "
             + "   IF :NEW.uuid_charter_object IS NOT NULL THEN "
@@ -110,4 +120,90 @@ public class CharterFile extends Table {
         
     }
     
+    private final static String [] keyFields = {"attachmentguid"};
+
+    public class Sync extends SyncMap<AttachmentType> {
+        
+        UUID uuid_charter;
+        GisPollExportCharterDataMDB mDB;
+
+        public Sync (DB db, UUID uuid_charter, GisPollExportCharterDataMDB mDB) {
+            super (db);
+            this.uuid_charter = uuid_charter;
+            this.mDB = mDB;
+            commonPart.put ("uuid_charter", uuid_charter);
+            commonPart.put ("id_status", 1);
+        }                
+
+        @Override
+        public String[] getKeyFields () {
+            return keyFields;
+        }
+
+        @Override
+        public void setFields (Map<String, Object> h, AttachmentType a) {                        
+            h.put ("label", a.getName ());
+            h.put ("description",    a.getDescription ());
+            h.put ("attachmentguid", a.getAttachment ().getAttachmentGUID ());
+            h.put ("attachmenthash", a.getAttachmentHASH ().toUpperCase ());
+        }
+
+        @Override
+        public Table getTable () {
+            return CharterFile.this;
+        }
+
+        @Override
+        public void processUpdated (List<Map<String, Object>> updated) throws SQLException {
+            
+            updated.forEach ((h) -> {
+                
+                Object hashAsIs = ((Map) h.get (ACTUAL)).get (ATTACHMENTHASH);
+                Object hashToBe = ((Map) h.get (WANTED)).get (ATTACHMENTHASH);
+                    
+                if (DB.eq (hashAsIs, hashToBe)) return;
+                
+                final UUID uuid = UUID.fromString (h.get ("uuid").toString ());
+
+                logger.info ("Scheduling download for " + uuid + ": " + hashToBe + " <> " + hashAsIs);
+                
+                mDB.download (uuid);
+                
+            });
+            
+        } 
+
+        @Override
+        public void processDeleted (List<Map<String, Object>> deleted) throws SQLException {
+            
+            deleted.forEach ((h) -> {
+                Object u = h.get ("uuid");
+                h.clear ();
+                h.put ("uuid", u);
+                h.put ("id_status", 2);
+            });
+            
+            db.update (getTable (), deleted);
+
+        }
+                
+        private void addAll (List<AttachmentType> src, VocContractDocType.i type) {
+
+            for (AttachmentType a: src) {
+                Map<String, Object> h = DB.HASH ();
+                setFields (h, a);
+                h.put ("id_type", type.getId ());
+                addRecord (h);
+            }
+
+        }        
+        
+        public void addFrom (ExportCAChResultType.Charter c) {
+            addAll (c.getAttachmentCharter (), VocContractDocType.i.CHARTER);
+        }        
+        
+    }
+
+    private static final String ATTACHMENTHASH = "attachmenthash";    
+
 }

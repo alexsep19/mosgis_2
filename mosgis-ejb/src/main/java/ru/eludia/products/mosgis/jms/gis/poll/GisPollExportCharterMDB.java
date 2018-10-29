@@ -17,6 +17,7 @@ import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.CharterLog;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -187,262 +188,22 @@ public class GisPollExportCharterMDB  extends UUIDMDB<OutSoap> {
                                                     
             db.commit ();
             
+            db.getConnection ().setAutoCommit (true);
+            
+            switch (VocAction.i.forName (r.get ("log.action").toString ())) {
+                case ROLLOVER:
+                case TERMINATE:
+                    charter.doReload (r.get ("ctr.uuid").toString (), null);
+                default:
+                    // do nothing
+            }            
+            
         }
         catch (FU fu) {
             fu.register (db, uuid, r);
         }
-/*
-        if (VocAction.i.ROLLOVER.getName ().equals (r.get ("log.action"))) {
-            
-            db.getConnection ().setAutoCommit (true);
 
-            updateDates (db, orgPPAGuid, (UUID) r.get ("ctr.uuid"), (UUID) r.get ("ctr.contractguid"));
-
-        }
-*/
     }
-/*
-    private void updateDates (DB db, UUID orgPPAGuid, UUID ctrUuid, UUID contractGUID) throws SQLException {
-        
-        UUID rUID = UUID.randomUUID ();
-
-        AckRequest.Ack exportCharterStatus = null;
-        
-        try {
-            exportCharterStatus = wsGisHouseManagementClient.exportCharterStatus (orgPPAGuid, rUID, Collections.singletonList (contractGUID));
-        }
-        catch (Exception ex) {
-            logger.log (Level.SEVERE, "wsGisHouseManagementClient.exportCharterStatus", ex);
-        }                
-                
-        UUID mGUID = UUID.fromString (exportCharterStatus.getMessageGUID ());
-
-        db.update (Charter.class, HASH (
-            "uuid", ctrUuid,
-            "contractversionguid", null
-        ));
-
-        for (int i = 0; i < 10; i ++) {
-            
-            try {
-                
-                Thread.sleep (2000L);
-                
-                GetStateResult state = null;
-                
-                try {
-                    state = wsGisHouseManagementClient.getState (orgPPAGuid, mGUID);
-                }
-                catch (Exception ex) {
-                    logger.log (Level.SEVERE, "wsGisHouseManagementClient.getState", ex);
-                }
-                
-                if (state.getRequestState () < 2) continue;
-                
-                GisPollExportCharterStatusMDB.processGetStateResponse (state, db, rUID, true);
-                
-                break;
-                                
-            }
-            catch (InterruptedException ex) {
-                logger.log (Level.WARNING, "It's futile", ex);
-            }
-            
-        }  
-        
-        UUID contractversionguid = DB.to.UUIDFromHex (db.getString (Charter.class, ctrUuid, "contractversionguid"));
-        
-        String scontractversionguid = contractversionguid.toString ();
-        
-
-        
-        
-        rUID = UUID.randomUUID ();        
-
-        try {
-            exportCharterStatus = wsGisHouseManagementClient.exportCharterData (orgPPAGuid, rUID, Collections.singletonList (contractversionguid));
-        }
-        catch (Exception ex) {
-            logger.log (Level.SEVERE, "wsGisHouseManagementClient.exportCharterStatus", ex);
-        }                
-                
-        mGUID = UUID.fromString (exportCharterStatus.getMessageGUID ());
-
-        db.update (Charter.class, HASH (
-            "uuid", ctrUuid,
-            "contractversionguid", null
-        ));
-        
-        Model m = db.getModel ();
-        
-        Map<Object, Map<String, Object>> uuid2contractObject = new HashMap <> ();
-        Map<String, Map<String, Object>> fias2contractObject = new HashMap <> ();
-        
-        db.forEach (m
-                
-            .select (CharterObject.class, "*")
-            .where ("uuid_charter", ctrUuid), 
-                
-            (rs) -> {
-                
-                Map<String, Object> i = db.HASH (rs);
-                
-                i.put ("nsi2uuid", HASH ());
-                i.put ("un2uuid", HASH ());
-
-                uuid2contractObject.put (i.get ("uuid").toString (), i);
-                fias2contractObject.put (i.get ("fiashouseguid").toString (), i);
-            
-            }
-                
-        );
-        
-        db.forEach (m                
-                
-            .select (CharterObjectService.class, "uuid", "uuid_charter_object", "code_vc_nsi_3", "is_additional")
-            .where ("uuid_charter", ctrUuid)
-            .toMaybeOne (AdditionalService.class, "AS a", "uniquenumber").on ()
-                
-        , (rs) -> {
-            
-            DB.ResultGet rg = new DB.ResultGet (rs);
-
-            final String uuid_charter_object = rg.getUUIDString ("uuid_charter_object");
-                                
-            Map<String, Object> charter_object = uuid2contractObject.get (uuid_charter_object);
-            
-            if (charter_object == null) {
-                logger.warning ("charter_object not found: " + uuid_charter_object);
-                return;
-            }
-                        
-            if (rs.getInt ("is_additional") == 1) {
-                
-                ((Map<String, String>) charter_object.get ("un2uuid")).put (
-                    rs.getString ("a.uniquenumber"), 
-                    rg.getUUIDString ("uuid")
-                );
-                
-            }
-            else {
-                
-                ((Map<String, String>) charter_object.get ("nsi2uuid")).put (
-                    rs.getString ("code_vc_nsi_3"), 
-                    rg.getUUIDString ("uuid")
-                );                
-                
-            }
-            
-        });
-        
-        logger.info ("uuid2contractObject = " + uuid2contractObject);
-
-        for (int i = 0; i < 10; i ++) {
-            
-            try {
-                
-                Thread.sleep (2000L);
-                
-                GetStateResult state = null;
-                
-                try {
-                    state = wsGisHouseManagementClient.getState (orgPPAGuid, mGUID);
-                }
-                catch (Exception ex) {
-                    logger.log (Level.SEVERE, "wsGisHouseManagementClient.getState", ex);
-                }
-                
-                if (state.getRequestState () < 2) continue;
-                
-                List<Map<String, Object>> objectRecords = new ArrayList ();
-                List<Map<String, Object>> serviceRecords = new ArrayList ();
-                                
-                for (ExportCAChResultType er: state.getExportCAChResult ()) {
-                    
-                    ExportCAChResultType.Charter contract = er.getCharter ();
-                    
-                    if (contract == null) {
-                        logger.warning ("Not a Charter? Bizarre, bizarre...");
-                        continue;
-                    }                                       
-                    
-                    String v = contract.getCharterVersionGUID ();
-                    
-                    if (v == null) {
-                        logger.warning ("Empty CharterVersionGUID? Bizarre, bizarre...");
-                        continue;
-                    }                                       
-                    
-                    if (!v.equals (scontractversionguid)) {
-                        logger.warning ("We requested " + scontractversionguid + ". Why did they send back " + v + "?");
-                        continue;
-                    }                                       
-                                        
-                    for (ExportCAChResultType.Charter.CharterObject co: contract.getCharterObject ()) {
-                        
-                        Map<String, Object> charter_object = fias2contractObject.get (co.getFIASHouseGuid ());
-                        
-                        String objUuid = charter_object.get ("uuid").toString ();
-
-                        objectRecords.add (HASH (
-                            "uuid",      objUuid,
-                            "startdate", co.getStartDate (),
-                            "enddate",   co.getEndDate ()
-                        ));
-                        
-                        for (ExportCAChResultType.Charter.CharterObject.HouseService hs: co.getHouseService ()) {
-                            
-                            serviceRecords.add (HASH (
-                                "uuid",      ((Map<String, String>) charter_object.get ("nsi2uuid")).get (hs.getServiceType ().getCode ()),
-                                "startdate", hs.getStartDate (),
-                                "enddate",   hs.getEndDate ()
-                            ));
-                            
-                        }                        
-
-                        for (ExportCAChResultType.Charter.CharterObject.AddService as: co.getAddService ()) {
-                            
-                            serviceRecords.add (HASH (
-                                "uuid",      ((Map<String, String>) charter_object.get ("un2uuid")).get (as.getServiceType ().getCode ()),
-                                "startdate", as.getStartDate (),
-                                "enddate",   as.getEndDate ()
-                            ));
-                            
-                        }                        
-
-                    }            
-                    
-                    db.begin ();
-                    
-                        db.update (CharterObjectService.class, serviceRecords);
-                        
-                        db.update (CharterObject.class, objectRecords);
-
-                        db.update (Charter.class, HASH (
-                            "uuid",                ctrUuid,
-                            "contractversionguid", scontractversionguid,
-                            "signingdate",         contract.getSigningDate (),      
-                            "effectivedate",       contract.getEffectiveDate (),      
-                            "plandatecomptetion",  contract.getPlanDateComptetion ()
-                        ));
-                    
-                    db.commit ();
-                    
-                    break;
-                    
-                }
-                
-                break;
-                                
-            }
-            catch (InterruptedException ex) {
-                logger.log (Level.WARNING, "It's futile", ex);
-            }
-            
-        }  
-        
-    }
-*/        
     private class FU extends Exception {
         
         String code;

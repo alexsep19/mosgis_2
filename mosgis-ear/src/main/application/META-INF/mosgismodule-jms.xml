@@ -316,6 +316,16 @@
     </delivery-params-overrides>
   </uniform-distributed-queue>   
   <!-- на выход — пока без очереди -->
+  
+  <!-- очередь опроса статуса исходящих запросов на данные уставов -->
+  <uniform-distributed-queue name="outExportHouseChartersDataQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.outExportHouseChartersDataQueue</jndi-name>
+    <delivery-params-overrides>
+        <time-to-deliver>2000</time-to-deliver>
+        <redelivery-delay>10000</redelivery-delay>
+    </delivery-params-overrides>
+  </uniform-distributed-queue>
 
   <!-- очередь опроса статуса исходящих запросов на статусы уставов -->
   <uniform-distributed-queue name="outExportHouseCharterStatusQueue">
@@ -327,6 +337,15 @@
     </delivery-params-overrides>
   </uniform-distributed-queue>
   
+  <!-- очередь загрузки файлов, приложенных к уставам -->
+  <uniform-distributed-queue name="outExportHouseCharterFilesQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.outExportHouseCharterFilesQueue</jndi-name>
+    <delivery-params-overrides>
+        <time-to-deliver>2000</time-to-deliver>
+        <redelivery-delay>10000</redelivery-delay>
+    </delivery-params-overrides>
+  </uniform-distributed-queue>
   
   
   

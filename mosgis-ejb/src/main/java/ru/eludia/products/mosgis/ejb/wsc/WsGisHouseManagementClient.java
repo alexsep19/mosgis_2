@@ -372,10 +372,52 @@ public class WsGisHouseManagementClient {
         
         final ImportCharterRequest.TerminateCharter tc = (ImportCharterRequest.TerminateCharter) DB.to.javaBean (ImportCharterRequest.TerminateCharter.class, r);
         tc.setCharterVersionGUID (r.get ("ctr.charterversionguid").toString ());
-        ImportCharterRequest importCharterRequest = of.createImportCharterRequest ();
+        ImportCharterRequest importCharterRequest = of.createImportCharterRequest ();        
         importCharterRequest.setTerminateCharter (tc);
+        importCharterRequest.setTransportGUID (UUID.randomUUID ().toString ());
         return getPort (orgPPAGuid, messageGUID).importCharterData (importCharterRequest).getAck ();
         
     }
 
+    public AckRequest.Ack annulCharterData (UUID orgPPAGuid, UUID messageGUID,  Map<String, Object> r) throws Fault {
+        
+        final ImportCharterRequest.AnnulmentCharter ac = (ImportCharterRequest.AnnulmentCharter) DB.to.javaBean (ImportCharterRequest.AnnulmentCharter.class, r);
+        ac.setCharterVersionGUID (r.get ("ctr.charterversionguid").toString ());        
+        ImportCharterRequest importCharterRequest = of.createImportCharterRequest ();
+        importCharterRequest.setAnnulmentCharter (new ImportCharterRequest.AnnulmentCharter ());
+        importCharterRequest.setTransportGUID (UUID.randomUUID ().toString ());
+        return getPort (orgPPAGuid, messageGUID).importCharterData (importCharterRequest).getAck ();
+        
+    }
+    
+    public AckRequest.Ack exportCharterData (UUID orgPPAGuid, UUID messageGUID, List<UUID> ids) throws Fault {
+
+        final ExportCAChAsyncRequest r = of.createExportCAChAsyncRequest ();
+                
+        List<ExportCAChRequestCriteriaType> criteria = r.getCriteria ();
+
+        for (UUID uuid: ids) {
+            ExportCAChRequestCriteriaType c = of.createExportCAChRequestCriteriaType ();
+            c.setCharterVersionGUID (uuid.toString ());
+            criteria.add (c);
+        }
+
+        return getPort (orgPPAGuid, messageGUID).exportCAChData (r).getAck ();
+
+    }
+    
+    public AckRequest.Ack rolloverCharterData (UUID orgPPAGuid, UUID messageGUID,  Map<String, Object> r) throws Fault {
+
+        final ImportCharterRequest.RollOverCharter rc = (ImportCharterRequest.RollOverCharter) DB.to.javaBean (ImportCharterRequest.RollOverCharter.class, r);
+        rc.setCharterVersionGUID (r.get ("ctr.charterversionguid").toString ());        
+        rc.setRollOver (true);
+
+        ImportCharterRequest importCharterRequest = of.createImportCharterRequest ();
+        importCharterRequest.setRollOverCharter (rc);
+        importCharterRequest.setTransportGUID (UUID.randomUUID ().toString ());
+        
+        return getPort (orgPPAGuid, messageGUID).importCharterData (importCharterRequest).getAck ();        
+        
+    }    
+    
 }

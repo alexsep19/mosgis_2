@@ -1,14 +1,20 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import ru.eludia.base.DB;
+import ru.eludia.base.db.util.SyncMap;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
+import ru.gosuslugi.dom.schema.integration.house_management.ContractServiceType;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportCharterRequest;
 
 public class CharterObjectService extends Table {
@@ -43,10 +49,6 @@ public class CharterObjectService extends Table {
             + "DECLARE" 
             + " PRAGMA AUTONOMOUS_TRANSACTION; "
             + "BEGIN "
-                
-            + "IF :NEW.startdate > :NEW.enddate THEN "
-            + " raise_application_error (-20000, '#enddate#: Дата начала предоставления услуги должна быть раньше даты окончания');"
-            + "END IF; "
 
             + "IF :NEW.is_deleted = 0 THEN "
             + " FOR i IN ("
@@ -138,5 +140,97 @@ public class CharterObjectService extends Table {
         as.setBaseServiceCharter (CharterFile.getBaseServiceType (r));
         co.getAddService ().add (as);
     }
+    
+    abstract class Sync<T> extends SyncMap<T> {
+        
+        UUID uuid_charter;
+        CharterFile.Sync files;
+        
+        public Sync (DB db, UUID uuid_charter, CharterFile.Sync files) {
+            super (db);
+            this.uuid_charter = uuid_charter;
+            this.files = files;
+            commonPart.put ("uuid_charter", uuid_charter);
+            commonPart.put ("is_deleted", 0);
+        }                
+        
+        void setFile (Map<String, Object> h, AttachmentType agreement) {
+            h.put ("uuid_charter_agreement", files.getPk (agreement));
+        }
+        
+        @Override
+        public void processDeleted (List<Map<String, Object>> deleted) throws SQLException {
+            
+            deleted.forEach ((h) -> {
+                Object u = h.get ("uuid");
+                h.clear ();
+                h.put ("uuid", u);
+                h.put ("is_deleted", 1);
+            });
+            
+            db.update (getTable (), deleted);
+
+        }
+        
+        @Override
+        public Table getTable () {
+            return CharterObjectService.this;
+        }
+        
+        void setDateFields (Map<String, Object> h, ContractServiceType cs) {
+            h.put ("startdate", cs.getStartDate ());
+            h.put ("enddate", cs.getEndDate ());
+        }
+        
+    }    
+
+    private final static String [] keyFieldsH = {"uuid_charter_object", "code_vc_nsi_3"};
+    
+    public class SyncH extends Sync<ExportCAChResultType.Charter.ContractObject.HouseService> {
+        
+        public SyncH (DB db, UUID uuid_charter, CharterFile.Sync contractFiles) {
+            super (db, uuid_charter, contractFiles);
+            commonPart.put ("is_additional", 0);            
+        }                
+
+        @Override
+        public String[] getKeyFields () {
+            return keyFieldsH;
+        }
+
+        @Override
+        public void setFields (Map<String, Object> h, ExportCAChResultType.Charter.ContractObject.HouseService co) {
+            setDateFields (h, co);
+            h.put ("code_vc_nsi_3", co.getServiceType ().getCode ());
+            setFile (h, co.getBaseService ().getAgreement ());            
+        }
+        
+    }
+    
+    private final static String [] keyFieldsA = {"uuid_charter_object", "uuid_add_service"};
+    
+    public class SyncA extends Sync<ExportCAChResultType.Charter.ContractObject.AddService> {
+        
+        AdditionalService.Sync adds;
+
+        public SyncA (DB db, UUID uuid_charter, CharterFile.Sync contractFiles, AdditionalService.Sync adds) throws SQLException {
+            super (db, uuid_charter, contractFiles);
+            this.adds = adds;            
+            commonPart.put ("is_additional", 1);                                    
+        }                
+
+        @Override
+        public String[] getKeyFields () {
+            return keyFieldsA;
+        }
+
+        @Override
+        public void setFields (Map<String, Object> h, ExportCAChResultType.Charter.ContractObject.AddService co) {
+            setDateFields (h, co);
+            h.put ("uuid_add_service", adds.getPk (co.getServiceType ()));
+            setFile (h, co.getBaseService ().getAgreement ());
+        }
+
+    }        
     
 }
