@@ -94,10 +94,9 @@ define ([], function () {
                     it._can.update = it._can.cancel = it._can.edit
 
                 }
-it._can.rollover   = 1
 
                 $('body').data ('data', data)                
-                
+
                 done (data) 
             
             })
