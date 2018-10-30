@@ -53,6 +53,10 @@ define ([], function () {
 
     }
     
+    $_DO.create_house_charter_object_common = function (e) {
+        use.block ('charter_object_new_house_passport');
+    }    
+    
     $_DO.delete_charter_object_common = function (e) {   
         if (!confirm ('Удалить эту запись, Вы уверены?')) return        
         query ({type: 'charter_objects', action: 'delete'}, {}, reload_page)

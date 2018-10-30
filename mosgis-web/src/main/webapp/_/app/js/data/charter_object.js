@@ -49,6 +49,8 @@ define ([], function () {
                 if (!it.contractobjectversionguid) it._can.delete = 1
 
                 it._can.update = it._can.cancel = it._can.edit
+                
+                if (!it ['house.uuid']) it._can.create_house = 1
 
             }
             

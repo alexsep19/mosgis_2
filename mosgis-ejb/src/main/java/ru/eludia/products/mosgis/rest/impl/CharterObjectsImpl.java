@@ -13,6 +13,7 @@ import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.rest.api.CharterObjectsLocal;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.CharterObjectLog;
+import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.db.model.voc.VocCharterObjectReason;
@@ -38,6 +39,7 @@ public class CharterObjectsImpl extends BaseCRUD<CharterObject> implements Chart
             .toOne (Charter.class,            "AS ctr",  "*"    ).on ()
             .toOne (VocOrganization.class,    "AS org",  "label").on ("ctr.uuid_org")
             .toOne (VocBuildingAddress.class, "AS fias", "label").on ("root.fiashouseguid=fias.houseguid")
+            .toMaybeOne (House.class,         "AS house", "uuid" ).on ("root.fiashouseguid=house.fiashouseguid")
         );
 
         job.add ("item", item);

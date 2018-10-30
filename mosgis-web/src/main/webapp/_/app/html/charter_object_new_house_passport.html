@@ -1,0 +1,66 @@
+<span
+	data-popup-width=200    
+	data-popup-height=190
+	data-popup-title='Выберите тип дома'
+>
+
+    <style>
+        .w2ui-field > label.popup_1 {
+            width: 30px;
+            margin-right: 10px;
+            margin-left: 10px;
+        }
+        
+        .w2ui-field > label.popup_2 {
+            width: 25px;
+            margin-right: 10px;
+            margin-left: 10px;
+        }
+                        
+        .w2ui-field input.popup {
+            width: 10px !important;
+        }
+    </style>
+    
+	<div class="w2ui-reset w2ui-form" style="height:140px; margin:8px 0 0 0;">
+
+        <div class="w2ui-page page-0">
+
+            <center>
+            <table border=0 cellpadding=0 cellspacing=0 width=15%>
+                <tr>
+                    <td align="right">
+                        <div class="w2ui-field">
+                            <input class="popup" type=radio name="is_condo" value=1>
+                        </div>
+                    </td>
+                    <td aligh="left">
+                        <div class="w2ui-field">
+                             <label class="popup_1">МКД</label>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td align="right">
+                        <div class="w2ui-field">
+                            <input class="popup" type=radio name="is_condo" value=0>
+                        </div>
+                    </td>
+                    <td aligh="left">
+                        <div class="w2ui-field">
+                             <label class="popup_2">ЖД</label>
+                        </div>
+                    </td>
+                </tr>
+            </table>    
+            </center>
+        </div>
+            
+        <div class="w2ui-buttons">
+            <span>
+                <button class=w2ui-btn name=create>Создать</button>
+            </span>
+        </div>
+
+</span>
