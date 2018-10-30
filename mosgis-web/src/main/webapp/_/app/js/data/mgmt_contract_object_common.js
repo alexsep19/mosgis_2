@@ -61,6 +61,10 @@ define ([], function () {
         use.block ('mgmt_contract_object_annul_popup');
     }
     
+    $_DO.create_house_mgmt_contract_object_common = function (e) {
+        use.block ('mgmt_contract_object_new_house_passport');
+    }
+    
     $_DO.choose_tab_mgmt_contract_object_common = function (e) {
     
         var name = e.tab.id

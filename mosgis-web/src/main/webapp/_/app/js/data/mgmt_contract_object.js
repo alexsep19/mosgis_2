@@ -60,6 +60,23 @@ define ([], function () {
 
             }
             
+            var can_create_house = false
+            
+            switch (it.id_ctr_status_gis) {
+                case 10:
+                case 20:
+                case 40:
+                    can_create_house = true
+            }
+            
+            if (it.is_deleted == 0 && !it ['house.uuid'] && 
+                    can_create_house && 
+                    ($_USER.role.admin || it ['ctr.uuid_org'] == $_USER.uuid_org)) {
+                
+                it._can.create_house = 1
+                
+            }
+            
             $('body').data ('data', data)
 
             done (data)
