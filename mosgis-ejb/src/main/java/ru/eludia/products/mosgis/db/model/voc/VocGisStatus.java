@@ -75,6 +75,10 @@ public class VocGisStatus extends Table {
         byte id;
         String name;
         String label;
+        
+        public ru.eludia.base.model.def.Num asDef () {
+            return new ru.eludia.base.model.def.Num (id);
+        }
 
         public byte getId () {
             return id;

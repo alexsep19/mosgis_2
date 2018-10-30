@@ -1,15 +1,20 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import static java.lang.Boolean.FALSE;
 import java.util.Collection;
 import java.util.Map;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
+import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
-import ru.eludia.base.model.def.Bool;
+import static ru.eludia.base.model.Type.BOOLEAN;
+import static ru.eludia.base.model.Type.NUMERIC;
+import static ru.eludia.base.model.Type.INTEGER;
+import static ru.eludia.base.model.Type.DATE;
+import static ru.eludia.base.model.Type.STRING;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
-import ru.eludia.base.model.def.Num;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocCharterObjectReason;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
@@ -23,76 +28,70 @@ import ru.gosuslugi.dom.schema.integration.house_management.DeviceMeteringsDaySe
 import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
 
 public class Charter extends Table {
-/*    
+
     public enum c implements ColEnum {
+        
+        UUID_ORG                  (VocOrganization.class,                                      "Организация"),
+        ID_CTR_STATUS             (VocGisStatus.class,    VocGisStatus.i.PROJECT.asDef (),     "Статус устава с точки зрения mosgis"),
+        ID_CTR_STATUS_GIS         (VocGisStatus.class,    VocGisStatus.i.PROJECT.asDef (),     "Статус устава с точки зрения ГИС ЖКХ"),
+        ID_CTR_STATE_GIS          (VocGisStatus.class,    VocGisStatus.i.NOT_RUNNING.asDef (), "Состояние устава с точки зрения ГИС ЖКХ"),
+        UUID_OUT_SOAP             (OutSoap.class,         null,                                "Последний запрос на импорт в ГИС ЖКХ"),
+        ID_LOG                    (CharterLog.class,      null,                                "Последнее событие редактирования"),        
+        
+        UUID                      (Type.UUID,    NEW_UUID,    "Ключ"),        
+        IS_DELETED                (BOOLEAN,      FALSE,  "1, если запись удалена; иначе 0"),
+
+        DATE_                     (DATE,          null,  "Дата регистрации TCН/ТСЖ/кооператива (Организации Поставщика данных)"),        
+                
+        AUTOMATICROLLOVERONEYEAR  (BOOLEAN,      FALSE,  "Автоматически продлить срок оказания услуг на один год"),
+        NOCHARTERAPPROVEPROTOCOL  (BOOLEAN,      FALSE,  "Протокол, содержащий решение об утверждении устава, отсутствует"),              
+
+        // PeriodMetering		    
+        DDT_M_START               (NUMERIC,  2,   null,  "Начало периода ввода показаний ПУ (1..31 — конкретное число; 99 — последнее число)"),
+        DDT_M_START_NXT           (BOOLEAN,      FALSE,  "1, если начало периода ввода показаний ПУ в следующем месяце; иначе 0"),
+        DDT_M_END                 (NUMERIC,  2,   null,  "Окончание периода ввода показаний ПУ (1..31 — конкретное число; 99 — последнее число)"),
+        DDT_M_END_NXT             (BOOLEAN,      FALSE,  "1, если окончание периода ввода показаний ПУ в следующем месяце; иначе 0"),
+
+        // PaymentDocumentInterval	    
+        DDT_D_START               (NUMERIC,  2,   null,  "Срок представления (выставления) платежных документов для внесения платы за жилое помещение и (или) коммунальные услуги (1..30 — конкретное число; 99 — последнее число)"),
+        DDT_D_START_NXT           (BOOLEAN,      FALSE,  "1, если срок представления (выставления) платежных документов для внесения платы за жилое помещение и (или) коммунальные услуги в следующем месяце; иначе 0"),
+
+        // PaymentInterval		    
+        DDT_I_START               (NUMERIC,  2,   null,  "Срок внесения платы за жилое помещение и (или) коммунальные услуги (1..30 — конкретное число; 99 — последнее число)"),
+        DDT_I_START_NXT           (BOOLEAN,      FALSE,  "1, если срок внесения платы за жилое помещение и (или) коммунальные услуги в следующем месяце; иначе 0"),
+
+        CHARTERGUID               (Type.UUID,    null,    "UUID устава в ГИС ЖКХ"),
+        CHARTERVERSIONGUID        (Type.UUID,    null,    "Идентификатор последней известной версии устава"),
+
+        VERSIONNUMBER             (INTEGER,  10, null,    "Номер версии (по состоянию в ГИС ЖКХ)"),
+
+        TERMINATE                 (DATE,         null,    "Дата прекращения"),
+        REASON                    (STRING, 255,  null,    "Причина прекращения"),
+
+        ROLLTODATE                (DATE,         null,    "Пролонгировать до даты"),
+
+        REASONOFANNULMENT         (STRING, 1000, null,    "Причина аннулирования"),
+        IS_ANNULED                (BOOLEAN,      new Virt ("DECODE(\"REASONOFANNULMENT\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0")
         
         ;
         
-        private Col col;        
-
-        private c (Object... p) {
-            col = new Col (p);
-        }
-
         @Override
-        public Col getCol () {
-            return col;
-        }
+        public Col getCol () {return col;}
+        private Col col;        
+        private c (Type type, Object... p) {col = new Col (this, type, p);}
+        private c (Class c,   Object... p) {col = new Ref (this, c, p);}
         
     }
-*/
 
     public Charter () {
 
         super ("tb_charters", "Уставы");
-
-        pk    ("uuid",                      Type.UUID,             NEW_UUID,            "Ключ");
-        col   ("is_deleted",                Type.BOOLEAN,          Bool.FALSE,          "1, если запись удалена; иначе 0");
-        fk    ("uuid_org",                  VocOrganization.class,                      "Организация");
         
-        fk    ("id_ctr_status",             VocGisStatus.class,          new Num (VocGisStatus.i.PROJECT.getId ()), "Статус устава с точки зрения mosgis");
-        fk    ("id_ctr_status_gis",         VocGisStatus.class,          new Num (VocGisStatus.i.PROJECT.getId ()), "Статус устава с точки зрения ГИС ЖКХ");
-        fk    ("id_ctr_state_gis",          VocGisStatus.class,          new Num (VocGisStatus.i.NOT_RUNNING.getId ()), "Состояние устава с точки зрения ГИС ЖКХ");
+        cols   (c.class);
+        pk     (getColumn (c.UUID.toString ()));
         
-        col   ("date_",                     Type.DATE,             null,        "Дата регистрации TCН/ТСЖ/кооператива (Организации Поставщика данных)");
-        col   ("automaticrolloveroneyear",  Type.BOOLEAN,          Bool.FALSE,  "Автоматически продлить срок оказания услуг на один год");
-        col   ("nocharterapproveprotocol",  Type.BOOLEAN,          Bool.FALSE,  "Протокол, содержащий решение об утверждении устава, отсутствует");              
-        
-    //  DateDetailsType:
-
-        //    PeriodMetering
-        col   ("ddt_m_start",               Type.NUMERIC,          2,   null,  "Начало периода ввода показаний ПУ (1..31 — конкретное число; 99 — последнее число)");
-        col   ("ddt_m_start_nxt",           Type.BOOLEAN,          Bool.FALSE, "1, если начало периода ввода показаний ПУ в следующем месяце; иначе 0");
-        col   ("ddt_m_end",                 Type.NUMERIC,          2,   null,  "Окончание периода ввода показаний ПУ (1..31 — конкретное число; 99 — последнее число)");
-        col   ("ddt_m_end_nxt",             Type.BOOLEAN,          Bool.FALSE, "1, если окончание периода ввода показаний ПУ в следующем месяце; иначе 0");
-
-        //    PaymentDocumentInterval
-        col   ("ddt_d_start",               Type.NUMERIC,          2,   null,  "Срок представления (выставления) платежных документов для внесения платы за жилое помещение и (или) коммунальные услуги (1..30 — конкретное число; 99 — последнее число)");
-        col   ("ddt_d_start_nxt",           Type.BOOLEAN,          Bool.FALSE, "1, если срок представления (выставления) платежных документов для внесения платы за жилое помещение и (или) коммунальные услуги в следующем месяце; иначе 0");
-
-        //    PaymentInterval
-        col   ("ddt_i_start",               Type.NUMERIC,          2,   null,  "Срок внесения платы за жилое помещение и (или) коммунальные услуги (1..30 — конкретное число; 99 — последнее число)");
-        col   ("ddt_i_start_nxt",           Type.BOOLEAN,          Bool.FALSE, "1, если срок внесения платы за жилое помещение и (или) коммунальные услуги в следующем месяце; иначе 0");
-
-        fk    ("uuid_out_soap",             OutSoap.class,             null,    "Последний запрос на импорт в ГИС ЖКХ");
-        col   ("charterguid",               Type.UUID,                 null,    "UUID устава в ГИС ЖКХ");
-        col   ("charterversionguid",        Type.UUID,                 null,    "Идентификатор последней известной версии устава");
-
-        fk    ("id_log",                    CharterLog.class,          null,    "Последнее событие редактирования");
-
-        col   ("versionnumber",             Type.INTEGER,          10, null,    "Номер версии (по состоянию в ГИС ЖКХ)");
-
-        col   ("terminate",                 Type.DATE,                 null,    "Дата прекращения");
-        col   ("reason",                    Type.STRING,         255,  null,    "Причина прекращения");
-        
-        col   ("rolltodate",                Type.DATE,             null,        "Пролонгировать до даты");
-        
-        col   ("reasonofannulment",         Type.STRING,         1000, null,    "Причина аннулирования");
-        col   ("is_annuled",                Type.BOOLEAN,          new Virt ("DECODE(\"REASONOFANNULMENT\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0");
-
-        key    ("charterguid", "charterguid");
-        unique ("uuid_org", "uuid_org");
-        
+        key    ("charterguid", c.CHARTERGUID);
+        unique ("uuid_org",    c.UUID_ORG);        
         
         trigger ("BEFORE UPDATE", ""
                 
