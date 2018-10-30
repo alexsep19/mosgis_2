@@ -1,18 +1,25 @@
 package ru.eludia.products.mosgis.ejb.wsc;
 
+import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.jws.HandlerChain;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
 import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
+import ru.eludia.base.db.util.JDBCConsumer;
 import ru.eludia.base.db.util.TypeConverter;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.Block;
+import ru.eludia.products.mosgis.db.model.tables.Charter;
+import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractFile;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
@@ -21,9 +28,12 @@ import ru.eludia.products.mosgis.db.model.tables.Lift;
 import ru.eludia.products.mosgis.db.model.tables.LivingRoom;
 import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.util.StringUtils;
+import ru.eludia.products.mosgis.jms.gis.poll.GisPollExportMgmtContractStatusMDB;
 import ru.eludia.products.mosgis.ws.base.LoggingOutMessageHandler;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
@@ -31,6 +41,8 @@ import ru.gosuslugi.dom.schema.integration.base.GetStateRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ApartmentHouseESPType;
 import ru.gosuslugi.dom.schema.integration.house_management.ApartmentHouseOMSType;
 import ru.gosuslugi.dom.schema.integration.house_management.ApartmentHouseUOType;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChAsyncRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChRequestCriteriaType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportHouseRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportStatusCAChRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
@@ -40,6 +52,7 @@ import ru.gosuslugi.dom.schema.integration.house_management.HouseBasicUpdateESPT
 import ru.gosuslugi.dom.schema.integration.house_management.HouseBasicUpdateOMSType;
 import ru.gosuslugi.dom.schema.integration.house_management.HouseBasicUpdateRSOType;
 import ru.gosuslugi.dom.schema.integration.house_management.HouseBasicUpdateUOType;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportCharterRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseESPRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseOMSRequest;
@@ -90,6 +103,24 @@ public class WsGisHouseManagementClient {
         request.setFIASHouseGuid(fiasHouseGuid);
         
         return getPort ().exportHouseData(request).getAck();
+        
+    }
+
+    public AckRequest.Ack rolloverContractData (UUID orgPPAGuid, UUID messageGUID,  Map<String, Object> r) throws Fault {
+
+        final ImportContractRequest.Contract.RollOverContract rc = (ImportContractRequest.Contract.RollOverContract) DB.to.javaBean (ImportContractRequest.Contract.RollOverContract.class, r);
+        rc.setLicenseRequest (true);
+        rc.setContractVersionGUID (r.get ("ctr.contractversionguid").toString ());        
+        rc.setRollOver (true);
+
+        ImportContractRequest importContractRequest = of.createImportContractRequest ();
+        final ImportContractRequest.Contract c = of.createImportContractRequestContract ();
+        c.setRollOverContract (rc);
+        c.setTransportGUID (UUID.randomUUID ().toString ());
+        
+        importContractRequest.getContract ().add (c);
+        
+        return getPort (orgPPAGuid, messageGUID).importContractData (importContractRequest).getAck ();        
         
     }
     
@@ -213,6 +244,38 @@ public class WsGisHouseManagementClient {
 
         return getPort (orgPPAGuid, messageGUID).exportStatusCAChData (r).getAck ();
 
+    }   
+    
+    public AckRequest.Ack exportCharterStatus (UUID orgPPAGuid, UUID messageGUID, List<UUID> ids) throws Fault {
+
+        final ExportStatusCAChRequest r = of.createExportStatusCAChRequest ();
+
+        List<ExportStatusCAChRequest.Criteria> criteria = r.getCriteria ();
+
+        for (UUID uuid: ids) {
+            final ExportStatusCAChRequest.Criteria c = of.createExportStatusCAChRequestCriteria ();            
+            c.setCharterGUID (uuid.toString ());
+            criteria.add (c);            
+        }
+
+        return getPort (orgPPAGuid, messageGUID).exportStatusCAChData (r).getAck ();
+
+    }   
+
+    public AckRequest.Ack exportContractData (UUID orgPPAGuid, UUID messageGUID, List<UUID> ids) throws Fault {
+
+        final ExportCAChAsyncRequest r = of.createExportCAChAsyncRequest ();
+                
+        List<ExportCAChRequestCriteriaType> criteria = r.getCriteria ();
+
+        for (UUID uuid: ids) {
+            ExportCAChRequestCriteriaType c = of.createExportCAChRequestCriteriaType ();
+            c.setContractVersionGUID (uuid.toString ());
+            criteria.add (c);
+        }
+
+        return getPort (orgPPAGuid, messageGUID).exportCAChData (r).getAck ();
+
     }
 
     public GetStateResult getState (UUID orgPPAGuid, UUID uuid) throws Fault {
@@ -225,7 +288,7 @@ public class WsGisHouseManagementClient {
         
         ImportHouseUORequest importHouseUORequest = of.createImportHouseUORequest();
         
-        if (TypeConverter.bool(r.get("is_condo"))) {
+        if (TypeConverter.Boolean(r.get("is_condo"))) {
             //МКД
             ImportHouseUORequest.ApartmentHouse house = new ImportHouseUORequest.ApartmentHouse();
             importHouseUORequest.setApartmentHouse(house);
@@ -263,7 +326,7 @@ public class WsGisHouseManagementClient {
                 livingHouse.setBasicCharacteristicts(TypeConverter.javaBean(HouseBasicUpdateUOType.class, r));
                 house.setLivingHouseToUpdate(livingHouse);
             }
-            if (TypeConverter.bool(r.get("hasblocks")))
+            if (TypeConverter.Boolean(r.get("hasblocks")))
                 ((Collection<Map<String, Object>>) r.get("blocks")).forEach((item) -> Block.add(house, item));
             ((Collection<Map<String, Object>>) r.get("livingrooms")).forEach((item) -> LivingRoom.add(house, item));
         }
@@ -275,7 +338,7 @@ public class WsGisHouseManagementClient {
         
         ImportHouseOMSRequest importHouseOMSRequest = of.createImportHouseOMSRequest();
         
-        if (TypeConverter.bool(r.get("is_condo"))) {
+        if (TypeConverter.Boolean(r.get("is_condo"))) {
             //МКД
             ImportHouseOMSRequest.ApartmentHouse house = new ImportHouseOMSRequest.ApartmentHouse();
             importHouseOMSRequest.setApartmentHouse(house);
@@ -313,7 +376,7 @@ public class WsGisHouseManagementClient {
                 livingHouse.setBasicCharacteristicts(TypeConverter.javaBean(HouseBasicUpdateOMSType.class, r));
                 house.setLivingHouseToUpdate(livingHouse);
             }
-            if (TypeConverter.bool(r.get("hasblocks")))
+            if (TypeConverter.Boolean(r.get("hasblocks")))
                 ((Collection<Map<String, Object>>) r.get("blocks")).forEach((item) -> Block.add(house, item));
             ((Collection<Map<String, Object>>) r.get("livingrooms")).forEach((item) -> LivingRoom.add(house, item));
         }
@@ -325,7 +388,7 @@ public class WsGisHouseManagementClient {
         
         ImportHouseRSORequest importHouseRSORequest = of.createImportHouseRSORequest();
         
-        if (TypeConverter.bool(r.get("is_condo"))) {
+        if (TypeConverter.Boolean(r.get("is_condo"))) {
             //МКД
             ImportHouseRSORequest.ApartmentHouse house = new ImportHouseRSORequest.ApartmentHouse();
             importHouseRSORequest.setApartmentHouse(house);
@@ -362,7 +425,7 @@ public class WsGisHouseManagementClient {
                 livingHouse.setBasicCharacteristicts(TypeConverter.javaBean(HouseBasicUpdateRSOType.class, r));
                 house.setLivingHouseToUpdate(livingHouse);
             }
-            if (TypeConverter.bool(r.get("hasblocks")))
+            if (TypeConverter.Boolean(r.get("hasblocks")))
                 ((Collection<Map<String, Object>>) r.get("blocks")).forEach((item) -> Block.add(house, item));
             ((Collection<Map<String, Object>>) r.get("livingrooms")).forEach((item) -> LivingRoom.add(house, item));
         }
@@ -374,7 +437,7 @@ public class WsGisHouseManagementClient {
         
         ImportHouseESPRequest importHouseESPRequest = of.createImportHouseESPRequest();
         
-        if (TypeConverter.bool(r.get("is_condo"))) {
+        if (TypeConverter.Boolean(r.get("is_condo"))) {
             //МКД
             ImportHouseESPRequest.ApartmentHouse house = new ImportHouseESPRequest.ApartmentHouse();
             importHouseESPRequest.setApartmentHouse(house);
@@ -401,5 +464,163 @@ public class WsGisHouseManagementClient {
         
         return getPort (orgPPAGuid, UUID.randomUUID()).importHouseESPData(importHouseESPRequest).getAck ();       
     }
+    
+    
+    
+    
+    public AckRequest.Ack placeCharterData (UUID orgPPAGuid, UUID messageGUID,  Map<String, Object> r) throws Fault {
+        
+        r.put ("date", r.get ("date_"));
+        final ImportCharterRequest.PlacingCharter pc = (ImportCharterRequest.PlacingCharter) DB.to.javaBean (ImportCharterRequest.PlacingCharter.class, r);
+        Charter.fillCharter (pc, r);
+        
+        for (Map<String, Object> o:    (Collection<Map<String, Object>>) r.get ("objects")) CharterObject.add (pc, o);
 
+        ImportCharterRequest importCharterRequest = of.createImportCharterRequest ();
+                
+        importCharterRequest.setPlacingCharter (pc);
+        importCharterRequest.setTransportGUID (r.get ("uuid").toString ());
+
+        return getPort (orgPPAGuid, messageGUID).importCharterData (importCharterRequest).getAck ();
+        
+    }
+
+    public AckRequest.Ack editCharterData (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        
+        r.put ("date", r.get ("date_"));
+        final ImportCharterRequest.EditCharter ec = (ImportCharterRequest.EditCharter) DB.to.javaBean (ImportCharterRequest.EditCharter.class, r);
+        Charter.fillCharter (ec, r);
+        ec.setCharterVersionGUID (r.get ("ctr.charterversionguid").toString ());
+        
+        for (Map<String, Object> o:    (Collection<Map<String, Object>>) r.get ("objects")) CharterObject.add (ec, o);        
+
+        ImportCharterRequest importCharterRequest = of.createImportCharterRequest ();
+        
+        importCharterRequest.setEditCharter (ec);
+        importCharterRequest.setTransportGUID (r.get ("uuid").toString ());
+        
+        return getPort (orgPPAGuid, messageGUID).importCharterData (importCharterRequest).getAck ();
+
+    }
+    
+    public void doWithGetState (DB db, UUID orgPPAGuid, UUID requestGuid, UUID messageGuid, UUID ctrUuid, JDBCConsumer<GetStateResult> done) throws SQLException {
+
+        logger.info ("Synchronous exportContractStatus for contract " + ctrUuid + ": " + requestGuid + " - " + messageGuid);
+                
+        db.update (Contract.class, HASH (
+            "uuid", ctrUuid,
+            "contractversionguid", null
+        ));
+        
+        for (int i = 0; i < 10; i ++) {
+            
+            try {
+                
+                Thread.sleep (2000L);
+                
+                GetStateResult state = null;
+                
+                try {
+                    state = getState (orgPPAGuid, messageGuid);
+                }
+                catch (Exception ex) {
+                    logger.log (Level.WARNING, "wsGisHouseManagementClient.getState failed", ex);
+                    continue;
+                }
+                
+                if (state.getRequestState () < 2) {
+                    logger.log (Level.WARNING, "wsGisHouseManagementClient.getState is not ready");
+                    continue;
+                }
+                
+                done.accept (state);
+                
+                db.update (OutSoap.class, HASH (
+                    "uuid", requestGuid,
+                    "id_status", DONE.getId ()
+                ));                
+                
+                return;
+                
+            }
+            catch (InterruptedException ex) {
+                logger.log (Level.WARNING, "It's futile", ex);
+            }
+            
+        }        
+        
+        throw new IllegalStateException ("Synchronous exportContractStatus for contract " + ctrUuid + " failed. See previous log lines.");
+        
+    }    
+    
+    public void refreshContractStatus (UUID orgPPAGuid, UUID contractGUID, DB db, UUID ctrUuid) throws SQLException {
+        
+        UUID requestGuid = UUID.randomUUID ();
+        UUID messageGuid = null;
+                
+        try {
+            messageGuid = UUID.fromString (exportContractStatus (orgPPAGuid, requestGuid, Collections.singletonList (contractGUID)).getMessageGUID ());
+        }
+        catch (Exception ex) {
+            throw new IllegalStateException (ex);
+        }
+        
+        doWithGetState (db, orgPPAGuid, requestGuid, messageGuid, ctrUuid, (state) -> {
+            GisPollExportMgmtContractStatusMDB.processGetStateResponse (state, db, true);            
+        });        
+
+    }
+    
+    public AckRequest.Ack terminateCharterData (UUID orgPPAGuid, UUID messageGUID,  Map<String, Object> r) throws Fault {
+        
+        final ImportCharterRequest.TerminateCharter tc = (ImportCharterRequest.TerminateCharter) DB.to.javaBean (ImportCharterRequest.TerminateCharter.class, r);
+        tc.setCharterVersionGUID (r.get ("ctr.charterversionguid").toString ());
+        ImportCharterRequest importCharterRequest = of.createImportCharterRequest ();        
+        importCharterRequest.setTerminateCharter (tc);
+        importCharterRequest.setTransportGUID (UUID.randomUUID ().toString ());
+        return getPort (orgPPAGuid, messageGUID).importCharterData (importCharterRequest).getAck ();
+        
+    }
+
+    public AckRequest.Ack annulCharterData (UUID orgPPAGuid, UUID messageGUID,  Map<String, Object> r) throws Fault {
+        
+        final ImportCharterRequest.AnnulmentCharter ac = (ImportCharterRequest.AnnulmentCharter) DB.to.javaBean (ImportCharterRequest.AnnulmentCharter.class, r);
+        ac.setCharterVersionGUID (r.get ("ctr.charterversionguid").toString ());        
+        ImportCharterRequest importCharterRequest = of.createImportCharterRequest ();
+        importCharterRequest.setAnnulmentCharter (new ImportCharterRequest.AnnulmentCharter ());
+        importCharterRequest.setTransportGUID (UUID.randomUUID ().toString ());
+        return getPort (orgPPAGuid, messageGUID).importCharterData (importCharterRequest).getAck ();
+        
+    }
+    
+    public AckRequest.Ack exportCharterData (UUID orgPPAGuid, UUID messageGUID, List<UUID> ids) throws Fault {
+
+        final ExportCAChAsyncRequest r = of.createExportCAChAsyncRequest ();
+                
+        List<ExportCAChRequestCriteriaType> criteria = r.getCriteria ();
+
+        for (UUID uuid: ids) {
+            ExportCAChRequestCriteriaType c = of.createExportCAChRequestCriteriaType ();
+            c.setCharterVersionGUID (uuid.toString ());
+            criteria.add (c);
+        }
+
+        return getPort (orgPPAGuid, messageGUID).exportCAChData (r).getAck ();
+
+    }
+    
+    public AckRequest.Ack rolloverCharterData (UUID orgPPAGuid, UUID messageGUID,  Map<String, Object> r) throws Fault {
+
+        final ImportCharterRequest.RollOverCharter rc = (ImportCharterRequest.RollOverCharter) DB.to.javaBean (ImportCharterRequest.RollOverCharter.class, r);
+        rc.setCharterVersionGUID (r.get ("ctr.charterversionguid").toString ());        
+        rc.setRollOver (true);
+
+        ImportCharterRequest importCharterRequest = of.createImportCharterRequest ();
+        importCharterRequest.setRollOverCharter (rc);
+        importCharterRequest.setTransportGUID (UUID.randomUUID ().toString ());
+        
+        return getPort (orgPPAGuid, messageGUID).importCharterData (importCharterRequest).getAck ();        
+        
+    }    
+    
 }

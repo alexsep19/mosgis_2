@@ -13,7 +13,9 @@ public interface MgmtContractLocal extends CRUDBackend {
     JsonObject doAlter     (String id, User user);
     JsonObject doPromote   (String id);
     JsonObject doRefresh   (String id, User user);
+    JsonObject doReload    (String id, User user);
     JsonObject doTerminate (String id, JsonObject p, User user);
     JsonObject doAnnul     (String id, JsonObject p, User user);
+    JsonObject doRollover  (String id, JsonObject p, User user);
 
 }

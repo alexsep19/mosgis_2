@@ -6,7 +6,7 @@ define ([], function () {
         
         fill (view, data, $('body'))
 
-        $('#container').w2layout ({
+        $('#container').w2relayout ({
         
             name: 'topmost_layout',
             

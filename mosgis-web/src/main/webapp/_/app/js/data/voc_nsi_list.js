@@ -34,7 +34,7 @@ define ([], function () {
         
             var org_vocs = []
                         
-            if (one_of_roles (1, 19, 20, 21, 36, 2)) org_vocs.push ({
+            if (one_of_roles (1, 19, 20, 21, 22, 36, 2)) org_vocs.push ({
                 id: 'add_services',
                 text: 'Дополнительные услуги',
             })
@@ -52,6 +52,11 @@ define ([], function () {
             if (one_of_roles (1, 19, 20, 21, 36)) org_vocs.push ({
                 id: 'insurance_products',
                 text: 'Страховые продукты',
+            })
+            
+            if (one_of_roles (1, 19, 20, 21, 22, 36, 2)) org_vocs.push ({
+                id: 'vc_persons',
+                text: 'Физические лица',
             })
 
             if (org_vocs.length) data.vc_nsi_list_group.unshift ({

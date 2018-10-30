@@ -2,6 +2,30 @@ define ([], function () {
 
     var form_name = 'mgmt_contract_common_form'
     
+    $_DO.download_mgmt_contract_common = function (e) {    
+        
+        var box = $('body')
+
+        function label (cur, max) {return String (Math.round (100 * cur / max)) + '%'}
+
+        w2utils.lock (box, label (0, 1))
+
+        download ({
+
+            type:   'contract_docs', 
+            id:     $('body').data ('data').item.last_termination.file.uuid,
+            action: 'download',
+
+        }, {}, {
+
+            onprogress: function (cur, max) {$('.w2ui-lock-msg').html ('<br><br>' + label (cur, max))},
+
+            onload: function () {w2utils.unlock (box)},
+
+        })
+    
+    }    
+    
     $_DO.open_orgs_mgmt_contract_common = function (e) {
     
         var f = w2ui [form_name]
@@ -128,6 +152,11 @@ define ([], function () {
         if (!confirm ('Послать в ГИС ЖКХ запрос на обновление статуса этого договора?')) return
         query ({type: 'mgmt_contracts', action: 'refresh'}, {}, reload_page)
     }
+    
+    $_DO.reload_mgmt_contract_common = function (e) {
+        if (!confirm ('Все изменения, не переданные в ГИС ЖКХ, будут потеряны. Вы действительно хотите обновить данные из ГИС ЖКХ?')) return
+        query ({type: 'mgmt_contracts', action: 'reload'}, {}, reload_page)
+    }
 
     $_DO.undelete_mgmt_contract_common = function (e) {   
         if (!confirm ('Восстановить эту запись, Вы уверены?')) return        
@@ -140,6 +169,10 @@ define ([], function () {
     
     $_DO.annul_mgmt_contract_common = function (e) {
         use.block ('mgmt_contract_annul_popup')
+    }
+    
+    $_DO.rollover_mgmt_contract_common = function (e) {
+        use.block ('mgmt_contract_rollover_popup')
     }
     
     $_DO.choose_tab_mgmt_contract_common = function (e) {
@@ -182,6 +215,8 @@ define ([], function () {
         }
 
         it.err_text = it ['out_soap.err_text']        
+        
+        if (it.id_ctr_status_gis == 110) it.is_annuled = 1
 
         done (data)
         

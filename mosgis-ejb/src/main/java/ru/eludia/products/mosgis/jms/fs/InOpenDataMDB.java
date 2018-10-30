@@ -240,7 +240,7 @@ public class InOpenDataMDB extends UUIDMDB<InOpenData> {
 
             logger.log (Level.INFO, "" + file); 
 
-            try (DB.RecordBuffer bb = db.new TableUpsertBuffer (InOpenDataLine.class, PACK_SIZE, InOpenDataLinesBuf.class, BUFF_SIZE, null)) {
+            try (DB.RecordBuffer bb = db.new TableUpsertBuffer (InOpenDataLine.class, PACK_SIZE, InOpenDataLinesBuf.class, BUFF_SIZE)) {
                 
                 b = bb;
                 

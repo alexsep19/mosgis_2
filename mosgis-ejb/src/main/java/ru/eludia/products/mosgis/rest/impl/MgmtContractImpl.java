@@ -59,8 +59,10 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
             case APPROVE:
             case PROMOTE:
             case REFRESH:
+            case RELOAD:
             case TERMINATE:
             case ANNUL:
+            case ROLLOVER:
                 super.publishMessage (action, id_log);
             default:
                 return;
@@ -110,13 +112,16 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
         
         final MosGisModel model = ModelHolder.getModel ();
-
+        
+        final JsonObject data = p.getJsonObject ("data");
+logger.info ("data=" + data);
         Select select = model.select (MgmtContract.class, "AS root", "*", "uuid AS id")
             .toOne (VocOrganization.class, "AS org", "label").on ("uuid_org")
             .toMaybeOne (VocOrganization.class, "AS org_customer", "label").on ("uuid_org_customer")
             .toMaybeOne (ContractLog.class         ).on ()
             .toMaybeOne (OutSoap.class,           "err_text").on ()
-            .and ("uuid_org", p.getJsonObject ("data").getString ("uuid_org", null))
+            .and ("uuid_org",          data.getString ("uuid_org",          null))
+            .and ("uuid_org_customer", data.getString ("uuid_org_customer", null))
             .orderBy ("org.label")
             .orderBy ("root.docnum")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
@@ -131,14 +136,16 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
     public JsonObject getItem (String id) {return fetchData ((db, job) -> {
         
         Model m = ModelHolder.getModel ();
-
-        job.add ("item", db.getJsonObject (m
+        
+        JsonObject item = db.getJsonObject (m
             .get (MgmtContract.class, id, "*")
             .toOne      (VocOrganization.class,                    "label").on ("uuid_org")
             .toMaybeOne (VocOrganization.class, "AS org_customer", "label").on ("uuid_org_customer")
             .toMaybeOne (ContractLog.class                                ).on ()
             .toMaybeOne (OutSoap.class,                         "err_text").on ()
-        ));
+        );
+
+        job.add ("item", item);
 
         JsonObject lastApprove = db.getJsonObject (m
             .select  (ContractLog.class, "AS root", "*")
@@ -152,6 +159,35 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
         );       
 
         if (lastApprove != null) job.add ("last_approve", lastApprove);
+        
+        switch (VocGisStatus.i.forId (item.getInt ("id_ctr_status_gis", 10))) {
+            
+            case APPROVAL_PROCESS:
+            case PENDING_RQ_TERMINATE:
+            case PENDING_RP_TERMINATE:
+            case TERMINATED:
+                
+                JsonObject lastTermination = db.getJsonObject (m
+                    .select  (ContractLog.class, "AS root", "*")
+                    .and    ("uuid_object", id)
+                    .and    ("action",      VocAction.i.TERMINATE.getName ())
+                    .orderBy ("root.ts DESC")
+                );
+
+                if (lastTermination != null) job.add ("last_termination", lastTermination);
+
+                JsonObject terminationFile = db.getJsonObject (m
+                    .select  (ContractFile.class, "uuid", "label")
+                    .and    ("uuid_contract", id)
+                    .and    ("id_type", VocContractDocType.i.TERMINATION_ATTACHMENT.getId ())
+                );
+
+                if (terminationFile != null) job.add ("termination_file", terminationFile);
+
+            default:
+                // do nothing
+                
+        }
 
     });}
 
@@ -160,13 +196,13 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();
         
+        VocAction.addTo (jb);
+        
         final MosGisModel model = ModelHolder.getModel ();
 
         try (DB db = model.getDb ()) {
             
             db.addJsonArrays (jb,
-                    
-                VocAction.getVocSelect (),
 
                 NsiTable.getNsiTable (58).getVocSelect ()
                     .toMaybeOne (VocGisCustomerTypeNsi58.class, "AS it", "isdefault")
@@ -301,6 +337,18 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
     });}
     
     @Override
+    public JsonObject doReload (String id, User user) {return doAction ((db) -> {
+        
+        db.update (getTable (), HASH (
+            "uuid",           id,
+            "id_ctr_status",  VocGisStatus.i.PENDING_RQ_RELOAD.getId ()
+        ));
+        
+        logAction (db, user, id, VocAction.i.RELOAD);
+        
+    });}
+    
+    @Override
     public JsonObject doTerminate (String id, JsonObject p, User user) {return doAction ((db) -> {
         
         db.update (getTable (), getData (p,
@@ -321,6 +369,18 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
         ));
         
         logAction (db, user, id, VocAction.i.ANNUL);
+                        
+    });}
+    
+    @Override
+    public JsonObject doRollover (String id, JsonObject p, User user) {return doAction ((db) -> {
+        
+        db.update (getTable (), getData (p,
+            "uuid", id,
+            "id_ctr_status", VocGisStatus.i.PENDING_RQ_ROLLOVER.getId ()
+        ));
+        
+        logAction (db, user, id, VocAction.i.ROLLOVER);
                         
     });}
 

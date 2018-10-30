@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 import javax.ejb.Stateless;
 import javax.json.JsonObject;
 import ru.eludia.base.db.sql.gen.Select;
-import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
+import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.rest.api.VocBuildingAddressesLocal;
 import ru.eludia.products.mosgis.rest.impl.base.Base;
 
@@ -21,7 +21,7 @@ public class VocBuildingAddressesImpl extends Base implements VocBuildingAddress
     public JsonObject select (JsonObject p) {return fetchData ((db, job) -> {
         
         Select select = db.getModel ()
-            .select  (VocBuildingAddress.class, "houseguid AS id", "label", "postalcode")
+            .select  (VocBuilding.class, "houseguid AS id", "label", "postalcode")
             .orderBy ("postalcode, label")
             .limit (0, 50);
 

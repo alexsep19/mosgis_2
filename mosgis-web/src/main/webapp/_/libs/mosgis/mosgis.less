@@ -63,12 +63,19 @@ span.anchor {
 	cursor: pointer;
 }
 
-td.w2ui-grid-data[data-ref] > div:not(:empty) {
+.link() {
     color: blue;
     text-decoration: underline;
-    cursor: pointer;
 }
 
+div.clickable {
+    .link();
+}
+
+td.w2ui-grid-data[data-ref] > div:not(:empty) {
+    .link();
+    cursor: pointer;
+}
 
 table.annul {
 

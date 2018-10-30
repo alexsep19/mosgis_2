@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.db.model;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,12 +17,15 @@ public final class MosGisModel extends ru.eludia.base.Model {
     
     private static final String REGISTRYNUMBER = "registrynumber";
     private static final String VOCNSI58 = "vc_nsi_58";
+    private static final String NAME = "name";
+    private static final String ISNESTED = "is_nested";
+    private static final String COLS = "cols";
     
     public Table getLogTable (Table t) {
         return get (t.getName () + "__log");
     }
     
-    public MosGisModel (DataSource ds) throws SQLException {
+    public MosGisModel (DataSource ds) throws SQLException, IOException {
         
         super (ds
             , "ru.eludia.products.mosgis.db.model.gis"
@@ -29,6 +33,7 @@ public final class MosGisModel extends ru.eludia.base.Model {
             , "ru.eludia.products.mosgis.db.model.incoming.soap"
             , "ru.eludia.products.mosgis.db.model.incoming"
             , "ru.eludia.products.mosgis.db.model.incoming.nsi"
+            , "ru.eludia.products.mosgis.db.model.incoming.fias"
 /*                
             , "ru.eludia.products.mosgis.db.model.incoming.json"
             , "ru.eludia.products.mosgis.db.model.incoming.json.statusViews"
@@ -47,21 +52,19 @@ public final class MosGisModel extends ru.eludia.base.Model {
                 
                 db.forEach ((
                         
-                    select (VocNsiList.class, REGISTRYNUMBER))
+                    select (VocNsiList.class, REGISTRYNUMBER, NAME, ISNESTED, COLS))
                         .and ("cols IS NOT NULL")
                         .orderBy (REGISTRYNUMBER)
 
                 , rs -> {
                     
-                    final int n = rs.getInt (REGISTRYNUMBER);
-                    
-                    if (tables.containsKey (NsiTable.getName (n))) return;                    
+                    if (tables.containsKey (NsiTable.getName (rs.getInt (REGISTRYNUMBER)))) return;
 
                     try {
-                        add (new NsiTable (db, n));
+                        add (new NsiTable (db, rs));
                     }
                     catch (Exception ex) {
-                        logger.log (Level.WARNING, "Exception occured while adding NSI table " + n, ex);
+                        logger.log (Level.WARNING, "Exception occured while adding NSI table " + rs.getInt (REGISTRYNUMBER), ex);
                     }
                     
                 });

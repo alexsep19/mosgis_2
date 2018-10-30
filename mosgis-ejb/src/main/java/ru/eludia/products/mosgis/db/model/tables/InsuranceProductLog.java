@@ -5,6 +5,7 @@ import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.def.Blob.EMPTY_BLOB;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import static ru.eludia.base.model.def.Def.NOW;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
 
 public class InsuranceProductLog extends Table {
@@ -14,7 +15,7 @@ public class InsuranceProductLog extends Table {
         super ("tb_ins_products__log",                                                  "Страховой продукт: история изменения");
 
         pk    ("uuid",                      Type.UUID,             NEW_UUID,            "Ключ");
-        col   ("action",                    Type.STRING,                                "Действие");
+        ref   ("action",                    VocAction.class,                            "Действие");
 
         fk    ("uuid_object",               InsuranceProduct.class,                     "Ссылка на запись");
         col   ("ts",                        Type.TIMESTAMP,        NOW,                 "Дата/время события");

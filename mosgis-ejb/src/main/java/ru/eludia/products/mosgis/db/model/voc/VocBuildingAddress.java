@@ -23,26 +23,16 @@ public class VocBuildingAddress extends View {
 
     @Override
     public final String getSQL () {
-        
-        String l = "s.formalname" +
-            "    || ' ' || s.shortname" +
-            "    ||DECODE(b.house_label,NULL,NULL,', ' || b.house_label)" +
-            "    ||DECODE(b.build_label,NULL,NULL,', ' || b.build_label)" +
-            "    ||DECODE(ss.shortname,NULL,NULL,', ' || ss.shortname || '. ' || b.strucnum)";
-        
 
         return "SELECT" +
             "  b.houseguid" +
             "  , b.livestatus" +
             "  , b.postalcode" +
             "  , b.eststatus" +
-            "  , s.formalname" +
-            "  , " + l + " label " +
-            "  , UPPER(" + l + ") label_uc " +
+            "  , b.label" +
+            "  , b.label_uc" +
             " FROM " +
-            "  vc_buildings b" +
-            "  INNER JOIN vc_streets s ON b.aoguid = s.aoguid" +
-            "  LEFT  JOIN vc_fias_strstat ss ON b.strstatus = ss.strstatid";
+            "  vc_buildings b";
 
     }
 

@@ -13,9 +13,11 @@ import ru.eludia.base.DB;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.phys.PhysicalCol;
 import ru.eludia.base.db.sql.build.QP;
+import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.rest.api.OutSoapExportNsiItemLocal;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.rest.impl.base.Base;
 
 @Stateless
 public class OutSoapExportNsiItemImpl implements OutSoapExportNsiItemLocal {
@@ -115,18 +117,15 @@ public class OutSoapExportNsiItemImpl implements OutSoapExportNsiItemLocal {
     @Override
     public JsonObject getRq (String id) {
 
-        JsonObjectBuilder jb = Json.createObjectBuilder ();
+        final MosGisModel m = ModelHolder.getModel ();
 
-        try (DB db = ModelHolder.getModel ().getDb ()) {
-
-            jb.add ("xml", db.getString (OutSoap.class, id, "rq"));
-
+        try (DB db = m.getDb ()) {            
+            final JsonObject jo = db.getJsonObject (m.get (OutSoap.class, id, "rq AS xml", "id_status", "is_failed"));
+            return jo == null ? Base.EMPTY_JSON_OBJECT : jo;
         }
         catch (SQLException ex) {
             throw new InternalServerErrorException (ex);
         }
-        
-        return jb.build ();
 
     }
 

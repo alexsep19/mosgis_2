@@ -33,6 +33,8 @@ import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.model.abs.NamedObject;
 import static ru.eludia.base.model.def.Def.NOW;
 import ru.eludia.base.db.sql.gen.Get;
+import ru.eludia.base.model.Table;
+import ru.eludia.base.model.def.Bool;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.nsi.NsiMultipleRefTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiMultipleScalarTable;
@@ -199,7 +201,15 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
 
             nsiElement.forEach (collectRecord);
 
-            if (collectRecord.isNested ()) table.addParentCol ();
+            if (collectRecord.isNested ()) {
+                
+                table.addParentCol ();
+                
+                Map<String, Object> record = db.getMap(VocNsiList.class, registryNumber);
+                record.put("is_nested", Bool.TRUE);
+                db.update(VocNsiList.class, record);
+                
+            }
 
             if (!records.isEmpty ()) {
 
@@ -209,6 +219,10 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
 
             }
 
+            db.adjustTable (table);
+            
+            for (Table t: table.getTables ()) db.adjustTable (t);
+            
             db.updateSchema (table.getTables ());
 
             db.begin ();
@@ -235,7 +249,7 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
 
                     db.d0 ("UPDATE " + refTable.getName () + " SET ord = -1");
                         
-                    db.upsert (refTable, m2m, null);
+                    db.upsert (refTable, m2m);
 
                     db.d0 ("DELETE FROM " + refTable.getName () + " WHERE ord = -1");
                                         
@@ -267,7 +281,7 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
                     
                 }
             
-                db.upsert (table, records, null);
+                db.upsert (table, records);
 
                 db.update (OutSoap.class, HASH (
                     "uuid", uuid,

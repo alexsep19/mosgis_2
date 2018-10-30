@@ -70,7 +70,7 @@ public class VcRd1Impl implements VcRd1Local {
     public JsonObject getVocs () {
 
         JsonObjectBuilder jb = Json.createObjectBuilder ();
-
+        
         try (DB db = ModelHolder.getModel ().getDb ()) {
             db.addJsonArrays (jb, 
                 ModelHolder.getModel ().select (new RdTable (db, 1240), "id", "name AS label").orderBy ("name"),

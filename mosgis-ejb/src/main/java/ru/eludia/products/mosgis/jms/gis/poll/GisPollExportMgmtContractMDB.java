@@ -4,26 +4,25 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
-import javax.jms.Queue;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
-import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractLog;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
-import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
-import ru.eludia.products.mosgis.jms.base.UUIDMDB;
+import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
+import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
+import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.eludia.products.mosgis.rest.api.MgmtContractLocal;
 import ru.gosuslugi.dom.schema.integration.base.CommonResultType;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
@@ -38,25 +37,19 @@ import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
+public class GisPollExportMgmtContractMDB extends GisPollMDB {
 
     @EJB
     WsGisHouseManagementClient wsGisHouseManagementClient;
-
-    @Resource (mappedName = "mosgis.outExportHouseMgmtContractsQueue")
-    Queue queue;
-    
-    @EJB
-    protected UUIDPublisher UUIDPublisher;
-    
+        
     @EJB
     MgmtContractLocal mgmtContract;
-    
+
     @Override
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
-            .toOne (ContractLog.class,     "AS log", "uuid", "id_ctr_status").on ("log.uuid_out_soap=root.uuid")
-            .toOne (Contract.class,        "AS ctr", "uuid"                 ).on ()
+            .toOne (ContractLog.class,     "AS log", "uuid", "id_ctr_status", "action").on ("log.uuid_out_soap=root.uuid")
+            .toOne (Contract.class,        "AS ctr", "uuid", "contractguid" ).on ()
             .toOne (VocOrganization.class, "AS org", "orgppaguid"           ).on ("ctr.uuid_org")
         ;
         
@@ -99,7 +92,8 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
     @Override
     protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
 
-        UUID orgPPAGuid = (UUID) r.get ("org.orgppaguid");
+        UUID orgPPAGuid   = (UUID) r.get ("org.orgppaguid");
+        UUID uuidContract = (UUID) r.get ("ctr.uuid");
         
         final VocGisStatus.i lastStatus = VocGisStatus.i.forId (r.get ("log.id_ctr_status"));
         
@@ -117,43 +111,35 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
 
         try {
 
-            GetStateResult rp;
-
-            try {
-                rp = wsGisHouseManagementClient.getState (orgPPAGuid, (UUID) r.get ("uuid_ack"));
-            }
-            catch (Fault ex) {
-                final ru.gosuslugi.dom.schema.integration.base.Fault faultInfo = ex.getFaultInfo ();
-                throw new FU (faultInfo.getErrorCode (), faultInfo.getErrorMessage (), VocGisStatus.i.FAILED_STATE);
-            }
-
-            if (rp.getRequestState () < DONE.getId ()) {
-                logger.info ("requestState = " + rp.getRequestState () + ", retry...");
-                UUIDPublisher.publish (queue, uuid);
-                return;
-            }
+            GetStateResult rp = getState (orgPPAGuid, r);
 
             ImportContractResultType importContract = digImportContract (rp, action.getFailStatus ());            
 
-            db.begin ();            
-            
-                final Table t = db.getModel ().t (ContractObject.class);
-                                
-                ContractObject contractObjectTableDefinition = (ContractObject) t;
-                
-                for (ExportStatusCAChResultType.ContractObject co: importContract.getContractObject ()) 
-                    
-                    db.d0 (contractObjectTableDefinition.updateStatus ((UUID) r.get ("ctr.uuid"), co));            
+            VocGisStatus.i state = VocGisStatus.i.forName (importContract.getState ());                
+            if (state == null) state = VocGisStatus.i.NOT_RUNNING;
 
-                VocGisStatus.i state = VocGisStatus.i.forName (importContract.getState ());                
-                if (state == null) state = VocGisStatus.i.NOT_RUNNING;
-                
-                final byte status = VocGisStatus.i.forName (importContract.getContractStatus ().value ()).getId ();
-            
-                final UUID uuidContract = (UUID) r.get ("ctr.uuid");
+            final byte status = VocGisStatus.i.forName (importContract.getContractStatus ().value ()).getId ();
 
+            db.begin ();
+
+                for (ExportStatusCAChResultType.ContractObject co: importContract.getContractObject ()) {
+
+                    db.update (ContractObject.class, HASH (
+
+                        "uuid_contract",             uuidContract,
+                        "fiashouseguid",             co.getFIASHouseGuid (),
+                        "is_deleted",                0,
+
+                        "id_ctr_status_gis",         VocGisStatus.i.forName (co.getManagedObjectStatus ().value ()).getId (),
+                        "contractobjectversionguid", co.getContractObjectVersionGUID ()                  
+
+                    ), "uuid_contract", "fiashouseguid", "is_deleted");
+
+                }
+            
                 db.update (Contract.class, HASH (
                     "uuid",                uuidContract,
+                    "rolltodate",          null,    
                     "contractguid",        importContract.getContractGUID (),
                     "contractversionguid", importContract.getContractVersionGUID (),
                     "versionnumber",       importContract.getVersionNumber (),
@@ -172,53 +158,90 @@ public class GisPollExportMgmtContractMDB  extends UUIDMDB<OutSoap> {
                     "uuid", uuid,
                     "id_status", DONE.getId ()
                 ));
-                
-                if (state == VocGisStatus.i.REVIEWED) mgmtContract.doPromote (uuidContract.toString ());
-                                                    
+                                                                    
             db.commit ();
-            
+
+            db.getConnection ().setAutoCommit (true);
+
+            if (state == VocGisStatus.i.REVIEWED) mgmtContract.doPromote (uuidContract.toString ());
+                        
+            switch (VocAction.i.forName (r.get ("log.action").toString ())) {
+                case ROLLOVER:
+                case TERMINATE:
+                    mgmtContract.doReload (r.get ("ctr.uuid").toString (), null);
+                default:
+                    // do nothing
+            }
+                        
         }
         catch (FU fu) {
+            
+            db.getConnection ().setAutoCommit (true);
+            
             fu.register (db, uuid, r);
+            
+        }
+        catch (GisPollRetryException ex) {
+            return;
+        }
+
+    }
+
+    private GetStateResult getState (UUID orgPPAGuid, Map<String, Object> r) throws GisPollRetryException, FU {
+        
+        GetStateResult rp;
+        
+        try {
+            rp = wsGisHouseManagementClient.getState (orgPPAGuid, (UUID) r.get ("uuid_ack"));
+        }
+        catch (Fault ex) {
+            throw new FU (ex.getFaultInfo (), VocGisStatus.i.FAILED_STATE);
+        }
+        catch (Throwable ex) {            
+            throw new FU (ex, VocGisStatus.i.FAILED_STATE);
         }
         
+        checkIfResponseReady (rp);
+        
+        return rp;
+        
     }
-    
-    private class FU extends Exception {
+        
+    private class FU extends GisPollException {
         
         String code;
         String text;
         VocGisStatus.i status;
 
         FU (String code, String text, VocGisStatus.i status) {
-            super (code + " " + text);
-            this.code = code;
-            this.text = text;
+            super (code, text);
             this.status = status;
         }
         
         FU (ErrorMessageType errorMessage, VocGisStatus.i status) {
-            this (errorMessage.getErrorCode (), errorMessage.getDescription (), status);
+            super (errorMessage);
+            this.status = status;
+        }
+
+        FU (ru.gosuslugi.dom.schema.integration.base.Fault fault, VocGisStatus.i status) {
+            super (fault);
+            this.status = status;
         }
         
-        private void register (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
+        FU (Throwable t, VocGisStatus.i status) {
+            super (t);
+            this.status = status;
+        }
+        
+        @Override
+        public void register (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
             
-            logger.warning (getMessage ());
-            
-            db.update (OutSoap.class, HASH (
-                "uuid", uuid,
-                "id_status", DONE.getId (),
-                "is_failed", 1,
-                "err_code",  code,
-                "err_text",  text
-            ));
+            super.register (db, uuid, r);
 
             db.update (Contract.class, HASH (
                 "uuid",          r.get ("ctr.uuid"),
                 "id_ctr_status", status.getId ()
             ));
-
-            db.commit ();            
             
         }
         

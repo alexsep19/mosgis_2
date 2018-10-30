@@ -25,7 +25,7 @@ public class VocOrganizations extends EJBResource <VocOrganizationsLocal> {
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject doImport (JsonObject p) { 
-        return back.doImport (p); 
+        return back.doImport (p, getUser ()); 
     }
     
     @POST
@@ -47,6 +47,21 @@ public class VocOrganizations extends EJBResource <VocOrganizationsLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject getMgmtNsi58 (@PathParam ("id") String id) { 
         return back.getMgmtNsi58 (id);
+    }
+    
+    @POST
+    @Path("{id}/refresh") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject doRefresh (@PathParam ("id") String id) { 
+        return back.doRefresh (id, getUser ());
+    }
+    
+    @POST
+    @Path("{id}/log") 
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
+        return back.getLog (id, p, getUser ());
     }
     
 }

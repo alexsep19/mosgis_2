@@ -2,6 +2,7 @@ package ru.eludia.products.mosgis.db.model.tables;
 
 import java.util.Map;
 import java.util.UUID;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
@@ -16,8 +17,11 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import static ru.eludia.products.mosgis.db.model.voc.VocGisStatus.i.ANNUL;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.gosuslugi.dom.schema.integration.house_management.ContractType;
+import ru.gosuslugi.dom.schema.integration.house_management.DateDetailsExportType;
 import ru.gosuslugi.dom.schema.integration.house_management.DateDetailsType;
-import ru.gosuslugi.dom.schema.integration.house_management.DeviceMeteringsDaySelectionType;
+import ru.gosuslugi.dom.schema.integration.house_management.DaySelectionExportType;
+import ru.gosuslugi.dom.schema.integration.house_management.DeviceMeteringsDaySelectionType;    
+import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
 
 public class Contract extends Table {
 
@@ -43,8 +47,9 @@ public class Contract extends Table {
         col   ("effectivedate",             Type.DATE,                          "Дата вступления в силу");
         col   ("plandatecomptetion",        Type.DATE,                          "Планируемая дата окончания");
         col   ("terminate",                 Type.DATE,             null,        "Дата расторжения");
+        col   ("rolltodate",                Type.DATE,             null,        "Пролонгировать до даты");
 
-        col   ("automaticrolloveroneyear",  Type.BOOLEAN,          Bool.FALSE,  "1, если запись удалена; иначе 0");
+        col   ("automaticrolloveroneyear",  Type.BOOLEAN,          Bool.FALSE,  "Автоматически продлить срок оказания услуг на один год");
         col   ("code_vc_nsi_58",            Type.STRING,           20,   null,  "Ссылка на НСИ \"Основание заключения договора\" (реестровый номер 58)");
         col   ("code_vc_nsi_54",            Type.STRING,           20,   null,  "Ссылка на НСИ \"Основание расторжения договора\" (реестровый номер 54)");
 
@@ -78,6 +83,84 @@ public class Contract extends Table {
 
         key   ("org_docnum", "uuid_org", "docnum");
         key   ("contractguid", "contractguid");
+        
+        trigger ("BEFORE UPDATE", ""
+                
+            + "DECLARE" 
+            + " PRAGMA AUTONOMOUS_TRANSACTION; "
+            + "BEGIN "
+
+            + "IF 1=1"
+            + "  AND :NEW.rolltodate IS NOT NULL "
+            + "  AND :OLD.rolltodate IS NULL "
+            + " THEN BEGIN "
+                                
+                + " FOR i IN ("
+                    + "SELECT "
+                    + " o.startdate"
+                    + " , o.enddate"
+                    + " , c.docnum"
+                    + " , c.signingdate"
+                    + " , org.label "
+                    + " , a.label address "
+                    + "FROM "
+                    + " tb_contract_objects o "
+                    + " INNER JOIN tb_contracts c ON o.uuid_contract = c.uuid"
+                    + " INNER JOIN vc_orgs org    ON c.uuid_org      = org.uuid "
+                    + " INNER JOIN vc_build_addresses a ON o.fiashouseguid = a.houseguid "
+                    + "WHERE o.is_deleted = 0"
+                    + " AND o.is_annuled = 0"
+                    + " AND o.fiashouseguid IN (SELECT fiashouseguid FROM tb_contract_objects WHERE is_deleted = 0 AND is_annuled = 0 AND uuid_contract = :NEW.uuid) "
+                    + " AND o.enddate   >= :NEW.effectivedate "
+                    + " AND o.startdate <= :NEW.rolltodate "
+                    + " AND o.uuid_contract <> :NEW.uuid "
+                    + ") LOOP"
+                + " raise_application_error (-20000, "
+                    + "'Дом по адресу ' || i.address || ' обслуживается с ' "
+                    + "|| TO_CHAR (i.startdate, 'DD.MM.YYYY')"
+                    + "||' по '"
+                    + "|| TO_CHAR (i.enddate, 'DD.MM.YYYY')"
+                    + "||' по договору управления от '"
+                    + "|| TO_CHAR (i.signingdate, 'DD.MM.YYYY')"
+                    + "||' №'"
+                    + "|| i.docnum"
+                    + "||' с '"
+                    + "|| i.label"
+                    + "|| '. Операция отменена.'); "
+                + " END LOOP; "  
+
+                + " FOR i IN ("
+                    + "SELECT "
+                    + " o.startdate"
+                    + " , o.enddate"
+                    + " , org.label "
+                    + " , a.label address "
+                    + "FROM "
+                    + " tb_charter_objects o "
+                    + " INNER JOIN tb_charters c ON o.uuid_charter = c.uuid"
+                    + " INNER JOIN vc_orgs org    ON c.uuid_org      = org.uuid "
+                    + " INNER JOIN vc_build_addresses a ON o.fiashouseguid = a.houseguid "
+                    + "WHERE o.is_deleted = 0"
+                    + " AND o.is_annuled = 0"
+                    + " AND o.fiashouseguid IN (SELECT fiashouseguid FROM tb_contract_objects WHERE is_deleted = 0 AND is_annuled = 0 AND uuid_contract = :NEW.uuid) "
+                    + " AND (o.enddate IS NULL OR o.enddate   >= :NEW.effectivedate )"
+                    + " AND o.startdate <= :NEW.rolltodate "
+                    + ") LOOP"
+                + " raise_application_error (-20000, "
+                    + "'Дом по адресу ' || i.address || ' обслуживается с ' "
+                    + "|| TO_CHAR (i.startdate, 'DD.MM.YYYY')"
+                    + "|| CASE WHEN i.enddate IS NULL THEN NULL ELSE ' по '"
+                    + "|| TO_CHAR (i.enddate, 'DD.MM.YYYY') END"
+                    + "||' согласно уставу '"
+                    + "|| i.label"
+                    + "|| '. Операция отменена.'); "
+                + " END LOOP; "  
+               
+            + " END; END IF; "
+
+            + "END; "
+
+        );
 
         trigger ("BEFORE INSERT OR UPDATE", ""                
 
@@ -140,7 +223,7 @@ public class Contract extends Table {
                 + "END IF; "
                 + "IF :OLD.id_ctr_status = " + VocGisStatus.i.FAILED_PLACING.getId () + " THEN :NEW.id_ctr_status := " + VocGisStatus.i.PROJECT.getId () + "; END IF; "
             + "END; END IF; "
-
+                        
             + "IF UPDATING "
             + "  AND :OLD.id_ctr_status < " + VocGisStatus.i.PENDING_RQ_PLACING.getId ()
             + "  AND :NEW.id_ctr_status = " + VocGisStatus.i.PENDING_RQ_PLACING.getId ()
@@ -301,12 +384,74 @@ public class Contract extends Table {
         c.setDateDetails (dd);
                 
     }
+        
+    public static void setDateFields (Map<String, Object> h, ExportCAChResultType.Contract contract) {
+        h.put ("signingdate",        contract.getSigningDate ());
+        h.put ("effectivedate",      contract.getEffectiveDate ());
+        h.put ("plandatecomptetion", contract.getPlanDateComptetion ());
+    }
+    
+    private static void setExtraFields (Map<String, Object> h, ExportCAChResultType.Contract.Terminate terminate) {
+        if (terminate == null) {
+            h.put ("terminate",      null);
+            h.put ("code_vc_nsi_54", null);
+        }
+        else {
+            h.put ("terminate",      terminate.getTerminate ());
+            h.put ("code_vc_nsi_54", terminate.getReasonRef ().getCode ());
+        }
+    }
+    
+    private static byte day (Byte d, Boolean last) {
+        return DB.ok (last) ? 99 : d;
+    }
+
+    private static void setExtraFields (Map<String, Object> h, String field, DaySelectionExportType p) {
+        h.put ("ddt_m_" + field,          day   (p.getDate (), p.isLastDay ()));
+        h.put ("ddt_m_" + field + "_nxt", DB.ok (p.isIsNextMonth ()));
+    }
+    
+    private static void setExtraFields (Map<String, Object> h, DateDetailsExportType.PeriodMetering p) {
+        setExtraFields (h, "start", p.getStartDate ());
+        setExtraFields (h, "end",   p.getEndDate ());
+    }
+
+    private static void setExtraFields (Map<String, Object> h, DateDetailsExportType.PaymentDocumentInterval p) {
+        h.put ("ddt_d_start",     day   (p.getStartDate (), p.isLastDay ()));
+        h.put ("ddt_d_start_nxt", DB.ok (p.isNextMounth ()));
+    }
+
+    private static void setExtraFields (Map<String, Object> h, DateDetailsExportType.PaymentInterval p) {
+        h.put ("ddt_i_start",     day   (p.getStartDate (), p.isLastDay ()));
+        h.put ("ddt_i_start_nxt", DB.ok (p.isNextMounth ()));
+    }
+        
+    private static void setExtraFields (Map<String, Object> h, DateDetailsExportType dateDetails) {
+        setExtraFields (h, dateDetails.getPeriodMetering ());
+        setExtraFields (h, dateDetails.getPaymentDocumentInterval ());
+        setExtraFields (h, dateDetails.getPaymentInterval ());
+    }
+    
+    public static void setExtraFields (Map<String, Object> h, ExportCAChResultType.Contract contract) {
+        h.put ("docnum",                   contract.getDocNum ());
+        h.put ("automaticrolloveroneyear", DB.ok (contract.isAutomaticRollOverOneYear ()));
+        h.put ("code_vc_nsi_58",           contract.getContractBase ().getCode ());
+        setExtraFields (h, contract.getTerminate ());
+        setExtraFields (h, contract.getDateDetails ());
+        /*
+        fk    ("uuid_org",                  VocOrganization.class,                      "Исполнитель");
+        fk    ("uuid_org_customer",         VocOrganization.class,              null,   "Заказчик");
+        fk    ("id_customer_type",          VocGisCustomerType.class,                   "Тип заказчика");
+         */ 
+    }
     
     public enum Action {
         
         PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.FAILED_PLACING),
         APPROVING   (VocGisStatus.i.PENDING_RP_APPROVAL,  VocGisStatus.i.FAILED_STATE),
         REFRESHING  (VocGisStatus.i.PENDING_RP_REFRESH,   VocGisStatus.i.FAILED_STATE),
+        RELOADING   (VocGisStatus.i.PENDING_RP_RELOAD,    VocGisStatus.i.FAILED_STATE),
+        ROLLOVER    (VocGisStatus.i.PENDING_RP_ROLLOVER,  VocGisStatus.i.FAILED_STATE),
         TERMINATION (VocGisStatus.i.PENDING_RP_TERMINATE, VocGisStatus.i.FAILED_TERMINATE),
         ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.FAILED_ANNULMENT),
         EDITING     (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.FAILED_STATE)
@@ -336,6 +481,8 @@ public class Contract extends Table {
                 case PENDING_RQ_EDIT:      return EDITING;
                 case PENDING_RQ_TERMINATE: return TERMINATION;
                 case PENDING_RQ_ANNULMENT: return ANNULMENT;
+                case PENDING_RQ_ROLLOVER:  return ROLLOVER;
+                case PENDING_RQ_RELOAD:    return RELOADING;
                 default: return null;
             }            
         }

@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.ejb;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,7 +29,7 @@ public class ModelHolder {
     }
     
     @PermitAll
-    public void updateModel () {
+    public void updateModel () throws IOException {
         
         logger.log (Level.INFO, "MODEL UPDATE STARTED");
         
@@ -36,7 +37,6 @@ public class ModelHolder {
         
         try {
             newModel = new MosGisModel (ds);
-            newModel.update ();
             modelReference.getAndSet (newModel);
         }
         catch (SQLException ex) {
@@ -51,10 +51,11 @@ public class ModelHolder {
         
         try {            
             model = new MosGisModel (ds);
-            model.update ();
+            model.update();
             modelReference.set (model);
         }
-        catch (SQLException ex) {
+        catch (Exception ex) {
+            logger.log (Level.SEVERE, "Cannot set up ModelHolder", ex);
             throw new IllegalStateException (ex);
         }
 

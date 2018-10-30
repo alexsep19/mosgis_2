@@ -1,0 +1,190 @@
+<span>
+
+    <div>
+
+        <div class="w2ui-page page-0" style="padding-top: 13px;min-width: 900px">
+
+        	<style>
+
+        		.w2ui-field > label {
+        			width: 350px;
+        			margin-right: 10px;
+        		}
+
+        		.w2ui-field > label.short {
+        			width: 10px;
+        		}
+
+        		.w2ui-field > label.short+div {
+        			margin-left: 10px;
+        		}
+
+        		.w2ui-field input {
+        			width: 270px !important;
+        		}
+
+				.w2ui-field input.dt {
+					width: 70px !important;
+				}
+
+				.w2ui-field input.long {
+					width: 600px !important;
+				}
+
+				.sync b {
+					color: red;
+				}
+
+        	</style>
+
+        	<table border=0 cellpadding=0 cellspacing=0 width=90%>
+
+        		<tr>
+
+					<td style="min-width:650px;" width=1 valign=top>
+
+							<div class="w2ui-field">
+								<label>Дата государственной регистрации</label>
+								<div>
+									<input name=date_ placeholder="" class=dt>
+								</div>
+							</div>
+
+							<div class="w2ui-field">
+								<label>Протокол утверждения устава</label>
+								<div>
+									<input name=nocharterapproveprotocol>
+								</div>
+							</div>
+
+					</td>
+
+					<td valign=top>
+
+						<table border=0 cellpadding=0 cellspacing=0 width=100% class=sync>
+
+							<tr>
+								<td>Статус:</td>
+								<td>
+									<span data-text=status_label/>
+								</td>
+							</tr>
+							<tr data-on=gis_state_label>
+								<td>Состояние:</td>
+								<td>
+									<span data-text=gis_state_label/>
+								</td>
+							</tr>
+
+							<tr data-on=last_termination>
+								<td>Прекратил действие:</td>
+								<td data-text=last_termination.terminate data-date/>
+							</tr>
+
+							<tr data-on=last_termination>
+								<td>Причина:</td>
+								<td data-text=last_termination.reason/>
+							</tr>
+
+							<tr data-on=err_text>
+								<th colspan=2 data-text=err_text></th>
+							</tr>
+
+						</table>
+
+					</td>
+
+        		</tr>
+
+        		<tr>
+					<td valign=top>
+
+						<div class="w2ui-field">
+							<label>Ввод показаний по ПУ с</label>
+							<div>
+								<input name=ddt_m_start>
+							</div>
+						</div>
+
+						<div class="w2ui-field">
+							<label>...по</label>
+							<div>
+								<input name=ddt_m_end>
+							</div>
+						</div>
+
+						<div class="w2ui-field">
+							<label>Срок выставления платежных документов</label>
+							<div>
+								<input name=ddt_d_start>
+							</div>
+						</div>
+
+						<div class="w2ui-field">
+							<label>Срок внесения платы</label>
+							<div>
+								<input name=ddt_i_start>
+							</div>
+						</div>
+
+					</td>
+					<td valign=top>
+
+						<div class="w2ui-field">
+							<label class=short> </label>
+							<div>
+								<input name=ddt_m_start_nxt>
+							</div>
+						</div>
+
+						<div class="w2ui-field">
+							<label class=short> </label>
+							<div>
+								<input name=ddt_m_end_nxt>
+							</div>
+						</div>
+
+						<div class="w2ui-field">
+							<label class=short> </label>
+							<div>
+								<input name=ddt_d_start_nxt>
+							</div>
+						</div>
+
+						<div class="w2ui-field">
+							<label class=short> </label>
+							<div>
+								<input name=ddt_i_start_nxt>
+							</div>
+						</div>
+
+					</td>
+        		</tr>
+
+        	</table>
+
+        </div>
+
+        <div class="w2ui-buttons">
+        	<span>
+				<button class=w2ui-btn name=edit   data-on=__read_only>Редактировать</button>
+				<button class=w2ui-btn name=update data-off=__read_only>Сохранить</button>
+				<button class=w2ui-btn name=cancel data-off=__read_only>Отменить</button>
+				<button class=w2ui-btn name=approve data-on=__read_only>Утвердить</button>
+<!--
+				<button class=w2ui-btn name=refresh data-on=__read_only>Обновить статус из ГИС ЖКХ</button>
+-->
+				<button class=w2ui-btn name=reload  data-on=__read_only>Обновить из ГИС ЖКХ</button>
+				<button class=w2ui-btn name=alter   data-on=__read_only>Изменить</button>
+				<button class=w2ui-btn name=rollover   data-on=__read_only>Продлить</button>
+				<button class=w2ui-btn name=terminate  data-on=__read_only>Прекратить</button>
+				<button class=w2ui-btn name=annul  data-on=__read_only>Аннулировать</button>
+<!--
+				<button class=w2ui-btn name=delete  data-on=__read_only>Удалить</button>
+-->
+            </span>
+        </div>
+
+    </div>
+
+</span>

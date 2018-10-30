@@ -25,14 +25,6 @@ function setup_request () {
 
 }
 
-$.fn.w2relayout = function (o) {
-
-    if (w2ui [o.name]) w2ui [o.name].destroy ()
-
-    return this.w2layout (o)
-
-}
-
 $.fn.w2residebar = function (o) {
 
     if (w2ui [o.name]) w2ui [o.name].destroy ()
@@ -373,10 +365,18 @@ requirejs (['elu/elu', 'elu_w2ui/elu_w2ui'], function (jq, elu, elu_w2ui) {
     $_SESSION.beforeExpiry ($_SESSION.keepAlive)
     
     window.addEventListener ('storage', $_SESSION.closeAllOnLogout)
-    
-    if ($_USER) $_USER.has_nsi_20 = function () {
-        for (var i = 0; i < arguments.length; i ++) if ($_USER.role ['nsi_20_' + arguments [i]]) return true
-        return false
+
+    if ($_USER) {
+
+        $_USER.has_nsi_20 = function () {
+            for (var i = 0; i < arguments.length; i ++) if ($_USER.role ['nsi_20_' + arguments [i]]) return true
+            return false
+        }
+
+        $_USER.is_building_society = function () {
+            return $_USER.has_nsi_20 (19, 20, 21, 22)
+        }
+
     }
 
     if ($_USER && $_USER.opt && $_USER.opt.no_tabs) {

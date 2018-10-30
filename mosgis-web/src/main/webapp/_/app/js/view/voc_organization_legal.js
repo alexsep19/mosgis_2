@@ -2,18 +2,22 @@ define ([], function () {
 
     return function (data, view) {
     
-        data.item.vc_nsi_20 = data.vc_orgs_nsi_20
+        var it = data.item
+        
+        it.vc_nsi_20 = data.vc_orgs_nsi_20
             .map (function (r) {return data.vc_nsi_20 [r.code]})
             .sort ()
             .join (',<br>')
-            
-        data.item.vc_organization_types_label = data.item ['vc_organization_types.label']
 
-        $('title').text (data.item.label)
+        it.vc_organization_types_label = it ['vc_organization_types.label']
 
-        fill (view, data.item, $('body'))
+        $('title').text (it.label)
+
+        fill (view, it, $('body'))
         
-        $('#container').w2layout ({
+        $('#the_form').w2reform ({name: 'voc_organization_legal_form', record: it})
+                
+        $('#container').w2relayout ({
         
             name: 'topmost_layout',
             
@@ -25,6 +29,7 @@ define ([], function () {
 
                         tabs: [
                             {id: 'voc_organization_legal_users', caption: 'Учётные записи', off: !$_USER.role.admin && $_USER.uuid_org != $_REQUEST.id},
+                            {id: 'voc_organization_legal_log', caption: 'История'},
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_voc_organization_legal
@@ -40,7 +45,27 @@ define ([], function () {
             },
 
         });
+                
+        if (it.id_log && it ['out_soap.id_status'] != 3) {
         
+            w2utils.lock ($('#the_form'), {
+                msg     : 'Ждём ответ ГИС ЖКХ...',       
+                spinner : false,    
+            })
+        
+            setTimeout (reload_page, 2000)
+        
+        }
+        
+        var charter_uuid = it ['charter.uuid']
+        
+        if (charter_uuid && ($_USER.uuid_org == it.uuid || $_USER.role.admin || $_USER.role.nsi_20_4)) {
+        
+            clickOn ($('div[data-text=stateregistrationdate]'), function () {
+                openTab ('/charter/' + charter_uuid)
+            })
+
+        }
 
     }
 

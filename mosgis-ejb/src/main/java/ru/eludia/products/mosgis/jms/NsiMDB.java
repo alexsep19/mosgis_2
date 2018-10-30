@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.jms;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,7 +30,12 @@ public class NsiMDB extends TextMDB {
     @Override
     protected void onTextMessage (TextMessage message) throws SQLException, JMSException {
         logger.log (Level.INFO, "Caught " + message.getJMSMessageID () + "...");               
-        modelHolder.updateModel();
+        try {
+            modelHolder.updateModel();
+        }
+        catch (Exception ex) {
+            Logger.getLogger (NsiMDB.class.getName()).log (Level.SEVERE, "Cannot update model", ex);
+        }
         logger.log (Level.INFO, "Done handling " + message.getJMSMessageID ());
     }    
 }

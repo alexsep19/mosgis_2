@@ -7,6 +7,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -23,6 +25,17 @@ public class URLFilter implements Filter {
     private final static Logger logger = Logger.getLogger (Filter.class.getName ());
     private String ver = "";
     
+    protected static InitialContext ic;
+    
+    static {                
+        try {
+            ic = new InitialContext ();
+        }
+        catch (NamingException nex) {
+            throw new IllegalStateException (nex);
+        }        
+    }
+
     public URLFilter () {
     }    
 
@@ -54,17 +67,15 @@ public class URLFilter implements Filter {
     }
 
     @Override
-    public void init (FilterConfig filterConfig) {        
+    public void init (FilterConfig filterConfig) {  
         
-        this.filterConfig = filterConfig;
-
-        try (InputStream inputStream = filterConfig.getServletContext ().getResourceAsStream ("/META-INF/MANIFEST.MF")) {                                
-            ver = new Manifest (inputStream).getMainAttributes ().getValue ("Weblogic-Application-Version").toString ();
+        try {
+            ver = ic.lookup ("mosgis.confTopic").toString ().substring (7, 31);
         }
-        catch (IOException ex) {
-            logger.log (Level.SEVERE, "Cannot read MANIFEST.MF", ex);
+        catch (Exception ex) {
+            logger.log (Level.SEVERE, "Cannot get application version", ex);
         }
-
+        
     }
 
     @Override

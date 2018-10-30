@@ -14,6 +14,7 @@ import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.MainMunicipalService;
 import ru.eludia.products.mosgis.db.model.tables.MainMunicipalServiceLog;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -108,6 +109,8 @@ public class MainMunicipalServiceImpl extends BaseCRUD<MainMunicipalService> imp
     public JsonObject getVocs () {
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();
+        
+        VocAction.addTo (jb);
         
         final MosGisModel model = ModelHolder.getModel ();
 

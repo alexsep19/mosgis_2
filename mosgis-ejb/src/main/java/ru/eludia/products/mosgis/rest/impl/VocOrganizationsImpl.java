@@ -1,38 +1,58 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.sql.SQLException;
+import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.ejb.EJB;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
+import javax.jms.Queue;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Predicate;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.base.model.Table;
+import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.incoming.InVocOrganization;
 import ru.eludia.products.mosgis.rest.api.VocOrganizationsLocal;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.Charter;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerTypeNsi20;
 import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerTypeNsi58;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTypes;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
-import ru.eludia.products.mosgis.jmx.OrgMBean;
-import ru.eludia.products.mosgis.rest.impl.base.Base;
+import ru.eludia.products.mosgis.rest.User;
+import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 import ru.eludia.products.mosgis.web.base.ComplexSearch;
 import ru.eludia.products.mosgis.web.base.Search;
 import ru.eludia.products.mosgis.web.base.SimpleSearch;
 
 @Stateless
-public class VocOrganizationsImpl extends Base<VocOrganization> implements VocOrganizationsLocal {
+public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements VocOrganizationsLocal {
 
     private static final Logger logger = Logger.getLogger (VocOrganizationsImpl.class.getName ());
     
-    @EJB
-    OrgMBean org;
+    @Resource (mappedName = "mosgis.inOrgQueue")
+    Queue inOrgQueue;
+    
+    @Resource (mappedName = "mosgis.inOrgByGUIDQueue")
+    Queue queue;
+
+    @Override
+    public Queue getQueue () {
+        return queue;
+    }
 
     private final static String DEFAULT_SEARCH = "label_uc LIKE %?%";
     
@@ -148,8 +168,11 @@ public class VocOrganizationsImpl extends Base<VocOrganization> implements VocOr
         try (DB db = ModelHolder.getModel ().getDb ()) {
 
             JsonObject item = db.getJsonObject (ModelHolder.getModel ()
-                .get (VocOrganization.class, id, "*")
+                .get (VocOrganization.class, id, "AS root", "*")
                 .toMaybeOne (VocOrganizationTypes.class, "label").on ()
+                .toMaybeOne (VocOrganizationLog.class).on ()
+                .toMaybeOne (OutSoap.class, "id_status").on ()
+                .toMaybeOne (Charter.class, "AS charter", "uuid").on ("root.uuid=charter.uuid_org")
             );
 
             jb.add ("item", item);
@@ -166,11 +189,25 @@ public class VocOrganizationsImpl extends Base<VocOrganization> implements VocOr
     }
 
     @Override
-    public JsonObject doImport (JsonObject p) {
-
-        org.importOrg (p.getJsonObject ("data").getString ("ogrn"));
-
-        return Json.createObjectBuilder ().build ();
+    public JsonObject doImport (JsonObject p, User user) {
+        
+        MosGisModel m = ModelHolder.getModel ();
+        
+        try (DB db = m.getDb ()) {
+            
+            UUID uuid = (UUID) db.insertId (InVocOrganization.class, HASH (
+                "uuid_user", user.getId (),
+                "ogrn",      p.getJsonObject ("data").getString ("ogrn")
+            ));
+            
+            UUIDPublisher.publish (inOrgQueue, uuid);
+            
+            return Json.createObjectBuilder ().add ("id", uuid.toString ()).build ();
+            
+        }
+        catch (Exception ex) {
+            throw new InternalServerErrorException (ex);
+        }
 
     }
 
@@ -222,5 +259,38 @@ public class VocOrganizationsImpl extends Base<VocOrganization> implements VocOr
         );
 
     });}
+
+    @Override
+    public JsonObject doRefresh (String id, User user) {return doAction ((db) -> {
+
+        logAction (db, user, id, VocAction.i.REFRESH);
+        
+    });}
+    
+    protected void logAction (DB db, User user, Object id, VocAction.i action) throws SQLException {
+
+        Table logTable = ModelHolder.getModel ().getLogTable (getTable ());
+
+        if (logTable == null) return;
+
+        String id_log = db.insertId (logTable, HASH (
+            "action", action,
+            "uuid_object", id,
+            "uuid_user", user == null ? null : user.getId ()
+        )).toString ();
+        
+        db.update (getTable (), HASH (
+            "orgrootentityguid", id,
+            "id_log",    id_log
+        ));
+
+        publishMessage (action, id_log);
+
+    }    
+
+    @Override
+    public JsonObject select (JsonObject p, User user) {
+        throw new UnsupportedOperationException ("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
 }
