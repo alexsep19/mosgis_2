@@ -14,6 +14,7 @@ import javax.jms.Queue;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
@@ -117,18 +118,18 @@ public class GisPollExportCharterStatusMDB extends UUIDMDB<OutSoap> {
         if (status == VocGisStatus.i.REVIEWED) toPromote.add (uuidCharter);
         
         final Map<String, Object> ctr = HASH (
-            "uuid",               uuidCharter,
-            "charterversionguid", er.getCharterVersionGUID ()
+            EnTable.c.UUID,               uuidCharter,
+            Charter.c.CHARTERVERSIONGUID, er.getCharterVersionGUID ()
         );
         
         if (!versionsOnly) {
             
-            ctr.put ("id_ctr_status", status.getId ());
-            ctr.put ("id_ctr_status_gis", status.getId ());
-            ctr.put ("versionnumber", er.getVersionNumber ());
+            DB.set (ctr, Charter.c.ID_CTR_STATUS,     status.getId ());
+            DB.set (ctr, Charter.c.ID_CTR_STATUS_GIS, status.getId ());
+            DB.set (ctr, Charter.c.VERSIONNUMBER,     er.getVersionNumber ());
             
             VocGisStatus.i state = VocGisStatus.i.forName (er.getState ());
-            if (state != null) ctr.put ("id_ctr_state_gis", state.getId ());
+            if (state != null) DB.set (ctr, Charter.c.ID_CTR_STATE_GIS, state.getId ());
             
         }
         

@@ -20,6 +20,7 @@ import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Get;
 import static ru.eludia.base.model.def.Def.NOW;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.AdditionalService;
@@ -247,8 +248,8 @@ public class ExportCharterMDB extends UUIDMDB<CharterLog> {
         UUID mGUID = UUID.fromString (exportCharterStatus.getMessageGUID ());
 
         db.update (Charter.class, HASH (
-            "uuid", ctrUuid,
-            "charterversionguid", null
+            EnTable.c.UUID,               ctrUuid,
+            Charter.c.CHARTERVERSIONGUID, null
         ));
 
         for (int i = 0; i < 10; i ++) {

@@ -7,15 +7,14 @@ import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
-import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.Type.BOOLEAN;
 import static ru.eludia.base.model.Type.NUMERIC;
 import static ru.eludia.base.model.Type.INTEGER;
 import static ru.eludia.base.model.Type.DATE;
 import static ru.eludia.base.model.Type.STRING;
-import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocCharterObjectReason;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -27,7 +26,7 @@ import ru.gosuslugi.dom.schema.integration.house_management.DaySelectionExportTy
 import ru.gosuslugi.dom.schema.integration.house_management.DeviceMeteringsDaySelectionType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
 
-public class Charter extends Table {
+public class Charter extends EnTable {
 
     public enum c implements ColEnum {
         
@@ -38,9 +37,6 @@ public class Charter extends Table {
         UUID_OUT_SOAP             (OutSoap.class,         null,                                "Последний запрос на импорт в ГИС ЖКХ"),
         ID_LOG                    (CharterLog.class,      null,                                "Последнее событие редактирования"),        
         
-        UUID                      (Type.UUID,    NEW_UUID,    "Ключ"),        
-        IS_DELETED                (BOOLEAN,      FALSE,  "1, если запись удалена; иначе 0"),
-
         DATE_                     (DATE,          null,  "Дата регистрации TCН/ТСЖ/кооператива (Организации Поставщика данных)"),        
                 
         AUTOMATICROLLOVERONEYEAR  (BOOLEAN,      FALSE,  "Автоматически продлить срок оказания услуг на один год"),
@@ -88,7 +84,6 @@ public class Charter extends Table {
         super ("tb_charters", "Уставы");
         
         cols   (c.class);
-        pk     (getColumn (c.UUID.toString ()));
         
         key    ("charterguid", c.CHARTERGUID);
         unique ("uuid_org",    c.UUID_ORG);        
