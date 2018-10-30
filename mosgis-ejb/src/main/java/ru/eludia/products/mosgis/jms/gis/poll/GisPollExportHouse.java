@@ -149,11 +149,17 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                             "storeyscount",          entrance.getStoreysCount(),
                             "creationyear",          entrance.getCreationYear(),
                             "terminationdate",       entrance.getTerminationDate(),
-                            "code_vc_nsi_330",       entrance.getAnnulmentReason() != null ? entrance.getAnnulmentReason().getCode() : null,
                             "annulmentinfo",         entrance.getAnnulmentInfo(),
                             "gis_modification_date", entrance.getModificationDate(),
                             "informationconfirmed",  Boolean.TRUE.equals(entrance.isInformationConfirmed())
                         );
+                        if (entrance.getAnnulmentReason() != null) {
+                            data.put("code_vc_nsi_330", entrance.getAnnulmentReason().getCode());
+                            data.put("is_annuled_in_gis", true);
+                        } else {
+                            data.put("code_vc_nsi_330", null);
+                            data.put("is_annuled_in_gis", false);
+                        }
                         entrances.put(UUID.fromString(entrance.getEntranceGUID()), data);
 
                         return data;
@@ -175,20 +181,27 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                 NonResidentialPremise.class, 
                 HASH ("uuid_house", houseUuid), 
                 house.getNonResidentialPremises().stream().map(nonResisentialPremise -> {
-                    return HASH(
+                    Map<String, Object> data = HASH(
                         "premisesguid",          nonResisentialPremise.getPremisesGUID(),
                         "fiaschildhouseguid",    nonResisentialPremise.getFIASChildHouseGuid(),
                         "gis_unique_number",     nonResisentialPremise.getPremisesUniqueNumber(),
                         "cadastralnumber",       nonResisentialPremise.getCadastralNumber(),
                         "premisesnum",           nonResisentialPremise.getPremisesNum(),
                         "terminationdate",       nonResisentialPremise.getTerminationDate(),
-                        "code_vc_nsi_330",       nonResisentialPremise.getAnnulmentReason() != null ? nonResisentialPremise.getAnnulmentReason().getCode() : null,
                         "floor",                 nonResisentialPremise.getFloor(),
                         "totalarea",             nonResisentialPremise.getTotalArea(),
                         "iscommonproperty",      Boolean.TRUE.equals(nonResisentialPremise.isIsCommonProperty()),
                         "gis_modification_date", nonResisentialPremise.getModificationDate(),
                         "informationconfirmed",  Boolean.TRUE.equals(nonResisentialPremise.isInformationConfirmed())
                     );
+                    if (nonResisentialPremise.getAnnulmentReason() != null) {
+                        data.put("code_vc_nsi_330", nonResisentialPremise.getAnnulmentReason().getCode());
+                        data.put("is_annuled_in_gis", true);
+                    } else {
+                        data.put("code_vc_nsi_330", null);
+                        data.put("is_annuled_in_gis", false);
+                    }
+                    return data;
                 }).collect(Collectors.toList()),
                 "premisesguid"
             );
@@ -197,28 +210,34 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
             house.getResidentialPremises().forEach( premise -> {
                 
                 List<Map<String, Object>> rooms = premise.getLivingRoom().stream().map(room -> {
-                    return HASH(
+                    Map<String, Object> data = HASH(
                         "livingroomguid",        room.getLivingRoomGUID(),
                         "gis_unique_number",     room.getLivingRoomUniqueNumber(),
                         "cadastralnumber",       room.getCadastralNumber(),
                         "roomnumber",            room.getRoomNumber(),
                         "terminationdate",       room.getTerminationDate(),
-                        "code_vc_nsi_330",       room.getAnnulmentReason() != null ? room.getAnnulmentReason().getCode() : null,
                         "floor",                 room.getFloor(),
                         "square",                room.getSquare(),
                         "gis_modification_date", room.getModificationDate(),
                         "informationconfirmed",  Boolean.TRUE.equals(room.isInformationConfirmed())
                     );
+                    if (room.getAnnulmentReason() != null) {
+                        data.put("code_vc_nsi_330", room.getAnnulmentReason().getCode());
+                        data.put("is_annuled_in_gis", true);
+                    } else {
+                        data.put("code_vc_nsi_330", null);
+                        data.put("is_annuled_in_gis", false);
+                    }
+                    return data;
                 }).collect(Collectors.toList());
                 
-                premises.put(UUID.fromString(premise.getPremisesGUID()), HASH(
+                Map<String, Object> premisesHash = HASH(
                     "premisesguid",          premise.getPremisesGUID(),
                     "fiaschildhouseguid",    premise.getFIASChildHouseGuid(),
                     "gis_unique_number",     premise.getPremisesUniqueNumber(),
                     "cadastralnumber",       premise.getCadastralNumber(),
                     "premisesnum",           premise.getPremisesNum(),
                     "terminationdate",       premise.getTerminationDate(),
-                    "code_vc_nsi_330",       premise.getAnnulmentReason() != null ? premise.getAnnulmentReason().getCode() : null,
                     "floor",                 premise.getFloor(),
                     "uuid_entrance",         entranceUuidByNum.get(premise.getEntranceNum()),
                     "code_vc_nsi_30",        premise.getPremisesCharacteristic() != null ? premise.getPremisesCharacteristic().getCode() : null,
@@ -227,7 +246,17 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                     "gis_modification_date", premise.getModificationDate(),
                     "informationconfirmed",  Boolean.TRUE.equals(premise.isInformationConfirmed()),
                     "livingrooms",           rooms
-                ));
+                );
+                
+                if (premise.getAnnulmentReason() != null) {
+                    premisesHash.put("code_vc_nsi_330", premise.getAnnulmentReason().getCode());
+                    premisesHash.put("is_annuled_in_gis", true);
+                } else {
+                    premisesHash.put("code_vc_nsi_330", null);
+                    premisesHash.put("is_annuled_in_gis", false);
+                }
+                
+                premises.put(UUID.fromString(premise.getPremisesGUID()), premisesHash);
             });
             
             db.dupsert (
@@ -260,7 +289,7 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                 Lift.class, 
                 HASH ("uuid_house", houseUuid), 
                     house.getLift().stream().map(lift -> {
-                        return HASH(
+                        Map<String, Object> data = HASH(
                             "liftguid",              lift.getLiftGUID(),
                             "fiaschildhouseguid",    lift.getFIASChildHouseGuid(),
                             "uuid_entrance",         entranceUuidByNum.get(lift.getEntranceNum()),
@@ -268,10 +297,18 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                             "factorynum",            lift.getFactoryNum(),
                             "code_vc_nsi_192",       lift.getType().getCode(),
                             "terminationdate",       lift.getTerminationDate(),
-                            "code_vc_nsi_330",       lift.getAnnulmentReason() != null ? lift.getAnnulmentReason().getCode() : null,
                             "annulmentinfo",         lift.getAnnulmentInfo(),
                             "gis_modification_date", lift.getModificationDate()
                         );
+                        if (lift.getAnnulmentReason() != null) {
+                            data.put("code_vc_nsi_330", lift.getAnnulmentReason().getCode());
+                            data.put("is_annuled_in_gis", true);
+                        } else {
+                            data.put("code_vc_nsi_330", null);
+                            data.put("is_annuled_in_gis", false);
+                        }
+                        
+                        return data;
                     }).collect(Collectors.toList()),
                 "liftguid"
             );
@@ -294,27 +331,34 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
             house.getBlock().forEach( block -> {
                 
                 List<Map<String, Object>> rooms = block.getLivingRoom().stream().map(room -> {
-                    return HASH(
+                    Map<String, Object> data = HASH(
                         "livingroomguid",        room.getLivingRoomGUID(),
                         "gis_unique_number",     room.getLivingRoomUniqueNumber(),
                         "cadastralnumber",       room.getCadastralNumber(),
                         "roomnumber",            room.getRoomNumber(),
                         "terminationdate",       room.getTerminationDate(),
-                        "code_vc_nsi_330",       room.getAnnulmentReason() != null ? room.getAnnulmentReason().getCode() : null,
                         "floor",                 room.getFloor(),
                         "square",                room.getSquare(),
                         "gis_modification_date", room.getModificationDate(),
                         "informationconfirmed",  Boolean.TRUE.equals(room.isInformationConfirmed())
                     );
+                    if (room.getAnnulmentReason() != null) {
+                        data.put("code_vc_nsi_330", room.getAnnulmentReason().getCode());
+                        data.put("is_annuled_in_gis", true);
+                    } else {
+                        data.put("code_vc_nsi_330", null);
+                        data.put("is_annuled_in_gis", false);
+                    }
+                    
+                    return data;
                 }).collect(Collectors.toList());
                 
-                blocks.put(UUID.fromString(block.getBlockGUID()), HASH(
+                Map<String, Object> blocksHash = HASH(
                     "blockguid",             block.getBlockGUID(),
                     "gis_unique_number",     block.getBlockUniqueNumber(),
                     "cadastralnumber",       block.getCadastralNumber(),
                     "blocknum",              block.getBlockNum(),
                     "terminationdate",       block.getTerminationDate(),
-                    "code_vc_nsi_330",       block.getAnnulmentReason() != null ? block.getAnnulmentReason().getCode() : null,
                     "code_vc_nsi_30",        block.getPremisesCharacteristic() != null ? block.getPremisesCharacteristic().getCode() : null,
                     "totalarea",             block.getTotalArea(),
                     "grossarea",             block.getGrossArea(),
@@ -322,7 +366,17 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                     "informationconfirmed",  Boolean.TRUE.equals(block.isInformationConfirmed()),
                     "is_nrs",                BlockCategoryType.NON_RESIDENTIAL.equals(block.getCategory()),
                     "livingrooms",           rooms
-                ));
+                );
+                
+                if (block.getAnnulmentReason() != null) {
+                    blocksHash.put("code_vc_nsi_330", block.getAnnulmentReason().getCode());
+                    blocksHash.put("is_annuled_in_gis", true);
+                } else {
+                    blocksHash.put("code_vc_nsi_330", null);
+                    blocksHash.put("is_annuled_in_gis", false);
+                }
+                
+                blocks.put(UUID.fromString(block.getBlockGUID()), blocksHash);
             });
             
             db.dupsert (
@@ -357,18 +411,27 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                     "uuid_house", houseUuid
                 ),
                 house.getLivingRoom().stream().map(room -> {
-                    return HASH(
+                    Map<String, Object> data = HASH(
                         "livingroomguid",        room.getLivingRoomGUID(),
                         "gis_unique_number",     room.getLivingRoomUniqueNumber(),
                         "cadastralnumber",       room.getCadastralNumber(),
                         "roomnumber",            room.getRoomNumber(),
                         "terminationdate",       room.getTerminationDate(),
-                        "code_vc_nsi_330",       room.getAnnulmentReason() != null ? room.getAnnulmentReason().getCode() : null,
                         "floor",                 room.getFloor(),
                         "square",                room.getSquare(),
                         "gis_modification_date", room.getModificationDate(),
                         "informationconfirmed",  Boolean.TRUE.equals(room.isInformationConfirmed())
                     );
+                    
+                    if (room.getAnnulmentReason() != null) {
+                        data.put("code_vc_nsi_330", room.getAnnulmentReason().getCode());
+                        data.put("is_annuled_in_gis", true);
+                    } else {
+                        data.put("code_vc_nsi_330", null);
+                        data.put("is_annuled_in_gis", false);
+                    }
+                    
+                    return data;
                 }).collect(Collectors.toList()), 
                 "livingroomguid"
             );

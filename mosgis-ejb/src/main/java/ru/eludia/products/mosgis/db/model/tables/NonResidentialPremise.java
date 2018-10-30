@@ -41,11 +41,12 @@ public class NonResidentialPremise extends Passport {
         col    ("iscommonproperty",   Type.BOOLEAN,        Bool.FALSE, "1, если помещение составляет общее имущество в многоквартирном доме; иначе 0");
         col    ("floor",              Type.STRING,         null,       "Этаж");
         
-        ref    ("fiaschildhouseguid",    VocBuilding.class, null,      "ГУИД дочернего дома по ФИАС, к которому относится подъезд для группирующих домов");
-        col    ("gis_unique_number",     Type.STRING,       null,      "Уникальный номер");
-        col    ("gis_modification_date", Type.TIMESTAMP,    null,      "Дата модификации данных в ГИС ЖКХ");
-        col    ("informationconfirmed",  Type.BOOLEAN,      Bool.TRUE, "Информация подтверждена поставщиком");
-        col    ("premisesguid",          Type.UUID,         null,      "Идентификатор в ГИС ЖКХ");
+        ref    ("fiaschildhouseguid",    VocBuilding.class, null,       "ГУИД дочернего дома по ФИАС, к которому относится подъезд для группирующих домов");
+        col    ("gis_unique_number",     Type.STRING,       null,       "Уникальный номер");
+        col    ("gis_modification_date", Type.TIMESTAMP,    null,       "Дата модификации данных в ГИС ЖКХ");
+        col    ("informationconfirmed",  Type.BOOLEAN,      Bool.TRUE,  "Информация подтверждена поставщиком");
+        col    ("premisesguid",          Type.UUID,         null,       "Идентификатор в ГИС ЖКХ");
+        col    ("is_annuled_in_gis",     Type.BOOLEAN,      Bool.FALSE, "1, если запись аннулирована в ГИС ЖКХ; иначе 0");
 
         trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
             + "IF :NEW.premisesnum IS NULL        THEN raise_application_error (-20000, '#premisesnum#: Необходимо указать номер помещения.'); END IF; "

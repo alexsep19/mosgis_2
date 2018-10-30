@@ -3,7 +3,6 @@ package ru.eludia.products.mosgis.jms.gis.send;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -26,7 +25,6 @@ import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.base.db.util.TypeConverter;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.Block;
-import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.Entrance;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.Lift;
@@ -44,11 +42,7 @@ import ru.eludia.products.mosgis.jms.base.JsonMDB;
 import ru.eludia.products.mosgis.util.StringUtils;
 import ru.eludia.products.mosgis.util.XmlUtils;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
-import ru.gosuslugi.dom.schema.integration.house_management.ApartmentHouseUOType;
 import ru.gosuslugi.dom.schema.integration.house_management.BlockCategoryType;
-import ru.gosuslugi.dom.schema.integration.house_management.HouseBasicUOType;
-import ru.gosuslugi.dom.schema.integration.house_management.HouseBasicUpdateUOType;
-import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseUORequest;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 
 @MessageDriven(activationConfig = {
@@ -100,8 +94,8 @@ logger.info(params.toString());
         r.putAll(getCadastralNumber((String) r.get("kad_n")));
         r.put("transportguid", r.get("uuid"));
         
-        boolean isCondo = TypeConverter.bool(r.get("is_condo"));
-        boolean hasBlocks =  TypeConverter.bool(r.get("hasblocks"));
+        boolean isCondo = TypeConverter.Boolean(r.get("is_condo"));
+        boolean hasBlocks =  TypeConverter.Boolean(r.get("hasblocks"));
         
         if (isCondo) {
             addEntrances(r, db);
@@ -174,7 +168,11 @@ logger.info(params.toString());
     private void addEntrances (Map<String, Object> r, DB db) throws SQLException {
         List<Map<String, Object>> entrances = new ArrayList<>();
         
-        db.forEach(db.getModel().select (Entrance.class, "*").where ("uuid_house", r.get ("uuid")).and ("is_deleted", 0), (rs) -> {
+        db.forEach(db.getModel()
+                .select (Entrance.class, "*")
+                .where ("uuid_house", r.get ("uuid"))
+                .and ("is_deleted", 0)
+                .and ("is_annuled_in_gis", 0), (rs) -> {
             
             Map<String, Object> entrance = db.HASH (rs);
             
@@ -195,7 +193,9 @@ logger.info(params.toString());
                 .select (Lift.class, "AS root", "*")
                 .toOne(Entrance.class, "AS entrance", "entrancenum").on()
                 .toOne (nsi192, "AS vc_nsi_192", "guid").on ("vc_nsi_192.code=root.code_vc_nsi_192 AND vc_nsi_192.isactual=1")
-                .where ("uuid_house", r.get ("uuid")).and ("is_deleted", 0), (rs) -> {
+                .where ("uuid_house", r.get ("uuid"))
+                .and ("is_deleted", 0)
+                .and ("is_annuled_in_gis", 0), (rs) -> {
             
             Map<String, Object> lift = db.HASH (rs);
             
@@ -218,7 +218,9 @@ logger.info(params.toString());
                 .select (ResidentialPremise.class, "AS root","*")
                 .toMaybeOne(Entrance.class, "AS entrance", "entrancenum").on()
                 .toMaybeOne (nsi30, "AS vc_nsi_30", "guid").on ("vc_nsi_30.code=root.code_vc_nsi_30 AND vc_nsi_30.isactual=1")
-                .where ("uuid_house", r.get ("uuid")).and ("is_deleted", 0));
+                .where ("uuid_house", r.get ("uuid"))
+                .and ("is_deleted", 0)
+                .and ("is_annuled_in_gis", 0));
         
         premises.values().forEach(premise -> {
             
@@ -246,7 +248,11 @@ logger.info(params.toString());
     private void addNonResidentialPremises (Map<String, Object> r, DB db) throws SQLException {
         
         List<Map<String, Object>> premises = new ArrayList<>();
-        db.forEach(db.getModel().select (NonResidentialPremise.class, "*").where ("uuid_house", r.get ("uuid")).and ("is_deleted", 0), (rs) -> {
+        db.forEach(db.getModel()
+                .select (NonResidentialPremise.class, "*")
+                .where ("uuid_house", r.get ("uuid"))
+                .and ("is_deleted", 0)
+                .and ("is_annuled_in_gis", 0), (rs) -> {
             
             Map<String, Object> premise = db.HASH (rs);
             
@@ -265,7 +271,11 @@ logger.info(params.toString());
         
         Map<Object, Map<String, Object>> premises = (Map<Object, Map<String, Object>>) (isCondo ? r.get("residentialpremises") : r.get("blocks"));
         
-        db.forEach(db.getModel().select (LivingRoom.class, "*").where ("uuid_house", r.get ("uuid")).and ("is_deleted", 0), (rs) -> {
+        db.forEach(db.getModel()
+                .select (LivingRoom.class, "*")
+                .where ("uuid_house", r.get ("uuid"))
+                .and ("is_deleted", 0)
+                .and ("is_annuled_in_gis", 0), (rs) -> {
             Map<String, Object> room = db.HASH (rs);
             
             room.putAll(getCadastralNumber((String) room.get("cadastralnumber")));
@@ -289,7 +299,9 @@ logger.info(params.toString());
                 db.getModel()
                         .select (Block.class, "AS root", "*")
                         .toMaybeOne (nsi30, "AS vc_nsi_30", "guid").on ("vc_nsi_30.code=root.code_vc_nsi_30 AND vc_nsi_30.isactual=1")
-                        .where ("uuid_house", r.get ("uuid")).and ("is_deleted", 0));
+                        .where ("uuid_house", r.get ("uuid"))
+                        .and ("is_deleted", 0)
+                        .and ("is_annuled_in_gis", 0));
         
         blocks.values().forEach(block -> {
             block.putAll(getCadastralNumber((String) block.get("cadastralnumber")));
@@ -297,7 +309,7 @@ logger.info(params.toString());
             block.put("premisescharacteristic", NsiTable.toDom((String) block.get("code_vc_nsi_30"), (UUID) block.get("vc_nsi_30.guid")));
             if (block.get("grossarea") == null) 
                 block.put("nogrossares", true);
-            if (TypeConverter.bool(block.get("is_nrs")))
+            if (TypeConverter.Boolean(block.get("is_nrs")))
                 block.put("category", BlockCategoryType.NON_RESIDENTIAL);
             
             block.put("livingrooms", new ArrayList<>());
