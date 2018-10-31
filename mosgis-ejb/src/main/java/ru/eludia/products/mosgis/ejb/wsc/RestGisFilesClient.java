@@ -1,6 +1,8 @@
 package ru.eludia.products.mosgis.ejb.wsc;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
@@ -21,10 +23,44 @@ import javax.ws.rs.client.WebTarget;
 import static javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM;
 import javax.ws.rs.core.Response;
 import java.util.Base64;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.xml.bind.DatatypeConverter;
+import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.jmx.Conf;
 
 @Stateless
 public class RestGisFilesClient {
+    
+    private class Authenticator implements ClientRequestFilter {
+
+        public void filter (ClientRequestContext requestContext) throws IOException {
+            MultivaluedMap<String, Object> headers = requestContext.getHeaders ();
+            final String basicAuthentication = getBasicAuthentication ();
+            if (basicAuthentication == null) return;
+logger.info ("setting Authorization=" + basicAuthentication);
+            headers.add ("Authorization", basicAuthentication);
+        }
+
+        private String getBasicAuthentication () {
+            
+            final String login = Conf.get (VocSetting.i.WS_GIS_BASIC_LOGIN);
+            
+            if (!DB.ok (login)) return null;
+            
+            final String password = Conf.get (VocSetting.i.WS_GIS_BASIC_PASSWORD);            
+            
+            String token = login + ":" + password;
+            
+            try {               
+                return "BASIC " + DatatypeConverter.printBase64Binary (token.getBytes ("UTF-8"));
+            } 
+            catch (UnsupportedEncodingException ex) {
+                throw new IllegalStateException("Cannot encode with UTF-8", ex);
+            }
+            
+        }
+        
+    }    
     
     private static final Logger logger = Logger.getLogger (RestGisFilesClient.class.getName ());
 
@@ -36,6 +72,8 @@ public class RestGisFilesClient {
     public void init () {
         
         client = ClientBuilder.newClient ();
+        
+        client.register (new Authenticator ());        
         
         client.register ((ClientRequestFilter) (ClientRequestContext requestContext) -> {
             logger.info ("rq: " + requestContext.getStringHeaders ());
@@ -60,7 +98,7 @@ public class RestGisFilesClient {
 
         client.property ("jersey.config.client.connectTimeout", Conf.getInt (VocSetting.i.WS_GIS_FILES_TMT_CONN));
         client.property ("jersey.config.client.readTimeout", Conf.getInt (VocSetting.i.WS_GIS_FILES_TMT_RESP));
-
+                
         StringBuilder sb = new StringBuilder (Conf.get (VocSetting.i.WS_GIS_FILES_URL));
         if (sb.charAt (sb.length () - 1) != '/') sb.append ('/');
         sb.append (context.name ().toLowerCase ());
