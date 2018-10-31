@@ -60,7 +60,7 @@ define ([], function () {
 
             }
 
-            if (it.is_deleted == 0 && !it ['house.uuid'] && ($_USER.role.admin || it ['ctr.uuid_org'] == $_USER.uuid_org)) it._can.create_house = 1
+            if (it.is_deleted == 0 && !it ['house.uuid'] && it.id_ctr_status_gis != 110 && ($_USER.role.admin || it ['ctr.uuid_org'] == $_USER.uuid_org)) it._can.create_house = 1
             
             $('body').data ('data', data)
 

@@ -50,7 +50,7 @@ define ([], function () {
 
                 it._can.update = it._can.cancel = it._can.edit
                 
-                if (!it ['house.uuid']) it._can.create_house = 1
+                if (!it ['house.uuid'] && it.id_ctr_status_gis != 110) it._can.create_house = 1
 
             }
             
