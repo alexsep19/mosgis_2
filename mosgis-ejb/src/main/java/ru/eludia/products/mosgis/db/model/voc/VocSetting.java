@@ -1,6 +1,7 @@
 package ru.eludia.products.mosgis.db.model.voc;
 
 import javax.xml.ws.BindingProvider;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.jmx.Conf;
@@ -24,6 +25,13 @@ public class VocSetting extends Table {
         java.util.Map <String,Object> c = ((BindingProvider) p).getRequestContext ();
 
         c.put (BindingProvider.ENDPOINT_ADDRESS_PROPERTY, url);
+        
+        final String basicLogin = Conf.get (i.WS_GIS_BASIC_LOGIN);
+        if (DB.ok (basicLogin)) {
+            c.put (BindingProvider.USERNAME_PROPERTY, basicLogin);
+            c.put (BindingProvider.PASSWORD_PROPERTY, Conf.get (i.WS_GIS_BASIC_PASSWORD));
+        }        
+        
         c.put (com.sun.xml.ws.developer.JAXWSProperties.CONNECT_TIMEOUT, connectTimeout);
         c.put ("com.sun.xml.ws.request.timeout", responseTimeout);
                       
@@ -50,6 +58,8 @@ public class VocSetting extends Table {
         PATH_FIAS ("path.fias", "Директория с распакованной из RAR XML-выгрузкой ФИАС", "c:/projects/mosgis/incoming/fias/fias_xml"),
         PATH_OPENDATA ("path.opendata", "Директория с распакованной из ZIP XML-выгрузкой с портала открытых данных Правительства Москвы", "c:/projects/mosgis/incoming/opendata"),
 
+        WS_GIS_BASIC_LOGIN    ("ws.gis.basic.login", "Login Basic-аутентификации сервисов GIS", ""),
+        WS_GIS_BASIC_PASSWORD ("ws.gis.basic.password", "Пароль Basic-аутентификации сервисов GIS", ""),
         WS_GIS_URL_ROOT       ("ws.gis.url.root", "Корневой URL сервисов GIS", ""),
         
         WS_GIS_FILES_URL      ("ws.gis.files.url", "Endpoint URL файлового REST-сервиса ГИС ЖКХ", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-file-store-service/rest/"),

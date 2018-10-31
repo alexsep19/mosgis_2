@@ -74,4 +74,11 @@ public interface ConfMBean {
     
     public String getWsGisUrlRoot ();
     public void   setWsGisUrlRoot (String s);
+    
+    public String getWsGisBasicLogin ();
+    public void   setWsGisBasicLogin (String s);
+    
+    public String getWsGisBasicPassword ();    
+    public void   setWsGisBasicPassword (String s);
+    
 }

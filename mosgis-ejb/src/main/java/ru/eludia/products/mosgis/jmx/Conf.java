@@ -432,4 +432,25 @@ public class Conf implements ConfMBean, ConfLocal {
         set (VocSetting.i.WS_GIS_NSI_URL, s + VocSetting.i.WS_GIS_NSI_URL.getValue().substring(VocSetting.WS_GIS_URL_ROOT_DEFAULT.length()));
         set (VocSetting.i.WS_GIS_ORG_COMMON_URL, s + VocSetting.i.WS_GIS_ORG_COMMON_URL.getValue().substring(VocSetting.WS_GIS_URL_ROOT_DEFAULT.length()));
     }
+    
+    @Override
+    public String getWsGisBasicLogin () {
+        return get (VocSetting.i.WS_GIS_BASIC_LOGIN);
+    }
+
+    @Override
+    public void setWsGisBasicLogin (String s) {
+        set (VocSetting.i.WS_GIS_BASIC_LOGIN, s);
+    }
+
+    @Override
+    public String getWsGisBasicPassword () {
+        return "******";
+    }
+
+    @Override
+    public void setWsGisBasicPassword (String s) {
+        set (VocSetting.i.WS_GIS_BASIC_PASSWORD, s);
+    }
+
 }
