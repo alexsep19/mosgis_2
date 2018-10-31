@@ -13,7 +13,7 @@ public abstract class NsiScalarField extends NsiField {
         
     public NsiScalarField (JsonObject o) {
         super (o);
-        fName = "F_" + name;
+        fName = "f_" + name;
     }
     
 //    public abstract NsiElementFieldType toDom (Object value) throws java.sql.SQLException;

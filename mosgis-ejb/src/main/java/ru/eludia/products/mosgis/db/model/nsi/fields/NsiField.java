@@ -12,7 +12,7 @@ public abstract class NsiField extends NamedObject {
     boolean multiple;
             
     public NsiField (JsonObject o) {
-        super (o.getString ("name"), o.getString ("remark"));
+        super (o.getString ("name").toLowerCase (), o.getString ("remark"));
         multiple = o.getBoolean ("mul", false);
     }
 
