@@ -114,6 +114,8 @@ define ([], function () {
         
         if (!data.item.is_condo) return done (data)
         
+        data.item.cach = data.cach
+        
         query ({type: 'voc_nsi_list', id: 192, part: 'lines'}, {"cmd":"get","selected":[],"limit":100,"offset":0}, function (d) {
 
             var k = 'vc_nsi_192'

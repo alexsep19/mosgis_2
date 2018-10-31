@@ -18,6 +18,8 @@ define ([], function () {
         
         var data = {'is_condo': v.is_condo, "fiashouseguid": item.fiashouseguid, "address": item ["fias.label"]}
 
+        if (!confirm ('Вы уверены, что по адресу ' + data.address + ' находится ' + (v.is_condo == '1' ? 'многоквартирный дом' : 'жилой (не многоквартирный) дом') + '?')) return w2popup.close ()
+
         query (tia, {'data': data}, function (data) {
         
             w2popup.close ()

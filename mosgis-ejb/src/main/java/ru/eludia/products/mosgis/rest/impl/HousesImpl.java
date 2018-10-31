@@ -21,9 +21,12 @@ import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.PassportKind;
 import static ru.eludia.products.mosgis.PassportKind.CONDO;
 import static ru.eludia.products.mosgis.PassportKind.COTTAGE;
+import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.rest.api.HousesLocal;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.ActualCaChObject;
 import ru.eludia.products.mosgis.db.model.tables.Block;
+import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.Entrance;
 import ru.eludia.products.mosgis.db.model.tables.Lift;
 import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
@@ -31,6 +34,7 @@ import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
 import static ru.eludia.products.mosgis.db.model.voc.VocRdColType.i.REF;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -102,9 +106,11 @@ public class HousesImpl extends Base<House> implements HousesLocal {
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();
         
-        try (DB db = ModelHolder.getModel ().getDb ()) {
+        final MosGisModel m = ModelHolder.getModel ();
+        
+        try (DB db = m.getDb ()) {
             
-            JsonObject item = db.getJsonObject (ModelHolder.getModel ()
+            JsonObject item = db.getJsonObject (m
                     .get (House.class, id, "*")
                     .toMaybeOne (VocBuilding.class,        "AS fias",      "postalcode", "okato", "oktmo").on ()
                     .toMaybeOne (VocBuildingAddress.class, "AS fias_addr", "label").on ("fias.houseguid = fias_addr.houseguid")
@@ -114,7 +120,7 @@ public class HousesImpl extends Base<House> implements HousesLocal {
             
             if (item.getInt ("is_condo", 1) == 0) {
                 
-                if (null != db.getString (ModelHolder.getModel ()
+                if (null != db.getString (m
                         
                     .select (Block.class, "uuid")
                     .where ("uuid_house", id)
@@ -125,7 +131,7 @@ public class HousesImpl extends Base<House> implements HousesLocal {
             }
             else {
                 
-                if (null != db.getString (ModelHolder.getModel ()
+                if (null != db.getString (m
                         
                     .select (ResidentialPremise.class, "uuid")
                     .where ("uuid_house", id)
@@ -139,20 +145,29 @@ public class HousesImpl extends Base<House> implements HousesLocal {
             db.addJsonArrays (jb, NsiTable.getNsiTable (NSI_VOC_CONDITION).getVocSelect ());
             
             House housesTable = new House ();
-            housesTable.setModel (ModelHolder.getModel ());
+            housesTable.setModel (m);
             housesTable.addNsiFields (db);
             for (MultipleRefTable refTable: housesTable.getRefTables ()) {                
                 
                 JsonObjectBuilder ids = Json.createObjectBuilder ();
                 
-                db.forEach (
-                    ModelHolder.getModel ().select (refTable, "code").where (refTable.getPk ().get (0).getName (), id), 
+                db.forEach (m.select (refTable, "code").where (refTable.getPk ().get (0).getName (), id), 
                     rs -> {ids.add (rs.getString (1), 1);}
                 );
                 
                 jb.add (refTable.getName (), ids);
                 
-            }
+            }            
+            
+            JsonObject caCh = db.getJsonObject (m
+                .select     (ActualCaChObject.class, "AS root", "uuid", "id_ctr_status_gis")
+                .toOne      (VocOrganization.class, "AS org", "uuid", "label").on ()
+                .toMaybeOne (Contract.class,        "AS ctr", "uuid", "docnum", "signingdate").on ()
+                .where      ("fiashouseguid", item.getString ("fiashouseguid"))
+                .orderBy    ("root.id_ctr_status_gis")
+            );
+            
+            if (caCh != null) jb.add ("cach", caCh);
             
         }
         catch (Exception ex) {

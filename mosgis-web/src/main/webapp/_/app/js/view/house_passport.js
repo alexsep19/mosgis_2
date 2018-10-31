@@ -17,6 +17,40 @@ define ([], function () {
     }
 
     return function (data, view) {
+    
+        var it = data.item
+        
+        var cach = it.cach
+        
+        if (cach) {        
+            cach.org_label = cach ['org.label']
+            
+            if (cach ['ctr.uuid']) {
+                cach.type = 'mgmt_contract_object'
+                cach.label = 'договоре №' + cach ['ctr.docnum'] + ' от ' + dt_dmy (cach ['ctr.signingdate'])
+            }
+            else {
+                cach.type = 'charter_object'
+                cach.label = 'уставе'
+            }
+            
+            switch (cach.id_ctr_status_gis) {
+                case 10:
+                case 20:
+                    cach.label = 'Управление домом не утверждено в ' + cach.label
+                    break;
+                case 70:
+                    cach.label = 'Управление домом отклонено в ' + cach.label
+                    break;
+                case 90:
+                    cach.label = 'Управление домом заблокировано в ' + cach.label
+                    break;
+                default:
+                    cach.label = null
+            }            
+
+            cach.click = function () {openTab ('/' + cach.type + '/' + cach.uuid)}
+        }
 
         $_F5 = function (data) {
         
@@ -106,7 +140,9 @@ define ([], function () {
                         sessionStorage.removeItem ('check_sum_area_fields_of_a_house')
                         setTimeout ($_DO.check_sum_area_fields_of_a_house, 400)
                     }
-
+                    
+                    if (cach) clickOn ($('#cach'), cach.click)
+                    
                 }
 
             )},
