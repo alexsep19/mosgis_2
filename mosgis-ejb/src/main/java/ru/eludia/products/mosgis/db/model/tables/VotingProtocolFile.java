@@ -23,6 +23,7 @@ public class VotingProtocolFile extends Table {
         col ("attachmentguid",        Type.UUID,                null,        "Идентификатор сохраненного вложения");
         col ("attachmenthash",        Type.BINARY, 32,          null,        "ГОСТ Р 34.11-94");
         
+        col ("id_status",             Type.INTEGER, 1,                null,  "Статус");        
         fk  ("id_log",                VotingProtocolFileLog.class,    null,  "Последнее событие редактирования");
         
     }
