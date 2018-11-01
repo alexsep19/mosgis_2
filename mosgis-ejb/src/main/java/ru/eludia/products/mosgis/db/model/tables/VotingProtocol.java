@@ -46,6 +46,8 @@ public class VotingProtocol extends Table {
         //decisionlist?
         
         col ("modification", Type.STRING, null, "Основание изменения (для протоколов в статусе \"Размещен\")");
+        
+        fk  ("id_log",                VotingProtocolLog.class,    null,         "Последнее событие редактирования");
     }
     
 }
