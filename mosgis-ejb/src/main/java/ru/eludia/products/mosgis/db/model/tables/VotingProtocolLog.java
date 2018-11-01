@@ -99,7 +99,7 @@ public class VotingProtocolLog extends Table {
                     + "FROM "
                         + "tb_voting_protocols "
                     + "WHERE "
-                        + "uuid=:NEW.uuid_object "
+                        + "uuid=:NEW.uuid_object; "
                 + "END;");
         
     }
