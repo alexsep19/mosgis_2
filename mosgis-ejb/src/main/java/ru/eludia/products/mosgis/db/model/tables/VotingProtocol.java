@@ -4,6 +4,7 @@ import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 
 public class VotingProtocol extends Table {
     
@@ -14,6 +15,10 @@ public class VotingProtocol extends Table {
         pk  ("uuid", Type.UUID, "Ключ");
         
         fk  ("fiashouseguid",           VocBuilding.class,                   "Глобальный уникальный идентификатор дома по ФИАС");
+        col ("is_deleted",              Type.BOOLEAN, null,                  "1, если запись удалена; иначе 0");
+        
+        fk  ("id_prtcl_status",           VocGisStatus.class, null,   "Статус протокола с точки зрения mosgis");
+        fk  ("id_prtcl_status_gis",       VocGisStatus.class, null,   "Статус протокола с точки зрения ГИС ЖКХ");
         
         col ("protocolnum", Type.STRING, 30, null, "Номер протокола");
         col ("protocoldate", Type.DATE, "Дата составления протокола");
