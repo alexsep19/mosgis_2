@@ -22,7 +22,7 @@ define ([], function () {
 
             columns: [                
                 {field: 'is_condo',   caption: 'Тип дома', size: 10, render: function (r) {return r.is_condo ? 'МКД' : 'ЖД'}},
-                {field: 'unom', caption: 'UNOM',    size: 8},
+//                {field: 'unom', caption: 'UNOM',    size: 8},
                 {field: 'fiashouseguid', caption: 'GUID ФИАС',    size: 30},
                 {field: 'address', caption: 'Адрес',    size: 100},
             ],
