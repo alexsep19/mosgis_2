@@ -30,7 +30,7 @@ public class NonResidentialPremise extends Passport {
         
         col    ("premisesnum",        Type.STRING, 255,    null,       "Номер помещения");
         col    ("cadastralnumber",    Type.STRING,         null,       "Кадастровый номер");
-        col    ("totalarea",          Type.NUMERIC, 25, 4, null,       "Общая площадь жилого помещения");
+        col    ("totalarea",          Type.NUMERIC, 25, 4, null,       "Общая площадь");
         col    ("iscommonproperty",   Type.BOOLEAN,        Bool.FALSE, "1, если помещение составляет общее имущество в многоквартирном доме; иначе 0");
 
         trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
