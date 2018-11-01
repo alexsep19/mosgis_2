@@ -112,9 +112,9 @@ define ([], function () {
 
         data.__read_only = 1
         
-        if (!data.item.is_condo) return done (data)
-        
         data.item.cach = data.cach
+
+        if (!data.item.is_condo) return done (data)        
         
         query ({type: 'voc_nsi_list', id: 192, part: 'lines'}, {"cmd":"get","selected":[],"limit":100,"offset":0}, function (d) {
 

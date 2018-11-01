@@ -40,10 +40,10 @@ define ([], function () {
                     cach.label = 'Управление домом не утверждено в ' + cach.label
                     break;
                 case 70:
-                    cach.label = 'Управление домом отклонено в ' + cach.label
+                    cach.label = 'Управление домом заблокировано в ' + cach.label
                     break;
                 case 90:
-                    cach.label = 'Управление домом заблокировано в ' + cach.label
+                    cach.label = 'Управление домом отклонено в ' + cach.label
                     break;
                 default:
                     cach.label = null

@@ -32,6 +32,7 @@ public class ActualContractObject extends View {
             + " FROM "       + getName (ContractObject.class) + " o"
             + " INNER JOIN " + getName (Contract.class) + " c ON o.uuid_contract = c.uuid"
             + " WHERE o.is_deleted = 0"
+            + " AND o.id_ctr_status_gis <> " + VocGisStatus.i.ANNUL.getId ()
             + " AND o.startdate <= SYSDATE"
             + " AND (o.enddate IS NULL OR o.enddate >= TRUNC(SYSDATE))"
         ;

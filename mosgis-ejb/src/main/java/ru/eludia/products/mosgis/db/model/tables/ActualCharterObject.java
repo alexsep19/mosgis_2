@@ -32,6 +32,7 @@ public class ActualCharterObject extends View {
             + " INNER JOIN " + getName (Charter.class) + " c ON o.uuid_charter = c.uuid"
             + " WHERE o.is_deleted = 0"
             + " AND o.ismanagedbycontract = 0"
+            + " AND o.id_ctr_status_gis <> " + VocGisStatus.i.ANNUL.getId ()
             + " AND o.startdate <= SYSDATE"
             + " AND (o.enddate IS NULL OR o.enddate >= TRUNC(SYSDATE))"
         ;
