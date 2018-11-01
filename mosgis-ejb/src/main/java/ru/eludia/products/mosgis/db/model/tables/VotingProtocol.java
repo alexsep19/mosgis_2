@@ -20,23 +20,19 @@ public class VotingProtocol extends Table {
         
         col ("avoitingdate", Type.DATE, null, "Дата окончания приема решений (заочное голосование опросным путем)");
         col ("resolutionplace", Type.STRING, 3000, null, "Место принятия решений (заочное голосование опросным путем)");
-        //attachments?
         
         col ("meetingdate", Type.DATETIME, null, "Дата и время проведения собрания (очное голосование)");
         col ("votingplace", Type.STRING, 3000, null, "Место проведения собрания (очное голосование)");
-        //attachments?
         
         col ("evotingdatebegin", Type.DATETIME, null, "Дата и время начала проведения голосования (заочное голосование с использованием системы)");
         col ("evotingdateend", Type.DATETIME, null, "Дата и время окончания проведения голосования (заочное голосование с использованием системы)");
         col ("discipline", Type.STRING, null, "Порядок приема оформленных в письменной форме решений собственников (заочное голосование с использованием системы)");
         col ("inforeview", Type.STRING, null, "Порядок ознакомления с информацией и (или) материалами, которые будут представлены на данном собрании (заочное голосование с использованием системы)");
-        //attachments?
         
         col ("meeting_av_date", Type.DATETIME, null, "Дата и время проведения собрания (очно-заочное голосование)");
         col ("meeting_av_place", Type.STRING, 3000, null, "Место проведения собрания (очно-заочное голосование)");
         col ("meeting_av_date_end", Type.DATE, null, "Дата окончания приема решений (очно-заочное голосование)");
         col ("meeting_av_res_place", Type.STRING, 3000, null, "Место приема решения (очно-заочное голосование)");
-        //attachments?
         
         //voteinitiators?
         col ("extravoting", Type.BOOLEAN, "Внеочередное собрание");
