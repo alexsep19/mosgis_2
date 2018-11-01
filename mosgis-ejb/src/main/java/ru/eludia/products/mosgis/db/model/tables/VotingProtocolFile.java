@@ -14,7 +14,6 @@ public class VotingProtocolFile extends Table {
         
         ref ("uuid_voting_protocol", VotingProtocol.class, "Ссылка на протокол общего собрания собственников");
         
-        col ("name", Type.STRING, 1024, "Наименование вложения");
         col ("description", Type.STRING, 500, "Описание вложения");
         
         col ("label",                 Type.STRING,                           "Имя файла");
@@ -23,6 +22,8 @@ public class VotingProtocolFile extends Table {
         col ("body",                  Type.BLOB,                EMPTY_BLOB,  "Содержимое");
         col ("attachmentguid",        Type.UUID,                null,        "Идентификатор сохраненного вложения");
         col ("attachmenthash",        Type.BINARY, 32,          null,        "ГОСТ Р 34.11-94");
+        
+        fk  ("id_log",                VotingProtocolFileLog.class,    null,  "Последнее событие редактирования");
         
     }
     
