@@ -3,9 +3,9 @@ package ru.eludia.products.mosgis.db.model.voc;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.Table;
 
-public class VocProtertyDocumentTypes extends Table {
+public class VocProtertyDocumentType extends Table {
 
-    public VocProtertyDocumentTypes () {
+    public VocProtertyDocumentType () {
 
         super ("vc_prop_doc_types", "Действия пользователей системы");
 
