@@ -274,7 +274,7 @@ public class Charter extends EnTable {
         
         for (Map<String, Object> file: (Collection<Map<String, Object>>) r.get ("files")) CharterFile.add (c, file);
         
-        if (c.getMeetingProtocol ().getProtocolMeetingOwners ().isEmpty ()) c.setNoCharterApproveProtocol (true);
+        if (c.getMeetingProtocol () == null || c.getMeetingProtocol ().getProtocolMeetingOwners ().isEmpty ()) c.setNoCharterApproveProtocol (true);
                 
     }
     
