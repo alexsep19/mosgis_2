@@ -36,6 +36,8 @@ import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.def.Bool;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.tables.Passport;
+import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.nsi.NsiMultipleRefTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiMultipleScalarTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
@@ -298,6 +300,17 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
                 }
             
             db.commit ();
+            
+            if (registryNumber == 197) {
+                
+                Passport houses = (Passport) ModelHolder.getModel ().get(House.class);
+                houses.addNsiFields (db);
+                houses.getRefTables ().forEach ( (t) -> {
+                    try { db.updateSchema(t); }
+                    catch (SQLException ex) { logger.log (Level.SEVERE, null, ex); }
+                });
+                
+            }
             
             if (page < pages) {
                 nsi.importNsiItems (registryNumber, page + 1);
