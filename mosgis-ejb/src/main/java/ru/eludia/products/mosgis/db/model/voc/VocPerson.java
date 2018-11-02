@@ -5,7 +5,6 @@ import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
-import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 
 public class VocPerson extends Table {
     

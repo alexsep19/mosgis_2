@@ -61,7 +61,8 @@ define ([], function () {
         query ({type: 'houses'}, {}, function (data) {
         
             add_vocabularies (data, {
-                "vc_nsi_24": 1
+                vc_nsi_24: 1,
+                vc_prop_doc_types: 1
             })
             
             data.active_tab = localStorage.getItem ('house.active_tab') || 'house_address'

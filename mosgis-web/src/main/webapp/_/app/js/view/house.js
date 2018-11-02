@@ -24,6 +24,7 @@ define ([], function () {
                             {id: 'house_systems',  caption: 'Внутридомовые сети', off: !data.item.is_condo},
                             {id: 'house_premises', caption: 'Помещения', off: !data.item.is_condo},
                             {id: 'house_living_rooms', caption: 'Комнаты', off: (data.item.is_condo && !data.has_shared_premises_res)},
+                            {id: 'house_property_documents', caption: 'Собственники'},
                             {id: 'house_docs',     caption: 'Документы'},
                         ].filter (not_off),
 
