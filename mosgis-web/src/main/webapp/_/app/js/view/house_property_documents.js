@@ -6,6 +6,15 @@ define ([], function () {
     
         $(w2ui ['topmost_layout'].el ('main')).w2regrid ({
         
+            toolbar: {
+            
+                items: [
+                    {type: 'button', id: 'create_person', caption: 'Добавить собственника-физическое лицо', icon: 'w2ui-icon-plus', onClick: $_DO.create_person_house_property_documents},
+                    {type: 'button', id: 'create_org', caption: 'Добавить собственника-физическое лицо', icon: 'w2ui-icon-plus', onClick: $_DO.create_org_house_property_documents},
+                ].filter (not_off),
+                
+            },         
+        
             multiSelect: false,
 
             name: grid_name,
@@ -13,8 +22,6 @@ define ([], function () {
             show: {
                 toolbar: true,
                 footer: 1,
-                toolbarReload: false,
-                toolbarColumns: false,
             },            
 
             textSearch: 'contains',
