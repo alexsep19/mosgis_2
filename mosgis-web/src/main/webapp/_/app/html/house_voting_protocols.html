@@ -1,0 +1,57 @@
+<span>
+    <div>
+        <div class="w2ui-page page-0" style="padding-top: 13px;min-width: 900px">
+
+        	<style>
+        		.w2ui-field>label {
+        			width: 300px;
+        			margin-right: 10px;
+        		}
+        	</style>
+                
+                <center>
+                    <table cellpadding=0 cellspacing=0 width=90%>
+                        
+                        <td valign=top width=1 style="min-width:490px;">
+                            
+                            <div class="w2ui-field">
+                                <label>Номер протокола:</label>
+                                <div>
+                                        <input name="protocolnum" maxlength=30 />
+                                </div>
+                            </div>
+                            <div class="w2ui-field">
+                                <label>Дата составления протокола:</label>
+                                <div>
+                                        <input class="date" name="protocoldate"/>
+                                </div>
+                            </div>
+                            
+                            <div class="w2ui-field">
+                                <label>Вид собрания:</label>
+                                <div>
+                                    <select name="voting_type">
+                                        <option value=0>Внеочередное</option>
+                                        <option value=1>Ежегодное</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="w2ui-field">
+                                <label>Форма проведения:</label>
+                                <div>
+                                    <input type="radio" name="form" value=0>Заочное голосование (опросным путем)
+                                    <input type="radio" name="form" value=1>Очное голосование
+                                    <input type="radio" name="form" value=2>Заочное голосование с использованием системы
+                                    <input type="radio" name="form" value=3>Очно-заочное голосование
+                                </div>
+                            </div>
+                            
+                        </td>
+                        
+                    </table>
+                </center>
+                
+        </div>
+    </div>
+</span>
