@@ -6,6 +6,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,6 +36,7 @@ import static ru.eludia.base.model.def.Def.NOW;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.def.Bool;
+import ru.eludia.products.mosgis.db.model.incoming.nsi.InNsiItem;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.Passport;
 import ru.eludia.products.mosgis.db.model.tables.House;
@@ -94,7 +96,8 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
     }    
         
     private static final String REGISTRY_NUMBER_TOKEN = "RegistryNumber>";
-
+    private final long MINUTE = 60000;   
+    
     @Override
     protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
         
@@ -123,15 +126,34 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
 
             }
             
+//            String xml = r.get ("rq").toString ();
+//            int p1 = xml.indexOf (REGISTRY_NUMBER_TOKEN) + REGISTRY_NUMBER_TOKEN.length ();
+//            int p2 = xml.indexOf ('<', p1);                                        
+//            int registryNumber = Integer.valueOf (xml.substring (p1, p2));
+            
+            
+            Map<String, Object> map =  db.getMap (ModelHolder.getModel ()
+                        .get(InNsiItem.class, uuid, "registrynumber"));
+            
+            int registryNumber = Integer.valueOf (map.get ("registrynumber").toString ());
+
             if (rp.getRequestState () < 3) {
-                UUIDPublisher.publish (outExportNsiItemQueue, uuid);
+                
+                long now = System.currentTimeMillis();
+                long r_ts = Timestamp.valueOf (r.get ("ts").toString ()).getTime ();
+                
+                logger.log (Level.INFO, "RequestState time elapsed: " + (now - r_ts) + " ms");
+            
+                if (now - r_ts < MINUTE) {
+                    logger.log (Level.INFO, "republishing uuid " + uuid);
+                    UUIDPublisher.publish (outExportNsiItemQueue, uuid);
+                } else {
+                    logger.log (Level.INFO, "reimporting nsi " + registryNumber);
+                    nsi.importNsiItems(registryNumber);
+                }
+                
                 return;
             }
-            
-            String xml = r.get ("rq").toString ();
-            int p1 = xml.indexOf (REGISTRY_NUMBER_TOKEN) + REGISTRY_NUMBER_TOKEN.length ();
-            int p2 = xml.indexOf ('<', p1);                                        
-            int registryNumber = Integer.valueOf (xml.substring (p1, p2));            
             
             ErrorMessageType errorMessage = rp.getErrorMessage ();
             

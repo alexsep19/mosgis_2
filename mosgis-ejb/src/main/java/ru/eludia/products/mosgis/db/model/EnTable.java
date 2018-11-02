@@ -1,12 +1,12 @@
 package ru.eludia.products.mosgis.db.model;
 
-import static java.lang.Boolean.FALSE;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.Type.BOOLEAN;
+import static ru.eludia.base.model.def.Bool.FALSE;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 
 public abstract class EnTable extends Table {
@@ -14,7 +14,7 @@ public abstract class EnTable extends Table {
     public enum c implements ColEnum {
 
         UUID                      (Type.UUID,    NEW_UUID,    "Ключ"),        
-        IS_DELETED                (BOOLEAN,      FALSE,  "1, если запись удалена; иначе 0")        
+        IS_DELETED                (BOOLEAN,      FALSE,  "1, если запись удалена; иначе 0")
         ;
 
         @Override

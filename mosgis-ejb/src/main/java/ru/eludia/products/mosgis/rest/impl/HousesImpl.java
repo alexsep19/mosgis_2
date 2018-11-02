@@ -37,6 +37,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
+import ru.eludia.products.mosgis.db.model.voc.VocProtertyDocumentType;
 import static ru.eludia.products.mosgis.db.model.voc.VocRdColType.i.REF;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
@@ -180,6 +181,12 @@ public class HousesImpl extends Base<House> implements HousesLocal {
             
             if (caCh != null) jb.add ("cach", caCh);
             
+            db.addJsonArrays (jb,
+                m
+                    .select (VocProtertyDocumentType.class, "id", "label")
+                    .orderBy ("label")
+            );
+                        
         }
         catch (Exception ex) {
             throw new InternalServerErrorException (ex);
