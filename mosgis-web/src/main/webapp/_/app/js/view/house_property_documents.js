@@ -40,6 +40,8 @@ define ([], function () {
             postData: {data: {"uuid_house": $_REQUEST.id}},
 
             url: '/mosgis/_rest/?type=property_documents',
+            
+            onDblClick: function (e) {openTab ('/property_document/' + e.recid)}
                                                                         
         })
 
