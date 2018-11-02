@@ -22,6 +22,7 @@ define ([], function () {
         query ({type: 'property_documents'}, {}, function (data) {
         
             add_vocabularies (data, {
+                vc_prop_doc_types: 1
             })
             
             var it = data.item
@@ -30,9 +31,9 @@ define ([], function () {
 
             it._can = {}
 
-            if (($_USER.role.admin || it ['ctr.uuid_org'] == $_USER.uuid_org) && !it.is_deleted) {           
+            if (($_USER.role.admin || it.uuid_org == $_USER.uuid_org) && !it.is_deleted) {
                 it._can.edit   = 1
-                it._can.update = it._can.cancel = it._can.edit                
+                it._can.delete = it._can.update = it._can.cancel = it._can.edit
             }
             
             $('body').data ('data', data)
