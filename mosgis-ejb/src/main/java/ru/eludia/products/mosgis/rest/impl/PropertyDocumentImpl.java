@@ -2,18 +2,15 @@ package ru.eludia.products.mosgis.rest.impl;
 
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
-import javax.json.Json;
 import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.ws.rs.InternalServerErrorException;
-import ru.eludia.base.DB;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.tables.PropertyDocument;
-import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.voc.VocProtertyDocumentType;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
@@ -73,6 +70,8 @@ public class PropertyDocumentImpl extends BaseCRUD<PropertyDocument> implements 
 
         Select select = m.select (getTable (), "AS root", "*", "uuid AS id")
             .toOne (Premise.class, "AS premise", "*").where ("uuid_house", p.getJsonObject ("data").getString ("uuid_house", null)).on ()
+            .toMaybeOne (VocOrganization.class, "AS org", "label").on ("org.uuid=root." + PropertyDocument.c.UUID_ORG_OWNER.lc ())
+            .toMaybeOne (VocPerson.class, "AS person", "label").on ()
 /*                
             .and (PropertyDocument.c.UUID_PREMISE.toString ().toLowerCase (), 
                 m.select (Premise.class, "id").where ("uuid_house", p.getJsonObject ("data").getString ("uuid_house", null)))
@@ -89,40 +88,22 @@ public class PropertyDocumentImpl extends BaseCRUD<PropertyDocument> implements 
     @Override
     public JsonObject getItem (String id) {return fetchData ((db, job) -> {
 
-        job.add ("item", db.getJsonObject (ModelHolder.getModel ()
-            .get (getTable (), id, "*")
-            .toOne      (VocOrganization.class,        "label").on ()
-//            .toMaybeOne (PropertyDocumentLog.class        ).on ()
-        ));
-
-    });}
-        
-    @Override
-    public JsonObject getVocs () {
-        
-        JsonObjectBuilder jb = Json.createObjectBuilder ();
-        
-        VocAction.addTo (jb);
-        
         final MosGisModel m = ModelHolder.getModel ();
 
-        try (DB db = m.getDb ()) {
-            
-            db.addJsonArrays (jb,
+        job.add ("item", db.getJsonObject (m
+            .get (getTable (), id, "AS root", "*")
+            .toOne (Premise.class, "AS p", "*").on ()                
+            .toOne (House.class, "AS h", "address").on ()
+            .toMaybeOne (VocOrganization.class, "AS org", "label").on ("org.uuid=root." + PropertyDocument.c.UUID_ORG_OWNER.lc ())
+            .toMaybeOne (VocPerson.class, "AS person", "label").on ()
+        ));
 
-                m
-                    .select (VocProtertyDocumentType.class, "id", "label")
-                    .orderBy ("label")
-                
-            );
+        db.addJsonArrays (job,
+            m
+                .select (VocProtertyDocumentType.class, "id", "label")
+                .orderBy ("label")
+        );
 
-        }
-        catch (Exception ex) {
-            throw new InternalServerErrorException (ex);
-        }
-
-        return jb.build ();
-        
-    }
+    });}        
     
 }

@@ -39,7 +39,7 @@ define ([], function () {
         var r = form.record
         var v = form.values ()
         
-        if (!(v.uuid_org_owner = r.uuid_org_owner)) die ('label_org_owner', 'Вы абыли указать собственника')
+        if (!(v.uuid_org_owner = r.uuid_org_owner)) die ('label_org_owner', 'Вы забыли указать собственника')
         if (!v.uuid_premise) die ('uuid_premise', 'Вы забыли указать помещение')
      
         var p = parseFloat (v.prc)
