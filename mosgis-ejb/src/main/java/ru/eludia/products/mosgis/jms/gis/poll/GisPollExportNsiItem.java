@@ -43,6 +43,11 @@ import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.nsi.NsiMultipleRefTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiMultipleScalarTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.Block;
+import ru.eludia.products.mosgis.db.model.tables.LivingRoom;
+import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
+import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
+import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiList;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementFieldType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementType;
@@ -176,7 +181,7 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
                         "id_status", DONE.getId (),
                         "is_failed", 1,
                         "err_code",  errorMessage.getErrorCode (),
-                        "err_text",  errorMessage.getDescription ()                        
+                        "err_text",  errorMessage.getDescription ()
                     ));
                     
                     nsi.checkForPending ();
@@ -325,12 +330,31 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
             
             if (registryNumber == 197) {
                 
-                Passport houses = (Passport) ModelHolder.getModel ().get(House.class);
-                houses.addNsiFields (db);
-                houses.getRefTables ().forEach ( (t) -> {
-                    try { db.updateSchema(t); }
-                    catch (SQLException ex) { logger.log (Level.SEVERE, null, ex); }
-                });
+                List<Passport> passports = new ArrayList<> ();
+                
+                passports.add ((Passport) ModelHolder.getModel ().get (House.class));
+                passports.add ((Passport) ModelHolder.getModel ().get (Block.class));
+                passports.add ((Passport) ModelHolder.getModel ().get (LivingRoom.class));
+                passports.add ((Passport) ModelHolder.getModel ().get (ResidentialPremise.class));
+                passports.add ((Passport) ModelHolder.getModel ().get (NonResidentialPremise.class));
+                
+                Set<String> refNames = new HashSet<>();
+                
+                for (Passport passport: (Iterable<Passport>) passports::iterator) {
+                    
+                    passport.addNsiFields (db);
+                    List<MultipleRefTable> refTables = passport.getRefTables ();
+                    
+                    for (MultipleRefTable refTable: (Iterable<MultipleRefTable>) refTables::iterator) {
+                    
+                        if (refNames.add (refTable.getName ())) {
+                            
+                            db.updateSchema(refTable);
+                            
+                        }
+                    
+                    }
+                }
                 
             }
             
