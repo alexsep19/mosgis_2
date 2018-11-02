@@ -14,6 +14,7 @@ import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.tables.PropertyDocument;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.voc.VocProtertyDocumentType;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
@@ -73,6 +74,8 @@ public class PropertyDocumentImpl extends BaseCRUD<PropertyDocument> implements 
 
         Select select = m.select (getTable (), "AS root", "*", "uuid AS id")
             .toOne (Premise.class, "AS premise", "*").where ("uuid_house", p.getJsonObject ("data").getString ("uuid_house", null)).on ()
+            .toMaybeOne (VocOrganization.class, "AS org", "label").on ("org.uuid=root." + PropertyDocument.c.UUID_ORG_OWNER.lc ())
+            .toMaybeOne (VocPerson.class, "AS person", "label").on ()
 /*                
             .and (PropertyDocument.c.UUID_PREMISE.toString ().toLowerCase (), 
                 m.select (Premise.class, "id").where ("uuid_house", p.getJsonObject ("data").getString ("uuid_house", null)))
