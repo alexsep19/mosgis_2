@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.jms.gis.send;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +36,8 @@ import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
+import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
+import ru.eludia.products.mosgis.db.model.voc.VocRdColType;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
@@ -43,6 +46,8 @@ import ru.eludia.products.mosgis.util.StringUtils;
 import ru.eludia.products.mosgis.util.XmlUtils;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.BlockCategoryType;
+import ru.gosuslugi.dom.schema.integration.house_management.OGFData;
+import ru.gosuslugi.dom.schema.integration.house_management.OGFDataValue;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 
 @MessageDriven(activationConfig = {
@@ -51,8 +56,6 @@ import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
     , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
 public class ImportHouseMDB extends JsonMDB<House> {
-
-    private static final Logger logger = Logger.getLogger (ImportHouseMDB.class.getName ());
 
     private static final Pattern CADASTRAL_NUMBER_PATTERN = Pattern.compile("^[0-9]{2}:[0-9]{2}:[0-9]{6,10}:.+"); 
     
@@ -73,7 +76,6 @@ public class ImportHouseMDB extends JsonMDB<House> {
     
     @Override
     protected void handleRecord(DB db, JsonObject params, Map<String, Object> r) throws SQLException {
-logger.info(params.toString());
 
         Model model = ModelHolder.getModel();
 
@@ -87,6 +89,13 @@ logger.info(params.toString());
                     orgRoles.add(OrgRoles.getByNsiCode((String) role.get("roles.code")));
                 });
         
+        Map <Object, Map <String, Object>> passportFields = db.getIdx(model.select (VocPassportFields.class, "*"));
+        
+        boolean isCondo = TypeConverter.Boolean(r.get("is_condo"));
+        boolean hasBlocks =  TypeConverter.Boolean(r.get("hasblocks"));
+        
+        addOGFData(r, passportFields, isCondo);
+        
         r.put("state", XmlUtils.createNsiRef(24, (String) r.get("code_vc_nsi_24")));
         r.put("lifecyclestage", XmlUtils.createNsiRef(336, (String) r.get("code_vc_nsi_336")));
         r.put("olsontz", XmlUtils.createNsiRef(32, "2")); //Москва(+3)
@@ -94,18 +103,15 @@ logger.info(params.toString());
         r.putAll(getCadastralNumber((String) r.get("kad_n")));
         r.put("transportguid", r.get("uuid"));
         
-        boolean isCondo = TypeConverter.Boolean(r.get("is_condo"));
-        boolean hasBlocks =  TypeConverter.Boolean(r.get("hasblocks"));
-        
         if (isCondo) {
             addEntrances(r, db);
-            addLifts(r, db);
-            addResidentialPremises(r, db);
-            addNonResidentialPremises(r, db);
+            addLifts(r, passportFields, db);
+            addResidentialPremises(r, passportFields, db);
+            addNonResidentialPremises(r, passportFields, db);
         } else {
-            if (hasBlocks) addBlocks(r, db);
+            if (hasBlocks) addBlocks(r, passportFields, db);
         }
-        addLivingRooms(r, db, isCondo);
+        addLivingRooms(r, passportFields, db, isCondo);
         
         if (isCondo)
             r.put("residentialpremises", ((Map<Object, Object>)r.get("residentialpremises")).values());
@@ -183,7 +189,7 @@ logger.info(params.toString());
         r.put ("entrances", entrances);
     }
     
-    private void addLifts (Map<String, Object> r, DB db) throws SQLException {
+    private void addLifts (Map<String, Object> r, Map <Object, Map <String, Object>> passportFields, DB db) throws SQLException {
         
         NsiTable nsi192 = NsiTable.getNsiTable (192);
         
@@ -199,6 +205,8 @@ logger.info(params.toString());
             
             Map<String, Object> lift = db.HASH (rs);
             
+            addOGFData(lift, passportFields);
+            
             lift.put("type", NsiTable.toDom((String) lift.get("code_vc_nsi_192"), (UUID) lift.get("vc_nsi_192.guid")));
             
             lift.put("entrancenum", lift.get("entrance.entrancenum"));
@@ -209,7 +217,7 @@ logger.info(params.toString());
         r.put ("lifts", lifts);
     }
     
-    private void addResidentialPremises (Map<String, Object> r, DB db) throws SQLException {
+    private void addResidentialPremises (Map<String, Object> r, Map <Object, Map <String, Object>> passportFields, DB db) throws SQLException {
         
         NsiTable nsi30 = NsiTable.getNsiTable (30);
         
@@ -223,6 +231,8 @@ logger.info(params.toString());
                 .and ("is_annuled_in_gis", 0));
         
         premises.values().forEach(premise -> {
+            
+            addOGFData(premise, passportFields);
             
             String entranceNum = (String)premise.get("entrance.entrancenum");
             if(StringUtils.isBlank(entranceNum))
@@ -245,7 +255,7 @@ logger.info(params.toString());
         r.put ("residentialpremises", premises);
     }
     
-    private void addNonResidentialPremises (Map<String, Object> r, DB db) throws SQLException {
+    private void addNonResidentialPremises (Map<String, Object> r, Map <Object, Map <String, Object>> passportFields, DB db) throws SQLException {
         
         List<Map<String, Object>> premises = new ArrayList<>();
         db.forEach(db.getModel()
@@ -256,6 +266,8 @@ logger.info(params.toString());
             
             Map<String, Object> premise = db.HASH (rs);
             
+            addOGFData(premise, passportFields);
+            
             premise.putAll(getCadastralNumber((String) premise.get("cadastralnumber")));
             premise.put("transportguid", premise.get("uuid"));
        
@@ -265,7 +277,7 @@ logger.info(params.toString());
         r.put ("nonresidentialpremises", premises);
     }
     
-    private void addLivingRooms (Map<String, Object> r, DB db, boolean isCondo) throws SQLException {
+    private void addLivingRooms (Map<String, Object> r, Map <Object, Map <String, Object>> passportFields, DB db, boolean isCondo) throws SQLException {
         
         List<Map<String, Object>> houseRooms = new ArrayList<>();
         
@@ -277,6 +289,8 @@ logger.info(params.toString());
                 .and ("is_deleted", 0)
                 .and ("is_annuled_in_gis", 0), (rs) -> {
             Map<String, Object> room = db.HASH (rs);
+            
+            addOGFData(room, passportFields);
             
             room.putAll(getCadastralNumber((String) room.get("cadastralnumber")));
             room.put("transportguid", room.get("uuid"));
@@ -291,7 +305,7 @@ logger.info(params.toString());
         r.put ("livingrooms", houseRooms);
     }
     
-    private void addBlocks (Map<String, Object> r, DB db) throws SQLException {
+    private void addBlocks (Map<String, Object> r, Map <Object, Map <String, Object>> passportFields, DB db) throws SQLException {
         
         NsiTable nsi30 = NsiTable.getNsiTable (30);
         
@@ -304,6 +318,9 @@ logger.info(params.toString());
                         .and ("is_annuled_in_gis", 0));
         
         blocks.values().forEach(block -> {
+            
+            addOGFData(block, passportFields);
+            
             block.putAll(getCadastralNumber((String) block.get("cadastralnumber")));
             block.put("transportguid", block.get("uuid"));
             block.put("premisescharacteristic", NsiTable.toDom((String) block.get("code_vc_nsi_30"), (UUID) block.get("vc_nsi_30.guid")));
@@ -316,6 +333,74 @@ logger.info(params.toString());
         });
         
         r.put ("blocks", blocks);
+    }
+    
+    private void addOGFData (Map<String, Object> r, Map <Object, Map <String, Object>> passportFields) {
+        addOGFData(r, passportFields, null);
+    }
+    
+    private void addOGFData (Map<String, Object> r, Map <Object, Map <String, Object>> passportFields, Boolean isCondo) {
+        
+        List<OGFData> ogfDataList = new ArrayList<>();
+        
+        r.forEach((key, value) -> {
+            if (!key.startsWith("f_")) return;
+            if (value == null) return;
+            if (value instanceof String && StringUtils.isBlank((String)value)) return;
+            
+            String code = key.substring(2, key.length());
+
+            Map <String, Object> ogfDataType = passportFields.get(code);
+            if (ogfDataType == null) {
+                logger.log (Level.SEVERE, "В справочнике НСИ 197 не найдена значение с кодом " + code);
+                return;
+            }
+            if (isCondo != null) {
+                if (isCondo && !TypeConverter.Boolean(ogfDataType.get("is_for_condo"))) return;
+                if (!isCondo && !TypeConverter.Boolean(ogfDataType.get("is_for_cottage"))) return;
+            }
+            
+            Long idType = (Long)ogfDataType.get("id_type");
+            if (idType == null) {
+                logger.log (Level.SEVERE, "В справочнике НСИ 197 не указан тип для значения с кодом " + code);
+                return;
+            }
+            
+            OGFData ogf = new OGFData();
+            ogfDataList.add(ogf);
+            ogf.setCode(code);
+            OGFDataValue ogfDataValue = new OGFDataValue();
+            ogf.setValue(ogfDataValue);
+            
+            switch (VocRdColType.i.forId(idType.intValue())) {
+                case BOOL:
+                    ogfDataValue.setBooleanValue(TypeConverter.Boolean(value));
+                    break;
+                case FLOAT:
+                    ogfDataValue.setFloatValue(((BigDecimal) value).floatValue());
+                    break;
+                case DATA:
+                    //TODO реализовать
+                    logger.log (Level.SEVERE, "Отправка файлов не поддерживается");
+                    //ogfDataValue.setFile(file);
+                    break;
+                case INT:
+                case YEAR:
+                    ogfDataValue.setIntegerValue(((Long) value).intValue());
+                    break;    
+                case REF:
+                    ogfDataValue.setNsiCode(value.toString());
+                    break;
+                case TEXT:
+                    ogfDataValue.setStringValue((String) value);
+                    break;
+                case TIME:
+                    ogfDataValue.setDateTimeValue(TypeConverter.XMLGregorianCalendar(value.toString().replace (' ', 'T')));
+                    break;
+            }
+        });
+        
+        r.put("ogfdata", ogfDataList);
     }
     
     private enum OrgRoles {

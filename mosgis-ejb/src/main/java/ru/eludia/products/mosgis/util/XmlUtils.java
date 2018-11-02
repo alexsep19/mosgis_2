@@ -25,7 +25,11 @@ public class XmlUtils {
         Model model = ModelHolder.getModel();
 
         NsiTable nsiTable = NsiTable.getNsiTable(regisryNumber);
-
+        if (nsiTable == null) {
+            logger.log(Level.SEVERE, "Cannot find nsi by registryNumber '" + regisryNumber);
+            return null;
+        }
+        
         try (DB db = ModelHolder.getModel().getDb()) {
 
             Map<String, Object> nsiItem = null;

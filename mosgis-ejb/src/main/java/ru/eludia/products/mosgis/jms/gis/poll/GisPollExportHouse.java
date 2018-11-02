@@ -17,23 +17,29 @@ import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.base.db.util.TypeConverter;
 import ru.eludia.products.mosgis.db.model.tables.Block;
+import ru.eludia.products.mosgis.db.model.tables.ContractLog;
 import ru.eludia.products.mosgis.db.model.tables.Entrance;
 import ru.eludia.products.mosgis.db.model.tables.House;
+import ru.eludia.products.mosgis.db.model.tables.HouseLog;
 import ru.eludia.products.mosgis.db.model.tables.Lift;
 import ru.eludia.products.mosgis.db.model.tables.LivingRoom;
 import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
+import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
+import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.house_management.BlockCategoryType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportHouseResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.house_management.HouseBasicExportType;
+import ru.gosuslugi.dom.schema.integration.house_management.OGFData;
+import ru.gosuslugi.dom.schema.integration.house_management.OGFDataValue;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 
 @MessageDriven(activationConfig = {
@@ -41,7 +47,7 @@ import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
     , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
     , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class GisPollExportHouse extends UUIDMDB<OutSoap> {
+public class GisPollExportHouse extends GisPollMDB {
     
     @EJB
     protected WsGisHouseManagementClient wsGisExportHouseClient;
@@ -49,7 +55,9 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
     @Override
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ()
-            .get    (getTable (), uuid, "*")
+            .get    (getTable (), uuid, "AS root", "*")
+            .toOne (HouseLog.class,     "AS log", "uuid").on ("log.uuid_out_soap=root.uuid")
+            .toOne (House.class,     "AS log", "uuid", "fiashouseguid").on ()
         ;        
     }
 
@@ -65,30 +73,15 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
             ErrorMessageType errorMessage = rp.getErrorMessage ();
 
             if (errorMessage != null) {
+                logger.warning (errorMessage.getErrorCode () + " " + errorMessage.getDescription ());
 
-                if ("INT002000".equals (errorMessage.getErrorCode ())) {
-                    
-                    logger.warning ("House not found");
-                
-                    db.update (OutSoap.class, HASH (
-                        "uuid", uuid,
-                        "id_status", DONE.getId ()
-                    ));
-                    
-                }
-                else {
-
-                    logger.warning (errorMessage.getErrorCode () + " " + errorMessage.getDescription ());
-
-                    db.update (OutSoap.class, HASH (
-                        "uuid", uuid,
-                        "id_status", DONE.getId (),
-                        "is_failed", 1,
-                        "err_code",  errorMessage.getErrorCode (),
-                        "err_text",  errorMessage.getDescription ()
-                    ));
-
-                }                
+                db.update (OutSoap.class, HASH (
+                    "uuid", uuid,
+                    "id_status", DONE.getId (),
+                    "is_failed", 1,
+                    "err_code",  errorMessage.getErrorCode (),
+                    "err_text",  errorMessage.getDescription ()
+                ));             
 
                 return;
 
@@ -122,14 +115,15 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
         if (result.getApartmentHouse() != null) {
             ExportHouseResultType.ApartmentHouse house = result.getApartmentHouse();
             String fiasHouseGuid = house.getBasicCharacteristicts().getFIASHouseGuid();
-            record.putAll(basicCharacteristicToMap(house.getBasicCharacteristicts()));
+            
+            addBasicCharacteristic(record, house.getBasicCharacteristicts());
 
             record.putAll(DB.HASH(
                 "code_vc_nsi_25",        house.getHouseManagementType() != null ? house.getHouseManagementType().getCode() : null,
                 "minfloorcount",         house.getMinFloorCount(),
                 "code_vc_nsi_241",       house.getOverhaulFormingKind(),
                 "undergroundfloorcount", house.getUndergroundFloorCount(),
-                "address",               db.getJsonObject(VocBuildingAddress.class, fiasHouseGuid).getString("label")
+                "address",               db.getString(VocBuilding.class, fiasHouseGuid, "label")
             ));
             
             db.upsert (House.class, record, "fiashouseguid");
@@ -140,7 +134,7 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
             
             db.dupsert (
                 Entrance.class, 
-                HASH ("uuid_house", houseUuid), 
+                HASH ("uuid_house", houseUuid),
                     house.getEntrance().stream().map(entrance -> {
                         Map<String, Object> data = HASH(
                             "entranceguid",          entrance.getEntranceGUID(),
@@ -201,6 +195,9 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                         data.put("code_vc_nsi_330", null);
                         data.put("is_annuled_in_gis", false);
                     }
+                    
+                    addOGFData(data, nonResisentialPremise.getOGFData());
+                    
                     return data;
                 }).collect(Collectors.toList()),
                 "premisesguid"
@@ -228,6 +225,9 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                         data.put("code_vc_nsi_330", null);
                         data.put("is_annuled_in_gis", false);
                     }
+                    
+                    addOGFData(data, room.getOGFData());
+                    
                     return data;
                 }).collect(Collectors.toList());
                 
@@ -256,15 +256,15 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                     premisesHash.put("is_annuled_in_gis", false);
                 }
                 
+                addOGFData(premisesHash, premise.getOGFData());
+                
                 premises.put(UUID.fromString(premise.getPremisesGUID()), premisesHash);
             });
             
-            db.dupsert (
-                ResidentialPremise.class, 
-                HASH (
-                    "uuid_house", houseUuid
-                ), 
-                new ArrayList<> (premises.values()), "premisesguid"
+            db.dupsert(
+                    ResidentialPremise.class,
+                    HASH("uuid_house", houseUuid),
+                    new ArrayList<>(premises.values()), "premisesguid"
             );
             
             db.forEach(m.select(ResidentialPremise.class, "uuid", "premisesguid").where("uuid_house", houseUuid), (rs) -> {
@@ -308,6 +308,8 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                             data.put("is_annuled_in_gis", false);
                         }
                         
+                        addOGFData(data, lift.getOGFData());
+                        
                         return data;
                     }).collect(Collectors.toList()),
                 "liftguid"
@@ -316,7 +318,9 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
             //ЖД
             ExportHouseResultType.LivingHouse house = result.getLivingHouse();
             String fiasHouseGuid = house.getBasicCharacteristicts().getFIASHouseGuid();
-            record.putAll(basicCharacteristicToMap(house.getBasicCharacteristicts()));
+            
+            addBasicCharacteristic(record, house.getBasicCharacteristicts());
+            
             record.putAll(DB.HASH(
                 "hasblocks",                     house.isHasBlocks() != null ? house.isHasBlocks() : Boolean.FALSE,
                 "hasmultiplehouseswithsameadres", house.isHasMultipleHousesWithSameAddress() != null ? house.isHasMultipleHousesWithSameAddress() : Boolean.FALSE,
@@ -350,6 +354,8 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                         data.put("is_annuled_in_gis", false);
                     }
                     
+                    addOGFData(data, room.getOGFData());
+                    
                     return data;
                 }).collect(Collectors.toList());
                 
@@ -375,6 +381,8 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                     blocksHash.put("code_vc_nsi_330", null);
                     blocksHash.put("is_annuled_in_gis", false);
                 }
+                
+                addOGFData(blocksHash, block.getOGFData());
                 
                 blocks.put(UUID.fromString(block.getBlockGUID()), blocksHash);
             });
@@ -431,6 +439,8 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
                         data.put("is_annuled_in_gis", false);
                     }
                     
+                    addOGFData(data, room.getOGFData());
+                    
                     return data;
                 }).collect(Collectors.toList()), 
                 "livingroomguid"
@@ -438,9 +448,8 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
         }
     }
     
-    private Map<String, Object> basicCharacteristicToMap (HouseBasicExportType basic) {
-        basic.getOGFData();
-        return DB.HASH (
+    private void addBasicCharacteristic (Map<String, Object> r, HouseBasicExportType basic) {
+        r.putAll(DB.HASH (
             "annulmentinfo",    basic.getAnnulmentInfo(),
             "code_vc_nsi_330",  basic.getAnnulmentReason() != null ? basic.getAnnulmentReason().getCode() : null,
             "kad_n",            basic.getCadastralNumber(),
@@ -453,7 +462,26 @@ public class GisPollExportHouse extends UUIDMDB<OutSoap> {
             "usedyear",         basic.getUsedYear(),
             "culturalheritage", Boolean.TRUE.equals(basic.isCulturalHeritage()),
             "code_vc_nsi_336",  basic.getLifeCycleStage() != null ? basic.getLifeCycleStage().getCode() : null
-        );
+        ));
+        addOGFData(r, basic.getOGFData());
+    }
+    
+    private void addOGFData (Map<String, Object> r, List<OGFData> ogfData) {
+        if (ogfData.isEmpty())
+            return;
+        
+        ogfData.forEach(ogf -> {
+            OGFDataValue ogfDataValue = ogf.getValue();
+            Object value = null;
+            if (ogfDataValue.isBooleanValue() != null)  value = ogfDataValue.isBooleanValue();
+            if (ogfDataValue.getDateTimeValue()!= null) value = ogfDataValue.getDateTimeValue();
+            if (ogfDataValue.getFile() != null)         value = ogfDataValue.getFile(); //TODO Скачать файл
+            if (ogfDataValue.getFloatValue() != null)   value = ogfDataValue.getFloatValue();
+            if (ogfDataValue.getIntegerValue() != null) value = ogfDataValue.getIntegerValue();
+            if (ogfDataValue.getNsiCode() != null)      value = ogfDataValue.getNsiCode();
+            if (ogfDataValue.getStringValue() != null)  value = ogfDataValue.getStringValue();
+            r.put("f_" + ogf.getCode(), value);
+        });
     }
 
 }
