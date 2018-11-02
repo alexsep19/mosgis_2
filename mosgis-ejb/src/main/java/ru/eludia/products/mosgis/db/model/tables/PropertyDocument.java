@@ -6,6 +6,7 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.Type.DATE;
 import static ru.eludia.base.model.Type.STRING;
+import static ru.eludia.base.model.Type.NUMERIC;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
@@ -20,6 +21,7 @@ public class PropertyDocument extends EnTable {
         UUID_ORG_OWNER            (VocOrganization.class,         "Собственник-организация"),
         UUID_PERSON_OWNER         (VocPerson.class,               "Собственник-физлицо"),
         ID_TYPE                   (VocProtertyDocumentType.class, "Тип документа"),
+        PRC                       (NUMERIC,       5, 2, null,     "Размер доли в праве собственности на помещение, %"),
         NO                        (STRING,        null,           "Номер документа"),
         DT                        (DATE,          null,           "Дата документа"),
         ISSUER                    (STRING,        null,           "Кем выдан документ"),

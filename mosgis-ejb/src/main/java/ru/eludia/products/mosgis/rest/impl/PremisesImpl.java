@@ -18,9 +18,10 @@ public class PremisesImpl extends Base implements PremisesLocal {
 
         Select select = db.getModel ()
             .select  (Premise.class, "*")                
-            .and ("uuid_house", p.getJsonObject ("data").getJsonString ("uuid_house"))
+            .and ("uuid_house", p.getJsonObject ("data").getString ("uuid_house"))
             .orderBy ("label")
-            .limit (p.getInt ("offset"), p.getInt ("limit"));
+//            .limit (p.getInt ("offset"), p.getInt ("limit"))
+            ;
 
         db.addJsonArrays (job, select);
 

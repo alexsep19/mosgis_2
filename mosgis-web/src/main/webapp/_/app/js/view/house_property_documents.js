@@ -9,8 +9,8 @@ define ([], function () {
             toolbar: {
             
                 items: [
-                    {type: 'button', id: 'create_person', caption: 'Добавить собственника-физическое лицо', icon: 'w2ui-icon-plus', onClick: $_DO.create_person_house_property_documents},
-                    {type: 'button', id: 'create_org', caption: 'Добавить собственника-физическое лицо', icon: 'w2ui-icon-plus', onClick: $_DO.create_org_house_property_documents},
+                    {type: 'button', id: 'create_person', caption: 'Физическое лицо', icon: 'w2ui-icon-plus', onClick: $_DO.create_person_house_property_documents},
+                    {type: 'button', id: 'create_org', caption: 'Юридическое лицо', icon: 'w2ui-icon-plus', onClick: $_DO.create_org_house_property_documents},
                 ].filter (not_off),
                 
             },         

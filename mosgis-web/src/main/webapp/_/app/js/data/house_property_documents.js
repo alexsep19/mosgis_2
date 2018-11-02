@@ -6,7 +6,7 @@ define ([], function () {
     
     }
 
-    $_DO.create_person_house_property_documents = function (e) {
+    $_DO.create_org_house_property_documents = function (e) {
             
         use.block ('property_document_org_new')
     
