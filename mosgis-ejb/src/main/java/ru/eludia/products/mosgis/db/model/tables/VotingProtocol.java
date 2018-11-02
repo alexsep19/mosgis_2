@@ -1,10 +1,15 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Map;
+import java.util.UUID;
+import ru.eludia.base.DB;
+import ru.eludia.base.db.util.SyncMap;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
 
 public class VotingProtocol extends Table {
     
@@ -48,6 +53,36 @@ public class VotingProtocol extends Table {
         col ("modification", Type.STRING, null, "Основание изменения (для протоколов в статусе \"Размещен\")");
         
         fk  ("id_log",                VotingProtocolLog.class,    null,         "Последнее событие редактирования");
+    }
+    
+    private final static String [] keyFields = {""};
+
+    public class Sync extends SyncMap<NsiRef> {
+        
+        UUID uuid_org;
+
+        public Sync (DB db, UUID uuid_org) {
+            super (db);
+            this.uuid_org = uuid_org;
+            commonPart.put ("uuid_org", uuid_org);
+            commonPart.put ("is_deleted", 0);
+        }                
+
+        @Override
+        public String[] getKeyFields () {
+            return keyFields;
+        }
+
+        @Override
+        public void setFields (Map<String, Object> h, NsiRef o) {
+            //h.put ("uniquenumber", o.getCode ());
+        }
+
+        @Override
+        public Table getTable () {
+            return VotingProtocol.this;
+        }
+        
     }
     
 }
