@@ -16,6 +16,7 @@ import javax.json.JsonObjectBuilder;
 import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
+import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.PassportKind;
@@ -38,6 +39,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
 import static ru.eludia.products.mosgis.db.model.voc.VocRdColType.i.REF;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.web.base.Search;
 import ru.eludia.products.mosgis.rest.impl.base.Base;
@@ -48,12 +50,21 @@ public class HousesImpl extends Base<House> implements HousesLocal {
     private static final Logger logger = Logger.getLogger (HousesImpl.class.getName ());
         
     @Override
-    public JsonObject select (JsonObject p) {
+    public JsonObject select (JsonObject p, User user) {
         
-        Select select = ModelHolder.getModel ().select (House.class, "uuid AS id", "address", "is_condo", "fiashouseguid", "unom")
+        Model m = ModelHolder.getModel ();
+        
+        Select select = m.select (House.class, "uuid AS id", "address", "is_condo", "fiashouseguid", "unom")
             .orderBy ("address")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
-
+        
+        String uuidOrg = user.getUuidOrg ();
+        
+        if (DB.ok (uuidOrg)) select.and ("fiashouseguid", m
+            .select (ActualCaChObject.class, "fiashouseguid")
+            .where ("uuid_org", uuidOrg)
+        );
+            
         final Search search = Search.from (p);
 
         if (search != null) select = search.filter (select, simple (search, "unom", "fiashouseguid", "address_uc LIKE %?%"));

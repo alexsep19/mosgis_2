@@ -1,6 +1,9 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.jms.Queue;
@@ -276,6 +279,27 @@ logger.info ("data=" + data);
         ));
         
         logAction (db, user, id, VocAction.i.APPROVE);
+        
+        List<UUID> ids = new ArrayList<> ();
+        
+        db.forEach (db.getModel ().select (ContractFile.class, "uuid").where ("uuid_contract", id), (rs) -> {
+            ids.add ((UUID) db.getValue (rs, 1));
+        });
+        
+        for (UUID idFile: ids) {
+            
+            String idFileLog = db.insertId (ContractFileLog.class, HASH (
+                "action", VocAction.i.APPROVE.getName (),
+                "uuid_object", idFile,
+                "uuid_user", user == null ? null : user.getId ()
+            )).toString ();
+            
+            db.update (ContractFile.class, HASH (
+                "uuid",      idFile,
+                "id_log",    idFileLog
+            ));
+            
+        }
         
     });}
     

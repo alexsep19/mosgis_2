@@ -1,5 +1,8 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.jms.Queue;
@@ -236,6 +239,27 @@ public class CharterImpl extends BaseCRUD<Charter> implements CharterLocal {
         ));
         
         logAction (db, user, id, VocAction.i.APPROVE);
+        
+        List<UUID> ids = new ArrayList<> ();
+        
+        db.forEach (db.getModel ().select (CharterFile.class, "uuid").where ("uuid_charter", id), (rs) -> {
+            ids.add ((UUID) db.getValue (rs, 1));
+        });
+        
+        for (UUID idFile: ids) {
+            
+            String idFileLog = db.insertId (CharterFileLog.class, HASH (
+                "action", VocAction.i.APPROVE.getName (),
+                "uuid_object", idFile,
+                "uuid_user", user == null ? null : user.getId ()
+            )).toString ();
+            
+            db.update (CharterFile.class, HASH (
+                "uuid",      idFile,
+                "id_log",    idFileLog
+            ));
+            
+        }        
         
     });}
     

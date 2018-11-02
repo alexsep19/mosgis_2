@@ -8,23 +8,42 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.rest.api.HousesLocal;
 
 @Path ("houses")
 public class Houses extends EJBResource <HousesLocal> {
+    
+    private void checkOrg (JsonObject item) {
+        
+        if (securityContext.isUserInRole ("admin")) return;
+        
+        if (!(
+            securityContext.isUserInRole ("nsi_20_1")
+            || securityContext.isUserInRole ("nsi_20_19")
+            || securityContext.isUserInRole ("nsi_20_20")
+            || securityContext.isUserInRole ("nsi_20_21")
+            || securityContext.isUserInRole ("nsi_20_22")
+        )) throw new ValidationException ("foo", "Доступ запрещён");
+        
+        if (!item.containsKey ("cach")) throw new ValidationException ("foo", "Ваша организация не управляет домом по этому адресу. Доступ запрещён.");
+
+    }    
 
     @POST
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject select (JsonObject p) { 
-        return back.select (p); 
+        return back.select (p, getUser ()); 
     }
 
     @POST
     @Path("{id}") 
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) { 
-        return back.getItem (id);
+        final JsonObject item = back.getItem (id);
+        checkOrg (item);
+        return item;
     }
 
     @POST
