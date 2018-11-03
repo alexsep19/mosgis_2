@@ -4,9 +4,11 @@ import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.json.JsonObject;
 import ru.eludia.base.Model;
+import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.House;
+import ru.eludia.products.mosgis.db.model.tables.Owner;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.tables.PropertyDocument;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -24,29 +26,23 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 public class PropertyDocumentImpl extends BaseCRUD<PropertyDocument> implements PropertyDocumentLocal {
     
     private static final Logger logger = Logger.getLogger (PropertyDocumentImpl.class.getName ());    
-    
-    private void filterOffDeleted (Select select) {
-        select.and ("is_deleted", 0);
-    }
-    
+       
     private void applyComplexSearch (final ComplexSearch search, Select select) {
 
         search.filter (select, "");
         
-        if (!search.getFilters ().containsKey ("is_deleted")) filterOffDeleted (select);
-
     }
     
     private void applySimpleSearch (final SimpleSearch search, Select select) {
 
-        filterOffDeleted (select);
-
-        final String searchString = search.getSearchString ();
+        final String s = search.getSearchString ();
         
-        if (searchString == null || searchString.isEmpty ()) return;
-
-        select.and ("label LIKE %?%", searchString.toUpperCase ());
+        if (s == null || s.isEmpty ()) return;
         
+        final String uc = s.toUpperCase ();
+
+        select.andEither ("owner_label_uc LIKE %?%", uc).or ("label", s);
+
     }
     
     private void applySearch (final Search search, Select select) {        
@@ -57,9 +53,6 @@ public class PropertyDocumentImpl extends BaseCRUD<PropertyDocument> implements 
         else if (search instanceof ComplexSearch) {
             applyComplexSearch ((ComplexSearch) search, select);
         }
-        else {
-            filterOffDeleted (select);
-        }
 
     }
     
@@ -68,15 +61,8 @@ public class PropertyDocumentImpl extends BaseCRUD<PropertyDocument> implements 
         
         final Model m = ModelHolder.getModel ();
 
-        Select select = m.select (getTable (), "AS root", "*", "uuid AS id")
-            .toOne (Premise.class, "AS premise", "*").where ("uuid_house", p.getJsonObject ("data").getString ("uuid_house", null)).on ()
-            .toMaybeOne (VocOrganization.class, "AS org", "label").on ("org.uuid=root." + PropertyDocument.c.UUID_ORG_OWNER.lc ())
-            .toMaybeOne (VocPerson.class, "AS person", "label").on ()
-/*                
-            .and (PropertyDocument.c.UUID_PREMISE.toString ().toLowerCase (), 
-                m.select (Premise.class, "id").where ("uuid_house", p.getJsonObject ("data").getString ("uuid_house", null)))
-*/
-            .orderBy ("premise.label")
+        Select select = m.select (Owner.class, "*")
+            .orderBy ("label")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
         applySearch (Search.from (p), select);

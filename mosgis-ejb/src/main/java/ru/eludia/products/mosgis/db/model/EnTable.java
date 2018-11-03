@@ -11,6 +11,11 @@ import static ru.eludia.base.model.def.Def.NEW_UUID;
 
 public abstract class EnTable extends Table {
 
+    public static void appendNotDeleted (StringBuilder sb) {
+        sb.append (c.IS_DELETED.lc ());
+        sb.append ("=0");
+    }
+
     public enum c implements ColEnum {
 
         UUID                      (Type.UUID,    NEW_UUID,    "Ключ"),        
@@ -28,7 +33,7 @@ public abstract class EnTable extends Table {
     public EnTable (String name, String remark) {
         super (name, remark);
         cols  (c.class);
-        pk    (getColumn (c.UUID.toString ()));
+        pk    (c.UUID);
     }
 
 }
