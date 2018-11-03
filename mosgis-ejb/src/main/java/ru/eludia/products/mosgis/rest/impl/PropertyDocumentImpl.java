@@ -6,6 +6,7 @@ import javax.json.JsonObject;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.Owner;
@@ -27,9 +28,14 @@ public class PropertyDocumentImpl extends BaseCRUD<PropertyDocument> implements 
     
     private static final Logger logger = Logger.getLogger (PropertyDocumentImpl.class.getName ());    
        
+    private void filterOffDeleted (Select select) {
+        select.and (EnTable.c.IS_DELETED, Operator.EQ, 0);
+    }
+
     private void applyComplexSearch (final ComplexSearch search, Select select) {
 
         search.filter (select, "");
+        if (!search.getFilters ().containsKey ("is_deleted")) filterOffDeleted (select);
         
     }
     
@@ -47,13 +53,14 @@ public class PropertyDocumentImpl extends BaseCRUD<PropertyDocument> implements 
     
     private void applySearch (final Search search, Select select) {        
 
-        if (search instanceof SimpleSearch) {
-            applySimpleSearch  ((SimpleSearch) search, select);
-        }
-        else if (search instanceof ComplexSearch) {
+        if (search instanceof ComplexSearch) {
             applyComplexSearch ((ComplexSearch) search, select);
         }
-
+        else {
+            if (search instanceof SimpleSearch) applySimpleSearch  ((SimpleSearch) search, select);
+            filterOffDeleted (select);        
+        }
+        
     }
     
     @Override

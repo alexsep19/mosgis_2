@@ -26,6 +26,15 @@ define ([], function () {
 
             textSearch: 'contains',
 
+            searches: [            
+                {field: 'label',  caption: 'Номер помещения',  type: 'text'},
+                {field: 'owner_label_uc',  caption: 'Собственник',  type: 'text'},
+                {field: 'is_deleted', caption: 'Статус записи', type: 'enum', options: {items: [
+                    {id: "0", text: "Актуальные"},
+                    {id: "1", text: "Удалённые"},
+                ]}},
+            ].filter (not_off),
+            
             columns: [                
                 {field: 'label', caption: 'Помещение', size: 10},
                 {field: 'owner_label', caption: 'Собственник', size: 30},
