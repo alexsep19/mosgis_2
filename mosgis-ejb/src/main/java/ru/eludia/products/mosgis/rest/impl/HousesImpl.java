@@ -33,6 +33,7 @@ import ru.eludia.products.mosgis.db.model.tables.Lift;
 import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -186,11 +187,13 @@ public class HousesImpl extends Base<House> implements HousesLocal {
                     .select (VocProtertyDocumentType.class, "id", "label")
                     .orderBy ("label")
             );
-                        
+                                    
         }
         catch (Exception ex) {
             throw new InternalServerErrorException (ex);
         }
+
+        VocAction.addTo (jb);
         
         return jb.build ();
 
