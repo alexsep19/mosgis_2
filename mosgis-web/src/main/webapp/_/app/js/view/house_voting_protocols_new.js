@@ -28,6 +28,8 @@ define ([], function () {
                             {name: 'extravoting', type: 'list', options: {items: [{id:0, text: "Ежегодное"}, {id:1, text: "Внеочередное"}]}},
                             {name: 'meetingeligibility', type: 'list', options: {items: [{id:0, text: "Правомочно"}, {id:1, text: "Неправомочно"}]}},
                             
+                            {name: 'form_', type: 'radio'},
+                            
                             {name: 'protocolform', type: 'radio'},
                     
                             {name: 'avotingdate', type: 'date'},

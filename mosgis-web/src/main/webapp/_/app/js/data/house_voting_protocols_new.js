@@ -9,9 +9,9 @@ define ([], function () {
         console.log (v)
         
         if (!v.protocoldate) die ('protocoldate', 'Пожалуйста, введите дату составления протокола')
-        if (!v.protocolform) die ('protocolform', 'Пожалуйста, выберите форму проведения')
+        if (!v.form_) die ('form_', 'Пожалуйста, выберите форму проведения')
         
-        switch (v.protocolform) {
+        switch (v.form_) {
             case '0': {
                     if (!v.avotingdate) die ('avotingdate', 'Пожалуйста, введите дату окончания приема решений')
                     if (!v.resolutionplace) die ('resolutionplace', 'Пожалуйста, введите место приема решения')
