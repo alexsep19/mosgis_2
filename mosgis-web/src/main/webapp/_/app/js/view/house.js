@@ -20,6 +20,7 @@ define ([], function () {
                             {id: 'house_address',  caption: 'Адрес'},
                             {id: 'house_passport', caption: 'Общие'},   // sic
                             {id: 'house_common',   caption: 'Паспорт'}, // sic
+                            {id: 'house_voting_protocols', caption: 'Протоколы ОСС'},
                             {id: 'house_constr',   caption: 'Конструктивные элементы', off: !data.item.is_condo},
                             {id: 'house_systems',  caption: 'Внутридомовые сети', off: !data.item.is_condo},
                             {id: 'house_premises', caption: 'Помещения', off: !data.item.is_condo},

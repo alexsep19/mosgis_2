@@ -1,13 +1,17 @@
 package ru.eludia.products.mosgis.rest.impl;
 
 import javax.annotation.Resource;
+import javax.ejb.Stateless;
 import javax.jms.Queue;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
+import ru.eludia.base.Model;
+import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocol;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocolLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -18,16 +22,9 @@ import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.VotingProtocolsLocal;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 
+@Stateless
 public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements VotingProtocolsLocal {
-    
-    @Resource (mappedName = "mosgis.inNsiVotingProtocolsQueue")
-    Queue queue;
 
-    @Override
-    public Queue getQueue () {
-        return queue;
-    }
-    
     @Override
     public JsonObject getVocs () {
         
@@ -40,12 +37,12 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
             db.addJsonArrays (jb,
                     
                 ModelHolder.getModel ()
-                    .select (VocOrganization.class, "uuid AS id", "label")                    
+                    .select (VocOrganization.class, "uuid AS id", "label")
                     .orderBy ("label")
                     .and ("uuid", ModelHolder.getModel ().select (VotingProtocol.class, "uuid_org").where ("is_deleted", 0)),
 
                 ModelHolder.getModel ()
-                    .select (VocAsyncEntityState.class, "id", "label")                    
+                    .select (VocAsyncEntityState.class, "id", "label")
                     .orderBy ("label")
 
             );
@@ -72,7 +69,25 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
 
     @Override
     public JsonObject select(JsonObject p, User user) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        Model m = ModelHolder.getModel ();
+        
+        Select select = m.select (VotingProtocol.class, "uuid AS id", "protocolnum", "protocoldate", "modification")
+            //.toOne (Premise.class, "AS premise", "*").where ("uuid_house", p.getJsonObject ("data").getString ("uuid_house", null)).on ()
+            .orderBy("protocolnum")
+            .limit (p.getInt ("offset"), p.getInt ("limit"));
+        
+        JsonObjectBuilder jb = Json.createObjectBuilder ();
+
+        try (DB db = ModelHolder.getModel ().getDb ()) {
+            db.addJsonArrayCnt (jb, select);
+        }
+        catch (Exception ex) {
+            throw new InternalServerErrorException (ex);
+        }
+        
+        return jb.build ();
+        
     }
     
 }
