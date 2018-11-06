@@ -6,6 +6,7 @@ import ru.eludia.base.DB;
 import ru.eludia.base.db.util.SyncMap;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
+import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -17,7 +18,7 @@ public class VotingProtocol extends Table {
         
         super ("tb_voting_protocols", "Протоколы ОСС");
         
-        pk  ("uuid", Type.UUID, "Ключ");
+        pk  ("uuid", Type.UUID, NEW_UUID, "Ключ");
         
         fk  ("fiashouseguid",           VocBuilding.class,                   "Глобальный уникальный идентификатор дома по ФИАС");
         col ("is_deleted",              Type.BOOLEAN, null,                  "1, если запись удалена; иначе 0");
@@ -43,12 +44,10 @@ public class VotingProtocol extends Table {
         col ("meeting_av_place", Type.STRING, 3000, null, "Место проведения собрания (очно-заочное голосование)");
         col ("meeting_av_date_end", Type.DATE, null, "Дата окончания приема решений (очно-заочное голосование)");
         col ("meeting_av_res_place", Type.STRING, 3000, null, "Место приема решения (очно-заочное голосование)");
-        
-        //voteinitiators?
+
         col ("extravoting", Type.BOOLEAN, "Внеочередное собрание");
         col ("annualvoting", Type.BOOLEAN, new Virt("DECODE(\"EXTRAVOTING\",1,0,1)"), "Ежегодное собрание");
         col ("meetingeligibility", Type.STRING, 1, "Правомочность собрания. (C)OMPETENT - правомочно, (N)OT_COMPETENT - не правомочно");
-        //decisionlist?
         
         col ("modification", Type.STRING, null, "Основание изменения (для протоколов в статусе \"Размещен\")");
         

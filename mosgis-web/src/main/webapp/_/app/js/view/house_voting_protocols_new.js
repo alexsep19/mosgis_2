@@ -26,7 +26,7 @@ define ([], function () {
                             {name: 'protocoldate', type: 'date'},
                     
                             {name: 'extravoting', type: 'list', options: {items: [{id:0, text: "Ежегодное"}, {id:1, text: "Внеочередное"}]}},
-                            {name: 'meetingeligibility', type: 'list', options: {items: [{id:"C", text: "Правомочно"}, {id:"N", text: "Неправомочно"}]}},
+                            {name: 'meetingeligibility', type: 'list', options: {items: [{id:0, text: "Правомочно"}, {id:1, text: "Неправомочно"}]}},
                             
                             {name: 'protocolform', type: 'radio'},
                     

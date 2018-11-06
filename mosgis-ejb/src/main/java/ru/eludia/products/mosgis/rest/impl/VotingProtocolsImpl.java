@@ -1,8 +1,6 @@
 package ru.eludia.products.mosgis.rest.impl;
 
-import javax.annotation.Resource;
 import javax.ejb.Stateless;
-import javax.jms.Queue;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -11,7 +9,6 @@ import ru.eludia.base.DB;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
-import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocol;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocolLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
