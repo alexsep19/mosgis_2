@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by S (H) -->
 <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://dom.gosuslugi.ru/schema/integration/nsi-service-async/" xmlns:nsi="http://dom.gosuslugi.ru/schema/integration/nsi/" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:ns="http://www.w3.org/2000/09/xmldsig#" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="http://dom.gosuslugi.ru/schema/integration/nsi-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/nsi-service-async/">
 	<wsdl:types>
 		<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified" attributeFormDefault="unqualified" version="11.5.0.2">
