@@ -15,6 +15,7 @@ public class WorkingList extends EnTable {
         UUID_CONTRACT_OBJECT (ContractObject.class,  "Ссылка на объект договора"),
         UUID_CHARTER_OBJECT  (CharterObject.class,   "Ссылка на объект устава"),
         FIASHOUSEGUID        (VocBuilding.class,     "Дом"),
+        ID_LOG               (WorkingListLog.class,  "Последнее событие редактирования"),
         DT_FROM              (DATE,                  "Период \"с\"  (первое число первого месяца периода)"),
         DT_TO                (DATE,                  "Период \"по\" (последнее число последнего месяца периода)")
         ;
@@ -28,7 +29,7 @@ public class WorkingList extends EnTable {
         @Override
         public boolean isLoggable () {
             switch (this) {
-//                case ID_LOG:
+                case ID_LOG:
                 case UUID_CONTRACT_OBJECT:
                 case UUID_CHARTER_OBJECT:
                 case FIASHOUSEGUID:
