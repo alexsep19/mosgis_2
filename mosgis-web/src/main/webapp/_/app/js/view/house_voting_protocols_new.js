@@ -27,8 +27,10 @@ define ([], function () {
                     
                             {name: 'extravoting', type: 'list', options: {items: [{id:0, text: "Ежегодное"}, {id:1, text: "Внеочередное"}]}},
                             {name: 'meetingeligibility', type: 'list', options: {items: [{id:"C", text: "Правомочно"}, {id:"N", text: "Неправомочно"}]}},
+                            
+                            {name: 'protocolform', type: 'radio'},
                     
-                            {name: 'avoitingdate', type: 'date'},
+                            {name: 'avotingdate', type: 'date'},
                             {name: 'resolutionplace', type: 'text'},
 
                             {name: 'meetingdate', type: 'date'},

@@ -53,11 +53,18 @@
             <div class="w2ui-field">
                 <label>Правомочность собрания</label>
                 <div>
-                    <select name="extravoting">
+                    <select name="meetingeligibility">
                         <option value="C">Правомочно</option>
                         <option value="N">Неправомочно</option>
                     </select>
                 </div>
+            </div>
+            
+            <div class="w2ui-field">
+                <input type=radio name="protocolform" value="0"/> Заочное голосование (опросным путем)                        
+                <input type=radio name="protocolform" value="1"/> Очное голосование
+                <input type=radio name="protocolform" value="2"/> Заочное голосование с использованием системы
+                <input type=radio name="protocolform" value="3"/> Очно-заочное голосование
             </div>
             
             <div class="w2ui-field">
@@ -91,36 +98,31 @@
             <div class="w2ui-field">
                 <label>evotingdatebegin</label>
                 <div>
-                	<input name=meetingdate class=dt>
+                	<input name=evotingdatebegin class=dt>
                 </div>
             </div>
             
             <div class="w2ui-field">
                 <label>evotingdateend</label>
                 <div>
-                	<input name=meetingdate class=dt>
+                	<input name=evotingdateend class=dt>
                 </div>
             </div>
             
             <div class="w2ui-field">
                 <label>discipline</label>
                 <div>
-                	<input name=votingplace maxlength=30>
+                	<input name=discipline maxlength=30>
                 </div>
             </div>
             
             <div class="w2ui-field">
                 <label>inforeview</label>
                 <div>
-                	<input name=votingplace maxlength=30>
+                	<input name=inforeview maxlength=30>
                 </div>
             </div>
-            
-            
-            
-            
-            
-            
+
             <div class="w2ui-field">
                 <label>meeting_av_date</label>
                 <div>
