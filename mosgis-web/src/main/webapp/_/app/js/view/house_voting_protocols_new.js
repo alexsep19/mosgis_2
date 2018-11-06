@@ -4,8 +4,8 @@ define ([], function () {
         
         $(view).w2popup('open', {
 
-            width  : 605,
-            height : 280,
+            width  : 500,
+            height : 390,
 
             title   : 'Добавление протокола',
 
@@ -29,24 +29,6 @@ define ([], function () {
                             {name: 'meetingeligibility', type: 'list', options: {items: [{id:0, text: "Правомочно"}, {id:1, text: "Неправомочно"}]}},
                             
                             {name: 'form_', type: 'radio'},
-                            
-                            {name: 'protocolform', type: 'radio'},
-                    
-                            {name: 'avotingdate', type: 'date'},
-                            {name: 'resolutionplace', type: 'text'},
-
-                            {name: 'meetingdate', type: 'date'},
-                            {name: 'votingplace', type: 'text'},
-
-                            {name: 'evotingdatebegin', type: 'date'},
-                            {name: 'evotingdateend', type: 'date'},
-                            {name: 'discipline', type: 'text'},
-                            {name: 'inforeview', type: 'text'},
-
-                            {name: 'meeting_av_date', type: 'date'},
-                            {name: 'meeting_av_date_end', type: 'date'},
-                            {name: 'meeting_av_place', type: 'text'},
-                            {name: 'meeting_av_res_place', type: 'text'},
                         ],
 
                     });
