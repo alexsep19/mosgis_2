@@ -1,0 +1,158 @@
+<span
+	data-popup-width=570
+	data-popup-height=250
+	data-popup-title='Протокол'
+>
+
+	<style>
+
+        label[data-block-name=vc_person_new] {
+        	width: 180px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=vc_person_new] {
+        	width: 320px !important;
+        }
+
+        .w2ui-field input.dt {
+            width: 70px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:200px; margin:8px 0 0 0;">
+
+        <div class="w2ui-page page-0" style="height:200px;">
+
+
+            <div class="w2ui-field">
+                <label>Номер протокола</label>
+                <div>
+                	<input name=protocolnum maxlength=30>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Дата составления протокола</label>
+                <div>
+                	<input name=protocoldate maxlength=100 class=dt>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Вид собрания</label>
+                <div>
+                    <select name="extravoting">
+                        <option value=0>Ежегодное</option>
+                        <option value=1>Внеочередное</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Правомочность собрания</label>
+                <div>
+                    <select name="extravoting">
+                        <option value="C">Правомочно</option>
+                        <option value="N">Неправомочно</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="w2ui-field">
+                <label>avotingdate</label>
+                <div>
+                	<input name=avotingdate class=dt>
+                </div>
+            </div>
+            
+            <div class="w2ui-field">
+                <label>resolutionplace</label>
+                <div>
+                	<input name=resolutionplace maxlength=30>
+                </div>
+            </div>
+            
+            <div class="w2ui-field">
+                <label>meetingdate</label>
+                <div>
+                	<input name=meetingdate class=dt>
+                </div>
+            </div>
+            
+            <div class="w2ui-field">
+                <label>votingplace</label>
+                <div>
+                	<input name=votingplace maxlength=30>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>evotingdatebegin</label>
+                <div>
+                	<input name=meetingdate class=dt>
+                </div>
+            </div>
+            
+            <div class="w2ui-field">
+                <label>evotingdateend</label>
+                <div>
+                	<input name=meetingdate class=dt>
+                </div>
+            </div>
+            
+            <div class="w2ui-field">
+                <label>discipline</label>
+                <div>
+                	<input name=votingplace maxlength=30>
+                </div>
+            </div>
+            
+            <div class="w2ui-field">
+                <label>inforeview</label>
+                <div>
+                	<input name=votingplace maxlength=30>
+                </div>
+            </div>
+            
+            
+            
+            
+            
+            
+            <div class="w2ui-field">
+                <label>meeting_av_date</label>
+                <div>
+                	<input name=meeting_av_date class=dt>
+                </div>
+            </div>
+            
+            <div class="w2ui-field">
+                <label>meeting_av_place</label>
+                <div>
+                	<input name=meeting_av_place maxlength=30>
+                </div>
+            </div>
+            
+            <div class="w2ui-field">
+                <label>meeting_av_date_end</label>
+                <div>
+                	<input name=meeting_av_date_end class=dt>
+                </div>
+            </div>
+            
+            <div class="w2ui-field">
+                <label>meeting_av_res_place</label>
+                <div>
+                	<input name=meeting_av_res_place maxlength=30>
+                </div>
+            </div>
+
+	</div>
+            
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+</span>

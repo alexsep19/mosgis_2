@@ -7,8 +7,8 @@ define ([], function () {
     }    
     
     $_DO.create_house_voting_protocols = function (e) {
-            
-        if ($('body').data ('data').voting_protocols.items.filter (not_off).length == 0) return alert ('Документы всех типов, доступных для этого дома, уже добавлены')
+        
+        //if ($('body').data ('data').voting_protocols.items.filter (not_off).length == 0) return alert ('Документы всех типов, доступных для этого дома, уже добавлены')
 
         use.block ('house_voting_protocols_new')
     
