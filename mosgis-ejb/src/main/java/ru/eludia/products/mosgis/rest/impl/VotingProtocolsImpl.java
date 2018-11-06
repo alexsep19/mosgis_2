@@ -69,9 +69,9 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
         
         Model m = ModelHolder.getModel ();
         
-        Select select = m.select (VotingProtocol.class, "uuid AS id", "protocolnum", "protocoldate", "modification")
+        Select select = m.select (VotingProtocol.class, "*", "uuid AS id")
             //.toOne (Premise.class, "AS premise", "*").where ("uuid_house", p.getJsonObject ("data").getString ("uuid_house", null)).on ()
-            .orderBy("protocolnum")
+            .orderBy("protocoldate")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();
