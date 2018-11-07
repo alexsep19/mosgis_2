@@ -40,6 +40,7 @@ define ([], function () {
             switch (cach.id_ctr_status_gis) {
                 case 40:
                     it._can.edit = 1
+                    cach.label = null
                     break;
                 case 10:
                 case 20:

@@ -33,6 +33,10 @@ define ([], function () {
         
 darn (data.item.startdate)
 darn (data.item.enddate)
+
+        var dt = new Date (data.item.startdate)
+        
+darn (dt)        
         
         data.record = {}
         
