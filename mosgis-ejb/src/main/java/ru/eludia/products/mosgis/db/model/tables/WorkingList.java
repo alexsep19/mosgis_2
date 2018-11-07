@@ -4,9 +4,11 @@ import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.Type.DATE;
+import ru.eludia.base.model.def.Num;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 
 public class WorkingList extends EnTable {
 
@@ -15,6 +17,8 @@ public class WorkingList extends EnTable {
         UUID_CONTRACT_OBJECT (ContractObject.class,  "Ссылка на объект договора"),
         UUID_CHARTER_OBJECT  (CharterObject.class,   "Ссылка на объект устава"),
         FIASHOUSEGUID        (VocBuilding.class,     "Дом"),
+        ID_CTR_STATUS        (VocGisStatus.class,    new Num (VocGisStatus.i.PROJECT.getId ()), "Статус объекта договора с точки зрения mosgis"),
+        ID_CTR_STATUS_GIS    (VocGisStatus.class,    new Num (VocGisStatus.i.PROJECT.getId ()), "Статус объекта договора с точки зрения ГИС ЖКХ"),
         ID_LOG               (WorkingListLog.class,  "Последнее событие редактирования"),
         DT_FROM              (DATE,                  "Период \"с\"  (первое число первого месяца периода)"),
         DT_TO                (DATE,                  "Период \"по\" (последнее число последнего месяца периода)")
