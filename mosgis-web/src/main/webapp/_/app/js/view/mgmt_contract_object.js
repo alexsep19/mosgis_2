@@ -18,7 +18,7 @@ define ([], function () {
 
                         tabs: [
                             {id: 'mgmt_contract_object_common',   caption: 'Общие'},
-//                            {id: 'mgmt_contract_object_working_lists',     caption: 'Перечень услуг'},
+                            {id: 'mgmt_contract_object_working_lists',     caption: 'Перечень услуг'},
                             {id: 'mgmt_contract_object_docs',     caption: 'Документы'},
                         ].filter (not_off),
 

@@ -36,15 +36,6 @@ define ([], function () {
                 footer: true,
             },     
 
-            toolbar: {
-            
-                items: [
-                    {type: 'button', id: b [0], caption: 'Удалить', onClick: $_DO.delete_mgmt_contracts, disabled: true, off: !$_USER.role.nsi_20_1},
-//                    {type: 'button', id: b [1], caption: 'Восстановить', onClick: $_DO.undelete_mgmt_contracts, disabled: true, off: $_USER.role.admin},
-                ].filter (not_off),
-                
-            }, 
-
             searches: [            
                 
                 {field: 'docnum', caption: 'Номер',  type: 'text'},
@@ -53,7 +44,7 @@ define ([], function () {
                     switch (i.id) {
                         case 50:
                         case 60:
-                        case 70:
+                        case 80:
                             return false;
                         default:
                             return true;
