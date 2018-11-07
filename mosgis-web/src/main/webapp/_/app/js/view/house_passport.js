@@ -20,9 +20,12 @@ define ([], function () {
     
         var it = data.item
         
+        it._can = {cancel: 1}
+        
         var cach = it.cach
         
         if (cach) {        
+
             cach.org_label = cach ['org.label']
             
             if (cach ['ctr.uuid']) {
@@ -35,6 +38,9 @@ define ([], function () {
             }
             
             switch (cach.id_ctr_status_gis) {
+                case 40:
+                    it._can.edit = 1
+                    break;
                 case 10:
                 case 20:
                     cach.label = 'Управление домом не утверждено в ' + cach.label
@@ -51,6 +57,8 @@ define ([], function () {
 
             cach.click = function () {openTab ('/' + cach.type + '/' + cach.uuid)}
         }
+        
+        it._can.update = it._can.edit
 
         $_F5 = function (data) {
         
@@ -101,7 +109,7 @@ define ([], function () {
         
         var $panel = $(w2ui ['passport_layout'].el ('top'))
         
-        fill (view, data.item, $panel)        
+        fill (view, it, $panel)        
 
         $panel.w2reform ({ 
         
