@@ -26,7 +26,7 @@ define ([], function () {
         
         function recalc () {
 
-            var items = {'avoting': [$('#avoitingdate'),
+            var items = {'avoting': [$('#avotingdate'),
                                      $('#resolutionplace')],
                          'meeting': [$('#meetingdate'),
                                      $('#meetingtime'),
