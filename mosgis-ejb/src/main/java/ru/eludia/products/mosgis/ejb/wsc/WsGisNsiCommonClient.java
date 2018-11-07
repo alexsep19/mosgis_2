@@ -4,6 +4,8 @@ import java.math.BigInteger;
 import java.util.Map;
 import java.util.UUID;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.jws.HandlerChain;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
@@ -22,6 +24,7 @@ import ru.gosuslugi.dom.schema.integration.nsi_common_service_async.NsiServiceAs
 import ru.gosuslugi.dom.schema.integration.nsi_common.ObjectFactory;
 
 @Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class WsGisNsiCommonClient {
     
     private static final ObjectFactory of = new ObjectFactory ();

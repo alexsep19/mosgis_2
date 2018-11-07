@@ -14,7 +14,7 @@ import ru.eludia.products.mosgis.ejb.ModelHolder;
 
 public abstract class UUIDMDB<T extends Table> extends TextMDB {
     
-    protected abstract void handleRecord (DB db, final UUID uuid, Map<String, Object> r) throws SQLException;    
+    protected abstract void handleRecord (DB db, final UUID uuid, Map<String, Object> r) throws Exception;    
     
     protected Class getTableClass () {
         return (Class) ((ParameterizedType)getClass ().getGenericSuperclass ()).getActualTypeArguments () [0];
@@ -70,7 +70,7 @@ public abstract class UUIDMDB<T extends Table> extends TextMDB {
                 handleRecord (db, uuid, r);
                 logger.log (Level.INFO, "Done handling " + uuid + " " + r);
             }
-            catch (SQLException e) {
+            catch (Exception e) {
                 logger.log (Level.SEVERE, "Failed handling " + uuid + " " + r, e);
                 return;
             }

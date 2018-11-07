@@ -6,6 +6,8 @@ import java.util.UUID;
 import java.util.logging.Logger;
 import ru.gosuslugi.dom.schema.integration.bills.ObjectFactory;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.jws.HandlerChain;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
@@ -22,6 +24,7 @@ import ru.gosuslugi.dom.schema.integration.bills_service_async.BillsServiceAsync
 import ru.gosuslugi.dom.schema.integration.bills_service_async.Fault;
 
 @Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class WsGisBillsClient {
     
     private static final ObjectFactory of = new ObjectFactory ();

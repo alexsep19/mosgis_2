@@ -38,25 +38,16 @@ public class GisNsiMDB extends UUIDMDB<InNsiGroup> {
     Queue outExportNsiQueue;
     
     @Override
-    protected void handleRecord (DB db, UUID uuid, Map r) throws SQLException {
-        
-        String g = r.get ("listgroup").toString ();
-        
-        try {
+    protected void handleRecord (DB db, UUID uuid, Map r) throws Exception {
+
+        AckRequest.Ack ack = wsGisNsiCommonClient.exportNsiList (VocNsiListGroup.i.forName (r.get ("listgroup").toString ()), uuid);
             
-            AckRequest.Ack ack = wsGisNsiCommonClient.exportNsiList (VocNsiListGroup.i.forName (g), uuid);
-            
-            db.update (OutSoap.class, DB.HASH (
-                "uuid",     uuid,
-                "uuid_ack", ack.getMessageGUID ()
-            ));
+        db.update (OutSoap.class, DB.HASH (
+            "uuid",     uuid,
+            "uuid_ack", ack.getMessageGUID ()
+        ));
                 
-            UUIDPublisher.publish (outExportNsiQueue, UUID.fromString (ack.getRequesterMessageGUID ()));
-            
-        }
-        catch (Exception ex) {
-            logger.log (Level.SEVERE, "Cannot import NSI group " + g, ex);
-        }
+        UUIDPublisher.publish (outExportNsiQueue, uuid);
 
     }
 
