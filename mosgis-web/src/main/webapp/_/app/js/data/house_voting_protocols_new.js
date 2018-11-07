@@ -7,6 +7,8 @@ define ([], function () {
         var v = form.values ()
         
         if (!v.protocoldate) die ('protocoldate', 'Пожалуйста, введите дату составления протокола')
+        if (!v.extravoting) die ('extravoting', 'Пожалуйста, укажите вид собрания')
+        if (!v.meetingeligibility) die ('meetingeligibility', 'Пожалуйста, укажите правомочность собрания')
         if (!v.form_) die ('form_', 'Пожалуйста, выберите форму проведения')
         
         v['meetingeligibility'] = v['meetingeligibility'] == 0 ? "C" : "N"

@@ -1,5 +1,5 @@
 <span
-	data-popup-width=500
+	data-popup-width=550
 	data-popup-height=400
 	data-popup-title='Протокол'
 >
@@ -23,14 +23,17 @@
         }
 
         .w2ui-field input.gen {
-            width: 200px !important;
+            width: 300px !important;
             margin-right: 20px !important;
         }
 
         .w2ui-field input.dt {
             width: 70px !important;
         }
-
+        
+        .w2ui-field input.tm {
+            width: 25px !important;
+        }
 	</style>
 
 	<div class="w2ui-reset w2ui-form" style="height:340px; margin:8px 0 0 0;">
@@ -73,10 +76,7 @@
                     </td>
                     <td>
                             <div class="w2ui-field">
-                                <select name="extravoting">
-                                    <option value="0">Ежегодное</option>
-                                    <option value="1">Внеочередное</option>
-                                </select>
+                                <input name=extravoting placeholder="">
                             </div>
                     </td>
                 </tr>
@@ -89,82 +89,82 @@
                     </td>
                     <td>
                         <div class="w2ui-field">
-                            <select name="meetingeligibility">
-                                <option value="0">Правомочно</option>
-                                <option value="1">Неправомочно</option>
-                            </select>
+                            <input name=meetingeligibility placeholder="">
                         </div>
                     </td>
                 </tr>
                 
+                <tr>
+                    <td>
+                        <div class="w2ui-field">
+                            <label class="gen">Форма проведения</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="w2ui-field">
+                            <input class=gen name=form_ placeholder="">
+                        </div>
+                    </td>
+                </tr>
             </table>
             </center>
-            
+                
             <center>
-            <table border=0 cellpadding=0 cellspacing=0 width=90%>
-                <tr>
-                    <td>
-                        <div class="w2ui-field">
-                            <input class="radio" type=radio name="form_" value="0"/>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="w2ui-field">
-                            <label class="radio">Заочное голосование (опросным путем)</label>
-                        </div>
-                    </td>
-                    
-                    
-                </tr>
-                <tr>
-                    <td>
-                        <div class="w2ui-field">
-                            <input class="radio" type=radio name="form_" value="1"/>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="w2ui-field">
-                            <label class="radio">Очное голосование</label>
-                        </div>
-                    </td>
-                    
-                    
-                </tr>
-                <tr>
-                    <td>
-                        <div class="w2ui-field">
-                            <input class="radio" type=radio name="form_" value="2"/>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="w2ui-field">
-                            <label class="radio">Заочное голосование с использованием системы</label>
-                        </div>
-                    </td>
-                    
-                    
-                </tr>
-                <tr>
-                    <td>
-                        <div class="w2ui-field">
-                            <input class="radio" type=radio name="form_" value="3"/>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="w2ui-field">
-                            <label class="radio">Очно-заочное голосование</label>
-                        </div>
-                    </td>
-                    
-                </tr>
+            <table border=1 cellpadding=0 cellspacing=0 width=90%>
+                <tr><td>
+                    <div class="w2ui-field">
+				<label style="width: 250px; margin-right: 5px !important;">Дата окончания приема решений</label>
+                                <div>
+                                    <input name=avoitingdate placeholder="" class=dt disabled>
+                                </div>
+                    </div>
+                </td></tr>
+                
+                <tr><td>
+                    <div class="w2ui-field">
+				<label style="width: 250px; margin-right: 5px !important;">Место принятия решений</label>
+				<div>
+					<input name=resolutionplace disabled>
+				</div>
+                    </div>
+                </td></tr>
+                <tr><td>
+                    <div class="w2ui-field">
+				<label style="width: 250px; margin-right: 5px !important;">Дата проведения собрания</label>
+                                <div>
+                                    <input name=meetingdate placeholder="" class=dt disabled>
+                                </div>
+                    </div>
+                </td></tr>
+                
+                <tr><td>
+                    <div class="w2ui-field">
+				<label style="width: 250px; margin-right: 5px !important;">Время проведения собрания</label>
+                                <div>
+                                    <input type="time" name="meetingtime" min="0:00" max="23:00" required />
+                                </div>
+                    </div>
+                </td></tr>
+                
+                <tr><td>
+                    <div class="w2ui-field">
+				<label style="width: 250px; margin-right: 5px !important;">Место проведения собрания</label>
+				<div>
+					<input name=votingplace disabled>
+				</div>
+                    </div>
+                </td></tr>
+                
+                
+                
             </table>
             </center>
+
+	</div>
+        </div>
             
-                
             <div class="w2ui-buttons">
 		<button class=w2ui-btn name=update>Сохранить</button>
             </div>
-
-	</div>
 
 </span>
