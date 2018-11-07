@@ -110,7 +110,7 @@
             </center>
                 
             <center>
-            <table border=1 cellpadding=0 cellspacing=0 width=90%>
+            <table border=0 cellpadding=0 cellspacing=0 width=90%>
                 <tr><td>
                     <div class="w2ui-field">
 				<label style="width: 250px; margin-right: 5px !important;">Дата окончания приема решений</label>
@@ -124,15 +124,16 @@
                     <div class="w2ui-field">
 				<label style="width: 250px; margin-right: 5px !important;">Место принятия решений</label>
 				<div>
-					<input name=resolutionplace disabled>
+                                    <input name=resolutionplace disabled>
 				</div>
                     </div>
                 </td></tr>
+                
                 <tr><td>
                     <div class="w2ui-field">
 				<label style="width: 250px; margin-right: 5px !important;">Дата проведения собрания</label>
                                 <div>
-                                    <input name=meetingdate placeholder="" class=dt disabled>
+                                    <input id=meetingdate name=meetingdate placeholder="" class=dt disabled>
                                 </div>
                     </div>
                 </td></tr>
@@ -141,7 +142,7 @@
                     <div class="w2ui-field">
 				<label style="width: 250px; margin-right: 5px !important;">Время проведения собрания</label>
                                 <div>
-                                    <input type="time" name="meetingtime" min="0:00" max="23:00" required />
+                                    <input type="time" id=meetingtime name="meetingtime" min="0:00" max="23:00" required class=dt disabled/>
                                 </div>
                     </div>
                 </td></tr>
@@ -150,21 +151,108 @@
                     <div class="w2ui-field">
 				<label style="width: 250px; margin-right: 5px !important;">Место проведения собрания</label>
 				<div>
-					<input name=votingplace disabled>
+					<input id=votingplace name=votingplace disabled>
 				</div>
                     </div>
                 </td></tr>
                 
+                <tr><td>
+                    <div class="w2ui-field">
+				<label style="width: 250px; margin-right: 5px !important;">Дата начала проведения голосования</label>
+                                <div>
+                                    <input id=evotingdatebegin name=evotingdatebegin placeholder="" class=dt disabled>
+                                </div>
+                    </div>
+                </td></tr>
                 
+                <tr><td>
+                    <div class="w2ui-field">
+				<label style="width: 250px; margin-right: 5px !important;">Время начала проведения собрания</label>
+                                <div>
+                                    <input type="time" id=evotingtimebegin name="evotingtimebegin" min="0:00" max="23:00" required class=dt disabled/>
+                                </div>
+                    </div>
+                </td></tr>
+                
+                <tr><td>
+                    <div class="w2ui-field">
+				<label style="width: 250px; margin-right: 5px !important;">Дата окончания проведения голосования</label>
+                                <div>
+                                    <input id=evotingdateend name=evotingdateend placeholder="" class=dt disabled>
+                                </div>
+                    </div>
+                </td></tr>
+                
+                <tr><td>
+                    <div class="w2ui-field">
+				<label style="width: 250px; margin-right: 5px !important;">Время окончания проведения собрания</label>
+                                <div>
+                                    <input type="time" id=evotingtimeend name="evotingtimeend" min="0:00" max="23:00" required class=dt disabled/>
+                                </div>
+                    </div>
+                </td></tr>
+                
+                <tr><td>
+                    <div class="w2ui-field">
+				<label style="width: 250px; margin-right: 5px !important;">Порядок приема решений собственников</label>
+				<div>
+					<input id=discipline name=discipline disabled>
+				</div>
+                    </div>
+                </td></tr>
+                
+                <tr><td>
+                    <div class="w2ui-field">
+				<label style="width: 250px; margin-right: 5px !important;">Порядок ознакомления с информацией и (или) материалами</label>
+				<div>
+					<input id=inforeview name=inforeview disabled>
+				</div>
+                    </div>
+                </td></tr>
+                
+                <tr><td>
+                    <div class="w2ui-field">
+				<label style="width: 250px; margin-right: 5px !important;">Дата проведения собрания</label>
+                                <div>
+                                    <input id=meeting_av_date name=meeting_av_date placeholder="" class=dt disabled>
+                                </div>
+                    </div>
+                </td></tr>
+                
+                <tr><td>
+                    <div class="w2ui-field">
+				<label style="width: 250px; margin-right: 5px !important;">Время проведения собрания</label>
+                                <div>
+                                    <input type="time" id=meeting_av_time name="meeting_av_time" min="0:00" max="23:00" required class=dt disabled/>
+                                </div>
+                    </div>
+                </td></tr>
+                
+                <tr><td>
+                    <div class="w2ui-field">
+				<label style="width: 250px; margin-right: 5px !important;">Дата окончания приема решений</label>
+                                <div>
+                                    <input id=meeting_av_date_end name=meeting_av_date_end placeholder="" class=dt disabled>
+                                </div>
+                    </div>
+                </td></tr>
+                
+                <tr><td>
+                    <div class="w2ui-field">
+				<label style="width: 250px; margin-right: 5px !important;">Место приема решения</label>
+				<div>
+					<input id=meeting_av_res_place name=meeting_av_res_place disabled>
+				</div>
+                    </div>
+                </td></tr>
                 
             </table>
             </center>
 
-	</div>
-        </div>
-            
             <div class="w2ui-buttons">
 		<button class=w2ui-btn name=update>Сохранить</button>
             </div>
+	</div>
+        </div>
 
 </span>
