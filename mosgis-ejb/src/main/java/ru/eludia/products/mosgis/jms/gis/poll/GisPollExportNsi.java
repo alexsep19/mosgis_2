@@ -58,8 +58,10 @@ public class GisPollExportNsi extends UUIDMDB<OutSoap> {
             
             for (NsiItemInfoType i: rp.getNsiList ().getNsiItemInfo ()) {
                 
+                int registryNumber = i.getRegistryNumber ().intValue ();
+
                 vocNsiList.add (HASH (                        
-                    "registrynumber", i.getRegistryNumber (),
+                    "registrynumber", registryNumber,
                     "name",           i.getName (),
                     "listgroup",      listGroup                        
                 ));
@@ -67,7 +69,7 @@ public class GisPollExportNsi extends UUIDMDB<OutSoap> {
                 inNsiItem.add (HASH (                        
                     "uuid", UUID.randomUUID (),
                     "uuid_in_nsi_group", uuid,
-                    "registrynumber", i.getRegistryNumber ()
+                    "registrynumber", registryNumber
                 ));
                 
             }

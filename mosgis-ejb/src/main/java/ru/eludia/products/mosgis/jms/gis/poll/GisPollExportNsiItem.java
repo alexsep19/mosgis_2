@@ -221,8 +221,27 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
                     "registrynumber", registryNumber,
                     "cols",           new Fields (nsiElement).toJson ().toString ()
             ));
+            
+            NsiTable table = null;
+            
+            try {
+                table = new NsiTable (db, registryNumber);
+            }
+            catch (Exception e) {
 
-            NsiTable table = new NsiTable (db, registryNumber);
+                logger.log (Level.WARNING, "Cannot load table definition ", e);
+
+                db.update (OutSoap.class, HASH (
+                    "uuid", uuid,
+                    "id_status", DONE.getId (),
+                    "is_failed", 1,
+                    "err_code",  "0",
+                    "err_text",  e.getMessage ()
+                ));
+                
+                return;
+
+            }
 
             List <Map<String, Object>> records = new ArrayList<> ();
 
