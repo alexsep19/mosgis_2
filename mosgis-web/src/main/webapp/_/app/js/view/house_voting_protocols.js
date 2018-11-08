@@ -33,7 +33,7 @@ define ([], function () {
                 footer: true,
                 toolbarColumns: true,
                 toolbarAdd: Permissions (),
-                toolbarDelete: Permissions (),
+                //toolbarDelete: Permissions (),
             },            
 
             textSearch: 'contains',
@@ -63,7 +63,7 @@ define ([], function () {
 
             url: '/mosgis/_rest/?type=voting_protocols',
            
-            onDelete: $_DO.delete_house_voting_protocols,
+            //onDelete: $_DO.delete_house_voting_protocols,
             
             onAdd: $_DO.create_house_voting_protocols,
             
