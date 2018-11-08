@@ -8,25 +8,11 @@ define ([], function () {
             
     return function (data, view) {
 
-        var layout = w2ui ['topmost_layout']
-
-        var fields = [
-            
-        ]
+        console.log (data)
         
-        switch (data.form_) {
-            case 0:
-                fields.add(
-                        {field: 'avotingdate', caption: 'Дата окончания приема решений', size: 7, render: _dt}
-                        )
-                break
-            case 1:
-                break
-            case 2:
-                break
-            case 3:
-                break
-        }
+        
+
+        var layout = w2ui ['topmost_layout']
         
         var $panel = $(layout.el ('main'))
 
@@ -40,11 +26,8 @@ define ([], function () {
                 toolbar: true,
                 footer: true,
                 toolbarColumns: true,
-                toolbarReload: false,
-                toolbarInput: false,
                 toolbarAdd: true,
                 toolbarDelete: true,
-                toolbarEdit: true,
             },            
 
             textSearch: 'contains',
@@ -77,8 +60,6 @@ define ([], function () {
             onDelete: $_DO.delete_house_voting_protocols,
             
             onAdd: $_DO.create_house_voting_protocols,
-            
-            onEdit: $_DO.edit_house_voting_protocols,
             
         })
 

@@ -2,6 +2,19 @@ define ([], function () {
 
     return function (data, view) {
         
+        function voting_ptocols_view_permit () {
+            
+            if ($_USER.role.nsi_20_1 ||
+                $_USER.role.nsi_20_7 ||
+                $_USER.role.nsi_20_4 ||
+                $_USER.role.nsi_20_19 || 
+                $_USER.role.nsi_20_20 || 
+                $_USER.role.nsi_20_21 ||
+                $_USER.role.admin) { return true }
+            else { return false }
+            
+        }
+        
         $('title').text (data.item.address)        
         
         fill (view, data, $('body'))
@@ -20,7 +33,7 @@ define ([], function () {
                             {id: 'house_address',  caption: 'Адрес'},
                             {id: 'house_passport', caption: 'Общие'},   // sic
                             {id: 'house_common',   caption: 'Паспорт'}, // sic
-                            {id: 'house_voting_protocols', caption: 'Протоколы ОСС'},
+                            {id: 'house_voting_protocols', caption: 'Протоколы ОСС', off: !voting_ptocols_view_permit()},
                             {id: 'house_constr',   caption: 'Конструктивные элементы', off: !data.item.is_condo},
                             {id: 'house_systems',  caption: 'Внутридомовые сети', off: !data.item.is_condo},
                             {id: 'house_premises', caption: 'Помещения', off: !data.item.is_condo},

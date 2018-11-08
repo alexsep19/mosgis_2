@@ -2,7 +2,7 @@ define ([], function () {
 
     $_DO.edit_house_voting_protocols = function (e) {
             
-        use.block ('house_voting_protocol_popup')
+        //use.block ('house_voting_protocol_popup')
     
     }    
     
