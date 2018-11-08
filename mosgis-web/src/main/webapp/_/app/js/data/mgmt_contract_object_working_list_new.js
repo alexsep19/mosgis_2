@@ -27,16 +27,7 @@ define ([], function () {
     return function (done) {
 
         var data = clone ($('body').data ('data'))
-        
-        var dt = new Date (data.item.startdate + 'Z')
-
-        function dtIso      () {return dt.toISOString ().substr (0, 10)}
-        function dtIncMonth () {dt.setMonth (dt.getMonth () + 1)}
-        
-        var ms_to = new Date (data.item.enddate + 'Z').getTime ()
-        
-        dt.setDate (1)
-        
+                
         data.begins = data.periods.map (function (i) {return {
             id: i.id.substr (0, 8) + '01',
             text: i.text

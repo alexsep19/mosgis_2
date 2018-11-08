@@ -99,9 +99,9 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
         job.add ("item", db.getJsonObject (m
             .get (getTable (), id, "AS root", "*")
             .toMaybeOne (VocBuilding.class, "AS fias", "label").on ()
-            .toMaybeOne (ContractObject.class).on ()
+            .toMaybeOne (ContractObject.class, "AS cao", "startdate", "enddate").on ()
             .toMaybeOne (Contract.class, "AS ca", "*").on ()
-            .toMaybeOne (CharterObject.class).on ()
+            .toMaybeOne (CharterObject.class, "AS cho", "startdate", "enddate").on ()
             .toMaybeOne (Charter.class, "AS ch", "*").on ()
         ));
 

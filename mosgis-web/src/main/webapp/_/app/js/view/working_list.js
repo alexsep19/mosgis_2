@@ -4,7 +4,7 @@ define ([], function () {
     
         var it = data.item
         
-        $('title').text (1111/*it ['fias.label']*/)
+        $('title').text ('Работы / ' + it ['fias.label'])
         
         fill (view, it, $('body'))
 
