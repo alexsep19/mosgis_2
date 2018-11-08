@@ -20,10 +20,6 @@ define ([], function () {
             }
         }
         
-        function set_size (elements, sizes) {
-            
-        }
-        
         function recalc () {
 
             var items = {'avoting': [$('#avotingdate'),
@@ -85,20 +81,7 @@ define ([], function () {
                     items['meet_av'].forEach(enabling);
                     sizing (items['meet_av'][0], sizes['meet_av']);
                     break;
-            }
-                        
-//            var o = {
-//                form: 340,
-//                page: 340,
-//                //box: 216,
-//                popup: 400,
-//                //'form-box': 193,
-//            }
-//            
-//            for (var k in o) {
-//                $avoitingdate_row.closest ('.w2ui-' + k).height (o [k] + 30 * on)
-//                $resolutionplace_row.closest ('.w2ui-' + k).height (o [k] + 30 * on)
-//            }            
+            }         
         }
         
         $(view).w2popup('open', {
@@ -140,8 +123,21 @@ define ([], function () {
                                 {id: 3, text: "Очно-заочное голосование"},
                             ]}},
                             
-                            {name: 'avoitingdate', type: 'date'},
+                            {name: 'avotingdate', type: 'date'},
                             {name: 'resolutionplace', type: 'text'},
+                            {name: 'meetingdate', type: 'date'},
+                            {name: 'meetingtime', type: 'time'},
+                            {name: 'votingplace', type: 'text'},
+                            {name: 'evotingdatebegin', type: 'date'},
+                            {name: 'evotingtimebegin', type: 'time'},
+                            {name: 'evotingdateend', type: 'date'},
+                            {name: 'evotingtimeend', type: 'time'},
+                            {name: 'discipline', type: 'text'},
+                            {name: 'inforeview', type: 'text'},
+                            {name: 'meeting_av_date', type: 'date'},
+                            {name: 'meeting_av_time', type: 'time'},
+                            {name: 'meeting_av_date_end', type: 'date'},
+                            {name: 'meeting_av_res_place', type: 'text'},
                         ],
                         
                         onChange: function (e) {if (e.target == "form_") e.done (recalc)},

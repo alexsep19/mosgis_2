@@ -30,7 +30,7 @@ public class VotingProtocolLog extends Table {
         col ("protocolnum", Type.STRING, 30, null, "Номер протокола");
         col ("protocoldate", Type.DATE, "Дата составления протокола");
         
-        col ("avoitingdate", Type.DATE, null, "Дата окончания приема решений (заочное голосование опросным путем)");
+        col ("avotingdate", Type.DATE, null, "Дата окончания приема решений (заочное голосование опросным путем)");
         col ("resolutionplace", Type.STRING, 3000, null, "Место принятия решений (заочное голосование опросным путем)");
         
         col ("meetingdate", Type.DATETIME, null, "Дата и время проведения собрания (очное голосование)");
@@ -60,7 +60,7 @@ public class VotingProtocolLog extends Table {
                         + "id_prtcl_status_gis, "
                         + "protocolnum, "
                         + "protocoldate, "
-                        + "avoitingdate, "
+                        + "avotingdate, "
                         + "resolutionplace, "
                         + "meetingdate, "
                         + "votingplace, "
@@ -81,7 +81,7 @@ public class VotingProtocolLog extends Table {
                         + ":NEW.id_prtcl_status_gis, "
                         + ":NEW.protocolnum, "
                         + ":NEW.protocoldate, "
-                        + ":NEW.avoitingdate, "
+                        + ":NEW.avotingdate, "
                         + ":NEW.resolutionplace, "
                         + ":NEW.meetingdate, "
                         + ":NEW.votingplace, "
