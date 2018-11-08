@@ -26,8 +26,8 @@ public class VotingProtocol extends Table {
         fk  ("fiashouseguid",           VocBuilding.class,                   "Глобальный уникальный идентификатор дома по ФИАС");
         col ("is_deleted",              Type.BOOLEAN, null,                  "1, если запись удалена; иначе 0");
         
-        fk  ("id_prtcl_status",           VocGisStatus.class, null,   "Статус протокола с точки зрения mosgis");
-        fk  ("id_prtcl_status_gis",       VocGisStatus.class, null,   "Статус протокола с точки зрения ГИС ЖКХ");
+        fk  ("id_prtcl_status",           VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (),   "Статус протокола с точки зрения mosgis");
+        fk  ("id_prtcl_status_gis",       VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (),   "Статус протокола с точки зрения ГИС ЖКХ");
         
         col ("form_", Type.NUMERIC, 1, "Форма проведения");
         
