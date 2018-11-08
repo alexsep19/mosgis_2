@@ -60,6 +60,7 @@ define ([], function () {
         var data = clone ($('body').data ('data'))
         
         v['fiashouseguid'] = data.item.fiashouseguid
+        v['uuid_org'] = data.item['org.uuid']
 
         query (tia, {data: v}, function (data) {
         

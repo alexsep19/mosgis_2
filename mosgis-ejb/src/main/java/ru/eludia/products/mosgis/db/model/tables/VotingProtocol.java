@@ -10,6 +10,7 @@ import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
 
 public class VotingProtocol extends Table {
@@ -19,6 +20,8 @@ public class VotingProtocol extends Table {
         super ("tb_voting_protocols", "Протоколы ОСС");
         
         pk  ("uuid", Type.UUID, NEW_UUID, "Ключ");
+        
+        fk  ("uuid_org",                  VocOrganization.class,                      "Организация");
         
         fk  ("fiashouseguid",           VocBuilding.class,                   "Глобальный уникальный идентификатор дома по ФИАС");
         col ("is_deleted",              Type.BOOLEAN, null,                  "1, если запись удалена; иначе 0");
