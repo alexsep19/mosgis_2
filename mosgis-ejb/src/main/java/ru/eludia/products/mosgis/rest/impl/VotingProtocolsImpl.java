@@ -12,6 +12,7 @@ import ru.eludia.products.mosgis.db.model.tables.VotingProtocol;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocolLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
@@ -95,7 +96,11 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
 
                 ModelHolder.getModel ()
                     .select (VocAsyncEntityState.class, "id", "label")
-                    .orderBy ("label")
+                    .orderBy ("label"),
+                    
+                ModelHolder.getModel ()
+                    .select(VocGisStatus.class, "id", "label")
+                    .orderBy ("id")
 
             );
 
