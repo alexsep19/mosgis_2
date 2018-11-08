@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:tns="http://dom.gosuslugi.ru/schema/integration/licenses/" xmlns:organizations-base="http://dom.gosuslugi.ru/schema/integration/organizations-base/" xmlns:organizations-registry-base="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" xmlns:individual-registry-base="http://dom.gosuslugi.ru/schema/integration/individual-registry-base/" xmlns:nsi-base="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:premises-base="http://dom.gosuslugi.ru/schema/integration/premises-base/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://www.w3.org/2000/09/xmldsig#" targetNamespace="http://dom.gosuslugi.ru/schema/integration/licenses/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="12.2.0.16">
+<xs:schema xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:tns="http://dom.gosuslugi.ru/schema/integration/licenses/" xmlns:organizations-base="http://dom.gosuslugi.ru/schema/integration/organizations-base/" xmlns:organizations-registry-base="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" xmlns:individual-registry-base="http://dom.gosuslugi.ru/schema/integration/individual-registry-base/" xmlns:nsi-base="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:premises-base="http://dom.gosuslugi.ru/schema/integration/premises-base/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://www.w3.org/2000/09/xmldsig#" targetNamespace="http://dom.gosuslugi.ru/schema/integration/licenses/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="12.2.1.10">
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/base/" schemaLocation="../lib/hcs-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/organizations-base/" schemaLocation="../lib/hcs-organizations-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" schemaLocation="../lib/hcs-organizations-registry-base.xsd"/>
@@ -231,18 +231,16 @@
     A - ACTIVE - включена в реестр, действующая
     F - FINISHED - включена в реестр, действие прекращено в зависимости от даты окончания действия лицензии
     C - CANCELED - аннулирована
-    R - REJECTED - отменена в зависимости от основания</xs:documentation>
+    R - REJECTED - отменена в зависимости от основания
+    I - INACTIVE - не включена в реестр, не действующая</xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
-						<xs:pattern value="A"/>
-						<xs:pattern value="F"/>
-						<xs:pattern value="C"/>
-						<xs:pattern value="R"/>
 						<xs:enumeration value="A"/>
 						<xs:enumeration value="F"/>
 						<xs:enumeration value="C"/>
 						<xs:enumeration value="R"/>
+						<xs:enumeration value="I"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
@@ -258,7 +256,7 @@
 			</xs:element>
 			<xs:element name="RegionFIASGuid" type="base:GUIDType" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Адрес осуществления лицензируемого вида деятельности (Глобальный уникальный идентификатор дома по ФИАС)</xs:documentation>
+					<xs:documentation>Адрес осуществления лицензируемого вида деятельности (код по ФИАС)</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="LicensableTypeOfActivity" type="base:LongTextType">
@@ -293,12 +291,15 @@
 									<xs:annotation>
 										<xs:documentation>Статус документа:    
      A - ACTIVE - Действующий
-     C - CANCELED - Отменен</xs:documentation>
+     C - CANCELED - Отменен
+     P - PROJECT - 
+Проект</xs:documentation>
 									</xs:annotation>
 									<xs:simpleType>
 										<xs:restriction base="xs:string">
 											<xs:enumeration value="A"/>
 											<xs:enumeration value="C"/>
+											<xs:enumeration value="P"/>
 										</xs:restriction>
 									</xs:simpleType>
 								</xs:element>
@@ -507,12 +508,15 @@
 							<xs:annotation>
 								<xs:documentation>Статус документа:    
     A - ACTIVE - Действующиий
-    C - CANCELED - Отменен</xs:documentation>
+    C - CANCELED - Отменен
+    P - PROJECT - 
+Проект</xs:documentation>
 							</xs:annotation>
 							<xs:simpleType>
 								<xs:restriction base="xs:string">
 									<xs:enumeration value="A"/>
 									<xs:enumeration value="C"/>
+									<xs:enumeration value="P"/>
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:element>
@@ -644,7 +648,7 @@
 										</xs:annotation>
 										<xs:simpleType>
 											<xs:restriction base="xs:integer">
-												<xs:totalDigits value="2"/>
+												<xs:totalDigits value="4"/>
 											</xs:restriction>
 										</xs:simpleType>
 									</xs:element>

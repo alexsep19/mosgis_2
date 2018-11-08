@@ -36,7 +36,7 @@ public class VocPerson extends Table {
         col ("patronymic",     Type.STRING,  256,  null,      "Отчество");
         
         col ("label",          Type.STRING,     new Virt("DECODE(\"PATRONYMIC\", NULL, (\"SURNAME\" || ' ' || \"FIRSTNAME\"), (\"SURNAME\" || ' ' || \"FIRSTNAME\" || ' ' || \"PATRONYMIC\"))"), "ФИО");
-        col ("label_uc",       Type.STRING,     new Virt("UPPER(DECODE(\"PATRONYMIC\", NULL, (\"SURNAME\" || ' ' || \"FIRSTNAME\"), (\"SURNAME\" || ' ' || \"FIRSTNAME\" || ' ' || \"PATRONYMIC\")))"), "ФИО (в верхнем регистре)");
+        col ("label_uc",       Type.STRING,     new Virt("UPPER(\"LABEL\")"), "ФИО (в верхнем регистре)");
         
         col ("sex",            Type.STRING,  1, new Virt("DECODE(IS_FEMALE, 1, 'F', 0, 'M', NULL)"), "Пол (ГИС)");
         

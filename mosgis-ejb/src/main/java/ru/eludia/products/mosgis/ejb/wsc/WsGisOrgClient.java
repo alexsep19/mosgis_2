@@ -3,6 +3,8 @@ package ru.eludia.products.mosgis.ejb.wsc;
 import java.util.Map;
 import java.util.UUID;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.jws.HandlerChain;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
@@ -18,6 +20,7 @@ import ru.gosuslugi.dom.schema.integration.organizations_registry_common_service
 import ru.gosuslugi.dom.schema.integration.organizations_registry_common_service_async.RegOrgServiceAsync;
 
 @Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class WsGisOrgClient {
 
     private static final ObjectFactory of = new ObjectFactory ();

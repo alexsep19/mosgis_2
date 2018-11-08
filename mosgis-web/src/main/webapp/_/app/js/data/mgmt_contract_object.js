@@ -41,8 +41,10 @@ define ([], function () {
                 case 110:
                     is_locked = true
             }
+            
+            var is_own = $_USER.role.admin || ($_USER.role.nsi_20_1 && it ['ctr.uuid_org'] == $_USER.uuid_org)
 
-            if (!is_locked && $_USER.role.nsi_20_1 && it ['ctr.uuid_org'] == $_USER.uuid_org) {
+            if (!is_locked && is_own) {
             
                 switch (it ["ctr.id_ctr_status"]) {
 
@@ -58,6 +60,10 @@ define ([], function () {
 
                 it._can.update = it._can.cancel = it._can.edit
 
+            }
+
+            if (is_own && it ["ctr.id_ctr_status_gis"] == 40) {
+                it._can.edit_work_list = 1                
             }
 
             if (it.is_deleted == 0 && !it ['house.uuid'] && it.id_ctr_status_gis != 110 && ($_USER.role.admin || it ['ctr.uuid_org'] == $_USER.uuid_org)) it._can.create_house = 1

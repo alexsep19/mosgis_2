@@ -71,10 +71,11 @@ public abstract class BaseCRUD <T extends Table> extends Base<T> implements CRUD
         
         Select select = ModelHolder.getModel ().select (logTable, "AS log", "*", "uuid AS id")
             .and ("uuid_object", id)
-            .toMaybeOne (VocUser.class, "label").on ()
-            .toMaybeOne (OutSoap.class, "AS soap", "id_status", "is_failed", "ts", "ts_rp", "err_text", "uuid_ack").on ()
+            .toMaybeOne (VocUser.class, "label").on ()            
             .orderBy ("log.ts DESC")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
+        
+        if (logTable.getColumn ("uuid_out_soap") != null) select.toMaybeOne (OutSoap.class, "AS soap", "id_status", "is_failed", "ts", "ts_rp", "err_text", "uuid_ack").on ();
         
         logTable.getColumns ().forEachEntry (0, (i) -> {
             final Col value = i.getValue ();

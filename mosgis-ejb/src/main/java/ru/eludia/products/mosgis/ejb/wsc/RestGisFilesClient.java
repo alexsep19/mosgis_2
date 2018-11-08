@@ -23,12 +23,15 @@ import javax.ws.rs.client.WebTarget;
 import static javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM;
 import javax.ws.rs.core.Response;
 import java.util.Base64;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.bind.DatatypeConverter;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.jmx.Conf;
 
 @Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class RestGisFilesClient {
     
     private class Authenticator implements ClientRequestFilter {

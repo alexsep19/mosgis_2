@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by S (H) -->
-<!---->
-<!---->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:metering-device-base="http://dom.gosuslugi.ru/schema/integration/metering-device-base/" xmlns:nsi-base="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:tns="http://dom.gosuslugi.ru/schema/integration/device-metering/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/device-metering/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="11.14.0.8">
+<!-- edited with XMLSpy v2011 sp1 (http://www.altova.com) by End User (free.org) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:metering-device-base="http://dom.gosuslugi.ru/schema/integration/metering-device-base/" xmlns:nsi-base="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:tns="http://dom.gosuslugi.ru/schema/integration/device-metering/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/device-metering/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="12.2.1.5">
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/base/" schemaLocation="../lib/hcs-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/metering-device-base/" schemaLocation="../lib/hcs-metering-device-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/nsi-base/" schemaLocation="../lib/hcs-nsi-base.xsd"/>
@@ -571,12 +569,12 @@
 						<xs:choice>
 							<xs:element name="MeteringDeviceType" type="nsi-base:nsiRef" maxOccurs="100">
 								<xs:annotation>
-									<xs:documentation>Вид прибора учета (НСИ 27)</xs:documentation>
+									<xs:documentation>Тип прибора учета (НСИ 27)</xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="MunicipalResource" type="nsi-base:nsiRef" maxOccurs="100">
 								<xs:annotation>
-									<xs:documentation>Коммунальный ресурс (НСИ 2)</xs:documentation>
+									<xs:documentation>Вид коммунального ресурса (НСИ 2)</xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="MeteringDeviceRootGUID" type="base:GUIDType" maxOccurs="100">
@@ -648,7 +646,7 @@
 	</xs:element>
 	<xs:element name="exportMeteringDeviceHistoryResult">
 		<xs:annotation>
-			<xs:documentation>Экспорт показаний и поверок приборов учета. Значения показаний и поверок указываются в единицах измерения, которые назначены прибору учета при его создании. Если ЕИ прибора учета отличается от ЕИ коммунального ресурса по умолчанию, то дополнительно указываются значения показаний и поверок в ЕИ КР по умолчанию</xs:documentation>
+			<xs:documentation>Экспорт показаний и поверок приборов учета. Значения показаний и поверок указываются в единицах измерения (ЕИ), которые назначены прибору учета при его создании. Если ЕИ прибора учета отличается от ЕИ коммунального ресурса (КР) по умолчанию, то дополнительно указываются значения показаний и поверок в ЕИ КР по умолчанию</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:complexContent>
@@ -656,7 +654,7 @@
 					<xs:choice>
 						<xs:element name="exportMeteringDeviceHistoryResult" type="tns:exportMeteringDeviceHistoryResultType" maxOccurs="unbounded">
 							<xs:annotation>
-								<xs:documentation>Показания и объемы потребления ресурсов по ПУ</xs:documentation>
+								<xs:documentation>Показания и объемы потребления ресурсов по одному ПУ</xs:documentation>
 							</xs:annotation>
 						</xs:element>
 						<xs:element ref="base:ErrorMessage"/>

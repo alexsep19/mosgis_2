@@ -22,14 +22,6 @@ define ([], function () {
 
     }
 
-    $_DO.delete_mgmt_contracts = function () {
-        if (confirm ('Удалить эту запись?')) setDeleted ('delete')
-    }
-    
-    $_DO.undelete_mgmt_contracts = function (e) {
-        if (confirm ('Восстановить эту запись?')) setDeleted ('undelete')
-    }
-
     $_DO.create_mgmt_contracts = function (e) {       
         $_SESSION.set ('record', {})
         use.block ('mgmt_contract_popup')

@@ -1,0 +1,46 @@
+<span
+	data-popup-width=500
+	data-popup-height=205
+	data-popup-title='Перечень работ и услуг'
+>
+
+	<style>
+
+        label[data-block-name=mgmt_contract_object_working_list_new] {
+        	width: 120px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=mgmt_contract_object_working_list_new] {
+        	width: 320px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:150px; margin:8px 0 0 0;">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Начало срока</label>
+                <div>
+                	<input name=dt_from maxlength=100>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Окончание срока</label>
+                <div>
+                	<input name=dt_to>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>

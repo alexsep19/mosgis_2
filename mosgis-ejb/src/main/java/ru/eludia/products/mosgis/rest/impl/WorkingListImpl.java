@@ -8,25 +8,19 @@ import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
-import ru.eludia.products.mosgis.db.model.tables.House;
-import ru.eludia.products.mosgis.db.model.tables.Owner;
-import ru.eludia.products.mosgis.db.model.tables.Premise;
-import ru.eludia.products.mosgis.db.model.tables.PropertyDocument;
-import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
-import ru.eludia.products.mosgis.db.model.voc.VocPerson;
-import ru.eludia.products.mosgis.db.model.voc.VocProtertyDocumentType;
+import ru.eludia.products.mosgis.db.model.tables.WorkingList;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
-import ru.eludia.products.mosgis.rest.api.PropertyDocumentLocal;
+import ru.eludia.products.mosgis.rest.api.WorkingListLocal;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 import ru.eludia.products.mosgis.web.base.ComplexSearch;
 import ru.eludia.products.mosgis.web.base.Search;
 import ru.eludia.products.mosgis.web.base.SimpleSearch;
 
 @Stateless
-public class PropertyDocumentImpl extends BaseCRUD<PropertyDocument> implements PropertyDocumentLocal {
+public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingListLocal {
     
-    private static final Logger logger = Logger.getLogger (PropertyDocumentImpl.class.getName ());    
+    private static final Logger logger = Logger.getLogger (WorkingListImpl.class.getName ());    
        
     private void filterOffDeleted (Select select) {
         select.and (EnTable.c.IS_DELETED, Operator.EQ, 0);
@@ -68,8 +62,8 @@ public class PropertyDocumentImpl extends BaseCRUD<PropertyDocument> implements 
         
         final Model m = ModelHolder.getModel ();
 
-        Select select = m.select (Owner.class, "*")
-            .orderBy ("label")
+        Select select = m.select (WorkingList.class, "*")
+            .orderBy (WorkingList.c.DT_FROM.lc ())
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
         applySearch (Search.from (p), select);
@@ -85,17 +79,15 @@ public class PropertyDocumentImpl extends BaseCRUD<PropertyDocument> implements 
 
         job.add ("item", db.getJsonObject (m
             .get (getTable (), id, "AS root", "*")
-            .toOne (Premise.class, "AS p", "*").on ()                
-            .toOne (House.class, "AS h", "address").on ()
-            .toMaybeOne (VocOrganization.class, "AS org", "label").on ("org.uuid=root." + PropertyDocument.c.UUID_ORG_OWNER.lc ())
-            .toMaybeOne (VocPerson.class, "AS person", "label").on ()
+//            .toOne (Premise.class, "AS p", "*").on ()                
+//            .toOne (House.class, "AS h", "address").on ()
         ));
 
-        db.addJsonArrays (job,
-            m
-                .select (VocProtertyDocumentType.class, "id", "label")
-                .orderBy ("label")
-        );
+//        db.addJsonArrays (job,
+//            m
+//                .select (VocProtertyDocumentType.class, "id", "label")
+//                .orderBy ("label")
+//        );
 
     });}        
     

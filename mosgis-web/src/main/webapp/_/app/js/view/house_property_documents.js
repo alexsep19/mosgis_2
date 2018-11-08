@@ -20,17 +20,25 @@ define ([], function () {
             name: grid_name,
 
             show: {
-                toolbarInput: false,
                 toolbar: true,
                 footer: 1,
             },            
 
             textSearch: 'contains',
 
+            searches: [            
+                {field: 'label',  caption: 'Номер помещения',  type: 'text'},
+                {field: 'owner_label_uc',  caption: 'Собственник',  type: 'text'},
+                {field: 'is_deleted', caption: 'Статус записи', type: 'enum', options: {items: [
+                    {id: "0", text: "Актуальные"},
+                    {id: "1", text: "Удалённые"},
+                ]}},
+            ].filter (not_off),
+            
             columns: [                
-                {field: 'premise.label', caption: 'Помещение', size: 10},
-                {field: 'label', caption: 'Собственник', size: 30, render: function (r) {return r ['org.label'] || r ['person.label'] }},
-                {field: 'premise.totalarea', caption: 'Площадь, м2', size: 10},
+                {field: 'label', caption: 'Помещение', size: 10},
+                {field: 'owner_label', caption: 'Собственник', size: 30},
+                {field: 'totalarea', caption: 'Площадь, м2', size: 10},
                 {field: 'prc', caption: 'Доля, %', size: 10},
                 {field: 'id_type', caption: 'Документ', size: 25, voc: data.vc_prop_doc_types},
                 {field: 'no', caption: '№', size: 25},

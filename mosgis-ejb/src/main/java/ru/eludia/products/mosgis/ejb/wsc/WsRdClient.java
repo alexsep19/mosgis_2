@@ -1,6 +1,8 @@
 package ru.eludia.products.mosgis.ejb.wsc;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.jws.WebParam;
 import javax.xml.ws.WebServiceRef;
 import org.tempuri.WS;
@@ -12,6 +14,7 @@ import org.datacontract.schemas._2004._07.dmwsnewlife.ArrayOfOwnObjectService;
 import org.datacontract.schemas._2004._07.dmwsnewlife.OwnObjectService;
 
 @Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class WsRdClient {
 
     @WebServiceRef(wsdlLocation = "META-INF/wsdl/rd.wsdl")

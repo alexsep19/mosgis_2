@@ -109,6 +109,15 @@ public class ContractLog extends Table {
            + " FROM tb_contracts WHERE uuid=:NEW.uuid_object; "
 
        + "END;");        
+       
+       trigger ("AFTER INSERT", ""
+        + "BEGIN "
+        + "  IF :NEW.action = 'delete' THEN "
+        + "    UPDATE tb_contract_objects__log SET uuid_user = :NEW.uuid_user WHERE action = 'delete' AND uuid_user IS NULL AND uuid_object IN (SELECT uuid FROM tb_contract_objects WHERE uuid_contract = :NEW.uuid_object);"
+        + "    UPDATE tb_contract_services__log SET uuid_user = :NEW.uuid_user WHERE action = 'delete' AND uuid_user IS NULL AND uuid_object IN (SELECT uuid FROM tb_contract_services WHERE uuid_contract = :NEW.uuid_object);"
+        + "  END IF;"
+        + "END;");
+
     }
     
 }

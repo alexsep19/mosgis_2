@@ -9,6 +9,7 @@ import javax.json.JsonNumber;
 import javax.json.JsonValue;
 import ru.eludia.base.db.sql.gen.Predicate;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Table;
 
 public final class ComplexSearch extends Search {
@@ -69,7 +70,6 @@ public final class ComplexSearch extends Search {
                 }
                 
                 for (Object oi: values) {
-logger.info ("oi=" + oi);
                     if ((oi instanceof Integer) && ((Integer) oi) != 0) continue;
                     if ((oi instanceof String) && !"0".equals (oi)) continue;
                     op = "..." + op;
@@ -78,8 +78,6 @@ logger.info ("oi=" + oi);
                 }
             }
             
-logger.info ("op=" + op);
-
             filters.put (o.getString ("field"), new Predicate (op, values));
 
         }
@@ -89,9 +87,10 @@ logger.info ("op=" + op);
     public void apply (Select s) {
         
         Table table = s.getTable ();
-
         filters.forEach ((n, p) -> {
-            if (table.getColumn (n) != null) s.and (n, p);
+            final Col column = table.getColumn (n);
+            if (column == null) logger.warning ("Column " + n + " not found in " + table.getName () + ". Filter ignored"); 
+                else s.and (n, p);
         });
 
     }

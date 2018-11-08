@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://dom.gosuslugi.ru/schema/integration/house-management-service-async/" xmlns:hm="http://dom.gosuslugi.ru/schema/integration/house-management/" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:ns="http://www.w3.org/2000/09/xmldsig#" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="http://dom.gosuslugi.ru/schema/integration/account-base/" xmlns:ns2="http://dom.gosuslugi.ru/schema/integration/individual-registry-base/" xmlns:ns3="http://dom.gosuslugi.ru/schema/integration/metering-device-base/" xmlns:ns4="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:ns5="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" xmlns:ns6="http://dom.gosuslugi.ru/schema/integration/bills-base/" xmlns:ns7="http://dom.gosuslugi.ru/schema/integration/organizations-base/" xmlns:ns8="http://dom.gosuslugi.ru/schema/integration/premises-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/house-management-service-async/">
 	<wsdl:types>
-		<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified" attributeFormDefault="unqualified" version="12.2.0.14">
+		<xs:schema version="12.2.1.1" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 			<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/house-management/" schemaLocation="hcs-house-management-types.xsd"/>
 			<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/base/" schemaLocation="../lib/hcs-base.xsd"/>
 		</xs:schema>
@@ -205,6 +205,24 @@
 	<wsdl:message name="exportBriefSocialHireContractResult">
 		<wsdl:part name="AckRequest" element="base:AckRequest"/>
 	</wsdl:message>
+	<wsdl:message name="exportBriefBasicHouseRequest">
+		<wsdl:part name="exportBriefBasicHouseRequest" element="hm:exportBriefBasicHouseRequest"/>
+	</wsdl:message>
+	<wsdl:message name="exportBriefBasicHouseResult">
+		<wsdl:part name="AckRequest" element="base:AckRequest"/>
+	</wsdl:message>
+	<wsdl:message name="exportBriefLivingHouseRequest">
+		<wsdl:part name="exportBriefLivingHouseRequest" element="hm:exportBriefLivingHouseRequest"/>
+	</wsdl:message>
+	<wsdl:message name="exportBriefLivingHouseResult">
+		<wsdl:part name="AckRequest" element="base:AckRequest"/>
+	</wsdl:message>
+	<wsdl:message name="exportBriefApartmentHouseRequest">
+		<wsdl:part name="exportBriefApartmentHouseRequest" element="hm:exportBriefApartmentHouseRequest"/>
+	</wsdl:message>
+	<wsdl:message name="exportBriefApartmentHouseResult">
+		<wsdl:part name="AckRequest" element="base:AckRequest"/>
+	</wsdl:message>
 	<wsdl:portType name="HouseManagementPortsTypeAsync">
 		<wsdl:operation name="importMeteringDeviceData">
 			<wsdl:documentation>Передать данные ПУ</wsdl:documentation>
@@ -383,6 +401,24 @@
 			<wsdl:documentation>Операция сноса дома</wsdl:documentation>
 			<wsdl:input message="tns:demolishHouseRequest"/>
 			<wsdl:output message="tns:demolishHouseResult"/>
+			<wsdl:fault name="InvalidRequest" message="tns:Fault"/>
+		</wsdl:operation>
+		<wsdl:operation name="exportBriefBasicHouse">
+			<wsdl:documentation>Экспорт краткой базовой информации о доме</wsdl:documentation>
+			<wsdl:input message="tns:exportBriefBasicHouseRequest"/>
+			<wsdl:output message="tns:exportBriefBasicHouseResult"/>
+			<wsdl:fault name="InvalidRequest" message="tns:Fault"/>
+		</wsdl:operation>
+		<wsdl:operation name="exportBriefLivingHouse">
+			<wsdl:documentation>Экспорт краткой информации о жилом доме</wsdl:documentation>
+			<wsdl:input message="tns:exportBriefLivingHouseRequest"/>
+			<wsdl:output message="tns:exportBriefLivingHouseResult"/>
+			<wsdl:fault name="InvalidRequest" message="tns:Fault"/>
+		</wsdl:operation>
+		<wsdl:operation name="exportBriefApartmentHouse">
+			<wsdl:documentation>Экспорт краткой информации о многоквартирном доме</wsdl:documentation>
+			<wsdl:input message="tns:exportBriefApartmentHouseRequest"/>
+			<wsdl:output message="tns:exportBriefApartmentHouseResult"/>
 			<wsdl:fault name="InvalidRequest" message="tns:Fault"/>
 		</wsdl:operation>
 	</wsdl:portType>
@@ -796,6 +832,48 @@
 		</wsdl:operation>
 		<wsdl:operation name="demolishHouse">
 			<soap:operation soapAction="urn:demolishHouse"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+				<soap:header message="tns:RequestHeader" part="Header" use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+				<soap:header message="tns:ResultHeader" part="Header" use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="InvalidRequest">
+				<soap:fault name="InvalidRequest" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="exportBriefBasicHouse">
+			<soap:operation soapAction="urn:exportBriefBasicHouse"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+				<soap:header message="tns:RequestHeader" part="Header" use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+				<soap:header message="tns:ResultHeader" part="Header" use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="InvalidRequest">
+				<soap:fault name="InvalidRequest" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="exportBriefLivingHouse">
+			<soap:operation soapAction="urn:exportBriefLivingHouse"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+				<soap:header message="tns:RequestHeader" part="Header" use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+				<soap:header message="tns:ResultHeader" part="Header" use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="InvalidRequest">
+				<soap:fault name="InvalidRequest" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="exportBriefApartmentHouse">
+			<soap:operation soapAction="urn:exportBriefApartmentHouse"/>
 			<wsdl:input>
 				<soap:body use="literal"/>
 				<soap:header message="tns:RequestHeader" part="Header" use="literal"/>

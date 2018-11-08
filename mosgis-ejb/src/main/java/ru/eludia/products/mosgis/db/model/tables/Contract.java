@@ -161,7 +161,7 @@ public class Contract extends Table {
             + "END; "
 
         );
-
+        
         trigger ("BEFORE INSERT OR UPDATE", ""                
 
         + "DECLARE "
@@ -337,6 +337,17 @@ public class Contract extends Table {
             + "END IF; "
                         
         + "END;");
+        
+        trigger ("AFTER UPDATE", ""
+            + "BEGIN"
+            + " IF :OLD.is_deleted = 0 AND :NEW.is_deleted = 1 THEN "
+            + "  UPDATE tb_contract_objects SET is_deleted = 1 WHERE uuid_contract = :NEW.uuid; "
+            + "  INSERT INTO tb_contract_objects__log (uuid_object, action) SELECT uuid, 'delete' FROM tb_contract_objects WHERE uuid_contract = :NEW.uuid; "
+            + "  UPDATE tb_contract_services SET is_deleted = 1 WHERE uuid_contract = :NEW.uuid; "
+            + "  INSERT INTO tb_contract_services__log (uuid_object, action) SELECT uuid, 'delete' FROM tb_contract_services WHERE uuid_contract = :NEW.uuid; "
+            + " END IF;"
+            + "END;"
+        );        
 
     }
     

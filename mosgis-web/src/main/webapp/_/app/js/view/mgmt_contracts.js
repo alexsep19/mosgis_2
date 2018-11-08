@@ -36,20 +36,20 @@ define ([], function () {
                 footer: true,
             },     
 
-            toolbar: {
-            
-                items: [
-                    {type: 'button', id: b [0], caption: 'Удалить', onClick: $_DO.delete_mgmt_contracts, disabled: true, off: !$_USER.role.nsi_20_1},
-//                    {type: 'button', id: b [1], caption: 'Восстановить', onClick: $_DO.undelete_mgmt_contracts, disabled: true, off: $_USER.role.admin},
-                ].filter (not_off),
-                
-            }, 
-
             searches: [            
                 
                 {field: 'docnum', caption: 'Номер',  type: 'text'},
                 {field: 'signingdate', caption: 'Дата заключения',  type: 'date'},
-                {field: 'id_status', caption: 'Статус договора', type: 'enum', options: {items: data.vc_gis_status.items}}, 
+                {field: 'id_ctr_status', caption: 'Статус договора', type: 'enum', options: {items: data.vc_gis_status.items.filter (function (i) {
+                    switch (i.id) {
+                        case 50:
+                        case 60:
+                        case 80:
+                            return false;
+                        default:
+                            return true;
+                    }
+                })}}, 
                 {field: 'uuid_org', caption: 'Исполнитель', type: 'enum', options: {items: data.vc_orgs.items}, off: $_USER.role.nsi_20_1},
                 {field: 'id_customer_type', caption: 'Тип заказчика', type: 'enum', options: {items: data.vc_gis_customer_type.items}, off: !($_USER.role.admin || $_USER.role.nsi_20_1)},
                 {field: 'uuid_org_customer', caption: 'Заказчик', type: 'enum', options: {items: data.customers.items}, off: !($_USER.role.admin || $_USER.role.nsi_20_1)},
