@@ -38,7 +38,7 @@ define ([], function () {
 
             searches: [            
                 {field: 'status_label',  caption: 'Статус протокола',  type: 'text'},
-                {field: 'label_form',  caption: 'Форма собрания',  type: 'text'},
+                {field: 'label_form_uc',  caption: 'Форма собрания',  type: 'text'},
                 {field: 'is_deleted', caption: 'Статус записи', type: 'enum', options: {items: [
                     {id: "0", text: "Актуальные"},
                     {id: "1", text: "Удалённые"},

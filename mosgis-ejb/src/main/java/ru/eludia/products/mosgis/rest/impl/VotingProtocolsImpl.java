@@ -46,7 +46,7 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
         
         if (searchString == null || searchString.isEmpty ()) return;
 
-        select.and ("label_form LIKE %?%", searchString);
+        select.and ("label_form_uc LIKE %?%", searchString);
         
     }
     
