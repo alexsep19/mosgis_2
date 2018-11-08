@@ -6,7 +6,6 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
-import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocol;
@@ -18,10 +17,66 @@ import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.VotingProtocolsLocal;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
+import ru.eludia.products.mosgis.web.base.ComplexSearch;
+import ru.eludia.products.mosgis.web.base.Search;
+import ru.eludia.products.mosgis.web.base.SimpleSearch;
 
 @Stateless
 public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements VotingProtocolsLocal {
 
+    private void filterOffDeleted (Select select) {
+        select.and ("is_deleted", 0);
+    }
+    
+    private void applyComplexSearch (final ComplexSearch search, Select select) {
+
+        search.filter (select, "");
+        
+        if (!search.getFilters ().containsKey ("is_deleted")) filterOffDeleted (select);
+
+    }
+    
+    private void applySimpleSearch (final SimpleSearch search, Select select) {
+
+        filterOffDeleted (select);
+
+        final String searchString = search.getSearchString ();
+        
+        if (searchString == null || searchString.isEmpty ()) return;
+
+        select.and ("label_form LIKE %?%", searchString);
+        
+    }
+    
+    private void applySearch (final Search search, Select select) {        
+
+        if (search instanceof SimpleSearch) {
+            applySimpleSearch  ((SimpleSearch) search, select);
+        }
+        else if (search instanceof ComplexSearch) {
+            applyComplexSearch ((ComplexSearch) search, select);
+        }
+        else {
+            filterOffDeleted (select);
+        }
+
+    }
+    
+    @Override
+    public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
+
+        Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
+            .toMaybeOne (VotingProtocolLog.class         ).on ()
+            .and ("uuid_org", user.getUuidOrg ())
+            .orderBy ("root.id_prtcl_status_gis")
+            .limit (p.getInt ("offset"), p.getInt ("limit"));
+
+        applySearch (Search.from (p), select);
+
+        db.addJsonArrayCnt (job, select);
+
+    });}
+    
     @Override
     public JsonObject getVocs () {
         
@@ -63,28 +118,5 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
         ));
 
     });}
-
-    @Override
-    public JsonObject select(JsonObject p, User user) {
-        
-        Model m = ModelHolder.getModel ();
-        
-        Select select = m.select (VotingProtocol.class, "*", "uuid AS id")
-            //.toOne (Premise.class, "AS premise", "*").where ("uuid_house", p.getJsonObject ("data").getString ("uuid_house", null)).on ()
-            .orderBy("protocoldate")
-            .limit (p.getInt ("offset"), p.getInt ("limit"));
-        
-        JsonObjectBuilder jb = Json.createObjectBuilder ();
-
-        try (DB db = ModelHolder.getModel ().getDb ()) {
-            db.addJsonArrayCnt (jb, select);
-        }
-        catch (Exception ex) {
-            throw new InternalServerErrorException (ex);
-        }
-        
-        return jb.build ();
-        
-    }
     
 }

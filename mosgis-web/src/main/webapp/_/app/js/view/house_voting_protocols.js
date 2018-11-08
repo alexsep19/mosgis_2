@@ -15,13 +15,6 @@ define ([], function () {
             return false
             
         }
-        
-        var forms = {
-            0: "Заочное голосование (опросным путем)",
-            1: "Очное голосование",
-            2: "Заочное голосование с использованием системы",
-            3: "Очно-заочное голосование",
-        }
 
         var layout = w2ui ['topmost_layout']
         
@@ -45,12 +38,7 @@ define ([], function () {
 
             searches: [            
                 {field: 'id_prtcl_status_gis',  caption: 'Статус протокола',  type: 'text'},
-                {field: 'label_form',  caption: 'Форма собрания',  type: 'enum', options: {items: [
-                    {id: "0", text: forms[0]},
-                    {id: "1", text: forms[1]},
-                    {id: "2", text: forms[2]},
-                    {id: "3", text: forms[3]},
-                ]}},
+                {field: 'label_form',  caption: 'Форма собрания',  type: 'text'},
                 {field: 'is_deleted', caption: 'Статус записи', type: 'enum', options: {items: [
                     {id: "0", text: "Актуальные"},
                     {id: "1", text: "Удалённые"},
