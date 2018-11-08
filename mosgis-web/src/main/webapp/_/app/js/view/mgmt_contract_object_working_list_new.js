@@ -11,9 +11,11 @@ define ([], function () {
                 record: data.record,
 
                 fields : [                                
-                    {name: 'dt_from', type: 'list', options: {items: []}},
-                    {name: 'dt_to', type: 'list', options: {items: []}},
+                    {name: 'dt_from', type: 'list', options: {items: data.begins}},
+                    {name: 'dt_to', type: 'list', options: {items: data.ends}},
                 ],
+                
+                focus: -1,
 
             })
 

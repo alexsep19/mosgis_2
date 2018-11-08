@@ -1,7 +1,12 @@
 define ([], function () {
     
-    var grid_name = 'mgmt_contract_object_working_lists_grid'
-                
+    var grid_name = 'working_lists_grid'
+    
+    function _my (x, y, z, t) {
+        var p = t.split ('-')
+        return w2utils.settings.fullmonths [parseInt (p [1]) - 1] + ' ' + p [0]
+    }
+
     return function (data, view) {
     
         var layout = w2ui ['topmost_layout']
@@ -25,14 +30,29 @@ define ([], function () {
 
             textSearch: 'contains',
 
+            searches: [            
+            
+                {field: "uuid_contract_object", operator: "is", type: 'text', value: $_REQUEST.id, hidden: true},
+            
+                {field: 'id_ctr_status', caption: 'Статус', type: 'enum', options: {items: data.vc_gis_status.items.filter (function (i) {
+                    switch (i.id) {
+                        case 50:
+                        case 60:
+                        case 80:
+                            return false;
+                        default:
+                            return true;
+                    }
+                })}}, 
+
+            ].filter (not_off),
+            
             columns: [                               
-                {field: 'id_type', caption: 'Тип', size: 50},
+                {field: 'dt_from', caption: 'Начало', size: 20, render: _my},
+                {field: 'dt_to', caption: 'Окончание', size: 20, render: _my},
+                {field: 'id_ctr_status', caption: 'Статус', size: 100, voc: data.vc_gis_status},
             ],
             
-            postData: {search: [
-                {field: "uuid_contract_object", operator: "is", value: $_REQUEST.id},
-            ]},
-
             url: '/mosgis/_rest/?type=working_lists',
                                     
             onAdd: $_DO.create_mgmt_contract_object_working_lists,
