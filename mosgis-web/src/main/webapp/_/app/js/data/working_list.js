@@ -21,6 +21,11 @@ define ([], function () {
     
         query ({type: 'working_lists'}, {}, function (data) {        
         
+            add_vocabularies (data, {
+                vc_gis_status: 1,
+                vc_actions: 1,
+            })
+        
             var it = data.item
             
             it.dt_from = it.dt_from.substr (0, 10)

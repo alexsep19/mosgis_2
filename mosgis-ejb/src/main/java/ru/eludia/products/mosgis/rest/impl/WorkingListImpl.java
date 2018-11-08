@@ -15,7 +15,9 @@ import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.WorkingList;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.WorkingListLocal;
@@ -104,6 +106,9 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
             .toMaybeOne (CharterObject.class, "AS cho", "startdate", "enddate").on ()
             .toMaybeOne (Charter.class, "AS ch", "*").on ()
         ));
+        
+        VocGisStatus.addTo (job);
+        VocAction.addTo (job);
 
 //        db.addJsonArrays (job,
 //            m
