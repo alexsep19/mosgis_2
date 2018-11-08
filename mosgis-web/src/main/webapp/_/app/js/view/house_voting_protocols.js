@@ -45,7 +45,7 @@ define ([], function () {
 
             searches: [            
                 {field: 'id_prtcl_status_gis',  caption: 'Статус протокола',  type: 'text'},
-                {field: 'form_',  caption: 'Форма собрания',  type: 'enum', options: {items: [
+                {field: 'label_form',  caption: 'Форма собрания',  type: 'enum', options: {items: [
                     {id: "0", text: forms[0]},
                     {id: "1", text: forms[1]},
                     {id: "2", text: forms[2]},
