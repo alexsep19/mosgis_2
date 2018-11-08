@@ -58,6 +58,10 @@ define ([], function () {
             url: '/mosgis/_rest/?type=working_lists',
                                     
             onAdd: $_DO.create_mgmt_contract_object_working_lists,
+            
+            onDblClick: function (e) {
+                openTab ('/working_list/' + e.recid)
+            },
                         
         })
 

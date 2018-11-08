@@ -76,7 +76,7 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
         
         final Model m = ModelHolder.getModel ();
 
-        Select select = m.select (WorkingList.class, "*")
+        Select select = m.select (WorkingList.class, "*", EnTable.c.UUID.lc () + " AS id")
             .orderBy (WorkingList.c.DT_FROM.lc ())
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
