@@ -1,10 +1,12 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.json.JsonObject;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Operator;
+import ru.eludia.base.db.sql.gen.Predicate;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
@@ -27,9 +29,21 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
     }
 
     private void applyComplexSearch (final ComplexSearch search, Select select) {
-
-        search.filter (select, "");
-        if (!search.getFilters ().containsKey ("is_deleted")) filterOffDeleted (select);
+        
+        final Map<String, Predicate> filters = search.getFilters ();
+        
+        Predicate dt = filters.get ("dt");
+        
+        if (dt != null) {
+            final Object [] v = dt.getValues ();
+            filters.put (WorkingList.c.DT_FROM.lc (), new Predicate ("<=", v));
+            filters.put (WorkingList.c.DT_TO.lc (),   new Predicate (">=", v));
+            filters.remove ("dt");
+        }
+        
+        search.apply (select);
+        
+        if (!filters.containsKey ("is_deleted")) filterOffDeleted (select);
         
     }
     

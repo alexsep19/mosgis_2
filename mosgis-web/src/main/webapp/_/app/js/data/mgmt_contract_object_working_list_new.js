@@ -37,32 +37,18 @@ define ([], function () {
         
         dt.setDate (1)
         
-        data.begins = []
-        data.ends   = []
-
-        while (dt.getTime () <= ms_to) {
+        data.begins = data.periods.map (function (i) {return {
+            id: i.id.substr (0, 8) + '01',
+            text: i.text
+        }})
         
-            var label = w2utils.settings.fullmonths [dt.getMonth ()] + ' ' + dt.getFullYear ()
-        
-            data.begins.push ({id: dtIso (), text: label})
+        data.ends   = clone (data.periods).reverse ()
 
-            dtIncMonth ()
-            dt.setDate (0)
-
-            data.ends.unshift ({id: dtIso (), text: label})
-
-            dt.setDate (1)
-            dtIncMonth ()
-            
-            if (dt.getTime () > ms_to) break
-                    
-        }
-                
         data.record = {
             dt_from: data.begins [0].id,
-            dt_to: data.ends [0].id,
+            dt_to:   data.ends [0].id,
         }
-        
+
         done (data)
 
     }

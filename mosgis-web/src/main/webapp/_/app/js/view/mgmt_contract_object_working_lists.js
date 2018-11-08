@@ -8,7 +8,7 @@ define ([], function () {
     }
 
     return function (data, view) {
-    
+
         var layout = w2ui ['topmost_layout']
 
         var $panel = $(layout.el ('main'))
@@ -33,6 +33,8 @@ define ([], function () {
             searches: [            
             
                 {field: "uuid_contract_object", operator: "is", type: 'text', value: $_REQUEST.id, hidden: true},
+
+                {field: 'dt', caption: 'Период', type: 'list', options: {items: data.periods}},
             
                 {field: 'id_ctr_status', caption: 'Статус', type: 'enum', options: {items: data.vc_gis_status.items.filter (function (i) {
                     switch (i.id) {
