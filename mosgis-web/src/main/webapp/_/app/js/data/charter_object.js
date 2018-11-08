@@ -33,8 +33,10 @@ define ([], function () {
             var it = data.item
 
             it._can = {}
+            
+            var is_own = ($_USER.role.admin || it ['ctr.uuid_org'] == $_USER.uuid_org)
 
-            if (($_USER.role.admin || it ['ctr.uuid_org'] == $_USER.uuid_org) && !it.is_deleted) {
+            if (is_own && !it.is_deleted) {
             
                 switch (it ["ctr.id_ctr_status"]) {
 
@@ -52,6 +54,10 @@ define ([], function () {
                 
                 if (!it ['house.uuid'] && it.id_ctr_status_gis != 110) it._can.create_house = 1
 
+            }
+            
+            if (is_own && it ["ctr.id_ctr_status_gis"] == 40) {
+                it._can.edit_work_list = 1
             }
             
             $('body').data ('data', data)
