@@ -64,7 +64,7 @@ define ([], function () {
                 {field: 'extravoting', caption: 'Вид собрания', size: 7, render: function (r) {return r.extravoting ? 'Внеочередное' : 'Ежегодное'}},
                 {field: 'meetingeligibility', caption: 'Правомочность проведения собрания', size: 10, render: function (r) {return r.meetingeligibility == "C" ? 'Правомочное' : 'Неправомочное'}},
                 {field: 'modification', caption: 'Основания изменения', size: 20},
-                {field: 'form_', caption: 'Форма проведения', size: 15, render: function (r) { return forms[r.form_] }},
+                {field: 'label_form', caption: 'Форма проведения', size: 15},
                 {field: 'id_prtcl_status_gis', caption: 'Статус протокола', size: 10}
             ].filter (not_off),
             
