@@ -10,7 +10,13 @@ define ([], function () {
 
         console.log (data)
         
-        
+        function Permissions () {
+            
+            if (data.cach && data.cach['org.uuid'] == $_USER.uuid_org && data.cach.id_ctr_status_gis != 110)
+                return true
+            return false
+            
+        }
 
         var layout = w2ui ['topmost_layout']
         
@@ -26,8 +32,8 @@ define ([], function () {
                 toolbar: true,
                 footer: true,
                 toolbarColumns: true,
-                toolbarAdd: true,
-                toolbarDelete: true,
+                toolbarAdd: Permissions (),
+                toolbarDelete: Permissions (),
             },            
 
             textSearch: 'contains',
