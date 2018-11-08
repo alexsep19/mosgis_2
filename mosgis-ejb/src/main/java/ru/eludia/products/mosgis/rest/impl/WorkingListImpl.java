@@ -10,7 +10,12 @@ import ru.eludia.base.db.sql.gen.Predicate;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.tables.Charter;
+import ru.eludia.products.mosgis.db.model.tables.Contract;
+import ru.eludia.products.mosgis.db.model.tables.CharterObject;
+import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.WorkingList;
+import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.WorkingListLocal;
@@ -93,8 +98,11 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
 
         job.add ("item", db.getJsonObject (m
             .get (getTable (), id, "AS root", "*")
-//            .toOne (Premise.class, "AS p", "*").on ()                
-//            .toOne (House.class, "AS h", "address").on ()
+            .toMaybeOne (VocBuilding.class, "AS fias", "label").on ()
+            .toMaybeOne (ContractObject.class).on ()
+            .toMaybeOne (Contract.class, "AS ca", "*").on ()
+            .toMaybeOne (CharterObject.class).on ()
+            .toMaybeOne (Charter.class, "AS ch", "*").on ()
         ));
 
 //        db.addJsonArrays (job,
