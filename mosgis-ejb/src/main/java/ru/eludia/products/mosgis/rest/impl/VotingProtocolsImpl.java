@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.util.logging.Level;
 import javax.ejb.Stateless;
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -67,6 +68,7 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
 
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
+            .toOne (VocGisStatus.class, "label AS status_label").on("id_prtcl_status_gis")
             .toMaybeOne (VotingProtocolLog.class         ).on ()
             .and ("uuid_org", user.getUuidOrg ())
             .orderBy ("root.id_prtcl_status_gis")
@@ -117,7 +119,8 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
     public JsonObject getItem (String id) {return fetchData ((db, job) -> {
 
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
-            .get (getTable (), id, "*")
+            .get (VotingProtocol.class, id, "*", "AS root")
+            .toOne (VocGisStatus.class, "label AS status_label").on("id_prtcl_status_gis")
             .toMaybeOne (VotingProtocolLog.class           ).on ()
             .toMaybeOne (OutSoap.class,             "err_text").on ()
         ));

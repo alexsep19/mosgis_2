@@ -28,7 +28,7 @@ public class VotingProtocol extends Table {
         col ("is_deleted",              Type.BOOLEAN, Bool.FALSE,            "1, если запись удалена; иначе 0");
         
         fk  ("id_prtcl_status",           VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (),   "Статус протокола с точки зрения mosgis");
-        fk  ("id_prtcl_status_gis",       VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (),   "Статус протокола с точки зрения ГИС ЖКХ");
+        ref ("id_prtcl_status_gis",       VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (),   "Статус протокола с точки зрения ГИС ЖКХ");
         
         col ("form_", Type.NUMERIC, 1, "Форма проведения (код)");
         col ("label_form", Type.STRING, new Virt("DECODE(\"FORM_\", 0, 'Заочное голосование (опросным путем)', 1, 'Очное голосование', 2, 'Заочное голосование с использованием системы', 3, 'Очно-заочное голосование', 'Неизвестная форма проведения')"), "Форма проведения");

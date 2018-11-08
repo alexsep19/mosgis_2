@@ -37,7 +37,7 @@ define ([], function () {
             textSearch: 'contains',
 
             searches: [            
-                {field: 'id_prtcl_status_gis',  caption: 'Статус протокола',  type: 'text'},
+                {field: 'status_label',  caption: 'Статус протокола',  type: 'text'},
                 {field: 'label_form',  caption: 'Форма собрания',  type: 'text'},
                 {field: 'is_deleted', caption: 'Статус записи', type: 'enum', options: {items: [
                     {id: "0", text: "Актуальные"},
@@ -53,7 +53,7 @@ define ([], function () {
                 {field: 'meetingeligibility', caption: 'Правомочность проведения собрания', size: 10, render: function (r) {return r.meetingeligibility == "C" ? 'Правомочное' : 'Неправомочное'}},
                 {field: 'modification', caption: 'Основания изменения', size: 20},
                 {field: 'label_form', caption: 'Форма проведения', size: 15},
-                {field: 'id_prtcl_status_gis', caption: 'Статус протокола', size: 10}
+                {field: 'status_label', caption: 'Статус протокола', size: 10},
             ].filter (not_off),
             
             postData: {data: {"uuid_house": $_REQUEST.id}},
