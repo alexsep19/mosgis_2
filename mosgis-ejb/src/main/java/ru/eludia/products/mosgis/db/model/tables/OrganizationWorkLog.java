@@ -6,7 +6,6 @@ import static ru.eludia.base.model.def.Def.NEW_UUID;
 import static ru.eludia.base.model.def.Def.NOW;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
-import static ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState.i.PENDING;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
 
@@ -32,6 +31,7 @@ public class OrganizationWorkLog extends Table {
         col   ("workname",                  Type.STRING,                                "Название работы/услуги");
         col   ("code_vc_nsi_56",            Type.STRING,  20,                   null,   "Ссылка на НСИ \"Вид работ\" (реестровый номер 56)");
         col   ("codes_vc_nsi_67",           Type.STRING,                        null,   "Ссылки на НСИ \"Обязательные работы, обеспечивающие надлежащее содержание МКД\" (реестровый номер 67)");
+        col   ("uniquenumber",              Type.STRING,                        null,   "Уникальный реестровый номер (в ГИС)");
 
         col   ("label",                    Type.STRING,  new Virt ("(''||\"WORKNAME\")"),  "Наименование");
         col   ("label_uc",                 Type.STRING,  new Virt ("UPPER(\"WORKNAME\")"),  "НАИМЕНОВАНИЕ В ВЕРХНЕМ РЕГИСТРЕ");
@@ -45,6 +45,7 @@ public class OrganizationWorkLog extends Table {
             + "SELECT"
             + "       is_deleted,              "
             + "       elementguid,             "
+            + "       uniquenumber,            "
             + "       okei,                    "
             + "       stringdimensionunit,     "
             + "       workname,                "
@@ -54,6 +55,7 @@ public class OrganizationWorkLog extends Table {
                 
             + "       :NEW.is_deleted,              "
             + "       :NEW.elementguid,             "
+            + "       :NEW.uniquenumber,            "
             + "       :NEW.okei,                    "
             + "       :NEW.stringdimensionunit,     "
             + "       :NEW.workname,                "

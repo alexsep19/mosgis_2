@@ -21,6 +21,7 @@ public class OrganizationWork extends Table {
         fk    ("uuid_org",                 VocOrganization.class,                      "Организация");
         col   ("is_deleted",               Type.BOOLEAN,          Bool.FALSE,          "1, если запись удалена; иначе 0");
         col   ("elementguid",              Type.UUID,           null,       "Идентификатор существующего элемента справочника");        
+        col   ("uniquenumber",             Type.STRING,                        null,   "Уникальный реестровый номер (в ГИС)");        
         fk    ("id_status",                VocAsyncEntityState.class,          new Num (VocAsyncEntityState.i.PENDING.getId ()), "Статус синхронизации");
         fk    ("id_log",                   OrganizationWorkLog.class,          null, "Последнее событие редактирования");
         
