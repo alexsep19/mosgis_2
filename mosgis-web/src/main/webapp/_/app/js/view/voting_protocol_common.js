@@ -2,9 +2,64 @@ define ([], function () {
     
     var form_name = 'voting_protocol_common_form'
 
-    return function (data, view) {
+    function disabling (element, i, arr) {
+        element.val ('').prop ('disabled', true)
+        element.closest ('.w2ui-field').hide ()
+    }
     
-        console.log (data)
+    function enabling (element, i, arr) {
+        element.closest ('.w2ui-field').show ()
+        element.val ('').prop ('disabled', false)
+    }
+    
+    function sizing (element, arr) {
+        for (item in arr){
+            element.closest ('.w2ui-' + item).height (arr[item])
+        }
+    }
+    
+    function recalc () {
+
+        var items = {'avoting': [$('#avotingdate'),
+                                 $('#resolutionplace')],
+                     'meeting': [$('#meetingdate'),
+                                 $('#meetingtime'),
+                                 $('#votingplace')],
+                     'evoting': [$('#evotingdatebegin'),
+                                 $('#evotingtimebegin'),
+                                 $('#evotingdateend'),
+                                 $('#evotingtimeend'),
+                                 $('#discipline'),
+                                 $('#inforeview')],
+                     'meet_av': [$('#meeting_av_date'),
+                                 $('#meeting_av_time'),
+                                 $('#meeting_av_date_end'),
+                                 $('#meeting_av_res_place')]}
+
+        items['avoting'].forEach(disabling);
+        items['meeting'].forEach(disabling);
+        items['evoting'].forEach(disabling);
+        items['meet_av'].forEach(disabling);
+
+        var v = w2ui [form_name].values ()
+
+        switch (v.form_) {
+            case 0:
+                items['avoting'].forEach(enabling);
+                break;
+            case 1:
+                items['meeting'].forEach(enabling);
+                break;
+            case 2:
+                items['evoting'].forEach(enabling);
+                break;
+            case 3:
+                items['meet_av'].forEach(enabling);
+                break;
+        }         
+    }
+
+    return function (data, view) {
     
         $_F5 = function (data) {
         
@@ -40,7 +95,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 270},
+                {type: 'top', size: 300},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
@@ -59,7 +114,7 @@ define ([], function () {
         });
         
         var $panel = $(w2ui ['passport_layout'].el ('top'))
-                
+
         fill (view, data.item, $panel)
 
         $panel.w2reform ({ 
@@ -104,6 +159,10 @@ define ([], function () {
                 {name: 'meeting_av_date_end', type: 'date'},
                 {name: 'meeting_av_res_place', type: 'text'},
             ],
+
+            onChange: function (e) {if (e.target == "form_") e.done (recalc)},
+                        
+            onRender: function (e) {e.done (setTimeout (recalc, 100))},
 
             focus: -1,
             

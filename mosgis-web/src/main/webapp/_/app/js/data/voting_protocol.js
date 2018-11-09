@@ -27,6 +27,8 @@ define ([], function () {
             
                 data.item = d.item
 
+                if (d.cach) data.cach = d.cach
+
                 $('body').data ('data', data)
     
                 done (data)

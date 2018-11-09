@@ -93,7 +93,7 @@ define ([], function () {
     return function (done) {        
 
         w2ui ['topmost_layout'].unlock ('main')
-        
+
         var data = clone ($('body').data ('data'))
 
         data.active_tab = localStorage.getItem ('voting_protocol_common.active_tab') || 'voting_protocol_common_log'
@@ -102,12 +102,18 @@ define ([], function () {
 
         if ($_USER.role.admin) data.item.org_label = data.item ['vc_orgs.label']
 
-        data.item._can = $_USER.role.admin /*|| data.item.id_status == 10*/ ? {} : {
-            edit: 1 - data.item.is_deleted,
+        permissions = 0
+
+        if (!data.item.is_deleted && data.cach && data.cach.id_ctr_status_gis == 10) {
+            permissions = 1
+        }
+
+        data.item._can = $_USER.role.admin ? {} : 
+        {
+            edit: permissions,
             update: 1,
             cancel: 1,
-            delete: 1 - data.item.is_deleted,
-//            undelete: data.item.is_deleted,
+            delete: permissions,
         }
 
         done (data)
