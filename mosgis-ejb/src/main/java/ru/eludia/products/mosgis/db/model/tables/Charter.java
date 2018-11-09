@@ -1,6 +1,5 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
-import static java.lang.Boolean.FALSE;
 import java.util.Collection;
 import java.util.Map;
 import ru.eludia.base.DB;
@@ -13,6 +12,7 @@ import static ru.eludia.base.model.Type.NUMERIC;
 import static ru.eludia.base.model.Type.INTEGER;
 import static ru.eludia.base.model.Type.DATE;
 import static ru.eludia.base.model.Type.STRING;
+import ru.eludia.base.model.def.Bool;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocCharterObjectReason;
@@ -39,22 +39,22 @@ public class Charter extends EnTable {
         
         DATE_                     (DATE,          null,  "Дата регистрации TCН/ТСЖ/кооператива (Организации Поставщика данных)"),        
                 
-        AUTOMATICROLLOVERONEYEAR  (BOOLEAN,      FALSE,  "Автоматически продлить срок оказания услуг на один год"),
-        NOCHARTERAPPROVEPROTOCOL  (BOOLEAN,      FALSE,  "Протокол, содержащий решение об утверждении устава, отсутствует"),              
+        AUTOMATICROLLOVERONEYEAR  (BOOLEAN,      Bool.FALSE,  "Автоматически продлить срок оказания услуг на один год"),
+        NOCHARTERAPPROVEPROTOCOL  (BOOLEAN,      Bool.FALSE,  "Протокол, содержащий решение об утверждении устава, отсутствует"),              
 
         // PeriodMetering		    
         DDT_M_START               (NUMERIC,  2,   null,  "Начало периода ввода показаний ПУ (1..31 — конкретное число; 99 — последнее число)"),
-        DDT_M_START_NXT           (BOOLEAN,      FALSE,  "1, если начало периода ввода показаний ПУ в следующем месяце; иначе 0"),
+        DDT_M_START_NXT           (BOOLEAN,      Bool.FALSE,  "1, если начало периода ввода показаний ПУ в следующем месяце; иначе 0"),
         DDT_M_END                 (NUMERIC,  2,   null,  "Окончание периода ввода показаний ПУ (1..31 — конкретное число; 99 — последнее число)"),
-        DDT_M_END_NXT             (BOOLEAN,      FALSE,  "1, если окончание периода ввода показаний ПУ в следующем месяце; иначе 0"),
+        DDT_M_END_NXT             (BOOLEAN,      Bool.FALSE,  "1, если окончание периода ввода показаний ПУ в следующем месяце; иначе 0"),
 
         // PaymentDocumentInterval	    
         DDT_D_START               (NUMERIC,  2,   null,  "Срок представления (выставления) платежных документов для внесения платы за жилое помещение и (или) коммунальные услуги (1..30 — конкретное число; 99 — последнее число)"),
-        DDT_D_START_NXT           (BOOLEAN,      FALSE,  "1, если срок представления (выставления) платежных документов для внесения платы за жилое помещение и (или) коммунальные услуги в следующем месяце; иначе 0"),
+        DDT_D_START_NXT           (BOOLEAN,      Bool.FALSE,  "1, если срок представления (выставления) платежных документов для внесения платы за жилое помещение и (или) коммунальные услуги в следующем месяце; иначе 0"),
 
         // PaymentInterval		    
         DDT_I_START               (NUMERIC,  2,   null,  "Срок внесения платы за жилое помещение и (или) коммунальные услуги (1..30 — конкретное число; 99 — последнее число)"),
-        DDT_I_START_NXT           (BOOLEAN,      FALSE,  "1, если срок внесения платы за жилое помещение и (или) коммунальные услуги в следующем месяце; иначе 0"),
+        DDT_I_START_NXT           (BOOLEAN,      Bool.FALSE,  "1, если срок внесения платы за жилое помещение и (или) коммунальные услуги в следующем месяце; иначе 0"),
 
         CHARTERGUID               (Type.UUID,    null,    "UUID устава в ГИС ЖКХ"),
         CHARTERVERSIONGUID        (Type.UUID,    null,    "Идентификатор последней известной версии устава"),
