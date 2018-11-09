@@ -119,7 +119,7 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
     public JsonObject getItem (String id) {return fetchData ((db, job) -> {
 
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
-            .get (VotingProtocol.class, id, "*", "AS root")
+            .get (VotingProtocol.class, id, "*")
             .toOne (VocGisStatus.class, "label AS status_label").on("id_prtcl_status_gis")
             .toMaybeOne (VotingProtocolLog.class           ).on ()
             .toMaybeOne (OutSoap.class,             "err_text").on ()
