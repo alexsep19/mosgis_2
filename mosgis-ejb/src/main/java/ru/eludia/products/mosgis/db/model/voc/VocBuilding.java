@@ -1,12 +1,21 @@
 package ru.eludia.products.mosgis.db.model.voc;
 
+import java.sql.SQLException;
+import java.util.logging.Logger;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.def.Bool;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.incoming.InFias;
+import ru.eludia.products.mosgis.db.model.tables.ActualCaChObject;
+import ru.eludia.products.mosgis.db.model.tables.Contract;
 
 public class VocBuilding extends Table {
+    
+    private static final Logger logger = Logger.getLogger (VocBuilding.class.getName ());
     
     private final String LABELSTR = "s_formalname || ' ' || s_shortname "
                          + "|| var_house || var_build || var_shortname";
@@ -77,6 +86,19 @@ public class VocBuilding extends Table {
                     + ":NEW.label := " + LABELSTR + "; " +
                  "END;"
         );
+        
+    }
+
+    public static void addCaCh (DB db, JsonObjectBuilder jb, Object fiashouseguid) throws SQLException {
+        
+        JsonObject caCh = db.getJsonObject (db.getModel ()
+            .select (ActualCaChObject.class, "AS root", "uuid", "id_ctr_status_gis")
+            .toOne (VocOrganization.class, "AS org", "uuid", "label").on ()
+            .toMaybeOne (Contract.class, "AS ctr", "uuid", "docnum", "signingdate").on ()
+            .where ("fiashouseguid", fiashouseguid)
+            .orderBy ("root.id_ctr_status_gis"));
+
+        if (caCh != null) jb.add ("cach", caCh);
         
     }
 

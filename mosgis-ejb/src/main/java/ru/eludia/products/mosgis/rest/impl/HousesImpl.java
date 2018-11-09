@@ -172,15 +172,9 @@ public class HousesImpl extends Base<House> implements HousesLocal {
                 
             }            
             
-            JsonObject caCh = db.getJsonObject (m
-                .select     (ActualCaChObject.class, "AS root", "uuid", "id_ctr_status_gis")
-                .toOne      (VocOrganization.class, "AS org", "uuid", "label").on ()
-                .toMaybeOne (Contract.class,        "AS ctr", "uuid", "docnum", "signingdate").on ()
-                .where      ("fiashouseguid", item.getString ("fiashouseguid"))
-                .orderBy    ("root.id_ctr_status_gis")
-            );
+            final String fiashouseguid = item.getString ("fiashouseguid");
             
-            if (caCh != null) jb.add ("cach", caCh);
+            VocBuilding.addCaCh (db, jb, fiashouseguid);
             
             db.addJsonArrays (jb,
                 m

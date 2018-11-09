@@ -98,17 +98,21 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
     public JsonObject getItem (String id) {return fetchData ((db, job) -> {
 
         final MosGisModel m = ModelHolder.getModel ();
-
-        job.add ("item", db.getJsonObject (m
-            .get (getTable (), id, "AS root", "*")
-            .toMaybeOne (VocBuilding.class, "AS fias", "label").on ()
-            .toMaybeOne (ContractObject.class, "AS cao", "startdate", "enddate").on ()
-            .toMaybeOne (Contract.class, "AS ca", "*").on ()
-            .toMaybeOne (CharterObject.class, "AS cho", "startdate", "enddate").on ()
-            .toMaybeOne (Charter.class, "AS ch", "*").on ()
-            .toMaybeOne (VocOrganization.class, "AS chorg", "label").on ("ch.uuid_org=chorg.uuid")
-        ));
         
+        final JsonObject item = db.getJsonObject (m
+                .get (getTable (), id, "AS root", "*")
+                .toMaybeOne (VocBuilding.class, "AS fias", "label").on ()
+                .toMaybeOne (ContractObject.class, "AS cao", "startdate", "enddate").on ()
+                .toMaybeOne (Contract.class, "AS ca", "*").on ()
+                .toMaybeOne (CharterObject.class, "AS cho", "startdate", "enddate").on ()
+                .toMaybeOne (Charter.class, "AS ch", "*").on ()
+                .toMaybeOne (VocOrganization.class, "AS chorg", "label").on ("ch.uuid_org=chorg.uuid")
+        );
+
+        job.add ("item", item);
+        
+        VocBuilding.addCaCh (db, job, item.getString (WorkingList.c.FIASHOUSEGUID.lc ()));
+            
         VocGisStatus.addTo (job);
         VocAction.addTo (job);
 

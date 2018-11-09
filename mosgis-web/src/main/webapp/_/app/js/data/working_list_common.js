@@ -46,7 +46,7 @@ define ([], function () {
     
     $_DO.delete_working_list_common = function (e) {   
         if (!confirm ('Удалить эту запись, Вы уверены?')) return        
-        query ({type: 'contract_objects', action: 'delete'}, {}, reload_page)
+        query ({type: 'working_lists', action: 'delete'}, {}, reload_page)
     }
         
     $_DO.choose_tab_working_list_common = function (e) {
@@ -86,6 +86,20 @@ define ([], function () {
         if ($_USER.role.admin) data.item.org_label = data.item ['vc_orgs.label']
         
         var it = data.item
+        
+        it._can = {cancel: 1}
+        
+        if (!it.is_deleted) {
+        
+            var cach = data.cach
+
+            if (cach && cach ['org.uuid'] == $_USER.uuid_org) {
+                it._can.edit = 1
+            }        
+            
+        }        
+
+        it._can.update = it._can.delete = it._can.edit        
         
 //        it.status_label     = data.vc_gis_status [it.id_ctr_status]
 //        if (it.id_ctr_status != it.id_ctr_status_gis) it.gis_status_label = data.vc_gis_status [it.id_ctr_status_gis]
