@@ -10,6 +10,11 @@ define ([], function () {
         
         query ({type: 'working_lists'}, {}, function (data) {
 
+            var it = data.item
+            
+            it.dt_from = it.dt_from.substr (0, 10)
+            it.dt_to   = it.dt_to.substr (0, 10)
+
             data.__read_only = true
             
             $_F5 (data)

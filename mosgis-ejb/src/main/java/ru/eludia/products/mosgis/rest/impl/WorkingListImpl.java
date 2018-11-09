@@ -10,14 +10,18 @@ import ru.eludia.base.db.sql.gen.Predicate;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
+import ru.eludia.products.mosgis.db.model.tables.OrganizationWork;
 import ru.eludia.products.mosgis.db.model.tables.WorkingList;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
@@ -100,28 +104,35 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
         final MosGisModel m = ModelHolder.getModel ();
         
         final JsonObject item = db.getJsonObject (m
-                .get (getTable (), id, "AS root", "*")
-                .toMaybeOne (VocBuilding.class, "AS fias", "label").on ()
-                .toMaybeOne (ContractObject.class, "AS cao", "startdate", "enddate").on ()
-                .toMaybeOne (Contract.class, "AS ca", "*").on ()
-                .toMaybeOne (CharterObject.class, "AS cho", "startdate", "enddate").on ()
-                .toMaybeOne (Charter.class, "AS ch", "*").on ()
-                .toMaybeOne (VocOrganization.class, "AS chorg", "label").on ("ch.uuid_org=chorg.uuid")
+            .get (getTable (), id, "AS root", "*")
+            .toMaybeOne (VocBuilding.class, "AS fias", "label").on ()
+            .toMaybeOne (ContractObject.class, "AS cao", "startdate", "enddate").on ()
+            .toMaybeOne (Contract.class, "AS ca", "*").on ()
+            .toMaybeOne (CharterObject.class, "AS cho", "startdate", "enddate").on ()
+            .toMaybeOne (Charter.class, "AS ch", "*").on ()
+            .toMaybeOne (VocOrganization.class, "AS chorg", "label").on ("ch.uuid_org=chorg.uuid")
         );
 
         job.add ("item", item);
-        
+
         VocBuilding.addCaCh (db, job, item.getString (WorkingList.c.FIASHOUSEGUID.lc ()));
-            
+
         VocGisStatus.addTo (job);
         VocAction.addTo (job);
 
-//        db.addJsonArrays (job,
-//            m
-//                .select (VocProtertyDocumentType.class, "id", "label")
-//                .orderBy ("label")
-//        );
+        db.addJsonArrays (job,
 
-    });}        
-    
+            NsiTable.getNsiTable (56).getVocSelect (), 
+
+            m
+                .select     (OrganizationWork.class, "AS org_works", "uuid AS id", "label")
+                .toMaybeOne (VocOkei.class, "AS okei", "national").on ()
+                .where      ("uuid_org", item.getString ("ca.uuid_org", item.getString ("ch.uuid_org", "00")))
+                .and        ("id_status", VocAsyncEntityState.i.OK.getId ())
+                .orderBy    ("org_works.label")
+
+        );
+
+    });}
+
 }

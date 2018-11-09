@@ -29,12 +29,10 @@ public class OrganizationWork extends Table {
         col   ("stringdimensionunit",      Type.STRING,  100,                  null,   "Другая единица измерения");
         col   ("workname",                 Type.STRING,                                "Название работы/услуги");
         col   ("code_vc_nsi_56",           Type.STRING,  20,                   null,   "Ссылка на НСИ \"Вид работ\" (реестровый номер 56)");
-//        col   ("code_vc_nsi_67",           Type.STRING,  20,    null,       "Ссылка на НСИ \"Обязательные работы, обеспечивающие надлежащее содержание МКД\" (реестровый номер 67)");
         
         col   ("label",                    Type.STRING,  new Virt ("(''||\"WORKNAME\")"),  "Наименование");
         col   ("label_uc",                 Type.STRING,  new Virt ("UPPER(\"WORKNAME\")"),  "НАИМЕНОВАНИЕ В ВЕРХНЕМ РЕГИСТРЕ");
         col   ("servicetyperef",           Type.STRING,  new Virt ("(''||\"CODE_VC_NSI_56\")"),  "Вид работ");
-//        col   ("requiredserviceref",       Type.STRING,  new Virt ("(''||\"CODE_VC_NSI_67\")"),  "Обязательные работы");
 
         key   ("org_label", "uuid_org", "label");
 
