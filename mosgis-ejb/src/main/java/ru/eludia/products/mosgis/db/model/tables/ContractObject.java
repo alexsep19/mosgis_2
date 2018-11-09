@@ -84,7 +84,7 @@ public class ContractObject extends Table {
                     
                     
                     
-            + "IF :NEW.is_deleted = 0 THEN "
+            + "IF :NEW.is_deleted = 0 AND :NEW.is_annuled = 0 THEN "
             + " FOR i IN ("
                 + "SELECT "
                 + " o.startdate"
@@ -119,7 +119,7 @@ public class ContractObject extends Table {
             + "END IF; "
 
                     
-            + "IF :NEW.is_deleted = 0 THEN "
+            + "IF :NEW.is_deleted = 0 AND :NEW.is_annuled = 0 THEN "
             + " FOR i IN ("
                 + "SELECT "
                 + " o.startdate"
