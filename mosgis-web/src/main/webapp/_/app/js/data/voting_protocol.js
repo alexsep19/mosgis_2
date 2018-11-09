@@ -1,6 +1,6 @@
 define ([], function () {
 
-    $_DO.choose_tab_house_voting_protocol = function (e) {
+    $_DO.choose_tab_voting_protocol = function (e) {
 
         var name = e.tab.id
                 
@@ -11,7 +11,7 @@ define ([], function () {
             layout.lock ('main', 'Загрузка...', true);
         }
             
-        localStorage.setItem ('house_voting_protocol.active_tab', name)
+        localStorage.setItem ('voting_protocol.active_tab', name)
             
         use.block (name)
             

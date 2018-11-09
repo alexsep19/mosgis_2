@@ -20,7 +20,7 @@ define ([], function () {
                             {id: 'voting_protocol_common',   caption: 'Общие'},
                         ].filter (not_off),
 
-                        onClick: $_DO.choose_tab_vc_person
+                        onClick: $_DO.choose_tab_voting_protocol
 
                     }                
                 

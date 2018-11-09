@@ -1,0 +1,116 @@
+define ([], function () {
+    
+    var form_name = 'voting_protocol_common_form'
+
+    return function (data, view) {
+    
+        console.log (data)
+    
+        $_F5 = function (data) {
+        
+            data.item.__read_only = data.__read_only
+            
+            var r = clone (data.item)
+            
+            $.each (w2ui [form_name].fields, function () {
+            
+                if (this.type != 'date') return
+                
+                var dt = r [this.name]
+                
+                if (dt != undefined && dt.charAt (3) != '.') r [this.name] = dt_dmy (dt)
+                        
+            })
+            
+            w2ui [form_name].record = r
+            
+            $('div[data-block-name=voting_protocol_common] input').prop ({disabled: data.__read_only})
+
+            w2ui [form_name].refresh ()
+
+        }
+
+        var layout = w2ui ['topmost_layout']
+
+        var $panel = $(layout.el ('main'))
+
+        $panel.w2relayout ({
+        
+            name: 'passport_layout',
+            
+            panels: [
+                
+                {type: 'top', size: 270},
+                {type: 'main', size: 400, 
+                    tabs: {
+                        tabs:    [
+                            {id: 'voting_protocol_common_log', caption: 'История изменений'},
+                        ],
+                        onClick: $_DO.choose_tab_voting_protocol_common
+                    }                
+                },
+                
+            ],
+            
+            onRender: function (e) {
+                this.get ('main').tabs.click (data.active_tab)
+            },            
+
+        });
+        
+        var $panel = $(w2ui ['passport_layout'].el ('top'))
+                
+        fill (view, data.item, $panel)
+
+        $panel.w2reform ({ 
+        
+            name   : form_name,
+            
+            record : data.item,                
+            
+            fields : [                                
+                {name: 'protocolnum', type: 'text'},
+                {name: 'protocoldate', type: 'date'},
+        
+                {name: 'extravoting', type: 'list', options: { items: [
+                    {id: 0, text: "Ежегодное"},
+                    {id: 1, text: "Внеочередное"},
+                ]}},
+                {name: 'meetingeligibility', type: 'list', options: { items: [
+                    {id: 0, text: "Правомочное"},
+                    {id: 1, text: "Неправомочное"},
+                ]}},
+                
+                {name: 'form_', type: 'list', options: { items: [
+                    {id: 0, text: "Заочное голосование (опросным путем)"},
+                    {id: 1, text: "Очное голосование"},
+                    {id: 2, text: "Заочное голосование с использованием системы"},
+                    {id: 3, text: "Очно-заочное голосование"},
+                ]}},
+                
+                {name: 'avotingdate', type: 'date'},
+                {name: 'resolutionplace', type: 'text'},
+                {name: 'meetingdate', type: 'date'},
+                {name: 'meetingtime', type: 'time'},
+                {name: 'votingplace', type: 'text'},
+                {name: 'evotingdatebegin', type: 'date'},
+                {name: 'evotingtimebegin', type: 'time'},
+                {name: 'evotingdateend', type: 'date'},
+                {name: 'evotingtimeend', type: 'time'},
+                {name: 'discipline', type: 'text'},
+                {name: 'inforeview', type: 'text'},
+                {name: 'meeting_av_date', type: 'date'},
+                {name: 'meeting_av_time', type: 'time'},
+                {name: 'meeting_av_date_end', type: 'date'},
+                {name: 'meeting_av_res_place', type: 'text'},
+            ],
+
+            focus: -1,
+            
+        })
+
+        $_F5 (data)        
+
+    }
+    
+})
