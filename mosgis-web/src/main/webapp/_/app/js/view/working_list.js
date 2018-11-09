@@ -41,10 +41,12 @@ define ([], function () {
             openTab (it.uuid_contract_object ? '/mgmt_contract_object/' + it.uuid_contract_object : '/charter_object/' + it.uuid_charter_object) 
         })
         
-        clickOn ($('#ca_link'), function () {
+        clickOn ($('#ca_link'), function () {       
+            openTab ('/mgmt_contract/' + it ['ca.uuid'])       
+        })
         
-            openTab ('/mgmt_contract/' + it ['ca.uuid'])
-        
+        clickOn ($('#ch_link'), function () {       
+            openTab ('/charter/' + it ['ch.uuid'])       
         })
 
     }
