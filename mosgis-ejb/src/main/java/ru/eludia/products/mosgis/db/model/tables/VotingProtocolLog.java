@@ -27,6 +27,10 @@ public class VotingProtocolLog extends Table {
         fk    ("id_prtcl_status",           VocGisStatus.class,                 null,   "Статус протокола с точки зрения mosgis");
         fk    ("id_prtcl_status_gis",       VocGisStatus.class,                 null,   "Статус протокола с точки зрения ГИС ЖКХ");
 
+        col ("form_", Type.NUMERIC, 1, "Форма проведения (код)");
+        col ("label_form", Type.STRING, new Virt("DECODE(\"FORM_\", 0, 'Заочное голосование (опросным путем)', 1, 'Очное голосование', 2, 'Заочное голосование с использованием системы', 3, 'Очно-заочное голосование', 'Неизвестная форма проведения')"), "Форма проведения");
+        col ("label_form_uc", Type.STRING, new Virt("UPPER(\"LABEL_FORM\")"), "ФОРМА ПРОВЕДЕНИЯ");
+        
         col ("protocolnum", Type.STRING, 30, null, "Номер протокола");
         col ("protocoldate", Type.DATE, "Дата составления протокола");
         
@@ -58,6 +62,7 @@ public class VotingProtocolLog extends Table {
                         + "is_deleted, "
                         + "id_prtcl_status, "
                         + "id_prtcl_status_gis, "
+                        + "form_, "
                         + "protocolnum, "
                         + "protocoldate, "
                         + "avotingdate, "
@@ -79,6 +84,7 @@ public class VotingProtocolLog extends Table {
                         + ":NEW.is_deleted, "
                         + ":NEW.id_prtcl_status, "
                         + ":NEW.id_prtcl_status_gis, "
+                        + ":NEW.form_, "
                         + ":NEW.protocolnum, "
                         + ":NEW.protocoldate, "
                         + ":NEW.avotingdate, "

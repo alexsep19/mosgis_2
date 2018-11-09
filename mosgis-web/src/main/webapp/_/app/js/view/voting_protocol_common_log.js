@@ -20,9 +20,9 @@ define ([], function () {
             ], 
             
             columns: [                
-                {field: 'ts', caption: 'Дата/время',    size: 30, render: _ts},
-                {field: 'action', caption: 'Действие',    size: 30, voc: data.vc_actions},
-                {field: 'vc_users.label', caption: 'Оператор',    size: 30},
+                {field: 'ts', caption: 'Дата/время',    size: 10, render: _ts},
+                {field: 'action', caption: 'Действие',    size: 10, voc: data.vc_actions},
+                {field: 'vc_users.label', caption: 'Оператор',    size: 10},
 
                 {field: 'protocolnum', caption: 'Номер протокола', size: 10, hidden: 1},
                 {field: 'protocoldate', caption: 'Дата составления протокола', size: 7, render: _dt},
@@ -30,7 +30,7 @@ define ([], function () {
                 {field: 'meetingeligibility', caption: 'Правомочность проведения собрания', size: 10, render: function (r) {return r.meetingeligibility == "C" ? 'Правомочное' : 'Неправомочное'}},
                 {field: 'modification', caption: 'Основания изменения', size: 15, hidden: 1},
                 {field: 'label_form', caption: 'Форма проведения', size: 15},
-                {field: 'status_label', caption: 'Статус протокола', size: 10},
+                {field: 'prtcl_status_gis.label', caption: 'Статус протокола', size: 10},
 
             ],
             
