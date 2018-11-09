@@ -1,13 +1,38 @@
 package ru.eludia.products.mosgis.db.model.voc;
 
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.Table;
 
 public class VocGisStatus extends Table {
+    
+    private static JsonArray jsonArray;
+    
+    private static final String TABLE_NAME = "vc_gis_status";
+    
+    public static final void addTo (JsonObjectBuilder job) {
+        job.add (TABLE_NAME, jsonArray);
+    }       
+    
+    static {
+        
+        JsonArrayBuilder builder = Json.createArrayBuilder ();
+        
+        for (i value: i.values ()) builder.add (Json.createObjectBuilder ()
+            .add ("id",    value.id)
+            .add ("label", value.label)
+        );
+                    
+        jsonArray = builder.build ();
+        
+    }    
 
     public VocGisStatus () {
         
-        super ("vc_gis_status", "Статусы процессов утверждения в ГИС ЖКХ (из hcs-house-management-types.xsd + собственные)");
+        super (TABLE_NAME, "Статусы процессов утверждения в ГИС ЖКХ (из hcs-house-management-types.xsd + собственные)");
         
         pk    ("id",           Type.INTEGER, "Ключ");        
         col   ("name",         Type.STRING,  "Идентификатор");

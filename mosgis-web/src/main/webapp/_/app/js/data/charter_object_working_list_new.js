@@ -1,6 +1,6 @@
 define ([], function () {
 
-    $_DO.update_mgmt_contract_object_working_list_new = function (e) {
+    $_DO.update_charter_object_working_list_new = function (e) {
 
         var form = w2ui ['working_list_form']
 
@@ -8,7 +8,7 @@ define ([], function () {
         
         if (v.dt_from > v.dt_to) die ('dt_to', 'Окончание периода перечня не может быть раньше начала. Укажите корректные значения.')
         
-        v.uuid_contract_object = $_REQUEST.id
+        v.uuid_charter_object = $_REQUEST.id
         
         query ({type: 'working_lists', id: undefined, action: 'create'}, {data: v}, function (data) {
         

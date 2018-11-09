@@ -32,7 +32,7 @@ define ([], function () {
 
             searches: [            
             
-                {field: "uuid_contract_object", operator: "is", type: 'text', value: $_REQUEST.id, hidden: true},
+                {field: "uuid_charter_object", operator: "is", type: 'text', value: $_REQUEST.id, hidden: true},
 
                 {field: 'dt', caption: 'Период', type: 'list', options: {items: data.periods}},
             
@@ -57,7 +57,7 @@ define ([], function () {
             
             url: '/mosgis/_rest/?type=working_lists',
                                     
-            onAdd: $_DO.create_mgmt_contract_object_working_lists,
+            onAdd: $_DO.create_charter_object_working_lists,
             
             onDblClick: function (e) {
                 openTab ('/working_list/' + e.recid)

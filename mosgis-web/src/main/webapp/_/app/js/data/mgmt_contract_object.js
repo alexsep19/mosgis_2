@@ -68,6 +68,34 @@ define ([], function () {
 
             if (it.is_deleted == 0 && !it ['house.uuid'] && it.id_ctr_status_gis != 110 && ($_USER.role.admin || it ['ctr.uuid_org'] == $_USER.uuid_org)) it._can.create_house = 1
             
+            var dt = new Date (data.item.startdate + 'Z')
+
+            function dtIso      () {return dt.toISOString ().substr (0, 10)}
+            function dtIncMonth () {dt.setMonth (dt.getMonth () + 1)}
+
+            var ms_to = new Date (data.item.enddate + 'Z').getTime ()
+
+            dt.setDate (1)
+
+            data.periods = []
+
+            while (dt.getTime () <= ms_to) {
+            
+                dtIncMonth ()
+                dt.setDate (0)
+                
+                data.periods.push ({
+                    id: dtIso (),
+                    text: w2utils.settings.fullmonths [dt.getMonth ()] + ' ' + dt.getFullYear (),
+                })
+
+                dt.setDate (1)
+                dtIncMonth ()
+
+                if (dt.getTime () > ms_to) break
+
+            }
+            
             $('body').data ('data', data)
 
             done (data)

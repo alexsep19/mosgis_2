@@ -3,7 +3,6 @@ package ru.eludia.products.mosgis.rest.resources;
 import ru.eludia.products.mosgis.rest.misc.EJBResource;
 import javax.json.JsonObject;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -15,11 +14,8 @@ import ru.eludia.products.mosgis.rest.api.WorkingListLocal;
 @Path ("working_lists")
 public class WorkingLists extends EJBResource <WorkingListLocal> {
     
-    private JsonObject getInnerItem (String id) {
-        final JsonObject data = back.getItem (id);        
-        final JsonObject item = data.getJsonObject ("item");
-        if (item == null) throw new InternalServerErrorException ("Wrong data from back.getItem (" + id + "), no item: " + data);
-        return item;
+    private JsonObject getData (String id) {
+        return back.getItem (id);
     }
     
     private String getUserOrg () {
@@ -37,16 +33,17 @@ public class WorkingLists extends EJBResource <WorkingListLocal> {
     
     private void checkOrg (JsonObject item) {
 
-//        String itemOrg = item.getString ("uuid_org", null);
-//
-//        if (itemOrg == null) throw new InternalServerErrorException ("Wrong WorkingList, no org: " + item);
-//
-//        String userOrg = getUserOrg ();
-//
-//        if (!userOrg.equals (itemOrg)) {
-//            logger.warning ("Org mismatch: " + userOrg + " vs. " + itemOrg);
-//            throw new ValidationException ("foo", "Доступ запрещён");
-//        }
+        if (securityContext.isUserInRole ("admin")) return;
+        
+        if (!(
+            securityContext.isUserInRole ("nsi_20_1")
+            || securityContext.isUserInRole ("nsi_20_19")
+            || securityContext.isUserInRole ("nsi_20_20")
+            || securityContext.isUserInRole ("nsi_20_21")
+            || securityContext.isUserInRole ("nsi_20_22")
+        )) throw new ValidationException ("foo", "Доступ запрещён");
+
+        if (!item.containsKey ("cach") || !item.getJsonObject ("cach").getString ("org.uuid").equals (getUser ().getUuidOrg ())) throw new ValidationException ("foo", "Ваша организация не управляет домом по этому адресу. Доступ запрещён.");
 
     }
     
@@ -70,7 +67,7 @@ public class WorkingLists extends EJBResource <WorkingListLocal> {
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject doUpdate (@PathParam ("id") String id, JsonObject p) {
-        final JsonObject item = getInnerItem (id);
+        final JsonObject item = getData (id);
         checkOrg (item);
         return back.doUpdate (id, p, getUser ());
     }
@@ -79,7 +76,7 @@ public class WorkingLists extends EJBResource <WorkingListLocal> {
     @Path("{id}/delete") 
     @Produces (APPLICATION_JSON)
     public JsonObject doDelete (@PathParam ("id") String id) { 
-        final JsonObject item = getInnerItem (id);
+        final JsonObject item = getData (id);
         checkOrg (item);
         return back.doDelete (id, getUser ());
     }
@@ -88,7 +85,7 @@ public class WorkingLists extends EJBResource <WorkingListLocal> {
     @Path("{id}/undelete") 
     @Produces (APPLICATION_JSON)
     public JsonObject doUndelete (@PathParam ("id") String id) { 
-        final JsonObject item = getInnerItem (id);
+        final JsonObject item = getData (id);
         checkOrg (item);
         return back.doUndelete (id, getUser ());
     }
@@ -98,7 +95,6 @@ public class WorkingLists extends EJBResource <WorkingListLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) { 
         final JsonObject item = back.getItem (id);
-        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
         return item;
     }
     
@@ -108,7 +104,7 @@ public class WorkingLists extends EJBResource <WorkingListLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
         final JsonObject item = back.getItem (id);
-        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
+        if (!securityContext.isUserInRole ("admin")) checkOrg (item);
         return back.getLog (id, p, getUser ());
     }
     

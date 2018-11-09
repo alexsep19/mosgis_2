@@ -18,6 +18,7 @@ define ([], function () {
 
                         tabs: [
                             {id: 'charter_object_common',   caption: 'Общие'},
+                            {id: 'charter_object_working_lists',     caption: 'Перечень услуг'},
                             {id: 'charter_object_docs',     caption: 'Документы'},
                         ].filter (not_off),
 
