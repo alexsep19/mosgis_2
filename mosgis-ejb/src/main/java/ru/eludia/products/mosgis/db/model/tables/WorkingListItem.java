@@ -15,7 +15,7 @@ public class WorkingListItem extends EnTable {
         UUID_ORG_WORK        (OrganizationWork.class, "Ссылка на работу/услугу организации"),
         
 //        ID_LOG               (WorkingListLog.class,  "Последнее событие редактирования"),
-        INDEX                (NUMERIC,  4, 0, null,   "Номер строки в перечне работ и услуг"),
+        INDEX_               (NUMERIC,  4, 0, null,   "Номер строки в перечне работ и услуг"),
         
         PRICE                (NUMERIC, 14, 4, null,   "Цена"),
         AMOUNT               (NUMERIC, 14, 3, null,   "Объём"),
@@ -49,7 +49,7 @@ public class WorkingListItem extends EnTable {
 
         cols   (c.class);
 
-        key    ("ndx", c.UUID_WORKING_LIST, c.INDEX);
+        key    ("ndx", c.UUID_WORKING_LIST, c.INDEX_);
 /*        
         trigger ("BEFORE INSERT", 
                 
