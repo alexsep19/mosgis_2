@@ -60,9 +60,11 @@ define ([], function () {
 
             url: '/mosgis/_rest/?type=voting_protocols',
            
-            //onDelete: $_DO.delete_house_voting_protocols,
-            
-            onAdd: $_DO.create_house_voting_protocols,
+            onDblClick: function (e) {
+                openTab ('/voting_protocol/' + e.recid)
+            },
+
+            onAdd: $_DO.create_house_voting_protocols
             
         })
 
