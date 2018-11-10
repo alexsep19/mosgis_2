@@ -41,8 +41,15 @@ public class URLFilter implements Filter {
 
     @Override
     public void doFilter (ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        
+        final HttpServletRequest hr = (HttpServletRequest) request;
 
-        RequestWrapper wrappedRequest = new RequestWrapper ((HttpServletRequest) request);
+        if (hr.getRequestURI ().startsWith ("/mosgis/svc/")) {
+            chain.doFilter (request, response);
+            return;
+        }
+
+        RequestWrapper wrappedRequest = new RequestWrapper (hr);
                         
         try {
             wrappedRequest.setResponseHeaders ((HttpServletResponse) response);

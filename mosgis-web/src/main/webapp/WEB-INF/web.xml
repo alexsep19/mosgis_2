@@ -1,24 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
-
     <filter>
         <filter-name>URLFilter</filter-name>
         <filter-class>ru.eludia.products.mosgis.web.URLFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>URLFilter</filter-name>
-        <url-pattern>/*</url-pattern>        
+        <url-pattern>/*</url-pattern>
     </filter-mapping>
-    
     <filter>
         <filter-name>GZIPFilter</filter-name>
         <filter-class>ru.eludia.products.mosgis.web.GZIPFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>GZIPFilter</filter-name>
-        <url-pattern>/*</url-pattern>        
+        <url-pattern>/*</url-pattern>
     </filter-mapping>
-    
     <servlet>
         <servlet-name>ru.eludia.products.mosgis.rest.MosGisApplication</servlet-name>
         <init-param>
@@ -27,8 +24,15 @@
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
-
-    <session-config>        
+    <servlet>
+        <servlet-name>SvcServlet</servlet-name>
+        <servlet-class>ru.eludia.products.mosgis.web.SvcServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SvcServlet</servlet-name>
+        <url-pattern>/svc/*</url-pattern>
+    </servlet-mapping>
+    <session-config>
         <session-timeout>
             30
         </session-timeout>
@@ -36,5 +40,4 @@
             <http-only>true</http-only>
         </cookie-config>
     </session-config>
-    
 </web-app>
