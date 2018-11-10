@@ -10,21 +10,30 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.ejb.EJB;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
+import ru.eludia.products.mosgis.proxy.GisWsAddress;
+import ru.eludia.products.mosgis.proxy.ProxyLoggerLocal;
 
 public class SvcServlet extends HttpServlet {
     
     private static final Logger logger = Logger.getLogger (SvcServlet.class.getName ());
+    
+    @EJB
+    ProxyLoggerLocal back;
 
-    private URL getURL (HttpServletRequest request) throws MalformedURLException {
-        StringBuilder sb = new StringBuilder ("http://gis.dovsyanko/");
+    private URL getURL (HttpServletRequest request, GisWsAddress gisWsAddress) throws MalformedURLException {
+        StringBuilder sb = new StringBuilder (gisWsAddress.getUrl ());
         sb.append (request.getRequestURI ().substring (12));
         if (request.getQueryString () != null) {
             sb.append ('?');
@@ -34,12 +43,13 @@ public class SvcServlet extends HttpServlet {
         return url;
     }
 
-    private static String getAuth () throws UnsupportedEncodingException {
-        return "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary ("sit:xw{p&&Ee3b9r8?amJv*]".getBytes ("UTF-8"));
+    private static String getAuth (GisWsAddress gisWsAddress) throws UnsupportedEncodingException {
+        return "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary ((gisWsAddress.getLogin () + ':' + gisWsAddress.getPassword ()).getBytes ("UTF-8"));
     }
     
-    private void setAuth (HttpURLConnection con) throws UnsupportedEncodingException {
-        con.setRequestProperty ("Authorization", getAuth ());
+    private void setAuth (HttpURLConnection con, GisWsAddress gisWsAddress) throws UnsupportedEncodingException {
+        if (gisWsAddress.getLogin ().isEmpty ()) return;
+        con.setRequestProperty ("Authorization", getAuth (gisWsAddress));
     }
     
     private void pump (final InputStream is, final OutputStream os) throws IOException {
@@ -49,12 +59,13 @@ public class SvcServlet extends HttpServlet {
     }
 
     private HttpURLConnection createConnection (HttpServletRequest request) throws MalformedURLException, ProtocolException, UnsupportedEncodingException, IOException {
-        URL url = getURL (request);
+        GisWsAddress gisWsAddress = back.getGisWsAddress ();
+        URL url = getURL (request, gisWsAddress);
         HttpURLConnection con = (HttpURLConnection) url.openConnection ();
         final String method = request.getMethod ();
         con.setRequestMethod (method);
         logger.info (method + ' ' + url);
-        setAuth (con);
+        setAuth (con, gisWsAddress);
         return con;
     }
 
@@ -89,6 +100,10 @@ logger.info ("rc=" + rc);
     private static final String CHARSET_TOKEN = ";charset=";
     private static final String ORG_TOKEN = ":orgPPAGUID>";
     private static final String MSG_TOKEN = ":MessageGUID>";
+    private static final String BODY_TOKEN = ":Body>";
+    private static final String STATE_TOKEN = ":RequestState>";
+    
+    Pattern RE_ERR = Pattern.compile  (":ErrorCode>([^<]*)</\\w+:ErrorCode>\\s*<\\w+:(Description|ErrorMessage)>([^<]*)<", Pattern.MULTILINE);
 
     @Override
     protected void doPost (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -120,15 +135,7 @@ logger.info ("rc=" + rc);
         StringBuilder sb = new StringBuilder ();
         
         try (ServletInputStream is = request.getInputStream ()) {            
-            try (InputStreamReader isr = new InputStreamReader (is, cs)) {                
-                try (BufferedReader br = new BufferedReader (isr)) {                                            
-                    while (true) {
-                        String line = br.readLine ();
-                        if (line == null) break;                        
-                        sb.append (line);
-                    }                                                               
-                }                
-            }            
+            pump (is, cs, sb);            
         }
     
         String s = sb.toString ();
@@ -157,13 +164,80 @@ logger.info ("rc=" + rc);
 logger.info (svcName + '.' + methodName + ", org=" + org + ", msg=" + msg + ", rc=" + rc);
         
         copyHeader (response, "Content-Type", con);
-
-        try (InputStream is = con.getInputStream ()) {            
-            try (ServletOutputStream os = response.getOutputStream ()) {
-                pump (is, os);
-            }            
+        
+        StringBuilder osb = new StringBuilder ();
+        
+        try (InputStream is = con.getInputStream ()) {
+            pump (is, "UTF-8", osb);
         }
         
+        String os = osb.toString ();
+        
+        if ("getState".equals (methodName)) {
+            
+            String omsg = "";
+            int ompos = os.indexOf (MSG_TOKEN, os.indexOf (BODY_TOKEN));
+            if (ompos >= 0) {
+                ompos += MSG_TOKEN.length ();
+                omsg = os.substring (ompos, ompos + 36);
+            }
+
+            String state = "";
+            int stpos = os.indexOf (STATE_TOKEN);
+            if (stpos >= 0) {
+                stpos += STATE_TOKEN.length ();
+                state = os.substring (stpos, stpos + 1);
+            }
+            
+            String err="";
+            String dsc="";
+            
+            if ("3".equals (state)) {
+                
+                final Matcher matcher = RE_ERR.matcher (os);
+                
+                if (matcher.find ()) {
+                    err = matcher.group (1);
+                    dsc = matcher.group (3);
+                }
+            
+            }
+
+logger.info ("msg=" + omsg + ", state=" + state + ", err=" + err + ", dsc=" + dsc);
+            
+        }
+        else {
+            
+            String ack = "";
+            final int bpos = os.indexOf (BODY_TOKEN);
+            int ompos = os.indexOf (MSG_TOKEN, bpos);
+            if (ompos >= 0) {
+                ompos += MSG_TOKEN.length ();
+                ack = os.substring (ompos, ompos + 36);
+            }
+            
+logger.info ("ack=" + ack);
+
+        }        
+
+        response.setCharacterEncoding ("UTF-8");
+        try (PrintWriter w = response.getWriter ()) {
+            w.print (os);
+        }
+        
+    }
+
+    private void pump (final InputStream is, String cs, StringBuilder sb) throws IOException {
+        try (InputStreamReader isr = new InputStreamReader (is, cs)) {
+            try (BufferedReader br = new BufferedReader (isr)) {
+                while (true) {
+                    String line = br.readLine ();
+                    if (line == null) break;
+                    sb.append (line);
+                    sb.append ('\n');
+                }
+            }
+        }
     }
 
     @Override
