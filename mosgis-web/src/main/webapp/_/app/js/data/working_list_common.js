@@ -84,7 +84,7 @@ define ([], function () {
         
         data.ends   = clone (data.periods).reverse ()
 
-        data.active_tab = localStorage.getItem ('working_list_common.active_tab') || 'working_list_common_services'
+        data.active_tab = localStorage.getItem ('working_list_common.active_tab') || 'working_list_common_items'
 
         data.__read_only = 1
 
