@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -251,6 +252,12 @@ public class ExportCharterMDB extends UUIDMDB<CharterLog> {
             EnTable.c.UUID,               ctrUuid,
             Charter.c.CHARTERVERSIONGUID, null
         ));
+        
+        List<Map<String, Object>> newObjects = db.getList (db.getModel ()
+            .select (CharterObject.class, "uuid", "contractobjectversionguid")
+            .where ("uuid_charter", ctrUuid)
+            .and ("contractobjectversionguid IS NULL")
+        );
 
         for (int i = 0; i < 10; i ++) {
             
@@ -278,7 +285,9 @@ public class ExportCharterMDB extends UUIDMDB<CharterLog> {
                 logger.log (Level.WARNING, "It's futile", ex);
             }
             
-        }  
+        }
+        
+        db.update (CharterObject.class, newObjects);
         
     }
 

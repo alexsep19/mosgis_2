@@ -365,9 +365,17 @@ public class WsGisHouseManagementClient {
             throw new IllegalStateException (ex);
         }
         
+        List<Map<String, Object>> newObjects = db.getList (db.getModel ()
+            .select (ContractObject.class, "uuid", "contractobjectversionguid")
+            .where ("uuid_contract", ctrUuid)
+            .and ("contractobjectversionguid IS NULL")
+        );
+        
         doWithGetState (db, orgPPAGuid, requestGuid, messageGuid, ctrUuid, (state) -> {
             GisPollExportMgmtContractStatusMDB.processGetStateResponse (state, db, true);            
-        });        
+        });
+        
+        db.update (ContractObject.class, newObjects);
 
     }
     
