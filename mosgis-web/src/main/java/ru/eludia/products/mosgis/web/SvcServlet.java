@@ -31,6 +31,49 @@ public class SvcServlet extends HttpServlet {
     
     @EJB
     ProxyLoggerLocal back;
+    
+    private String getServiceName (String s) {
+        switch (s) {
+            case "AppealsAsync": return "AppealsServiceAsync";
+            case "BillsAsync": return "BillsServiceAsync";
+            case "Bills": return "BillsService";
+            case "CapitalRepairAsync": return "CapitalRepairAsyncService";
+            case "CapitalRepair": return "CapitalRepairService";
+            case "DeviceMeteringAsync": return "DeviceMeteringServiceAsync";
+            case "DeviceMetering": return "DeviceMeteringService";
+            case "FASAsync": return "FASServiceAsync";
+            case "HomeManagementAsync": return "HouseManagementServiceAsync";
+            case "HomeManagement": return "HouseManagementService";
+            case "InfrastructureAsync": return "InfrastructureServiceAsync";
+            case "Infrastructure": return "InfrastructureService";
+            case "InspectionAsync": return "InspectionServiceAsync";
+            case "Inspection": return "InspectionService";
+            case "LicensesAsync": return "LicenseServiceAsync";
+            case "Licenses": return "LicenseService";
+            case "MSPAsync": return "MSPAsyncService";
+            case "MSP": return "MSPService";
+            case "NsiCommonAsync": return "NsiServiceAsync";
+            case "NsiCommon": return "NsiService";
+            case "NsiAsync": return "NsiServiceAsync";
+            case "Nsi": return "NsiService";
+            case "OrgRegistryCommonAsync": return "RegOrgServiceAsync";
+            case "OrgRegistryCommon": return "RegOrgService";
+            case "OrgRegistryAsync": return "RegOrgServiceAsync";
+            case "OrgRegistry": return "RegOrgService";
+            case "PaymentAsync": return "PaymentsServiceAsync";
+            case "RapAsync": return "RapServiceAsync";
+            case "Rap": return "RapService";
+            case "OrganizationAsync": return "ServicesServiceAsync";
+            case "Organization": return "ServicesService";
+            case "TariffAsync": return "TariffAsyncService";
+            case "UkAsync": return "UkAsyncService";
+            case "Uk": return "UkService";
+            case "VolumeQualityAsync": return "VolumeQualityServiceAsync";
+            case "VolumeQuality": return "VolumeQualityService";
+            default: return s;
+        }
+    }
+    
 
     private URL getURL (HttpServletRequest request, GisWsAddress gisWsAddress) throws MalformedURLException {
         StringBuilder sb = new StringBuilder (gisWsAddress.getUrl ());
@@ -111,7 +154,7 @@ logger.info ("rc=" + rc);
         HttpURLConnection con = createConnection (request);
         
         String url = con.getURL ().toString ();
-        String svcName = url.substring (url.lastIndexOf ('/') + 1);
+        String svcName = getServiceName (url.substring (url.lastIndexOf ('/') + 1));
         
         con.setDoOutput (true);
         copyHeader (request, "Content-Type", con);
@@ -176,10 +219,10 @@ logger.info (svcName + '.' + methodName + ", org=" + org + ", msg=" + msg + ", r
         if ("getState".equals (methodName)) {
             
             String omsg = "";
-            int ompos = os.indexOf (MSG_TOKEN, os.indexOf (BODY_TOKEN));
+            int ompos = s.indexOf (MSG_TOKEN, s.indexOf (BODY_TOKEN));
             if (ompos >= 0) {
                 ompos += MSG_TOKEN.length ();
-                omsg = os.substring (ompos, ompos + 36);
+                omsg = s.substring (ompos, ompos + 36);
             }
 
             String state = "";
@@ -200,7 +243,14 @@ logger.info (svcName + '.' + methodName + ", org=" + org + ", msg=" + msg + ", r
                     err = matcher.group (1);
                     dsc = matcher.group (3);
                 }
+                
+                back.logResponse (omsg, os, err, dsc);
             
+            }
+            else {
+                
+                back.logPending (omsg);
+                
             }
 
 logger.info ("msg=" + omsg + ", state=" + state + ", err=" + err + ", dsc=" + dsc);
@@ -218,7 +268,9 @@ logger.info ("msg=" + omsg + ", state=" + state + ", err=" + err + ", dsc=" + ds
             
 logger.info ("ack=" + ack);
 
-        }        
+            back.logRequest (msg, svcName, methodName, s, org, ack);
+
+        }
 
         response.setCharacterEncoding ("UTF-8");
         try (PrintWriter w = response.getWriter ()) {
