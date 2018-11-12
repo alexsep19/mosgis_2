@@ -3,7 +3,9 @@ define ([], function () {
     return function (data, view) {
         
         function voting_ptocols_view_permit () {
-            
+
+            if (!data.item.is_condo) return false
+
             if ($_USER.role.nsi_20_1 ||
                 $_USER.role.nsi_20_7 ||
                 $_USER.role.nsi_20_4 ||
