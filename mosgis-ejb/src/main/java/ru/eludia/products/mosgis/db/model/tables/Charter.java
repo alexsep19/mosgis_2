@@ -375,8 +375,15 @@ public class Charter extends EnTable {
         }
         
         public final boolean needsUpload () {
-            for (VocContractDocType.i type: VocContractDocType.i.values ()) if (this.needsUpload (type)) return true;
-            return false;            
+            
+            switch (this) {
+                case RELOADING: 
+                    return false;
+                default:
+                    for (VocContractDocType.i type: VocContractDocType.i.values ()) if (this.needsUpload (type)) return true;
+                    return false;
+            }
+            
         }        
                 
     };
