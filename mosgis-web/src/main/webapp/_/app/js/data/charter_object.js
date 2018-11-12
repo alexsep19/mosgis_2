@@ -36,7 +36,7 @@ define ([], function () {
             
             var is_own = ($_USER.role.admin || it ['ctr.uuid_org'] == $_USER.uuid_org)
 
-            if (is_own && !it.is_deleted) {
+            if (is_own && !it.is_deleted && it.id_ctr_status_gis != 110) {
             
                 switch (it ["ctr.id_ctr_status"]) {
 
