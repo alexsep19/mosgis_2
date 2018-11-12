@@ -73,8 +73,6 @@ define ([], function () {
                 if (dt != undefined && dt.charAt (3) != '.') r [this.name] = dt_dmy (dt)
                         
             })
-
-            console.log (r)
             
             w2ui [form_name].record = r
 

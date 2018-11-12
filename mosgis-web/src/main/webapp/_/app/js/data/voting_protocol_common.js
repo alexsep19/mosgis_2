@@ -37,27 +37,47 @@ define ([], function () {
         var f = w2ui [form_name]
 
         var v = f.values ()
-                
-        var re = /^[А-ЯЁ][а-яё\-]*$/
         
-        //if (!v.surname) die ('surname', 'Укажите, пожалуйста, фамилию')
-        //if (!re.test (v.surname)) die ('surname', 'Фамилия содержит не корректные символы')
-        //if (!v.firstname) die ('firstname', 'Укажите, пожалуйста, имя')
-        //if (!re.test (v.firstname)) die ('firstname', 'Имя содержит некорректные символы')
-        //if (v.patronymic && (!re.test (v.patronymic) || !/[ач]$/.test (v.patronymic))) die ('patronymic', 'Отчество указано некорректно')
+        if (!v.protocoldate) die ('protocoldate', 'Пожалуйста, введите дату составления протокола')
+        if (!v.hasOwnProperty('extravoting')) die ('extravoting', 'Пожалуйста, укажите вид собрания')
+        if (!v.hasOwnProperty('meetingeligibility')) die ('meetingeligibility', 'Пожалуйста, укажите правомочность собрания')
+        if (!v.hasOwnProperty('form_')) die ('form_', 'Пожалуйста, выберите форму проведения')
 
-        //if (v.is_female=="") v.is_female=null
-        
-        //var re_dt = /^\d\d\d\d\-\d\d-\d\d$/
-        
-        //if (v.birthdate && !re_dt.test (v.birthdate)) die ('birthdate', 'Некорректный формат даты')
-        
-        //if (v.code_vc_nsi_95) {
-            //if (v.number_===null) die ('number_', 'Пожалуйста, укажите номер документа')
-            //if (!v.issuedate) die ('issuedate', 'Пожалуйста, укажите дату выдачи документа')
-            //if (!re_dt.test (v.issuedate)) die ('issuedate', 'Некорректный формат даты')
-            //if (!v.issuer) die ('issuer', 'Пожалуйста, укажите, кем выдан документ')
-        //}
+        switch (v.form_) {
+            case 0:
+                if (!v.avotingdate) die ('avotingdate', 'Пожалуйста, введите дату окончания приема решений')
+                if (!v.resolutionplace) die ('resolutionplace', 'Пожалуйста, введите место принятия решений')
+                break;
+            case 1:
+                if (!v.meetingdate) die ('meetingdate', 'Пожалуйста, введите дату проведения собрания')
+                if (!v.meetingtime) die ('meetingtime', 'Пожалуйста, введите время проведения собрания')
+                if (!v.votingplace) die ('votingplace', 'Пожалуйста, введите место проведения собрания')
+                v.meetingdate = v.meetingdate + " " + v.meetingtime + ":00"
+                break;
+            case 2:
+                if (!v.evotingdatebegin) die ('evotingdatebegin', 'Пожалуйста, введите дату начала проведения голосования')
+                if (!v.evotingtimebegin) die ('evotingtimebegin', 'Пожалуйста, введите время начала проведения голосования')
+                if (!v.evotingdateend) die ('evotingdateend', 'Пожалуйста введите дату окончания проведения голосования')
+                if (!v.evotingtimeend) die ('evotingtimeend', 'Пожалуйста, введите время окончания проведения голосования')
+                if (!v.discipline) die ('discipline', 'Пожалуйста, введите порядок приема оформленных в письменной форме решений собственников')
+                if (!v.inforeview) die ('inforeview', 'Пожалуйста, введите порядок ознакомления с информацией и (или) материалами, которые будут представлены на данном собрании')
+                
+                v.evotingdatebegin = v.evotingdatebegin + " " + v.evotingtimebegin + ":00"
+                v.evotingdateend = v.evotingdateend + " " + v.evotingtimeend + ":00"
+                
+                if ((Date.parse (v.evotingdateend) - Date.parse (v.evotingdatebegin)) <= 0) die ('evotingdateend', 'Некорректный временной промежуток')
+                break;
+            case 3:
+                if (!v.meeting_av_date) die ('meeting_av_date', 'Пожалуйста, введите дату проведения собрания')
+                if (!v.meeting_av_time) die ('meeting_av_time', 'Пожалуйста, введите время проведения собрания')
+                if (!v.meeting_av_date_end) die ('meeting_av_date_end', 'Пожалуйста, введите дату окончания приема решений')
+                if (!v.meeting_av_res_place) die ('meeting_av_res_place', 'Пожалуйста, введите место приема решения')
+                
+                if ((Date.parse (v.meeting_av_date_end) - Date.parse (v.meeting_av_date)) < 0) die ('meeting_av_date_end', 'Некорректный временной промежуток')
+                
+                v.meeting_av_date = v.meeting_av_date + " " + v.meeting_av_time + ":00"
+                break;
+        }
 
         query ({type: 'voting_protocols', action: 'update'}, {data: v}, reload_page)
 
