@@ -68,8 +68,9 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
     
     @Override
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
-
+       
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
+            .where ("fiashouseguid", p.getJsonObject("data").getJsonString("uuid_house").getString ())
             .toOne (VocGisStatus.class, "label AS status_label").on("id_prtcl_status_gis")
             .toMaybeOne (VotingProtocolLog.class         ).on ()
             .and ("uuid_org", user.getUuidOrg ())

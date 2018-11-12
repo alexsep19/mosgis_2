@@ -55,8 +55,8 @@ define ([], function () {
                 {field: 'label_form', caption: 'Форма проведения', size: 15},
                 {field: 'status_label', caption: 'Статус протокола', size: 10},
             ].filter (not_off),
-            
-            postData: {data: {"uuid_house": $_REQUEST.id}},
+
+            postData: {data: {"uuid_house": data.item.fiashouseguid}},
 
             url: '/mosgis/_rest/?type=voting_protocols',
            
