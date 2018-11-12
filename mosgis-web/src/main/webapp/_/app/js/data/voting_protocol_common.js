@@ -43,7 +43,6 @@ define ([], function () {
         if (!v.hasOwnProperty('meetingeligibility')) die ('meetingeligibility', 'Пожалуйста, укажите правомочность собрания')
         if (!v.hasOwnProperty('form_')) die ('form_', 'Пожалуйста, выберите форму проведения')
 
-        console.log (v.form_)
         switch (v.form_) {
             case 0:
                 if (!v.avotingdate) die ('avotingdate', 'Пожалуйста, введите дату окончания приема решений')
@@ -53,8 +52,10 @@ define ([], function () {
                 if (!v.meetingdate) die ('meetingdate', 'Пожалуйста, введите дату проведения собрания')
                 if (!v.meetingtime) die ('meetingtime', 'Пожалуйста, введите время проведения собрания')
                 if (!v.votingplace) die ('votingplace', 'Пожалуйста, введите место проведения собрания')
-                v.meetingdate = v.meetingdate + " " + v.meetingtime + ":00"
-                console.log (v.meetingdate)
+                
+                if (v.meetingtime.length == 5) v.meetingtime = v.meetingtime + ":00"
+                v.meetingdate = v.meetingdate + " " + v.meetingtime
+
                 break;
             case 2:
                 if (!v.evotingdatebegin) die ('evotingdatebegin', 'Пожалуйста, введите дату начала проведения голосования')
@@ -64,8 +65,10 @@ define ([], function () {
                 if (!v.discipline) die ('discipline', 'Пожалуйста, введите порядок приема оформленных в письменной форме решений собственников')
                 if (!v.inforeview) die ('inforeview', 'Пожалуйста, введите порядок ознакомления с информацией и (или) материалами, которые будут представлены на данном собрании')
                 
-                v.evotingdatebegin = v.evotingdatebegin + " " + v.evotingtimebegin + ":00"
-                v.evotingdateend = v.evotingdateend + " " + v.evotingtimeend + ":00"
+                if (v.evotingtimebegin.length == 5) v.evotingtimebegin = v.evotingtimebegin + ":00"
+                if (v.evotingtimeend.length == 5) v.evotingtimeend = v.evotingtimeend + ":00"
+                v.evotingdatebegin = v.evotingdatebegin + " " + v.evotingtimebegin
+                v.evotingdateend = v.evotingdateend + " " + v.evotingtimeend
                 
                 if ((Date.parse (v.evotingdateend) - Date.parse (v.evotingdatebegin)) <= 0) die ('evotingdateend', 'Некорректный временной промежуток')
                 break;
@@ -77,7 +80,9 @@ define ([], function () {
                 
                 if ((Date.parse (v.meeting_av_date_end) - Date.parse (v.meeting_av_date)) < 0) die ('meeting_av_date_end', 'Некорректный временной промежуток')
                 
-                v.meeting_av_date = v.meeting_av_date + " " + v.meeting_av_time + ":00"
+                if (v.meeting_av_time.length == 5) v.meeting_av_time = v.meeting_av_time + ":00"
+                v.meeting_av_date = v.meeting_av_date + " " + v.meeting_av_time
+
                 break;
         }
 
