@@ -101,6 +101,21 @@ public class Charter extends EnTable {
                                 
                 + " FOR i IN ("
                     + "SELECT "
+                    + " o.uuid "
+                    + "FROM "
+                    + " tb_charter_objects o "
+                    + " LEFT JOIN tb_charter_services s ON (s.uuid_charter_object = o.uuid AND s.is_deleted = 0) "
+                    + "WHERE o.is_deleted = 0"
+                    + " AND o.is_annuled = 0"
+                    + " AND o.uuid_charter = :NEW.uuid "
+                    + " AND (o.enddate >= :NEW.rolltodate OR (o.enddate IS NULL AND s.enddate >= :NEW.rolltodate))"
+                    + ") LOOP"
+                + " raise_application_error (-20000, 'Дата, до которой требуется продлить срок оказания услуг, должна быть строго позже самой поздней даты окончания предоставления услуги. Операция отменена.'); "
+                + " END LOOP; "  
+                
+                                
+                + " FOR i IN ("
+                    + "SELECT "
                     + " o.startdate"
                     + " , o.enddate"
                     + " , c.docnum"
