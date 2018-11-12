@@ -6,8 +6,8 @@
 
         	<style>
                 .w2ui-field label.gen {
-                    width: 170px !important;
-                    margin-left: 30px !important;
+                    width: 200px !important;
+                    margin-left: 350px !important;
                 }
 
                 .w2ui-field input.gen {
@@ -24,10 +24,9 @@
                 }
             </style>
 
-            <center>
-            <table style="border-spacing: 4px 4px;">
+            <table style="border-spacing: 4px 4px;" border=1>
                 <tr>
-                    <td>
+                    <td style="width: 550px">
                         <div class="w2ui-field">
                             <label class="gen">Номер протокола</label>
                         </div>
@@ -37,6 +36,8 @@
                             <input class="gen" name=protocolnum maxlength=30>
                         </div>
                     </td>
+                </tr>
+                <tr>
                     <td>
                         <div class="w2ui-field">
                             <label class="gen">Дата составления протокола</label>
@@ -60,6 +61,8 @@
                                 <input name=extravoting placeholder="">
                             </div>
                     </td>
+                </tr>
+                <tr>
                     <td>
                         <div class="w2ui-field">
                             <label class="gen">Правомочность собрания</label>
@@ -70,12 +73,8 @@
                             <input name=meetingeligibility placeholder="">
                         </div>
                     </td>
-                </tr>
-            </table>
-            </center>            
+                </tr>       
 
-            <center>
-            <table style="border-spacing: 4px 4px;">
                 <tr>
                     <td>
                         <div class="w2ui-field">
@@ -89,69 +88,73 @@
                     </td>
                 </tr>
             </table>
-            </center>
-                
-            <center>
-            <table border-spacing: 4px 4px;">
+<!--||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
+            <table style="border-spacing: 4px 4px;" border=1>
                 <tr>
-                    <td style="width: 280px">
+                    <td style="width: 550px">
                         <div class="w2ui-field">
-                            <label style="width: 200px; margin-right: 5px !important;">Дата окончания приема решений</label>
-                                <div>
-                                    <input id=avotingdate name=avotingdate placeholder="" class=dt>
-                                </div>
+                            <label class=gen>Дата окончания приема решений</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="w2ui-field">
+                            <input id=avotingdate name=avotingdate placeholder="" class=dt>
                         </div>
                     </td>
                 </tr>
                 <tr>
-                    <td style="width: 400px">
+                    <td>
                         <div class="w2ui-field">
-                            <label style="width: 200px; margin-right: 5px !important;">Место принятия решений</label>
-                                <div>
-                                    <input id=resolutionplace name=resolutionplace>
-                                </div>
+                            <label class=gen>Место принятия решений</label>
                         </div>
                     </td>
-                </tr>
-            </table>
-            </center>
-                
-            <center>
-            <table border-spacing: 4px 4px;">
-                <tr>
-                    <td style="width: 250px">
+                    <td>
                         <div class="w2ui-field">
-                            <label style="width: 170px; margin-right: 5px !important;">Дата проведения собрания</label>
-                            <div>
-                                    <input id=meetingdate name=meetingdate placeholder="" class=dt >
-                                </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="width: 280px">
-                        <div class="w2ui-field">
-                            <label style="width: 170px; margin-right: 5px !important;">Время проведения собрания</label>
-                            <div>
-                                    <input type="time" id=meetingtime name="meetingtime" min="0:00" max="23:00" required class=dt />
-                                </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="width: 360px">
-                        <div class="w2ui-field">
-                            <label style="width: 170px; margin-right: 5px !important;">Место проведения собрания</label>
-                                <div>
-                                <input id=votingplace name=votingplace >
-                            </div>
+                            <input id=resolutionplace name=resolutionplace>
                         </div>
                     </td>
                 </tr>
             </table>
-            </center>
-                
-            <center>
+<!--||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
+            <table border-spacing: 4px 4px;" border=1>
+                <tr>
+                    <td style="width: 550px">
+                        <div class="w2ui-field">
+                            <label class=gen>Дата проведения собрания</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="w2ui-field">
+                            <input id=meetingdate name=meetingdate placeholder="" class=dt >
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="w2ui-field">
+                            <label class=gen>Время проведения собрания</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <input type="time" id=meetingtime name="meetingtime" min="0:00" max="23:00" required class=dt />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="w2ui-field">
+                            <label class=gen>Место проведения собрания</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="w2ui-field">
+                            <input class=gen id=votingplace name=votingplace >
+                        </div>
+                    </td>
+                </tr>
+            </table>
+<!--||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
             <table border-spacing: 4px 4px;">
                 <tr>
                     <td style="width: 550px">
@@ -213,9 +216,7 @@
                     </td>
                 </tr>
             </table>
-            </center>
-
-            <center>
+<!--||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
             <table border-spacing: 4px 4px;">
 
                 <tr>
@@ -259,8 +260,7 @@
                 </tr>
                 
             </table>
-            </center>
-
+<!--||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
         </div>
 
         <div class="w2ui-buttons">
