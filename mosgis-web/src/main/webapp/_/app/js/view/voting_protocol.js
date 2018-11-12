@@ -6,6 +6,10 @@ define ([], function () {
         
         fill (view, data.item, $('body'))
 
+        if (data.item.protocolnum == undefined || data.item.protocolnum == "") {
+            $('label[id="num"]').hide ();
+        }
+
         $('#container').w2relayout ({
         
             name: 'topmost_layout',

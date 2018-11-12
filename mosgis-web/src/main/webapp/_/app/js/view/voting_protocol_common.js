@@ -73,10 +73,12 @@ define ([], function () {
                 if (dt != undefined && dt.charAt (3) != '.') r [this.name] = dt_dmy (dt)
                         
             })
+
+            console.log (data)
             
             w2ui [form_name].record = r
 
-            recalc ()
+            //recalc ()
             
             $('div[data-block-name=voting_protocol_common] input').prop ({disabled: data.__read_only})
 
@@ -161,7 +163,7 @@ define ([], function () {
 
             onChange: function (e) {if (e.target == "form_") e.done (recalc)},
                         
-            //onRender: function (e) {e.done (setTimeout (recalc, 100))},
+            onRender: function (e) {e.done (setTimeout (recalc, 100))},
             
         })
 
