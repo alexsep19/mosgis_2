@@ -212,6 +212,21 @@ public class ContractFile extends Table {
         }
 
         @Override
+        public void processCreated (List<Map<String, Object>> created) throws SQLException {
+            
+            created.forEach ((h) -> {
+                
+                final UUID uuid = UUID.fromString (h.get ("uuid").toString ());
+
+                logger.info ("Scheduling download for " + uuid);
+
+                mDB.download (uuid);
+                
+            });
+                
+        }
+
+        @Override
         public void processUpdated (List<Map<String, Object>> updated) throws SQLException {
             
             updated.forEach ((h) -> {
@@ -219,7 +234,7 @@ public class ContractFile extends Table {
                 Object hashAsIs = ((Map) h.get (ACTUAL)).get (ATTACHMENTHASH);
                 Object hashToBe = ((Map) h.get (WANTED)).get (ATTACHMENTHASH);
                     
-                if (DB.eq (hashAsIs, hashToBe)) return;
+                if (DB.eq (hashAsIs, hashToBe) && Long.parseLong (((Map) h.get (ACTUAL)).get ("len").toString ()) > 0) return;
                 
                 final UUID uuid = UUID.fromString (h.get ("uuid").toString ());
 
