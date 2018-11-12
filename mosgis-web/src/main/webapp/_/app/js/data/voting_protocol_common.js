@@ -1,7 +1,7 @@
 define ([], function () {
 
     var form_name = 'voting_protocol_common_form'
-    
+
     $_DO.cancel_voting_protocol_common = function (e) {
         
         if (!confirm ('Отменить несохранённые правки?')) return
