@@ -18,6 +18,7 @@ import javax.management.ObjectName;
 import ru.eludia.base.DB;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.build.QP;
+import ru.eludia.products.mosgis.db.model.tables.StuckCharters;
 import ru.eludia.products.mosgis.db.model.tables.StuckContracts;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
@@ -35,6 +36,9 @@ public class TTLWatch implements TTLWatchMBean {
 
     @Resource (mappedName = "mosgis.stuckContractsQueue")
     Queue stuckContractsQueue;    
+    
+    @Resource (mappedName = "mosgis.stuckChartersQueue")
+    Queue stuckChartersQueue;    
         
     @PostConstruct
     public void registerInJMX () {
@@ -78,6 +82,48 @@ public class TTLWatch implements TTLWatchMBean {
                 db.forEach (m.select (StuckContracts.class, StuckContracts.c.UUID.lc ()).limit (0, 128), (rs) -> {
                                         
                     UUIDPublisher.publish (stuckContractsQueue, DB.to.UUIDFromHex (rs.getString (2)));
+
+                });
+                
+            }
+            catch (SQLException ex) {
+                
+                if (ex.getErrorCode () == 54) {
+                    logger.info ("Can't acquire lock, skip operation");
+                    return;
+                }
+                
+                throw ex;
+                
+            }
+            finally {
+                db.commit ();
+            }
+            
+        }
+        catch (Exception ex) {
+            logger.log (Level.SEVERE, null, ex);
+        }
+        
+    }           
+
+    @Override
+    @Schedule (hour = "*", minute = "*", second = "2", persistent = false)
+    public void checkCharters () {
+        
+        Model m = ModelHolder.getModel ();
+        
+        try (DB db = m.getDb ()) {
+            
+            db.begin ();
+            
+            try {
+                
+                db.getString (new QP ("SELECT id FROM tb_locks WHERE id=? FOR UPDATE NOWAIT", "stuck_charters"));
+                
+                db.forEach (m.select (StuckCharters.class, StuckCharters.c.UUID.lc ()).limit (0, 128), (rs) -> {
+                                        
+                    UUIDPublisher.publish (stuckChartersQueue, DB.to.UUIDFromHex (rs.getString (2)));
 
                 });
                 

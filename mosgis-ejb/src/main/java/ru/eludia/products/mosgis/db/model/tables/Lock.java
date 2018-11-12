@@ -17,7 +17,8 @@ public class Lock extends Table {
             
     public enum i {
         
-        STUCK_CONTRACTS ("stuck_contracts");
+        STUCK_CONTRACTS ("stuck_contracts"),
+        STUCK_CHARTERS ("stuck_charters");
         
         String id;
 

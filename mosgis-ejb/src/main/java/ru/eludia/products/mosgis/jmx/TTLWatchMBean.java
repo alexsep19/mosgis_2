@@ -6,5 +6,6 @@ import javax.ejb.Local;
 public interface TTLWatchMBean {
     
     public void checkContracts ();
+    public void checkCharters ();
 
 }

@@ -92,7 +92,8 @@ public class VocSetting extends Table {
         
         GIS_ID_ORGANIZATION ("gis.id.organization", "ГИС-идентификатор организации-отправителя данных", "392cf4d1-3527-4b99-9f60-7c3ecbba11d8"),
 
-        TTL_CONTRACTS ("ttl.contracts", "Время жизни операции отправки ДУ в ГИС, мин.", "30");
+        TTL_CONTRACTS ("ttl.contracts", "Время жизни операции отправки ДУ в ГИС, мин.", "30"),
+        TTL_CHARTERS  ("ttl.charters", "Время жизни операции отправки уставов в ГИС, мин.", "30");
         
         String id;
         String label;
