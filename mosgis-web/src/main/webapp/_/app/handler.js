@@ -121,6 +121,8 @@ w2utils.settings = {
         "sec": "сек",
         "Select Search Field": "Выбрать поля поиска",
         "selected": "выделено",
+        "Select Hour": "Выберите час",
+        "Select Minute": "Выберите минуту",
         "Server Response": "Ответ сервера",
         "Show": "Показать",
         "Show/hide columns": "Показать/скрыть колонки",
