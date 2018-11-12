@@ -7,9 +7,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
+import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.jms.Queue;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import ru.eludia.base.DB;
@@ -17,6 +20,7 @@ import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.products.mosgis.db.model.tables.StuckContracts;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 
 @Startup
 @Singleton
@@ -25,6 +29,12 @@ public class TTLWatch implements TTLWatchMBean {
     private ObjectName objectName = null;
     private MBeanServer platformMBeanServer;
     private static final Logger logger = Logger.getLogger (TTLWatch.class.getName ());
+    
+    @EJB
+    protected UUIDPublisher UUIDPublisher;
+
+    @Resource (mappedName = "mosgis.stuckContractsQueue")
+    Queue stuckContractsQueue;    
         
     @PostConstruct
     public void registerInJMX () {
@@ -65,12 +75,10 @@ public class TTLWatch implements TTLWatchMBean {
                 
                 db.getString (new QP ("SELECT id FROM tb_locks WHERE id=? FOR UPDATE NOWAIT", "stuck_contracts"));
                 
-                db.forEach (m.select (StuckContracts.class, StuckContracts.c.UUID.lc ()), (rs) -> {
-                    
-                    UUID uuid = DB.to.UUIDFromHex (rs.getString (1));
-                    
-                    logger.info ("Stuck contract detected: " + uuid);
-                    
+                db.forEach (m.select (StuckContracts.class, StuckContracts.c.UUID.lc ()).limit (0, 128), (rs) -> {
+                                        
+                    UUIDPublisher.publish (stuckContractsQueue, DB.to.UUIDFromHex (rs.getString (2)));
+
                 });
                 
             }
