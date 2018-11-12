@@ -22,7 +22,8 @@ define ([], function () {
         query ({type: 'property_documents'}, {}, function (data) {
         
             add_vocabularies (data, {
-                vc_prop_doc_types: 1
+                vc_prop_doc_types: 1,
+                vc_actions: 1
             })
             
             var it = data.item
