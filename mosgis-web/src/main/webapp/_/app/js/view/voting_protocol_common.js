@@ -2,17 +2,22 @@ define ([], function () {
     
     var form_name = 'voting_protocol_common_form'
 
+    var read_only = false
+
     return function (data, view) {
     
-        function recalc (hidden) {
+        function recalc () {
+
             function disabling (element, i, arr) {
-                element.val ('').prop ('disabled', true)
+                element.prop ('disabled', true)
                 element.closest ('.w2ui-field').hide ()
             }
             
             function enabling (element, i, arr) {
                 element.closest ('.w2ui-field').show ()
-                element.val ('').prop ('disabled', false)
+                if (read_only != undefined && !read_only) {
+                    element.prop ('disabled', false)
+                }
             }
 
             var items = {'avoting': [$('#avotingdate'),
@@ -51,7 +56,7 @@ define ([], function () {
                 case 3:
                     items['meet_av'].forEach(enabling);
                     break;
-            }         
+            }   
         }
 
         $_F5 = function (data) {
@@ -65,24 +70,25 @@ define ([], function () {
                 if (this.type != 'date') return
                 
                 var dt = r [this.name]
+                var t_name = this.name.replace('date', 'time')
 
-                if (dt != undefined) {
-                    r [this.name.replace('date', 'time')] = dt.substring (dt.indexOf (" ") + 1, dt.indexOf("."))
+                if (dt != undefined && r [t_name] == undefined) {
+                    r [t_name] = dt.substring (dt.indexOf (" ") + 1, dt.indexOf("."))
                 }
                 
                 if (dt != undefined && dt.charAt (3) != '.') r [this.name] = dt_dmy (dt)
                         
             })
 
-            console.log (data)
-            
             w2ui [form_name].record = r
-
-            //recalc ()
             
             $('div[data-block-name=voting_protocol_common] input').prop ({disabled: data.__read_only})
 
+            read_only = data.__read_only
+
             w2ui [form_name].refresh ()
+
+            recalc (data.__read_only)
 
         }
 

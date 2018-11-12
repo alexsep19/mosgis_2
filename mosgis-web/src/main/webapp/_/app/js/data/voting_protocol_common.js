@@ -43,6 +43,7 @@ define ([], function () {
         if (!v.hasOwnProperty('meetingeligibility')) die ('meetingeligibility', 'Пожалуйста, укажите правомочность собрания')
         if (!v.hasOwnProperty('form_')) die ('form_', 'Пожалуйста, выберите форму проведения')
 
+        console.log (v.form_)
         switch (v.form_) {
             case 0:
                 if (!v.avotingdate) die ('avotingdate', 'Пожалуйста, введите дату окончания приема решений')
@@ -53,6 +54,7 @@ define ([], function () {
                 if (!v.meetingtime) die ('meetingtime', 'Пожалуйста, введите время проведения собрания')
                 if (!v.votingplace) die ('votingplace', 'Пожалуйста, введите место проведения собрания')
                 v.meetingdate = v.meetingdate + " " + v.meetingtime + ":00"
+                console.log (v.meetingdate)
                 break;
             case 2:
                 if (!v.evotingdatebegin) die ('evotingdatebegin', 'Пожалуйста, введите дату начала проведения голосования')
