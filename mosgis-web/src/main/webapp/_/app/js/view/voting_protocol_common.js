@@ -33,6 +33,7 @@ define ([], function () {
             }
 
             tables = ['avoting_table', 'meeting_table', 'evoting_table', 'meet_av_table']
+            sizes = [332, 366, 468, 400]
 
             tables.forEach (function (element, i, arr) {
                 disable_block (element)
@@ -40,7 +41,9 @@ define ([], function () {
 
             var v = w2ui [form_name].values ()
 
-            enable_block (tables[v.form_]) 
+            enable_block (tables[v.form_])
+            $('#layout_passport_layout_panel_top').height (sizes[v.form_]) // верх
+            $('#layout_passport_layout_panel_main').css('top', sizes[v.form_] + 1 + 'px') // логи
         }
 
         $_F5 = function (data) {
