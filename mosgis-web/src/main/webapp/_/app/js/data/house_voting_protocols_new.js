@@ -61,6 +61,7 @@ define ([], function () {
         
         v['fiashouseguid'] = data.item.fiashouseguid
         v['uuid_org'] = data.item['org.uuid']
+        v['house_uuid'] = data.item.uuid
 
         query (tia, {data: v}, function (data) {
         
