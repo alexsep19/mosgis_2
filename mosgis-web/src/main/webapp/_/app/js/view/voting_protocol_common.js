@@ -21,7 +21,9 @@ define ([], function () {
             }
 
             var items = {'avoting': [$('#avotingdate'),
-                                     $('#resolutionplace')],
+                                     $('#resolutionplace'),
+                                     $('#avotingdate_label'),
+                                     $('#resolutionplace_label')],
                          'meeting': [$('#meetingdate'),
                                      $('#meetingtime'),
                                      $('#votingplace')],
