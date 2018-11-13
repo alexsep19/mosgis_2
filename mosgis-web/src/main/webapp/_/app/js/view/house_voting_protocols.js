@@ -20,6 +20,8 @@ define ([], function () {
         
         var $panel = $(layout.el ('main'))
 
+        console.log (data)
+
         $panel.w2regrid ({ 
         
             multiSelect: false,
@@ -37,8 +39,13 @@ define ([], function () {
             textSearch: 'contains',
 
             searches: [            
-                {field: 'status_label',  caption: 'Статус протокола',  type: 'text'},
-                {field: 'label_form_uc',  caption: 'Форма собрания',  type: 'text'},
+                {field: 'id_prtcl_status_gis',  caption: 'Статус протокола',  type: 'enum', options: {items: data.vc_gis_status}},
+                {field: 'form_',  caption: 'Форма собрания',  type: 'enum', options: {items: [
+                    {id: "0", text: "Заочное голосование (опросным путем)"},
+                    {id: "1", text: "Очное голосование"},
+                    {id: "2", text: "Заочное голосование с использованием системы"},
+                    {id: "3", text: "Очно-заочное голосование"},
+                ]}},
                 {field: 'is_deleted', caption: 'Статус записи', type: 'enum', options: {items: [
                     {id: "0", text: "Актуальные"},
                     {id: "1", text: "Удалённые"},

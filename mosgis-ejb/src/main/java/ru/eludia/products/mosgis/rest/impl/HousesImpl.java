@@ -36,6 +36,7 @@ import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
 import ru.eludia.products.mosgis.db.model.voc.VocProtertyDocumentType;
@@ -188,6 +189,7 @@ public class HousesImpl extends Base<House> implements HousesLocal {
         }
 
         VocAction.addTo (jb);
+        VocGisStatus.addTo(jb);
         
         return jb.build ();
 
