@@ -8,77 +8,39 @@ define ([], function () {
     
         function recalc () {
 
-            function disabling (element, i, arr) {
-                element.prop ('disabled', true)
-                element.closest ('.w2ui-field').hide ()
+            function disable_block (table_name) {
+                var $table = $('#' + table_name)
+                $table.find('input').each (disable_element)
+                $table.find('label').each (disable_element)
+                $table.hide ()
             }
-            
-            function enabling (element, i, arr) {
-                element.closest ('.w2ui-field').show ()
+
+            function disable_element (i, element) {
+                $(element).prop ('disabled', true)
+            }
+
+            function enable_block (table_name) {
+                var $table = $('#' + table_name)
+                $table.find('input').each (enable_element)
+                $table.find('label').each (enable_element)
+                $table.show ()
+            }
+
+            function enable_element (i, element) {
                 if (read_only != undefined && !read_only) {
-                    element.prop ('disabled', false)
+                    $(element).prop ('disabled', false)
                 }
             }
 
-            var items = {'avoting': [$('#avotingdate'),
-                                     $('#resolutionplace'),
+            tables = ['avoting_table', 'meeting_table', 'evoting_table', 'meet_av_table']
 
-                                     $('#avotingdate_label'),
-                                     $('#resolutionplace_label')],
-
-                         'meeting': [$('#meetingdate'),
-                                     $('#meetingtime'),
-                                     $('#votingplace'),
-
-                                     $('#meetingdate_label'),
-                                     $('#meetingtime_label'),
-                                     $('#votingplace_label')],
-
-                         'evoting': [$('#evotingdatebegin'),
-                                     $('#evotingtimebegin'),
-                                     $('#evotingdateend'),
-                                     $('#evotingtimeend'),
-                                     $('#discipline'),
-                                     $('#inforeview'),
-
-                                     $('#evotingdatebegin_label'),
-                                     $('#evotingtimebegin_label'),
-                                     $('#evotingdateend_label'),
-                                     $('#evotingtimeend_label'),
-                                     $('#discipline_label'),
-                                     $('#inforeview_label')],
-
-                         'meet_av': [$('#meeting_av_date'),
-                                     $('#meeting_av_time'),
-                                     $('#meeting_av_date_end'),
-                                     $('#meeting_av_res_place'),
-
-                                     $('#meeting_av_date_label'),
-                                     $('#meeting_av_time_label'),
-                                     $('#meeting_av_date_end_label'),
-                                     $('#meeting_av_res_place_label')]}
-
-            items['avoting'].forEach(disabling);
-            items['meeting'].forEach(disabling);
-            items['evoting'].forEach(disabling);
-            items['meet_av'].forEach(disabling);
+            tables.forEach (function (element, i, arr) {
+                disable_block (element)
+            })
 
             var v = w2ui [form_name].values ()
 
-            switch (v.form_) {
-                case 0:
-                    items['avoting'].forEach(enabling);
-                    break;
-                case 1:
-                    items['meeting'].forEach(enabling);
-                    break;
-                case 2:
-                    items['evoting'].forEach(enabling);
-                    break;
-                case 3:
-                    items['meet_av'].forEach(enabling);
-                    break;
-            }   
+            enable_block (tables[v.form_]) 
         }
 
         $_F5 = function (data) {
