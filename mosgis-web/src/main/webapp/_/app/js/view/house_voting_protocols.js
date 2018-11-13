@@ -16,11 +16,15 @@ define ([], function () {
             
         }
 
+        status_list = data.vc_gis_status
+
+        status_list.forEach((el, i, arr) => {
+            el['text'] = el['label']
+        })
+
         var layout = w2ui ['topmost_layout']
         
         var $panel = $(layout.el ('main'))
-
-        console.log (data)
 
         $panel.w2regrid ({ 
         
@@ -39,7 +43,7 @@ define ([], function () {
             textSearch: 'contains',
 
             searches: [            
-                {field: 'id_prtcl_status_gis',  caption: 'Статус протокола',  type: 'enum', options: {items: data.vc_gis_status}},
+                {field: 'id_prtcl_status_gis',  caption: 'Статус протокола',  type: 'enum', options: {items: status_list}},
                 {field: 'form_',  caption: 'Форма собрания',  type: 'enum', options: {items: [
                     {id: "0", text: "Заочное голосование (опросным путем)"},
                     {id: "1", text: "Очное голосование"},
