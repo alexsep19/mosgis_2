@@ -21,14 +21,32 @@ define ([], function () {
 
         query (tia, {data: d}, function () {
         
-            $.each (grid.records, function () {            
-                if (this.uuid == e.recid) this [data.k] = data.v
-                delete this.w2ui
-            })
+            query ({type: 'working_list_items', id: undefined}, {data: {uuid_working_list: $_REQUEST.id}}, function (d) {
             
-            grid.unlock ()                    
-                        
-            grid.refresh ()
+                var totalcost
+
+                $.each (d.tb_work_list_items, function () {
+                
+                    if (this.uuid == e.recid) totalcost = this.totalcost
+                
+                })
+                
+                $.each (grid.records, function () {            
+                
+                    if (this.uuid == e.recid) {
+                        this [data.k] = data.v
+                        this.totalcost = totalcost
+                    }
+                    
+                    delete this.w2ui
+                    
+                })
+
+                grid.unlock ()                    
+
+                grid.refresh ()
+
+            })                
 
         }, edit_failed (grid, e))
     
@@ -57,7 +75,7 @@ define ([], function () {
         if (layout) layout.unlock ('main')
         
         var data = $('body').data ('data')
-
+darn (data)
         query ({type: 'working_list_items', id: undefined}, {data: {uuid_working_list: $_REQUEST.id}}, function (d) {
         
             data.records = dia2w2uiRecords (d.tb_work_list_items)

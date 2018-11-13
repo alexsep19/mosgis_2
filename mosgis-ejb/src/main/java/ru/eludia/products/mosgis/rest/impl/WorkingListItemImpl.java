@@ -8,6 +8,7 @@ import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.OrganizationWork;
 import ru.eludia.products.mosgis.db.model.tables.WorkingListItem;
+import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.WorkingListItemLocal;
@@ -29,6 +30,7 @@ public class WorkingListItemImpl extends BaseCRUD<WorkingListItem> implements Wo
             .where (f, p.getJsonObject ("data").getString (f))
             .where (EnTable.c.IS_DELETED.lc (), 0)
             .toOne (OrganizationWork.class, "AS w", "label").on ()
+            .toMaybeOne (VocOkei.class, "AS ok", "national").on ()
             .orderBy (WorkingListItem.c.INDEX_.lc ())
             .orderBy ("w.label");
 
