@@ -22,20 +22,32 @@ define ([], function () {
 
             var items = {'avoting': [$('#avotingdate'),
                                      $('#resolutionplace'),
+
                                      $('#avotingdate_label'),
                                      $('#resolutionplace_label')],
+
                          'meeting': [$('#meetingdate'),
                                      $('#meetingtime'),
                                      $('#votingplace'),
+
                                      $('#meetingdate_label'),
                                      $('#meetingtime_label'),
                                      $('#votingplace_label')],
+
                          'evoting': [$('#evotingdatebegin'),
                                      $('#evotingtimebegin'),
                                      $('#evotingdateend'),
                                      $('#evotingtimeend'),
                                      $('#discipline'),
-                                     $('#inforeview')],
+                                     $('#inforeview'),
+
+                                     $('#evotingdatebegin_label'),
+                                     $('#evotingtimebegin_label'),
+                                     $('#evotingdateend_label'),
+                                     $('#evotingtimeend_label'),
+                                     $('#discipline_label'),
+                                     $('#inforeview_label')],
+
                          'meet_av': [$('#meeting_av_date'),
                                      $('#meeting_av_time'),
                                      $('#meeting_av_date_end'),
