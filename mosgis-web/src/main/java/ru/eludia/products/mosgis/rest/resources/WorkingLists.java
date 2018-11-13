@@ -80,16 +80,7 @@ public class WorkingLists extends EJBResource <WorkingListLocal> {
         checkOrg (item);
         return back.doDelete (id, getUser ());
     }
-    
-    @POST
-    @Path("{id}/undelete") 
-    @Produces (APPLICATION_JSON)
-    public JsonObject doUndelete (@PathParam ("id") String id) { 
-        final JsonObject item = getData (id);
-        checkOrg (item);
-        return back.doUndelete (id, getUser ());
-    }
-        
+            
     @POST
     @Path("{id}") 
     @Produces (APPLICATION_JSON)
@@ -106,6 +97,16 @@ public class WorkingLists extends EJBResource <WorkingListLocal> {
         final JsonObject item = back.getItem (id);
         if (!securityContext.isUserInRole ("admin")) checkOrg (item);
         return back.getLog (id, p, getUser ());
+    }
+    
+    @POST
+    @Path("{id}/add_items") 
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject doAddItems (@PathParam ("id") String id, JsonObject p) {
+        final JsonObject item = getData (id);
+        checkOrg (item);
+        return back.doAddItems (id, p, getUser ());
     }
     
 }

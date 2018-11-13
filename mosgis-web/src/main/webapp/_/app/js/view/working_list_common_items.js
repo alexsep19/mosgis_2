@@ -6,7 +6,7 @@ define ([], function () {
         
         $(w2ui ['passport_layout'].el ('main')).w2regrid ({ 
 
-            name: 'mgmt_contract_common_log',
+            name: 'working_list_common_items_grid',
 
             show: {
                 toolbar: true,
@@ -22,6 +22,10 @@ define ([], function () {
             ],
             
             records: [],
+            
+            onAdd: function () {
+                use.block ('working_list_common_items_popup')
+            }
 
         }).refresh ();
 
