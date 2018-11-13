@@ -71,7 +71,7 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
        
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
-            .where ("house_uuid", p.getJsonObject("data").getJsonString("uuid_house").getString ())
+            .where ("fiashouseguid", p.getJsonObject("data").getJsonString("uuid_house").getString ())
             .toOne (VocGisStatus.class, "label AS status_label").on("id_prtcl_status_gis")
             .toMaybeOne (VotingProtocolLog.class         ).on ()
             .and ("uuid_org", user.getUuidOrg ())
@@ -125,7 +125,7 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
         JsonObject item = db.getJsonObject (ModelHolder.getModel ()
             .get (VotingProtocol.class, id, "*")
             .toOne (VocGisStatus.class, "label AS status_label").on("id_prtcl_status_gis")
-            .toOne (House.class, "address AS address_label", "uuid AS house_uuid").on ()
+            .toOne (VocBuilding.class, "label AS address_label").on ()
             .toMaybeOne (VotingProtocolLog.class           ).on ()
             .toMaybeOne (OutSoap.class,             "err_text").on ()
         ); 
