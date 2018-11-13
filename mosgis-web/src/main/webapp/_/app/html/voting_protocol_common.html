@@ -17,6 +17,7 @@
 
                 .w2ui-field input.dt {
                     width: 70px !important;
+                    margin-right: 10px !important;
                 }
                 
                 .w2ui-field input.tm {
@@ -110,13 +111,13 @@
                     </td>
                     <td>
                         <div class="w2ui-field">
-                            <input id=resolutionplace name=resolutionplace>
+                            <input class=gen id=resolutionplace name=resolutionplace>
                         </div>
                     </td>
                 </tr>
             </table>
 <!--||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
-            <table border-spacing: 4px 4px;" border=1>
+            <table style="border-spacing: 4px 4px;" border=1>
                 <tr>
                     <td style="width: 550px">
                         <div class="w2ui-field">
@@ -125,7 +126,7 @@
                     </td>
                     <td>
                         <div class="w2ui-field">
-                            <input id=meetingdate name=meetingdate placeholder="" class=dt >
+                            <input id=meetingdate name="meetingdate" placeholder="" class=dt >
                         </div>
                     </td>
                 </tr>
@@ -136,7 +137,7 @@
                         </div>
                     </td>
                     <td>
-                        <div>
+                        <div class="w2ui-field">
                             <input type="time" id=meetingtime name="meetingtime" min="0:00" max="23:00" required class=dt />
                         </div>
                     </td>
@@ -155,106 +156,110 @@
                 </tr>
             </table>
 <!--||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
-            <table border-spacing: 4px 4px;">
+            <table style="border-spacing: 4px 4px;" border=1>
                 <tr>
                     <td style="width: 550px">
                         <div class="w2ui-field">
-                            <label style="width: 370px; margin-right: 5px !important;">Дата начала проведения голосования</label>
-                                    <div>
-                                    <input id=evotingdatebegin name=evotingdatebegin placeholder="" class=dt >
-                                </div>
+                            <label class=gen>Дата начала проведения голосования</label>
+                        </div>
+                        <div class="w2ui-field">
+                            <input id=evotingdatebegin name=evotingdatebegin placeholder="" class=dt >
                         </div>
                     </td>
-
-                    <td style="width: 550px">
+                </tr>
+                <tr>
+                    <td>
                         <div class="w2ui-field">
-                            <label style="width: 370px; margin-right: 5px !important;">Время начала проведения собрания</label>
-                            <div>
-                                    <input type="time" id=evotingtimebegin name="evotingtimebegin" min="0:00" max="23:00" required class=dt />
-                                </div>
+                            <label class=gen>Время начала проведения собрания</label>
+                        </div>
+                        <div class="w2ui-field">
+                            <input type="time" id=evotingtimebegin name="evotingtimebegin" min="0:00" max="23:00" required class=dt />
                         </div>
                     </td>
                 </tr>
                 
                 <tr>
-                    <td style="width: 550px">
+                    <td>
                         <div class="w2ui-field">
-                            <label style="width: 370px; margin-right: 5px !important;">Дата окончания проведения голосования</label>
-                            <div>
-                                    <input id=evotingdateend name=evotingdateend placeholder="" class=dt >
-                                </div>
+                            <label class=gen>Дата окончания проведения голосования</label>
+                        <div class="w2ui-field">
+                            <input id=evotingdateend name=evotingdateend placeholder="" class=dt >
                         </div>
                     </td>
-
-                    <td style="width: 550px">
+                </tr>
+                <tr>
+                    <td>
                         <div class="w2ui-field">
-                            <label style="width: 370px; margin-right: 5px !important;">Время окончания проведения собрания</label>
-                                    <div>
-                                    <input type="time" id=evotingtimeend name="evotingtimeend" min="0:00" max="23:00" required class=dt />
-                                </div>
+                            <label class=gen>Время окончания проведения собрания</label>
+                        </div>
+                        <div class="w2ui-field">
+                            <input type="time" id=evotingtimeend name="evotingtimeend" min="0:00" max="23:00" required class=dt />
                         </div>
                     </td>
                 </tr>
                 
                 <tr>
-                    <td style="width: 550px">
+                    <td>
                         <div class="w2ui-field">
-                            <label style="width: 370px; margin-right: 5px !important;">Порядок приема решений собственников</label>
-                            <div>
-                                <input id=discipline name=discipline >
-                            </div>
+                            <label class=gen>Порядок приема решений собственников</label>
+                        </div>
+                        <div class="w2ui-field">
+                            <input class=gen id=discipline name=discipline >
                         </div>
                     </td>
-
-                    <td style="width: 550px">
+                </tr>
+                <tr>
+                    <td>
                         <div class="w2ui-field">
-                            <label style="width: 370px; margin-right: 5px !important;">Порядок ознакомления с информацией и (или) материалами</label>
-                            <div>
-                                <input id=inforeview name=inforeview >
-                            </div>
+                            <label class=gen>Порядок ознакомления с информацией и (или) материалами</label>
+                        </div>
+                        <div class="w2ui-field">
+                            <input class=gen id=inforeview name=inforeview >
                         </div>
                     </td>
                 </tr>
             </table>
 <!--||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
-            <table border-spacing: 4px 4px;">
+            <table style="border-spacing: 4px 4px;" border=1>
 
                 <tr>
-                    <td style="width: 370px">
+                    <td style="width: 550px">
                         <div class="w2ui-field">
-                            <label style="width: 200px; margin-right: 5px !important;">Дата проведения собрания</label>
-                            <div>
-                                    <input id=meeting_av_date name=meeting_av_date placeholder="" class=dt >
-                                </div>
+                            <label class=gen>Дата проведения собрания</label>
+                        </div>
+                        <div class="w2ui-field">
+                            <input id=meeting_av_date name=meeting_av_date placeholder="" class=dt >
                         </div>
                     </td>
-
-                    <td style="width: 370px">
+                </tr>
+                <tr>
+                    <td>
                         <div class="w2ui-field">
-                            <label style="width: 200px; margin-right: 5px !important;">Время проведения собрания</label>
-                            <div>
-                                    <input type="time" id=meeting_av_time name="meeting_av_time" min="0:00" max="23:00" required class=dt />
-                                </div>
+                            <label class=gen>Время проведения собрания</label>
+                        </div>
+                        <div class="w2ui-field">
+                            <input type="time" id=meeting_av_time name="meeting_av_time" min="0:00" max="23:00" required class=dt />
                         </div>
                     </td>
                 </tr>
                 
                 <tr>
-                    <td style="width: 370px">
+                    <td>
                         <div class="w2ui-field">
-                            <label style="width: 200px; margin-right: 5px !important;">Дата окончания приема решений</label>
-                            <div>
-                                    <input id=meeting_av_date_end name=meeting_av_date_end placeholder="" class=dt >
-                                </div>
+                            <label class=gen>Дата окончания приема решений</label>
+                        </div>
+                        <div class="w2ui-field">
+                            <input id=meeting_av_date_end name=meeting_av_date_end placeholder="" class=dt >
                         </div>
                     </td>
-                
-                    <td style="width: 370px">
+                </tr>
+                <tr>
+                    <td>
                         <div class="w2ui-field">
-                            <label style="width: 200px; margin-right: 5px !important;">Место приема решения</label>
-                            <div>
-                                <input id=meeting_av_res_place name=meeting_av_res_place >
-                            </div>
+                            <label class=gen>Место приема решения</label>
+                        </div>
+                        <div class="w2ui-field">
+                            <input class=gen id=meeting_av_res_place name=meeting_av_res_place >
                         </div>
                     </td>
                 </tr>
