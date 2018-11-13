@@ -51,7 +51,12 @@ define ([], function () {
                          'meet_av': [$('#meeting_av_date'),
                                      $('#meeting_av_time'),
                                      $('#meeting_av_date_end'),
-                                     $('#meeting_av_res_place')]}
+                                     $('#meeting_av_res_place'),
+
+                                     $('#meeting_av_date_label'),
+                                     $('#meeting_av_time_label'),
+                                     $('#meeting_av_date_end_label'),
+                                     $('#meeting_av_res_place_label')]}
 
             items['avoting'].forEach(disabling);
             items['meeting'].forEach(disabling);
