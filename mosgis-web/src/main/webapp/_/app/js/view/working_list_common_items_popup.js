@@ -31,7 +31,7 @@ define ([], function () {
                     {field: 'label', caption: 'Наименование', size: 50},
                 ],
                 
-                records: dia2w2uiRecords (data.org_works),
+                records: data.record.voc,
                             
             }).refresh ()
 

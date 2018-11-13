@@ -21,9 +21,15 @@ define ([], function () {
     return function (done) {
 
         var data = clone ($('body').data ('data'))
-                
-        data.record = {}
+
+        var idx = {}; $.each (data.records, function () {idx [this.uuid_org_work] = 1})
+
+        data.record = {voc: dia2w2uiRecords (data.org_works.items.filter (function (i) {
+            return !idx [i.id]
+        }))}
         
+        if (!data.record.voc.length) die ('foo', 'Все работы, имеющиеся в справочнике, в данный перечень уже внесены.')
+                
         done (data)
 
     }

@@ -147,6 +147,7 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
             
             String uuid = db.insertId (WorkingListItem.class, HASH (
                  WorkingListItem.c.UUID_WORKING_LIST.lc (), id,
+                 WorkingListItem.c.COUNT.lc (), 1,
                  WorkingListItem.c.UUID_ORG_WORK.lc (), ((JsonString) t).getString ()
             )).toString ();
             

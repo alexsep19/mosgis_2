@@ -4,6 +4,7 @@ import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.Type.DATE;
+import static ru.eludia.base.model.Type.NUMERIC;
 import ru.eludia.base.model.def.Num;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
@@ -21,7 +22,9 @@ public class WorkingList extends EnTable {
         ID_CTR_STATUS_GIS    (VocGisStatus.class,    new Num (VocGisStatus.i.PROJECT.getId ()), "Статус объекта договора с точки зрения ГИС ЖКХ"),
         ID_LOG               (WorkingListLog.class,  "Последнее событие редактирования"),
         DT_FROM              (DATE,                  "Период \"с\"  (первое число первого месяца периода)"),
-        DT_TO                (DATE,                  "Период \"по\" (последнее число последнего месяца периода)")
+        DT_TO                (DATE,                  "Период \"по\" (последнее число последнего месяца периода)"),
+        COUNT                (NUMERIC,  4, 0, null,  "Количество"),
+        TOTALCOST            (NUMERIC, 22, 2, null,  "Общая стоимость")
         ;
 
         @Override

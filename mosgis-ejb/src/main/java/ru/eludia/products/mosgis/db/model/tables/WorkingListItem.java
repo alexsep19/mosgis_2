@@ -58,7 +58,17 @@ public class WorkingListItem extends EnTable {
             + " END IF ; "
             + "END;"
         );
-
+        
+        trigger ("AFTER INSERT OR UPDATE", ""
+            + "DECLARE" 
+            + " PRAGMA AUTONOMOUS_TRANSACTION; "
+            + "BEGIN "
+            + " UPDATE tb_work_lists SET totalcost = (SELECT SUM(totalcost) FROM tb_work_list_items WHERE uuid_working_list=:NEW.uuid_working_list AND is_deleted=0) WHERE uuid = :NEW.uuid_working_list; "
+            + " UPDATE tb_work_lists SET count     = (SELECT SUM(count)     FROM tb_work_list_items WHERE uuid_working_list=:NEW.uuid_working_list AND is_deleted=0) WHERE uuid = :NEW.uuid_working_list; "                                
+            + " COMMIT;"
+            + "END;"
+        );
+        
     }
 
 }

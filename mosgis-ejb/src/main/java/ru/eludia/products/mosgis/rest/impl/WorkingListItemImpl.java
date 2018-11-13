@@ -38,7 +38,7 @@ public class WorkingListItemImpl extends BaseCRUD<WorkingListItem> implements Wo
 
     @Override
     public JsonObject getItem (String id) {
-        throw new UnsupportedOperationException ("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return EMPTY_JSON_OBJECT;
     }
 
 }
