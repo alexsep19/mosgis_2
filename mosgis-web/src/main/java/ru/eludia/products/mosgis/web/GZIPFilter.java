@@ -18,7 +18,6 @@ import java.io.ByteArrayOutputStream;
 
 public class GZIPFilter implements Filter {
     
-    private static final String [] KEYS = new String [] {"text/javascript", "text/css", "application/json"};
     private static final String GZIP = "gzip";
     
     @Override
@@ -72,11 +71,14 @@ public class GZIPFilter implements Filter {
         }
         
         public boolean check () {
-            boolean content = false;
             String contenttype = getHeader(HttpHeaders.CONTENT_TYPE);
-            if (contenttype == KEYS[0] || contenttype == KEYS[1] || contenttype == KEYS[2])
-                content = true;
-            return content;
+            switch(contenttype) {
+                case "text/javascript":  return true;
+                case "text/css":         return true;
+                case "application/json": return true;
+                default:                 return false;
+                
+            }
         }
         
         @Override
@@ -94,7 +96,6 @@ public class GZIPFilter implements Filter {
     public class ServletResponseGZIPOutputStream  extends ServletOutputStream {
         
         protected GZIPOutputStream output;
-        protected Boolean open = true;
         protected ByteArrayOutputStream baos;
         protected HttpServletResponse response;
         
@@ -107,53 +108,43 @@ public class GZIPFilter implements Filter {
         
         @Override
         public void close () throws IOException {
-            if (open == true) {
-                output.finish();
-                byte[] bytes = baos.toByteArray();
-                response.setContentLength(bytes.length);
-                response.addHeader("Content-Encoding", GZIP);
-                ServletOutputStream output = response.getOutputStream();
-                output.write(bytes);
-                output.flush();
-                output.close();
-                open = false;
-            }
+            output.finish();
+            byte[] bytes = baos.toByteArray();
+            response.setContentLength(bytes.length);
+            response.addHeader("Content-Encoding", GZIP);
+            ServletOutputStream output0 = response.getOutputStream();
+            output0.write(bytes);
+            output0.flush();
+            output0.close();
         }
         
         @Override
         public void flush () throws IOException {
-            if (!open)
-                throw new IOException("Stream closed!");
             output.flush();
         }
         
         @Override
         public void write(byte[] b) throws IOException {
-            if (!open)
-                throw new IOException("Stream closed!");
             output.write(b, 0, b.length);
         }
 
         @Override
         public void write(byte[] b, int off, int len) throws IOException {
-            if (!open) 
-                throw new IOException("Stream closed!");
             output.write(b, off, len);
         }
 
         @Override
         public void write(int b) throws IOException {
-            if (!open) {
-                throw new IOException("Stream closed!");
-            }
             output.write(b);
         }
+        
          @Override
         public void setWriteListener(WriteListener writeListener) {
         }
+        
         @Override
         public boolean isReady() {
-            return open;
+            return false;
         }
     }
 }
