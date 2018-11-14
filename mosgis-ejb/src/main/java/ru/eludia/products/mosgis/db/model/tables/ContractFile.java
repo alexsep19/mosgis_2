@@ -36,8 +36,8 @@ public class ContractFile extends Table {
         ref    ("id_type",               VocContractDocType.class,              "Ссылка на тип документа");
         
         col    ("label",                 Type.STRING,                           "Имя файла");
-        col    ("mime",                  Type.STRING,                           "Тип содержимого");
-        col    ("len",                   Type.INTEGER,                          "Размер, байт");
+        col    ("mime",                  Type.STRING,              null,        "Тип содержимого");
+        col    ("len",                   Type.INTEGER,             null,        "Размер, байт");
         col    ("body",                  Type.BLOB,                EMPTY_BLOB,  "Содержимое");
         col    ("description",           Type.TEXT,                null,        "Примечание");
         col    ("attachmentguid",        Type.UUID,                null,        "Идентификатор сохраненного вложения");
@@ -53,6 +53,8 @@ public class ContractFile extends Table {
         key    ("attachmentguid", "attachmentguid");
        
         trigger ("BEFORE UPDATE", "BEGIN "
+                
+            + " IF :NEW.len IS NULL THEN :NEW.len := -1; END IF; "                
 
             + "IF (NVL (:OLD.attachmentguid, '00') = NVL (:NEW.attachmentguid, '00')) THEN BEGIN"
 //            + " IF :OLD.id_type <> " + VocContractDocType.i.TERMINATION_ATTACHMENT.getId () + " THEN FOR i IN (SELECT uuid FROM tb_contracts WHERE uuid=:NEW.uuid_contract AND id_ctr_status NOT IN (10, 11) AND contractversionguid IS NOT NULL) LOOP"
