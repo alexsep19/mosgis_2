@@ -76,7 +76,7 @@ public class GZIPFilter implements Filter {
                 case "text/css":         
                 case "application/json": return true;
                 
-                    default:                 return false;
+                    default:             return false;
             }
         }
         
