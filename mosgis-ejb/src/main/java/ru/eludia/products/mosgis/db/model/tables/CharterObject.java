@@ -54,7 +54,7 @@ public class CharterObject extends Table {
             + " PRAGMA AUTONOMOUS_TRANSACTION; "
             + "BEGIN "
                 
-            + "IF :NEW.is_deleted = 0 AND :NEW.is_annuled = 0 THEN "
+            + "IF :NEW.is_deleted = 0 AND :NEW.is_annuled = 0 AND :NEW.ismanagedbycontract = 0 THEN "
             + " FOR i IN ("
                 + "SELECT "
                 + " o.startdate"
