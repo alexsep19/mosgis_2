@@ -70,21 +70,20 @@ public class GZIPFilter implements Filter {
             outputStream.flush();
         }
         
-        public boolean check () {
-            String contenttype = getHeader(HttpHeaders.CONTENT_TYPE);
-            switch(contenttype) {
-                case "text/javascript":  return true;
-                case "text/css":         return true;
+        public boolean checkResponseFormat () {
+            switch(getHeader(HttpHeaders.CONTENT_TYPE)) {
+                case "text/javascript":  
+                case "text/css":         
                 case "application/json": return true;
-                default:                 return false;
                 
+                    default:                 return false;
             }
         }
         
         @Override
         public ServletOutputStream getOutputStream () throws IOException {
             if (outputStream == null) {
-                if (check())
+                if (checkResponseFormat())
                     outputStream = (new ServletResponseGZIPOutputStream (httpServletResponse));
                 else
                     outputStream = httpServletResponse.getOutputStream();
