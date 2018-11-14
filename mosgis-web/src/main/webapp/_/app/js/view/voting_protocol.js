@@ -40,8 +40,10 @@ define ([], function () {
 
         });
 
-        $(('#house_link')).attr({title: 'Перейти на страницу паспорта дома'})
-        clickOn ($('#house_link'), function () { openTab ('/house/' + data.item.house_uuid) })
+        if (data.item.house_uuid != undefined) {
+            $(('#house_link')).attr({title: 'Перейти на страницу паспорта дома'})
+            clickOn ($('#house_link'), function () { openTab ('/house/' + data.item.house_uuid) })
+        }
 
     }
 
