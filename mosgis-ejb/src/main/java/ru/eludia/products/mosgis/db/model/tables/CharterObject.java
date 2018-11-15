@@ -210,17 +210,18 @@ public class CharterObject extends Table {
 
         @Override
         public void setFields (Map<String, Object> h, ExportCAChResultType.Charter.ContractObject co) {
-            
+
             byte status = VocGisStatus.i.forName (co.getStatusObject ().value ()).getId ();
-            
+
             h.put ("fiashouseguid", co.getFIASHouseGuid ());
             h.put ("startdate", co.getStartDate ());
-            h.put ("enddate", co.getEndDate ());            
-            h.put ("uuid_charter_file", files.getPk (co.getBaseMService ().getAgreement ()));            
+            h.put ("enddate", co.getEndDate ());
+            h.put ("uuid_charter_file", files.getPk (co.getBaseMService ().getAgreement ()));
             h.put ("id_ctr_status_gis", status);
             h.put ("id_ctr_status", status);
             h.put ("is_from_gis", 1);
-            
+            h.put ("contractobjectversionguid", co.getContractObjectVersionGUID ());
+
         }
 
         @Override
