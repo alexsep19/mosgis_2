@@ -8,11 +8,21 @@ define ([], function () {
     
         function recalc () {
 
+            var tables = {'avoting_table': [], 'meeting_table': [], 'evoting_table': ['evoting_period_table'], 'meet_av_table': []}
+            var sizes = [332, 331, 400, 400]
+
             function disable_block (table_name) {
                 var $table = $('#' + table_name)
                 $table.find('input').each (disable_element)
                 $table.find('label').each (disable_element)
                 $table.hide ()
+
+
+                if (tables[table_name] != undefined) {
+                    tables[table_name].forEach ((el, i, arr) => {
+                        disable_block (el)
+                    })
+                }
             }
 
             function disable_element (i, element) {
@@ -24,6 +34,12 @@ define ([], function () {
                 $table.find('input').each (enable_element)
                 $table.find('label').each (enable_element)
                 $table.show ()
+
+                if (tables[table_name] != undefined) {
+                    tables[table_name].forEach ((el, i, arr) => {
+                        enable_block (el)
+                    })
+                }
             }
 
             function enable_element (i, element) {
@@ -32,16 +48,13 @@ define ([], function () {
                 }
             }
 
-            tables = ['avoting_table', 'meeting_table', 'evoting_table', 'meet_av_table']
-            sizes = [332, 331, 400, 400]
-
-            tables.forEach (function (element, i, arr) {
-                disable_block (element)
-            })
+            for (var table in tables) {
+                disable_block (table)
+            }
 
             var v = w2ui [form_name].values ()
 
-            enable_block (tables[v.form_])
+            enable_block (Object.keys(tables)[v.form_])
 
             $panel_top = $('#layout_passport_layout_panel_top')
             $panel_main = $('#layout_passport_layout_panel_main')
