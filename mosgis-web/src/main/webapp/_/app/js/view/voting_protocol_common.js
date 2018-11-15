@@ -9,7 +9,7 @@ define ([], function () {
         function recalc () {
 
             var tables = {'avoting_table': [], 'meeting_table': [], 'evoting_table': ['evoting_period_table'], 'meet_av_table': []}
-            var sizes = [332, 331, 400, 400]
+            var sizes = [332, 331, 369, 400]
 
             function disable_block (table_name) {
                 var $table = $('#' + table_name)
@@ -69,7 +69,11 @@ define ([], function () {
         
             read_only = data.__read_only
 
-            w2ui [form_name].record['__read_only'] = data.__read_only
+            var r = clone (data.item)
+
+            w2ui [form_name].record = r
+
+            w2ui [form_name].record['__read_only'] = read_only
             
             $('div[data-block-name=voting_protocol_common] input').prop ({disabled: data.__read_only})
 

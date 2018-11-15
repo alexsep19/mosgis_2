@@ -14,6 +14,10 @@
                     margin-left: 105px !important;
                 }
 
+                .w2ui-field label.from_to {
+                    width: 15px !important;
+                }
+
                 .w2ui-field label.evoting {
                     width: 355px !important;
                     margin-left: 0px !important;
@@ -158,11 +162,16 @@
                 </tr>
             </table>
 <!--||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
-            <table id=evoting_period_table style="border-spacing: 4px 4px;" border=1>
+            <table id=evoting_period_table style="border-spacing: 4px 4px;" border=0>
                 <tr>
                     <td class=labels>
                         <div class="w2ui-field">
-                            <label id=evotingdatebegin_label class=gen>Дата и время начала голосования</label>
+                            <label id=evotingdatebegin_label class=gen>Период проведения голосования:</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="w2ui-field">
+                            <label id=evoting_from_label class=from_to>с</label>
                         </div>
                     </td>
                     <td>
@@ -170,12 +179,9 @@
                             <input id=evotingdatebegin name=evotingdatebegin placeholder="" class=dt_tm >
                         </div>
                     </td>
-                </tr>
-                
-                <tr>
                     <td>
                         <div class="w2ui-field">
-                            <label id=evotingdateend_label class=gen>Дата и время окончания голосования</label>
+                            <label id=evoting_to_label class=from_to>по</label>
                         </div>
                     </td>
                     <td>
@@ -186,7 +192,7 @@
                 </tr>
             </table>
 
-            <table id=evoting_table style="border-spacing: 4px 4px;" border=1>
+            <table id=evoting_table style="border-spacing: 4px 4px;" border=0>
                 <tr>
                     <td>
                         <div class="w2ui-field">
