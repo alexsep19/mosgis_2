@@ -8,6 +8,7 @@ import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractLog;
 import ru.eludia.products.mosgis.db.model.tables.StuckContracts;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.stuckContractsQueue")
@@ -25,6 +26,7 @@ public class StuckContractsMDB extends StuckMDB<StuckContracts> {
         
         if (values.containsKey ("uuid_out_soap")) db.update (ContractLog.class, DB.HASH (
             "uuid", r.get ("id_log"),
+            "id_ctr_status", VocGisStatus.i.FAILED_STATE.getId (),
             "uuid_out_soap", values.get ("uuid_out_soap")
         ));
         
