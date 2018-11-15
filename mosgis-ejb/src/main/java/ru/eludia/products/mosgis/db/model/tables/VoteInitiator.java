@@ -16,11 +16,12 @@ public class VoteInitiator extends EnTable {
     
     public enum c implements ColEnum {
         
-        UUID_ORG  (VocOrganization.class,            "Организация"    ),
-        UUID_IND  (PropertyDocument.class,           "Физическое лицо"),
+        UUID_ORG      (VocOrganization.class,            "Организация"    ),
+        UUID_IND      (PropertyDocument.class,           "Физическое лицо"),
+        UUID_PROTOCOL (VotingProtocol.class,             "Протокол"),
         
         ID_LOG     (VoteInitiatorLog.class,     "Последнее событие редактирования"),
-        IS_DELETED (BOOLEAN, Bool.FALSE, "1, если запись удалена; иначе 0"),
+        IS_DELETED (BOOLEAN, Bool.FALSE,        "1, если запись удалена; иначе 0"),
         
         IND_SURNAME        (STRING, 256, null, "Фамилия"),
         IND_FIRSTNAME      (STRING, 256, null, "Имя"),
@@ -50,6 +51,7 @@ public class VoteInitiator extends EnTable {
         
         cols (c.class);
         
+        key ("uuid_protocol", c.UUID_PROTOCOL);
         key ("uuid_org", c.UUID_ORG);
         key ("uuid_ind", c.UUID_IND);
         
