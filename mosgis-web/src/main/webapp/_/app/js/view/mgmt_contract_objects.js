@@ -27,7 +27,7 @@ define ([], function () {
             
             toolbar: {
             
-                items: !is_editable && data.item [ch.uuid] ? [] : [
+                items: !is_editable && data.item ['ch.uuid'] ? [] : [
                     {type: 'button', id: 'add', caption: 'Скопировать из устава', onClick: $_DO.add_mgmt_contract_objects, icon: 'w2ui-icon-plus'},
                 ].filter (not_off),
                 
