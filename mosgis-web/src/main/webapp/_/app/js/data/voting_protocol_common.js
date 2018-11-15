@@ -58,17 +58,10 @@ define ([], function () {
                 break;
             case 2:
                 if (!v.evotingdatebegin) die ('evotingdatebegin', 'Пожалуйста, введите дату начала проведения голосования')
-                if (!v.evotingtimebegin) die ('evotingtimebegin', 'Пожалуйста, введите время начала проведения голосования')
                 if (!v.evotingdateend) die ('evotingdateend', 'Пожалуйста введите дату окончания проведения голосования')
-                if (!v.evotingtimeend) die ('evotingtimeend', 'Пожалуйста, введите время окончания проведения голосования')
                 if (!v.discipline) die ('discipline', 'Пожалуйста, введите порядок приема оформленных в письменной форме решений собственников')
                 if (!v.inforeview) die ('inforeview', 'Пожалуйста, введите порядок ознакомления с информацией и (или) материалами, которые будут представлены на данном собрании')
-                
-                if (v.evotingtimebegin.length == 5) v.evotingtimebegin = v.evotingtimebegin + ":00"
-                if (v.evotingtimeend.length == 5) v.evotingtimeend = v.evotingtimeend + ":00"
-                v.evotingdatebegin = v.evotingdatebegin + " " + v.evotingtimebegin
-                v.evotingdateend = v.evotingdateend + " " + v.evotingtimeend
-                
+
                 if ((Date.parse (v.evotingdateend) - Date.parse (v.evotingdatebegin)) <= 0) die ('evotingdateend', 'Некорректный временной промежуток')
                 break;
             case 3:

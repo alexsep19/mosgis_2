@@ -33,7 +33,7 @@ define ([], function () {
             }
 
             tables = ['avoting_table', 'meeting_table', 'evoting_table', 'meet_av_table']
-            sizes = [332, 331, 469, 400]
+            sizes = [332, 331, 400, 400]
 
             tables.forEach (function (element, i, arr) {
                 disable_block (element)
@@ -130,10 +130,8 @@ define ([], function () {
                 {name: 'meetingdate', type: 'datetime'},
                 {name: 'votingplace', type: 'text'},
 
-                {name: 'evotingdatebegin', type: 'date'},
-                {name: 'evotingtimebegin', type: 'time'},
-                {name: 'evotingdateend', type: 'date'},
-                {name: 'evotingtimeend', type: 'time'},
+                {name: 'evotingdatebegin', type: 'datetime'},
+                {name: 'evotingdateend', type: 'datetime'},
                 {name: 'discipline', type: 'text'},
                 {name: 'inforeview', type: 'text'},
 
