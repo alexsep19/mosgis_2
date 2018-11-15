@@ -152,9 +152,9 @@ define ([], function () {
                 {name: 'discipline', type: 'text'},
                 {name: 'inforeview', type: 'text'},
 
-                {name: 'meeting_av_date', type: 'date'},
-                {name: 'meeting_av_time', type: 'time'},
+                {name: 'meeting_av_date', type: 'datetime'},
                 {name: 'meeting_av_date_end', type: 'date'},
+                {name: 'meeting_av_place', type: 'text'},
                 {name: 'meeting_av_res_place', type: 'text'},
             ],
 
