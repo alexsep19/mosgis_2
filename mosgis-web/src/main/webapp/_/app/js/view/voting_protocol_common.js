@@ -42,8 +42,16 @@ define ([], function () {
             var v = w2ui [form_name].values ()
 
             enable_block (tables[v.form_])
-            $('#layout_passport_layout_panel_top').height (sizes[v.form_]) // верх
-            $('#layout_passport_layout_panel_main').css('top', sizes[v.form_] + 1 + 'px') // логи
+
+            $panel_top = $('#layout_passport_layout_panel_top')
+            $panel_main = $('#layout_passport_layout_panel_main')
+            $top_form_box = $panel_top.children ('.w2ui-panel-content').children ('.w2ui-form-box')
+
+            console.log ($top_form_box)
+
+            $panel_top.height (sizes[v.form_])
+            $top_form_box.height (sizes[v.form_])
+            $panel_main.css('top', sizes[v.form_] + 1 + 'px')
         }
 
         $_F5 = function (data) {
@@ -75,7 +83,7 @@ define ([], function () {
 
             w2ui [form_name].refresh ()
 
-            recalc (data.__read_only)
+            recalc ()
 
         }
 

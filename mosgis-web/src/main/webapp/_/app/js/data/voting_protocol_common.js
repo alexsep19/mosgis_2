@@ -131,7 +131,7 @@ define ([], function () {
 
         permissions = 0
 
-        if (!data.item.is_deleted && data.cach && data.cach.id_ctr_status_gis == 40) {
+        if (!data.item.is_deleted && data.cach && data.cach.id_ctr_status_gis == 10) {
             permissions = 1
         }
 
