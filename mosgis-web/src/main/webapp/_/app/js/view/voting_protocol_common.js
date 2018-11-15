@@ -33,7 +33,7 @@ define ([], function () {
             }
 
             tables = ['avoting_table', 'meeting_table', 'evoting_table', 'meet_av_table']
-            sizes = [332, 366, 468, 400]
+            sizes = [332, 366, 469, 400]
 
             tables.forEach (function (element, i, arr) {
                 disable_block (element)
