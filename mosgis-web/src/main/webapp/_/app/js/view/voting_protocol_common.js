@@ -8,11 +8,21 @@ define ([], function () {
     
         function recalc () {
 
+            var tables = {'avoting_table': [], 'meeting_table': [], 'evoting_table': ['evoting_period_table'], 'meet_av_table': []}
+            var sizes = [332, 331, 369, 400]
+
             function disable_block (table_name) {
                 var $table = $('#' + table_name)
                 $table.find('input').each (disable_element)
                 $table.find('label').each (disable_element)
                 $table.hide ()
+
+
+                if (tables[table_name] != undefined) {
+                    tables[table_name].forEach ((el, i, arr) => {
+                        disable_block (el)
+                    })
+                }
             }
 
             function disable_element (i, element) {
@@ -24,6 +34,12 @@ define ([], function () {
                 $table.find('input').each (enable_element)
                 $table.find('label').each (enable_element)
                 $table.show ()
+
+                if (tables[table_name] != undefined) {
+                    tables[table_name].forEach ((el, i, arr) => {
+                        enable_block (el)
+                    })
+                }
             }
 
             function enable_element (i, element) {
@@ -32,50 +48,38 @@ define ([], function () {
                 }
             }
 
-            tables = ['avoting_table', 'meeting_table', 'evoting_table', 'meet_av_table']
-            sizes = [332, 366, 468, 400]
-
-            tables.forEach (function (element, i, arr) {
-                disable_block (element)
-            })
+            for (var table in tables) {
+                disable_block (table)
+            }
 
             var v = w2ui [form_name].values ()
 
-            enable_block (tables[v.form_])
-            $('#layout_passport_layout_panel_top').height (sizes[v.form_]) // верх
-            $('#layout_passport_layout_panel_main').css('top', sizes[v.form_] + 1 + 'px') // логи
+            enable_block (Object.keys(tables)[v.form_])
+
+            $panel_top = $('#layout_passport_layout_panel_top')
+            $panel_main = $('#layout_passport_layout_panel_main')
+            $top_form_box = $panel_top.children ('.w2ui-panel-content').children ('.w2ui-form-box')
+
+            $panel_top.height (sizes[v.form_])
+            $top_form_box.height (sizes[v.form_])
+            $panel_main.css('top', sizes[v.form_] + 1 + 'px')
         }
 
         $_F5 = function (data) {
         
-            data.item.__read_only = data.__read_only
-            
+            read_only = data.__read_only
+
             var r = clone (data.item)
-            
-            $.each (w2ui [form_name].fields, function () {
-
-                if (this.type != 'date') return
-                
-                var dt = r [this.name]
-                var t_name = this.name.replace('date', 'time')
-
-                if (dt != undefined && r [t_name] == undefined) {
-                    r [t_name] = dt.substring (dt.indexOf (" ") + 1, dt.indexOf("."))
-                }
-                
-                if (dt != undefined && dt.charAt (3) != '.') r [this.name] = dt_dmy (dt)
-                        
-            })
 
             w2ui [form_name].record = r
+
+            w2ui [form_name].record['__read_only'] = read_only
             
             $('div[data-block-name=voting_protocol_common] input').prop ({disabled: data.__read_only})
 
-            read_only = data.__read_only
-
             w2ui [form_name].refresh ()
 
-            recalc (data.__read_only)
+            recalc ()
 
         }
 
@@ -139,18 +143,18 @@ define ([], function () {
                 
                 {name: 'avotingdate', type: 'date'},
                 {name: 'resolutionplace', type: 'text'},
-                {name: 'meetingdate', type: 'date'},
-                {name: 'meetingtime', type: 'time'},
+
+                {name: 'meetingdate', type: 'datetime'},
                 {name: 'votingplace', type: 'text'},
-                {name: 'evotingdatebegin', type: 'date'},
-                {name: 'evotingtimebegin', type: 'time'},
-                {name: 'evotingdateend', type: 'date'},
-                {name: 'evotingtimeend', type: 'time'},
+
+                {name: 'evotingdatebegin', type: 'datetime'},
+                {name: 'evotingdateend', type: 'datetime'},
                 {name: 'discipline', type: 'text'},
                 {name: 'inforeview', type: 'text'},
-                {name: 'meeting_av_date', type: 'date'},
-                {name: 'meeting_av_time', type: 'time'},
+
+                {name: 'meeting_av_date', type: 'datetime'},
                 {name: 'meeting_av_date_end', type: 'date'},
+                {name: 'meeting_av_place', type: 'text'},
                 {name: 'meeting_av_res_place', type: 'text'},
             ],
 

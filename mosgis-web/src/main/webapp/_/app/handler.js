@@ -66,6 +66,7 @@ w2utils.settings = {
         "Column": "Колонка",
         "Confirmation": "Подтверждение",
         "contains": "содержит",
+        "Current Date & Time": "Текущие дата и время",
         "Delete Confirmation": "Подтверждение удаления",
         "Delete selected records": "Удалить выбранные записи",
         "Delete": "Удалить",
@@ -155,6 +156,8 @@ function _dt (record, ind, col_ind, data) {
 function _ts (record, ind, col_ind, data) {
     return dt_dmy (data) + data.substr (10)
 }
+
+function dt_dmyhm (v) { return !v ? '' : dt_dmy (v.substr (0, 10)) + v.substr (10,6)}
 
 function dt_dmyhms (v) { return !v ? '' : dt_dmy (v.substr (0, 10)) + v.substr (10,9)}
 
