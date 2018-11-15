@@ -34,6 +34,7 @@ public abstract class LogTable extends Table {
                 Col col = c.getCol ().clone ();
                 
                 col.setDef (null);
+                col.setNullable (true);
                 
                 add (col);
                 
