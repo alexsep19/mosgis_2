@@ -19,6 +19,7 @@ public class VoteInitiator extends EnTable {
         UUID_ORG  (VocOrganization.class,            "Организация"    ),
         UUID_IND  (PropertyDocument.class,           "Физическое лицо"),
         
+        ID_LOG     (VoteInitiatorLog.class,     "Последнее событие редактирования"),
         IS_DELETED (BOOLEAN, Bool.FALSE, "1, если запись удалена; иначе 0"),
         
         IND_SURNAME        (STRING, 256, null, "Фамилия"),
