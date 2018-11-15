@@ -37,6 +37,8 @@ define ([], function () {
         var f = w2ui [form_name]
 
         var v = f.values ()
+
+        console.log ("v:", v)
         
         if (!v.protocoldate) die ('protocoldate', 'Пожалуйста, введите дату составления протокола')
         if (!v.hasOwnProperty('extravoting')) die ('extravoting', 'Пожалуйста, укажите вид собрания')
@@ -47,14 +49,11 @@ define ([], function () {
             case 0:
                 if (!v.avotingdate) die ('avotingdate', 'Пожалуйста, введите дату окончания приема решений')
                 if (!v.resolutionplace) die ('resolutionplace', 'Пожалуйста, введите место принятия решений')
+
                 break;
             case 1:
                 if (!v.meetingdate) die ('meetingdate', 'Пожалуйста, введите дату проведения собрания')
-                if (!v.meetingtime) die ('meetingtime', 'Пожалуйста, введите время проведения собрания')
                 if (!v.votingplace) die ('votingplace', 'Пожалуйста, введите место проведения собрания')
-                
-                if (v.meetingtime.length == 5) v.meetingtime = v.meetingtime + ":00"
-                v.meetingdate = v.meetingdate + " " + v.meetingtime
 
                 break;
             case 2:

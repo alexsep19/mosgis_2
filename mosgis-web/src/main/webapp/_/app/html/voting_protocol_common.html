@@ -10,8 +10,8 @@
                 }
 
                 .w2ui-field label.gen {
-                    width: 200px !important;
-                    margin-left: 155px !important;
+                    width: 250px !important;
+                    margin-left: 105px !important;
                 }
 
                 .w2ui-field label.evoting {
@@ -29,6 +29,11 @@
                     margin-right: 10px !important;
                 }
                 
+                .w2ui-field input.dt_tm {
+                    width: 95px !important;
+                    margin-right: 10px !important;
+                }
+
                 .w2ui-field input.tm {
                     width: 25px !important;
                 }
@@ -130,24 +135,12 @@
                 <tr>
                     <td class=labels>
                         <div class="w2ui-field">
-                            <label id=meetingdate_label class=gen>Дата проведения собрания</label>
+                            <label id=meetingdate_label class=gen>Дата и время проведения собрания</label>
                         </div>
                     </td>
                     <td>
                         <div class="w2ui-field">
-                            <input id=meetingdate name="meetingdate" placeholder="" class=dt >
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="w2ui-field">
-                            <label id=meetingtime_label class=gen>Время проведения собрания</label>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="w2ui-field">
-                            <input type="time" id=meetingtime name="meetingtime" min="0:00" max="23:00" required class=dt />
+                            <input id=meetingdate name="meetingdate" placeholder="" class=dt_tm >
                         </div>
                     </td>
                 </tr>

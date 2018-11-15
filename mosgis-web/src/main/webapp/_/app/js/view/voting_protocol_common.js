@@ -47,8 +47,6 @@ define ([], function () {
             $panel_main = $('#layout_passport_layout_panel_main')
             $top_form_box = $panel_top.children ('.w2ui-panel-content').children ('.w2ui-form-box')
 
-            console.log ($top_form_box)
-
             $panel_top.height (sizes[v.form_])
             $top_form_box.height (sizes[v.form_])
             $panel_main.css('top', sizes[v.form_] + 1 + 'px')
@@ -56,30 +54,11 @@ define ([], function () {
 
         $_F5 = function (data) {
         
-            data.item.__read_only = data.__read_only
-            
-            var r = clone (data.item)
-            
-            $.each (w2ui [form_name].fields, function () {
+            read_only = data.__read_only
 
-                if (this.type != 'date') return
-                
-                var dt = r [this.name]
-                var t_name = this.name.replace('date', 'time')
-
-                if (dt != undefined && r [t_name] == undefined) {
-                    r [t_name] = dt.substring (dt.indexOf (" ") + 1, dt.indexOf("."))
-                }
-                
-                if (dt != undefined && dt.charAt (3) != '.') r [this.name] = dt_dmy (dt)
-                        
-            })
-
-            w2ui [form_name].record = r
+            w2ui [form_name].record['__read_only'] = data.__read_only
             
             $('div[data-block-name=voting_protocol_common] input').prop ({disabled: data.__read_only})
-
-            read_only = data.__read_only
 
             w2ui [form_name].refresh ()
 
@@ -147,15 +126,17 @@ define ([], function () {
                 
                 {name: 'avotingdate', type: 'date'},
                 {name: 'resolutionplace', type: 'text'},
-                {name: 'meetingdate', type: 'date'},
-                {name: 'meetingtime', type: 'time'},
+
+                {name: 'meetingdate', type: 'datetime'},
                 {name: 'votingplace', type: 'text'},
+
                 {name: 'evotingdatebegin', type: 'date'},
                 {name: 'evotingtimebegin', type: 'time'},
                 {name: 'evotingdateend', type: 'date'},
                 {name: 'evotingtimeend', type: 'time'},
                 {name: 'discipline', type: 'text'},
                 {name: 'inforeview', type: 'text'},
+
                 {name: 'meeting_av_date', type: 'date'},
                 {name: 'meeting_av_time', type: 'time'},
                 {name: 'meeting_av_date_end', type: 'date'},
