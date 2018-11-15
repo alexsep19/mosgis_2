@@ -17,6 +17,7 @@ public class StuckCharters extends View {
             "SELECT " +
             "  c.uuid " +
             "  , c.id_ctr_status" +
+            "  , c.id_log" +
             "  , s.uuid uuid_out_soap" +
             " FROM " +
             "  tb_charters c" +
@@ -32,6 +33,7 @@ public class StuckCharters extends View {
 
         UUID               (Type.UUID, "uuid договора"),
         ID_CTR_STATUS      (VocGisStatus.class, "Статус договора"),
+        ID_LOG             (CharterLog.class, "Последнее событие"),
         UUID_OUT_SOAP      (OutSoap.class, "uuid SOAP-запроса")        
         ;
         

@@ -1,7 +1,6 @@
 package ru.eludia.products.mosgis.jmx;
 
 import java.lang.management.ManagementFactory;
-import java.nio.file.FileSystems;
 import java.sql.SQLException;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -452,5 +451,26 @@ public class Conf implements ConfMBean, ConfLocal {
     public void setWsGisBasicPassword (String s) {
         set (VocSetting.i.WS_GIS_BASIC_PASSWORD, s);
     }
+    
+    
+    @Override
+    public int getTtlContracts () {
+        return getInt (VocSetting.i.TTL_CONTRACTS);
+    }
+
+    @Override
+    public void setTtlContracts (int i) {
+        setInt (VocSetting.i.TTL_CONTRACTS, i);
+    }
+    
+    @Override
+    public int getTtlCharters () {
+        return getInt (VocSetting.i.TTL_CHARTERS);
+    }
+
+    @Override
+    public void setTtlCharters (int i) {
+        setInt (VocSetting.i.TTL_CHARTERS, i);
+    }    
 
 }

@@ -1,5 +1,10 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.sql.SQLException;
+import java.util.Map;
+import java.util.UUID;
+import java.util.logging.Logger;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.Table;
 import static ru.eludia.base.model.def.Bool.TRUE;
@@ -12,6 +17,8 @@ import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.IN_P
 
 
 public class OutSoap extends Table {
+    
+    private static Logger logger = Logger.getLogger (OutSoap.class.getName ());
 
     public OutSoap () {
 
@@ -38,11 +45,46 @@ public class OutSoap extends Table {
         unique ("uuid_ack", "uuid_ack");
         
         key ("ym", "ym", "ts");
-        
+                
         trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
             + "IF :NEW.rp IS NULL THEN :NEW.ts_rp := NULL; ELSE :NEW.ts_rp := SYSDATE; END IF;"
         + "END;");
 
+    }
+    
+    public static final void expire (DB db, UUID uuid) throws SQLException {
+        
+        db.update (OutSoap.class, DB.HASH (
+            "uuid", uuid,
+            "id_status", 3,
+            "is_failed", 1,
+            "err_code", "0",
+            "ts_rp",    NOW,
+            "err_text", "Операция прервана по истечении времени"
+        ));
+        
+    }
+    
+    public static final UUID addExpired (DB db) throws SQLException {
+        
+        UUID uuid = UUID.randomUUID ();        
+        
+        db.insert (OutSoap.class, DB.HASH (
+                "uuid", uuid,
+                "svc",  "null",
+                "op",   "null",
+                "rq",   "<null />",
+                "rp",   "<null />",
+                "ts",   NOW,
+                "ts_rp",   NOW,
+                "id_status", 3,
+                "is_failed", 1,
+                "err_code", "0",
+                "err_text", "Операция прервана по истечении времени"
+        ));
+        
+        return uuid;
+        
     }
 
 }

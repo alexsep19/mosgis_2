@@ -130,6 +130,7 @@ public class ContractObject extends Table {
                 + " INNER JOIN tb_charters c ON o.uuid_charter = c.uuid"
                 + " INNER JOIN vc_orgs org    ON c.uuid_org      = org.uuid "
                 + "WHERE o.is_deleted = 0"
+                + " AND o.ismanagedbycontract = 0"  
                 + " AND o.is_annuled = 0"
                 + " AND o.fiashouseguid = :NEW.fiashouseguid "
                 + " AND (o.enddate IS NULL OR o.enddate >= :NEW.startdate) "

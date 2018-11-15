@@ -24,6 +24,7 @@ define ([], function () {
             add_vocabularies (data, {
                 vc_gis_status: 1,
                 vc_actions: 1,
+                org_works: 1,
             })
         
             var it = data.item

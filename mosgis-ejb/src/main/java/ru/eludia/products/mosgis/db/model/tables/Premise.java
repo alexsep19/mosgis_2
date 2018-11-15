@@ -17,6 +17,7 @@ public class Premise extends View {
         LABEL                     (STRING,        null,           "Номер помещения"),
         CADASTRALNUMBER           (STRING,        null,           "Кадастровый номер"),
         TOTALAREA                 (NUMERIC,       25, 4, null,    "Общая площадь жилого помещения"),
+        CLASS                     (STRING,        null,           "Класс")
         ;
         
         @Override

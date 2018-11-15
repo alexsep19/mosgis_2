@@ -4,6 +4,9 @@ import java.util.Map;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.json.JsonObject;
+import javax.json.JsonString;
+import javax.json.JsonValue;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Predicate;
@@ -17,6 +20,8 @@ import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.OrganizationWork;
 import ru.eludia.products.mosgis.db.model.tables.WorkingList;
+import ru.eludia.products.mosgis.db.model.tables.WorkingListItem;
+import ru.eludia.products.mosgis.db.model.tables.WorkingListItemLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
@@ -133,6 +138,32 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
 
         );
 
+    });}
+
+    @Override
+    public JsonObject doAddItems (String id, JsonObject p, User user) {return doAction ((db) -> {
+        
+        for (JsonValue t: p.getJsonObject ("data").getJsonArray ("ids")) {
+            
+            String uuid = db.insertId (WorkingListItem.class, HASH (
+                 WorkingListItem.c.UUID_WORKING_LIST.lc (), id,
+                 WorkingListItem.c.COUNT.lc (), 1,
+                 WorkingListItem.c.UUID_ORG_WORK.lc (), ((JsonString) t).getString ()
+            )).toString ();
+            
+            String id_log = db.insertId (WorkingListItemLog.class, HASH (
+                "action", VocAction.i.CREATE.getName (),
+                "uuid_object", uuid,
+                "uuid_user", user.getId ()
+            )).toString ();
+
+            db.update (WorkingListItem.class, HASH (
+                "uuid",      uuid,
+                "id_log",    id_log
+            ));
+            
+        }        
+        
     });}
 
 }

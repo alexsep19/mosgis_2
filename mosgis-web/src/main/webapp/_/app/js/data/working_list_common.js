@@ -75,20 +75,7 @@ define ([], function () {
 
         w2ui ['topmost_layout'].unlock ('main')
         
-        var data = clone ($('body').data ('data'))
-        
-        data.begins = data.periods.map (function (i) {return {
-            id: i.id.substr (0, 8) + '01',
-            text: i.text
-        }})
-        
-        data.ends   = clone (data.periods).reverse ()
-
-        data.active_tab = localStorage.getItem ('working_list_common.active_tab') || 'working_list_common_items'
-
-        data.__read_only = 1
-
-        if ($_USER.role.admin) data.item.org_label = data.item ['vc_orgs.label']
+        var data = $('body').data ('data')
         
         var it = data.item
         
@@ -105,6 +92,22 @@ define ([], function () {
         }        
 
         it._can.update = it._can.delete = it._can.edit        
+
+        data = clone (data)
+
+        data.begins = data.periods.map (function (i) {return {
+            id: i.id.substr (0, 8) + '01',
+            text: i.text
+        }})
+        
+        data.ends   = clone (data.periods).reverse ()
+
+        data.active_tab = localStorage.getItem ('working_list_common.active_tab') || 'working_list_common_items'
+
+        data.__read_only = 1
+
+        if ($_USER.role.admin) data.item.org_label = data.item ['vc_orgs.label']
+        
         
 //        it.status_label     = data.vc_gis_status [it.id_ctr_status]
 //        if (it.id_ctr_status != it.id_ctr_status_gis) it.gis_status_label = data.vc_gis_status [it.id_ctr_status_gis]

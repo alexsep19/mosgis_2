@@ -12,6 +12,7 @@ import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.Owner;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.tables.PropertyDocument;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.voc.VocProtertyDocumentType;
@@ -73,6 +74,8 @@ public class PropertyDocumentImpl extends BaseCRUD<PropertyDocument> implements 
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
         applySearch (Search.from (p), select);
+        
+        select.and (Owner.c.UUID_HOUSE.lc (), p.getJsonObject ("data").getString ("uuid_house"));
 
         db.addJsonArrayCnt (job, select);
 
@@ -87,9 +90,11 @@ public class PropertyDocumentImpl extends BaseCRUD<PropertyDocument> implements 
             .get (getTable (), id, "AS root", "*")
             .toOne (Premise.class, "AS p", "*").on ()                
             .toOne (House.class, "AS h", "address").on ()
-            .toMaybeOne (VocOrganization.class, "AS org", "label").on ("org.uuid=root." + PropertyDocument.c.UUID_ORG_OWNER.lc ())
-            .toMaybeOne (VocPerson.class, "AS person", "label").on ()
+            .toMaybeOne (VocOrganization.class, "AS org", "label", "id_type").on ("org.uuid=root." + PropertyDocument.c.UUID_ORG_OWNER.lc ())
+            .toMaybeOne (VocPerson.class, "AS person", "label", "uuid_org").on ()
         ));
+        
+        VocAction.addTo (job);
 
         db.addJsonArrays (job,
             m

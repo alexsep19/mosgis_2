@@ -24,6 +24,14 @@ define ([], function () {
                 toolbarInput: false,
                 toolbarAdd: is_editable,
             },            
+            
+            toolbar: {
+            
+                items: !is_editable && data.item [ch.uuid] ? [] : [
+                    {type: 'button', id: 'add', caption: 'Скопировать из устава', onClick: $_DO.add_mgmt_contract_objects, icon: 'w2ui-icon-plus'},
+                ].filter (not_off),
+                
+            },             
 
             textSearch: 'contains',
             
@@ -42,6 +50,8 @@ define ([], function () {
             ]},
 
             url: '/mosgis/_rest/?type=contract_objects',
+            
+            limit: 100000,
                         
             onDblClick: function (e) {openTab ('/mgmt_contract_object/' + e.recid)},
             

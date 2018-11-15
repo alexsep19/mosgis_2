@@ -20,6 +20,7 @@ import ru.eludia.base.model.Table;
 import ru.eludia.base.model.phys.PhysicalCol;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractFile;
 import ru.eludia.products.mosgis.db.model.tables.ContractFileLog;
@@ -144,6 +145,7 @@ logger.info ("data=" + data);
             .get (MgmtContract.class, id, "*")
             .toOne      (VocOrganization.class,                    "label").on ("uuid_org")
             .toMaybeOne (VocOrganization.class, "AS org_customer", "label").on ("uuid_org_customer")
+            .toMaybeOne (Charter.class,         "AS ch",            "uuid").on ("org_customer.uuid=ch.uuid_org")
             .toMaybeOne (ContractLog.class                                ).on ()
             .toMaybeOne (OutSoap.class,                         "err_text").on ()
         );

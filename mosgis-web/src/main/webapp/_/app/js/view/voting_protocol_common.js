@@ -8,55 +8,42 @@ define ([], function () {
     
         function recalc () {
 
-            function disabling (element, i, arr) {
-                element.prop ('disabled', true)
-                element.closest ('.w2ui-field').hide ()
+            function disable_block (table_name) {
+                var $table = $('#' + table_name)
+                $table.find('input').each (disable_element)
+                $table.find('label').each (disable_element)
+                $table.hide ()
             }
-            
-            function enabling (element, i, arr) {
-                element.closest ('.w2ui-field').show ()
+
+            function disable_element (i, element) {
+                $(element).prop ('disabled', true)
+            }
+
+            function enable_block (table_name) {
+                var $table = $('#' + table_name)
+                $table.find('input').each (enable_element)
+                $table.find('label').each (enable_element)
+                $table.show ()
+            }
+
+            function enable_element (i, element) {
                 if (read_only != undefined && !read_only) {
-                    element.prop ('disabled', false)
+                    $(element).prop ('disabled', false)
                 }
             }
 
-            var items = {'avoting': [$('#avotingdate'),
-                                     $('#resolutionplace')],
-                         'meeting': [$('#meetingdate'),
-                                     $('#meetingtime'),
-                                     $('#votingplace')],
-                         'evoting': [$('#evotingdatebegin'),
-                                     $('#evotingtimebegin'),
-                                     $('#evotingdateend'),
-                                     $('#evotingtimeend'),
-                                     $('#discipline'),
-                                     $('#inforeview')],
-                         'meet_av': [$('#meeting_av_date'),
-                                     $('#meeting_av_time'),
-                                     $('#meeting_av_date_end'),
-                                     $('#meeting_av_res_place')]}
+            tables = ['avoting_table', 'meeting_table', 'evoting_table', 'meet_av_table']
+            sizes = [332, 366, 468, 400]
 
-            items['avoting'].forEach(disabling);
-            items['meeting'].forEach(disabling);
-            items['evoting'].forEach(disabling);
-            items['meet_av'].forEach(disabling);
+            tables.forEach (function (element, i, arr) {
+                disable_block (element)
+            })
 
             var v = w2ui [form_name].values ()
 
-            switch (v.form_) {
-                case 0:
-                    items['avoting'].forEach(enabling);
-                    break;
-                case 1:
-                    items['meeting'].forEach(enabling);
-                    break;
-                case 2:
-                    items['evoting'].forEach(enabling);
-                    break;
-                case 3:
-                    items['meet_av'].forEach(enabling);
-                    break;
-            }   
+            enable_block (tables[v.form_])
+            $('#layout_passport_layout_panel_top').height (sizes[v.form_]) // верх
+            $('#layout_passport_layout_panel_main').css('top', sizes[v.form_] + 1 + 'px') // логи
         }
 
         $_F5 = function (data) {
@@ -102,7 +89,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 300},
+                {type: 'top', size: 400},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [

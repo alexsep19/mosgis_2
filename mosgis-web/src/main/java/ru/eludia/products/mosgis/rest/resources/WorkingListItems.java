@@ -8,16 +8,15 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import ru.eludia.products.mosgis.rest.ValidationException;
-import ru.eludia.products.mosgis.rest.api.WorkingListLocal;
+import ru.eludia.products.mosgis.rest.api.WorkingListItemLocal;
 
-@Path ("working_lists")
-public class WorkingLists extends EJBResource <WorkingListLocal> {
+@Path ("working_list_items")
+public class WorkingListItems extends EJBResource <WorkingListItemLocal> {
     
     private JsonObject getData (String id) {
         return back.getItem (id);
     }
-    
+/*    
     private String getUserOrg () {
 
         String userOrg = getUser ().getUuidOrg ();
@@ -30,9 +29,10 @@ public class WorkingLists extends EJBResource <WorkingListLocal> {
         return userOrg;
         
     }
-    
+*/    
     private void checkOrg (JsonObject item) {
-
+        return;
+/*
         if (securityContext.isUserInRole ("admin")) return;
         
         if (!(
@@ -44,7 +44,7 @@ public class WorkingLists extends EJBResource <WorkingListLocal> {
         )) throw new ValidationException ("foo", "Доступ запрещён");
 
         if (!item.containsKey ("cach") || !item.getJsonObject ("cach").getString ("org.uuid").equals (getUser ().getUuidOrg ())) throw new ValidationException ("foo", "Ваша организация не управляет домом по этому адресу. Доступ запрещён.");
-
+*/
     }
     
     @POST
@@ -52,15 +52,7 @@ public class WorkingLists extends EJBResource <WorkingListLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject select (JsonObject p) { 
         return back.select (p, getUser ()); 
-    }
-    
-    @POST
-    @Path("create") 
-    @Produces (APPLICATION_JSON)
-    public JsonObject doCreate (JsonObject p) {
-        getUserOrg ();
-        return back.doCreate (p, getUser ());
-    }
+    }   
 
     @POST
     @Path("{id}/update") 
@@ -79,34 +71,6 @@ public class WorkingLists extends EJBResource <WorkingListLocal> {
         final JsonObject item = getData (id);
         checkOrg (item);
         return back.doDelete (id, getUser ());
-    }
-            
-    @POST
-    @Path("{id}") 
-    @Produces (APPLICATION_JSON)
-    public JsonObject getItem (@PathParam ("id") String id) { 
-        final JsonObject item = back.getItem (id);
-        return item;
-    }
-    
-    @POST
-    @Path("{id}/log") 
-    @Consumes (APPLICATION_JSON)
-    @Produces (APPLICATION_JSON)
-    public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
-        final JsonObject item = back.getItem (id);
-        if (!securityContext.isUserInRole ("admin")) checkOrg (item);
-        return back.getLog (id, p, getUser ());
-    }
-    
-    @POST
-    @Path("{id}/add_items") 
-    @Consumes (APPLICATION_JSON)
-    @Produces (APPLICATION_JSON)
-    public JsonObject doAddItems (@PathParam ("id") String id, JsonObject p) {
-        final JsonObject item = getData (id);
-        checkOrg (item);
-        return back.doAddItems (id, p, getUser ());
     }
     
 }

@@ -5,9 +5,18 @@
         <div class="w2ui-page page-0" style="padding-top: 13px;min-width: 900px">
 
         	<style>
+                td.labels {
+                    width: 300px;
+                }
+
                 .w2ui-field label.gen {
-                    width: 170px !important;
-                    margin-left: 30px !important;
+                    width: 200px !important;
+                    margin-left: 155px !important;
+                }
+
+                .w2ui-field label.evoting {
+                    width: 355px !important;
+                    margin-left: 0px !important;
                 }
 
                 .w2ui-field input.gen {
@@ -17,6 +26,7 @@
 
                 .w2ui-field input.dt {
                     width: 70px !important;
+                    margin-right: 10px !important;
                 }
                 
                 .w2ui-field input.tm {
@@ -24,10 +34,9 @@
                 }
             </style>
 
-            <center>
-            <table style="border-spacing: 4px 4px;">
+            <table style="border-spacing: 4px 4px;" border=0>
                 <tr>
-                    <td>
+                    <td class=labels>
                         <div class="w2ui-field">
                             <label class="gen">Номер протокола</label>
                         </div>
@@ -37,6 +46,8 @@
                             <input class="gen" name=protocolnum maxlength=30>
                         </div>
                     </td>
+                </tr>
+                <tr>
                     <td>
                         <div class="w2ui-field">
                             <label class="gen">Дата составления протокола</label>
@@ -60,6 +71,8 @@
                                 <input name=extravoting placeholder="">
                             </div>
                     </td>
+                </tr>
+                <tr>
                     <td>
                         <div class="w2ui-field">
                             <label class="gen">Правомочность собрания</label>
@@ -70,12 +83,8 @@
                             <input name=meetingeligibility placeholder="">
                         </div>
                     </td>
-                </tr>
-            </table>
-            </center>            
+                </tr>       
 
-            <center>
-            <table style="border-spacing: 4px 4px;">
                 <tr>
                     <td>
                         <div class="w2ui-field">
@@ -89,178 +98,203 @@
                     </td>
                 </tr>
             </table>
-            </center>
-                
-            <center>
-            <table border-spacing: 4px 4px;">
+<!--||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
+            <table id=avoting_table style="border-spacing: 4px 4px;" border=0>
                 <tr>
-                    <td style="width: 280px">
+                    <td class=labels>
                         <div class="w2ui-field">
-                            <label style="width: 200px; margin-right: 5px !important;">Дата окончания приема решений</label>
-                                <div>
-                                    <input id=avotingdate name=avotingdate placeholder="" class=dt>
-                                </div>
+                            <label id=avotingdate_label class=gen>Дата окончания приема решений</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="w2ui-field">
+                            <input id=avotingdate name=avotingdate placeholder="" class=dt>
                         </div>
                     </td>
                 </tr>
                 <tr>
-                    <td style="width: 400px">
+                    <td>
                         <div class="w2ui-field">
-                            <label style="width: 200px; margin-right: 5px !important;">Место принятия решений</label>
-                                <div>
-                                    <input id=resolutionplace name=resolutionplace>
-                                </div>
+                            <label id=resolutionplace_label class=gen>Место принятия решений</label>
                         </div>
                     </td>
-                </tr>
-            </table>
-            </center>
-                
-            <center>
-            <table border-spacing: 4px 4px;">
-                <tr>
-                    <td style="width: 250px">
+                    <td>
                         <div class="w2ui-field">
-                            <label style="width: 170px; margin-right: 5px !important;">Дата проведения собрания</label>
-                            <div>
-                                    <input id=meetingdate name=meetingdate placeholder="" class=dt >
-                                </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="width: 280px">
-                        <div class="w2ui-field">
-                            <label style="width: 170px; margin-right: 5px !important;">Время проведения собрания</label>
-                            <div>
-                                    <input type="time" id=meetingtime name="meetingtime" min="0:00" max="23:00" required class=dt />
-                                </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="width: 360px">
-                        <div class="w2ui-field">
-                            <label style="width: 170px; margin-right: 5px !important;">Место проведения собрания</label>
-                                <div>
-                                <input id=votingplace name=votingplace >
-                            </div>
+                            <input class=gen id=resolutionplace name=resolutionplace>
                         </div>
                     </td>
                 </tr>
             </table>
-            </center>
-                
-            <center>
-            <table border-spacing: 4px 4px;">
+<!--||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
+            <table id=meeting_table style="border-spacing: 4px 4px;" border=0>
                 <tr>
-                    <td style="width: 550px">
+                    <td class=labels>
                         <div class="w2ui-field">
-                            <label style="width: 370px; margin-right: 5px !important;">Дата начала проведения голосования</label>
-                                    <div>
-                                    <input id=evotingdatebegin name=evotingdatebegin placeholder="" class=dt >
-                                </div>
+                            <label id=meetingdate_label class=gen>Дата проведения собрания</label>
                         </div>
                     </td>
-
-                    <td style="width: 550px">
+                    <td>
                         <div class="w2ui-field">
-                            <label style="width: 370px; margin-right: 5px !important;">Время начала проведения собрания</label>
-                            <div>
-                                    <input type="time" id=evotingtimebegin name="evotingtimebegin" min="0:00" max="23:00" required class=dt />
-                                </div>
+                            <input id=meetingdate name="meetingdate" placeholder="" class=dt >
                         </div>
                     </td>
                 </tr>
-                
                 <tr>
-                    <td style="width: 550px">
+                    <td>
                         <div class="w2ui-field">
-                            <label style="width: 370px; margin-right: 5px !important;">Дата окончания проведения голосования</label>
-                            <div>
-                                    <input id=evotingdateend name=evotingdateend placeholder="" class=dt >
-                                </div>
+                            <label id=meetingtime_label class=gen>Время проведения собрания</label>
                         </div>
                     </td>
-
-                    <td style="width: 550px">
+                    <td>
                         <div class="w2ui-field">
-                            <label style="width: 370px; margin-right: 5px !important;">Время окончания проведения собрания</label>
-                                    <div>
-                                    <input type="time" id=evotingtimeend name="evotingtimeend" min="0:00" max="23:00" required class=dt />
-                                </div>
+                            <input type="time" id=meetingtime name="meetingtime" min="0:00" max="23:00" required class=dt />
                         </div>
                     </td>
                 </tr>
-                
                 <tr>
-                    <td style="width: 550px">
+                    <td>
                         <div class="w2ui-field">
-                            <label style="width: 370px; margin-right: 5px !important;">Порядок приема решений собственников</label>
-                            <div>
-                                <input id=discipline name=discipline >
-                            </div>
+                            <label id=votingplace_label class=gen>Место проведения собрания</label>
                         </div>
                     </td>
-
-                    <td style="width: 550px">
+                    <td>
                         <div class="w2ui-field">
-                            <label style="width: 370px; margin-right: 5px !important;">Порядок ознакомления с информацией и (или) материалами</label>
-                            <div>
-                                <input id=inforeview name=inforeview >
-                            </div>
+                            <input class=gen id=votingplace name=votingplace >
                         </div>
                     </td>
                 </tr>
             </table>
-            </center>
-
-            <center>
-            <table border-spacing: 4px 4px;">
-
+<!--||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
+            <table id=evoting_table style="border-spacing: 4px 4px;" border=0>
                 <tr>
-                    <td style="width: 370px">
+                    <td class=labels>
                         <div class="w2ui-field">
-                            <label style="width: 200px; margin-right: 5px !important;">Дата проведения собрания</label>
-                            <div>
-                                    <input id=meeting_av_date name=meeting_av_date placeholder="" class=dt >
-                                </div>
+                            <label id=evotingdatebegin_label class=evoting>Дата начала проведения голосования</label>
                         </div>
                     </td>
-
-                    <td style="width: 370px">
+                    <td>
                         <div class="w2ui-field">
-                            <label style="width: 200px; margin-right: 5px !important;">Время проведения собрания</label>
-                            <div>
-                                    <input type="time" id=meeting_av_time name="meeting_av_time" min="0:00" max="23:00" required class=dt />
-                                </div>
+                            <input id=evotingdatebegin name=evotingdatebegin placeholder="" class=dt >
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="w2ui-field">
+                            <label id=evotingtimebegin_label class=evoting>Время начала проведения собрания</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="w2ui-field">
+                            <input type="time" id=evotingtimebegin name="evotingtimebegin" min="0:00" max="23:00" required class=dt />
                         </div>
                     </td>
                 </tr>
                 
                 <tr>
-                    <td style="width: 370px">
+                    <td>
                         <div class="w2ui-field">
-                            <label style="width: 200px; margin-right: 5px !important;">Дата окончания приема решений</label>
-                            <div>
-                                    <input id=meeting_av_date_end name=meeting_av_date_end placeholder="" class=dt >
-                                </div>
+                            <label id=evotingdateend_label class=evoting>Дата окончания проведения голосования</label>
                         </div>
                     </td>
-                
-                    <td style="width: 370px">
+                    <td>
                         <div class="w2ui-field">
-                            <label style="width: 200px; margin-right: 5px !important;">Место приема решения</label>
-                            <div>
-                                <input id=meeting_av_res_place name=meeting_av_res_place >
-                            </div>
+                            <input id=evotingdateend name=evotingdateend placeholder="" class=dt >
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="w2ui-field">
+                            <label id=evotingtimeend_label class=evoting>Время окончания проведения собрания</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="w2ui-field">
+                            <input type="time" id=evotingtimeend name="evotingtimeend" min="0:00" max="23:00" required class=dt />
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td>
+                        <div class="w2ui-field">
+                            <label id=discipline_label class=evoting>Порядок приема решений собственников</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="w2ui-field">
+                            <input class=gen id=discipline name=discipline >
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="w2ui-field">
+                            <label id=inforeview_label class=evoting>Порядок ознакомления с информацией и (или) материалами</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="w2ui-field">
+                            <input class=gen id=inforeview name=inforeview >
+                        </div>
+                    </td>
+                </tr>
+            </table>
+<!--||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
+            <table id=meet_av_table style="border-spacing: 4px 4px;" border=0>
+                <tr>
+                    <td class=labels>
+                        <div class="w2ui-field">
+                            <label id=meeting_av_date_label class=gen>Дата проведения собрания</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="w2ui-field">
+                            <input id=meeting_av_date name=meeting_av_date placeholder="" class=dt >
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="w2ui-field">
+                            <label id=meeting_av_time_label class=gen>Время проведения собрания</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="w2ui-field">
+                            <input type="time" id=meeting_av_time name="meeting_av_time" min="0:00" max="23:00" required class=dt />
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td>
+                        <div class="w2ui-field">
+                            <label id=meeting_av_date_end_label class=gen>Дата окончания приема решений</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="w2ui-field">
+                            <input id=meeting_av_date_end name=meeting_av_date_end placeholder="" class=dt >
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="w2ui-field">
+                            <label id=meeting_av_res_place_label class=gen>Место приема решения</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="w2ui-field">
+                            <input class=gen id=meeting_av_res_place name=meeting_av_res_place >
                         </div>
                     </td>
                 </tr>
                 
             </table>
-            </center>
-
+<!--||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
         </div>
 
         <div class="w2ui-buttons">

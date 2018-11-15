@@ -52,6 +52,8 @@ define ([], function () {
             columns: [                               
                 {field: 'dt_from', caption: 'Начало', size: 20, render: _my},
                 {field: 'dt_to', caption: 'Окончание', size: 20, render: _my},
+                {field: 'count', caption: 'Количество', size: 10},
+                {field: 'totalcost', caption: 'Общая стоимость', size: 20},
                 {field: 'id_ctr_status', caption: 'Статус', size: 100, voc: data.vc_gis_status},
             ],
             
