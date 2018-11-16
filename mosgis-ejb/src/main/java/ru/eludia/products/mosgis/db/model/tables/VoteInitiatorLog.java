@@ -7,7 +7,7 @@ public class VoteInitiatorLog extends LogTable {
     
     public VoteInitiatorLog () {
     
-        super ("tb_vore_initiators__log", "История редактирования инициаторов собрания", VoteInitiator.class,
+        super ("tb_vote_initiators__log", "История редактирования инициаторов собрания", VoteInitiator.class,
             EnTable.c.class,
             VoteInitiator.c.class
         );
