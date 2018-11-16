@@ -16,6 +16,15 @@ define ([], function () {
 
         $panel.w2regrid ({ 
         
+            toolbar: {
+            
+                items: [
+                    {type: 'button', id: 'create_person', caption: 'Собственник', icon: 'w2ui-icon-plus', onClick: $_DO.create_person_voting_protocol_vote_initiators},
+                    {type: 'button', id: 'create_org', caption: 'Юридическое лицо', icon: 'w2ui-icon-plus', onClick: $_DO.create_org_voting_protocol_vote_initiators},
+                ].filter (not_off),
+                
+            },
+
             multiSelect: false,
 
             name: grid_name,
@@ -24,7 +33,7 @@ define ([], function () {
                 toolbar: true,
                 footer: true,
                 toolbarColumns: true,
-                toolbarAdd: true,
+                //toolbarAdd: true,
             },            
 
             textSearch: 'contains',
