@@ -8,8 +8,6 @@ define ([], function () {
     
     return function (data, view) {
 
-        console.log (data)
-
         var layout = w2ui ['topmost_layout']
         
         var $panel = $(layout.el ('main'))
@@ -19,7 +17,7 @@ define ([], function () {
             toolbar: {
             
                 items: [
-                    {type: 'button', id: 'create_person', caption: 'Собственник', icon: 'w2ui-icon-plus', onClick: $_DO.create_person_voting_protocol_vote_initiators},
+                    {type: 'button', id: 'create_owner', caption: 'Собственник', icon: 'w2ui-icon-plus', onClick: $_DO.create_owner_voting_protocol_vote_initiators},
                     {type: 'button', id: 'create_org', caption: 'Юридическое лицо', icon: 'w2ui-icon-plus', onClick: $_DO.create_org_voting_protocol_vote_initiators},
                 ].filter (not_off),
                 
@@ -33,7 +31,6 @@ define ([], function () {
                 toolbar: true,
                 footer: true,
                 toolbarColumns: true,
-                //toolbarAdd: true,
             },            
 
             textSearch: 'contains',
@@ -58,8 +55,6 @@ define ([], function () {
             onDblClick: function (e) {
                 openTab ('/voting_protocol/' + e.recid)
             },
-
-            onAdd: $_DO.create_voting_protocol_vote_initiators
             
         })
 

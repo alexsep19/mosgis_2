@@ -1,8 +1,15 @@
 define ([], function () {  
     
-    $_DO.create_voting_protocol_vote_initiators = function (e) {
+    $_DO.create_owner_voting_protocol_vote_initiators = function (e) {
 
-        use.block ('voting_protocol_vote_initiators_new')
+        use.block ('voting_protocol_vote_initiators_new_owner')
+    
+    }
+
+    $_DO.create_org_voting_protocol_vote_initiators = function (e) {
+
+        console.log ('ORG')
+        //use.block ('voting_protocol_vote_initiators_new_org')
     
     }
 
