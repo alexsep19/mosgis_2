@@ -4,10 +4,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.sql.SQLException;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -50,9 +47,7 @@ public abstract class Base <T extends Table> {
     public Map<String, Object> getData (JsonObject p, Object... o) throws SQLException {
         return getTable ().HASH (p.getJsonObject ("data"), o);
     }
-    
-    private static final Pattern re = Pattern.compile ("^#(\\w+)#: (.*)");
-    
+        
     public JsonObject doAction (DataFetcher h) {
        
         JsonObjectBuilder job = Json.createObjectBuilder ();
@@ -65,20 +60,9 @@ public abstract class Base <T extends Table> {
         catch (ValidationException ex) {
             throw ex;
         }
-        catch (SQLException ex) {
-
-            if (ex.getErrorCode () == 20000) {                
-                StringTokenizer st = new StringTokenizer (ex.getMessage (), "\n\r");
-                String s = st.nextToken ().replace ("ORA-20000: ", "");
-                Matcher matcher = re.matcher (s);
-                throw matcher.matches () ? 
-                    new ValidationException (matcher.group (1), matcher.group (2)) :
-                    new ValidationException ("foo", s);
-            }
-            else {
-                throw new InternalServerErrorException (ex);
-            }
-                
+        catch (SQLException ex) {            
+            ValidationException vex = ValidationException.wrap (ex);            
+            throw vex == null ? new InternalServerErrorException (ex) : vex;                
         }
         catch (Exception ex) {
             
@@ -107,19 +91,8 @@ public abstract class Base <T extends Table> {
             throw ex;
         }
         catch (SQLException ex) {
-
-            if (ex.getErrorCode () == 20000) {                
-                StringTokenizer st = new StringTokenizer (ex.getMessage (), "\n\r");
-                String s = st.nextToken ().replace ("ORA-20000: ", "");
-                Matcher matcher = re.matcher (s);
-                throw matcher.matches () ? 
-                    new ValidationException (matcher.group (1), matcher.group (2)) :
-                    new ValidationException ("foo", s);
-            }
-            else {
-                throw new InternalServerErrorException (ex);
-            }
-                
+            ValidationException vex = ValidationException.wrap (ex);            
+            throw vex == null ? new InternalServerErrorException (ex) : vex;                
         }
         catch (Exception ex) {
             

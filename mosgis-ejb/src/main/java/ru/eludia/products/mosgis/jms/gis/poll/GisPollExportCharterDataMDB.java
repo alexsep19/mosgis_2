@@ -30,6 +30,7 @@ import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
+import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.rest.api.CharterLocal;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
@@ -141,76 +142,106 @@ public class GisPollExportCharterDataMDB extends GisPollMDB {
         Model m = db.getModel ();
         
         Map<String, Object> logRecord = db.getMap (m.select (CharterLog.class, "action", "uuid_user", "uuid_out_soap", "uuid_message").orderBy ("ts DESC"));
-        
-        AdditionalService.Sync adds = ((AdditionalService) m.get (AdditionalService.class)).new Sync (db, orgUuid);
-        adds.reload ();
                 
-        CharterFile.Sync charterFiles = ((CharterFile) m.get (CharterFile.class)).new Sync (db, ctrUuid, this);
-        charterFiles.addFrom (charter);
-        charterFiles.sync ();                        
-        
-        final String key = "uuid_charter";
-        List<Map<String, Object>> idsCharterObject = db.getList (m.select (CharterObject.class, "uuid").where (key, ctrUuid).and ("is_deleted", 0));
-        List<Map<String, Object>> idsCharterObjectService = db.getList (m.select (CharterObjectService.class, "uuid").where (key, ctrUuid).and ("is_deleted", 0));
-        final Map<String, Object> del = HASH (
-            key, ctrUuid,
-            "is_deleted", 1
-        );        
-        
-        db.update (CharterObject.class,        del, key);
-        log (idsCharterObject, logRecord, db, CharterObjectLog.class);
-        
-        db.update (CharterObjectService.class, del, key);
-        for (Map<String, Object> i: idsCharterObjectService) {
-            logRecord.put ("uuid_object", i.get ("uuid"));
-            db.insert (CharterObjectServiceLog.class, logRecord);
-        }
+        try {            
+            
+            AdditionalService.Sync adds = ((AdditionalService) m.get (AdditionalService.class)).new Sync (db, orgUuid);
+            adds.reload ();
 
-        CharterObject.Sync charterObjects = ((CharterObject) m.get (CharterObject.class)).new Sync (db, ctrUuid, charterFiles);
-        charterObjects.addAll (charter.getContractObject ());
-        charterObjects.sync ();        
-        log (charterObjects.values (), logRecord, db, CharterObjectLog.class);
-        
-        final CharterObjectService srvTable = (CharterObjectService) m.get (CharterObjectService.class);
-        
-        CharterObjectService.SyncH charterObjectServicesH = (srvTable).new SyncH (db, ctrUuid, charterFiles);        
-        CharterObjectService.SyncA charterObjectServicesA = (srvTable).new SyncA (db, ctrUuid, charterFiles, adds);
-        
-        charter.getContractObject ().forEach ((co) -> {
-            Map<String, Object> parent = HASH ("uuid_charter_object", charterObjects.getPk (co));
-            charterObjectServicesH.addAll (co.getHouseService (), parent);
-            charterObjectServicesA.addAll (co.getAddService (), parent);
-        });
-        
-        charterObjectServicesH.sync ();
-        log (charterObjectServicesH.values (), logRecord, db, CharterObjectServiceLog.class);
-        
-        charterObjectServicesA.sync ();
-        log (charterObjectServicesA.values (), logRecord, db, CharterObjectServiceLog.class);
-        
-        VocGisStatus.i status = VocGisStatus.i.forName (charter.getCharterStatus ().value ());
-        
-        final Map<String, Object> h = HASH (
-            "id_ctr_status",       status.getId (),
-            "id_ctr_status_gis",   status.getId (),
-            "charterversionguid", charter.getCharterVersionGUID ()
-        );
-        
-        h.put ("date_", charter.getDate ());
-        
-        Charter.setExtraFields (h, charter);
-        
-        h.put ("uuid", ctrUuid);
-        db.update (Charter.class, h);
-        
-        h.put ("uuid", getUuid ());
-        db.update (CharterLog.class, h);
-        
-        db.update (OutSoap.class, HASH (
-            "uuid", getUuid (),
-            "id_status", DONE.getId ()
-        ));
-        
+            CharterFile.Sync charterFiles = ((CharterFile) m.get (CharterFile.class)).new Sync (db, ctrUuid, this);
+            charterFiles.addFrom (charter);
+            charterFiles.sync ();                        
+
+            final String key = "uuid_charter";
+            List<Map<String, Object>> idsCharterObject = db.getList (m.select (CharterObject.class, "uuid").where (key, ctrUuid).and ("is_deleted", 0));
+            List<Map<String, Object>> idsCharterObjectService = db.getList (m.select (CharterObjectService.class, "uuid").where (key, ctrUuid).and ("is_deleted", 0));
+            final Map<String, Object> del = HASH (
+                key, ctrUuid,
+                "is_deleted", 1
+            );        
+
+            db.update (CharterObject.class,        del, key);
+            log (idsCharterObject, logRecord, db, CharterObjectLog.class);
+
+            db.update (CharterObjectService.class, del, key);
+            for (Map<String, Object> i: idsCharterObjectService) {
+                logRecord.put ("uuid_object", i.get ("uuid"));
+                db.insert (CharterObjectServiceLog.class, logRecord);
+            }
+
+            CharterObject.Sync charterObjects = ((CharterObject) m.get (CharterObject.class)).new Sync (db, ctrUuid, charterFiles);
+            charterObjects.addAll (charter.getContractObject ());
+            charterObjects.sync ();        
+            log (charterObjects.values (), logRecord, db, CharterObjectLog.class);
+
+            final CharterObjectService srvTable = (CharterObjectService) m.get (CharterObjectService.class);
+
+            CharterObjectService.SyncH charterObjectServicesH = (srvTable).new SyncH (db, ctrUuid, charterFiles);        
+            CharterObjectService.SyncA charterObjectServicesA = (srvTable).new SyncA (db, ctrUuid, charterFiles, adds);
+
+            charter.getContractObject ().forEach ((co) -> {
+                Map<String, Object> parent = HASH ("uuid_charter_object", charterObjects.getPk (co));
+                charterObjectServicesH.addAll (co.getHouseService (), parent);
+                charterObjectServicesA.addAll (co.getAddService (), parent);
+            });
+
+            charterObjectServicesH.sync ();
+            log (charterObjectServicesH.values (), logRecord, db, CharterObjectServiceLog.class);
+
+            charterObjectServicesA.sync ();
+            log (charterObjectServicesA.values (), logRecord, db, CharterObjectServiceLog.class);
+            
+            VocGisStatus.i status = VocGisStatus.i.forName (charter.getCharterStatus ().value ());
+
+            final Map<String, Object> h = HASH (
+                "id_ctr_status",       status.getId (),
+                "id_ctr_status_gis",   status.getId (),
+                "charterversionguid", charter.getCharterVersionGUID ()
+            );
+
+            h.put ("date_", charter.getDate ());
+
+            Charter.setExtraFields (h, charter);
+
+            h.put ("uuid", ctrUuid);
+            db.update (Charter.class, h);
+
+            h.put ("uuid", getUuid ());
+            db.update (CharterLog.class, h);
+
+            db.update (OutSoap.class, HASH (
+                "uuid", getUuid (),
+                "id_status", DONE.getId ()
+            ));
+            
+        }
+        catch (Exception ex) {
+            
+            try (DB db1 = m.getDb ()) {
+                
+                db1.update (Charter.class, HASH (
+                    "uuid", ctrUuid,
+                    Charter.c.ID_CTR_STATUS.lc (), VocGisStatus.i.FAILED_STATE.getId ()
+                ));
+                
+                db1.update (CharterLog.class, HASH (
+                    "uuid", logRecord.get ("uuid"),
+                    Charter.c.ID_CTR_STATUS.lc (), VocGisStatus.i.FAILED_STATE.getId ()
+                ));
+                
+                ValidationException vex = ValidationException.wrap (ex);
+                
+                db1.update (OutSoap.class, HASH (
+                    "uuid", logRecord.get ("uuid_out_soap"),
+                    "is_failed", 1,
+                    "err_code", 0,
+                    "err_text", vex == null ? ex.getMessage () : vex.getMessage ()
+                ));
+                
+            }            
+
+        }        
+                
     }
 
     private void log (Collection<Map<String, Object>> records, Map<String, Object> logRecord, DB db, Class c) throws SQLException {
