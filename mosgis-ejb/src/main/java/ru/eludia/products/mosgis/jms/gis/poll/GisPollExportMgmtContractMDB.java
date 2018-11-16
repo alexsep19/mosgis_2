@@ -90,7 +90,7 @@ public class GisPollExportMgmtContractMDB extends GisPollMDB {
     }
 
     @Override
-    protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
+    protected void handleOutSoapRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
 
         UUID orgPPAGuid   = (UUID) r.get ("org.orgppaguid");
         UUID uuidContract = (UUID) r.get ("ctr.uuid");

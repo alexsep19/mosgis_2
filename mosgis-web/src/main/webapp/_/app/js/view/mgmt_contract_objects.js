@@ -17,17 +17,17 @@ define ([], function () {
             name: grid_name,
 
             show: {
-                toolbar: true,
+                toolbar: is_editable,
                 footer: 1,
                 toolbarReload: false,
                 toolbarColumns: false,
                 toolbarInput: false,
                 toolbarAdd: is_editable,
             },            
-            
+
             toolbar: {
             
-                items: !is_editable && data.item [ch.uuid] ? [] : [
+                items: !is_editable || !data.item ['ch.uuid'] ? [] : [
                     {type: 'button', id: 'add', caption: 'Скопировать из устава', onClick: $_DO.add_mgmt_contract_objects, icon: 'w2ui-icon-plus'},
                 ].filter (not_off),
                 
@@ -71,7 +71,9 @@ define ([], function () {
                         
                         var r = grid.get (recid)
                         
-                        if (r ['log.ts'] > data.item.last_approve.ts) {
+                        var last_approve_ts = data.item.last_approve ? data.item.last_approve.ts : '9999'
+                        
+                        if (r ['log.ts'] > last_approve_ts) {
                         
                             $('td', $this).css ({background: '#ffc'})
                         

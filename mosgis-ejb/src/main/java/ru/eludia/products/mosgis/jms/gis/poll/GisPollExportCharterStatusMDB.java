@@ -81,12 +81,12 @@ public class GisPollExportCharterStatusMDB extends UUIDMDB<OutSoap> {
     public static List<UUID> processGetStateResponse (GetStateResult rp, DB db, UUID uuid, boolean versionsOnly) throws SQLException {
         
         List <Map <String, Object>> charterRecords = new ArrayList<> (rp.getExportCAChResult ().size ());
-        List <Map <String, Object>> objectRecords   = new ArrayList<> (rp.getExportCAChResult ().size ());
+//        List <Map <String, Object>> objectRecords   = new ArrayList<> (rp.getExportCAChResult ().size ());
         List <UUID> toPromote = new ArrayList<> ();
         Model m = db.getModel ();        
-        for (ExportStatusCAChResultType er: rp.getExportStatusCAChResult ()) processExportStatus (er, db, m, toPromote, versionsOnly, charterRecords, objectRecords);
+        for (ExportStatusCAChResultType er: rp.getExportStatusCAChResult ()) processExportStatus (er, db, m, toPromote, versionsOnly, charterRecords/*, objectRecords*/);
         db.update (Charter.class, charterRecords);
-        db.update (CharterObject.class, objectRecords, "uuid_charter", "fiashouseguid");
+//        db.update (CharterObject.class, objectRecords, "uuid_charter", "fiashouseguid");
         db.update (OutSoap.class, HASH (
             "uuid", uuid,
             "id_status", DONE.getId ()
@@ -96,7 +96,7 @@ public class GisPollExportCharterStatusMDB extends UUIDMDB<OutSoap> {
         
     }   
     
-    private static boolean processExportStatus (ExportStatusCAChResultType er, DB db, Model m, List<UUID> toPromote, boolean versionsOnly, List<Map<String, Object>> charterRecords, List<Map<String, Object>> objectRecords) throws SQLException {
+    private static boolean processExportStatus (ExportStatusCAChResultType er, DB db, Model m, List<UUID> toPromote, boolean versionsOnly, List<Map<String, Object>> charterRecords/*, List<Map<String, Object>> objectRecords*/) throws SQLException {
         
         final String charterGUID = er.getCharterGUID ();
         
@@ -134,6 +134,7 @@ public class GisPollExportCharterStatusMDB extends UUIDMDB<OutSoap> {
         }
         
         charterRecords.add (ctr);
+/*            
         
         for (ExportStatusCAChResultType.ContractObject co: er.getContractObject ()) {
             
@@ -150,13 +151,13 @@ public class GisPollExportCharterStatusMDB extends UUIDMDB<OutSoap> {
                 "isblocked",                 Boolean.TRUE.equals (co.isIsBlocked ()) ? 1 : 0,
                 "contractobjectversionguid", co.getContractObjectVersionGUID ()
             );
-                        
+
             if (!versionsOnly) or.put ("id_ctr_status_gis", os.getId ());
             
             objectRecords.add (or);
-            
+
         }
-        
+*/        
         return false;
         
     }

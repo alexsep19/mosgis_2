@@ -10,8 +10,12 @@
                 }
 
                 .w2ui-field label.gen {
-                    width: 200px !important;
-                    margin-left: 155px !important;
+                    width: 250px !important;
+                    margin-left: 105px !important;
+                }
+
+                .w2ui-field label.from_to {
+                    width: 15px !important;
                 }
 
                 .w2ui-field label.evoting {
@@ -29,6 +33,11 @@
                     margin-right: 10px !important;
                 }
                 
+                .w2ui-field input.dt_tm {
+                    width: 95px !important;
+                    margin-right: 10px !important;
+                }
+
                 .w2ui-field input.tm {
                     width: 25px !important;
                 }
@@ -68,7 +77,7 @@
                     </td>
                     <td>
                             <div class="w2ui-field">
-                                <input name=extravoting placeholder="">
+                                <input class=gen name=extravoting placeholder="">
                             </div>
                     </td>
                 </tr>
@@ -80,7 +89,7 @@
                     </td>
                     <td>
                         <div class="w2ui-field">
-                            <input name=meetingeligibility placeholder="">
+                            <input class=gen name=meetingeligibility placeholder="">
                         </div>
                     </td>
                 </tr>       
@@ -115,7 +124,7 @@
                 <tr>
                     <td>
                         <div class="w2ui-field">
-                            <label id=resolutionplace_label class=gen>Место принятия решений</label>
+                            <label id=resolutionplace_label class=gen>Место приема решений</label>
                         </div>
                     </td>
                     <td>
@@ -130,24 +139,12 @@
                 <tr>
                     <td class=labels>
                         <div class="w2ui-field">
-                            <label id=meetingdate_label class=gen>Дата проведения собрания</label>
+                            <label id=meetingdate_label class=gen>Дата и время проведения собрания</label>
                         </div>
                     </td>
                     <td>
                         <div class="w2ui-field">
-                            <input id=meetingdate name="meetingdate" placeholder="" class=dt >
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="w2ui-field">
-                            <label id=meetingtime_label class=gen>Время проведения собрания</label>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="w2ui-field">
-                            <input type="time" id=meetingtime name="meetingtime" min="0:00" max="23:00" required class=dt />
+                            <input id=meetingdate name="meetingdate" placeholder="" class=dt_tm >
                         </div>
                     </td>
                 </tr>
@@ -165,57 +162,37 @@
                 </tr>
             </table>
 <!--||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
-            <table id=evoting_table style="border-spacing: 4px 4px;" border=0>
+            <table id=evoting_period_table style="border-spacing: 4px 4px;" border=0>
                 <tr>
                     <td class=labels>
                         <div class="w2ui-field">
-                            <label id=evotingdatebegin_label class=evoting>Дата начала проведения голосования</label>
+                            <label id=evotingdatebegin_label class=gen>Период проведения голосования:</label>
                         </div>
                     </td>
                     <td>
                         <div class="w2ui-field">
-                            <input id=evotingdatebegin name=evotingdatebegin placeholder="" class=dt >
+                            <label id=evoting_from_label class=from_to>с</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="w2ui-field">
+                            <input id=evotingdatebegin name=evotingdatebegin placeholder="" class=dt_tm >
+                        </div>
+                    </td>
+                    <td>
+                        <div class="w2ui-field">
+                            <label id=evoting_to_label class=from_to>по</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="w2ui-field">
+                            <input id=evotingdateend name=evotingdateend placeholder="" class=dt_tm >
                         </div>
                     </td>
                 </tr>
-                <tr>
-                    <td>
-                        <div class="w2ui-field">
-                            <label id=evotingtimebegin_label class=evoting>Время начала проведения собрания</label>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="w2ui-field">
-                            <input type="time" id=evotingtimebegin name="evotingtimebegin" min="0:00" max="23:00" required class=dt />
-                        </div>
-                    </td>
-                </tr>
-                
-                <tr>
-                    <td>
-                        <div class="w2ui-field">
-                            <label id=evotingdateend_label class=evoting>Дата окончания проведения голосования</label>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="w2ui-field">
-                            <input id=evotingdateend name=evotingdateend placeholder="" class=dt >
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="w2ui-field">
-                            <label id=evotingtimeend_label class=evoting>Время окончания проведения собрания</label>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="w2ui-field">
-                            <input type="time" id=evotingtimeend name="evotingtimeend" min="0:00" max="23:00" required class=dt />
-                        </div>
-                    </td>
-                </tr>
-                
+            </table>
+
+            <table id=evoting_table style="border-spacing: 4px 4px;" border=0>
                 <tr>
                     <td>
                         <div class="w2ui-field">
@@ -231,7 +208,7 @@
                 <tr>
                     <td>
                         <div class="w2ui-field">
-                            <label id=inforeview_label class=evoting>Порядок ознакомления с информацией и (или) материалами</label>
+                            <label id=inforeview_label class=evoting>Порядок ознакомления с информацией</label>
                         </div>
                     </td>
                     <td>
@@ -246,24 +223,12 @@
                 <tr>
                     <td class=labels>
                         <div class="w2ui-field">
-                            <label id=meeting_av_date_label class=gen>Дата проведения собрания</label>
+                            <label id=meeting_av_date_label class=gen>Дата и время проведения собрания</label>
                         </div>
                     </td>
                     <td>
                         <div class="w2ui-field">
-                            <input id=meeting_av_date name=meeting_av_date placeholder="" class=dt >
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="w2ui-field">
-                            <label id=meeting_av_time_label class=gen>Время проведения собрания</label>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="w2ui-field">
-                            <input type="time" id=meeting_av_time name="meeting_av_time" min="0:00" max="23:00" required class=dt />
+                            <input id=meeting_av_date name=meeting_av_date placeholder="" class=dt_tm >
                         </div>
                     </td>
                 </tr>
@@ -277,6 +242,18 @@
                     <td>
                         <div class="w2ui-field">
                             <input id=meeting_av_date_end name=meeting_av_date_end placeholder="" class=dt >
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="w2ui-field">
+                            <label id=meeting_av_res_place_label class=gen>Место проведения собрания</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="w2ui-field">
+                            <input class=gen id=meeting_av_place name=meeting_av_place >
                         </div>
                     </td>
                 </tr>

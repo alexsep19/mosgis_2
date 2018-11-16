@@ -1,6 +1,8 @@
 package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.annotation.Resource;
@@ -17,11 +19,12 @@ import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.CharterFile;
 import ru.eludia.products.mosgis.db.model.tables.CharterLog;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
+import ru.eludia.products.mosgis.db.model.tables.CharterObjectLog;
 import ru.eludia.products.mosgis.db.model.tables.CharterObjectService;
+import ru.eludia.products.mosgis.db.model.tables.CharterObjectServiceLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
-import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
@@ -49,7 +52,7 @@ public class GisPollExportCharterDataMDB extends GisPollMDB {
     Queue outExportHouseCharterFilesQueue;    
     
     private GetStateResult getState (UUID orgPPAGuid, Map<String, Object> r) throws GisPollRetryException, GisPollException {
-        
+
         GetStateResult rp;
         
         try {
@@ -82,9 +85,9 @@ public class GisPollExportCharterDataMDB extends GisPollMDB {
     }
 
     @Override
-    protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
-        
-        boolean isAnonymous = r.get ("log.uuid_user") == null;
+    protected void handleOutSoapRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
+                
+        if (DB.ok (r.get ("is_failed"))) throw new IllegalStateException (r.get ("err_text").toString ());
         
         UUID orgPPAGuid          = (UUID) r.get ("org.orgppaguid");
         UUID ctrUuid             = (UUID) r.get ("ctr.uuid");
@@ -115,7 +118,7 @@ public class GisPollExportCharterDataMDB extends GisPollMDB {
 
                 db.begin ();
                 
-                    updateCharter  (db, orgUuid, ctrUuid, charter, isAnonymous);
+                    updateCharter  (db, orgUuid, ctrUuid, charter);
 
                 db.commit ();
 
@@ -133,23 +136,44 @@ public class GisPollExportCharterDataMDB extends GisPollMDB {
 
     }        
 
-    private void updateCharter (DB db, UUID orgUuid, UUID ctrUuid, ExportCAChResultType.Charter charter, boolean isAnonymous) throws SQLException {
+    private void updateCharter (DB db, UUID orgUuid, UUID ctrUuid, ExportCAChResultType.Charter charter) throws SQLException {
         
         Model m = db.getModel ();
+        
+        Map<String, Object> logRecord = db.getMap (m.select (CharterLog.class, "action", "uuid_user", "uuid_out_soap", "uuid_message").orderBy ("ts DESC"));
         
         AdditionalService.Sync adds = ((AdditionalService) m.get (AdditionalService.class)).new Sync (db, orgUuid);
         adds.reload ();
                 
         CharterFile.Sync charterFiles = ((CharterFile) m.get (CharterFile.class)).new Sync (db, ctrUuid, this);
         charterFiles.addFrom (charter);
-        charterFiles.sync ();
+        charterFiles.sync ();                        
+        
+        final String key = "uuid_charter";
+        List<Map<String, Object>> idsCharterObject = db.getList (m.select (CharterObject.class, "uuid").where (key, ctrUuid).and ("is_deleted", 0));
+        List<Map<String, Object>> idsCharterObjectService = db.getList (m.select (CharterObjectService.class, "uuid").where (key, ctrUuid).and ("is_deleted", 0));
+        final Map<String, Object> del = HASH (
+            key, ctrUuid,
+            "is_deleted", 1
+        );        
+        
+        db.update (CharterObject.class,        del, key);
+        log (idsCharterObject, logRecord, db, CharterObjectLog.class);
+        
+        db.update (CharterObjectService.class, del, key);
+        for (Map<String, Object> i: idsCharterObjectService) {
+            logRecord.put ("uuid_object", i.get ("uuid"));
+            db.insert (CharterObjectServiceLog.class, logRecord);
+        }
 
         CharterObject.Sync charterObjects = ((CharterObject) m.get (CharterObject.class)).new Sync (db, ctrUuid, charterFiles);
         charterObjects.addAll (charter.getContractObject ());
-        charterObjects.sync ();
+        charterObjects.sync ();        
+        log (charterObjects.values (), logRecord, db, CharterObjectLog.class);
         
         final CharterObjectService srvTable = (CharterObjectService) m.get (CharterObjectService.class);
-        CharterObjectService.SyncH charterObjectServicesH = (srvTable).new SyncH (db, ctrUuid, charterFiles);
+        
+        CharterObjectService.SyncH charterObjectServicesH = (srvTable).new SyncH (db, ctrUuid, charterFiles);        
         CharterObjectService.SyncA charterObjectServicesA = (srvTable).new SyncA (db, ctrUuid, charterFiles, adds);
         
         charter.getContractObject ().forEach ((co) -> {
@@ -159,7 +183,10 @@ public class GisPollExportCharterDataMDB extends GisPollMDB {
         });
         
         charterObjectServicesH.sync ();
+        log (charterObjectServicesH.values (), logRecord, db, CharterObjectServiceLog.class);
+        
         charterObjectServicesA.sync ();
+        log (charterObjectServicesA.values (), logRecord, db, CharterObjectServiceLog.class);
         
         VocGisStatus.i status = VocGisStatus.i.forName (charter.getCharterStatus ().value ());
         
@@ -171,7 +198,7 @@ public class GisPollExportCharterDataMDB extends GisPollMDB {
         
         h.put ("date_", charter.getDate ());
         
-        if (!isAnonymous) Charter.setExtraFields (h, charter);
+        Charter.setExtraFields (h, charter);
         
         h.put ("uuid", ctrUuid);
         db.update (Charter.class, h);
@@ -184,6 +211,13 @@ public class GisPollExportCharterDataMDB extends GisPollMDB {
             "id_status", DONE.getId ()
         ));
         
+    }
+
+    private void log (Collection<Map<String, Object>> records, Map<String, Object> logRecord, DB db, Class c) throws SQLException {
+        for (Map<String, Object> i: records) {
+            logRecord.put ("uuid_object", i.get ("uuid"));
+            db.insert (c, logRecord);
+        }
     }
 
     private boolean isWrong (ExportCAChResultType.Charter charter, String scharterversionguid) {

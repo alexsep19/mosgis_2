@@ -8,6 +8,7 @@ import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.CharterLog;
 import ru.eludia.products.mosgis.db.model.tables.StuckCharters;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.stuckChartersQueue")
@@ -25,6 +26,7 @@ public class StuckChartersMDB extends StuckMDB<StuckCharters> {
         
         if (values.containsKey ("uuid_out_soap")) db.update (CharterLog.class, DB.HASH (
             "uuid", r.get ("id_log"),
+            "id_ctr_status", VocGisStatus.i.FAILED_STATE.getId (),
             "uuid_out_soap", values.get ("uuid_out_soap")
         ));        
         

@@ -37,6 +37,8 @@ define ([], function () {
         var f = w2ui [form_name]
 
         var v = f.values ()
+
+        console.log ("v:", v)
         
         if (!v.protocoldate) die ('protocoldate', 'Пожалуйста, введите дату составления протокола')
         if (!v.hasOwnProperty('extravoting')) die ('extravoting', 'Пожалуйста, укажите вид собрания')
@@ -47,42 +49,28 @@ define ([], function () {
             case 0:
                 if (!v.avotingdate) die ('avotingdate', 'Пожалуйста, введите дату окончания приема решений')
                 if (!v.resolutionplace) die ('resolutionplace', 'Пожалуйста, введите место принятия решений')
+
                 break;
             case 1:
                 if (!v.meetingdate) die ('meetingdate', 'Пожалуйста, введите дату проведения собрания')
-                if (!v.meetingtime) die ('meetingtime', 'Пожалуйста, введите время проведения собрания')
                 if (!v.votingplace) die ('votingplace', 'Пожалуйста, введите место проведения собрания')
-                
-                if (v.meetingtime.length == 5) v.meetingtime = v.meetingtime + ":00"
-                v.meetingdate = v.meetingdate + " " + v.meetingtime
 
                 break;
             case 2:
                 if (!v.evotingdatebegin) die ('evotingdatebegin', 'Пожалуйста, введите дату начала проведения голосования')
-                if (!v.evotingtimebegin) die ('evotingtimebegin', 'Пожалуйста, введите время начала проведения голосования')
                 if (!v.evotingdateend) die ('evotingdateend', 'Пожалуйста введите дату окончания проведения голосования')
-                if (!v.evotingtimeend) die ('evotingtimeend', 'Пожалуйста, введите время окончания проведения голосования')
                 if (!v.discipline) die ('discipline', 'Пожалуйста, введите порядок приема оформленных в письменной форме решений собственников')
-                if (!v.inforeview) die ('inforeview', 'Пожалуйста, введите порядок ознакомления с информацией и (или) материалами, которые будут представлены на данном собрании')
-                
-                if (v.evotingtimebegin.length == 5) v.evotingtimebegin = v.evotingtimebegin + ":00"
-                if (v.evotingtimeend.length == 5) v.evotingtimeend = v.evotingtimeend + ":00"
-                v.evotingdatebegin = v.evotingdatebegin + " " + v.evotingtimebegin
-                v.evotingdateend = v.evotingdateend + " " + v.evotingtimeend
-                
+                if (!v.inforeview) die ('inforeview', 'Пожалуйста, введите порядок ознакомления с информацией')
+
                 if ((Date.parse (v.evotingdateend) - Date.parse (v.evotingdatebegin)) <= 0) die ('evotingdateend', 'Некорректный временной промежуток')
                 break;
             case 3:
-                if (!v.meeting_av_date) die ('meeting_av_date', 'Пожалуйста, введите дату проведения собрания')
-                if (!v.meeting_av_time) die ('meeting_av_time', 'Пожалуйста, введите время проведения собрания')
+                if (!v.meeting_av_date) die ('meeting_av_date', 'Пожалуйста, введите дату и время проведения собрания')
                 if (!v.meeting_av_date_end) die ('meeting_av_date_end', 'Пожалуйста, введите дату окончания приема решений')
+                if (!v.meeting_av_place) die ('meeting_av_place', 'Пожалуйста, введите место проведения собрания')
                 if (!v.meeting_av_res_place) die ('meeting_av_res_place', 'Пожалуйста, введите место приема решения')
                 
                 if ((Date.parse (v.meeting_av_date_end) - Date.parse (v.meeting_av_date)) < 0) die ('meeting_av_date_end', 'Некорректный временной промежуток')
-                
-                if (v.meeting_av_time.length == 5) v.meeting_av_time = v.meeting_av_time + ":00"
-                v.meeting_av_date = v.meeting_av_date + " " + v.meeting_av_time
-
                 break;
         }
 

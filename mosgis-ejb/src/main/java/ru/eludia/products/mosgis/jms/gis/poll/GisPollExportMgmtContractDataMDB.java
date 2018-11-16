@@ -83,7 +83,7 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
     }
 
     @Override
-    protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
+    protected void handleOutSoapRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
         
         boolean isAnonymous = r.get ("log.uuid_user") == null;
         
