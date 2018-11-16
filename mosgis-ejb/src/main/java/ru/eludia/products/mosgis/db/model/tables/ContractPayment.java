@@ -22,7 +22,7 @@ public class ContractPayment extends EnTable {
         ID_CTR_STATUS_GIS    (VocGisStatus.class,      VocGisStatus.DEFAULT, "Статус объекта договора с точки зрения ГИС ЖКХ"),        
         TYPE_                (VocContractPaymentType.class,    "Тип размера платы"),
          
-//        ID_LOG               (ContractPaymentLog.class,  "Последнее событие редактирования"),
+        ID_LOG               (ContractPaymentLog.class,  "Последнее событие редактирования"),
         BEGINDATE            (DATE,                  "Дата начала периода"),
         ENDDATE              (DATE,                  "Дата окончания периода"),
         HOUSEMANAGEMENTPAYMENTSIZE (NUMERIC, 10, 2, null,  "Размер платы (цена) за услуги, работы по управлению МКД (если утверждена протоколом обшего собрания собственников)/Размер платы за содержание жилого помещения, установленный по результатам открытого конкурса (если утверждена протоколом открытого конкурса)")
