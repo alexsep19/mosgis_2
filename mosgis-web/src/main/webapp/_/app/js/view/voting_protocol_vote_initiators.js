@@ -36,24 +36,20 @@ define ([], function () {
 
             columns: 
             [                
-                {field: 'protocolnum', caption: 'Номер протокола', size: 10, hidden: 1},
-                {field: 'protocoldate', caption: 'Дата составления протокола', size: 7, render: _dt},
-                {field: 'extravoting', caption: 'Вид собрания', size: 7, render: function (r) {return r.extravoting ? 'Внеочередное' : 'Ежегодное'}},
-                {field: 'meetingeligibility', caption: 'Правомочность проведения собрания', size: 10, render: function (r) {return r.meetingeligibility == "C" ? 'Правомочное' : 'Неправомочное'}},
-                {field: 'modification', caption: 'Основания изменения', size: 15, hidden: 1},
-                {field: 'label_form', caption: 'Форма проведения', size: 15},
-                {field: 'status_label', caption: 'Статус протокола', size: 10},
+                {field: 'ind_label', caption: 'ФИО собственника', size: 10},
+                {field: 'org_label', caption: 'Наименование организации', size: 10},
+                {field: 'org_ogrn', caption: 'ОГРН/ОГРНИП', size: 10},
             ].filter (not_off),
 
-            postData: {data: {"uuid_house": data.item.fiashouseguid}},
+            //postData: {data: {"uuid_house": data.item.fiashouseguid}},
 
-            url: '/mosgis/_rest/?type=voting_protocols',
+            url: '/mosgis/_rest/?type=vote_initiators',
            
             onDblClick: function (e) {
                 openTab ('/voting_protocol/' + e.recid)
             },
 
-            onAdd: $_DO.create_house_voting_protocols
+            onAdd: $_DO.create_voting_protocol_vote_initiators
             
         })
 
