@@ -18,32 +18,23 @@ define ([], function () {
                 break;
             case 1:
                 if (!v.meetingdate) die ('meetingdate', 'Пожалуйста, введите дату проведения собрания')
-                if (!v.meetingtime) die ('meetingtime', 'Пожалуйста, введите время проведения собрания')
                 if (!v.votingplace) die ('votingplace', 'Пожалуйста, введите место проведения собрания')
-                v.meetingdate = v.meetingdate + " " + v.meetingtime + ":00"
                 break;
             case 2:
                 if (!v.evotingdatebegin) die ('evotingdatebegin', 'Пожалуйста, введите дату начала проведения голосования')
-                if (!v.evotingtimebegin) die ('evotingtimebegin', 'Пожалуйста, введите время начала проведения голосования')
                 if (!v.evotingdateend) die ('evotingdateend', 'Пожалуйста введите дату окончания проведения голосования')
-                if (!v.evotingtimeend) die ('evotingtimeend', 'Пожалуйста, введите время окончания проведения голосования')
                 if (!v.discipline) die ('discipline', 'Пожалуйста, введите порядок приема оформленных в письменной форме решений собственников')
-                if (!v.inforeview) die ('inforeview', 'Пожалуйста, введите порядок ознакомления с информацией и (или) материалами, которые будут представлены на данном собрании')
-                
-                v.evotingdatebegin = v.evotingdatebegin + " " + v.evotingtimebegin + ":00"
-                v.evotingdateend = v.evotingdateend + " " + v.evotingtimeend + ":00"
+                if (!v.inforeview) die ('inforeview', 'Пожалуйста, введите порядок ознакомления с информацией')
                 
                 if ((Date.parse (v.evotingdateend) - Date.parse (v.evotingdatebegin)) <= 0) die ('evotingdateend', 'Некорректный временной промежуток')
                 break;
             case 3:
                 if (!v.meeting_av_date) die ('meeting_av_date', 'Пожалуйста, введите дату проведения собрания')
-                if (!v.meeting_av_time) die ('meeting_av_time', 'Пожалуйста, введите время проведения собрания')
                 if (!v.meeting_av_date_end) die ('meeting_av_date_end', 'Пожалуйста, введите дату окончания приема решений')
+                if (!v.meeting_av_place) die ('meeting_av_res_place', 'Пожалуйста, введите место проведения собрания')
                 if (!v.meeting_av_res_place) die ('meeting_av_res_place', 'Пожалуйста, введите место приема решения')
                 
                 if ((Date.parse (v.meeting_av_date_end) - Date.parse (v.meeting_av_date)) < 0) die ('meeting_av_date_end', 'Некорректный временной промежуток')
-                
-                v.meeting_av_date = v.meeting_av_date + " " + v.meeting_av_time + ":00"
                 break;
         }
         
