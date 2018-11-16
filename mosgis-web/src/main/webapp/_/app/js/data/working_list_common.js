@@ -94,6 +94,7 @@ define ([], function () {
         it._can.update = it._can.delete = it._can.edit        
 
         data = clone (data)
+        it = data.item
 
         data.begins = data.periods.map (function (i) {return {
             id: i.id.substr (0, 8) + '01',
@@ -106,12 +107,10 @@ define ([], function () {
 
         data.__read_only = 1
 
-        if ($_USER.role.admin) data.item.org_label = data.item ['vc_orgs.label']
-        
-        
-//        it.status_label     = data.vc_gis_status [it.id_ctr_status]
-//        if (it.id_ctr_status != it.id_ctr_status_gis) it.gis_status_label = data.vc_gis_status [it.id_ctr_status_gis]
-                
+        if ($_USER.role.admin) data.item.org_label = data.item ['vc_orgs.label']        
+       
+        it.gis_status_label = data.vc_gis_status [it.id_ctr_status_gis]
+
         done (data)
         
     }

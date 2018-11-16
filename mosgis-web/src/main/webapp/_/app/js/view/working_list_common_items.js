@@ -22,6 +22,7 @@ define ([], function () {
             columns: [  
             
                 {field: 'index_', caption: '№', size: 1, editable: !is_own ? null : {type: 'int', min: 1}},
+                {field: 'vc_nsi_56', caption: 'Вид работ/услуг', size: 30},
                 {field: 'w.label', caption: 'Наименование', size: 50},
                 {field: 'price', caption: 'Цена', size: 10, editable: !is_own ? null : {type: 'float:4', min: 0}},
                 {field: 'count', caption: 'Количество', size: 10, editable: !is_own ? null : {type: 'int', min: 1}},
