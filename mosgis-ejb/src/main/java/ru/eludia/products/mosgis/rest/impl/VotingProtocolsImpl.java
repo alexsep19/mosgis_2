@@ -10,6 +10,8 @@ import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.tables.Premise;
+import ru.eludia.products.mosgis.db.model.tables.PropertyDocument;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocol;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocolLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -132,6 +134,12 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
         ); 
         
         job.add ("item", item);
+        
+        db.addJsonArrays(job, 
+                ModelHolder.getModel ()
+                        .select (PropertyDocument.class, "AS prop_doc", "uuid_org_owner AS id")
+                        .toOne (Premise.class, "AS prem", "*").on("prem.uuid_house=\'" + item.getString ("house_uuid") + "\'")
+        );
         
         final String fiashouseguid = item.getString ("fiashouseguid");    
         VocBuilding.addCaCh (db, job, fiashouseguid);
