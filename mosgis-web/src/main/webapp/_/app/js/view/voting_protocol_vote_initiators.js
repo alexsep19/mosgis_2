@@ -1,6 +1,6 @@
 define ([], function () {
     
-    var grid_name = 'voting_protocols_vote_initiators_grid'
+    var grid_name = 'voting_protocol_vote_initiators_grid'
     
     function getData () {
         return $('body').data ('data')

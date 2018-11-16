@@ -39,6 +39,8 @@ public class VoteInitiator extends EnTable {
         ORG_KPP            (NUMERIC,  9, null, "КПП"),
         ORG_OKOPF          (NUMERIC,  5, null, "ОКОПФ"),
         
+        ORG_LABEL          (STRING,      null, "Наименование организации или ИП"),
+        
         INIT_TYPE          (BOOLEAN, new Virt ("DECODE(\"UUID_ORG\", NULL, 1)"), "Тип инициатора (0 - организация, 1 - физическое лицо)")
         
         ;
@@ -102,12 +104,14 @@ public class VoteInitiator extends EnTable {
                             + "org.ogrn, "
                             + "org.inn, "
                             + "org.kpp, "
-                            + "org.okopf "
+                            + "org.okopf, "
+                            + "org.label "
                         + "INTO "
                             + ":NEW.org_ogrn, "
                             + ":NEW.org_inn, "
                             + ":NEW.org_kpp, "
-                            + ":NEW.org_okopf "
+                            + ":NEW.org_okopf, "
+                            + ":NEW.org_label "
                         + "FROM "
                             + "vc_orgs org WHERE :NEW.uuid_org = org.uuid; "
                     + "END IF; "
