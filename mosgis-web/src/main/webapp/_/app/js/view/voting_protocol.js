@@ -24,6 +24,7 @@ define ([], function () {
 
                         tabs: [
                             {id: 'voting_protocol_common',   caption: 'Общие'},
+                            {id: 'voting_protocol_vote_initiators', caption: 'Инициаторы собрания'},
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_voting_protocol
