@@ -3,11 +3,11 @@ package ru.eludia.products.mosgis.db.model.voc;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.Table;
 
-public class VocProtertyDocumentType extends Table {
+public class VocPropertyDocumentType extends Table {
 
-    public VocProtertyDocumentType () {
+    public VocPropertyDocumentType () {
 
-        super ("vc_prop_doc_types", "Действия пользователей системы");
+        super ("vc_prop_doc_types", "Виды свидетельств прав собственности");
 
         pk    ("id",           Type.INTEGER, "Идентификатор");
         col   ("label",        Type.STRING,  "Наименование");
