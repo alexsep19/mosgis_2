@@ -75,7 +75,7 @@ define ([], function () {
         
         $(view).w2popup('open', {
 
-            width  : 800,
+            width  : 620,
             height : 390,
 
             title   : 'Добавление протокола',

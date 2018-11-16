@@ -7,21 +7,16 @@
 	<style>
 
         td.labels {
-            width: 300px;
+            width: 200px;
         }
 
         .w2ui-field label.gen {
-            width: 250px !important;
-            margin-left: 105px !important;
+            width: 240px !important;
+            margin-left: 10px !important;
         }
 
         .w2ui-field label.from_to {
             width: 15px !important;
-        }
-
-        .w2ui-field label.evoting {
-            width: 355px !important;
-            margin-left: 0px !important;
         }
 
         .w2ui-field input.gen {
@@ -47,7 +42,6 @@
 	<div class="w2ui-reset w2ui-form" style="height:340px; margin:8px 0 0 0;">
 
         <div class="w2ui-page page-0" style="height:340px;">
-            <center>
             <table style="border-spacing: 4px 4px;" border=0>
                 <tr>
                     <td class=labels>
@@ -112,9 +106,7 @@
                     </td>
                 </tr>
             </table>
-        </center>
 <!--||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
-            <center>
             <table id=avoting_table style="border-spacing: 4px 4px;" border=0>
                 <tr>
                     <td class=labels>
@@ -141,9 +133,6 @@
                     </td>
                 </tr>
             </table>
-            </center>
-
-            <center>
             <table id=meeting_table style="border-spacing: 4px 4px;" border=0>
                 <tr>
                     <td class=labels>
@@ -170,14 +159,11 @@
                     </td>
                 </tr>
             </table>
-            </center>
-
-            <center>
             <table id=evoting_period_table style="border-spacing: 4px 4px;" border=0>
                 <tr>
                     <td class=labels>
                         <div class="w2ui-field">
-                            <label id=evotingdatebegin_label class=gen>Период проведения голосования:</label>
+                            <label id=evotingperiod_label class=gen>Период проведения голосования:</label>
                         </div>
                     </td>
                     <td>
@@ -202,14 +188,11 @@
                     </td>
                 </tr>
             </table>
-            </center>
-
-            <center>
             <table id=evoting_table style="border-spacing: 4px 4px;" border=0>
                 <tr>
                     <td>
                         <div class="w2ui-field">
-                            <label id=discipline_label class=evoting>Порядок приема решений собственников</label>
+                            <label id=discipline_label class=gen>Порядок приема решений собственников</label>
                         </div>
                     </td>
                     <td>
@@ -221,7 +204,7 @@
                 <tr>
                     <td>
                         <div class="w2ui-field">
-                            <label id=inforeview_label class=evoting>Порядок ознакомления с информацией</label>
+                            <label id=inforeview_label class=gen>Порядок ознакомления с информацией</label>
                         </div>
                     </td>
                     <td>
@@ -231,9 +214,6 @@
                     </td>
                 </tr>
             </table>
-            </center>
-
-            <center>
             <table id=meet_av_table style="border-spacing: 4px 4px;" border=0>
                 <tr>
                     <td class=labels>
@@ -286,7 +266,6 @@
                 </tr>
                 
             </table>
-            </center>
 
             <div class="w2ui-buttons">
 		<button class=w2ui-btn name=update>Сохранить</button>
