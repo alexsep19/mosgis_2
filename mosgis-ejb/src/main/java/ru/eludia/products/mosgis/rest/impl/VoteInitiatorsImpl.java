@@ -6,7 +6,9 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
+import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.tables.VoteInitiator;
+import ru.eludia.products.mosgis.db.model.tables.VoteInitiatorLog;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocol;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
@@ -15,6 +17,7 @@ import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.VoteInitiatorsLocal;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
+import ru.eludia.products.mosgis.web.base.Search;
 
 @Stateless
 public class VoteInitiatorsImpl extends BaseCRUD<VoteInitiator> implements VoteInitiatorsLocal {
@@ -51,9 +54,20 @@ public class VoteInitiatorsImpl extends BaseCRUD<VoteInitiator> implements VoteI
     }
 
     @Override
-    public JsonObject select(JsonObject p, User user) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
+       
+        Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
+            .where ("uuid_protocol", p.getJsonObject("data").getJsonString("protocol_uuid").getString ())
+            .toMaybeOne (VoteInitiatorLog.class         ).on ()
+            .and ("uuid_org", user.getUuidOrg ())
+            .orderBy ("root.uuid")
+            .limit (p.getInt ("offset"), p.getInt ("limit"));
+
+        //applySearch (Search.from (p), select);
+
+        db.addJsonArrayCnt (job, select);
+
+    });}
 
     @Override
     public JsonObject getItem(String id) {

@@ -8,6 +8,8 @@ define ([], function () {
     
     return function (data, view) {
 
+        console.log (data)
+
         var layout = w2ui ['topmost_layout']
         
         var $panel = $(layout.el ('main'))
@@ -41,7 +43,7 @@ define ([], function () {
                 {field: 'org_ogrn', caption: 'ОГРН/ОГРНИП', size: 10},
             ].filter (not_off),
 
-            //postData: {data: {"uuid_house": data.item.fiashouseguid}},
+            postData: {data: {"protocol_uuid": data.item.uuid}},
 
             url: '/mosgis/_rest/?type=vote_initiators',
            
