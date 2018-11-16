@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import javax.ejb.Stateless;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -15,6 +16,7 @@ import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.VoteInitiatorsLocal;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 
+@Stateless
 public class VoteInitiatorsImpl extends BaseCRUD<VoteInitiator> implements VoteInitiatorsLocal {
     
     @Override
