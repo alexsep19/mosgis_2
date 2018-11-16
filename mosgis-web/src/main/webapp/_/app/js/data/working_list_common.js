@@ -85,7 +85,7 @@ define ([], function () {
         
             var cach = data.cach
 
-            if (cach && cach ['org.uuid'] == $_USER.uuid_org) {
+            if (cach && cach.is_own && cach ['org.uuid'] == $_USER.uuid_org) {
                 it._can.edit = 1
             }        
             
