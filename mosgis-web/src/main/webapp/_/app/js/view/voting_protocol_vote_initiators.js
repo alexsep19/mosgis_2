@@ -38,8 +38,7 @@ define ([], function () {
 
             columns: 
             [                
-                {field: 'ind_label', caption: 'ФИО собственника', size: 10},
-                {field: 'org_label', caption: 'Наименование организации', size: 10},
+                {field: 'initiator', caption: 'Инициатор', size: 10},
                 {field: 'org_ogrn', caption: 'ОГРН/ОГРНИП', size: 10},
             ].filter (not_off),
 

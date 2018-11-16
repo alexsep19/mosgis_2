@@ -41,7 +41,8 @@ public class VoteInitiator extends EnTable {
         
         ORG_LABEL          (STRING,      null, "Наименование организации или ИП"),
         
-        INIT_TYPE          (BOOLEAN, new Virt ("DECODE(\"UUID_ORG\", NULL, 1)"), "Тип инициатора (0 - организация, 1 - физическое лицо)")
+        INIT_TYPE          (BOOLEAN, new Virt ("DECODE(\"UUID_ORG\", NULL, 1, 0)"), "Тип инициатора (0 - организация, 1 - физическое лицо)"),
+        INITIATOR          (STRING, new Virt ("DECODE(\"UUID_ORG\", NULL, \"ORG_LABEL\", \"IND_LABEL\")"), "Инициатор")
         
         ;
         
