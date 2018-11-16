@@ -143,7 +143,9 @@ public class GisPollExportCharterDataMDB extends GisPollMDB {
         
         Map<String, Object> logRecord = db.getMap (m.select (CharterLog.class, "action", "uuid_user", "uuid_out_soap", "uuid_message").orderBy ("ts DESC"));
                 
-        try {            
+        try {
+            
+            db.begin ();
             
             AdditionalService.Sync adds = ((AdditionalService) m.get (AdditionalService.class)).new Sync (db, orgUuid);
             adds.reload ();
@@ -214,32 +216,34 @@ public class GisPollExportCharterDataMDB extends GisPollMDB {
                 "id_status", DONE.getId ()
             ));
             
+            db.commit ();
+            
         }
         catch (Exception ex) {
             
-            try (DB db1 = m.getDb ()) {
+            db.rollback ();
+            
+            db.getConnection ().setAutoCommit (true);
+                            
+            ValidationException vex = ValidationException.wrap (ex);
                 
-                db1.update (Charter.class, HASH (
-                    "uuid", ctrUuid,
-                    Charter.c.ID_CTR_STATUS.lc (), VocGisStatus.i.FAILED_STATE.getId ()
-                ));
-                
-                db1.update (CharterLog.class, HASH (
-                    "uuid", logRecord.get ("uuid"),
-                    Charter.c.ID_CTR_STATUS.lc (), VocGisStatus.i.FAILED_STATE.getId ()
-                ));
-                
-                ValidationException vex = ValidationException.wrap (ex);
-                
-                db1.update (OutSoap.class, HASH (
-                    "uuid", logRecord.get ("uuid_out_soap"),
-                    "is_failed", 1,
-                    "err_code", 0,
-                    "err_text", vex == null ? ex.getMessage () : vex.getMessage ()
-                ));
-                
-            }            
+            db.update (OutSoap.class, HASH (
+                "uuid", logRecord.get ("uuid_out_soap"),
+                "is_failed", 1,
+                "err_code", 0,
+                "err_text", vex == null ? ex.getMessage () : vex.getMessage ()
+            ));
 
+            db.update (Charter.class, HASH (
+                "uuid", ctrUuid,
+                Charter.c.ID_CTR_STATUS.lc (), VocGisStatus.i.FAILED_STATE.getId ()
+            ));
+
+            db.update (CharterLog.class, HASH (
+                "uuid", logRecord.get ("uuid"),
+                Charter.c.ID_CTR_STATUS.lc (), VocGisStatus.i.FAILED_STATE.getId ()
+            ));
+                
         }        
                 
     }
