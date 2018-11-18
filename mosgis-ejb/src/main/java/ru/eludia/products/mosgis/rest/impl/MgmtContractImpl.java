@@ -31,6 +31,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
+import ru.eludia.products.mosgis.db.model.voc.VocContractPaymentType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType;
 import static ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType.i.OWNERS;
@@ -202,6 +203,7 @@ logger.info ("data=" + data);
         JsonObjectBuilder jb = Json.createObjectBuilder ();
         
         VocAction.addTo (jb);
+        VocContractPaymentType.addTo (jb);
         
         final MosGisModel model = ModelHolder.getModel ();
 

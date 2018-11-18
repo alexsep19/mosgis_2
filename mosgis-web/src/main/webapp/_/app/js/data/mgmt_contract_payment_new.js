@@ -1,0 +1,72 @@
+define ([], function () {
+
+    $_DO.update_mgmt_contract_payment_new = function (e) {
+
+        var form = w2ui ['contract_payment_new_form']
+
+        var v = form.values ()
+        
+        var it = $('body').data ('data').item
+        
+        if (!v.begindate) die ('begindate', 'Укажите, пожалуйста, дату начала')
+        if (v.begindate > it.effectivedate.substr (0, 10)) {
+            var dt = new Date (v.begindate)
+            if (dt.getDate () != 1) die ('begindate', 'Поскольку дата начала периода отлична от даты начала действия договора, она должна быть первым днём месяца')
+        }
+        
+        if (!v.enddate) die ('enddate', 'Укажите, пожалуйста, дату окончания')
+        if (v.enddate < v.begindate) die ('enddate', 'Дата начала превышает дату окончания управления')
+        if (v.enddate < it.plandatecomptetion.substr (0, 10)) {
+            var dt = new Date (v.enddate)
+            dt.setDate (1 + dt.getDate ())
+            if (dt.getDate () != 1) die ('enddate', 'Поскольку дата окончания периода отлична от даты окончания действия договора, она должна быть последним днём месяца')
+        }
+        
+        if (!(v.housemanagementpaymentsize) > 0) die ('housemanagementpaymentsize', 'Укажите, пожалуйста, корректный размер платы')
+        
+        v.uuid_contract = $_REQUEST.id
+
+        query ({type: 'contract_payments', action: 'create', id: undefined}, {data: v}, function (data) {
+        
+            w2popup.close ()
+
+            if (data.id) w2confirm ('Услуга зарегистрирована. Открыть её страницу в новой вкладке?').yes (function () {openTab ('/contract_payment/' + data.id)})
+            
+            var grid = w2ui ['mgmt_contract_payments_grid']
+
+            grid.reload (grid.refresh)
+            
+        })
+
+    }
+
+    return function (done) {
+
+        var data = clone ($('body').data ('data'))
+
+        data.record = {
+            uuid_contract_object: "",
+            type_: data.item.code_vc_nsi_58 == 1 ? "P" : "C",
+            begindate: dt_dmy (data.item.effectivedate),
+            enddate:   dt_dmy (data.item.plandatecomptetion),
+        }
+                
+        query ({type: "contract_objects", id: undefined}, {limit: 100000, offset: 0, search: [        
+            {field: "uuid_contract", operator: "is", value: data.item.uuid},            
+        ]}, function (d) {
+        
+            var a = [{id: "", text: "Все объекты договора"}]
+            
+            $.each (d.root, function () {
+                a.push ({id: this.id, text: this ['fias.label']})
+            })
+            
+            data.objects = a
+            
+            done (data)
+
+        })                      
+
+    }
+
+})

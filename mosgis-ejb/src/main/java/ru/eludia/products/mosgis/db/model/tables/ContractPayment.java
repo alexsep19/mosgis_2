@@ -38,7 +38,7 @@ public class ContractPayment extends EnTable {
         @Override
         public boolean isLoggable () {
             switch (this) {
-//                case ID_LOG:
+                case ID_LOG:
                 case UUID_CONTRACT:
                 case UUID_CONTRACT_OBJECT:
                 case FIASHOUSEGUID:
@@ -59,16 +59,14 @@ public class ContractPayment extends EnTable {
         key    ("uuid_contract", c.UUID_CONTRACT);
         key    ("uuid_contract_object", c.UUID_CONTRACT_OBJECT);
 
-        trigger ("BEFORE INSERT", 
-                
-              "BEGIN "
-                + "SELECT uuid_contract, fiashouseguid INTO :NEW.uuid_contract, :NEW.fiashouseguid FROM tb_contract_objects WHERE uuid=:NEW.uuid_contract_object; "                      
-            + "END;"
-                
+        trigger ("BEFORE INSERT",                 
+            "BEGIN "
+            + "  IF :NEW.uuid_contract_object IS NOT NULL THEN "
+                + "SELECT fiashouseguid INTO :NEW.fiashouseguid FROM tb_contract_objects WHERE uuid=:NEW.uuid_contract_object; "                      
+            + "  END IF;"
+            + "END;"                
         );
-        
-        /*
-        
+                
         trigger ("BEFORE INSERT OR UPDATE", ""
                 
             + "DECLARE" 
@@ -77,54 +75,31 @@ public class ContractPayment extends EnTable {
                     
             + "IF :NEW.is_deleted = 0 THEN "
 
-                + "IF :NEW.uuid_contract_object IS NOT NULL THEN "
-                    + " FOR i IN ("
-                        + "SELECT "
-                        + " o.dt_from"
-                        + " , o.dt_to "
-                        + "FROM "
-                        + " tb_work_lists o "
-                        + "WHERE o.is_deleted = 0"
-                        + " AND o.uuid_contract_object = :NEW.uuid_contract_object "
-                        + " AND o.dt_to   >= :NEW.dt_to "
-                        + " AND o.dt_from <= :NEW.dt_from "
-                        + " AND o.uuid <> NVL(:NEW.uuid, '00') "
-                        + ") LOOP"
-                    + " raise_application_error (-20000, "
-                        + "'Для этого объекта уже зарегистртрован перечень работ с ' "
-                        + "|| TO_CHAR (i.dt_from, 'DD.MM.YYYY')"
-                        + "||' по '"
-                        + "|| TO_CHAR (i.dt_to, 'DD.MM.YYYY')"
-                        + "|| '. Операция отменена.'); "
-                    + " END LOOP; "
-                + "END IF; "                                        
-                
-                + "IF :NEW.uuid_charter_object IS NOT NULL THEN "
-                    + " FOR i IN ("
-                        + "SELECT "
-                        + " o.dt_from"
-                        + " , o.dt_to "
-                        + "FROM "
-                        + " tb_work_lists o "
-                        + "WHERE o.is_deleted = 0"
-                        + " AND o.uuid_charter_object = :NEW.uuid_charter_object "
-                        + " AND o.dt_to   >= :NEW.dt_to "
-                        + " AND o.dt_from <= :NEW.dt_from "
-                        + " AND o.uuid <> NVL(:NEW.uuid, '00') "
-                        + ") LOOP"
-                    + " raise_application_error (-20000, "
-                        + "'Для этого объекта уже зарегистртрован перечень работ с ' "
-                        + "|| TO_CHAR (i.dt_from, 'DD.MM.YYYY')"
-                        + "||' по '"
-                        + "|| TO_CHAR (i.dt_to, 'DD.MM.YYYY')"
-                        + "|| '. Операция отменена.'); "
-                    + " END LOOP; "
-                + "END IF; "                                        
+                + " FOR i IN ("
+                    + "SELECT "
+                    + " o.begindate"
+                    + " , o.enddate "
+                    + "FROM "
+                    + " tb_ctr_payments o "
+                    + "WHERE o.is_deleted = 0"
+                    + " AND o.uuid_contract = :NEW.uuid_contract "
+                    + " AND NVL (o.uuid_contract_object, '00') = NVL (:NEW.uuid_contract_object, '00') "
+                    + " AND o.enddate   >= :NEW.begindate "
+                    + " AND o.begindate <= :NEW.enddate "
+                    + " AND o.uuid <> NVL(:NEW.uuid, '00') "
+                    + ") LOOP"
+                + " raise_application_error (-20000, "
+                    + "'Указанный период пересекается с другой информацией о размере платы за жилое помещение с ' "
+                    + "|| TO_CHAR (i.begindate, 'DD.MM.YYYY')"
+                    + "||' по '"
+                    + "|| TO_CHAR (i.enddate, 'DD.MM.YYYY')"
+                    + "|| '. Операция отменена.'); "
+                + " END LOOP; "
 
             + "END IF; "                                        
                     
         + "END;");        
-*/
+
     }
 
 }

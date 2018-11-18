@@ -1,0 +1,66 @@
+<span
+	data-popup-width=480
+	data-popup-height=260
+	data-popup-title='Добавить услугу управления'
+>
+
+	<style>
+
+        label[data-block-name=mgmt_contract_payment_new] {
+        	width: 120px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=mgmt_contract_payment_new] {
+        	width: 300px !important;
+        }
+
+        input[data-block-name=mgmt_contract_payment_new].dt {
+        	width: 70px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:205px; margin:8px 0 0 0;">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Объект управления</label>
+                <div>
+                	<input name=uuid_contract_object>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Период: с</label>
+                <div>
+                    <input name=begindate placeholder="" class=dt />
+по
+                    <input name=enddate placeholder="" class=dt />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Размер платы за м<sup>2</sup></label>
+                <div>
+                	<input name=housemanagementpaymentsize class=dt> руб.
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Основание</label>
+                <div>
+                	<input name=type_>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>

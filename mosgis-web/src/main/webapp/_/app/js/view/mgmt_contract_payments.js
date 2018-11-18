@@ -17,6 +17,7 @@ define ([], function () {
             name: grid_name,
 
             show: {
+                toolbar: 1,
                 footer: 1,
                 toolbarReload: false,
                 toolbarColumns: false,
