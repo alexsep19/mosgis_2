@@ -71,7 +71,7 @@ public class ContractPaymentImpl extends BaseCRUD<ContractPayment> implements Co
 
         applySearch (Search.from (p), select);
         
-        select.and (Owner.c.UUID_HOUSE.lc (), p.getJsonObject ("data").getString ("uuid_house"));
+        select.and (ContractPayment.c.UUID_CONTRACT.lc (), p.getJsonObject ("data").getString ("uuid_contract"));
 
         db.addJsonArrayCnt (job, select);
 

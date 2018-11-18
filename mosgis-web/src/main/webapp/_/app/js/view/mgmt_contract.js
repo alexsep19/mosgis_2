@@ -43,6 +43,7 @@ define ([], function () {
                             {id: 'mgmt_contract_docs',     caption: 'Документы'},
                             {id: 'mgmt_contract_agreements',     caption: 'Доп. соглашения'},
                             {id: 'mgmt_contract_objects',  caption: 'Объекты управления'},
+                            {id: 'mgmt_contract_payments',  caption: 'Услуги управления'},
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_mgmt_contract
