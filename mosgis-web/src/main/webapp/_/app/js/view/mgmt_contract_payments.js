@@ -28,8 +28,11 @@ define ([], function () {
             textSearch: 'contains',
             
             columns: [              
-                {field: 'begindate', caption: 'Начало', size: 18, render: _dt},
-                {field: 'enddate', caption: 'Окончание', size: 18, render: _dt},
+                {field: 'begindate', caption: 'Начало', size: 10, render: _dt},
+                {field: 'enddate', caption: 'Окончание', size: 10, render: _dt},
+                {field: 'vc_buildings.label', caption: 'Адрес', size: 50},
+                {field: 'housemanagementpaymentsize', caption: 'Руб/м2', size: 10},
+                {field: 'type_', caption: 'Основание', size: 50, voc: data.vc_ctr_pay_types},
             ],
             
             postData: {data: {uuid_contract: $_REQUEST.id}},

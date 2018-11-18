@@ -8,9 +8,11 @@ import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.Owner;
 import ru.eludia.products.mosgis.db.model.tables.ContractPayment;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocContractPaymentType;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
@@ -65,7 +67,9 @@ public class ContractPaymentImpl extends BaseCRUD<ContractPayment> implements Co
         
         final Model m = ModelHolder.getModel ();
 
-        Select select = m.select (ContractPayment.class, "*")
+        Select select = m.select (ContractPayment.class, "*", "uuid AS id")
+            .toMaybeOne (ContractObject.class).on ()
+            .toMaybeOne (VocBuilding.class, "label").on ()
             .orderBy (ContractPayment.c.BEGINDATE.lc ())
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
