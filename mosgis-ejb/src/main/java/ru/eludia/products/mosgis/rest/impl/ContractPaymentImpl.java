@@ -8,12 +8,14 @@ import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.Owner;
 import ru.eludia.products.mosgis.db.model.tables.ContractPayment;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocContractPaymentType;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.ContractPaymentLocal;
@@ -88,8 +90,12 @@ public class ContractPaymentImpl extends BaseCRUD<ContractPayment> implements Co
 
         job.add ("item", db.getJsonObject (m
             .get (getTable (), id, "AS root", "*")
+            .toOne (Contract.class, "AS ctr", "*").on ()
+            .toOne (VocOrganization.class, "AS org", "label").on ("ctr.uuid_org")                
+            .toMaybeOne (ContractObject.class).on ()
+            .toMaybeOne (VocBuilding.class, "AS fias", "label").on ()
         ));
-        
+
         VocAction.addTo (job);
         VocContractPaymentType.addTo (job);
 
