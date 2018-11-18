@@ -20,14 +20,13 @@ define ([], function () {
     return function (done) {
     
         query ({type: 'contract_payments'}, {}, function (data) {
-/*        
+
             add_vocabularies (data, {
-                vc_contract_doc_types: 1,
-                vc_nsi_3: 1,
-                tb_add_services: 1,
-                vc_gis_status: 1,
+                vc_ctr_pay_types: 1,
                 vc_actions: 1,
             })
+
+/*        
             
             var it = data.item
 
