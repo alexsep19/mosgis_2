@@ -56,9 +56,12 @@ define ([], function () {
                 record = w2ui[grid_name].records.find (x => x['id'] == e.recid)
 
                 if (record['uuid_ind'] == undefined)
-                    openTab ('/voc_org/' + record['uuid_org'])
+                    if (record['org.id_type'] > 0)
+                        openTab ('/voc_organization_legal/' + record['uuid_org'])
+                    else
+                        openTab ('/voc_organization_individual/' + record['uuid_org'])
                 else
-                   openTab ('/vc_person/' + record['prop.uuid_person_owner'])
+                    openTab ('/vc_person/' + record['prop.uuid_person_owner'])
             },
             
         })
