@@ -4,6 +4,21 @@ define ([], function () {
         
         var name = 'voting_protocol_vote_initiators_new_owner_form'
 
+        var grid = w2ui ['voting_protocol_vote_initiators_grid']
+
+        var ids = []
+        grid.records.forEach ((element, i, arr) => {ids.push(element['uuid_ind'])})
+
+        var owners = []
+        data.owners.items.forEach ((element, i, arr) => {
+            if (!ids.includes (element['id'])) owners.push (element)
+        })
+
+        if (owners.length == 0) { 
+            alert ('Все собственники уже являются инициаторами')
+            return false;
+        }
+
         $(view).w2popup('open', {
 
             width  : 500,
@@ -24,7 +39,7 @@ define ([], function () {
                         name: name,
 
                         fields : [
-                            {name: 'uuid_ind', type: 'list', options: {items: data.owners.items}},
+                            {name: 'uuid_ind', type: 'list', options: {items: owners}},
                         ],
 
                     });
