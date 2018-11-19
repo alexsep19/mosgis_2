@@ -24,7 +24,7 @@ define ([], function () {
         
             w2popup.close ()
             
-            if (data.id) w2confirm ('Перейти на страницу инициатора?').yes (function () {openTab ('/vote_initiators/' + data.id)})
+            if (data.id) w2confirm ('Перейти на страницу собственника?').yes (function () {openTab ('/vc_person/' + data.id)})
             
             grid.reload (grid.refresh)
             

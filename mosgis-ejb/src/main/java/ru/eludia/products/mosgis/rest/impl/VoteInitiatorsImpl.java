@@ -9,6 +9,7 @@ import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
+import ru.eludia.products.mosgis.db.model.tables.PropertyDocument;
 import ru.eludia.products.mosgis.db.model.tables.VoteInitiator;
 import ru.eludia.products.mosgis.db.model.tables.VoteInitiatorLog;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocol;
@@ -59,8 +60,10 @@ public class VoteInitiatorsImpl extends BaseCRUD<VoteInitiator> implements VoteI
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
        
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
-            .where ("uuid_protocol", p.getJsonObject("data").getJsonString("protocol_uuid").getString ())
+            .toMaybeOne (PropertyDocument.class, "AS prop", "uuid_person_owner").on ("root.uuid_ind=prop.uuid")
+            .toMaybeOne (VocOrganization.class, "AS org", "id_type").on ("root.uuid_org=org.uuid")
             .toMaybeOne (VoteInitiatorLog.class         ).on ()
+            .where ("uuid_protocol", p.getJsonObject("data").getJsonString("protocol_uuid").getString ())
             .orderBy ("root.uuid")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
