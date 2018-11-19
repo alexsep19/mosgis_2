@@ -8,8 +8,11 @@ import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.OrganizationWork;
 import ru.eludia.products.mosgis.db.model.tables.ServicePayment;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.ServicePaymentLocal;
@@ -62,9 +65,14 @@ public class ServicePaymentImpl extends BaseCRUD<ServicePayment> implements Serv
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
         
         final Model m = ModelHolder.getModel ();
+        
+        final NsiTable nsiTable = NsiTable.getNsiTable (56);
 
         Select select = m.select (ServicePayment.class, "*", "uuid AS id")
-//            .orderBy (ServicePayment.c.BEGINDATE.lc ())
+            .toOne (OrganizationWork.class, "AS w", "label").on ()
+            .toMaybeOne (VocOkei.class, "AS ok", "national").on ()
+            .toMaybeOne (nsiTable, nsiTable.getLabelField ().getfName () + " AS vc_nsi_56").on ("(w.code_vc_nsi_56=vc_nsi_56.code AND vc_nsi_56.isactual=1)")
+            .orderBy ("w.label")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
         applySearch (Search.from (p), select);

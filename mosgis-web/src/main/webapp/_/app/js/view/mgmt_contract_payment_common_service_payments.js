@@ -20,7 +20,7 @@ define ([], function () {
             multiSelect: false,
             
             columns: [              
-                {field: 'label', caption: 'Услуга', size: 50},
+                {field: 'w.label', caption: 'Услуга', size: 50},
                 {field: 'servicepaymentsize', caption: 'Размер платы', size: 100, editable: !is_own ? null : {type: 'float:4', min: 0}},
             ],
             
