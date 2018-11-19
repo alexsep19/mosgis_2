@@ -34,7 +34,7 @@ define ([], function () {
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
-                            {id: 'mgmt_contract_payment_common_services', caption: 'Услуги'},
+                            {id: 'mgmt_contract_payment_common_services', caption: 'Перечень услуг и размер оплаты'},
                             {id: 'mgmt_contract_payment_common_log', caption: 'История изменений'},
                         ],
                         onClick: $_DO.choose_tab_mgmt_contract_payment_common
