@@ -3,6 +3,9 @@ package ru.eludia.products.mosgis.rest.impl;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.json.JsonObject;
+import javax.json.JsonString;
+import javax.json.JsonValue;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Select;
@@ -10,11 +13,15 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
-import ru.eludia.products.mosgis.db.model.tables.Owner;
 import ru.eludia.products.mosgis.db.model.tables.ContractPayment;
+import ru.eludia.products.mosgis.db.model.tables.OrganizationWork;
+import ru.eludia.products.mosgis.db.model.tables.ServicePayment;
+import ru.eludia.products.mosgis.db.model.tables.ServicePaymentLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocContractPaymentType;
+import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
@@ -87,18 +94,56 @@ public class ContractPaymentImpl extends BaseCRUD<ContractPayment> implements Co
     public JsonObject getItem (String id) {return fetchData ((db, job) -> {
 
         final MosGisModel m = ModelHolder.getModel ();
+        
+        final JsonObject item = db.getJsonObject (m
+                .get (getTable (), id, "AS root", "*")
+                .toOne (Contract.class, "AS ctr", "*").on ()
+                .toOne (VocOrganization.class, "AS org", "label").on ("ctr.uuid_org")
+                .toMaybeOne (ContractObject.class).on ()
+                .toMaybeOne (VocBuilding.class, "AS fias", "label").on ()
+        );
 
-        job.add ("item", db.getJsonObject (m
-            .get (getTable (), id, "AS root", "*")
-            .toOne (Contract.class, "AS ctr", "*").on ()
-            .toOne (VocOrganization.class, "AS org", "label").on ("ctr.uuid_org")                
-            .toMaybeOne (ContractObject.class).on ()
-            .toMaybeOne (VocBuilding.class, "AS fias", "label").on ()
-        ));
+        job.add ("item", item);
+        
+        db.addJsonArrays (job,
+
+            m
+                .select     (OrganizationWork.class, "AS org_works", "uuid AS id", "label")
+                .toMaybeOne (VocOkei.class, "AS okei", "national").on ()
+                .where      ("uuid_org", item.getString ("ctr.uuid_org", "00"))
+                .and        ("id_status", VocAsyncEntityState.i.OK.getId ())
+                .orderBy    ("org_works.label")
+
+        );        
 
         VocAction.addTo (job);
         VocContractPaymentType.addTo (job);
 
     });}        
+    
+    @Override
+    public JsonObject doAddItems (String id, JsonObject p, User user) {return doAction ((db) -> {
+        
+        for (JsonValue t: p.getJsonObject ("data").getJsonArray ("ids")) {
+            
+            String uuid = db.insertId (ServicePayment.class, HASH (
+                 ServicePayment.c.UUID_CONTRACT_PAYMENT.lc (), id,
+                 ServicePayment.c.UUID_ORG_WORK.lc (), ((JsonString) t).getString ()
+            )).toString ();
+            
+            String id_log = db.insertId (ServicePaymentLog.class, HASH (
+                "action", VocAction.i.CREATE.getName (),
+                "uuid_object", uuid,
+                "uuid_user", user.getId ()
+            )).toString ();
+
+            db.update (ServicePayment.class, HASH (
+                "uuid",      uuid,
+                "id_log",    id_log
+            ));
+            
+        }        
+        
+    });}    
     
 }

@@ -112,4 +112,14 @@ public class ContractPayments extends EJBResource <ContractPaymentLocal> {
         return back.getLog (id, p, getUser ());
     }
     
+    @POST
+    @Path("{id}/add_items") 
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject doAddItems (@PathParam ("id") String id, JsonObject p) {
+        final JsonObject item = back.getItem (id);
+        checkOrg (item);
+        return back.doAddItems (id, p, getUser ());
+    }
+    
 }
