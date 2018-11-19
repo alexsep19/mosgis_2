@@ -4,8 +4,6 @@ define ([], function () {
         
         var name = 'voting_protocol_vote_initiators_new_owner_form'
 
-        console.log (data.owners)
-
         $(view).w2popup('open', {
 
             width  : 500,

@@ -5,6 +5,8 @@ define ([], function () {
         var form = w2ui ['voting_protocol_vote_initiators_new_owner_form']
 
         var v = form.values ()
+
+        if (!v.uuid_ind) die ('uuid_ind', 'Пожалуйста, выберите инициатора-собственника из списка')
         
         var tia = {type: 'vote_initiators'}
         tia.id = form.record.id
