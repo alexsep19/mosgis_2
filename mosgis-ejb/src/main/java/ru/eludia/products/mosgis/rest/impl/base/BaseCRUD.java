@@ -88,24 +88,32 @@ public abstract class BaseCRUD <T extends Table> extends Base<T> implements CRUD
                 default:
                     final Table targetTable = ref.getTargetTable ();
                     if (!targetTable.getColumns ().containsKey ("label")) return;
-                    final String name = ref.getName ();
+                    final String name = ref.getName ();                    
                     StringBuilder sb = new StringBuilder ("AS ");
-                    if (name.startsWith ("uuid_")) {
-                        sb.append (name.substring (5));
-                    }
-                    else if (name.startsWith ("id_")) {
-                        sb.append (name.substring (3));
-                    }
-                    else {
-                        sb.append (name);
-                    }                            
-                    select.toMaybeOne (targetTable, sb.toString (), "label").on (ref.getName ());
+                    select.toMaybeOne (targetTable, "AS " + getSafeName (getNameByRef (name)), "label").on (ref.getName ());
+                    
             }
         });
 
         db.addJsonArrayCnt (job, select);
         
     });}
+    
+    
+    private String getSafeName (String name) {
+        switch (name) {
+            case "file":
+                return name + '_';
+            default:
+                return name;
+        }
+    }
+    
+    private String getNameByRef (String name) {
+        if (name.startsWith ("uuid_")) return name.substring (5);
+        if (name.startsWith ("id_")) return name.substring (3);
+        return name;
+    }
 
     @Override
     public JsonObject doCreate (JsonObject p, User user) {return doAction ((db, job) -> {
