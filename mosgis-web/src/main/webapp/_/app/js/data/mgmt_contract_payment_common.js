@@ -80,7 +80,7 @@ define ([], function () {
         
         var data = clone ($('body').data ('data'))
 
-        data.active_tab = localStorage.getItem ('mgmt_contract_payment_common.active_tab') || 'mgmt_contract_payment_common_services'
+        data.active_tab = localStorage.getItem ('mgmt_contract_payment_common.active_tab') || 'mgmt_contract_payment_common_service_payments'
 
         data.__read_only = 1
 /*
