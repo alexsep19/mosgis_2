@@ -27,6 +27,11 @@ define ([], function () {
                                      icon: 'w2ui-icon-plus', 
                                      onClick: $_DO.create_org_voting_protocol_vote_initiators, 
                                      off: !data.item.house_uuid},
+                    {type: 'button', id: 'delete',
+                                     caption: 'Удалить',
+                                     icon: 'w2ui-icon-cross',
+                                     onClick: $_DO.delete_voting_protocol_vote_initiators,
+                                     off: !data.item.house_uuid}
                 ].filter (not_off),
                 
             },
