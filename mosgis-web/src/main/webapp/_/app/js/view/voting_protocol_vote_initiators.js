@@ -17,8 +17,16 @@ define ([], function () {
             toolbar: {
             
                 items: [
-                    {type: 'button', id: 'create_owner', caption: 'Собственник', icon: 'w2ui-icon-plus', onClick: $_DO.create_owner_voting_protocol_vote_initiators},
-                    {type: 'button', id: 'create_org', caption: 'Юридическое лицо', icon: 'w2ui-icon-plus', onClick: $_DO.create_org_voting_protocol_vote_initiators},
+                    {type: 'button', id: 'create_owner', 
+                                     caption: 'Собственник', 
+                                     icon: 'w2ui-icon-plus', 
+                                     onClick: $_DO.create_owner_voting_protocol_vote_initiators, 
+                                     off: !data.item.house_uuid},
+                    {type: 'button', id: 'create_org', 
+                                     caption: 'Юридическое лицо', 
+                                     icon: 'w2ui-icon-plus', 
+                                     onClick: $_DO.create_org_voting_protocol_vote_initiators, 
+                                     off: !data.item.house_uuid},
                 ].filter (not_off),
                 
             },
