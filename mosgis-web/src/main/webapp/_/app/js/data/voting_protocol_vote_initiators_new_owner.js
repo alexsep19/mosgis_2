@@ -18,6 +18,8 @@ define ([], function () {
         
         var data = clone ($('body').data ('data'))
 
+        v['uuid_protocol'] = data.item.uuid
+
         query (tia, {data: v}, function (data) {
         
             w2popup.close ()

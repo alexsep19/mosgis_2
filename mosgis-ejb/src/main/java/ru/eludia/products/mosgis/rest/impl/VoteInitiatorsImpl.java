@@ -61,7 +61,6 @@ public class VoteInitiatorsImpl extends BaseCRUD<VoteInitiator> implements VoteI
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
             .where ("uuid_protocol", p.getJsonObject("data").getJsonString("protocol_uuid").getString ())
             .toMaybeOne (VoteInitiatorLog.class         ).on ()
-            .and ("uuid_org", user.getUuidOrg ())
             .orderBy ("root.uuid")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
