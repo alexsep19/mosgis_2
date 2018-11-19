@@ -20,6 +20,7 @@ public class ContractPayment extends EnTable {
         UUID_CONTRACT        (Contract.class,          "Ссылка на договор"),
         UUID_CONTRACT_OBJECT (ContractObject.class,    "Ссылка на объект договора"),
         UUID_VOTING_PROTOCOL (VotingProtocol.class,    "Ссылка на протокол ОСС"),
+        UUID_FILE            (ContractPaymentFile.class, "Ссылка на протокол вложение"),
         FIASHOUSEGUID        (VocBuilding.class,       "Дом"),
         ID_CTR_STATUS        (VocGisStatus.class,      VocGisStatus.DEFAULT, "Статус объекта договора с точки зрения mosgis"),
         ID_CTR_STATUS_GIS    (VocGisStatus.class,      VocGisStatus.DEFAULT, "Статус объекта договора с точки зрения ГИС ЖКХ"),        

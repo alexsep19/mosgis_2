@@ -24,6 +24,7 @@ define ([], function () {
             var it = data.item
             
             if (!it.is_proto || !data.voting_proto) data.voting_proto = []
+            data.voting_proto.unshift ({id: "", label: "файл"})
 
             add_vocabularies (data, {
                 vc_ctr_pay_types: 1,
