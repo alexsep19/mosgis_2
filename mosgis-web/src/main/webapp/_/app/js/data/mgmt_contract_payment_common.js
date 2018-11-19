@@ -11,6 +11,10 @@ define ([], function () {
         query ({type: 'contract_payments'}, {}, function (data) {
 
             data.__read_only = true
+
+            var it = data.item            
+            
+            if (it.uuid_file) it.uuid_voting_protocol = '-' + it.uuid_file            
             
             $_F5 (data)
 
@@ -40,6 +44,14 @@ define ([], function () {
 
         var v = f.values ()
         
+        if (/^-/.test (v.uuid_voting_protocol)) {
+            v.uuid_file = v.uuid_voting_protocol
+            v.uuid_voting_protocol = ""
+        }
+        else {
+            v.uuid_file = ""
+        }
+        
         query ({type: 'contract_payments', action: 'update'}, {data: v}, reload_page)
 
     }
@@ -47,6 +59,30 @@ define ([], function () {
     $_DO.delete_mgmt_contract_payment_common = function (e) {   
         if (!confirm ('Удалить эту запись, Вы уверены?')) return        
         query ({type: 'contract_payments', action: 'delete'}, {}, reload_page)
+    }
+    
+    $_DO.download_mgmt_contract_payment_common = function (e) {   
+    
+        var box = w2ui [form_name].box
+
+        function label (cur, max) {return String (Math.round (100 * cur / max)) + '%'}
+
+        w2utils.lock (box, label (0, 1))
+
+        download ({
+
+            type:   'contract_payment_docs', 
+            id:     $('body').data ('data').item.uuid_file,
+            action: 'download',
+
+        }, {}, {
+
+            onprogress: function (cur, max) {$('.w2ui-lock-msg').html ('<br><br>' + label (cur, max))},
+
+            onload: function () {w2utils.unlock (box)},
+
+        })
+
     }
         
     $_DO.annul_mgmt_contract_payment_common = function (e) {   

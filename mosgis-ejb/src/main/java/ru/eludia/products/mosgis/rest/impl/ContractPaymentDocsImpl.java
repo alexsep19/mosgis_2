@@ -17,7 +17,7 @@ import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
-import ru.eludia.products.mosgis.rest.api.ContractDocsLocal;
+import ru.eludia.products.mosgis.rest.api.ContractPaymentDocsLocal;
 import ru.eludia.products.mosgis.db.model.tables.ContractPaymentFile;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -28,7 +28,7 @@ import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 import ru.eludia.products.mosgis.web.base.ComplexSearch;
 
 @Stateless
-public class ContractPaymentDocsImpl extends BaseCRUD<ContractPaymentFile> implements ContractDocsLocal  {
+public class ContractPaymentDocsImpl extends BaseCRUD<ContractPaymentFile> implements ContractPaymentDocsLocal  {
 
     private static final Logger logger = Logger.getLogger (ContractPaymentDocsImpl.class.getName ());    
 
@@ -42,8 +42,6 @@ public class ContractPaymentDocsImpl extends BaseCRUD<ContractPaymentFile> imple
             Object id = db.insertId (getTable (), HASH (
                 
                 "uuid_contract_payment",  file.getString ("uuid_contract_payment", null),
-                                
-                "id_type",        file.getInt    ("id_type"),
                 "label",          file.getString ("label"),
                 "description",    file.getString ("description", ""),
                 "mime",           file.getString ("type"),

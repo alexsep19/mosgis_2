@@ -15,6 +15,7 @@ import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.ContractPayment;
+import ru.eludia.products.mosgis.db.model.tables.ContractPaymentFile;
 import ru.eludia.products.mosgis.db.model.tables.OrganizationWork;
 import ru.eludia.products.mosgis.db.model.tables.ServicePayment;
 import ru.eludia.products.mosgis.db.model.tables.ServicePaymentLog;
@@ -103,6 +104,7 @@ public class ContractPaymentImpl extends BaseCRUD<ContractPayment> implements Co
             .toOne (VocOrganization.class, "AS org", "label").on ("ctr.uuid_org")
             .toMaybeOne (ContractObject.class).on ()
             .toMaybeOne (VocBuilding.class, "AS fias", "label").on ()
+            .toMaybeOne (ContractPaymentFile.class, "AS doc", "label").on ()
         );
 
         job.add ("item", item);

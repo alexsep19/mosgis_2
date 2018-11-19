@@ -24,7 +24,13 @@ define ([], function () {
             var it = data.item
             
             if (!it.is_proto || !data.voting_proto) data.voting_proto = []
-            data.voting_proto.unshift ({id: "", label: "файл"})
+            data.voting_proto.unshift ({id: "", label: "загрузить файл..."})
+            
+            if (it.uuid_file) {
+                var iid = '-' + it.uuid_file
+                data.voting_proto.push ({id: iid, label: it ['doc.label']})
+                it.uuid_voting_protocol = iid
+            }
 
             add_vocabularies (data, {
                 vc_ctr_pay_types: 1,

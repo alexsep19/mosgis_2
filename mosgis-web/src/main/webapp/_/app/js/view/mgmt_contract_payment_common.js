@@ -6,7 +6,9 @@ define ([], function () {
         
         $_F5 = function (data) {
         
-            data.item.__read_only = data.__read_only
+            var it = data.item
+
+            it.__read_only = data.__read_only
             
             var r = clone (data.item)
             
@@ -18,7 +20,21 @@ define ([], function () {
             $('div[data-block-name=mgmt_contract_payment_common] input[name=type_]').prop ({disabled: true})
 
             f.refresh ()
+/*            
+//            if (it.uuid_file && data.__read_only) {
+            
+                setTimeout (function () {
 
+                    clickOn ($('#proto input').parent (), function () {
+
+                        alert (1)
+
+                    })
+
+                }, 1000)             
+                
+//            }
+*/
         }
 
         var layout = w2ui ['topmost_layout']
@@ -47,7 +63,7 @@ define ([], function () {
             onRender: function (e) {
                 this.get ('main').tabs.click (data.active_tab)
             },            
-
+            
         });
         
         var $panel = $(w2ui ['passport_layout'].el ('top'))
@@ -67,6 +83,36 @@ define ([], function () {
             ],
 
             focus: -1,
+            
+            onChange: function (e) {
+            
+                if (e.target == "uuid_voting_protocol") {
+                
+                    e.done (function () {
+                    
+                        if (!e.value_new.id) use.block ('mgmt_contract_payment_doc_new')
+                    
+                    })
+                
+                }           
+                
+            },
+            
+            onRefresh: function (e) {
+
+                e.done (function () {
+                
+                    var r = this.record
+                    
+                    if (r.__read_only) {
+                    
+                        $('#proto input').css ('cursor', 'pointer').click ($_DO.download_mgmt_contract_payment_common)
+
+                    }               
+                
+                })            
+            
+            }
 
         })
 
