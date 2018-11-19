@@ -60,8 +60,8 @@ public class VoteInitiatorsImpl extends BaseCRUD<VoteInitiator> implements VoteI
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
        
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
-            .toMaybeOne (PropertyDocument.class, "AS prop", "uuid_person_owner").on ("root.uuid_ind=prop.uuid")
-            .toMaybeOne (VocOrganization.class, "AS org", "id_type").on ("root.uuid_org=org.uuid")
+            .toMaybeOne (PropertyDocument.class, "AS prop", "uuid_person_owner").on ()
+            .toMaybeOne (VocOrganization.class, "AS org", "id_type").on ()
             .toMaybeOne (VoteInitiatorLog.class         ).on ()
             .where ("uuid_protocol", p.getJsonObject("data").getJsonString("protocol_uuid").getString ())
             .orderBy ("root.uuid")

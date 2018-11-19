@@ -53,14 +53,12 @@ define ([], function () {
             url: '/mosgis/_rest/?type=vote_initiators',
            
             onDblClick: function (e) {
-                record = w2ui[grid_name].records.find (x => x['id'])
-
-                console.log (record['prop.uuid_person_owner'])
+                record = w2ui[grid_name].records.find (x => x['id'] == e.recid)
 
                 if (record['uuid_ind'] == undefined)
                     openTab ('/voc_org/' + record['uuid_org'])
                 else
-                    openTab ('/vc_person/' + record['prop.uuid_person_owner'])
+                   openTab ('/vc_person/' + record['prop.uuid_person_owner'])
             },
             
         })
