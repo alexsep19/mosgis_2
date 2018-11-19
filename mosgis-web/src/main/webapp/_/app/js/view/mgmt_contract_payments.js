@@ -7,8 +7,8 @@ define ([], function () {
         var layout = w2ui ['topmost_layout']
 
         var $panel = $(layout.el ('main'))
-        
-        var is_editable = data.item.id_ctr_state == 40
+
+        var is_editable = (data.item.id_ctr_status == 40)
 
         $panel.w2regrid ({ 
         
