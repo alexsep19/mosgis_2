@@ -37,6 +37,8 @@ public class VotingProtocol extends Table {
         col ("protocolnum", Type.STRING, 30, null, "Номер протокола");
         col ("protocoldate", Type.DATE, "Дата составления протокола");
         
+        col ("label", Type.STRING, new Virt("'№' || protocolnum || ' от ' || TO_CHAR (protocoldate, 'DD.MM.YYYY')"), "№/датаы");
+        
         col ("avotingdate", Type.DATE, null, "Дата окончания приема решений (заочное голосование опросным путем)");
         col ("resolutionplace", Type.STRING, 3000, null, "Место принятия решений (заочное голосование опросным путем)");
         

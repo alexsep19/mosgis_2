@@ -15,6 +15,7 @@ define ([], function () {
             f.record = r
             
             $('div[data-block-name=mgmt_contract_payment_common] input').prop ({disabled: data.__read_only})
+            $('div[data-block-name=mgmt_contract_payment_common] input[name=type_]').prop ({disabled: true})
 
             f.refresh ()
 
@@ -30,7 +31,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 160},
+                {type: 'top', size: 160 + 30 * data.item.is_proto},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
@@ -62,6 +63,7 @@ define ([], function () {
             fields : [                     
                 {name: 'housemanagementpaymentsize', type: 'float', options: {min: 0}},
                 {name: 'type_', type: 'list', options: {items: data.vc_ctr_pay_types.items}},
+                {name: 'uuid_voting_protocol', type: 'list', options: {items: data.voting_proto.items}},
             ],
 
             focus: -1,

@@ -3,8 +3,10 @@ package ru.eludia.products.mosgis.db.model.tables;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
+import static ru.eludia.base.model.Type.BOOLEAN;
 import static ru.eludia.base.model.Type.DATE;
 import static ru.eludia.base.model.Type.NUMERIC;
+import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
@@ -17,14 +19,17 @@ public class ContractPayment extends EnTable {
 
         UUID_CONTRACT        (Contract.class,          "Ссылка на договор"),
         UUID_CONTRACT_OBJECT (ContractObject.class,    "Ссылка на объект договора"),
+        UUID_VOTING_PROTOCOL (VotingProtocol.class,    "Ссылка на протокол ОСС"),
         FIASHOUSEGUID        (VocBuilding.class,       "Дом"),
         ID_CTR_STATUS        (VocGisStatus.class,      VocGisStatus.DEFAULT, "Статус объекта договора с точки зрения mosgis"),
         ID_CTR_STATUS_GIS    (VocGisStatus.class,      VocGisStatus.DEFAULT, "Статус объекта договора с точки зрения ГИС ЖКХ"),        
         TYPE_                (VocContractPaymentType.class,    "Тип размера платы"),
-         
+        IS_PROTO             (BOOLEAN,                 new Virt ("DECODE(\"TYPE_\", 'P', 1, 0)"),  "1, если основание — протокол ОСС, иначе 0"),
+        
         ID_LOG               (ContractPaymentLog.class,  "Последнее событие редактирования"),
-        BEGINDATE            (DATE,                  "Дата начала периода"),
-        ENDDATE              (DATE,                  "Дата окончания периода"),
+        
+        BEGINDATE            (DATE,                    "Дата начала периода"),
+        ENDDATE              (DATE,                    "Дата окончания периода"),
         HOUSEMANAGEMENTPAYMENTSIZE (NUMERIC, 10, 2, null,  "Размер платы (цена) за услуги, работы по управлению МКД (если утверждена протоколом обшего собрания собственников)/Размер платы за содержание жилого помещения, установленный по результатам открытого конкурса (если утверждена протоколом открытого конкурса)")
 
         ;
@@ -39,6 +44,7 @@ public class ContractPayment extends EnTable {
         public boolean isLoggable () {
             switch (this) {
                 case ID_LOG:
+                case IS_PROTO:
                 case UUID_CONTRACT:
                 case UUID_CONTRACT_OBJECT:
                 case FIASHOUSEGUID:

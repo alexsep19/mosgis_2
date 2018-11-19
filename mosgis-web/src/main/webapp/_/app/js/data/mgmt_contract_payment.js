@@ -21,13 +21,16 @@ define ([], function () {
     
         query ({type: 'contract_payments'}, {}, function (data) {
 
+            var it = data.item
+            
+            if (!it.is_proto || !data.voting_proto) data.voting_proto = []
+
             add_vocabularies (data, {
                 vc_ctr_pay_types: 1,
                 vc_actions: 1,
                 org_works: 1,
+                voting_proto: 1,
             })
-
-            var it = data.item
 
             it._can = {}
 

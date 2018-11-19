@@ -25,7 +25,7 @@ define ([], function () {
 
             columnGroups : [
                 {span: 3, caption: 'Событие'},
-                {span: 2, caption: 'Значения полей'},
+                {span: 3, caption: 'Значения полей'},
                 {span: 4, caption: 'Запрос в ГИС ЖКХ'},
             ], 
             
@@ -36,7 +36,7 @@ define ([], function () {
 
                 {field: 'housemanagementpaymentsize', caption: 'Руб/м2', size: 10},
                 {field: 'type_', caption: 'Основание', size: 50, voc: data.vc_ctr_pay_types},
-
+                {field: 'voting_protocol.label', caption: 'Протокол ОСС', size: 50},
 //                {field: 'annulmentinfo', caption: 'Аннулирование', size: 18},
                 {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: 'data-ref=1'},
                 {field: 'soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: 'data-ref=1'},

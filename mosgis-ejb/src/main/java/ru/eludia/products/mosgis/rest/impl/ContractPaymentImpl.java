@@ -5,6 +5,7 @@ import javax.ejb.Stateless;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
+import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Operator;
@@ -17,6 +18,7 @@ import ru.eludia.products.mosgis.db.model.tables.ContractPayment;
 import ru.eludia.products.mosgis.db.model.tables.OrganizationWork;
 import ru.eludia.products.mosgis.db.model.tables.ServicePayment;
 import ru.eludia.products.mosgis.db.model.tables.ServicePaymentLog;
+import ru.eludia.products.mosgis.db.model.tables.VotingProtocol;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
@@ -96,25 +98,40 @@ public class ContractPaymentImpl extends BaseCRUD<ContractPayment> implements Co
         final MosGisModel m = ModelHolder.getModel ();
         
         final JsonObject item = db.getJsonObject (m
-                .get (getTable (), id, "AS root", "*")
-                .toOne (Contract.class, "AS ctr", "*").on ()
-                .toOne (VocOrganization.class, "AS org", "label").on ("ctr.uuid_org")
-                .toMaybeOne (ContractObject.class).on ()
-                .toMaybeOne (VocBuilding.class, "AS fias", "label").on ()
+            .get (getTable (), id, "AS root", "*")
+            .toOne (Contract.class, "AS ctr", "*").on ()
+            .toOne (VocOrganization.class, "AS org", "label").on ("ctr.uuid_org")
+            .toMaybeOne (ContractObject.class).on ()
+            .toMaybeOne (VocBuilding.class, "AS fias", "label").on ()
         );
 
         job.add ("item", item);
-        
+                
         db.addJsonArrays (job,
 
             m
                 .select     (OrganizationWork.class, "AS org_works", "uuid AS id", "label")
                 .toMaybeOne (VocOkei.class, "AS okei", "national").on ()
-                .where      ("uuid_org", item.getString ("ctr.uuid_org", "00"))
+                .where      ("uuid_org", item.getString ("ctr.uuid_org"))
                 .and        ("id_status", VocAsyncEntityState.i.OK.getId ())
                 .orderBy    ("org_works.label")
-
+            
         );        
+
+        String fiashouseguid = item.getString ("fiashouseguid", "0");
+        if (DB.ok (fiashouseguid)) {
+
+            db.addJsonArrays (job,
+
+                m
+                    .select     (VotingProtocol.class, "AS voting_proto", "uuid AS id", "label")
+                    .where      ("fiashouseguid", fiashouseguid)
+//                    .and        ("id_status", VocAsyncEntityState.i.OK.getId ())
+                    .orderBy    ("protocoldate DESC")
+
+            );
+
+        }
 
         VocAction.addTo (job);
         VocContractPaymentType.addTo (job);
