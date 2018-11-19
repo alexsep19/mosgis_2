@@ -10,6 +10,7 @@ import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.tables.Owner;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.tables.PropertyDocument;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocol;
@@ -20,6 +21,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.VotingProtocolsLocal;
@@ -128,17 +130,19 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
             .get (VotingProtocol.class, id, "AS root", "*")
             .toOne (VocGisStatus.class, "label AS status_label").on("id_prtcl_status_gis")
             .toOne (VocBuilding.class, "label AS address_label").on ()
-            .toMaybeOne (House.class, "AS house", "uuid AS house_uuid").on ("root.fiashouseguid=house.fiashouseguid")
+            .toMaybeOne (House.class, "AS house", "uuid AS house_uuid", "fiashouseguid").on ("root.fiashouseguid=house.fiashouseguid")
             .toMaybeOne (VotingProtocolLog.class           ).on ()
             .toMaybeOne (OutSoap.class,             "err_text").on ()
         ); 
         
         job.add ("item", item);
         
-        db.addJsonArrays(job, 
+        db.addJsonArrays(job,
                 ModelHolder.getModel ()
-                        .select (PropertyDocument.class, "AS prop_doc", "uuid_org_owner AS id")
-                        .toOne (Premise.class, "AS prem", "*").on("prem.uuid_house=\'" + item.getString ("house_uuid") + "\'")
+                    .select (PropertyDocument.class, "AS owners", "uuid AS id")
+                    .toOne (Premise.class).where ("uuid_house", item.getJsonString("house_uuid").getString ()).on ()
+                    .and ("uuid_person_owner IS NOT NULL")
+                    .toOne (VocPerson.class, "label AS label").on ()
         );
         
         final String fiashouseguid = item.getString ("fiashouseguid");    
