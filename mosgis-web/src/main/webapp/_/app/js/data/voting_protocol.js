@@ -28,6 +28,10 @@ define ([], function () {
                 data.item = d.item
 
                 if (d.cach) data.cach = d.cach
+                if (d.owners) {
+                    add_vocabularies (d, {owners: {}})
+                    data.owners = d.owners
+                }
 
                 $('body').data ('data', data)
     

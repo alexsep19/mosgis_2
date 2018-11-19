@@ -3,11 +3,13 @@ define ([], function () {
     return function (data, view) {
         
         var name = 'voting_protocol_vote_initiators_new_owner_form'
-        
+
+        console.log (data.owners)
+
         $(view).w2popup('open', {
 
-            width  : 300,
-            height : 300,
+            width  : 500,
+            height : 150,
 
             title   : 'Добавление инициатора - физического лица',
 
@@ -24,7 +26,7 @@ define ([], function () {
                         name: name,
 
                         fields : [
-                            {name: 'uuid_ind', type: 'list', voc: data.prop_doc},
+                            {name: 'uuid_ind', type: 'list', options: {items: data.owners.items}},
                         ],
 
                     });

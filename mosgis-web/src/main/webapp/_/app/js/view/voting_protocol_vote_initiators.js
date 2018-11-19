@@ -48,7 +48,7 @@ define ([], function () {
                 {field: 'org_ogrn', caption: 'ОГРН/ОГРНИП', size: 10},
             ].filter (not_off),
 
-            postData: {data: {"protocol_uuid": data.item.uuid}},
+            postData: {data: {"protocol_uuid": data.item.uuid, "house_uuid": data.item.house_uuid}},
 
             url: '/mosgis/_rest/?type=vote_initiators',
            
