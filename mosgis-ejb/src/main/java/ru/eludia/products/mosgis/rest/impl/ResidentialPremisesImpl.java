@@ -18,6 +18,7 @@ import ru.eludia.products.mosgis.db.model.tables.HouseFile;
 import ru.eludia.products.mosgis.db.model.tables.Passport;
 import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
+import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.ResidentialPremisesLocal;
@@ -34,10 +35,12 @@ public class ResidentialPremisesImpl extends BasePassport<ResidentialPremise> im
 
         JsonObject item = db.getJsonObject (ModelHolder.getModel ()
             .get (table, id, "*")
-            .toOne (House.class, "address").on ()
+            .toOne (House.class, "address", "fiashouseguid").on ()
         );
 
         job.add ("item", item);                
+        
+        VocBuilding.addCaCh (db, job, item.getString ("tb_houses.fiashouseguid"));
 
         db.addJsonArrays (job, 
                 

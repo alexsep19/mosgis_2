@@ -13,6 +13,7 @@ import ru.eludia.products.mosgis.db.model.tables.Owner;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.tables.PropertyDocument;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.voc.VocPropertyDocumentType;
@@ -85,15 +86,19 @@ public class PropertyDocumentImpl extends BaseCRUD<PropertyDocument> implements 
     public JsonObject getItem (String id) {return fetchData ((db, job) -> {
 
         final MosGisModel m = ModelHolder.getModel ();
-
-        job.add ("item", db.getJsonObject (m
+        
+        final JsonObject item = db.getJsonObject (m
             .get (getTable (), id, "AS root", "*")
-            .toOne (Premise.class, "AS p", "*").on ()                
-            .toOne (House.class, "AS h", "address").on ()
+            .toOne (Premise.class, "AS p", "*").on ()
+            .toOne (House.class, "AS h", "address", "fiashouseguid").on ()
             .toMaybeOne (VocOrganization.class, "AS org", "label", "id_type").on ("org.uuid=root." + PropertyDocument.c.UUID_ORG_OWNER.lc ())
             .toMaybeOne (VocPerson.class, "AS person", "label", "uuid_org").on ()
-        ));
-        
+        );
+
+        job.add ("item", item);
+
+        VocBuilding.addCaCh (db, job, item.getString ("h.fiashouseguid"));
+
         VocAction.addTo (job);
 
         db.addJsonArrays (job,

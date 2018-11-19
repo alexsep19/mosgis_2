@@ -24,7 +24,7 @@ define ([], function () {
         
         var cach = it.cach
         
-        if (cach) {        
+        if (cach && cach.is_own) {        
 
             cach.org_label = cach ['org.label']
             

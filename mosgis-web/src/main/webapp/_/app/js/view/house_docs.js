@@ -21,7 +21,7 @@ define ([], function () {
             name: grid_name,
 
             show: {
-                toolbar: true,
+                toolbar: data.is_passport_editable,
                 footer: 1,
                 toolbarReload: false,
                 toolbarColumns: false,

@@ -16,6 +16,7 @@ import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.Passport;
 import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
+import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.NonResidentialPremisesLocal;
@@ -32,10 +33,12 @@ public class NonResidentialPremisesImpl extends BasePassport<NonResidentialPremi
 
         JsonObject item = db.getJsonObject (ModelHolder.getModel ()
             .get (table, id, "*")
-            .toOne (House.class, "address").on ()
+            .toOne (House.class, "address", "fiashouseguid").on ()
         );
 
         job.add ("item", item);                
+
+        VocBuilding.addCaCh (db, job, item.getString ("tb_houses.fiashouseguid"));
 
         db.addJsonArrays (job, 
             NsiTable.getNsiTable (17).getVocSelect (),

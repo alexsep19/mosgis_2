@@ -32,7 +32,7 @@ define ([], function () {
             multiSelect: false,
 
             show: {
-                toolbar: true,
+                toolbar: data.is_passport_editable,
                 footer: true,
                 toolbarAdd: true,
                 toolbarEdit: true,

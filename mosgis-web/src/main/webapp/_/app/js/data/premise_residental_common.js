@@ -106,14 +106,6 @@ define ([], function () {
 
         data.__read_only = 1
         
-        data.item._can = {
-            edit: 1,
-            update: 1,
-            cancel: 1,
-            annul: 1 - data.item.is_annuled,
-            restore: data.item.is_annuled,
-        }
-
         data.active_tab = localStorage.getItem ('premise_residental_common.active_tab') || 'premise_residental_common_living_rooms'        
 
         done (data)
