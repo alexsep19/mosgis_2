@@ -55,7 +55,14 @@ define ([], function () {
             {field: "uuid_contract", operator: "is", value: data.item.uuid},            
         ]}, function (d) {
         
-            var a = [{id: "", text: "Все объекты договора"}]
+            var a = []
+
+            if (d.root.length == 1) {
+                data.record.uuid_contract_object = d.root [0].id
+            }
+            else {
+                a.push ({id: "", text: "Все объекты договора"})
+            }
             
             $.each (d.root, function () {
                 a.push ({id: this.id, text: this ['fias.label']})
