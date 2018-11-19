@@ -225,6 +225,7 @@ public class CharterObject extends Table {
             h.put ("id_ctr_status", status);
             h.put ("is_from_gis", 1);
             h.put ("contractobjectversionguid", co.getContractObjectVersionGUID ());
+            h.put ("ismanagedbycontract", DB.ok (co.isIsManagedByContract ()));
 
         }
 
