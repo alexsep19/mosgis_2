@@ -8,7 +8,7 @@ define ([], function () {
 
         var $panel = $(layout.el ('main'))
         
-        var is_editable = 1 //data.item._can.edit
+        var is_editable = data.item.id_ctr_state == 40
 
         $panel.w2regrid ({ 
         

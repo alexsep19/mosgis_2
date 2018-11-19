@@ -56,8 +56,7 @@ define ([], function () {
             
                 switch (it ["ctr.id_ctr_status"]) {
 
-                    case 10:
-                    case 11:
+                    case 40:
                         it._can.edit    = 1
 //                        if (it.id_ctr_status_gis == 40 && !it.is_annuled) it._can.annul = 1
                         break;
