@@ -101,8 +101,7 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
                     
                 ModelHolder.getModel ()
                     .select (VocOrganization.class, "uuid AS id", "label")
-                    .orderBy ("label")
-                    .and ("uuid", ModelHolder.getModel ().select (VotingProtocol.class, "uuid_org").where ("is_deleted", 0)),
+                    .orderBy ("label"),
 
                 ModelHolder.getModel ()
                     .select (VocAsyncEntityState.class, "id", "label")
