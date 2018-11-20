@@ -7,7 +7,10 @@ define ([], function () {
         var grid = w2ui ['voting_protocol_vote_initiators_grid']
 
         var ids = []
-        grid.records.forEach ((element, i, arr) => {ids.push(element['uuid_ind'])})
+        grid.records.forEach ((element, i, arr) => {
+            if (element['uuid_ind'] != undefined)
+                ids.push(element['uuid_ind'])
+        })
 
         var owners = []
         data.owners.items.forEach ((element, i, arr) => {
@@ -15,8 +18,14 @@ define ([], function () {
         })
 
         if (owners.length == 0) { 
-            alert ('Все собственники уже являются инициаторами')
-            return false;
+            if (ids.length == 0) {
+                alert ('Список собственников пуст')
+                return false;
+            }
+            else {
+                alert ('Все собственники уже являются инициаторами')
+                return false;
+            }
         }
 
         $(view).w2popup('open', {
