@@ -11,6 +11,15 @@ define ([], function () {
             v: normalizeValue (e.value_new, col.editable.type)
         }
         
+        if (data.k == 'servicepaymentsize') {
+        
+            if (data.v != null && !(data.v > 0)) {
+                e.preventDefault ()
+                return alert ('Размер платы должен быть положительным числом')
+            }
+            
+        }        
+        
         if (data.v != null) data.v = String (data.v)
 
         grid.lock ()

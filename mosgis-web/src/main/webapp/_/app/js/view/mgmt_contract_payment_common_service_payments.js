@@ -21,7 +21,7 @@ define ([], function () {
             
             columns: [              
                 {field: 'w.label', caption: 'Услуга', size: 50},
-                {field: 'servicepaymentsize', caption: 'Размер платы', size: 100, editable: !is_own ? null : {type: 'float:4', min: 0}},
+                {field: 'servicepaymentsize', caption: 'Размер платы, руб.', size: 100, editable: !is_own ? null : {type: 'float:4', min: 0.0}},
             ],
             
             records: data.records,

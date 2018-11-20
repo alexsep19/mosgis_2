@@ -9,19 +9,10 @@ define ([], function () {
         var it = $('body').data ('data').item
         
         if (!v.begindate) die ('begindate', 'Укажите, пожалуйста, дату начала')
-        if (v.begindate > it.effectivedate.substr (0, 10)) {
-            var dt = new Date (v.begindate)
-            if (dt.getDate () != 1) die ('begindate', 'Поскольку дата начала периода отлична от даты начала действия договора, она должна быть первым днём месяца')
-        }
-        
+
         if (!v.enddate) die ('enddate', 'Укажите, пожалуйста, дату окончания')
         if (v.enddate < v.begindate) die ('enddate', 'Дата начала превышает дату окончания управления')
-        if (v.enddate < it.plandatecomptetion.substr (0, 10)) {
-            var dt = new Date (v.enddate)
-            dt.setDate (1 + dt.getDate ())
-            if (dt.getDate () != 1) die ('enddate', 'Поскольку дата окончания периода отлична от даты окончания действия договора, она должна быть последним днём месяца')
-        }
-        
+
         if (!(v.housemanagementpaymentsize) > 0) die ('housemanagementpaymentsize', 'Укажите, пожалуйста, корректный размер платы')
         
         v.uuid_contract = $_REQUEST.id
@@ -30,7 +21,7 @@ define ([], function () {
         
             w2popup.close ()
 
-            if (data.id) w2confirm ('Услуга зарегистрирована. Открыть её страницу в новой вкладке?').yes (function () {openTab ('/contract_payment/' + data.id)})
+            if (data.id) w2confirm ('Услуга зарегистрирована. Открыть её страницу в новой вкладке?').yes (function () {openTab ('/mgmt_contract_payment/' + data.id)})
             
             var grid = w2ui ['mgmt_contract_payments_grid']
 
