@@ -49,6 +49,62 @@ public class VocOrganization extends Table {
 
         key    ("label_uc", "label_uc");
 
+
+        col("post_address", Type.STRING, null, "Почтовый адрес");
+
+        col("phone", Type.STRING, null, "Телефон организации");
+
+        col("mail", Type.STRING, null, "Электронный адрес");
+
+        col("site", Type.STRING, null, "Адрес официального сайта");
+
+        col("phone_support", Type.STRING, null, "Номер телефона горячей линии");
+
+
+        col("head_fio", Type.STRING, null, "ФИО руководителя");
+
+        col("head_post", Type.STRING, null, "Должность руководителя");
+
+        col("head_phone", Type.STRING, null, "Телефон руководителя");
+
+        col("head_mail", Type.STRING, null, "Электронный адрес руководителя");
+
+
+        col("vice_fio", Type.STRING, null, "ФИО заместителя");
+
+        col("vice_post", Type.STRING, null, "Должность заместителя");
+
+        col("vice_phone", Type.STRING, null, "Телефон заместителя");
+
+        col("vice_mail", Type.STRING, null, "Электронный адрес заместителя");
+
+
+        col("citizen_address", Type.STRING, null, "Адрес приема граждан");
+
+        col("citizen_phone", Type.STRING, null, "Телефон приема граждан");
+
+        col("citizen_place", Type.STRING, null, "Место размещения информации для граждан");
+
+
+        col("dispatch_address", Type.STRING, null, "Адрес диспетчерской службы");
+
+        col("dispatch_phone", Type.STRING, null, "Контактные телефоны");
+
+        col("dispatch_schedule", Type.STRING, null, "Режим работы");
+
+
+        col("self_manage_org", Type.STRING, null, "Наименование саморегулируемой организации");
+
+        col("dt_from_self_manage_org", Type.DATE, null, "Дата вступления в члены организации");
+
+        col("dt_to_self_manage_org", Type.DATE, null, "Дата исключения/выхода из членов организации");
+
+        col("reason_cancel_self_manage_org", Type.STRING, null, "Причина исключения из членов организации");
+
+
+        col("staff_cnt", Type.INTEGER, null, "Количество штатных единиц");
+
+        col("staff_work_cnt", Type.INTEGER, null, "Количество работающих человек");
     }
     
     public static final RegOrgType regOrgType (UUID uuid) {

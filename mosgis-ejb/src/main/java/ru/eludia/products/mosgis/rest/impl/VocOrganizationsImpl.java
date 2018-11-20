@@ -266,7 +266,26 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
         logAction (db, user, id, VocAction.i.REFRESH);
         
     });}
-    
+
+    @Override
+    public JsonObject doPatch(String id, JsonObject p) {
+
+        JsonObject data = p.getJsonObject("data");
+
+        try (DB db = ModelHolder.getModel().getDb()) {
+
+            db.update(getTable(), HASH(
+                    "orgrootentityguid", id,
+                    data.getString("k"), data.getString("v", null)
+            ));
+
+        } catch (Exception ex) {
+            throw new InternalServerErrorException(ex);
+        }
+
+        return this.getItem (id);
+    }
+
     protected void logAction (DB db, User user, Object id, VocAction.i action) throws SQLException {
 
         Table logTable = ModelHolder.getModel ().getLogTable (getTable ());
