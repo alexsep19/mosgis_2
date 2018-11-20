@@ -1,5 +1,7 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import javax.ejb.Stateless;
 import javax.json.Json;
@@ -8,11 +10,13 @@ import javax.json.JsonObjectBuilder;
 import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.Owner;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.tables.PropertyDocument;
+import ru.eludia.products.mosgis.db.model.tables.VoteInitiator;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocol;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocolLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -146,6 +150,28 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
         
         final String fiashouseguid = item.getString ("fiashouseguid");    
         VocBuilding.addCaCh (db, job, fiashouseguid);
+
+    });}
+    
+    @Override
+    public JsonObject doCreate (JsonObject p, User user) {return doAction ((db, job) -> {
+
+        final Table table = getTable ();
+
+        Map<String, Object> data = getData (p);
+
+        if (table.getColumn (UUID_ORG) != null && !data.containsKey (UUID_ORG)) data.put (UUID_ORG, user.getUuidOrg ());
+
+        Object insertId = db.insertId (table, data);
+        
+        job.add ("id", insertId.toString ());
+        
+        Map<String, Object> initiator_org = new HashMap<>();
+        initiator_org.put ("uuid_protocol", insertId);
+        initiator_org.put ("uuid_org", data.get(UUID_ORG));
+        db.insert (VoteInitiator.class, initiator_org);
+        
+        logAction (db, user, insertId, VocAction.i.CREATE);
 
     });}
     
