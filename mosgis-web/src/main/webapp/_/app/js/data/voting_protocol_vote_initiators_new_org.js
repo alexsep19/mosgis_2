@@ -23,13 +23,6 @@ define ([], function () {
         query (tia, {data: v}, function (data) {
         
             w2popup.close ()
-
-            w2confirm ('Перейти на страницу организации?').yes (function () {
-                if (data.org.type > 0)
-                    openTab ('/voc_organization_legal/' + data.org['id'])
-                else
-                    openTab ('/voc_organization_individual/' + data.org['id'])
-            })
             
             grid.reload (grid.refresh)
             
