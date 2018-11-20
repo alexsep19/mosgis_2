@@ -92,11 +92,13 @@ public class VocBuilding extends Table {
     public static void addCaCh (DB db, JsonObjectBuilder jb, Object fiashouseguid) throws SQLException {
         
         JsonObject caCh = db.getJsonObject (db.getModel ()
-            .select (ActualCaChObject.class, "AS root", "uuid", "id_ctr_status_gis")
+            .select (ActualCaChObject.class, "AS root", "uuid", "id_ctr_status_gis", "is_own")
             .toOne (VocOrganization.class, "AS org", "uuid", "label").on ()
             .toMaybeOne (Contract.class, "AS ctr", "uuid", "docnum", "signingdate").on ()
             .where ("fiashouseguid", fiashouseguid)
-            .orderBy ("root.id_ctr_status_gis"));
+            .orderBy ("root.is_own DESC")
+            .orderBy ("root.id_ctr_status_gis")
+        );
 
         if (caCh != null) jb.add ("cach", caCh);
         

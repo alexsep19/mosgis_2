@@ -1,92 +1,81 @@
 define ([], function () {
 
     return function (data, view) {
-        
+
         var name = 'house_voting_protocols_new_form'
-        
-        function disabling (element, i, arr) {
-            element.val ('').prop ('disabled', true)
-            element.closest ('.w2ui-field').hide ()
-        }
-        
-        function enabling (element, i, arr) {
-            element.closest ('.w2ui-field').show ()
-            element.val ('').prop ('disabled', false)
-        }
-        
-        function sizing (element, arr) {
-            for (item in arr){
-                element.closest ('.w2ui-' + item).height (arr[item])
-            }
-        }
         
         function recalc () {
 
-            var items = {'avoting': [$('#avotingdate'),
-                                     $('#resolutionplace')],
-                         'meeting': [$('#meetingdate'),
-                                     $('#meetingtime'),
-                                     $('#votingplace')],
-                         'evoting': [$('#evotingdatebegin'),
-                                     $('#evotingtimebegin'),
-                                     $('#evotingdateend'),
-                                     $('#evotingtimeend'),
-                                     $('#discipline'),
-                                     $('#inforeview')],
-                         'meet_av': [$('#meeting_av_date'),
-                                     $('#meeting_av_time'),
-                                     $('#meeting_av_date_end'),
-                                     $('#meeting_av_res_place')]}
+            var tables = {'avoting_table': [], 'meeting_table': [], 'evoting_table': ['evoting_period_table'], 'meet_av_table': []}
+            var sizes = {'avoting_table': {form: 330,
+                                           page: 310,
+                                           box: 370,
+                                           popup: 380},
+                         'meeting_table': {form: 330,
+                                           page: 310,
+                                           box: 370,
+                                           popup: 380},
+                         'evoting_table': {form: 365,
+                                           page: 345,
+                                           box: 385,
+                                           popup: 415,
+                                           'form-box': 400},
+                         'meet_av_table': {form: 395,
+                                           page: 375,
+                                           box: 415,
+                                           popup: 445,
+                                           'form-box': 430}}
 
-            var sizes = {'avoting': {form: 290,
-                                     page: 270,
-                                     box: 330,
-                                     popup: 340},
-                         'meeting': {form: 330,
-                                     page: 310,
-                                     box: 360,
-                                     popup: 380},
-                         'evoting': {form: 435,//
-                                     page: 415,//
-                                     box: 455,//
-                                     popup: 485,
-                                     'form-box': 470},
-                         'meet_av': {form: 364,
-                                     page: 345,
-                                     box: 390,
-                                     popup: 415,
-                                     'form-box': 370}}
+            function disable_block (table_name) {
+                var $table = $('#' + table_name)
+                $table.find('input').each (disable_element)
+                $table.find('label').each (disable_element)
+                $table.hide ()
 
-            items['avoting'].forEach(disabling);
-            items['meeting'].forEach(disabling);
-            items['evoting'].forEach(disabling);
-            items['meet_av'].forEach(disabling);
+                if (tables[table_name] != undefined) {
+                    tables[table_name].forEach ((el, i, arr) => {
+                        disable_block (el)
+                    })
+                }
+            }
+
+            function disable_element (i, element) {
+                $(element).prop ('disabled', true)
+            }
+
+            function enable_block (table_name) {
+                var $table = $('#' + table_name)
+                $table.find('input').each (enable_element)
+                $table.find('label').each (enable_element)
+                $table.show ()
+
+                if (tables[table_name] != undefined) {
+                    tables[table_name].forEach ((el, i, arr) => {
+                        enable_block (el)
+                    })
+                }
+
+                for (item in sizes[table_name]) {
+                    $table.closest ('.w2ui-' + item).height (sizes[table_name][item])
+                }
+            }
+
+            function enable_element (i, element) {
+                $(element).prop ('disabled', false)
+            }
+
+            for (var table in tables) {
+                disable_block (table)
+            }
 
             var v = w2ui [name].values ()
 
-            switch (v.form_) {
-                case 0:
-                    items['avoting'].forEach(enabling);
-                    sizing (items['avoting'][0], sizes['avoting']);
-                    break;
-                case 1:
-                    items['meeting'].forEach(enabling);
-                    sizing (items['meeting'][0], sizes['meeting']);
-                    break;
-                case 2:
-                    items['evoting'].forEach(enabling);
-                    sizing (items['evoting'][0], sizes['evoting']);
-                    break;
-                case 3:
-                    items['meet_av'].forEach(enabling);
-                    sizing (items['meet_av'][0], sizes['meet_av']);
-                    break;
-            }         
+            enable_block (Object.keys(tables)[v.form_])
         }
         
         $(view).w2popup('open', {
 
-            width  : 550,
+            width  : 620,
             height : 390,
 
             title   : 'Добавление протокола',
@@ -125,18 +114,18 @@ define ([], function () {
                             
                             {name: 'avotingdate', type: 'date'},
                             {name: 'resolutionplace', type: 'text'},
-                            {name: 'meetingdate', type: 'date'},
-                            {name: 'meetingtime', type: 'time'},
+
+                            {name: 'meetingdate', type: 'datetime'},
                             {name: 'votingplace', type: 'text'},
-                            {name: 'evotingdatebegin', type: 'date'},
-                            {name: 'evotingtimebegin', type: 'time'},
-                            {name: 'evotingdateend', type: 'date'},
-                            {name: 'evotingtimeend', type: 'time'},
+
+                            {name: 'evotingdatebegin', type: 'datetime'},
+                            {name: 'evotingdateend', type: 'datetime'},
                             {name: 'discipline', type: 'text'},
                             {name: 'inforeview', type: 'text'},
-                            {name: 'meeting_av_date', type: 'date'},
-                            {name: 'meeting_av_time', type: 'time'},
+
+                            {name: 'meeting_av_date', type: 'datetime'},
                             {name: 'meeting_av_date_end', type: 'date'},
+                            {name: 'meeting_av_place', type: 'text'},
                             {name: 'meeting_av_res_place', type: 'text'},
                         ],
                         

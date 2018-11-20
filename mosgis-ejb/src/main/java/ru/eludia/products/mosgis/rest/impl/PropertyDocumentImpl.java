@@ -15,7 +15,7 @@ import ru.eludia.products.mosgis.db.model.tables.PropertyDocument;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
-import ru.eludia.products.mosgis.db.model.voc.VocProtertyDocumentType;
+import ru.eludia.products.mosgis.db.model.voc.VocPropertyDocumentType;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.PropertyDocumentLocal;
@@ -98,7 +98,7 @@ public class PropertyDocumentImpl extends BaseCRUD<PropertyDocument> implements 
 
         db.addJsonArrays (job,
             m
-                .select (VocProtertyDocumentType.class, "id", "label")
+                .select (VocPropertyDocumentType.class, "id", "label")
                 .orderBy ("label")
         );
 

@@ -10,7 +10,7 @@ define ([], function () {
         
         function Permissions () {
             
-            if (data.cach && data.cach['org.uuid'] == $_USER.uuid_org && data.cach.id_ctr_status_gis != 110)
+            if (data.cach && data.cach.is_own && data.cach['org.uuid'] == $_USER.uuid_org && data.cach.id_ctr_status_gis != 110)
                 return true
             return false
             

@@ -62,7 +62,7 @@ define ([], function () {
 
             }
 
-            if (is_own && it ["ctr.id_ctr_status_gis"] == 40) {
+            if (is_own && it.id_ctr_status_gis == 40 && it ["ctr.id_ctr_status_gis"] == 40) {
                 it._can.edit_work_list = 1                
             }
 

@@ -10,7 +10,7 @@ import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
-import ru.eludia.products.mosgis.db.model.voc.VocProtertyDocumentType;
+import ru.eludia.products.mosgis.db.model.voc.VocPropertyDocumentType;
 
 public class PropertyDocument extends EnTable {
 
@@ -20,7 +20,7 @@ public class PropertyDocument extends EnTable {
         UUID_PREMISE              (Premise.class,                 "Помещение"),
         UUID_ORG_OWNER            (VocOrganization.class,         "Собственник-организация"),
         UUID_PERSON_OWNER         (VocPerson.class,               "Собственник-физлицо"),
-        ID_TYPE                   (VocProtertyDocumentType.class, "Тип документа"),
+        ID_TYPE                   (VocPropertyDocumentType.class, "Тип документа"),
         ID_LOG                    (PropertyDocumentLog.class,     "Последнее событие редактирования"),
         PRC                       (NUMERIC,       5, 2, null,     "Размер доли в праве собственности на помещение, %"),
         NO                        (STRING,        null,           "Номер документа"),
