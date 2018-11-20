@@ -15,7 +15,7 @@ define ([], function () {
     
     function is_editable (it) {
     
-        if (it.id_ctr_status != 40) return 0;
+        if ((it.uuid_org != $_USER.uuid_org) && !$_USER.role.admin) return 0;
         
         switch (it.id_ctr_status_gis) {
             case 20:
