@@ -80,8 +80,7 @@ public class VoteInitiatorsImpl extends BaseCRUD<VoteInitiator> implements VoteI
                     
                 ModelHolder.getModel ()
                     .select (VocOrganization.class, "uuid AS id", "label")
-                    .orderBy ("label")
-                    .and ("uuid", ModelHolder.getModel ().select (VotingProtocol.class, "uuid_org").where ("is_deleted", 0)),
+                    .orderBy ("label"),
 
                 ModelHolder.getModel ()
                     .select (VocAsyncEntityState.class, "id", "label")
@@ -139,8 +138,6 @@ public class VoteInitiatorsImpl extends BaseCRUD<VoteInitiator> implements VoteI
         );
         
         job.add ("item", item);
-        
-        logger.log (Level.INFO, "vote initiator item: " + item.toString ());
         
         final String fiashouseguid = item.getString ("protocol.fiashouseguid");
         VocBuilding.addCaCh (db, job, fiashouseguid);
