@@ -89,9 +89,8 @@ public class CharterObject extends Table {
                 + "|| '. Операция отменена.'); "
             + " END LOOP; "
             + "END IF; "
-
                     
-            + "IF :NEW.is_deleted = 0 AND :NEW.is_annuled = 0 AND :NEW.is_from_gis = 0 THEN "
+            + "IF :NEW.is_deleted = 0 AND :NEW.is_annuled = 0 AND :NEW.is_from_gis = 0 AND :NEW.ismanagedbycontract = 0 THEN "
             + " FOR i IN ("
                 + "SELECT "
                 + " o.startdate"
@@ -105,6 +104,7 @@ public class CharterObject extends Table {
                 + " INNER JOIN vc_buildings b ON o.fiashouseguid = b.houseguid "
                 + "WHERE o.is_deleted = 0"
                 + " AND o.is_annuled = 0"
+                + " AND o.ismanagedbycontract = 0"
                 + " AND o.fiashouseguid = :NEW.fiashouseguid "
                 + " AND (   o.enddate IS NULL OR o.enddate >= :NEW.startdate) "
                 + " AND (:NEW.enddate IS NULL OR o.startdate <= :NEW.enddate )"
