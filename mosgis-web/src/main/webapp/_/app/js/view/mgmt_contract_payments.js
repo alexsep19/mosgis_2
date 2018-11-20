@@ -8,8 +8,6 @@ define ([], function () {
 
         var $panel = $(layout.el ('main'))
 
-        var is_editable = (data.item.id_ctr_status == 40)
-
         $panel.w2regrid ({ 
         
             multiSelect: false,
@@ -17,12 +15,12 @@ define ([], function () {
             name: grid_name,
 
             show: {
-                toolbar: 1,
+                toolbar: data.item._can.create_payment,
                 footer: 1,
                 toolbarReload: false,
                 toolbarColumns: false,
                 toolbarInput: false,
-                toolbarAdd: is_editable,
+                toolbarAdd: data.item._can.create_payment,
             },            
 
             textSearch: 'contains',

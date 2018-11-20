@@ -41,29 +41,25 @@ define ([], function () {
             begindate: dt_dmy (data.item.effectivedate),
             enddate:   dt_dmy (data.item.plandatecomptetion),
         }
-                
-        query ({type: "contract_objects", id: undefined}, {limit: 100000, offset: 0, search: [        
-            {field: "uuid_contract", operator: "is", value: data.item.uuid},            
-        ]}, function (d) {
         
-            var a = []
+        var root = data.contract_objects
+                
+        var a = []
 
-            if (d.root.length == 1) {
-                data.record.uuid_contract_object = d.root [0].id
-            }
-            else {
-                a.push ({id: "", text: "Все объекты договора"})
-            }
-            
-            $.each (d.root, function () {
-                a.push ({id: this.id, text: this ['fias.label']})
-            })
-            
-            data.objects = a
-            
-            done (data)
-
-        })                      
+        if (root.length == 1) {
+            data.record.uuid_contract_object = root [0].id
+        }
+        else {
+            a.push ({id: "", text: "Все объекты договора"})
+        }
+        
+        $.each (root, function () {
+            a.push (this)
+        })
+        
+        data.objects = a
+        
+        done (data)
 
     }
 
