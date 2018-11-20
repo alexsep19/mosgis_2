@@ -11,6 +11,7 @@ import javax.ejb.MessageDriven;
 import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.jms.TextMessage;
+import javax.json.JsonObject;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -25,25 +26,25 @@ import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
     , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
     , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class GisExportHouseMDB extends TextMDB {
+public class ExportHouseMDB extends TextMDB {
 
-    private static final Logger logger = Logger.getLogger (GisExportHouseMDB.class.getName ());
-
-    @EJB
-    protected UUIDPublisher UUIDPublisher;
+    private static final Logger logger = Logger.getLogger (ExportHouseMDB.class.getName ());
 
     @EJB
-    protected WsGisHouseManagementClient wsGisExportHouseClient;
+    private UUIDPublisher UUIDPublisher;
+
+    @EJB
+    private WsGisHouseManagementClient wsGisHouseManagementClient;
     
     @Resource (mappedName = "mosgis.outExportHouseQueue")
-    Queue outExportHouseQueue;
+    private Queue outExportHouseQueue;
 
     @Override
     protected void onTextMessage (TextMessage message) throws SQLException, JMSException {
 
         String fiasHouseGuid = message.getText ();
 
-        logger.info ("Got text: '" + fiasHouseGuid + "'");
+        logger.log (Level.INFO, "Got text: ''{0}''", fiasHouseGuid);
 
         if (fiasHouseGuid == null || "null".equals (fiasHouseGuid)) {
             logger.warning ("Empty FIASHouseGUID passed, ignoring");
@@ -52,7 +53,7 @@ public class GisExportHouseMDB extends TextMDB {
         
         try (DB db = ModelHolder.getModel ().getDb ()) {
             
-            AckRequest.Ack ack = wsGisExportHouseClient.exportHouseData(fiasHouseGuid);
+            AckRequest.Ack ack = wsGisHouseManagementClient.exportHouseData(fiasHouseGuid);
             
             db.update (OutSoap.class, DB.HASH (
                 "uuid",     ack.getRequesterMessageGUID (),
@@ -62,10 +63,7 @@ public class GisExportHouseMDB extends TextMDB {
             UUIDPublisher.publish (outExportHouseQueue, UUID.fromString (ack.getRequesterMessageGUID ()));
             
         }
-        catch (SQLException ex) {
-            logger.log (Level.SEVERE, null, ex);
-        }
-        catch (Fault ex) {
+        catch (SQLException | Fault ex) {
             logger.log (Level.SEVERE, null, ex);
         }
         

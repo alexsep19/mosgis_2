@@ -17,28 +17,50 @@ import javax.xml.ws.WebServiceRef;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.util.JDBCConsumer;
+import ru.eludia.base.db.util.TypeConverter;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.Block;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractFile;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
+import ru.eludia.products.mosgis.db.model.tables.Entrance;
+import ru.eludia.products.mosgis.db.model.tables.Lift;
+import ru.eludia.products.mosgis.db.model.tables.LivingRoom;
+import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
+import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
+import ru.eludia.products.mosgis.util.StringUtils;
 import ru.eludia.products.mosgis.jms.gis.poll.GisPollExportMgmtContractStatusMDB;
 import ru.eludia.products.mosgis.ws.base.LoggingOutMessageHandler;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
 import ru.gosuslugi.dom.schema.integration.base.GetStateRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ApartmentHouseESPType;
+import ru.gosuslugi.dom.schema.integration.house_management.ApartmentHouseOMSType;
+import ru.gosuslugi.dom.schema.integration.house_management.ApartmentHouseUOType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChAsyncRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChRequestCriteriaType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportHouseRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportStatusCAChRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
+import ru.gosuslugi.dom.schema.integration.house_management.HouseBasicRSOType;
+import ru.gosuslugi.dom.schema.integration.house_management.HouseBasicUOType;
+import ru.gosuslugi.dom.schema.integration.house_management.HouseBasicUpdateESPType;
+import ru.gosuslugi.dom.schema.integration.house_management.HouseBasicUpdateOMSType;
+import ru.gosuslugi.dom.schema.integration.house_management.HouseBasicUpdateRSOType;
+import ru.gosuslugi.dom.schema.integration.house_management.HouseBasicUpdateUOType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportCharterRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseESPRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseOMSRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseRSORequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseUORequest;
+import ru.gosuslugi.dom.schema.integration.house_management.LivingHouseOMSType;
 import ru.gosuslugi.dom.schema.integration.house_management.ObjectFactory;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.HouseManagementPortsTypeAsync;
@@ -263,7 +285,188 @@ public class WsGisHouseManagementClient {
         GetStateRequest getStateRequest = new GetStateRequest ();
         getStateRequest.setMessageGUID (uuid.toString ());
         return getPort (orgPPAGuid, UUID.randomUUID ()).getState (getStateRequest);
-    }    
+    }
+    
+    public AckRequest.Ack importHouseUOData (UUID orgPPAGuid, Map<String, Object> r) throws Fault {
+        
+        ImportHouseUORequest importHouseUORequest = of.createImportHouseUORequest();
+        
+        if (TypeConverter.Boolean(r.get("is_condo"))) {
+            //МКД
+            ImportHouseUORequest.ApartmentHouse house = new ImportHouseUORequest.ApartmentHouse();
+            importHouseUORequest.setApartmentHouse(house);
+            if (StringUtils.isBlank((String) r.get("gis_unique_number"))) {
+                //Создание
+                ImportHouseUORequest.ApartmentHouse.ApartmentHouseToCreate apartmentHouse
+                        = TypeConverter.javaBean(ImportHouseUORequest.ApartmentHouse.ApartmentHouseToCreate.class, r);
+                apartmentHouse.setBasicCharacteristicts(TypeConverter.javaBean(ApartmentHouseUOType.BasicCharacteristicts.class, r));
+                house.setApartmentHouseToCreate(apartmentHouse);
+            } else {
+                //Обновление
+                ImportHouseUORequest.ApartmentHouse.ApartmentHouseToUpdate apartmentHouse
+                        = TypeConverter.javaBean(ImportHouseUORequest.ApartmentHouse.ApartmentHouseToUpdate.class, r);
+                apartmentHouse.setBasicCharacteristicts(TypeConverter.javaBean(HouseBasicUpdateUOType.class, r));
+                house.setApartmentHouseToUpdate(apartmentHouse);
+            }
+            ((Collection<Map<String, Object>>) r.get("entrances")).forEach((item) -> Entrance.add(house, item));
+            ((Collection<Map<String, Object>>) r.get("lifts")).forEach((item) -> Lift.add(house, item));
+            ((Collection<Map<String, Object>>) r.get("residentialpremises")).forEach((item) -> ResidentialPremise.add(house, item));
+            ((Collection<Map<String, Object>>) r.get("nonresidentialpremises")).forEach((item) -> NonResidentialPremise.add(house, item));
+        } else {
+            //ЖД
+            ImportHouseUORequest.LivingHouse house = new ImportHouseUORequest.LivingHouse();
+            importHouseUORequest.setLivingHouse(house);
+            if (r.get("gis_unique_number") == null) {
+                //Создание
+                ImportHouseUORequest.LivingHouse.LivingHouseToCreate livingHouse
+                        = TypeConverter.javaBean(ImportHouseUORequest.LivingHouse.LivingHouseToCreate.class, r);
+                livingHouse.setBasicCharacteristicts(TypeConverter.javaBean(HouseBasicUOType.class, r));
+                house.setLivingHouseToCreate(livingHouse);
+            } else {
+                //Обновление
+                ImportHouseUORequest.LivingHouse.LivingHouseToUpdate livingHouse
+                        = TypeConverter.javaBean(ImportHouseUORequest.LivingHouse.LivingHouseToUpdate.class, r);
+                livingHouse.setBasicCharacteristicts(TypeConverter.javaBean(HouseBasicUpdateUOType.class, r));
+                house.setLivingHouseToUpdate(livingHouse);
+            }
+            if (TypeConverter.Boolean(r.get("hasblocks")))
+                ((Collection<Map<String, Object>>) r.get("blocks")).forEach((item) -> Block.add(house, item));
+            ((Collection<Map<String, Object>>) r.get("livingrooms")).forEach((item) -> LivingRoom.add(house, item));
+        }
+        
+        return getPort (orgPPAGuid, UUID.randomUUID()).importHouseUOData(importHouseUORequest).getAck ();       
+    }
+    
+    public AckRequest.Ack importHouseOMSData (UUID orgPPAGuid, Map<String, Object> r) throws Fault {
+        
+        ImportHouseOMSRequest importHouseOMSRequest = of.createImportHouseOMSRequest();
+        
+        if (TypeConverter.Boolean(r.get("is_condo"))) {
+            //МКД
+            ImportHouseOMSRequest.ApartmentHouse house = new ImportHouseOMSRequest.ApartmentHouse();
+            importHouseOMSRequest.setApartmentHouse(house);
+            if (StringUtils.isBlank((String) r.get("gis_unique_number"))) {
+                //Создание
+                ImportHouseOMSRequest.ApartmentHouse.ApartmentHouseToCreate apartmentHouse
+                        = TypeConverter.javaBean(ImportHouseOMSRequest.ApartmentHouse.ApartmentHouseToCreate.class, r);
+                apartmentHouse.setBasicCharacteristicts(TypeConverter.javaBean(ApartmentHouseOMSType.BasicCharacteristicts.class, r));
+                house.setApartmentHouseToCreate(apartmentHouse);
+            } else {
+                //Обновление
+                ImportHouseOMSRequest.ApartmentHouse.ApartmentHouseToUpdate apartmentHouse
+                        = TypeConverter.javaBean(ImportHouseOMSRequest.ApartmentHouse.ApartmentHouseToUpdate.class, r);
+                apartmentHouse.setBasicCharacteristicts(TypeConverter.javaBean(HouseBasicUpdateOMSType.class, r));
+                house.setApartmentHouseToUpdate(apartmentHouse);
+            }
+            ((Collection<Map<String, Object>>) r.get("entrances")).forEach((item) -> Entrance.add(house, item));
+            ((Collection<Map<String, Object>>) r.get("lifts")).forEach((item) -> Lift.add(house, item));
+            ((Collection<Map<String, Object>>) r.get("residentialpremises")).forEach((item) -> ResidentialPremise.add(house, item));
+            ((Collection<Map<String, Object>>) r.get("nonresidentialpremises")).forEach((item) -> NonResidentialPremise.add(house, item));
+        } else {
+            //ЖД
+            ImportHouseOMSRequest.LivingHouse house = new ImportHouseOMSRequest.LivingHouse();
+            importHouseOMSRequest.setLivingHouse(house);
+            if (r.get("gis_unique_number") == null) {
+                //Создание
+                ImportHouseOMSRequest.LivingHouse.LivingHouseToCreate livingHouse
+                        = TypeConverter.javaBean(ImportHouseOMSRequest.LivingHouse.LivingHouseToCreate.class, r);
+                livingHouse.setBasicCharacteristicts(TypeConverter.javaBean(LivingHouseOMSType.BasicCharacteristicts.class, r));
+                house.setLivingHouseToCreate(livingHouse);
+            } else {
+                //Обновление
+                ImportHouseOMSRequest.LivingHouse.LivingHouseToUpdate livingHouse
+                        = TypeConverter.javaBean(ImportHouseOMSRequest.LivingHouse.LivingHouseToUpdate.class, r);
+                livingHouse.setBasicCharacteristicts(TypeConverter.javaBean(HouseBasicUpdateOMSType.class, r));
+                house.setLivingHouseToUpdate(livingHouse);
+            }
+            if (TypeConverter.Boolean(r.get("hasblocks")))
+                ((Collection<Map<String, Object>>) r.get("blocks")).forEach((item) -> Block.add(house, item));
+            ((Collection<Map<String, Object>>) r.get("livingrooms")).forEach((item) -> LivingRoom.add(house, item));
+        }
+        
+        return getPort (orgPPAGuid, UUID.randomUUID()).importHouseOMSData(importHouseOMSRequest).getAck ();       
+    }
+    
+    public AckRequest.Ack importHouseRSOData (UUID orgPPAGuid, Map<String, Object> r) throws Fault {
+        
+        ImportHouseRSORequest importHouseRSORequest = of.createImportHouseRSORequest();
+        
+        if (TypeConverter.Boolean(r.get("is_condo"))) {
+            //МКД
+            ImportHouseRSORequest.ApartmentHouse house = new ImportHouseRSORequest.ApartmentHouse();
+            importHouseRSORequest.setApartmentHouse(house);
+            if (StringUtils.isBlank((String) r.get("gis_unique_number"))) {
+                //Создание
+                ImportHouseRSORequest.ApartmentHouse.ApartmentHouseToCreate apartmentHouse
+                        = TypeConverter.javaBean(ImportHouseRSORequest.ApartmentHouse.ApartmentHouseToCreate.class, r);
+                apartmentHouse.setBasicCharacteristicts(TypeConverter.javaBean(HouseBasicRSOType.class, r));
+                house.setApartmentHouseToCreate(apartmentHouse);
+            } else {
+                //Обновление
+                ImportHouseRSORequest.ApartmentHouse.ApartmentHouseToUpdate apartmentHouse
+                        = TypeConverter.javaBean(ImportHouseRSORequest.ApartmentHouse.ApartmentHouseToUpdate.class, r);
+                apartmentHouse.setBasicCharacteristicts(TypeConverter.javaBean(HouseBasicUpdateRSOType.class, r));
+                house.setApartmentHouseToUpdate(apartmentHouse);
+            }
+            ((Collection<Map<String, Object>>) r.get("entrances")).forEach((item) -> Entrance.add(house, item));
+            ((Collection<Map<String, Object>>) r.get("residentialpremises")).forEach((item) -> ResidentialPremise.add(house, item));
+            ((Collection<Map<String, Object>>) r.get("nonresidentialpremises")).forEach((item) -> NonResidentialPremise.add(house, item));
+        } else {
+            //ЖД
+            ImportHouseRSORequest.LivingHouse house = new ImportHouseRSORequest.LivingHouse();
+            importHouseRSORequest.setLivingHouse(house);
+            if (r.get("gis_unique_number") == null) {
+                //Создание
+                ImportHouseRSORequest.LivingHouse.LivingHouseToCreate livingHouse
+                        = TypeConverter.javaBean(ImportHouseRSORequest.LivingHouse.LivingHouseToCreate.class, r);
+                livingHouse.setBasicCharacteristicts(TypeConverter.javaBean(HouseBasicRSOType.class, r));
+                house.setLivingHouseToCreate(livingHouse);
+            } else {
+                //Обновление
+                ImportHouseRSORequest.LivingHouse.LivingHouseToUpdate livingHouse
+                        = TypeConverter.javaBean(ImportHouseRSORequest.LivingHouse.LivingHouseToUpdate.class, r);
+                livingHouse.setBasicCharacteristicts(TypeConverter.javaBean(HouseBasicUpdateRSOType.class, r));
+                house.setLivingHouseToUpdate(livingHouse);
+            }
+            if (TypeConverter.Boolean(r.get("hasblocks")))
+                ((Collection<Map<String, Object>>) r.get("blocks")).forEach((item) -> Block.add(house, item));
+            ((Collection<Map<String, Object>>) r.get("livingrooms")).forEach((item) -> LivingRoom.add(house, item));
+        }
+        
+        return getPort (orgPPAGuid, UUID.randomUUID()).importHouseRSOData(importHouseRSORequest).getAck ();       
+    }
+    
+    public AckRequest.Ack importHouseESPData (UUID orgPPAGuid, Map<String, Object> r) throws Exception {
+        
+        ImportHouseESPRequest importHouseESPRequest = of.createImportHouseESPRequest();
+        
+        if (TypeConverter.Boolean(r.get("is_condo"))) {
+            //МКД
+            ImportHouseESPRequest.ApartmentHouse house = new ImportHouseESPRequest.ApartmentHouse();
+            importHouseESPRequest.setApartmentHouse(house);
+            if (StringUtils.isBlank((String) r.get("gis_unique_number"))) {
+                //Создание
+                ImportHouseESPRequest.ApartmentHouse.ApartmentHouseToCreate apartmentHouse
+                        = TypeConverter.javaBean(ImportHouseESPRequest.ApartmentHouse.ApartmentHouseToCreate.class, r);
+                apartmentHouse.setBasicCharacteristicts(TypeConverter.javaBean(ApartmentHouseESPType.BasicCharacteristicts.class, r));
+                house.setApartmentHouseToCreate(apartmentHouse);
+            } else {
+                //Обновление
+                ImportHouseESPRequest.ApartmentHouse.ApartmentHouseToUpdate apartmentHouse
+                        = TypeConverter.javaBean(ImportHouseESPRequest.ApartmentHouse.ApartmentHouseToUpdate.class, r);
+                apartmentHouse.setBasicCharacteristicts(TypeConverter.javaBean(HouseBasicUpdateESPType.class, r));
+                house.setApartmentHouseToUpdate(apartmentHouse);
+            }
+            ((Collection<Map<String, Object>>) r.get("entrances")).forEach((item) -> Entrance.add(house, item));
+            ((Collection<Map<String, Object>>) r.get("lifts")).forEach((item) -> Lift.add(house, item));
+            ((Collection<Map<String, Object>>) r.get("residentialpremises")).forEach((item) -> ResidentialPremise.add(house, item));
+            ((Collection<Map<String, Object>>) r.get("nonresidentialpremises")).forEach((item) -> NonResidentialPremise.add(house, item));
+        } else {
+            throw new Exception("Данным методом возможно отправить только МКД");
+        }
+        
+        return getPort (orgPPAGuid, UUID.randomUUID()).importHouseESPData(importHouseESPRequest).getAck ();       
+    }
     
     
     
