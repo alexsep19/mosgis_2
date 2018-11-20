@@ -128,7 +128,7 @@ public class ContractPaymentImpl extends BaseCRUD<ContractPayment> implements Co
                 m
                     .select     (VotingProtocol.class, "AS voting_proto", "uuid AS id", "label")
                     .where      ("fiashouseguid", fiashouseguid)
-//                    .and        ("id_status", VocAsyncEntityState.i.OK.getId ())
+                    .and        ("is_deleted", 0)
                     .orderBy    ("protocoldate DESC")
 
             );
