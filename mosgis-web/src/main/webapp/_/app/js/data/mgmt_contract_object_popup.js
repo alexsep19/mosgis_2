@@ -56,7 +56,7 @@ define ([], function () {
             var a = []
             
             $.each (d.root, function () {
-                if (!this.ismanagedbycontract || idx [this.fiashouseguid]) return
+                if (!this.ismanagedbycontract || idx [this.fiashouseguid] || this.is_annuled || this.id_ctr_status_gis == 90 || this.id_ctr_status_gis == 110) return
                 this.label = this ['fias.label']
                 this.recid = this.uuid
                 a.push (this)
