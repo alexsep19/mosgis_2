@@ -1,6 +1,5 @@
 package ru.eludia.products.mosgis.rest.impl;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import javax.ejb.Stateless;
@@ -11,32 +10,25 @@ import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
-import ru.eludia.products.mosgis.db.model.tables.House;
-import ru.eludia.products.mosgis.db.model.tables.OutSoap;
-import ru.eludia.products.mosgis.db.model.tables.Owner;
-import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.tables.PropertyDocument;
 import ru.eludia.products.mosgis.db.model.tables.VoteInitiator;
+import ru.eludia.products.mosgis.db.model.tables.VoteInitiatorLog;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocol;
-import ru.eludia.products.mosgis.db.model.tables.VotingProtocolLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
-import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
-import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
-import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
-import ru.eludia.products.mosgis.rest.api.VotingProtocolsLocal;
+import ru.eludia.products.mosgis.rest.api.VoteInitiatorsLocal;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 import ru.eludia.products.mosgis.web.base.ComplexSearch;
 import ru.eludia.products.mosgis.web.base.Search;
 import ru.eludia.products.mosgis.web.base.SimpleSearch;
 
 @Stateless
-public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements VotingProtocolsLocal {
-
+public class VoteInitiatorsImpl extends BaseCRUD<VoteInitiator> implements VoteInitiatorsLocal {
+    
     private void filterOffDeleted (Select select) {
         select.and ("is_deleted", 0);
     }
@@ -57,7 +49,7 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
         
         if (searchString == null || searchString.isEmpty ()) return;
 
-        select.and ("label_form_uc LIKE %?%", searchString);
+        select.and ("label_uc LIKE %?%", searchString.toUpperCase ());
         
     }
     
@@ -76,23 +68,6 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
     }
     
     @Override
-    public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
-       
-        Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
-            .where ("fiashouseguid", p.getJsonObject("data").getJsonString("uuid_house").getString ())
-            .toOne (VocGisStatus.class, "label AS status_label").on("id_prtcl_status_gis")
-            .toMaybeOne (VotingProtocolLog.class         ).on ()
-            .and ("uuid_org", user.getUuidOrg ())
-            .orderBy ("root.id_prtcl_status_gis")
-            .limit (p.getInt ("offset"), p.getInt ("limit"));
-
-        applySearch (Search.from (p), select);
-
-        db.addJsonArrayCnt (job, select);
-
-    });}
-    
-    @Override
     public JsonObject getVocs () {
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();
@@ -109,11 +84,7 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
 
                 ModelHolder.getModel ()
                     .select (VocAsyncEntityState.class, "id", "label")
-                    .orderBy ("label"),
-                    
-                ModelHolder.getModel ()
-                    .select(VocGisStatus.class, "id", "label")
-                    .orderBy ("id")
+                    .orderBy ("label")
 
             );
 
@@ -127,51 +98,70 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
     }
 
     @Override
-    public JsonObject getItem (String id) {return fetchData ((db, job) -> {
+    public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
+       
+        Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
+            .toMaybeOne (PropertyDocument.class, "AS prop", "uuid_person_owner").on ()
+            .toMaybeOne (VocOrganization.class, "AS org", "id_type").on ()
+            .toMaybeOne (VoteInitiatorLog.class         ).on ()
+            .where ("uuid_protocol", p.getJsonObject("data").getJsonString("protocol_uuid").getString ())
+            .orderBy ("root.uuid")
+            .limit (p.getInt ("offset"), p.getInt ("limit"));
 
-        JsonObject item = db.getJsonObject (ModelHolder.getModel ()
-            .get (VotingProtocol.class, id, "AS root", "*")
-            .toOne (VocGisStatus.class, "label AS status_label").on("id_prtcl_status_gis")
-            .toOne (VocBuilding.class, "label AS address_label").on ()
-            .toMaybeOne (House.class, "AS house", "uuid AS house_uuid", "fiashouseguid").on ("root.fiashouseguid=house.fiashouseguid")
-            .toMaybeOne (VotingProtocolLog.class           ).on ()
-            .toMaybeOne (OutSoap.class,             "err_text").on ()
-        ); 
-        
-        job.add ("item", item);
-        
-        db.addJsonArrays(job,
-                ModelHolder.getModel ()
-                    .select (PropertyDocument.class, "AS owners", "uuid AS id")
-                    .toOne (Premise.class).where ("uuid_house", item.getJsonString("house_uuid").getString ()).on ()
-                    .and ("uuid_person_owner IS NOT NULL")
-                    .toMaybeOne (VocPerson.class, "label AS label").on ()
-        );
-        
-        final String fiashouseguid = item.getString ("fiashouseguid");    
-        VocBuilding.addCaCh (db, job, fiashouseguid);
+        applySearch (Search.from (p), select);
+
+        db.addJsonArrayCnt (job, select);
 
     });}
     
     @Override
     public JsonObject doCreate (JsonObject p, User user) {return doAction ((db, job) -> {
-
+        
         final Table table = getTable ();
 
         Map<String, Object> data = getData (p);
-
-        if (table.getColumn (UUID_ORG) != null && !data.containsKey (UUID_ORG)) data.put (UUID_ORG, user.getUuidOrg ());
 
         Object insertId = db.insertId (table, data);
         
         job.add ("id", insertId.toString ());
         
-        Map<String, Object> initiator_org = new HashMap<>();
-        initiator_org.put ("uuid_protocol", insertId);
-        initiator_org.put ("uuid_org", data.get(UUID_ORG));
-        db.insert (VoteInitiator.class, initiator_org);
+        if (data.containsKey("uuid_ind")) {
+            
+            JsonObject personId = db.getJsonObject(ModelHolder.getModel()
+                    .get(getTable (), insertId.toString ())
+                    .toOne (PropertyDocument.class, "uuid_person_owner AS id").on ()
+            );
+            
+            job.add ("person", personId);
+            
+        }
+        else if (data.containsKey("uuid_org")) {
+            
+            JsonObject org = db.getJsonObject(ModelHolder.getModel()
+                    .get(getTable (), insertId.toString ())
+                    .toOne (VocOrganization.class, "id_type AS type", "uuid AS id").on ()
+            );
+            
+            job.add ("org", org);
+            
+        }
         
         logAction (db, user, insertId, VocAction.i.CREATE);
+
+    });}
+
+    @Override
+    public JsonObject getItem (String id) {return fetchData ((db, job) -> {
+
+        JsonObject item = db.getJsonObject (ModelHolder.getModel ()
+            .get (getTable (), id, "*")
+            .toOne (VotingProtocol.class, "AS protocol", "fiashouseguid").on ()
+        );
+        
+        job.add ("item", item);
+        
+        final String fiashouseguid = item.getString ("protocol.fiashouseguid");
+        VocBuilding.addCaCh (db, job, fiashouseguid);
 
     });}
     
