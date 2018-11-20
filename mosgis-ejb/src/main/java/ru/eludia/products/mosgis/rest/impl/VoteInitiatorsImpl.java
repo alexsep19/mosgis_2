@@ -116,7 +116,7 @@ public class VoteInitiatorsImpl extends BaseCRUD<VoteInitiator> implements VoteI
     
     @Override
     public JsonObject doCreate (JsonObject p, User user) {return doAction ((db, job) -> {
-
+        
         final Table table = getTable ();
 
         Map<String, Object> data = getData (p);
@@ -124,6 +124,27 @@ public class VoteInitiatorsImpl extends BaseCRUD<VoteInitiator> implements VoteI
         Object insertId = db.insertId (table, data);
         
         job.add ("id", insertId.toString ());
+        
+        if (data.containsKey("uuid_ind")) {
+            
+            JsonObject personId = db.getJsonObject(ModelHolder.getModel()
+                    .get(getTable (), insertId.toString ())
+                    .toOne (PropertyDocument.class, "uuid_person_owner AS id").on ()
+            );
+            
+            job.add ("person", personId);
+            
+        }
+        else if (data.containsKey("uuid_org")) {
+            
+            JsonObject org = db.getJsonObject(ModelHolder.getModel()
+                    .get(getTable (), insertId.toString ())
+                    .toOne (VocOrganization.class, "id_type AS type", "uuid AS id").on ()
+            );
+            
+            job.add ("org", org);
+            
+        }
         
         logAction (db, user, insertId, VocAction.i.CREATE);
 
