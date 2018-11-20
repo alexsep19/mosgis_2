@@ -36,17 +36,18 @@ public class VoteInitiators extends EJBResource<VoteInitiatorsLocal> {
     }
     
     private void checkOrg (JsonObject item) {
-
-        String itemOrg = item.getString ("uuid_org", null);
-
-        if (itemOrg == null) throw new InternalServerErrorException ("Wrong voting protocol, no org: " + item);
-
-        String userOrg = getUserOrg ();
-
-        if (!userOrg.equals (itemOrg)) {
-            logger.warning ("Org mismatch: " + userOrg + " vs. " + itemOrg);
-            throw new ValidationException ("foo", "Доступ запрещён");
-        }
+        
+        if (securityContext.isUserInRole ("admin")) return;
+        
+        if (!(
+            securityContext.isUserInRole ("nsi_20_1")
+            || securityContext.isUserInRole ("nsi_20_19")
+            || securityContext.isUserInRole ("nsi_20_20")
+            || securityContext.isUserInRole ("nsi_20_21")
+            || securityContext.isUserInRole ("nsi_20_22")
+        )) throw new ValidationException ("foo", "Доступ запрещён");
+        
+        if (!item.containsKey ("cach")) throw new ValidationException ("foo", "Ваша организация не управляет домом по этому адресу. Доступ запрещён.");
 
     }
     
