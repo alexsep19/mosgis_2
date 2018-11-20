@@ -8,6 +8,12 @@ define ([], function () {
     
     return function (data, view) {
 
+        function show () {
+            if (data.item.house_uuid && (data.item.id_prtcl_status == 10 || data.item.id_prtcl_status == 11))
+                return true
+            return false
+        }
+
         var layout = w2ui ['topmost_layout']
         
         var $panel = $(layout.el ('main'))
@@ -21,12 +27,12 @@ define ([], function () {
                                      caption: 'Собственник', 
                                      icon: 'w2ui-icon-plus', 
                                      onClick: $_DO.create_owner_voting_protocol_vote_initiators, 
-                                     off: !data.item.house_uuid},
+                                     off: !show ()},
                     {type: 'button', id: 'create_org', 
                                      caption: 'Юридическое лицо', 
                                      icon: 'w2ui-icon-plus', 
                                      onClick: $_DO.create_org_voting_protocol_vote_initiators, 
-                                     off: !data.item.house_uuid},
+                                     off: !show ()},
                 ].filter (not_off),
                 
             },
@@ -39,7 +45,7 @@ define ([], function () {
                 toolbar: true,
                 footer: true,
                 toolbarColumns: true,
-                toolbarDelete: true,
+                toolbarDelete: show (),
             },            
 
             textSearch: 'contains',
