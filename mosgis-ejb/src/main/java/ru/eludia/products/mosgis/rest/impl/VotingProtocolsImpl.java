@@ -140,6 +140,7 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
                 ModelHolder.getModel ()
                     .select (PropertyDocument.class, "AS owners", "uuid AS id")
                     .toOne (Premise.class).where ("uuid_house", item.getJsonString("house_uuid").getString ()).on ()
+                    .and ("uuid_person_owner IS NOT NULL")
                     .toMaybeOne (VocPerson.class, "label AS label").on ()
         );
         
