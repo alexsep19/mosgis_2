@@ -14,6 +14,8 @@ define ([], function () {
 
     $_DO.delete_voting_protocol_vote_initiators = function (e) {    
     
+        console.log (e)
+
         if (!e.force) return
         
         $('.w2ui-message').remove ()

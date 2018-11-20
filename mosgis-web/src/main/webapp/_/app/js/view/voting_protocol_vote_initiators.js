@@ -27,11 +27,6 @@ define ([], function () {
                                      icon: 'w2ui-icon-plus', 
                                      onClick: $_DO.create_org_voting_protocol_vote_initiators, 
                                      off: !data.item.house_uuid},
-                    {type: 'button', id: 'delete',
-                                     caption: 'Удалить',
-                                     icon: 'w2ui-icon-cross',
-                                     onClick: $_DO.delete_voting_protocol_vote_initiators,
-                                     off: !data.item.house_uuid}
                 ].filter (not_off),
                 
             },
@@ -44,6 +39,7 @@ define ([], function () {
                 toolbar: true,
                 footer: true,
                 toolbarColumns: true,
+                toolbarDelete: true,
             },            
 
             textSearch: 'contains',
@@ -65,6 +61,8 @@ define ([], function () {
 
             url: '/mosgis/_rest/?type=vote_initiators',
            
+            onDelete: $_DO.delete_voting_protocol_vote_initiators,
+
             onDblClick: function (e) {
                 record = w2ui[grid_name].records.find (x => x['id'] == e.recid)
 
