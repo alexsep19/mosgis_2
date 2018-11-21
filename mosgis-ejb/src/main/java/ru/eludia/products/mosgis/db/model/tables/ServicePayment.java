@@ -56,7 +56,6 @@ public class ServicePayment extends EnTable {
     }
     
     public static final ContractPaymentsInfoType.ServicePayment toServicePayment (Map <String, Object> r) {
-logger.info ("r=" + r);
         final ContractPaymentsInfoType.ServicePayment sp = new ContractPaymentsInfoType.ServicePayment ();
         sp.setServicePaymentSize ((BigDecimal) r.get (c.SERVICEPAYMENTSIZE.lc ()));
         sp.setService (NsiTable.toDom (r.get ("w.uniquenumber").toString (), (UUID) r.get ("w.elementguid")));

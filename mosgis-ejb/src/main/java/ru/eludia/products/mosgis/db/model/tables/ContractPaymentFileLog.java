@@ -2,9 +2,9 @@ package ru.eludia.products.mosgis.db.model.tables;
 
 import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.LogTable;
+import ru.eludia.products.mosgis.db.model.GisFileLogTable;
 
-public class ContractPaymentFileLog extends LogTable {
+public class ContractPaymentFileLog extends GisFileLogTable {
 
     public ContractPaymentFileLog () {
 

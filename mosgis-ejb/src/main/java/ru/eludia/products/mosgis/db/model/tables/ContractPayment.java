@@ -11,11 +11,13 @@ import static ru.eludia.base.model.Type.BOOLEAN;
 import static ru.eludia.base.model.Type.DATE;
 import static ru.eludia.base.model.Type.NUMERIC;
 import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocContractPaymentType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
 
 public class ContractPayment extends EnTable {
@@ -167,6 +169,15 @@ logger.info ("r=" + r);
         pc.setContractVersionGUID (r.get ("ctrt.contractversionguid").toString ());
         
         for (Map <String, Object> i: (List <Map <String, Object>>) r.get ("svc")) pc.getServicePayment ().add (ServicePayment.toServicePayment (i));
+        
+        if (DB.ok (r.get ("doc.attachmentguid"))) {
+            pc.getProtocol ().add (AttachTable.toAttachmentType (
+                r.get ("doc.label"), 
+                r.get ("doc.description"), 
+                r.get ("doc.attachmentguid"), 
+                r.get ("doc.attachmenthash")
+            ));
+        }
         
         return pc;
         

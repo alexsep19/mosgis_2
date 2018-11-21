@@ -1,5 +1,8 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
@@ -18,6 +21,7 @@ import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.ContractPayment;
 import ru.eludia.products.mosgis.db.model.tables.ContractPaymentFile;
+import ru.eludia.products.mosgis.db.model.tables.ContractPaymentFileLog;
 import ru.eludia.products.mosgis.db.model.tables.OrganizationWork;
 import ru.eludia.products.mosgis.db.model.tables.ServicePayment;
 import ru.eludia.products.mosgis.db.model.tables.ServicePaymentLog;
@@ -203,11 +207,12 @@ public class ContractPaymentImpl extends BaseCRUD<ContractPayment> implements Co
         ));
         
         logAction (db, user, id, VocAction.i.APPROVE);
-/*        
-        List<UUID> ids = new ArrayList<> ();
+
+        List<UUID> ids = new ArrayList<> ();        
         
-        db.forEach (db.getModel ().select (ContractPaymentFile.class, "uuid").where ("uuid_ContractPayment", id), (rs) -> {
-            ids.add ((UUID) db.getValue (rs, 1));
+        db.forEach (db.getModel ().select (ContractPayment.class, "uuid_file").where ("uuid", id), (rs) -> {
+            final Object u = db.getValue (rs, 1);
+            if (u != null) ids.add ((UUID) u);
         });
         
         for (UUID idFile: ids) {
@@ -224,7 +229,7 @@ public class ContractPaymentImpl extends BaseCRUD<ContractPayment> implements Co
             ));
             
         }        
-*/        
+
     });}    
     
 }

@@ -1,6 +1,7 @@
 package ru.eludia.products.mosgis.jms.gis.send;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -13,24 +14,23 @@ import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Get;
+import static ru.eludia.base.model.def.Def.NOW;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
-import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.ContractPayment;
 import ru.eludia.products.mosgis.db.model.tables.ContractPaymentFile;
+import ru.eludia.products.mosgis.db.model.tables.ContractPaymentFileLog;
 import ru.eludia.products.mosgis.db.model.tables.ContractPaymentLog;
 import ru.eludia.products.mosgis.db.model.tables.OrganizationWork;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.ServicePayment;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
-import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
-import ru.eludia.products.mosgis.ejb.wsc.RestGisFilesClient;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
@@ -45,12 +45,12 @@ public class ExportContractPaymentMDB extends UUIDMDB<ContractPaymentLog> {
     
     @EJB
     WsGisHouseManagementClient wsGisHouseManagementClient;
-
-    @EJB
-    RestGisFilesClient restGisFilesClient;
     
     @Resource (mappedName = "mosgis.outExportHouseContractPaymentsQueue")
     Queue outExportHouseContractPaymentsQueue;
+    
+    @Resource (mappedName = "mosgis.inHouseContractPaymentFilesQueue")
+    Queue inHouseContractPaymentFilesQueue;
             
     @EJB
     protected UUIDPublisher UUIDPublisher;
@@ -65,6 +65,7 @@ public class ExportContractPaymentMDB extends UUIDMDB<ContractPaymentLog> {
                 .get (getTable (), uuid, "*")
                 .toOne (ContractPayment.class, "AS ctr", "id_ctr_status").on ()
                 .toMaybeOne (ContractPaymentFile.class, "AS doc", "*").on ()
+                .toMaybeOne (ContractPaymentFileLog.class, "AS doc_log", "ts_start_sending", "err_text").on ("doc.id_log=doc_log.uuid")
                 .toOne (Contract.class, "AS ctrt", "contractversionguid").on ()
                 .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("ctrt.uuid_org=org.uuid")
                 .toMaybeOne (ContractObject.class, "AS o", "*").on ("ctr.uuid_contract_object=o.uuid")
@@ -120,8 +121,42 @@ public class ExportContractPaymentMDB extends UUIDMDB<ContractPaymentLog> {
             .and    (EnTable.c.IS_DELETED.lc (), 0)
             .toOne (OrganizationWork.class, "AS w", "elementguid", "uniquenumber").on ()
         ));
-
+        
         try {
+            
+            if (DB.ok (r.get ("uuid_file"))) {
+
+                final Object err = r.get ("doc_log.err_text");
+                if (DB.ok (err)) throw new Exception (err.toString ());
+                
+                final Object ots = r.get ("doc_log.ts_start_sending");            
+                
+                if (!DB.ok (ots)) {
+                    
+                    db.update (ContractPaymentFileLog.class, DB.HASH (
+                        "uuid",              r.get ("doc.id_log"),
+                        "ts_start_sending",  NOW
+                    ));
+                    
+                    UUIDPublisher.publish (inHouseContractPaymentFilesQueue, (UUID) r.get ("uuid_file"));
+                    
+                    UUIDPublisher.publish (getOwnQueue (), uuid);
+                    
+                    logger.info ("Sending file, bailing out");
+                    
+                    return;
+                    
+                }
+                
+                if (!DB.ok (r.get ("doc.attachmentguid"))) {
+                    
+                    UUIDPublisher.publish (getOwnQueue (), uuid);
+                    
+                    logger.info ("Waiting for " + r.get ("doc.label") + " to be uploaded...");
+                    
+                }
+                
+            }
 
             AckRequest.Ack ack = invoke (db, action, uuid, r);
 
