@@ -66,13 +66,25 @@ define ([], function () {
 
                 it._can.delete = it._can.update = it._can.cancel = it._can.edit
 
-                it._can.approve = it._can.edit
+            }
+            
+            function finish () {
+            
+                $('body').data ('data', data)
+
+                done (data)
                 
             }
+            
+            if (!it._can.edit || it.id_ctr_status != 10 || it ['ctr.id_ctr_status_gis'] != 40) return finish ()
 
-            $('body').data ('data', data)
-
-            done (data)
+            query ({type: 'service_payments', id: undefined}, {offset:0, limit: 10000, data: {uuid_contract_payment: $_REQUEST.id}}, function (d) {
+            
+                it._can.approve = d.tb_svc_payments.length
+                
+                finish ()
+            
+            })
                 
         })    
 
