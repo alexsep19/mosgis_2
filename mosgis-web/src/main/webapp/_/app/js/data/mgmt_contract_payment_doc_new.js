@@ -55,7 +55,7 @@ define ([], function () {
         w2utils.lock ($('#w2ui-popup .w2ui-page'));
                 
         var data = {
-            uuid           : $_REQUEST.id,
+            uuid_contract_payment: $_REQUEST.id,
             description    : v.description,
         }
         

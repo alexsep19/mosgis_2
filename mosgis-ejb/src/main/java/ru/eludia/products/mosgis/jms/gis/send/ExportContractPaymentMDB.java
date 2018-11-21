@@ -1,7 +1,6 @@
 package ru.eludia.products.mosgis.jms.gis.send;
 
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;

@@ -41,7 +41,7 @@ public class ContractPaymentDocsImpl extends BaseCRUD<ContractPaymentFile> imple
         
             Object id = db.insertId (getTable (), HASH (
                 
-                "uuid_contract_payment",  file.getString ("uuid_contract_payment", null),
+                "uuid_contract_payment",  file.getString ("uuid_contract_payment"),
                 "label",          file.getString ("label"),
                 "description",    file.getString ("description", ""),
                 "mime",           file.getString ("type"),
