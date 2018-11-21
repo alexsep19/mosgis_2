@@ -122,4 +122,13 @@ public class ContractPayments extends EJBResource <ContractPaymentLocal> {
         return back.doAddItems (id, p, getUser ());
     }
     
+    @POST
+    @Path("{id}/approve") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject doApprove (@PathParam ("id") String id) { 
+        final JsonObject item = getInnerItem (id);
+        checkOrg (item);
+        return back.doApprove (id, getUser ());
+    }
+    
 }

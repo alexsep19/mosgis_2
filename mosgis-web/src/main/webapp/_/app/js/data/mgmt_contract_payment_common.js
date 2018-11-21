@@ -85,8 +85,9 @@ define ([], function () {
 
     }
         
-    $_DO.annul_mgmt_contract_payment_common = function (e) {   
-        use.block ('mgmt_contract_payment_annul_popup');
+    $_DO.approve_mgmt_contract_payment_common = function (e) {
+        if (!confirm ('Разместить эти данные в ГИС ЖКХ?')) return
+        query ({type: 'contract_payments', action: 'approve'}, {}, reload_page)
     }
     
     $_DO.create_house_mgmt_contract_payment_common = function (e) {

@@ -1,7 +1,9 @@
 package ru.eludia.products.mosgis.rest.impl;
 
 import java.util.logging.Logger;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
+import javax.jms.Queue;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
@@ -24,6 +26,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocContractPaymentType;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -37,6 +40,14 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 @Stateless
 public class ContractPaymentImpl extends BaseCRUD<ContractPayment> implements ContractPaymentLocal {
     
+    @Resource (mappedName = "mosgis.inHouseContractPaymentsQueue")
+    Queue queue;
+
+    @Override
+    public Queue getQueue () {
+        return queue;
+    }
+
     private static final Logger logger = Logger.getLogger (ContractPaymentImpl.class.getName ());    
        
     private void filterOffDeleted (Select select) {
@@ -163,6 +174,57 @@ public class ContractPaymentImpl extends BaseCRUD<ContractPayment> implements Co
             
         }        
         
+    });}    
+    
+    @Override
+    protected void publishMessage (VocAction.i action, String id_log) {
+        
+        switch (action) {
+            case APPROVE:
+            case PROMOTE:
+            case REFRESH:
+            case TERMINATE:
+            case ANNUL:
+            case ROLLOVER:
+            case RELOAD:
+                super.publishMessage (action, id_log);
+            default:
+                return;
+        }
+        
+    }
+    
+    @Override
+    public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
+
+        db.update (getTable (), HASH (
+            "uuid",           id,
+            "id_ctr_status",  VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+        ));
+        
+        logAction (db, user, id, VocAction.i.APPROVE);
+/*        
+        List<UUID> ids = new ArrayList<> ();
+        
+        db.forEach (db.getModel ().select (ContractPaymentFile.class, "uuid").where ("uuid_ContractPayment", id), (rs) -> {
+            ids.add ((UUID) db.getValue (rs, 1));
+        });
+        
+        for (UUID idFile: ids) {
+            
+            String idFileLog = db.insertId (ContractPaymentFileLog.class, HASH (
+                "action", VocAction.i.APPROVE.getName (),
+                "uuid_object", idFile,
+                "uuid_user", user == null ? null : user.getId ()
+            )).toString ();
+            
+            db.update (ContractPaymentFile.class, HASH (
+                "uuid",      idFile,
+                "id_log",    idFileLog
+            ));
+            
+        }        
+*/        
     });}    
     
 }

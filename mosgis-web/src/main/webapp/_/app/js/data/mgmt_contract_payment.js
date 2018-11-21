@@ -65,6 +65,8 @@ define ([], function () {
 
                 it._can.delete = it._can.update = it._can.cancel = it._can.edit
 
+                it._can.approve = it._can.edit
+                
             }
 
             $('body').data ('data', data)

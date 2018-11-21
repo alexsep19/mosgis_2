@@ -23,6 +23,7 @@ import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractFile;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
+import ru.eludia.products.mosgis.db.model.tables.ContractPayment;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
@@ -428,6 +429,22 @@ public class WsGisHouseManagementClient {
         importCharterRequest.setTransportGUID (UUID.randomUUID ().toString ());
         
         return getPort (orgPPAGuid, messageGUID).importCharterData (importCharterRequest).getAck ();        
+        
+    }    
+    
+    public AckRequest.Ack placeContractPaymentsInfo (UUID orgPPAGuid, UUID messageGUID,  Map<String, Object> r) throws Fault {
+        
+        ImportContractRequest.Contract.PlaceContractPaymentsInfo pc = ContractPayment.toPlaceContractPaymentsInfo (r);
+
+        ImportContractRequest importContractRequest = of.createImportContractRequest ();
+        
+        final ImportContractRequest.Contract c = of.createImportContractRequestContract ();
+        c.setPlaceContractPaymentsInfo (pc);
+        c.setTransportGUID (UUID.randomUUID ().toString ());
+        
+        importContractRequest.getContract ().add (c);
+
+        return getPort (orgPPAGuid, messageGUID).importContractData (importContractRequest).getAck ();
         
     }    
     

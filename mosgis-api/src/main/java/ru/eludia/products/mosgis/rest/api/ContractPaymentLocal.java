@@ -9,5 +9,6 @@ import ru.eludia.products.mosgis.rest.api.base.CRUDBackend;
 public interface ContractPaymentLocal extends CRUDBackend {
 
     public JsonObject doAddItems (String id, JsonObject p, User user);
+    JsonObject doApprove   (String id, User user);
         
 }

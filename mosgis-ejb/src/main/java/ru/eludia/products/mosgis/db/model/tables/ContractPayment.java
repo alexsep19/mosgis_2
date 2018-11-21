@@ -1,5 +1,9 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
@@ -12,6 +16,7 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocContractPaymentType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
 
 public class ContractPayment extends EnTable {
 
@@ -107,6 +112,64 @@ public class ContractPayment extends EnTable {
                     
         + "END;");        
 
+    }
+    
+    private static final Logger logger = Logger.getLogger (ContractPayment.class.getName ());    
+    
+    public enum Action {
+        
+        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.FAILED_PLACING),
+//        EDITING     (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.FAILED_STATE),
+//        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.FAILED_ANNULMENT),
+//        TERMINATION (VocGisStatus.i.PENDING_RP_TERMINATE, VocGisStatus.i.FAILED_TERMINATE),
+//        ROLLOVER    (VocGisStatus.i.PENDING_RP_ROLLOVER,  VocGisStatus.i.FAILED_STATE),
+//        RELOADING   (VocGisStatus.i.PENDING_RP_RELOAD,    VocGisStatus.i.FAILED_STATE)
+//        APPROVING   (VocGisStatus.i.PENDING_RP_APPROVAL,  VocGisStatus.i.FAILED_STATE),
+//        REFRESHING  (VocGisStatus.i.PENDING_RP_REFRESH,   VocGisStatus.i.FAILED_STATE),
+        ;
+        
+        VocGisStatus.i nextStatus;
+        VocGisStatus.i failStatus;
+
+        private Action (VocGisStatus.i nextStatus, VocGisStatus.i failStatus) {
+            this.nextStatus = nextStatus;
+            this.failStatus = failStatus;
+        }
+
+        public VocGisStatus.i getNextStatus () {
+            return nextStatus;
+        }
+
+        public VocGisStatus.i getFailStatus () {
+            return failStatus;
+        }
+        
+        public static Action forStatus (VocGisStatus.i status) {
+            switch (status) {
+                case PENDING_RQ_PLACING:   return PLACING;
+//                case PENDING_RQ_EDIT:      return EDITING;
+//                case PENDING_RQ_TERMINATE: return TERMINATION;
+//                case PENDING_RQ_ANNULMENT: return ANNULMENT;
+//                case PENDING_RQ_RELOAD:    return RELOADING;
+//                case PENDING_RQ_ROLLOVER:  return ROLLOVER;
+//                case PENDING_RQ_APPROVAL:  return APPROVING;
+//                case PENDING_RQ_REFRESH:   return REFRESHING;
+                default: return null;
+            }            
+        }
+                        
+    };
+    
+    public static final ImportContractRequest.Contract.PlaceContractPaymentsInfo toPlaceContractPaymentsInfo (Map<String, Object> r) {
+        r.put ("type", r.get ("type_"));
+logger.info ("r=" + r);
+        final ImportContractRequest.Contract.PlaceContractPaymentsInfo pc = (ImportContractRequest.Contract.PlaceContractPaymentsInfo) DB.to.javaBean (ImportContractRequest.Contract.PlaceContractPaymentsInfo.class, r);        
+        pc.setContractVersionGUID (r.get ("ctrt.contractversionguid").toString ());
+        
+        for (Map <String, Object> i: (List <Map <String, Object>>) r.get ("svc")) pc.getServicePayment ().add (ServicePayment.toServicePayment (i));
+        
+        return pc;
+        
     }
 
 }

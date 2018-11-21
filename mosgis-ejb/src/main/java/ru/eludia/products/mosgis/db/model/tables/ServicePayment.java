@@ -1,11 +1,17 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.math.BigDecimal;
+import java.util.Map;
+import java.util.UUID;
+import java.util.logging.Logger;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.Type.NUMERIC;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.gosuslugi.dom.schema.integration.house_management.ContractPaymentsInfoType;
 
 public class ServicePayment extends EnTable {
 
@@ -36,6 +42,8 @@ public class ServicePayment extends EnTable {
         }
 
     }
+    
+    private static final Logger logger = Logger.getLogger (ServicePayment.class.getName ());
 
     public ServicePayment () {
         
@@ -45,6 +53,14 @@ public class ServicePayment extends EnTable {
         
         key    ("uuid_contract", c.UUID_CONTRACT_PAYMENT, c.UUID_ORG_WORK);
 
+    }
+    
+    public static final ContractPaymentsInfoType.ServicePayment toServicePayment (Map <String, Object> r) {
+logger.info ("r=" + r);
+        final ContractPaymentsInfoType.ServicePayment sp = new ContractPaymentsInfoType.ServicePayment ();
+        sp.setServicePaymentSize ((BigDecimal) r.get (c.SERVICEPAYMENTSIZE.lc ()));
+        sp.setService (NsiTable.toDom (r.get ("w.uniquenumber").toString (), (UUID) r.get ("w.elementguid")));
+        return sp;
     }
 
 }
