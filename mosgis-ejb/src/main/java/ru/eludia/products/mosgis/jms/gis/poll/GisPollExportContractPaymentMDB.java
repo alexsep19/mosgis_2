@@ -1,6 +1,7 @@
 package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.annotation.Resource;
@@ -25,7 +26,9 @@ import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.eludia.products.mosgis.rest.api.ContractPaymentLocal;
+import ru.gosuslugi.dom.schema.integration.base.CommonResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportResult;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 
 @MessageDriven(activationConfig = {
@@ -68,18 +71,22 @@ public class GisPollExportContractPaymentMDB  extends GisPollMDB {
             
             GetStateResult state = getState (orgPPAGuid, r);
             
-            VocGisStatus.i status = VocGisStatus.i.APPROVED;
+            final List<ImportResult> importResult = state.getImportResult ();
             
-            final Map<String, Object> h = HASH (
+            if (importResult == null || importResult.isEmpty ()) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
+            
+            final List<ImportResult.CommonResult> commonResult = importResult.get (0).getCommonResult ();
+            
+            if (commonResult == null || commonResult.isEmpty ()) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
+            
+            for (CommonResultType.Error err: commonResult.get (0).getError ()) throw new GisPollException (err);
+            
+            VocGisStatus.i status = VocGisStatus.i.APPROVED;
+                        
+            update (db, uuid, r, HASH (
                 "id_ctr_status",       status.getId (),
                 "id_ctr_status_gis",   status.getId ()
-            );
-            
-            h.put ("uuid", r.get ("ctr.uuid"));
-            db.update (ContractPayment.class, h);
-            
-            h.put ("uuid", uuid);
-            db.update (ContractPaymentLog.class, h);
+            ));
 
             db.update (OutSoap.class, HASH (
                 "uuid", getUuid (),
@@ -91,8 +98,26 @@ public class GisPollExportContractPaymentMDB  extends GisPollMDB {
             return;
         }
         catch (GisPollException ex) {
+            
+            VocGisStatus.i status = VocGisStatus.i.FAILED_PLACING;
+
+            update (db, uuid, r, HASH (
+                "id_ctr_status",       status.getId (),
+                "id_ctr_status_gis",   status.getId ()
+            ));
+            
             ex.register (db, uuid, r);
         }
+        
+    }
+
+    private void update (DB db, UUID uuid, Map<String, Object> r, Map<String, Object> h) throws SQLException {
+        
+        h.put ("uuid", r.get ("ctr.uuid"));
+        db.update (ContractPayment.class, h);
+        
+        h.put ("uuid", uuid);
+        db.update (ContractPaymentLog.class, h);
         
     }
     

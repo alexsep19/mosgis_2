@@ -220,6 +220,9 @@ public class ExportContractPaymentMDB extends UUIDMDB<ContractPaymentLog> {
             logger.log (Level.SEVERE, "Cannot invoke WS", ex);
             
             db.begin ();
+            
+                String err = ex.getMessage ();
+                if (err.length () > 2000) err = err.substring (0, 2000);
 
                 db.upsert (OutSoap.class, HASH (
                     "uuid", uuid,
@@ -229,7 +232,7 @@ public class ExportContractPaymentMDB extends UUIDMDB<ContractPaymentLog> {
                     "id_status", DONE.getId (),
                     "is_failed", 1,
                     "err_code",  "0",
-                    "err_text",  ex.getMessage ().substring (0, 2000)
+                    "err_text",  err
                 ));
 
                 db.update (getTable (), DB.HASH (

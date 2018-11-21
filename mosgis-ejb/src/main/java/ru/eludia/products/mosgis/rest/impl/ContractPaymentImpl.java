@@ -122,8 +122,8 @@ public class ContractPaymentImpl extends BaseCRUD<ContractPayment> implements Co
             .toMaybeOne (ContractObject.class).on ()
             .toMaybeOne (VocBuilding.class, "AS fias", "label").on ()
             .toMaybeOne (ContractPaymentFile.class, "AS doc", "label").on ()
-            .toMaybeOne (ContractPaymentLog.class).on ()
-            .toMaybeOne (OutSoap.class, "err_text").on ()
+            .toMaybeOne (ContractPaymentLog.class, "AS cpl").on ()
+            .toMaybeOne (OutSoap.class, "err_text").on ("cpl.uuid_out_soap=out_soap.uuid")
         );
 
         job.add ("item", item);
