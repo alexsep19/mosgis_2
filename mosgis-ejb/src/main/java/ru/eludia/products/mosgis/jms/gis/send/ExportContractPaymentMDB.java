@@ -67,7 +67,7 @@ public class ExportContractPaymentMDB extends UUIDMDB<ContractPaymentLog> {
                 .toMaybeOne (ContractPaymentFileLog.class, "AS doc_log", "ts_start_sending", "err_text").on ("doc.id_log=doc_log.uuid")
                 .toOne (Contract.class, "AS ctrt", "contractversionguid").on ()
                 .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("ctrt.uuid_org=org.uuid")
-                .toMaybeOne (ContractObject.class, "AS o", "*").on ("ctr.uuid_contract_object=o.uuid")
+                .toMaybeOne (ContractObject.class, "AS o", "contractobjectversionguid").on ("ctr.uuid_contract_object=o.uuid")
             ;
             
         }
@@ -229,7 +229,7 @@ public class ExportContractPaymentMDB extends UUIDMDB<ContractPaymentLog> {
                     "id_status", DONE.getId (),
                     "is_failed", 1,
                     "err_code",  "0",
-                    "err_text",  ex.getMessage ()
+                    "err_text",  ex.getMessage ().substring (0, 2000)
                 ));
 
                 db.update (getTable (), DB.HASH (

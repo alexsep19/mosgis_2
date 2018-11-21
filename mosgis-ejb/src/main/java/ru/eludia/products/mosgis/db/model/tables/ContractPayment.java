@@ -168,6 +168,9 @@ logger.info ("r=" + r);
         final ImportContractRequest.Contract.PlaceContractPaymentsInfo pc = (ImportContractRequest.Contract.PlaceContractPaymentsInfo) DB.to.javaBean (ImportContractRequest.Contract.PlaceContractPaymentsInfo.class, r);        
         pc.setContractVersionGUID (r.get ("ctrt.contractversionguid").toString ());
         
+        final Object contractobjectversionguid = r.get ("o.contractobjectversionguid");
+        if (DB.ok (contractobjectversionguid)) pc.setContractObjectVersionGUID (contractobjectversionguid.toString ());
+        
         for (Map <String, Object> i: (List <Map <String, Object>>) r.get ("svc")) pc.getServicePayment ().add (ServicePayment.toServicePayment (i));
         
         if (DB.ok (r.get ("doc.attachmentguid"))) {

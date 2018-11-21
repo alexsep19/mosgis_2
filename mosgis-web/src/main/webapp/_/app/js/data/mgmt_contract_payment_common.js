@@ -120,14 +120,11 @@ define ([], function () {
         data.active_tab = localStorage.getItem ('mgmt_contract_payment_common.active_tab') || 'mgmt_contract_payment_common_service_payments'
 
         data.__read_only = 1
-/*
-        if ($_USER.role.admin) data.item.org_label = data.item ['vc_orgs.label']
         
         var it = data.item
         
         it.status_label     = data.vc_gis_status [it.id_ctr_status]
-        if (it.id_ctr_status != it.id_ctr_status_gis) it.gis_status_label = data.vc_gis_status [it.id_ctr_status_gis]
-*/                
+        it.err_text = it ['out_soap.err_text']        
             
         done (data)
         

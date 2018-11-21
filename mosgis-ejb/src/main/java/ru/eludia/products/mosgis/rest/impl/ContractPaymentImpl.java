@@ -22,7 +22,9 @@ import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.ContractPayment;
 import ru.eludia.products.mosgis.db.model.tables.ContractPaymentFile;
 import ru.eludia.products.mosgis.db.model.tables.ContractPaymentFileLog;
+import ru.eludia.products.mosgis.db.model.tables.ContractPaymentLog;
 import ru.eludia.products.mosgis.db.model.tables.OrganizationWork;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.ServicePayment;
 import ru.eludia.products.mosgis.db.model.tables.ServicePaymentLog;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocol;
@@ -120,9 +122,13 @@ public class ContractPaymentImpl extends BaseCRUD<ContractPayment> implements Co
             .toMaybeOne (ContractObject.class).on ()
             .toMaybeOne (VocBuilding.class, "AS fias", "label").on ()
             .toMaybeOne (ContractPaymentFile.class, "AS doc", "label").on ()
+            .toMaybeOne (ContractPaymentLog.class).on ()
+            .toMaybeOne (OutSoap.class, "err_text").on ()
         );
 
         job.add ("item", item);
+        
+        VocGisStatus.addTo (job);
                 
         db.addJsonArrays (job,
 
