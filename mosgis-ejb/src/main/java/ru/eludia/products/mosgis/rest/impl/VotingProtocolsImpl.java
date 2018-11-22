@@ -26,6 +26,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
+import ru.eludia.products.mosgis.db.model.voc.VocVotingForm;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.VotingProtocolsLocal;
@@ -98,6 +99,7 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
         JsonObjectBuilder jb = Json.createObjectBuilder ();
         
         VocAction.addTo (jb);
+        VocVotingForm.addTo (jb);
         
         try (DB db = ModelHolder.getModel ().getDb ()) {
             
