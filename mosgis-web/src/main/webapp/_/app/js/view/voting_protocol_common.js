@@ -9,7 +9,12 @@ define ([], function () {
         function recalc () {
 
             var tables = {'avoting_table': [], 'meeting_table': [], 'evoting_table': ['evoting_period_table'], 'meet_av_table': []}
-            var sizes = [332, 331, 369, 400]
+            var sizes = {
+                          'avoting': 332, 
+                          'meeting': 331, 
+                          'evoting': 369, 
+                          'meet_av': 400
+            }
 
             function disable_block (table_name) {
                 var $table = $('#' + table_name)
@@ -54,7 +59,7 @@ define ([], function () {
 
             var v = w2ui [form_name].values ()
 
-            enable_block (Object.keys(tables)[v.form_])
+            enable_block (v.form_ + '_table')
 
             $panel_top = $('#layout_passport_layout_panel_top')
             $panel_main = $('#layout_passport_layout_panel_main')
@@ -93,7 +98,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 400},
+                {type: 'top', size: 260},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
@@ -134,12 +139,7 @@ define ([], function () {
                     {id: "N", text: "Неправомочное"},
                 ]}},
                 
-                {name: 'form_', type: 'list', options: { items: [
-                    {id: 0, text: "Заочное голосование (опросным путем)"},
-                    {id: 1, text: "Очное голосование"},
-                    {id: 2, text: "Заочное голосование с использованием системы"},
-                    {id: 3, text: "Очно-заочное голосование"},
-                ]}},
+                {name: 'form_', type: 'list', options: { items: data.vc_voting_forms.items }},
                 
                 {name: 'avotingdate', type: 'date'},
                 {name: 'resolutionplace', type: 'text'},

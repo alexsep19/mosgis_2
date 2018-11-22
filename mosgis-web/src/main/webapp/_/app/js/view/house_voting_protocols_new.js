@@ -6,6 +6,11 @@ define ([], function () {
         
         function recalc () {
 
+            $('.w2ui-form').height (250)
+            $('.w2ui-page').height (230)
+            $('.w2ui-box').height (290)
+            $('.w2ui-popup').height (300)
+
             var tables = {'avoting_table': [], 'meeting_table': [], 'evoting_table': ['evoting_period_table'], 'meet_av_table': []}
             var sizes = {'avoting_table': {form: 330,
                                            page: 310,
@@ -70,7 +75,9 @@ define ([], function () {
 
             var v = w2ui [name].values ()
 
-            enable_block (Object.keys(tables)[v.form_])
+            //===========================================================
+
+            enable_block (v.form_ + '_table')
         }
         
         $(view).w2popup('open', {
@@ -105,12 +112,7 @@ define ([], function () {
                                 {id: 1, text: "Неправомочное"},
                             ]}},
                             
-                            {name: 'form_', type: 'list', options: { items: [
-                                {id: 0, text: "Заочное голосование (опросным путем)"},
-                                {id: 1, text: "Очное голосование"},
-                                {id: 2, text: "Заочное голосование с использованием системы"},
-                                {id: 3, text: "Очно-заочное голосование"},
-                            ]}},
+                            {name: 'form_', type: 'list', options: { items: data.vc_voting_forms.items }},
                             
                             {name: 'avotingdate', type: 'date'},
                             {name: 'resolutionplace', type: 'text'},

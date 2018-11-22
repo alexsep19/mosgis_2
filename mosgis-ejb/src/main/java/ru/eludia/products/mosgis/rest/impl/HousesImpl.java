@@ -41,6 +41,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
 import ru.eludia.products.mosgis.db.model.voc.VocPropertyDocumentType;
 import static ru.eludia.products.mosgis.db.model.voc.VocRdColType.i.REF;
+import ru.eludia.products.mosgis.db.model.voc.VocVotingForm;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.ValidationException;
@@ -190,6 +191,7 @@ public class HousesImpl extends Base<House> implements HousesLocal {
 
         VocAction.addTo (jb);
         VocGisStatus.addTo(jb);
+        VocVotingForm.addTo (jb);
         
         return jb.build ();
 

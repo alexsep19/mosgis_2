@@ -26,6 +26,8 @@ define ([], function () {
         
         var $panel = $(layout.el ('main'))
 
+        console.log (data)
+
         $panel.w2regrid ({ 
         
             multiSelect: false,
@@ -44,12 +46,7 @@ define ([], function () {
 
             searches: [            
                 {field: 'id_prtcl_status_gis',  caption: 'Статус протокола',  type: 'enum', options: {items: status_list}},
-                {field: 'form_',  caption: 'Форма собрания',  type: 'enum', options: {items: [
-                    {id: "0", text: "Заочное голосование (опросным путем)"},
-                    {id: "1", text: "Очное голосование"},
-                    {id: "2", text: "Заочное голосование с использованием системы"},
-                    {id: "3", text: "Очно-заочное голосование"},
-                ]}},
+                {field: 'form_',  caption: 'Форма собрания',  type: 'enum', options: {items: data.vc_voting_forms.items}},
                 {field: 'is_deleted', caption: 'Статус записи', type: 'enum', options: {items: [
                     {id: "0", text: "Актуальные"},
                     {id: "1", text: "Удалённые"},
@@ -63,7 +60,7 @@ define ([], function () {
                 {field: 'extravoting', caption: 'Вид собрания', size: 7, render: function (r) {return r.extravoting ? 'Внеочередное' : 'Ежегодное'}},
                 {field: 'meetingeligibility', caption: 'Правомочность проведения собрания', size: 10, render: function (r) {return r.meetingeligibility == "C" ? 'Правомочное' : 'Неправомочное'}},
                 {field: 'modification', caption: 'Основания изменения', size: 15, hidden: 1},
-                {field: 'label_form', caption: 'Форма проведения', size: 15},
+                {field: 'form_', caption: 'Форма проведения', size: 15},
                 {field: 'status_label', caption: 'Статус протокола', size: 10},
             ].filter (not_off),
 

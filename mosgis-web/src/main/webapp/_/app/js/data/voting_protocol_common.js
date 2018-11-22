@@ -43,20 +43,20 @@ define ([], function () {
         if (!v.protocoldate) die ('protocoldate', 'Пожалуйста, введите дату составления протокола')
         if (!v.hasOwnProperty('extravoting')) die ('extravoting', 'Пожалуйста, укажите вид собрания')
         if (!v.hasOwnProperty('meetingeligibility')) die ('meetingeligibility', 'Пожалуйста, укажите правомочность собрания')
-        if (!v.hasOwnProperty('form_')) die ('form_', 'Пожалуйста, выберите форму проведения')
+        if (!v.form_) die ('form_', 'Пожалуйста, выберите форму проведения')
 
         switch (v.form_) {
-            case 0:
+            case 'avoting':
                 if (!v.avotingdate) die ('avotingdate', 'Пожалуйста, введите дату окончания приема решений')
                 if (!v.resolutionplace) die ('resolutionplace', 'Пожалуйста, введите место принятия решений')
 
                 break;
-            case 1:
+            case 'meeting':
                 if (!v.meetingdate) die ('meetingdate', 'Пожалуйста, введите дату проведения собрания')
                 if (!v.votingplace) die ('votingplace', 'Пожалуйста, введите место проведения собрания')
 
                 break;
-            case 2:
+            case 'evoting':
                 if (!v.evotingdatebegin) die ('evotingdatebegin', 'Пожалуйста, введите дату начала проведения голосования')
                 if (!v.evotingdateend) die ('evotingdateend', 'Пожалуйста введите дату окончания проведения голосования')
                 if (!v.discipline) die ('discipline', 'Пожалуйста, введите порядок приема оформленных в письменной форме решений собственников')
@@ -64,7 +64,7 @@ define ([], function () {
 
                 if ((Date.parse (v.evotingdateend) - Date.parse (v.evotingdatebegin)) <= 0) die ('evotingdateend', 'Некорректный временной промежуток')
                 break;
-            case 3:
+            case 'meeting_av':
                 if (!v.meeting_av_date) die ('meeting_av_date', 'Пожалуйста, введите дату и время проведения собрания')
                 if (!v.meeting_av_date_end) die ('meeting_av_date_end', 'Пожалуйста, введите дату окончания приема решений')
                 if (!v.meeting_av_place) die ('meeting_av_place', 'Пожалуйста, введите место проведения собрания')
