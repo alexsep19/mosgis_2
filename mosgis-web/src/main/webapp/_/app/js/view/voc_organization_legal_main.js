@@ -59,7 +59,7 @@ define ([], function () {
 
         });
 
-        if (it.id_log && it ['out_soap.id_status'] != 3) {
+        if (it.id_log && it.out_soap && it ['out_soap.id_status'] != 3) {
 
             w2utils.lock ($('#the_form'), {
                 msg     : 'Ждём ответ ГИС ЖКХ...',

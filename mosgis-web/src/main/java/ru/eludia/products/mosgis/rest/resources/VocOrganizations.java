@@ -60,7 +60,7 @@ public class VocOrganizations extends EJBResource <VocOrganizationsLocal> {
     @Path("{id}/patch")
     @Produces(APPLICATION_JSON)
     public JsonObject doPatch(@PathParam("id") String id, JsonObject p) {
-        return back.doPatch(id, p);
+        return back.doPatch(id, p, getUser());
     }
 
     @POST

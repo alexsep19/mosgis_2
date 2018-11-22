@@ -268,7 +268,7 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
     });}
 
     @Override
-    public JsonObject doPatch(String id, JsonObject p) {
+    public JsonObject doPatch(String id, JsonObject p, User user) {
 
         JsonObject data = p.getJsonObject("data");
 
@@ -278,6 +278,8 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
                     "orgrootentityguid", id,
                     data.getString("k"), data.getString("v", null)
             ));
+
+            logAction(db, user, id, VocAction.i.UPDATE);
 
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex);
@@ -303,8 +305,9 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
             "id_log",    id_log
         ));
 
-        publishMessage (action, id_log);
-
+        if (action != VocAction.i.UPDATE) { // не отправлять в ГИС, пока меняем только локальные справочные поля
+            publishMessage(action, id_log);
+        }
     }    
 
     @Override
