@@ -447,5 +447,21 @@ public class WsGisHouseManagementClient {
         return getPort (orgPPAGuid, messageGUID).importContractData (importContractRequest).getAck ();
         
     }    
+
+    public AckRequest.Ack annulContractPaymentData (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        
+        ImportContractRequest.Contract.AnnulmentContractPaymentsInfo ac = ContractPayment.toAnnulmentContractPaymentsInfo (r);
+
+        ImportContractRequest importContractRequest = of.createImportContractRequest ();
+        
+        final ImportContractRequest.Contract c = of.createImportContractRequestContract ();
+        c.setAnnulmentContractPaymentsInfo (ac);
+        c.setTransportGUID (UUID.randomUUID ().toString ());
+        
+        importContractRequest.getContract ().add (c);
+
+        return getPort (orgPPAGuid, messageGUID).importContractData (importContractRequest).getAck ();
+
+    }
     
 }

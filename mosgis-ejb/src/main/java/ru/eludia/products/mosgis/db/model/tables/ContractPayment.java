@@ -18,7 +18,6 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocContractPaymentType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
-import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
 
 public class ContractPayment extends EnTable {
@@ -125,7 +124,7 @@ public class ContractPayment extends EnTable {
     public enum Action {
         
         PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.FAILED_PLACING),
-        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.FAILED_ANNULMENT),
+        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.FAILED_ANNULMENT)
 //        EDITING     (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.FAILED_STATE),
 //        TERMINATION (VocGisStatus.i.PENDING_RP_TERMINATE, VocGisStatus.i.FAILED_TERMINATE),
 //        ROLLOVER    (VocGisStatus.i.PENDING_RP_ROLLOVER,  VocGisStatus.i.FAILED_STATE),
@@ -165,6 +164,11 @@ public class ContractPayment extends EnTable {
         }
                         
     };
+    
+    public static final ImportContractRequest.Contract.AnnulmentContractPaymentsInfo toAnnulmentContractPaymentsInfo (Map<String, Object> r) {
+        final ImportContractRequest.Contract.AnnulmentContractPaymentsInfo ac = (ImportContractRequest.Contract.AnnulmentContractPaymentsInfo) DB.to.javaBean (ImportContractRequest.Contract.AnnulmentContractPaymentsInfo.class, r);
+        return ac;
+    }
     
     public static final ImportContractRequest.Contract.PlaceContractPaymentsInfo toPlaceContractPaymentsInfo (Map<String, Object> r) {
         r.put ("type", r.get ("type_"));

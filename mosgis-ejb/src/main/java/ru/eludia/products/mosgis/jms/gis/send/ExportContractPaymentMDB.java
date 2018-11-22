@@ -83,9 +83,9 @@ public class ExportContractPaymentMDB extends UUIDMDB<ContractPaymentLog> {
             
         switch (action) {
             case PLACING:     return wsGisHouseManagementClient.placeContractPaymentsInfo (orgPPAGuid, messageGUID, r);
+            case ANNULMENT:   return wsGisHouseManagementClient.annulContractPaymentData     (orgPPAGuid, messageGUID, r);
 //            case EDITING:     return wsGisHouseManagementClient.editContractPaymentData      (orgPPAGuid, messageGUID, r);
 //            case TERMINATION: return wsGisHouseManagementClient.terminateContractPaymentData (orgPPAGuid, messageGUID, r);
-//            case ANNULMENT:   return wsGisHouseManagementClient.annulContractPaymentData     (orgPPAGuid, messageGUID, r);
 //            case ROLLOVER:    return wsGisHouseManagementClient.rolloverContractPaymentData  (orgPPAGuid, messageGUID, r);
 //            case RELOADING:   return wsGisHouseManagementClient.exportContractPaymentData    (orgPPAGuid, messageGUID, Collections.singletonList ((UUID) r.get ("ctr.charterversionguid")));
             default: throw new IllegalArgumentException ("No action implemented for " + action);
@@ -123,7 +123,7 @@ public class ExportContractPaymentMDB extends UUIDMDB<ContractPaymentLog> {
         
         try {
             
-            if (DB.ok (r.get ("uuid_file"))) {
+            if (action == ContractPayment.Action.PLACING && DB.ok (r.get ("uuid_file"))) {
 
                 final Object err = r.get ("doc_log.err_text");
                 if (DB.ok (err)) throw new Exception (err.toString ());
