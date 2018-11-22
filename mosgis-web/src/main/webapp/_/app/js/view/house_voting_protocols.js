@@ -60,7 +60,7 @@ define ([], function () {
                 {field: 'extravoting', caption: 'Вид собрания', size: 7, render: function (r) {return r.extravoting ? 'Внеочередное' : 'Ежегодное'}},
                 {field: 'meetingeligibility', caption: 'Правомочность проведения собрания', size: 10, render: function (r) {return r.meetingeligibility == "C" ? 'Правомочное' : 'Неправомочное'}},
                 {field: 'modification', caption: 'Основания изменения', size: 15, hidden: 1},
-                {field: 'label_form', caption: 'Форма проведения', size: 15},
+                {field: 'form_', caption: 'Форма проведения', size: 15},
                 {field: 'status_label', caption: 'Статус протокола', size: 10},
             ].filter (not_off),
 

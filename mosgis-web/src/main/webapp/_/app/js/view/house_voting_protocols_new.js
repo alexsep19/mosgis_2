@@ -70,7 +70,7 @@ define ([], function () {
 
             var v = w2ui [name].values ()
 
-            enable_block (Object.keys(tables)[v.form_])
+            enable_block (v.form_ + '_table')
         }
         
         $(view).w2popup('open', {
@@ -105,12 +105,7 @@ define ([], function () {
                                 {id: 1, text: "Неправомочное"},
                             ]}},
                             
-                            {name: 'form_', type: 'list', options: { items: [
-                                {id: 0, text: "Заочное голосование (опросным путем)"},
-                                {id: 1, text: "Очное голосование"},
-                                {id: 2, text: "Заочное голосование с использованием системы"},
-                                {id: 3, text: "Очно-заочное голосование"},
-                            ]}},
+                            {name: 'form_', type: 'list', options: { items: data.vc_voting_forms.items }},
                             
                             {name: 'avotingdate', type: 'date'},
                             {name: 'resolutionplace', type: 'text'},
