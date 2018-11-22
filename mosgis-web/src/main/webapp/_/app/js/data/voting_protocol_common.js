@@ -125,10 +125,10 @@ define ([], function () {
 
         data.item._can = $_USER.role.admin ? {} : 
         {
-            edit: 1,
+            edit: permissions,
             update: 1,
             cancel: 1,
-            delete: 1,
+            delete: permissions,
         }
 
         done (data)

@@ -59,15 +59,17 @@ define ([], function () {
 
             var v = w2ui [form_name].values ()
 
-            enable_block (Object.keys(tables)[v.form_])
+            table_name = Object.keys(tables)[v.form_]
+
+            enable_block (table_name)
 
             $panel_top = $('#layout_passport_layout_panel_top')
             $panel_main = $('#layout_passport_layout_panel_main')
             $top_form_box = $panel_top.children ('.w2ui-panel-content').children ('.w2ui-form-box')
 
-            $panel_top.height (sizes[v.form_])
-            $top_form_box.height (sizes[v.form_])
-            $panel_main.css('top', sizes[v.form_] + 1 + 'px')
+            $panel_top.height (sizes[table_name])
+            $top_form_box.height (sizes[table_name])
+            $panel_main.css('top', sizes[table_name] + 1 + 'px')
         }
 
         $_F5 = function (data) {
