@@ -6,6 +6,11 @@ define ([], function () {
         
         function recalc () {
 
+            $('.w2ui-form').height (250)
+            $('.w2ui-page').height (230)
+            $('.w2ui-box').height (290)
+            $('.w2ui-popup').height (300)
+
             var tables = {'avoting_table': [], 'meeting_table': [], 'evoting_table': ['evoting_period_table'], 'meet_av_table': []}
             var sizes = {'avoting_table': {form: 330,
                                            page: 310,
@@ -69,6 +74,8 @@ define ([], function () {
             }
 
             var v = w2ui [name].values ()
+
+            //===========================================================
 
             enable_block (v.form_ + '_table')
         }
