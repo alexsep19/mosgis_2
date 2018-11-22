@@ -10,10 +10,10 @@ define ([], function () {
 
             var tables = {'avoting_table': [], 'meeting_table': [], 'evoting_table': ['evoting_period_table'], 'meet_av_table': []}
             var sizes = {
-                          'avoting': 332, 
-                          'meeting': 331, 
-                          'evoting': 369, 
-                          'meet_av': 400
+                          'avoting_table': 332, 
+                          'meeting_table': 331, 
+                          'evoting_table': 369, 
+                          'meet_av_table': 400
             }
 
             function disable_block (table_name) {
@@ -59,7 +59,7 @@ define ([], function () {
 
             var v = w2ui [form_name].values ()
 
-            enable_block (v.form_ + '_table')
+            enable_block (Object.keys(tables)[v.form_])
 
             $panel_top = $('#layout_passport_layout_panel_top')
             $panel_main = $('#layout_passport_layout_panel_main')
@@ -98,7 +98,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 260},
+                {type: 'top', size: 400},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
