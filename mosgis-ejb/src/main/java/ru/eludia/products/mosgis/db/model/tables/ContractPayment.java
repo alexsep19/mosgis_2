@@ -10,6 +10,7 @@ import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.Type.BOOLEAN;
 import static ru.eludia.base.model.Type.DATE;
 import static ru.eludia.base.model.Type.NUMERIC;
+import static ru.eludia.base.model.Type.STRING;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
@@ -38,7 +39,10 @@ public class ContractPayment extends EnTable {
         
         BEGINDATE            (DATE,                    "Дата начала периода"),
         ENDDATE              (DATE,                    "Дата окончания периода"),
-        HOUSEMANAGEMENTPAYMENTSIZE (NUMERIC, 10, 2, null,  "Размер платы (цена) за услуги, работы по управлению МКД (если утверждена протоколом обшего собрания собственников)/Размер платы за содержание жилого помещения, установленный по результатам открытого конкурса (если утверждена протоколом открытого конкурса)")
+        HOUSEMANAGEMENTPAYMENTSIZE (NUMERIC, 10, 2, null,  "Размер платы (цена) за услуги, работы по управлению МКД (если утверждена протоколом обшего собрания собственников)/Размер платы за содержание жилого помещения, установленный по результатам открытого конкурса (если утверждена протоколом открытого конкурса)"),
+
+        REASON               (STRING, 1000, null,    "Причина аннулирования"),
+        IS_ANNULED           (BOOLEAN,      new Virt ("DECODE(\"REASON\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0")
 
         ;
 
@@ -121,8 +125,8 @@ public class ContractPayment extends EnTable {
     public enum Action {
         
         PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.FAILED_PLACING),
+        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.FAILED_ANNULMENT),
 //        EDITING     (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.FAILED_STATE),
-//        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.FAILED_ANNULMENT),
 //        TERMINATION (VocGisStatus.i.PENDING_RP_TERMINATE, VocGisStatus.i.FAILED_TERMINATE),
 //        ROLLOVER    (VocGisStatus.i.PENDING_RP_ROLLOVER,  VocGisStatus.i.FAILED_STATE),
 //        RELOADING   (VocGisStatus.i.PENDING_RP_RELOAD,    VocGisStatus.i.FAILED_STATE)
@@ -149,9 +153,9 @@ public class ContractPayment extends EnTable {
         public static Action forStatus (VocGisStatus.i status) {
             switch (status) {
                 case PENDING_RQ_PLACING:   return PLACING;
+                case PENDING_RQ_ANNULMENT: return ANNULMENT;
 //                case PENDING_RQ_EDIT:      return EDITING;
 //                case PENDING_RQ_TERMINATE: return TERMINATION;
-//                case PENDING_RQ_ANNULMENT: return ANNULMENT;
 //                case PENDING_RQ_RELOAD:    return RELOADING;
 //                case PENDING_RQ_ROLLOVER:  return ROLLOVER;
 //                case PENDING_RQ_APPROVAL:  return APPROVING;

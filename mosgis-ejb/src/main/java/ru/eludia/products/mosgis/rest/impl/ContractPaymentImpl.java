@@ -250,4 +250,16 @@ public class ContractPaymentImpl extends BaseCRUD<ContractPayment> implements Co
         
     });}
     
+    @Override
+    public JsonObject doAnnul (String id, JsonObject p, User user) {return doAction ((db) -> {
+        
+        db.update (getTable (), getData (p,
+            "uuid", id,
+            "id_ctr_status", VocGisStatus.i.PENDING_RQ_ANNULMENT.getId ()
+        ));
+        
+        logAction (db, user, id, VocAction.i.ANNUL);
+                        
+    });}
+    
 }
