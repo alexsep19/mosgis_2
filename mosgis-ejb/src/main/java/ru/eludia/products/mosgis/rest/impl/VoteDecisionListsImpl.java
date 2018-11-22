@@ -1,5 +1,7 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.util.logging.Level;
+import javax.ejb.Stateless;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -18,6 +20,7 @@ import ru.eludia.products.mosgis.web.base.ComplexSearch;
 import ru.eludia.products.mosgis.web.base.Search;
 import ru.eludia.products.mosgis.web.base.SimpleSearch;
 
+@Stateless
 public class VoteDecisionListsImpl extends BaseCRUD<VoteDecisionList> implements VoteDecisionListsLocal {
 
     private void filterOffDeleted (Select select) {
@@ -61,6 +64,8 @@ public class VoteDecisionListsImpl extends BaseCRUD<VoteDecisionList> implements
     @Override
     public JsonObject select(JsonObject p, User user) {return fetchData ((db, job) -> {
 
+        logger.log (Level.INFO, "DECISIONS SELECT: " + );
+        
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
             .where ("protocol_uuid", p.getJsonString("protocol_uuid").getString ())
             .orderBy ("questionname")
