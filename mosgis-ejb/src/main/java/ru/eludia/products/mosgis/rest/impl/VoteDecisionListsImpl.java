@@ -18,7 +18,7 @@ import ru.eludia.products.mosgis.web.base.ComplexSearch;
 import ru.eludia.products.mosgis.web.base.Search;
 import ru.eludia.products.mosgis.web.base.SimpleSearch;
 
-public class VoteDecisionListImpl extends BaseCRUD<VoteDecisionList> implements VoteDecisionListsLocal {
+public class VoteDecisionListsImpl extends BaseCRUD<VoteDecisionList> implements VoteDecisionListsLocal {
 
     private void filterOffDeleted (Select select) {
         select.and ("is_deleted", 0);
