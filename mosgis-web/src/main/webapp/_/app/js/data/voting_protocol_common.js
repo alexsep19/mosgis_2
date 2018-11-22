@@ -46,17 +46,17 @@ define ([], function () {
         if (!v.form_) die ('form_', 'Пожалуйста, выберите форму проведения')
 
         switch (v.form_) {
-            case 'avoting':
+            case '0':
                 if (!v.avotingdate) die ('avotingdate', 'Пожалуйста, введите дату окончания приема решений')
                 if (!v.resolutionplace) die ('resolutionplace', 'Пожалуйста, введите место принятия решений')
 
                 break;
-            case 'meeting':
+            case '1':
                 if (!v.meetingdate) die ('meetingdate', 'Пожалуйста, введите дату проведения собрания')
                 if (!v.votingplace) die ('votingplace', 'Пожалуйста, введите место проведения собрания')
 
                 break;
-            case 'evoting':
+            case '2':
                 if (!v.evotingdatebegin) die ('evotingdatebegin', 'Пожалуйста, введите дату начала проведения голосования')
                 if (!v.evotingdateend) die ('evotingdateend', 'Пожалуйста введите дату окончания проведения голосования')
                 if (!v.discipline) die ('discipline', 'Пожалуйста, введите порядок приема оформленных в письменной форме решений собственников')
@@ -64,7 +64,7 @@ define ([], function () {
 
                 if ((Date.parse (v.evotingdateend) - Date.parse (v.evotingdatebegin)) <= 0) die ('evotingdateend', 'Некорректный временной промежуток')
                 break;
-            case 'meeting_av':
+            case '3':
                 if (!v.meeting_av_date) die ('meeting_av_date', 'Пожалуйста, введите дату и время проведения собрания')
                 if (!v.meeting_av_date_end) die ('meeting_av_date_end', 'Пожалуйста, введите дату окончания приема решений')
                 if (!v.meeting_av_place) die ('meeting_av_place', 'Пожалуйста, введите место проведения собрания')
@@ -125,10 +125,10 @@ define ([], function () {
 
         data.item._can = $_USER.role.admin ? {} : 
         {
-            edit: permissions,
+            edit: 1,
             update: 1,
             cancel: 1,
-            delete: permissions,
+            delete: 1,
         }
 
         done (data)
