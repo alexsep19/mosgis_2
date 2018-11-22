@@ -51,7 +51,7 @@ define ([], function () {
                 {field: 'abstent', caption: 'Воздержались', size: 7},
                 {field: 'total', caption: 'Всего', size: 7},
                 {field: 'votingresume', caption: 'Итоги голосования', size: 10, 
-                        render: function (r) {return r.meetingeligibility == "M" ? 'Решение принято' : 'Решение не принято'}
+                        render: function (r) {return r.votingresume == "M" ? 'Решение принято' : 'Решение не принято'}
                 },
                 {field: 'decisiontype_vc_nsi_63',  caption: 'Тип вопроса',  type: 'enum', options: {items: data.vc_nsi_63.items}},
             ].filter (not_off),
@@ -59,7 +59,8 @@ define ([], function () {
             postData: {data: {"protocol_uuid": data.item.uuid, "house_uuid": data.item.house_uuid}},
 
             url: '/mosgis/_rest/?type=vote_decision_lists',
-           
+            
+            onAdd: $_DO.create_voting_protocol_vote_decision_lists,
             onDelete: $_DO.delete_voting_protocol_vote_decision_lists,
 
             onDblClick: function (e) {

@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.util.Map;
 import java.util.logging.Level;
 import javax.ejb.Stateless;
 import javax.json.Json;
@@ -63,11 +64,11 @@ public class VoteDecisionListsImpl extends BaseCRUD<VoteDecisionList> implements
     
     @Override
     public JsonObject select(JsonObject p, User user) {return fetchData ((db, job) -> {
-
-        logger.log (Level.INFO, "DECISIONS SELECT: " + );
+        
+        Map<String, Object> data = getData (p);
         
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
-            .where ("protocol_uuid", p.getJsonString("protocol_uuid").getString ())
+            .where ("protocol_uuid", data.get("protocol_uuid").toString ())
             .orderBy ("questionname")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
