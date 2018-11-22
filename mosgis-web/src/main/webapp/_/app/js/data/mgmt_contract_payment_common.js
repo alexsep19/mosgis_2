@@ -86,8 +86,20 @@ define ([], function () {
     }
         
     $_DO.approve_mgmt_contract_payment_common = function (e) {
-        if (!confirm ('Разместить эти данные в ГИС ЖКХ?')) return
-        query ({type: 'contract_payments', action: 'approve'}, {}, reload_page)
+
+        query ({type: 'service_payments', id: undefined}, {offset:0, limit: 10000, data: {uuid_contract_payment: $_REQUEST.id}}, function (d) {
+        
+            $.each (d.tb_svc_payments, function () {
+                if (parseFloat(this.servicepaymentsize) >= 0.0001) return
+                die ('foo', this ['w.label'] + ': не определена стоимость') 
+            }) 
+            
+            if (!confirm ('Разместить эти данные в ГИС ЖКХ?')) return
+            
+            query ({type: 'contract_payments', action: 'approve'}, {}, reload_page)
+
+        })
+
     }
     
     $_DO.alter_mgmt_contract_payment_common = function (e) {
