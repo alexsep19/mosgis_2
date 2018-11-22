@@ -7,7 +7,9 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
+import javax.jms.Queue;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonNumber;
@@ -28,12 +30,14 @@ import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.ActualCaChObject;
 import ru.eludia.products.mosgis.db.model.tables.Block;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
+import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.Entrance;
 import ru.eludia.products.mosgis.db.model.tables.Lift;
 import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -45,13 +49,70 @@ import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.web.base.Search;
-import ru.eludia.products.mosgis.rest.impl.base.Base;
+import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 
 @Stateless
-public class HousesImpl extends Base<House> implements HousesLocal {
+public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
 
     private static final Logger logger = Logger.getLogger (HousesImpl.class.getName ());
         
+    @Resource (mappedName = "mosgis.inExportHouseQueue")
+    private Queue queue;
+
+    @Override
+    public Queue getQueue () {
+        return queue;
+    }
+    
+    @Override
+    protected void publishMessage (VocAction.i action, String id_log) {
+        
+        switch (action) {
+            case CREATE:
+                super.publishMessage (action, id_log);
+            default:
+                return;
+        }
+        
+    }
+    
+    @Override
+    protected void logAction (DB db, User user, Object id, VocAction.i action) throws SQLException {
+
+        Table logTable = ModelHolder.getModel ().getLogTable (getTable ());
+
+        if (logTable == null) return;
+
+        UUID uuidOrg = null;
+        if (user != null && user.getUuidOrg() != null)
+            uuidOrg = UUID.fromString(user.getUuidOrg());
+        
+        if (uuidOrg == null) {
+            Model model = db.getModel();
+            ModelHolder.getModel ()
+                    .select(ContractObject.class, "AS root", "uuid")
+                    .toOne (Contract.class, "AS contract", "label").on ()
+                    .toOne (VocOrganization.class, "AS org", "orgppaguid").on ()
+                    .where("fiashouseguid", values);
+        }
+            
+        
+        String id_log = db.insertId (logTable, HASH (
+            "action", action,
+            "uuid_object", id,
+            "uuid_user", user == null ? null : user.getId ()
+        )).toString ();
+        
+        db.update (getTable (), HASH (
+            "uuid",      id,
+            "id_status", VocAsyncEntityState.i.PENDING.getId (),
+            "id_log",    id_log
+        ));
+
+        publishMessage (action, id_log);
+
+    }
+    
     @Override
     public JsonObject select (JsonObject p, User user) {
         
@@ -426,7 +487,7 @@ public class HousesImpl extends Base<House> implements HousesLocal {
     private final String FIASHOUSEGUID = "fiashouseguid";
     
     @Override
-    public JsonObject doCreate (JsonObject p) {return fetchData ((db, job) -> {
+    public JsonObject doCreate (JsonObject p, User user) {return fetchData ((db, job) -> {
 
         final Table table = getTable ();
 
@@ -435,6 +496,8 @@ public class HousesImpl extends Base<House> implements HousesLocal {
         db.upsert (table, data, FIASHOUSEGUID);
 
         JsonObject upsertId = db.getJsonObject( new Select (table, "uuid").where(FIASHOUSEGUID, data.get(FIASHOUSEGUID)));
+        
+        logAction (db, user, upsertId, VocAction.i.CREATE);
         
         job.add ("id", upsertId.getString("uuid"));
 

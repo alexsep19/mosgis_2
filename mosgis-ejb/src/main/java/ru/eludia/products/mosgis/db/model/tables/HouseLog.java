@@ -8,9 +8,10 @@ import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import static ru.eludia.base.model.def.Def.NOW;
-import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
 import ru.eludia.products.mosgis.db.model.voc.VocRdColType;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
@@ -21,16 +22,19 @@ public class HouseLog extends Passport {
         
         super  ("tb_houses__log",             "История изменения МКД/ЖД");
         
-        pk    ("uuid",          Type.UUID,       NEW_UUID, "Ключ");
-        ref   ("action",        VocAction.class,           "Действие");
-        fk    ("uuid_object",   House.class,               "Ссылка на запись");
-        col   ("ts",            Type.TIMESTAMP,  NOW,      "Дата/время события");
-        fk    ("uuid_user",     VocUser.class,   null,     "Оператор");
-        fk    ("uuid_out_soap", OutSoap.class,   null,     "Последний запрос на импорт в ГИС ЖКХ");
-        col   ("uuid_message",  Type.UUID,       null,     "UUID запроса в ГИС ЖКХ");
+        pk    ("uuid",          Type.UUID,             NEW_UUID, "Ключ");
+        ref   ("action",        VocAction.class,                 "Действие");
+        fk    ("uuid_object",   House.class,                     "Ссылка на запись");
+        col   ("ts",            Type.TIMESTAMP,        NOW,      "Дата/время события");
+        fk    ("uuid_org",      VocOrganization.class, null,     "Организация");
+        fk    ("uuid_user",     VocUser.class,         null,     "Оператор");
+        fk    ("uuid_out_soap", OutSoap.class,         null,     "Последний запрос на импорт в ГИС ЖКХ");
+        col   ("uuid_message",  Type.UUID,             null,     "UUID запроса в ГИС ЖКХ");
+        
         
         col    ("unom",                  Type.NUMERIC,      12,    null, "UNOM (код дома в московских ИС)");
         fk     ("fiashouseguid",         VocBuilding.class,        null, "Глобальный уникальный идентификатор дома по ФИАС");
+        fk     ("id_status",             VocGisStatus.class,       null, "Статус");
         col    ("address",               Type.STRING,              null, "Адрес");
         col    ("totalsquare",           Type.NUMERIC,      25, 4, null, "Общая площадь");
         col    ("usedyear",              Type.NUMERIC,      4,     null, "Год ввода в эксплуатацию");
@@ -56,6 +60,7 @@ public class HouseLog extends Passport {
             + "SELECT"
             + "    unom"
             + "    , fiashouseguid"
+            + "    , id_status"   
             + "    , address"
             + "    , totalsquare"
             + "    , usedyear"
@@ -75,9 +80,10 @@ public class HouseLog extends Passport {
             + "    , code_vc_nsi_25"
             + "    , code_vc_nsi_336"
             + "    , hasmultiplehouseswithsameadres"
-            + "INTO"
+            + " INTO"
             + "    :NEW.unom"
             + "    , :NEW.fiashouseguid"
+            + "    , :NEW.id_status"
             + "    , :NEW.address"
             + "    , :NEW.totalsquare"
             + "    , :NEW.usedyear"

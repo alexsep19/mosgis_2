@@ -13,6 +13,6 @@ public interface HousesLocal {
     JsonObject doPatch  (String id, JsonObject p);
     JsonObject getVocPassportFields (String id, Integer[] ids);
     JsonObject doSetMultiple (String id, JsonObject p);
-    JsonObject doCreate (JsonObject p);
+    JsonObject doCreate (JsonObject p, User user);
 
 }

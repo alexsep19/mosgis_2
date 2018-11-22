@@ -35,14 +35,34 @@
                 <shortRevisionLength>7</shortRevisionLength>
                 <doCheck>false</doCheck>
                 <doUpdate>false</doUpdate>
-                <format>{0,date,yyyy-MM-dd-HH-mm}-{1}</format>
+                <!-- <format>{0,date,yyyy-MM-dd-HH-mm}-{1}</format> -->
                 <items>
                     <item>timestamp</item>
                     <item>scmVersion</item>
                 </items>
               </configuration>
-            </plugin>                        
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.4.3</version>
+                <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
-    
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 </project>

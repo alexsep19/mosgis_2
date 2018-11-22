@@ -98,14 +98,14 @@ public class WsGisHouseManagementClient {
         return getPort ().getState(getStateRequest);
     }    
 
-    public AckRequest.Ack exportHouseData (String fiasHouseGuid) throws Fault {
+    public AckRequest.Ack exportHouseData (String fiasHouseGuid, UUID orgPPAGuid, UUID messageGUID) throws Fault {
         
         if (fiasHouseGuid == null) throw new IllegalArgumentException ("Null FIASHouseGUID passed");
         
         ExportHouseRequest request = of.createExportHouseRequest();
         request.setFIASHouseGuid(fiasHouseGuid);
         
-        return getPort ().exportHouseData(request).getAck();
+        return getPort (orgPPAGuid, messageGUID).exportHouseData(request).getAck();
         
     }
 

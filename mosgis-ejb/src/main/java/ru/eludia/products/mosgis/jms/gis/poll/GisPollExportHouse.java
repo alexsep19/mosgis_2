@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -29,12 +28,16 @@ import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
+import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.house_management.BlockCategoryType;
+import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
+import ru.eludia.products.mosgis.util.StringUtils;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportHouseResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.house_management.HouseBasicExportType;
@@ -50,87 +53,112 @@ import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 public class GisPollExportHouse extends GisPollMDB {
     
     @EJB
-    protected WsGisHouseManagementClient wsGisExportHouseClient;
+    protected WsGisHouseManagementClient wsGisHouseManagementClient;
 
+    private GetStateResult getState(UUID orgPPAGuid, Map<String, Object> r) throws GisPollRetryException, GisPollException {
+
+        GetStateResult rp;
+
+        try {
+            rp = wsGisHouseManagementClient.getState(orgPPAGuid, (UUID) r.get("uuid_ack"));
+        } catch (Fault ex) {
+            throw new GisPollException(ex.getFaultInfo());
+        } catch (Throwable ex) {
+            throw new GisPollException(ex);
+        }
+
+        checkIfResponseReady(rp);
+
+        return rp;
+    }
+    
     @Override
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ()
-            .get    (getTable (), uuid, "AS root", "*")
+            .get   (getTable (), uuid, "AS root", "*")
             .toOne (HouseLog.class,     "AS log", "uuid").on ("log.uuid_out_soap=root.uuid")
-            .toOne (House.class,     "AS log", "uuid", "fiashouseguid").on ()
+            .toOne (House.class,     "AS house", "uuid", "fiashouseguid").on()
+            .toOne (VocOrganization.class, "AS org", "orgppaguid").on()
         ;        
     }
 
     @Override
-    protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
+    protected void handleOutSoapRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
+        
+        UUID orgPPAGuid = (UUID) r.get("org.orgppaguid");
+        UUID houseUUID  = (UUID) r.get("house.uuid");
 
         try {
-            
-            db.begin ();
+            GetStateResult rp = getState(orgPPAGuid, r);
 
-            GetStateResult rp = wsGisExportHouseClient.getState ((UUID) r.get ("uuid_ack"));
-
-            ErrorMessageType errorMessage = rp.getErrorMessage ();
-
-            if (errorMessage != null) {
-                logger.warning (errorMessage.getErrorCode () + " " + errorMessage.getDescription ());
-
-                db.update (OutSoap.class, HASH (
-                    "uuid", uuid,
-                    "id_status", DONE.getId (),
-                    "is_failed", 1,
-                    "err_code",  errorMessage.getErrorCode (),
-                    "err_text",  errorMessage.getDescription ()
-                ));             
-
-                return;
-
+            if (rp.getErrorMessage() != null) {
+                throw new GisPollException(rp.getErrorMessage());
             }
-            handleExportHouseResult (rp.getExportHouseResult(), db);
 
-            db.update (OutSoap.class, HASH (
-                "uuid", uuid,
-                "id_status", DONE.getId ()
+            db.begin();
+            handleExportHouseResult(db, houseUUID, rp.getExportHouseResult());
+            db.update(OutSoap.class, HASH(
+                    "uuid", uuid,
+                    "id_status", DONE.getId()
             ));
-            
-            db.commit ();
+            db.commit();
 
+        } catch (GisPollRetryException ex) {
+        } catch (GisPollException ex) {
+            ex.register(db, uuid, r);
         }
-        catch (Fault ex) {
-            logger.log (Level.SEVERE, null, ex);
-        }
-        
     }
-
-    private void handleExportHouseResult (ExportHouseResultType result, DB db) throws SQLException {
+    
+    private void handleExportHouseResult (DB db, UUID houseUuid, ExportHouseResultType result) throws SQLException {
 
         Model m = ModelHolder.getModel ();
-        
+             
         Map<String, Object> record = DB.HASH (
+            "uuid",                  houseUuid,
             "gis_unique_number",     result.getHouseUniqueNumber(),
             "gis_modification_date", result.getModificationDate(),
             "is_condo",              result.getApartmentHouse() != null
         );
         
         if (result.getApartmentHouse() != null) {
-            ExportHouseResultType.ApartmentHouse house = result.getApartmentHouse();
-            String fiasHouseGuid = house.getBasicCharacteristicts().getFIASHouseGuid();
+            saveApartmentHouse(db, m, houseUuid, record, result.getApartmentHouse());
+        } else {
+           saveLivingHouse(db, m, houseUuid, record, result.getLivingHouse()); 
+        }
+    }
+    
+    private void saveApartmentHouse(DB db, Model m, UUID houseUuid, Map<String, Object> record, ExportHouseResultType.ApartmentHouse house) throws SQLException {
+        String fiasHouseGuid = house.getBasicCharacteristicts().getFIASHouseGuid();
             
-            addBasicCharacteristic(record, house.getBasicCharacteristicts());
+        addBasicCharacteristic(record, house.getBasicCharacteristicts());
 
-            record.putAll(DB.HASH(
-                "code_vc_nsi_25",        house.getHouseManagementType() != null ? house.getHouseManagementType().getCode() : null,
-                "minfloorcount",         house.getMinFloorCount(),
-                "code_vc_nsi_241",       house.getOverhaulFormingKind(),
-                "undergroundfloorcount", house.getUndergroundFloorCount(),
-                "address",               db.getString(VocBuilding.class, fiasHouseGuid, "label")
-            ));
+        record.putAll(DB.HASH(
+            "code_vc_nsi_25",        house.getHouseManagementType() != null ? house.getHouseManagementType().getCode() : null,
+            "minfloorcount",         house.getMinFloorCount(),
+            "code_vc_nsi_241",       house.getOverhaulFormingKind(),
+            "undergroundfloorcount", house.getUndergroundFloorCount(),
+            "address",               db.getString(VocBuilding.class, fiasHouseGuid, "label")
+        ));
+          
+        Map<String, Object> dbHouseData = db.getMap(House.class, houseUuid);
+        putIfNullOrEmpty(record, dbHouseData);
+        if (record.get("kad_n") != null)
+            dbHouseData.put("kad_n", record.get("kad_n"));
+        db.update(House.class, dbHouseData);
+         
+        dbHouseData.put ("uuid", getUuid ());
+        db.update (HouseLog.class, dbHouseData);
+        
+        /*
+        //Подъезды
+        Map<UUID, Map<String, Object>> entrances = new HashMap<>();
             
-            db.upsert (House.class, record, "fiashouseguid");
-            String houseUuid = db.getString(m.select (House.class, "uuid").where ("fiashouseguid", fiasHouseGuid));
-                    
-            //Подъезды
-            Map<UUID, Map<String, Object>> entrances = new HashMap<>();
+            
+            
+            
+            
+            
+            
             
             db.dupsert (
                 Entrance.class, 
@@ -314,21 +342,26 @@ public class GisPollExportHouse extends GisPollMDB {
                     }).collect(Collectors.toList()),
                 "liftguid"
             );
-        } else {
-            //ЖД
-            ExportHouseResultType.LivingHouse house = result.getLivingHouse();
-            String fiasHouseGuid = house.getBasicCharacteristicts().getFIASHouseGuid();
+            */
+    }
+    
+    private void saveLivingHouse(DB db, Model m, UUID houseUuid, Map<String, Object> record, ExportHouseResultType.LivingHouse house) throws SQLException {
+        String fiasHouseGuid = house.getBasicCharacteristicts().getFIASHouseGuid();
             
-            addBasicCharacteristic(record, house.getBasicCharacteristicts());
+        addBasicCharacteristic(record, house.getBasicCharacteristicts());
             
-            record.putAll(DB.HASH(
-                "hasblocks",                     house.isHasBlocks() != null ? house.isHasBlocks() : Boolean.FALSE,
-                "hasmultiplehouseswithsameadres", house.isHasMultipleHousesWithSameAddress() != null ? house.isHasMultipleHousesWithSameAddress() : Boolean.FALSE,
-                "address", db.getJsonObject(VocBuildingAddress.class, fiasHouseGuid).getString("label")
-            ));
+        record.putAll(DB.HASH(
+            "hasblocks",                     house.isHasBlocks() != null ? house.isHasBlocks() : Boolean.FALSE,
+            "hasmultiplehouseswithsameadres", house.isHasMultipleHousesWithSameAddress() != null ? house.isHasMultipleHousesWithSameAddress() : Boolean.FALSE,
+            "address", db.getJsonObject(VocBuildingAddress.class, fiasHouseGuid).getString("label")
+        ));
             
-            db.upsert (House.class, record, "fiashouseguid");
-            String houseUuid = db.getString(m.select (House.class, "uuid").where ("fiashouseguid", fiasHouseGuid));
+        Map<String, Object> dbHouseData = db.getMap(House.class, houseUuid);
+        putIfNullOrEmpty(record, dbHouseData);
+        db.update(House.class, dbHouseData);
+         
+        dbHouseData.put ("uuid", getUuid ());
+        db.update (HouseLog.class, dbHouseData);
             
             //Помещения
             Map<UUID, Map<String, Object>> blocks = new HashMap<>();
@@ -445,7 +478,6 @@ public class GisPollExportHouse extends GisPollMDB {
                 }).collect(Collectors.toList()), 
                 "livingroomguid"
             );
-        }
     }
     
     private void addBasicCharacteristic (Map<String, Object> r, HouseBasicExportType basic) {
@@ -483,5 +515,13 @@ public class GisPollExportHouse extends GisPollMDB {
             r.put("f_" + ogf.getCode(), value);
         });
     }
-
+    
+    private void putIfNullOrEmpty(Map<String, Object> from, Map<String, Object> to) {
+        from.forEach((key, value) -> {
+            Object o = to.get(key);
+            if (o == null || o instanceof String && StringUtils.isEmpty((String)o))
+                to.put(key, value);
+        });
+        
+    }
 }
