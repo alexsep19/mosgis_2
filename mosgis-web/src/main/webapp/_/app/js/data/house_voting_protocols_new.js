@@ -9,7 +9,7 @@ define ([], function () {
         if (!v.protocoldate) die ('protocoldate', 'Пожалуйста, введите дату составления протокола')
         if (!v.hasOwnProperty('extravoting')) die ('extravoting', 'Пожалуйста, укажите вид собрания')
         if (!v.hasOwnProperty('meetingeligibility')) die ('meetingeligibility', 'Пожалуйста, укажите правомочность собрания')
-        if (!v.hasOwnProperty('form_')) die ('form_', 'Пожалуйста, выберите форму проведения')
+        if (!v.form_) die ('form_', 'Пожалуйста, выберите форму проведения')
 
         switch (v.form_) {
             case 'avoting':
