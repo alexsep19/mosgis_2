@@ -54,29 +54,38 @@ define ([], function () {
             var is_own = $_USER.role.admin || ($_USER.role.nsi_20_1 && it ['ctr.uuid_org'] == $_USER.uuid_org)
 
             if (!is_locked && is_own) {
-            
-                if (it ["ctr.id_ctr_status"] == 40) {
-                
-                    switch (it.id_ctr_status) {
-                    
-                        case 10:
-                            it._can.delete = 1
-                            it._can.edit = 1           
-                            break;
-                        case 14:
-                            it._can.delete = 1
-                            it._can.alter = 1
-                            break;
-                        case 40:
-                            it._can.annul = 1
-                            break;
+                            
+                switch (it ["ctr.id_ctr_status"]) {
 
-                    }                    
-                    
-                    it._can.update = it._can.cancel = it._can.edit
-                
+                    case 20:
+                    case 30:
+                        it.is_contract_pending = 1
+                        break
+
+                    case 40:
+
+                        switch (it.id_ctr_status) {
+
+                            case 10:
+                                it._can.delete = 1
+                                it._can.edit = 1           
+                                break;
+                            case 14:
+                                it._can.delete = 1
+                                it._can.alter = 1
+                                break;
+                            case 40:
+                                it._can.annul = 1
+                                break;
+
+                        }                    
+
+                        it._can.update = it._can.cancel = it._can.edit
+
+                        break
+
                 }
-            
+
             }
             
             function finish () {
