@@ -30,6 +30,7 @@ import ru.gosuslugi.dom.schema.integration.base.CommonResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportResult;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
+import ru.eludia.products.mosgis.db.model.tables.ContractPayment.c;
 
 @MessageDriven(activationConfig = {
  @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outExportHouseContractPaymentsQueue")
@@ -83,9 +84,9 @@ public class GisPollExportContractPaymentMDB  extends GisPollMDB {
             
             VocGisStatus.i status = VocGisStatus.i.APPROVED;
                         
-            update (db, uuid, r, HASH (
-                "id_ctr_status",       status.getId (),
-                "id_ctr_status_gis",   status.getId ()
+            update (db, uuid, r, HASH (c.VERSIONGUID, commonResult.get (0).getGUID (),
+                c.ID_CTR_STATUS,       status.getId (),
+                c.ID_CTR_STATUS_GIS,   status.getId ()
             ));
 
             db.update (OutSoap.class, HASH (
@@ -102,8 +103,8 @@ public class GisPollExportContractPaymentMDB  extends GisPollMDB {
             VocGisStatus.i status = VocGisStatus.i.FAILED_PLACING;
 
             update (db, uuid, r, HASH (
-                "id_ctr_status",       status.getId (),
-                "id_ctr_status_gis",   status.getId ()
+                c.ID_CTR_STATUS,       status.getId (),
+                c.ID_CTR_STATUS_GIS,   status.getId ()
             ));
             
             ex.register (db, uuid, r);

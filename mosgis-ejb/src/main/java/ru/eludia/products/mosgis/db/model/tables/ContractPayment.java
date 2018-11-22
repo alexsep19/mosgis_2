@@ -11,6 +11,7 @@ import static ru.eludia.base.model.Type.BOOLEAN;
 import static ru.eludia.base.model.Type.DATE;
 import static ru.eludia.base.model.Type.NUMERIC;
 import static ru.eludia.base.model.Type.STRING;
+import static ru.eludia.base.model.Type.UUID;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
@@ -35,10 +36,12 @@ public class ContractPayment extends EnTable {
         IS_PROTO             (BOOLEAN,                 new Virt ("DECODE(\"TYPE_\", 'P', 1, 0)"),  "1, если основание — протокол ОСС, иначе 0"),
         
         ID_LOG               (ContractPaymentLog.class,  "Последнее событие редактирования"),
-        
+                
         BEGINDATE            (DATE,                    "Дата начала периода"),
         ENDDATE              (DATE,                    "Дата окончания периода"),
         HOUSEMANAGEMENTPAYMENTSIZE (NUMERIC, 10, 2, null,  "Размер платы (цена) за услуги, работы по управлению МКД (если утверждена протоколом обшего собрания собственников)/Размер платы за содержание жилого помещения, установленный по результатам открытого конкурса (если утверждена протоколом открытого конкурса)"),
+
+        VERSIONGUID          (UUID, null, "Идентификатор версии сведений о размере платы по ДУ"),
 
         REASON               (STRING, 1000, null,    "Причина аннулирования"),
         IS_ANNULED           (BOOLEAN,      new Virt ("DECODE(\"REASON\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0")
@@ -167,9 +170,10 @@ public class ContractPayment extends EnTable {
     
     public static final ImportContractRequest.Contract.AnnulmentContractPaymentsInfo toAnnulmentContractPaymentsInfo (Map<String, Object> r) {
         final ImportContractRequest.Contract.AnnulmentContractPaymentsInfo ac = (ImportContractRequest.Contract.AnnulmentContractPaymentsInfo) DB.to.javaBean (ImportContractRequest.Contract.AnnulmentContractPaymentsInfo.class, r);
+        ac.setContractPaymentsInfoVersionGUID (r.get (c.VERSIONGUID.lc ()).toString ());
         return ac;
     }
-    
+
     public static final ImportContractRequest.Contract.PlaceContractPaymentsInfo toPlaceContractPaymentsInfo (Map<String, Object> r) {
         r.put ("type", r.get ("type_"));
 logger.info ("r=" + r);

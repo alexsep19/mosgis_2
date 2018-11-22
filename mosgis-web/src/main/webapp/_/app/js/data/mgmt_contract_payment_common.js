@@ -95,8 +95,12 @@ define ([], function () {
         query ({type: 'contract_payments', action: 'alter'}, {}, reload_page)
     }
     
+    $_DO.annul_mgmt_contract_payment_common = function (e) {
+        use.block ('mgmt_contract_payment_annul_popup')
+    }
+    
     $_DO.create_house_mgmt_contract_payment_common = function (e) {
-        use.block ('mgmt_contract_payment_new_house_passport');
+        use.block ('mgmt_contract_payment_new_house_passport')
     }
     
     $_DO.choose_tab_mgmt_contract_payment_common = function (e) {

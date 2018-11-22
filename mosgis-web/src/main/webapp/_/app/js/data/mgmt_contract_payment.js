@@ -69,7 +69,10 @@ define ([], function () {
                         case 14:
                             it._can.alter = 1
                             break;
-                                            
+                        case 40:
+                            it._can.annul = 1
+                            break;
+
                     }
                 
                 }

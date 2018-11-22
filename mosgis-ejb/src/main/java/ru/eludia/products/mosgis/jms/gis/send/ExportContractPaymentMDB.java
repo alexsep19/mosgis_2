@@ -254,14 +254,8 @@ public class ExportContractPaymentMDB extends UUIDMDB<ContractPaymentLog> {
         
     }
     
-    Queue getQueue (ContractPayment.Action action) {
-        
-        switch (action) {
-//            case REFRESHING: return outExportHouseContractPaymentStatusQueue;
-//            case RELOADING:  return outExportHouseContractPaymentsDataQueue;
-            default:         return outExportHouseContractPaymentsQueue;
-        }
-        
+    Queue getQueue (ContractPayment.Action action) {        
+        return outExportHouseContractPaymentsQueue;        
     }
 
 }
