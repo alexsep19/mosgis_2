@@ -237,5 +237,17 @@ public class ContractPaymentImpl extends BaseCRUD<ContractPayment> implements Co
         }        
 
     });}    
+
+    @Override
+    public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
+        
+        db.update (getTable (), HASH (
+            "uuid",           id,
+            "id_ctr_status",  VocGisStatus.i.MUTATING.getId ()
+        ));
+        
+        logAction (db, user, id, VocAction.i.ALTER);
+        
+    });}
     
 }

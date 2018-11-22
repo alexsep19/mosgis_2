@@ -55,16 +55,24 @@ define ([], function () {
 
             if (!is_locked && is_own) {
             
-                switch (it ["ctr.id_ctr_status"]) {
-
-                    case 40:
-                        it._can.edit    = 1
-//                        if (it.id_ctr_status_gis == 40 && !it.is_annuled) it._can.annul = 1
-                        break;
-                        
+                if (it ["ctr.id_ctr_status"] == 40) it._can.edit = 1
+                            
+                if (it._can.edit) {
+                
+                    it._can.update = it._can.cancel = 1
+                    
+                    switch (it.id_ctr_status) {
+                    
+                        case 10:
+                            it._can.delete = 1           
+                            break;
+                        case 14:
+                            it._can.alter = 1
+                            break;
+                                            
+                    }
+                
                 }
-
-                it._can.delete = it._can.update = it._can.cancel = it._can.edit
 
             }
             
@@ -76,7 +84,7 @@ define ([], function () {
                 
             }
             
-            if (!it._can.edit || it.id_ctr_status != 10 || it ['ctr.id_ctr_status_gis'] != 40) return finish ()
+            if (!it._can.edit || it.id_ctr_status > 11 || it ['ctr.id_ctr_status_gis'] != 40) return finish ()
 
             query ({type: 'service_payments', id: undefined}, {offset:0, limit: 10000, data: {uuid_contract_payment: $_REQUEST.id}}, function (d) {
             

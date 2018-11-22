@@ -90,6 +90,11 @@ define ([], function () {
         query ({type: 'contract_payments', action: 'approve'}, {}, reload_page)
     }
     
+    $_DO.alter_mgmt_contract_payment_common = function (e) {
+        if (!confirm ('Открыть эту карточку на редактирование?')) return
+        query ({type: 'contract_payments', action: 'alter'}, {}, reload_page)
+    }
+    
     $_DO.create_house_mgmt_contract_payment_common = function (e) {
         use.block ('mgmt_contract_payment_new_house_passport');
     }

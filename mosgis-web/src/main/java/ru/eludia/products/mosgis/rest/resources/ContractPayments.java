@@ -131,4 +131,13 @@ public class ContractPayments extends EJBResource <ContractPaymentLocal> {
         return back.doApprove (id, getUser ());
     }
     
+    @POST
+    @Path("{id}/alter") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject doAlter (@PathParam ("id") String id) { 
+        final JsonObject item = getInnerItem (id);
+        checkOrg (item);
+        return back.doAlter (id, getUser ());
+    }
+    
 }
