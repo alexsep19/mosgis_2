@@ -17,7 +17,8 @@ public class ServicePayment extends EnTable {
 
     public enum c implements EnColEnum {
 
-        UUID_CONTRACT_PAYMENT (ContractPayment.class,   "Ссылка на [сведения о размере платы за] услуги управления"),
+        UUID_CONTRACT_PAYMENT (ContractPayment.class,   "Ссылка на [сведения о размере платы за] услуги управления в ДУ"),
+        UUID_CHARTER_PAYMENT  (CharterPayment.class,    "Ссылка на [сведения о размере платы за] услуги управления в уставе"),
         UUID_ORG_WORK         (OrganizationWork.class,  "Ссылка на работу/услугу организации"),
         ID_LOG                (ServicePaymentLog.class,  "Последнее событие редактирования"),
         SERVICEPAYMENTSIZE    (NUMERIC, 14, 4, null,  "Размер платы (цены, тарифа) за работы (услуги)/Размер платы за работы (услуги), в целой части указываются рубли, в вещественной - до сотых долей копеек.")
@@ -52,6 +53,7 @@ public class ServicePayment extends EnTable {
         cols   (c.class);
         
         key    ("uuid_contract", c.UUID_CONTRACT_PAYMENT, c.UUID_ORG_WORK);
+        key    ("uuid_charter", c.UUID_CHARTER_PAYMENT, c.UUID_ORG_WORK);
 
     }
     

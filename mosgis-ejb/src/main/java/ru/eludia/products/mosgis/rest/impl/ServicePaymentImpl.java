@@ -76,12 +76,20 @@ public class ServicePaymentImpl extends BaseCRUD<ServicePayment> implements Serv
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
         applySearch (Search.from (p), select);
-        
-        select.and (ServicePayment.c.UUID_CONTRACT_PAYMENT.lc (), p.getJsonObject ("data").getString ("uuid_contract_payment"));
+
+        final JsonObject data = p.getJsonObject ("data");
+        checkRef (ServicePayment.c.UUID_CONTRACT_PAYMENT, data, select);
+        checkRef (ServicePayment.c.UUID_CHARTER_PAYMENT, data, select);
 
         db.addJsonArrayCnt (job, select);
 
     });}
+
+    private void checkRef (final ServicePayment.c c, final JsonObject data, Select select) {
+        final String key = c.lc ();
+        final String uuid = data.getString (key, null);
+        if (uuid != null) select.and (key, uuid);
+    }
     
     @Override
     public JsonObject getItem (String id) {return fetchData ((db, job) -> {
