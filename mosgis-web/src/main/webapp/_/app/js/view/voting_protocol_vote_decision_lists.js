@@ -29,7 +29,6 @@ define ([], function () {
                 footer: true,
                 toolbarColumns: true,
                 toolbarAdd: show (),
-                toolbarEdit: show (),
                 toolbarDelete: show (),
             },            
 
