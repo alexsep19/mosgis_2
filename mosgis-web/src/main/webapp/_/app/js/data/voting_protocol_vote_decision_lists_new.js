@@ -2,7 +2,7 @@ define ([], function () {
 
     $_DO.update_voting_protocol_vote_decision_lists_new = function (e) {
 
-        var form = w2ui ['voting_protocol_vote_vote_decision_lists_new_form']
+        var form = w2ui ['voting_protocol_vote_decision_lists_new_form']
 
         var v = form.values ()
 

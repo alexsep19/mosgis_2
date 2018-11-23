@@ -21,6 +21,14 @@ define ([], function () {
 
         query ({type: 'voting_protocols', part: 'vocs', id: undefined}, {}, function (data) {
 
+            if (data.vc_nsi_63) {    
+                
+                data.vc_nsi_63.forEach ((element, i, arr) => {
+                    if (element['id'].indexOf ('.') < 0) element['fake'] = 1
+                })
+
+            }
+
             add_vocabularies (data, data)
 
             query ({type: 'voting_protocols'}, {}, function (d) {
