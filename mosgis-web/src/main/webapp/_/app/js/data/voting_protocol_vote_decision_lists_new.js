@@ -14,6 +14,10 @@ define ([], function () {
 
         if (!v.agree && !v.against && !v.abstent) die ('agree', 'Пожалуйста, заполните как минимум одно поле результата голосования')
 
+        if (!v.agree) v['agree'] = 0
+        if (!v.against) v['against'] = 0
+        if (!v.abstent) v['abstent'] = 0
+
         if (!v.hasOwnProperty('votingresume')) die ('votingresume', 'Пожалуйста, укажите итог голосования')
         
         var tia = {type: 'vote_decision_lists'}

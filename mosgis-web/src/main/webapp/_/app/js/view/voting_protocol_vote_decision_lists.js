@@ -41,18 +41,25 @@ define ([], function () {
                 ]}},
             ].filter (not_off),
 
+            columnGroups:
+            [
+                {span: 3, caption: ''},
+                {span: 4, caption: 'Результаты голосования'},
+                {span: 1, caption: '', master: true},
+            ],
+
             columns: 
             [                
-                {field: 'questionnumber', caption: 'Номер', size: 10},
-                {field: 'questionname', caption: 'Вопрос', size: 10},
-                {field: 'agree', caption: 'За', size: 7},
-                {field: 'against', caption: 'Против', size: 7},
-                {field: 'abstent', caption: 'Воздержались', size: 7},
-                {field: 'total', caption: 'Всего', size: 7},
-                {field: 'votingresume', caption: 'Итоги голосования', size: 10, 
+                {field: 'questionnumber', caption: 'Номер', size: 2},
+                {field: 'questionname', caption: 'Вопрос', size: 13},
+                {field: 'decisiontype_vc_nsi_63',  caption: 'Тип вопроса', size: 13, voc: data.vc_nsi_63.items},
+                {field: 'agree', caption: 'За', size: 4},
+                {field: 'against', caption: 'Против', size: 4},
+                {field: 'abstent', caption: 'Воздержались', size: 4},
+                {field: 'total', caption: 'Всего', size: 4},
+                {field: 'votingresume', caption: 'Итоги голосования', size: 4, 
                         render: function (r) {return r.votingresume == "M" ? 'Решение принято' : 'Решение не принято'}
                 },
-                {field: 'decisiontype_vc_nsi_63',  caption: 'Тип вопроса', size: 10, voc: data.vc_nsi_63.items},
             ].filter (not_off),
 
             postData: {data: {"protocol_uuid": data.item.uuid, "house_uuid": data.item.house_uuid}},
