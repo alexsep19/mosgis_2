@@ -122,32 +122,4 @@ public class VoteDecisionListsImpl extends BaseCRUD<VoteDecisionList> implements
 
         return jb.build ();
     }
-    
-    @Override
-    public JsonObject doCreate (JsonObject p, User user) {return doAction ((db, job) -> {
-
-        final Table table = getTable ();
-
-        Map<String, Object> data = getData (p);
-
-        if (table.getColumn (UUID_ORG) != null && !data.containsKey (UUID_ORG)) data.put (UUID_ORG, user.getUuidOrg ());
-        
-        final MosGisModel model = ModelHolder.getModel ();
-        
-        int number = db.getCnt (model
-                .select(getTable ())
-                .where ("protocol_uuid", data.get("protocol_uuid"))
-                .and ("questionnumber IS NOT NULL")
-        );
-        
-        data.put("questionnumber", number + 1);
-
-        Object insertId = db.insertId (table, data);
-        
-        job.add ("id", insertId.toString ());
-        
-        logAction (db, user, insertId, VocAction.i.CREATE);
-
-    });}
-    
 }
