@@ -52,7 +52,7 @@ define ([], function () {
             [                
                 {field: 'questionnumber', caption: 'Номер', size: 2},
                 {field: 'questionname', caption: 'Вопрос', size: 13},
-                {field: 'decisiontype_vc_nsi_63',  caption: 'Тип вопроса', size: 13, voc: data.vc_nsi_63.items},
+                {field: 'decisiontype_vc_nsi_63',  caption: 'Тип вопроса', size: 13, voc: data.vc_nsi_63},
                 {field: 'agree', caption: 'За', size: 4},
                 {field: 'against', caption: 'Против', size: 4},
                 {field: 'abstent', caption: 'Воздержались', size: 4},
