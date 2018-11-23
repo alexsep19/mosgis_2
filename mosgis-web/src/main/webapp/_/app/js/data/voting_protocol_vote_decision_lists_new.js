@@ -17,17 +17,17 @@ define ([], function () {
         if (!v.agree) {
             v['agree'] = 0
         }
-        else if (!Number.isInteger (v.agree)) die ('agree', 'Введено неверное количество голосов "За"')
+        else if (!v['agree'].match(/^[0-9]*$/)) die ('agree', 'Введено неверное количество голосов "За"')
 
         if (!v.against){
             v['against'] = 0
         }
-        else if (!Number.isInteger (v.against)) die ('against', 'Введено неверное количество голосов "Против"')
+        else if (!v['against'].match(/^[0-9]*$/)) die ('against', 'Введено неверное количество голосов "Против"')
 
         if (!v.abstent){
             v['abstent'] = 0
         }
-        else if (!Number.isInteger (v.abstent)) die ('abstent', 'Введено неверное количество голосов "Воздержалось"')
+        else if (!v['abstent'].match(/^[0-9]*$/)) die ('abstent', 'Введено неверное количество голосов "Воздержалось"')
 
         if (!v.hasOwnProperty('votingresume')) die ('votingresume', 'Пожалуйста, укажите итог голосования')
 
