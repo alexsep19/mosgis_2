@@ -27,8 +27,8 @@ public class VoteDecisionList extends EnTable {
         ABSTENT (NUMERIC, 3, null, "Результат голосования \"Воздержался\""),
         TOTAL   (STRING, new Virt ("DECODE(\"AGREE\", NULL, 0, \"AGREE\")+DECODE(\"AGAINST\", NULL, 0, \"AGAINST\")+DECODE(\"ABSTENT\", NULL, 0, \"ABSTENT\")"), "Всего голосующих"),
         
-        FORMINGFUND_VC_NSI_241 (STRING, "Выбранный способ формирования фонда (НСИ 241)"),
-        MANAGEMENTTYPE_VC_NSI_25 (STRING, "Выбранный способ управления МКД (НСИ 25)"),
+        FORMINGFUND_VC_NSI_241 (STRING, null, "Выбранный способ формирования фонда (НСИ 241)"),
+        MANAGEMENTTYPE_VC_NSI_25 (STRING, null, "Выбранный способ управления МКД (НСИ 25)"),
         
         VOTINGRESUME (STRING, 1, "Итоги голосования: DECISION_IS_(M)ADE - решение принято DECISION_IS_(N)OT_MADE - решение не принято")
         

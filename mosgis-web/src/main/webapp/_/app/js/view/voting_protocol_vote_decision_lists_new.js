@@ -40,14 +40,12 @@ define ([], function () {
 
             enable_block(tables[v.decisiontype_vc_nsi_63])
 
-            //enable_block (Object.keys(tables)[v.form_])
-
         }
 
         $(view).w2popup('open', {
 
             width  : 650,
-            height : 350,
+            height : 400,
 
             title   : 'Новая повестка',
 
@@ -65,7 +63,7 @@ define ([], function () {
 
                         fields : [
                             {name: 'decisiontype_vc_nsi_63', type: 'list', options: {items: data.vc_nsi_63.items}},
-                            {name: 'questionname', type: 'text'},
+                            {name: 'questionname', type: 'textarea'},
                             {name: 'managementtype_vc_nsi_25', type: 'list', options: {items: data.vc_nsi_25.items}},
                             {name: 'formingfund_vc_nsi_241', type: 'list', options: {items: data.vc_nsi_241.items}},
                             {name: 'agree', type: 'text'},

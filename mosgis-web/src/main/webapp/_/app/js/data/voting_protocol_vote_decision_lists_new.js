@@ -6,7 +6,15 @@ define ([], function () {
 
         var v = form.values ()
 
-        //if (!v.uuid_org) die ('uuid_org', 'Пожалуйста, выберите инициатора-организацию из списка')
+        if (!v.decisiontype_vc_nsi_63) die ('decisiontype_vc_nsi_63', 'Пожалуйста, выберите тип вопроса из списка')
+        if (!v.questionname) die ('questionname', 'Пожалуйста, введите вопрос')
+
+        if (v.decisiontype_vc_nsi_63 == '2.1' && !v.formingfund_vc_nsi_241) die ('formingfund_vc_nsi_241', 'Пожалуйста, укажите способ формирования фонда капитального ремонта')
+        if (v.decisiontype_vc_nsi_63 == '11.1' && !v.managementtype_vc_nsi_25) die ('managementtype_vc_nsi_25', 'Пожалуйста, укажите способ управления МКД')
+
+        if (!v.agree && !v.against && !v.abstent) die ('agree', 'Пожалуйста, заполните как минимум одно поле результата голосования')
+
+        if (!v.hasOwnProperty('votingresume')) die ('votingresume', 'Пожалуйста, укажите итог голосования')
         
         var tia = {type: 'vote_decision_lists'}
         tia.id = form.record.id
