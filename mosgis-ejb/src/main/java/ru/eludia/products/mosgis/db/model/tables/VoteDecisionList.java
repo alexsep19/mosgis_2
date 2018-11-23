@@ -58,5 +58,15 @@ public class VoteDecisionList extends EnTable {
         cols (c.class);
         key  ("questionname", "questionname");
         
+        trigger ("BEFORE INSERT",
+                "DECLARE "
+                    + "max_num NUMBER; "
+                + "BEGIN "
+                    + "SELECT MAX(questionnumber) INTO max_num FROM tb_vote_decision_lists WHERE protocol_uuid = :NEW.protocol_uuid; "
+                    + "IF max_num = NULL "
+                    + "THEN max_num := 0; "
+                    + "END IF; "
+                    + ":NEW.questionnumber := (max_num + 1); "
+                + "END; ");
     }   
 }
