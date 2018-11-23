@@ -13,7 +13,9 @@ import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.VoteDecisionList;
+import ru.eludia.products.mosgis.db.model.tables.VotingProtocol;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.VoteDecisionListsLocal;
@@ -82,9 +84,15 @@ public class VoteDecisionListsImpl extends BaseCRUD<VoteDecisionList> implements
     @Override
     public JsonObject getItem(String id) {return fetchData ((db, job) -> {
 
-        job.add ("item", db.getJsonObject (ModelHolder.getModel ()
+        JsonObject item = db.getJsonObject (ModelHolder.getModel ()
             .get (getTable (), id, "*")
-        ));
+            .toOne (VotingProtocol.class, "AS protocol", "fiashouseguid").on ()
+        );
+        
+        job.add ("item", item);
+        
+        final String fiashouseguid = item.getString ("protocol.fiashouseguid");
+        VocBuilding.addCaCh (db, job, fiashouseguid);
 
     });}
 
