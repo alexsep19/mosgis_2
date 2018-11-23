@@ -19,6 +19,8 @@ define ([], function () {
         if (!v.abstent) v['abstent'] = 0
 
         if (!v.hasOwnProperty('votingresume')) die ('votingresume', 'Пожалуйста, укажите итог голосования')
+
+        v['votingresume'] = (v['votingresume'] == 0) ? "M" : "N"
         
         var tia = {type: 'vote_decision_lists'}
         tia.id = form.record.id
