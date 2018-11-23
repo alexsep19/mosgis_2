@@ -243,7 +243,7 @@ public class ContractPaymentImpl extends BaseCRUD<ContractPayment> implements Co
         
         db.update (getTable (), HASH (
             "uuid",           id,
-            "id_ctr_status",  VocGisStatus.i.MUTATING.getId ()
+            "id_ctr_status",  VocGisStatus.i.PROJECT.getId ()
         ));
         
         logAction (db, user, id, VocAction.i.ALTER);

@@ -31,7 +31,7 @@ public class VotingProtocol extends Table {
         fk  ("id_prtcl_status",           VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (),   "Статус протокола с точки зрения mosgis");
         ref ("id_prtcl_status_gis",       VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (),   "Статус протокола с точки зрения ГИС ЖКХ");
         
-        fk  ("form_", VocVotingForm.class, "Форма проведения");
+        fk  ("form_", VocVotingForm.class, null, "Форма проведения");
         //col ("label_form", Type.STRING, new Virt("DECODE(\"FORM_\", 0, 'Заочное голосование (опросным путем)', 1, 'Очное голосование', 2, 'Заочное голосование с использованием системы', 3, 'Очно-заочное голосование', 'Неизвестная форма проведения')"), "Форма проведения");
         //col ("label_form_uc", Type.STRING, new Virt("UPPER(\"LABEL_FORM\")"), "ФОРМА ПРОВЕДЕНИЯ");
         

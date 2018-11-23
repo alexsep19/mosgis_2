@@ -34,7 +34,7 @@ public class VocVotingForm extends Table {
         
         super (TABLE_NAME, "Формы проведения ОСС");
         
-        pk    ("name",         Type.STRING,  "Идентификатор");
+        pk    ("name",         Type.NUMERIC, 1, "Идентификатор");
         col   ("label",        Type.STRING,  "Наименование");
         
         data  (i.class);
@@ -43,10 +43,10 @@ public class VocVotingForm extends Table {
     
     public enum i {
         
-        AVOTING    ("avoting", "Заочное голосование (опросным путем)"),
-        MEETING    ("meeting", "Очное голосование"),
-        EVOTING    ("evoting", "Заочное голосование с использованием системы"),
-        MEET_AV    ("meet_av", "Очно-заочное голосование");
+        AVOTING    ("0", "Заочное голосование (опросным путем)"),
+        MEETING    ("1", "Очное голосование"),
+        EVOTING    ("2", "Заочное голосование с использованием системы"),
+        MEET_AV    ("3", "Очно-заочное голосование");
                 
         String name;
         String label;
