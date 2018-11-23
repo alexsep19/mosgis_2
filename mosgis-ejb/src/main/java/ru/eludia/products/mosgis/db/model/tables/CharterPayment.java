@@ -86,7 +86,7 @@ public class CharterPayment extends EnTable {
                     + " o.begindate"
                     + " , o.enddate "
                     + "FROM "
-                    + " tb_ctr_payments o "
+                    + " tb_ch_payments o "
                     + "WHERE o.is_deleted = 0"
                     + " AND o.uuid_charter = :NEW.uuid_charter "
                     + " AND NVL (o.uuid_charter_object, '00') = NVL (:NEW.uuid_charter_object, '00') "
