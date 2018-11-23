@@ -53,7 +53,7 @@ define ([], function () {
                 {field: 'votingresume', caption: 'Итоги голосования', size: 10, 
                         render: function (r) {return r.votingresume == "M" ? 'Решение принято' : 'Решение не принято'}
                 },
-                {field: 'decisiontype_vc_nsi_63',  caption: 'Тип вопроса',  type: 'enum', options: {items: data.vc_nsi_63.items}},
+                {field: 'decisiontype_vc_nsi_63',  caption: 'Тип вопроса', size: 10, voc: data.vc_nsi_63.items},
             ].filter (not_off),
 
             postData: {data: {"protocol_uuid": data.item.uuid, "house_uuid": data.item.house_uuid}},
