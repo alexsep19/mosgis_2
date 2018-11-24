@@ -74,8 +74,8 @@ public class MosGisModelTest {
     }
     
     @Test
-    public void testMethod () {
-        
+    public void testMethod () throws SQLException {
+        m.update ();
     }
 
     private static class DataSourceImpl implements DataSource {
