@@ -144,10 +144,10 @@ public class MosGisModelTest {
                 Class driverClass = Class.forName ("oracle.jdbc.driver.OracleDriver", true, loader);
                 Driver driver = (Driver) driverClass.newInstance ();
                 final Properties p = new Properties ();
-                p.put ("user", "mg");
-                p.put ("password", "z");
+                p.put ("user", System.getProperty (RU_ELUDIA_DB_USER));
+                p.put ("password", System.getProperty (RU_ELUDIA_DB_PASSWORD));
                 Locale.setDefault (Locale.US);
-                cn = driver.connect ("jdbc:oracle:thin:@127.0.0.1:1521:XE", p);
+                cn = driver.connect (System.getProperty (RU_ELUDIA_DB_URL), p);
             }
             catch (Exception ex) {
                 return new Croak (ex);
@@ -156,7 +156,11 @@ public class MosGisModelTest {
             return stmnt;
             
         }
+        
         private static final String RU_ELUDIA_DB_DRIVER_PATH = "ru.eludia.db.driver.path";
+        private static final String RU_ELUDIA_DB_URL = "ru.eludia.db.url";
+        private static final String RU_ELUDIA_DB_USER = "ru.eludia.db.user";
+        private static final String RU_ELUDIA_DB_PASSWORD = "ru.eludia.db.password";
 
         private static class Croak extends Statement {
             
