@@ -1,10 +1,17 @@
 package ru.eludia.products.mosgis.db.model;
 
+import java.io.File;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.Locale;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
@@ -23,6 +30,7 @@ public class MosGisModelTest {
     
     private static final Logger logger = Logger.getLogger (MosGisModelTest.class.getName ());
 
+    private static Connection cn;
     private static DataSource ds;
     private static MosGisModel m;
     
@@ -34,13 +42,13 @@ public class MosGisModelTest {
     
     @BeforeClass
     public static void setUpClass () throws Exception {
-        Class.forName ("oracle.jdbc.driver.OracleDriver");
         ds = new DataSourceImpl ();
         m = new MosGisModel (ds);
     }
     
     @AfterClass
-    public static void tearDownClass () {
+    public static void tearDownClass () throws SQLException {
+        if (cn != null) cn.close ();
     }
     
     @Before
@@ -65,7 +73,7 @@ public class MosGisModelTest {
 
         @Override
         public Connection getConnection () throws SQLException {
-            return DriverManager.getConnection ("jdbc:oracle:thin:@localhost:1521:XE", "mg", "z");
+            return cn;
         }
 
         @Override
@@ -115,28 +123,59 @@ public class MosGisModelTest {
         @Override
         public Statement apply (Statement stmnt, Description d) {
             
+            String path = System.getProperty (RU_ELUDIA_DB_DRIVER_PATH);
+            
+            if (path == null || path.isEmpty ()) return new Croak (RU_ELUDIA_DB_DRIVER_PATH + " not set, skipping test");
+            
+            File file = new File (path);
+            if (!file.exists ()) return new Croak ("File not found: " + file);
+            
+            URL [] urls = new URL [1];
             try {
-                Class.forName ("oracle.jdbc.driver.OracleDriver");
+                urls [0] = file.toURI ().toURL ();
             }
-            catch (ClassNotFoundException ex) {
-                return new Croak ("Oracle JDBC driver not found");
+            catch (MalformedURLException ex) {
+                return new Croak (ex);
+            }
+                        
+            URLClassLoader loader = new URLClassLoader (urls, stmnt.getClass ().getClassLoader ());
+            
+            try {
+                Class driverClass = Class.forName ("oracle.jdbc.driver.OracleDriver", true, loader);
+                Driver driver = (Driver) driverClass.newInstance ();
+                final Properties p = new Properties ();
+                p.put ("user", "mg");
+                p.put ("password", "z");
+                Locale.setDefault (Locale.US);
+                cn = driver.connect ("jdbc:oracle:thin:@127.0.0.1:1521:XE", p);
+            }
+            catch (Exception ex) {
+                return new Croak (ex);
             }
             
             return stmnt;
             
         }
+        private static final String RU_ELUDIA_DB_DRIVER_PATH = "ru.eludia.db.driver.path";
 
         private static class Croak extends Statement {
             
             String s;
+            Throwable t = null;
             
             public Croak (String s) {
                 this.s = s;
             }
             
+            public Croak (Throwable t) {
+                this.t = t;
+                this.s = t.getMessage ();
+            }
+            
             @Override
             public void evaluate () throws Throwable {
-                logger.info ("Test skipped: " + s);
+                if (t != null) logger.log (Level.SEVERE, s, t); else logger.info ("Test skipped: " + s);
+                logger.info ("System.getProperties () = " + System.getProperties ());
             }
             
         }
