@@ -131,7 +131,8 @@
                 </executions>
                 <configuration>
                     <sourceDirectory>${webapp.static.dir}</sourceDirectory>
-                    <outputDirectory>${webapp.static.dir}</outputDirectory>
+                    <outputDirectory>${project.basedir}/target/mosgis-web-1.0-SNAPSHOT/_</outputDirectory>
+
                 </configuration>
             </plugin>
         </plugins>
