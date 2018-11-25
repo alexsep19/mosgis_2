@@ -1,8 +1,9 @@
 /mosgis-api/target/
 /mosgis-ejb/target/
+/mosgis-ejb/nbproject/
 /mosgis-web/target/
 /mosgis-ear/target/
 /mosgis-web/node_modules/
 nb-configuration.xml
 /mosgis-web/src/main/webapp/_/app/js/_.js
-/mosgis-ejb/nbproject//mosgis-web/src/main/webapp/_/libs/mosgis/mosgis.css
+/mosgis-web/src/main/webapp/_/libs/mosgis/mosgis.css
