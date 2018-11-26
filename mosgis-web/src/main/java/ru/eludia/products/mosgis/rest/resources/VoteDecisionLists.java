@@ -15,11 +15,10 @@ import ru.eludia.products.mosgis.rest.misc.EJBResource;
 @Path("vote_decision_lists")
 public class VoteDecisionLists extends EJBResource<VoteDecisionListsLocal> {
 
-    private JsonObject getInnerItem (String id) {
+    private JsonObject getData (String id) {
         final JsonObject data = back.getItem (id);        
-        final JsonObject item = data.getJsonObject ("item");
-        if (item == null) throw new InternalServerErrorException ("Wrong data from back.getItem (" + id + "), no item: " + data);
-        return item;
+        if (data == null) throw new InternalServerErrorException ("Wrong data from back.getItem (" + id + "), no item: " + data);
+        return data;
     }
     
     private String getUserOrg () {
@@ -35,7 +34,7 @@ public class VoteDecisionLists extends EJBResource<VoteDecisionListsLocal> {
         
     }
     
-    private void checkOrg (JsonObject item) {
+    private void checkOrg (JsonObject data) {
         
         if (securityContext.isUserInRole ("admin")) return;
         
@@ -47,7 +46,7 @@ public class VoteDecisionLists extends EJBResource<VoteDecisionListsLocal> {
             || securityContext.isUserInRole ("nsi_20_22")
         )) throw new ValidationException ("foo", "Доступ запрещён");
         
-        if (!item.containsKey ("cach")) throw new ValidationException ("foo", "Ваша организация не управляет домом по этому адресу. Доступ запрещён.");
+        if (!data.containsKey ("cach")) throw new ValidationException ("foo", "Ваша организация не управляет домом по этому адресу. Доступ запрещён.");
 
     }
     
@@ -78,8 +77,8 @@ public class VoteDecisionLists extends EJBResource<VoteDecisionListsLocal> {
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject doUpdate (@PathParam ("id") String id, JsonObject p) {
-        final JsonObject item = getInnerItem (id);
-        checkOrg (item);
+        final JsonObject data = getData (id);
+        checkOrg (data);
         return back.doUpdate (id, p, getUser ());
     }
     
@@ -87,8 +86,8 @@ public class VoteDecisionLists extends EJBResource<VoteDecisionListsLocal> {
     @Path("{id}/delete") 
     @Produces (APPLICATION_JSON)
     public JsonObject doDelete (@PathParam ("id") String id) { 
-        final JsonObject item = getInnerItem (id);
-        checkOrg (item);
+        final JsonObject data = getData (id);
+        checkOrg (data);
         return back.doDelete (id, getUser ());
     }
     
@@ -96,8 +95,8 @@ public class VoteDecisionLists extends EJBResource<VoteDecisionListsLocal> {
     @Path("{id}/undelete") 
     @Produces (APPLICATION_JSON)
     public JsonObject doUndelete (@PathParam ("id") String id) { 
-        final JsonObject item = getInnerItem (id);
-        checkOrg (item);
+        final JsonObject data = getData (id);
+        checkOrg (data);
         return back.doUndelete (id, getUser ());
     }
         
