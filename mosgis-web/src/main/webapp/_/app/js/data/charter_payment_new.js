@@ -4,13 +4,15 @@ define ([], function () {
     
         $progress.prop ({max: file.size, value: 0}).show ().css ({visibility: 'visible'})
     
-        Base64file.upload (file, {type: type, {data: data}, 
+        Base64file.upload (file, {
+            type: type, 
+            data: data, 
             onprogress: function (x, y) {$progress.val (x)},
             onloadend: done
         })
     
     }
-
+    
     $_DO.update_charter_payment_new = function (e) {
 
         var form = w2ui ['charter_payment_new_form']
@@ -43,53 +45,48 @@ define ([], function () {
 
         v.uuid_charter = $_REQUEST.id
         
-        function finish (id) {
-        
-            w2popup.close ()
-
-            w2confirm ('Услуга зарегистрирована. Открыть её страницу в новой вкладке?').yes (function () {openTab ('/charter_payment/' + id)})
-            
-            var grid = w2ui ['charter_payments_grid']
-
-            grid.reload (grid.refresh)
-            
-        }
-darn (r)        
         form.lock ()
 
-        $('.w2ui-popup-body progress').css ({visibility: 'visible'})
-return        
         query ({type: 'charter_payments', action: 'create', id: undefined}, {data: v}, function (data) {
         
-            function exit () {return finish (data.id)}
+            var uuid_charter_payment = data.id
         
-            function check_file_0 () {
-
-                if (!r.file_0) return exit ()
-                
-                upload_gis_file ($('#progress_0'), r.file_0 [0].file, 'charter_payment_docs', 
-                
-                    data: {
-                        uuid_charter_payment: data.id, 
-                        description: r.file_0 [0].file.name
-                    },
-                    
-                    function (uuid_file) {
-
-                        query ({type: 'charter_payments', action: 'create', id: data.id}, {data: {uuid_file_0: uuid_file}}, function (d) {
-                        
-                            exit ()
-                        
-                        })
-
-                    }
-                    
-                )                
+            function exit () {
             
+                w2popup.close ()
+
+                w2confirm ('Услуга зарегистрирована. Открыть её страницу в новой вкладке?').yes (function () {openTab ('/charter_payment/' + uuid_charter_payment)})
+
+                var grid = w2ui ['charter_payments_grid']
+
+                grid.reload (grid.refresh)
+                
             }
-        
-            check_file_0 ()
-                    
+            
+            function check_file (n, done) {
+
+                var fn = 'file_' + n
+
+                var fl = r [fn]; if (!fl) return done ()
+
+                var file = fl [0].file
+
+                upload_gis_file ($('#progress_' + n), file, 'charter_payment_docs', {uuid_charter_payment: uuid_charter_payment, description: file.name}, function (uuid_file) {
+
+                    var data = {}
+
+                    data ['uuid_file_' + n] = uuid_file
+
+                    query ({type: 'charter_payments', action: 'update', id: uuid_charter_payment}, {data: data}, done)
+
+                })                
+
+            }    
+                        
+            check_file (1, function () {            
+                check_file (0, exit)                
+            })
+                            
         })
 
     }
