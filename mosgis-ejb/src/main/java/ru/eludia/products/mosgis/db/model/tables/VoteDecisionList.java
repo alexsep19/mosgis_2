@@ -63,7 +63,7 @@ public class VoteDecisionList extends EnTable {
                     + "max_num NUMBER; "
                 + "BEGIN "
                     + "SELECT MAX(questionnumber) INTO max_num FROM tb_vote_decision_lists WHERE protocol_uuid = :NEW.protocol_uuid; "
-                    + "IF max_num = NULL "
+                    + "IF max_num IS NULL "
                     + "THEN max_num := 0; "
                     + "END IF; "
                     + ":NEW.questionnumber := (max_num + 1); "
