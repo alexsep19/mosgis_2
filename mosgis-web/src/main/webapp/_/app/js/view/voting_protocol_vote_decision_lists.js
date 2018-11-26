@@ -71,7 +71,7 @@ define ([], function () {
 
             onDblClick: function (e) {
                 
-                openTab ('/vote_decision_lists/' + e.recid)
+                openTab ('/vote_decision_list/' + e.recid)
             
             },
             

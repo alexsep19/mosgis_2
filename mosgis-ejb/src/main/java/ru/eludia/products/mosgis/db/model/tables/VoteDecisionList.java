@@ -22,9 +22,9 @@ public class VoteDecisionList extends EnTable {
         
         DECISIONTYPE_VC_NSI_63 (STRING, "Тип вопроса (НСИ 63)"),
         
-        AGREE   (NUMERIC, 3, null, "Результат голосование \"За\""),
-        AGAINST (NUMERIC, 3, null, "Результат голосования \"Против\""),
-        ABSTENT (NUMERIC, 3, null, "Результат голосования \"Воздержался\""),
+        AGREE   (NUMERIC, 25, 4, null, "Результат голосование \"За\""),
+        AGAINST (NUMERIC, 25, 4, null, "Результат голосования \"Против\""),
+        ABSTENT (NUMERIC, 25, 4, null, "Результат голосования \"Воздержался\""),
         TOTAL   (STRING, new Virt ("DECODE(\"AGREE\", NULL, 0, \"AGREE\")+DECODE(\"AGAINST\", NULL, 0, \"AGAINST\")+DECODE(\"ABSTENT\", NULL, 0, \"ABSTENT\")"), "Всего голосующих"),
         
         FORMINGFUND_VC_NSI_241 (STRING, null, "Выбранный способ формирования фонда (НСИ 241)"),

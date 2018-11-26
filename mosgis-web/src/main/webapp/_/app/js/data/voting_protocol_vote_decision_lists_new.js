@@ -17,17 +17,17 @@ define ([], function () {
         if (!v.agree) {
             v['agree'] = 0
         }
-        else if (!v['agree'].match(/^[0-9]*$/)) die ('agree', 'Введено неверное количество голосов "За"')
+        else if (!v['agree'].match(/^[0-9]*\.?[0-9]+$/)) die ('agree', 'Введено неверное количество голосов "За"')
 
         if (!v.against){
             v['against'] = 0
         }
-        else if (!v['against'].match(/^[0-9]*$/)) die ('against', 'Введено неверное количество голосов "Против"')
+        else if (!v['against'].match(/^[0-9]*\.?[0-9]+$/)) die ('against', 'Введено неверное количество голосов "Против"')
 
         if (!v.abstent){
             v['abstent'] = 0
         }
-        else if (!v['abstent'].match(/^[0-9]*$/)) die ('abstent', 'Введено неверное количество голосов "Воздержалось"')
+        else if (!v['abstent'].match(/^[0-9]*\.?[0-9]+$/)) die ('abstent', 'Введено неверное количество голосов "Воздержалось"')
 
         if (!v.hasOwnProperty('votingresume')) die ('votingresume', 'Пожалуйста, укажите итог голосования')
 
@@ -49,7 +49,7 @@ define ([], function () {
         
             w2popup.close ()
 
-            if (data.id) w2confirm ('Перейти на страницу повестки?').yes (function () {openTab ('/vote_decision_lists/' + data.id)})
+            if (data.id) w2confirm ('Перейти на страницу повестки?').yes (function () {openTab ('/vote_decision_list/' + data.id)})
             
             grid.reload (grid.refresh)
             
