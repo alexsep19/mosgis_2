@@ -87,9 +87,19 @@ public final class MosGisModel extends ru.eludia.base.Model {
             }
 
             logger.log (Level.INFO, "VOC NSI 58 CHECKED");
-
-            for (Class c: Passport.classes) ((Passport) get (c)).addNsiFields (db);
+            
+            try {
+                for (Class c: Passport.classes) ((Passport) get (c)).addNsiFields (db);
+            }
+            catch (SQLException ex) {                
+                if (ex.getErrorCode () != 942) throw ex;
+                logger.log (Level.WARNING, "Problem with passport fields, OK for an empty database", ex);
+            }
+            
             db.adjustModel ();        
+            
         }
+        
     }
+    
 }

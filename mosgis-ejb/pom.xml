@@ -17,7 +17,6 @@
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.test.skip>true</maven.test.skip>
     </properties>
 
     <dependencies>
@@ -38,6 +37,24 @@
             <artifactId>javax.annotation-api</artifactId>
             <version>1.2-b03</version>
             <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-core</artifactId>
+            <version>1.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.json</artifactId>
+            <version>1.1.2</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>javax</groupId>
@@ -204,6 +221,19 @@
                     <target>2.0</target>
                 </configuration>
             </plugin>
+
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-surefire-plugin</artifactId>
+    <configuration>
+      <systemPropertyVariables>
+        <ru.eludia.db.driver.path>${ru.eludia.db.driver.path}</ru.eludia.db.driver.path>
+        <ru.eludia.db.url>${ru.eludia.db.url}</ru.eludia.db.url>
+        <ru.eludia.db.user>${ru.eludia.db.user}</ru.eludia.db.user>
+        <ru.eludia.db.password>${ru.eludia.db.password}</ru.eludia.db.password>
+      </systemPropertyVariables>
+    </configuration>
+</plugin>
             
 <plugin>
     <groupId>org.apache.maven.plugins</groupId>

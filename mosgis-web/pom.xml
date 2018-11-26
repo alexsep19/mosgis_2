@@ -118,7 +118,25 @@
                     </execution>                        
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.lesscss</groupId>
+                <artifactId>lesscss-maven-plugin</artifactId>
+                <version>1.7.0.1.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <sourceDirectory>${webapp.static.dir}</sourceDirectory>
+                    <outputDirectory>${project.basedir}/target/mosgis-web-1.0-SNAPSHOT/_</outputDirectory>
+
+                </configuration>
+            </plugin>
         </plugins>
+        
     </build>
 
 </project>

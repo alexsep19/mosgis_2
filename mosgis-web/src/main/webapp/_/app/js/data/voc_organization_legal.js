@@ -14,12 +14,15 @@ define ([], function () {
         localStorage.setItem ('voc_organization_legal.active_tab', name)
             
         use.block (name)
-            
-    }        
-    
-    $_DO.refresh_voc_organization_legal = function (e) {
-        if (!confirm ('Послать в ГИС ЖКХ запрос на обновление данных об этом юридическом лице?')) return
-        query ({type: 'voc_organizations', action: 'refresh'}, {}, reload_page)
+    }
+
+    $_DO.choose_top_tab_voc_organization_legal = function (e) {
+
+        var name = e.tab.id
+
+        localStorage.setItem('voc_organization_legal.active_top_tab', name)
+
+        use.block(name)
     }
 
     return function (done) {
@@ -28,7 +31,7 @@ define ([], function () {
 
             $('body').data ('data', data)
 
-            get_nsi ([20], done)
+            get_nsi([20], done)
 
         })
 
