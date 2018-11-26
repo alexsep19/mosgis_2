@@ -48,7 +48,21 @@ public class VocOrganizations extends EJBResource <VocOrganizationsLocal> {
     public JsonObject getMgmtNsi58 (@PathParam ("id") String id) { 
         return back.getMgmtNsi58 (id);
     }
-    
+
+    @POST
+    @Path("{id}/hours")
+    @Produces(APPLICATION_JSON)
+    public JsonObject getHours(@PathParam("id") String id) {
+        return back.getHours(id);
+    }
+
+    @POST
+    @Path("{id}/patch_hours")
+    @Produces(APPLICATION_JSON)
+    public JsonObject doPatchHours(@PathParam("id") String id, JsonObject p) {
+        return back.doPatchHours(id, p);
+    }
+
     @POST
     @Path("{id}/refresh") 
     @Produces (APPLICATION_JSON)

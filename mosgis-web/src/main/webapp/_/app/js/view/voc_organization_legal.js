@@ -23,6 +23,7 @@ define ([], function () {
                         tabs: [
                             {id: 'voc_organization_legal_main', caption: 'Юридическое лицо'},
                             {id: 'voc_organization_legal_info', caption: 'Информация'},
+                            {id: 'voc_organization_legal_hours', caption: 'Режим работы'}
                         ].filter(not_off),
 
                         onClick: $_DO.choose_top_tab_voc_organization_legal
