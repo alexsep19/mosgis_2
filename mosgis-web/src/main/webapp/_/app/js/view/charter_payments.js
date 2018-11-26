@@ -29,8 +29,8 @@ define ([], function () {
                 {field: 'begindate', caption: 'Начало', size: 10, render: _dt},
                 {field: 'enddate', caption: 'Окончание', size: 10, render: _dt},
                 {field: 'vc_buildings.label', caption: 'Адрес', size: 50},
-                {field: 'housemanagementpaymentsize', caption: 'Руб/м2', size: 10},
-                {field: 'type_', caption: 'Основание', size: 50, voc: data.vc_ctr_pay_types},
+                {field: 'payment_1', caption: 'Руб/м2 (для членов)', size: 10},
+                {field: 'payment_0', caption: 'Руб/м2 (для не членов)', size: 10},
             ],
             
             postData: {data: {uuid_charter: $_REQUEST.id}},

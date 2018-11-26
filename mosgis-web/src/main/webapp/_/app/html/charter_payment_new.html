@@ -1,0 +1,71 @@
+<span
+	data-popup-width=480
+	data-popup-height=290
+	data-popup-title='Добавить услугу управления'
+>
+
+	<style>
+
+        label[data-block-name=charter_payment_new] {
+        	width: 190px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=charter_payment_new] {
+        	width: 230px !important;
+        }
+
+        input[data-block-name=charter_payment_new].dt {
+        	width: 70px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:235px; margin:8px 0 0 0;">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Объект управления</label>
+                <div>
+                	<input name=uuid_charter_object>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Период: с</label>
+                <div>
+                    <input name=begindate placeholder="" class=dt />
+по
+                    <input name=enddate placeholder="" class=dt />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label style="width:290px"><b>Размер платы за м<sup>2</sup>:</sup></b></label>
+                <div> </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>для членов кооператива</sup></label>
+                <div>
+                	<input name=payment_1 class=dt> руб.
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>для не членов кооператива</sup></label>
+                <div>
+                	<input name=payment_0 class=dt> руб.
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>
