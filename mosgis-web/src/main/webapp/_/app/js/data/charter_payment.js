@@ -49,7 +49,7 @@ define ([], function () {
                     is_locked = true
             }
 */
-            var is_own = $_USER.role.admin || ($_USER.role.nsi_20_1 && it ['ctr.uuid_org'] == $_USER.uuid_org)
+            var is_own = $_USER.role.admin || (it ['ctr.uuid_org'] == $_USER.uuid_org)
 
             if (!is_locked && is_own) {
                             
