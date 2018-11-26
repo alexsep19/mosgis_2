@@ -49,17 +49,17 @@ define ([], function () {
         if (!v.agree) {
             v['agree'] = 0
         }
-        else if (!v['agree'].match(/^[0-9].[0-9]*$/)) die ('agree', 'Введено неверное количество голосов "За"')
+        else if (!v['agree'].match(/^[0-9]*\.?[0-9]+$/)) die ('agree', 'Введено неверное количество голосов "За"')
 
         if (!v.against){
             v['against'] = 0
         }
-        else if (!v['against'].match(/^[0-9].[0-9]*$/)) die ('against', 'Введено неверное количество голосов "Против"')
+        else if (!v['against'].match(/^[0-9]*\.?[0-9]+$/)) die ('against', 'Введено неверное количество голосов "Против"')
 
         if (!v.abstent){
             v['abstent'] = 0
         }
-        else if (!v['abstent'].match(/^[0-9].[0-9]*$/)) die ('abstent', 'Введено неверное количество голосов "Воздержалось"')
+        else if (!v['abstent'].match(/^[0-9]*\.?[0-9]+$/)) die ('abstent', 'Введено неверное количество голосов "Воздержалось"')
 
         if (!v.hasOwnProperty('votingresume')) die ('votingresume', 'Пожалуйста, укажите итог голосования')
 
@@ -110,7 +110,10 @@ define ([], function () {
 
         permissions = 0
 
-        if (!data.item.is_deleted && data.cach && data.cach.is_own && data.cach.id_ctr_status_gis == 40) {
+        if (!data.item.is_deleted && 
+            data.cach && 
+            data.cach.is_own && 
+            (data.item['protocol.id_ctr_status_gis'] == 10 || data.item['protocol.id_ctr_status_gis'] == 11)) {
             permissions = 1
         }
 

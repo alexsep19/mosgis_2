@@ -4,6 +4,8 @@ define ([], function () {
 
         $('title').text (data.item.label)
 
+        data.item.protocoldate = dt_dmy (data.item['protocol.protocoldate'])
+
         fill (view, data.item, $('body'))
 
         $('#container').w2relayout ({
@@ -35,7 +37,7 @@ define ([], function () {
         });
 
         $(('#protocol_link')).attr({title: 'Перейти на страницу протокола'})
-        clickOn ($('#protocol_link'), function () { openTab ('/voting_protocols/' + data.item.protocol_uuid) })
+        clickOn ($('#protocol_link'), function () { openTab ('/voting_protocol/' + data.item.protocol_uuid) })
 
     }
 

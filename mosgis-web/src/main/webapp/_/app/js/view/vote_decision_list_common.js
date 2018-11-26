@@ -8,7 +8,7 @@ define ([], function () {
     
         function recalc () {
 
-            var tables = {'11.1': 'management_type_table', 
+            var tables = {'11.1': 'management_type_table',
                           '2.1': 'forming_fund_table'
             }
 
@@ -36,9 +36,17 @@ define ([], function () {
                 disable_block (tables[table])
             }
 
-            var v = w2ui [name].values ()
+            var v = w2ui [form_name].values ()
 
             enable_block(tables[v.decisiontype_vc_nsi_63])
+
+            $panel_top = $('#layout_passport_layout_panel_top')
+            $panel_main = $('#layout_passport_layout_panel_main')
+            $top_form_box = $panel_top.children ('.w2ui-panel-content').children ('.w2ui-form-box')
+
+            $panel_top.height (350)
+            $top_form_box.height (350)
+            $panel_main.css('top', '351px')
 
         }
 
@@ -53,6 +61,7 @@ define ([], function () {
             w2ui [form_name].record['__read_only'] = read_only
             
             $('div[data-block-name=vote_decision_list_common] input').prop ({disabled: data.__read_only})
+            $('div[data-block-name=vote_decision_list_common] textarea').prop ({disabled: data.__read_only})
 
             w2ui [form_name].refresh ()
 
@@ -107,8 +116,8 @@ define ([], function () {
                             {name: 'against', type: 'text'},
                             {name: 'abstent', type: 'text'},
                             {name: 'votingresume', type: 'list', options: {items: [
-                                {id: 0, text: "Решение принято"},
-                                {id: 1, text: "Решение не принято"},
+                                {id: "M", text: "Решение принято"},
+                                {id: "N", text: "Решение не принято"},
                             ]}},
                         ],
 
