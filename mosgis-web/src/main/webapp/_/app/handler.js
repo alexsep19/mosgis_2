@@ -358,6 +358,33 @@ function prettifyXml (sourceXml) {
     return resultXml;
 };    
 
+function validate_gis_file (name, file) {
+
+    var exts   = {pdf:1, doc:1, docx:1, rtf:1, xls:1, xlsx:1, jpg:1, jpeg:1}
+    var max_mb = 10
+    
+    var fn = file.name
+
+    if (fn.length > 255) return die (name, 'Некорректное имя файла: ' + fn + '. Согласно требованиям ГИС ЖКХ, его длина не может превышать 255 символов')
+
+    var parts = fn.split ('.')         
+
+    if (parts.length < 2) die (name, 'Некорректное имя файла: ' + fn + ' (невозможно определить расширение)')
+
+    var ext = parts [parts.length - 1];
+
+    if (!exts [ext]) {
+
+        var l = []; for (var e in exts) l.push (e)
+
+        die (name, 'Некорректное имя файла: ' + fn + '.\n\nСогласно требованиям ГИС ЖКХ, разрешены следующие: ' + l.sort ().join (', ') + '.')
+
+    }
+
+    if (file.size > max_mb * 1024 * 1024) die (name, 'Файл ' + fn + ' имеет недопустимо большой объём. Согласно требованиям ГИС ЖКХ, его величина не может превышать ' + max_mb + ' Мб.')
+
+}
+
 requirejs (['elu/elu', 'elu_w2ui/elu_w2ui'], function (jq, elu, elu_w2ui) {
     
     var _redirect = redirect;
