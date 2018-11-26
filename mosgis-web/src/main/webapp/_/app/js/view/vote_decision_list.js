@@ -2,6 +2,8 @@ define ([], function () {
 
     return function (data, view) {
 
+        $('title').text (data.item.label)
+
         fill (view, data.item, $('body'))
 
         $('#container').w2relayout ({
@@ -15,7 +17,7 @@ define ([], function () {
                     tabs: {
 
                         tabs: [
-                            {id: 'vote_decision_list',   caption: 'Общие'},
+                            {id: 'vote_decision_list_common',   caption: 'Общие'},
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_vote_decision_list
