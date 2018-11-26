@@ -13,9 +13,7 @@ define ([], function () {
             data.__read_only = true
 
             var it = data.item            
-            
-            if (it.uuid_file) it.uuid_voting_protocol = '-' + it.uuid_file            
-            
+                        
             $_F5 (data)
 
         })
@@ -43,15 +41,7 @@ define ([], function () {
         var f = w2ui [form_name]
 
         var v = f.values ()
-        
-        if (/^-/.test (v.uuid_voting_protocol)) {
-            v.uuid_file = v.uuid_voting_protocol
-            v.uuid_voting_protocol = ""
-        }
-        else {
-            v.uuid_file = ""
-        }
-        
+                
         query ({type: 'charter_payments', action: 'update'}, {data: v}, reload_page)
 
     }
@@ -63,6 +53,8 @@ define ([], function () {
     
     $_DO.download_charter_payment_common = function (e) {   
     
+        var name = $(e.target).parent ().get (0).nextSibling.name
+        
         var box = w2ui [form_name].box
 
         function label (cur, max) {return String (Math.round (100 * cur / max)) + '%'}
@@ -72,7 +64,7 @@ define ([], function () {
         download ({
 
             type:   'charter_payment_docs', 
-            id:     $('body').data ('data').item.uuid_file,
+            id:     $('body').data ('data').item [name],
             action: 'download',
 
         }, {}, {

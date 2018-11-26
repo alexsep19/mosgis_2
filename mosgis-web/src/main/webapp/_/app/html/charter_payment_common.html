@@ -11,14 +11,6 @@
         			margin-right: 10px;
         		}
 
-        		.w2ui-field > label.short {
-        			width: 10px;
-        		}
-
-        		.w2ui-field > label.short+div {
-        			margin-left: 10px;
-        		}
-
         		.w2ui-field input {
         			width: 270px !important;
         		}
@@ -27,8 +19,8 @@
 					width: 70px !important;
 				}
 
-				.w2ui-field input.long {
-					width: 600px !important;
+				.w2ui-field input.doc {
+					width: 140px !important;
 				}
 
         	</style>
@@ -46,15 +38,15 @@
 
 						<div class="w2ui-field">
 							<label>для членов кооператива</sup></label>
-							<div>
-								<input name=payment_1 class=dt> руб.
+							<div class=proto>
+								<input name=payment_1 class=dt> руб. <input name=uuid_file_1 class=doc>
 							</div>
 						</div>
 
 						<div class="w2ui-field">
 							<label>для не членов кооператива</sup></label>
-							<div>
-								<input name=payment_0 class=dt> руб.
+							<div class=proto>
+								<input name=payment_0 class=dt> руб. <input name=uuid_file_0 class=doc>
 							</div>
 						</div>
 

@@ -23,19 +23,19 @@ define ([], function () {
 
             var it = data.item
             
-            if (!it.is_proto || !data.voting_proto) data.voting_proto = []
-            data.voting_proto.unshift ({id: "", label: "загрузить файл..."})
+            data.docs = [
+                {id: "", label: " "},
+                {id: "-1", label: "загрузить файл..."}
+            ]
             
-            if (it.uuid_file) {
-                var iid = '-' + it.uuid_file
-                data.voting_proto.push ({id: iid, label: it ['doc.label']})
-                it.uuid_voting_protocol = iid
-            }
+            if (it.uuid_file_0) data.docs.push ({id: it.uuid_file_0, label: it ['doc_0.label']})
+            if (it.uuid_file_1 && it.uuid_file_1 != it.uuid_file_0) data.docs.push ({id: it.uuid_file_1, label: it ['doc_1.label']})
 
             add_vocabularies (data, {
                 vc_actions: 1,
                 vc_gis_status: 1,
                 org_works: 1,
+                docs: 1,
             })
 
             it._can = {}

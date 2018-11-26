@@ -139,22 +139,7 @@ public class CharterPaymentImpl extends BaseCRUD<CharterPayment> implements Char
                 .and        ("id_status", VocAsyncEntityState.i.OK.getId ())
                 .orderBy    ("org_works.label")
             
-        );        
-
-        String fiashouseguid = item.getString ("fiashouseguid", "0");
-        if (DB.ok (fiashouseguid)) {
-
-            db.addJsonArrays (job,
-
-                m
-                    .select     (VotingProtocol.class, "AS voting_proto", "uuid AS id", "label")
-                    .where      ("fiashouseguid", fiashouseguid)
-                    .and        ("is_deleted", 0)
-                    .orderBy    ("protocoldate DESC")
-
-            );
-
-        }
+        );
 
         VocAction.addTo (job);
 

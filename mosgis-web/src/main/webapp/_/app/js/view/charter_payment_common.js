@@ -79,20 +79,28 @@ define ([], function () {
             fields : [                     
                 {name: 'payment_0', type: 'float', options: {min: 0}},
                 {name: 'payment_1', type: 'float', options: {min: 0}},
+                {name: 'uuid_file_1', type: 'list', options: {items: data.docs.items}},
+                {name: 'uuid_file_0', type: 'list', options: {items: data.docs.items}},
             ],
 
             focus: -1,
             
             onChange: function (e) {
             
-                if (e.target == "uuid_voting_protocol") {
-                
+                if (/^uuid_file_/.test (e.target)) {
+
                     e.done (function () {
-                    
-                        if (!e.value_new.id) use.block ('charter_payment_doc_new')
-                    
+
+                        if (e.value_new.id == -1) {
+                        
+                            $_SESSION.set ('field_name', e.target)
+                        
+                            use.block ('charter_payment_doc_new')
+                            
+                        }
+
                     })
-                
+
                 }           
                 
             },
@@ -105,7 +113,7 @@ define ([], function () {
                     
                     if (r.__read_only) {
                     
-                        $('#proto input').css ('cursor', 'pointer').click ($_DO.download_charter_payment_common)
+                        $('.proto input').css ('cursor', 'pointer').click ($_DO.download_charter_payment_common)
 
                     }               
                 
