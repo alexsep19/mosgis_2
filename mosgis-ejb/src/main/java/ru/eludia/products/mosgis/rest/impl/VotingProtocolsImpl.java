@@ -11,6 +11,7 @@ import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.Owner;
@@ -104,6 +105,10 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
         try (DB db = ModelHolder.getModel ().getDb ()) {
             
             db.addJsonArrays (jb,
+                
+                NsiTable.getNsiTable ( 25).getVocSelect (),
+                NsiTable.getNsiTable ( 63).getVocSelect (),
+                NsiTable.getNsiTable (241).getVocSelect (),
                     
                 ModelHolder.getModel ()
                     .select (VocOrganization.class, "uuid AS id", "label")

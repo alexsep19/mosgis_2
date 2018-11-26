@@ -1,6 +1,6 @@
 define ([], function () {
 
-    $_DO.choose_tab_voting_protocol = function (e) {
+    $_DO.choose_tab_vote_decision_list = function (e) {
 
         var name = e.tab.id
                 
@@ -11,15 +11,15 @@ define ([], function () {
             layout.lock ('main', 'Загрузка...', true);
         }
             
-        localStorage.setItem ('voting_protocol.active_tab', name)
+        localStorage.setItem ('vote_decision_list.active_tab', name)
             
         use.block (name)
             
     }            
 
-    return function (done) {        
+    return function (done) {       
 
-        query ({type: 'voting_protocols', part: 'vocs', id: undefined}, {}, function (data) {
+        query ({type: 'vote_decision_lists', part: 'vocs', id: undefined}, {}, function (data) {
 
             if (data.vc_nsi_63) {    
                 
@@ -31,15 +31,10 @@ define ([], function () {
 
             add_vocabularies (data, data)
 
-            query ({type: 'voting_protocols'}, {}, function (d) {
-            
-                data.item = d.item
+            query ({type: 'vote_decision_lists'}, {}, function (d) {
 
-                if (d.cach) data.cach = d.cach
-                if (d.owners) {
-                    add_vocabularies (d, {owners: {}})
-                    data.owners = d.owners
-                }
+                data.item = d.item
+                data.cach = d.cach
 
                 $('body').data ('data', data)
     

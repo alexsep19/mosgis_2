@@ -1,0 +1,181 @@
+<span>
+
+    <div>
+
+        <div class="w2ui-page page-0" style="padding-top: 13px;min-width: 900px">
+
+        	<style>
+
+        table td.results {
+            width: 50px;
+        }
+
+        .w2ui-field label.agree {
+            width: 20px !important;
+        }
+
+        .w2ui-field label.against {
+            width: 50px !important;
+        }
+
+        .w2ui-field label.abstent {
+            width: 90px !important;
+        }
+
+        .w2ui-field label.gen {
+            width: 250px !important;
+            margin-left: 5px !important;
+        }
+
+        .w2ui-field textarea.gen {
+            width: 332px; 
+            height: 70px;
+        }
+
+        .w2ui-field label.results {
+            width: 150px !important;
+            margin-left: 5px !important;
+        }
+
+        .w2ui-field input.gen {
+            width: 332px !important;
+            margin-right: 20px !important;
+        }
+
+        .w2ui-field input.short {
+            width: 50px !important;
+        }
+    </style>
+
+            <table id=decision_type_table style="border-spacing: 4px 4px;" border=0>
+                <tr>
+                <td>
+                    <div class="w2ui-field">
+                        <label class="gen">Тип вопроса</label>
+                    </div>
+                </td>
+                <td>
+                    <div class="w2ui-field">
+                        <input class="gen" name=decisiontype_vc_nsi_63>
+                    </div>
+                </td>
+                </tr>
+            </table>
+
+            <table id=question_name_table style="border-spacing: 4px 4px;" border=0>
+                <tr>
+                <td>
+                    <div class="w2ui-field">
+                        <label class="gen">Вопрос</label>
+                    </div>
+                </td>
+                <td>
+                    <div class="w2ui-field">
+                        <textarea class="gen" name=questionname></textarea>
+                    </div>
+                </td>
+                </tr>
+            </table>
+
+            <table id=management_type_table style="border-spacing: 4px 4px;" border=0>
+                <tr>
+                <td>
+                    <div class="w2ui-field">
+                        <label class="gen">Выбранный способ управления МКД</label>
+                    </div>
+                </td>
+                <td>
+                    <div class="w2ui-field">
+                        <input class="gen" name=managementtype_vc_nsi_25>
+                    </div>
+                </td>
+                </tr>
+            </table>
+
+            <table id=forming_fund_table style="border-spacing: 4px 4px;" border=0>
+                <tr>
+                <td>
+                    <div class="w2ui-field">
+                        <label class="gen">Выбранный способ формирования фонда</label>
+                    </div>
+                </td>
+                <td>
+                    <div class="w2ui-field">
+                        <input class="gen" name=formingfund_vc_nsi_241>
+                    </div>
+                </td>
+                </tr>
+            </table>
+
+            <table id=results_table style="border-spacing: 4px 4px;" border=0>
+                <tr>
+                <td>
+                    <div class="w2ui-field">
+                        <label class="gen">Результаты голосования: </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="w2ui-field">
+                        <label class="agree">за</label>
+                    </div>
+                </td>
+                <td>
+                    <div class="w2ui-field">
+                        <input class="short" name=agree>
+                    </div>
+                </td>
+                <td>
+                    <div class="w2ui-field">
+                        <label class="against">против</label>
+                    </div>
+                </td>
+                <td>
+                    <div class="w2ui-field">
+                        <input class="short" name=against>
+                    </div>
+                </td>
+                <td>
+                    <div class="w2ui-field">
+                        <label class="abstent">воздержались</label>
+                    </div>
+                </td>
+                <td>
+                    <div class="w2ui-field">
+                        <input class="short" name=abstent>
+                    </div>
+                </td>
+                </tr>
+            </table>
+
+            <table id=resume_table style="border-spacing: 4px 4px;" border=0>
+                <tr>
+                    <td>
+                        <div class="w2ui-field">
+                            <label class="gen">Итог голосования</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="w2ui-field">
+                            <input class="gen" name=votingresume>
+                        </div>   
+                    </td>
+                </tr>
+            </table>
+<!--||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
+        </div>
+
+        <div class="w2ui-buttons">
+        	<span>
+				<button class=w2ui-btn name=edit   data-on=__read_only>Редактировать</button>
+				<button class=w2ui-btn name=update data-off=__read_only>Сохранить</button>
+				<button class=w2ui-btn name=cancel data-off=__read_only>Отменить</button>
+				<button class=w2ui-btn name=delete  data-on=__read_only>Удалить</button>
+<!--
+				<button class=w2ui-btn name=undelete data-on=__read_only>Восстановить</button>
+-->
+            </span>
+        </div>
+
+    </div>
+
+</span>
