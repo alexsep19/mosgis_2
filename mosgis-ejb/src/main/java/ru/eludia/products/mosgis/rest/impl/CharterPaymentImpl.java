@@ -120,7 +120,8 @@ public class CharterPaymentImpl extends BaseCRUD<CharterPayment> implements Char
             .toOne (VocOrganization.class, "AS org", "label").on ("ctr.uuid_org")
             .toMaybeOne (CharterObject.class).on ()
             .toMaybeOne (VocBuilding.class, "AS fias", "label").on ()
-            .toMaybeOne (CharterPaymentFile.class, "AS doc", "label").on ()
+            .toMaybeOne (CharterPaymentFile.class, "AS doc_0", "label").on ("root.uuid_file_0=doc_0.uuid")
+            .toMaybeOne (CharterPaymentFile.class, "AS doc_1", "label").on ("root.uuid_file_1=doc_1.uuid")
             .toMaybeOne (CharterPaymentLog.class, "AS cpl").on ()
             .toMaybeOne (OutSoap.class, "err_text").on ("cpl.uuid_out_soap=out_soap.uuid")
         );
