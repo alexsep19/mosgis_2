@@ -41,7 +41,21 @@ define ([], function () {
         var f = w2ui [form_name]
 
         var v = f.values ()
-                
+        
+        if (v.payment_1) {
+            if (!v.uuid_file_1) die ('uuid_file_1', 'Загрузите, пожалуйста, протокол')
+        }
+        else {
+            if (v.uuid_file_1) die ('payment_1', 'Вы загрузили протокол, но не указали размер платы')
+        }
+        
+        if (v.payment_0) {
+            if (!v.uuid_file_0) die ('uuid_file_0', 'Загрузите, пожалуйста, протокол')
+        }
+        else {
+            if (v.uuid_file_0) die ('payment_0', 'Вы загрузили протокол, но не указали размер платы')
+        }
+
         query ({type: 'charter_payments', action: 'update'}, {data: v}, reload_page)
 
     }
@@ -55,6 +69,10 @@ define ([], function () {
     
         var name = $(e.target).parent ().get (0).nextSibling.name
         
+        var id = $('body').data ('data').item [name]
+        
+        if (!id) return
+        
         var box = w2ui [form_name].box
 
         function label (cur, max) {return String (Math.round (100 * cur / max)) + '%'}
@@ -64,7 +82,7 @@ define ([], function () {
         download ({
 
             type:   'charter_payment_docs', 
-            id:     $('body').data ('data').item [name],
+            id:     id,
             action: 'download',
 
         }, {}, {

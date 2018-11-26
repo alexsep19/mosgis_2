@@ -115,7 +115,10 @@ define ([], function () {
                     
                         $('.proto input').css ('cursor', 'pointer').click ($_DO.download_charter_payment_common)
 
-                    }               
+                    }
+                    else {
+                        $('.proto input').css ('cursor', 'normal').click ()
+                    }
                 
                 })            
             
