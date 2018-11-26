@@ -6,6 +6,8 @@ define ([], function () {
 
     return function (data, view) {
     
+        read_only = true;
+
         function recalc () {
 
             var tables = {'11.1': 'management_type_table',
@@ -38,7 +40,7 @@ define ([], function () {
 
             var v = w2ui [form_name].values ()
 
-            enable_block(tables[v.decisiontype_vc_nsi_63])
+            if (!read_only) enable_block(tables[v.decisiontype_vc_nsi_63])
 
             $panel_top = $('#layout_passport_layout_panel_top')
             $panel_main = $('#layout_passport_layout_panel_main')
