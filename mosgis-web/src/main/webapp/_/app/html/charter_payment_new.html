@@ -1,6 +1,6 @@
 <span
-	data-popup-width=480
-	data-popup-height=290
+	data-popup-width=580
+	data-popup-height=300
 	data-popup-title='Добавить услугу управления'
 >
 
@@ -19,9 +19,13 @@
         	width: 70px !important;
         }
 
+        input[data-block-name=charter_payment_new].doc {
+        	width: 200px !important;
+        }
+
 	</style>
 
-	<div class="w2ui-reset w2ui-form" style="height:235px; margin:8px 0 0 0;">
+	<div class="w2ui-reset w2ui-form" style="height:250px; margin:8px 0 0 0;">
 
         <div class="w2ui-page page-0">
 
@@ -50,6 +54,7 @@
                 <label>для членов кооператива</sup></label>
                 <div>
                 	<input name=payment_1 class=dt> руб.
+                	<input name=file_1 class=doc placeholder=файл... />
                 </div>
             </div>
 
@@ -57,6 +62,7 @@
                 <label>для не членов кооператива</sup></label>
                 <div>
                 	<input name=payment_0 class=dt> руб.
+                	<input name=file_0 class=doc placeholder=файл... />
                 </div>
             </div>
 

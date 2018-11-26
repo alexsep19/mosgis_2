@@ -5,7 +5,8 @@ define ([], function () {
         var form = w2ui ['charter_payment_new_form']
 
         var v = form.values ()
-        
+        var r = form.record
+                
         var it = $('body').data ('data').item
         
         if (!v.begindate) die ('begindate', 'Укажите, пожалуйста, дату начала')
@@ -14,17 +15,25 @@ define ([], function () {
         if (v.enddate < v.begindate) die ('enddate', 'Дата начала превышает дату окончания управления')
         
         v.uuid_charter = $_REQUEST.id
-
-        query ({type: 'charter_payments', action: 'create', id: undefined}, {data: v}, function (data) {
+        
+        function finish (id) {
         
             w2popup.close ()
 
-            if (data.id) w2confirm ('Услуга зарегистрирована. Открыть её страницу в новой вкладке?').yes (function () {openTab ('/charter_payment/' + data.id)})
+            w2confirm ('Услуга зарегистрирована. Открыть её страницу в новой вкладке?').yes (function () {openTab ('/charter_payment/' + id)})
             
             var grid = w2ui ['charter_payments_grid']
 
             grid.reload (grid.refresh)
             
+        }
+        
+        form.lock ()
+
+        query ({type: 'charter_payments', action: 'create', id: undefined}, {data: v}, function (data) {
+        
+            finish (data.id)
+                    
         })
 
     }
