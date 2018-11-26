@@ -103,7 +103,7 @@ public class ContractPayment extends EnTable {
                     + " tb_ctr_payments o "
                     + "WHERE o.is_deleted = 0"
                     + " AND o.uuid_contract = :NEW.uuid_contract "
-                    + " AND NVL (o.uuid_contract_object, '00') = NVL (:NEW.uuid_contract_object, '00') "
+                    + " AND (o.fiashouseguid IS NULL OR :NEW.fiashouseguid IS NULL OR o.fiashouseguid = :NEW.fiashouseguid)"
                     + " AND o.enddate   >= :NEW.begindate "
                     + " AND o.begindate <= :NEW.enddate "
                     + " AND o.uuid <> NVL(:NEW.uuid, '00') "

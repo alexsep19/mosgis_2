@@ -89,7 +89,7 @@ public class CharterPayment extends EnTable {
                     + " tb_ch_payments o "
                     + "WHERE o.is_deleted = 0"
                     + " AND o.uuid_charter = :NEW.uuid_charter "
-                    + " AND NVL (o.uuid_charter_object, '00') = NVL (:NEW.uuid_charter_object, '00') "
+                    + " AND (o.fiashouseguid IS NULL OR :NEW.fiashouseguid IS NULL OR o.fiashouseguid = :NEW.fiashouseguid)"
                     + " AND o.enddate   >= :NEW.begindate "
                     + " AND o.begindate <= :NEW.enddate "
                     + " AND o.uuid <> NVL(:NEW.uuid, '00') "
