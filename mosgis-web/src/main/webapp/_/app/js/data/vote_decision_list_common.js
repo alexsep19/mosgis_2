@@ -113,7 +113,7 @@ define ([], function () {
         if (!data.item.is_deleted && 
             data.cach && 
             data.cach.is_own && 
-            (data.item['protocol.id_ctr_status_gis'] == 10 || data.item['protocol.id_ctr_status_gis'] == 11)) {
+            (data.item['protocol.id_prtcl_status_gis'] == 10 || data.item['protocol.id_prtcl_status_gis'] == 11)) {
             permissions = 1
         }
 

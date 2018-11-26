@@ -5,7 +5,7 @@ define ([], function () {
     var read_only = false
 
     return function (data, view) {
-    
+
         read_only = true;
 
         function recalc () {

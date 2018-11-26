@@ -32,8 +32,9 @@ define ([], function () {
             add_vocabularies (data, data)
 
             query ({type: 'vote_decision_lists'}, {}, function (d) {
-            
+
                 data.item = d.item
+                data.cach = d.cach
 
                 $('body').data ('data', data)
     

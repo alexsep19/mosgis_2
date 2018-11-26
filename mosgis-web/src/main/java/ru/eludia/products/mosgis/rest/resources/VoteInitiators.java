@@ -104,9 +104,9 @@ public class VoteInitiators extends EJBResource<VoteInitiatorsLocal> {
     @Path("{id}") 
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) { 
-        final JsonObject item = back.getItem (id);
-        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
-        return item;
+        final JsonObject data = back.getItem (id);
+        if (!securityContext.isUserInRole ("admin")) checkOrg (data);
+        return data;
     }
     
     @POST
@@ -114,8 +114,8 @@ public class VoteInitiators extends EJBResource<VoteInitiatorsLocal> {
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
-        final JsonObject item = back.getItem (id);
-        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
+        final JsonObject data = back.getItem (id);
+        if (!securityContext.isUserInRole ("admin")) checkOrg (data);
         return back.getLog (id, p, getUser ());
     }
 }
