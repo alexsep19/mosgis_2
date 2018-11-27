@@ -1,6 +1,6 @@
 define ([], function () {
 
-    $_DO.update_charter_payment_common_service_payments_popup = function (e) {
+    $_DO.update_charter_payment_doc_new = function (e) {
 
         var f = w2ui ['charter_payment_common_service_payments_popup_form']
 
