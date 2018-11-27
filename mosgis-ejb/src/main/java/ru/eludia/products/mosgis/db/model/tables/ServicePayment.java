@@ -11,6 +11,7 @@ import static ru.eludia.base.model.Type.NUMERIC;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.gosuslugi.dom.schema.integration.house_management.CharterPaymentsInfoType;
 import ru.gosuslugi.dom.schema.integration.house_management.ContractPaymentsInfoType;
 
 public class ServicePayment extends EnTable {
@@ -59,6 +60,13 @@ public class ServicePayment extends EnTable {
     
     public static final ContractPaymentsInfoType.ServicePayment toServicePayment (Map <String, Object> r) {
         final ContractPaymentsInfoType.ServicePayment sp = new ContractPaymentsInfoType.ServicePayment ();
+        sp.setServicePaymentSize ((BigDecimal) r.get (c.SERVICEPAYMENTSIZE.lc ()));
+        sp.setService (NsiTable.toDom (r.get ("w.uniquenumber").toString (), (UUID) r.get ("w.elementguid")));
+        return sp;
+    }
+    
+    public static final CharterPaymentsInfoType.ServicePayment tooServicePayment (Map <String, Object> r) {
+        final CharterPaymentsInfoType.ServicePayment sp = new CharterPaymentsInfoType.ServicePayment ();
         sp.setServicePaymentSize ((BigDecimal) r.get (c.SERVICEPAYMENTSIZE.lc ()));
         sp.setService (NsiTable.toDom (r.get ("w.uniquenumber").toString (), (UUID) r.get ("w.elementguid")));
         return sp;

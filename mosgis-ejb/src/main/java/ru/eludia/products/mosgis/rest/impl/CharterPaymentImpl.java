@@ -44,7 +44,7 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 
 @Stateless
 public class CharterPaymentImpl extends BaseCRUD<CharterPayment> implements CharterPaymentLocal {
-/*    
+
     @Resource (mappedName = "mosgis.inHouseCharterPaymentsQueue")
     Queue queue;
 
@@ -52,7 +52,7 @@ public class CharterPaymentImpl extends BaseCRUD<CharterPayment> implements Char
     public Queue getQueue () {
         return queue;
     }
-*/
+
     private static final Logger logger = Logger.getLogger (CharterPaymentImpl.class.getName ());    
        
     private void filterOffDeleted (Select select) {
