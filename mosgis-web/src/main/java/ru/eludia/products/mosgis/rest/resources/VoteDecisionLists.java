@@ -9,11 +9,11 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import ru.eludia.products.mosgis.rest.ValidationException;
-import ru.eludia.products.mosgis.rest.api.VoteInitiatorsLocal;
+import ru.eludia.products.mosgis.rest.api.VoteDecisionListsLocal;
 import ru.eludia.products.mosgis.rest.misc.EJBResource;
 
-@Path("vote_initiators")
-public class VoteInitiators extends EJBResource<VoteInitiatorsLocal> {
+@Path("vote_decision_lists")
+public class VoteDecisionLists extends EJBResource<VoteDecisionListsLocal> {
 
     private JsonObject getData (String id) {
         final JsonObject data = back.getItem (id);        

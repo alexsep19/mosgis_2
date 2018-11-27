@@ -1,6 +1,6 @@
 define ([], function () {
 
-    $_DO.choose_tab_mgmt_contract_payment = function (e) {
+    $_DO.choose_tab_charter_payment = function (e) {
 
         var name = e.tab.id
                 
@@ -11,7 +11,7 @@ define ([], function () {
             layout.lock ('main', 'Загрузка...', true);
         }
             
-        localStorage.setItem ('mgmt_contract_payment.active_tab', name)
+        localStorage.setItem ('charter_payment.active_tab', name)
             
         use.block (name)
             
@@ -19,25 +19,23 @@ define ([], function () {
 
     return function (done) {
     
-        query ({type: 'contract_payments'}, {}, function (data) {
+        query ({type: 'charter_payments'}, {}, function (data) {
 
             var it = data.item
             
-            if (!it.is_proto || !data.voting_proto) data.voting_proto = []
-            data.voting_proto.unshift ({id: "", label: "загрузить файл..."})
+            data.docs = [
+                {id: "", label: " "},
+                {id: "-1", label: "загрузить файл..."}
+            ]
             
-            if (it.uuid_file) {
-                var iid = '-' + it.uuid_file
-                data.voting_proto.push ({id: iid, label: it ['doc.label']})
-                it.uuid_voting_protocol = iid
-            }
+            if (it.uuid_file_0) data.docs.push ({id: it.uuid_file_0, label: it ['doc_0.label']})
+            if (it.uuid_file_1 && it.uuid_file_1 != it.uuid_file_0) data.docs.push ({id: it.uuid_file_1, label: it ['doc_1.label']})
 
             add_vocabularies (data, {
-                vc_ctr_pay_types: 1,
                 vc_actions: 1,
                 vc_gis_status: 1,
                 org_works: 1,
-                voting_proto: 1,
+                docs: 1,
             })
 
             it._can = {}
@@ -51,15 +49,15 @@ define ([], function () {
                     is_locked = true
             }
 */
-            var is_own = $_USER.role.admin || ($_USER.role.nsi_20_1 && it ['ctr.uuid_org'] == $_USER.uuid_org)
+            var is_own = $_USER.role.admin || (it ['ctr.uuid_org'] == $_USER.uuid_org)
 
             if (!is_locked && is_own) {
                             
-                switch (it ["ctr.id_ctr_status_gis"]) {
+                switch (it ["ctr.id_ctr_status"]) {
 
                     case 20:
                     case 30:
-                        it.is_contract_pending = 1
+                        it.is_charter_pending = 1
                         break
 
                     case 40:
@@ -98,7 +96,7 @@ define ([], function () {
             
             if (!it._can.edit || it.id_ctr_status > 10 || it ['ctr.id_ctr_status_gis'] != 40) return finish ()
 
-            query ({type: 'service_payments', id: undefined}, {offset:0, limit: 10000, data: {uuid_contract_payment: $_REQUEST.id}}, function (d) {
+            query ({type: 'service_payments', id: undefined}, {offset:0, limit: 10000, data: {uuid_charter_payment: $_REQUEST.id}}, function (d) {
             
                 it._can.approve = d.tb_svc_payments.length
                 

@@ -44,7 +44,7 @@ define ([], function () {
                 text: 'Коммунальные услуги',
             })
 
-            if (one_of_roles (1, 19, 20, 21)) org_vocs.push ({
+            if (one_of_roles (1, 19, 20, 21, 22)) org_vocs.push ({
                 id: 'org_works',
                 text: 'Работы и услуги организаций',
             })
