@@ -9,7 +9,7 @@ define ([], function () {
         $(view).w2popup('open', {
 
             width  : 605,
-            height : 280,
+            height : 215,
 
             title   : 'Добавление документа',
 

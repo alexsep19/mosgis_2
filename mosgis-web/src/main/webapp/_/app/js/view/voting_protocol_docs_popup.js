@@ -4,8 +4,8 @@ define ([], function () {
 
         $(view).w2popup ('open', {
 
-            width  : 625,
-            height : 250,
+            width  : 605,
+            height : 215,
 
             title   : 'Редактирование документа',
 
