@@ -27,7 +27,7 @@ define ([], function () {
 
     $_DO.update_voting_protocol_docs_popup = function (e) {
     
-        var form = w2ui ['voting_potocol_docs_popup_form']
+        var form = w2ui ['voting_protocol_docs_popup_form']
         
         var r = form.values ()
         
@@ -42,7 +42,7 @@ define ([], function () {
         var id = grid.getSelection () [0]
 
         var data = grid.get (id)
-darn (data)
+
         done (data)
 
     }
