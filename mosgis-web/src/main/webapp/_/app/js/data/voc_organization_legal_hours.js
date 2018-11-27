@@ -53,6 +53,8 @@ define ([], function () {
                         this [d.k] = d.v
                     }
 
+                    this.is_holiday = this.is_holiday == 1
+
                     delete this.w2ui
                 })
 
