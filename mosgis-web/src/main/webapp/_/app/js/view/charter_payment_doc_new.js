@@ -8,7 +8,7 @@ define ([], function () {
                 
         $(view).w2popup('open', {
 
-            width  : 605,
+            width  : 480,
             height : 250,
 
             title   : 'Загрузка файла',

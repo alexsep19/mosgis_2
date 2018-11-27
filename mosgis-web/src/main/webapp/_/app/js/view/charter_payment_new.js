@@ -24,8 +24,8 @@ define ([], function () {
                     }},                                        
                     {name: 'payment_0', type: 'float', options: {min: 0}},
                     {name: 'payment_1', type: 'float', options: {min: 0}},
-                    {name: 'file_0', type: 'file', options: {max: 1, maxHeight: 30}},
-                    {name: 'file_1', type: 'file', options: {max: 1, maxHeight: 50, maxWidth: 192}},
+                    {name: 'file_0', type: 'file', options: {max: 1, maxWidth: 192}},
+                    {name: 'file_1', type: 'file', options: {max: 1, maxWidth: 192}},
 
                     {name: 'uuid_charter_object', type: 'list', options: {items: data.objects}},
 
