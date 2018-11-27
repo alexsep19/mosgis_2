@@ -2,14 +2,12 @@ define ([], function () {
 
     return function (data, view) {
     
-        var name = 'voting_protocol_docs_new_form'
-
-        var contract = data.contract || data    
+        var name = 'voting_protocol_docs_new_form' 
 
         $(view).w2popup('open', {
 
             width  : 605,
-            height : 215,
+            height : 245,
 
             title   : 'Добавление документа',
 
@@ -24,8 +22,9 @@ define ([], function () {
                         name: name,
 
                         fields : [
+                            {name: 'label', type: 'text'},
                             {name: 'description',  type: 'textarea' },
-                            {name: 'files', type: 'file'},    
+                            {name: 'files', type: 'file', options: {max: 1, maxWidth: 400}},
                         ],
 
                     });

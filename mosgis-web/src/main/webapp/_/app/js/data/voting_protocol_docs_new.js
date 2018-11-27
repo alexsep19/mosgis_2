@@ -5,6 +5,8 @@ define ([], function () {
         var f = w2ui ['voting_protocol_docs_new_form']
 
         var v = f.values ()
+
+        v.files[0].file = new File ([v.files[0].file], v.label, {type: v.files[0].file.type})
         
         var file = get_valid_gis_file (v, 'files')
                                                   
