@@ -4,6 +4,10 @@ define ([], function () {
 
     return function (data, view) {
 
+        data._can = {
+            edit: $_USER.role.admin || $_USER.uuid_org == data.id
+        }
+
         $_F5 = function (data) {
 
             var grid = w2ui [grid_name]
@@ -42,28 +46,31 @@ define ([], function () {
             columns: [
                 {field: 'label', caption: 'День недели', size: 60},
                 {field: 'open_from', caption: 'с', size: 20
-                    , editable: { type: 'time'}
+                    , editable: !data._can.edit? null : { type: 'time'}
                 },
                 {field: 'open_to', caption: 'по', size: 20
-                    , editable: {type: 'time'}
+                    , editable: !data._can.edit ? null : {type: 'time'}
                 },
                 {field: 'break_from', caption: 'с', size: 20
-                    , editable: {type: 'time'}
+                    , editable: !data._can.edit ? null : {type: 'time'}
                 },
                 {field: 'break_to', caption: 'по', size: 20
-                    , editable: {type: 'time'}
+                    , editable: !data._can.edit ? null : {type: 'time'}
                 },
                 {field: 'reception_from', caption: 'с', size: 20
-                    , editable: {type: 'time'}
+                    , editable: !data._can.edit ? null : {type: 'time'}
                 },
                 {field: 'reception_to', caption: 'по', size: 20
-                    , editable: {type: 'time'}
+                    , editable: !data._can.edit ? null : {type: 'time'}
                 },
                 {field: 'is_holiday', caption: 'Выходной', size: 40
-                    , editable: {type: 'checkbox'}
+                    , editable: !data._can.edit ? null : {type: 'checkbox'}
+                    , render: data._can.edit? null : function (v) {
+                        return '<div style="text-align:center">' + (v ? 'Да' : 'Нет') + '</div>'
+                    }
                 },
                 {field: 'note', caption: 'Комментарии', size: 300
-                    , editable: {type: 'text'}
+                    , editable: !data._can.edit ? null : {type: 'text'}
                 }
             ],
 
