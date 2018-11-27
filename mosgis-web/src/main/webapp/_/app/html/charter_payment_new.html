@@ -1,0 +1,88 @@
+<span
+	data-popup-width=580
+	data-popup-height=320
+	data-popup-title='Добавить услугу управления'
+>
+
+	<style>
+
+        label[data-block-name=charter_payment_new] {
+        	width: 190px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=charter_payment_new] {
+        	width: 230px !important;
+        }
+
+        input[data-block-name=charter_payment_new].dt {
+        	width: 70px !important;
+        }
+
+        input[data-block-name=charter_payment_new].doc {
+        	width: 200px !important;
+        }
+
+        progress[data-block-name=charter_payment_new] {
+        	width:    200px;
+        	position: relative;
+        	top:      -8px;
+        	left:     303px;
+        	z-index:  10;
+			visibility:hidden;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:270px; margin:8px 0 0 0;">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Объект управления</label>
+                <div>
+                	<input name=uuid_charter_object>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Период: с</label>
+                <div>
+                    <input name=begindate placeholder="" class=dt />
+по
+                    <input name=enddate placeholder="" class=dt />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label><b>Размер платы за м<sup>2</sup>:</sup></b></label>
+                <div> </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>для членов кооператива</sup></label>
+                <div>
+                	<input name=payment_1 class=dt> руб.
+                	<input name=file_1 class=doc placeholder=файл... />
+                </div>
+				<progress id=progress_1 />
+            </div>
+
+            <div class="w2ui-field">
+                <label>для не членов кооператива</sup></label>
+                <div>
+                	<input name=payment_0 class=dt> руб.
+                	<input name=file_0 class=doc placeholder=файл... />
+                </div>
+				<progress id=progress_0 />
+            </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>
