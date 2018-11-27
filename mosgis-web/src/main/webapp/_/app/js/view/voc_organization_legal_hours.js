@@ -14,6 +14,11 @@ define ([], function () {
 
             grid.records = data.voc_organization_hours
 
+            $.each(grid.records, function () {
+                if (this.w2ui)
+                    delete this.w2ui.changes
+            })
+
             grid.refresh ()
         }
 
