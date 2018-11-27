@@ -8,20 +8,6 @@ define ([], function () {
             edit: $_USER.role.admin || $_USER.uuid_org == data.id
         }
 
-        $_F5 = function (data) {
-
-            var grid = w2ui [grid_name]
-
-            grid.records = data.voc_organization_hours
-
-            $.each(grid.records, function () {
-                if (this.w2ui)
-                    delete this.w2ui.changes
-            })
-
-            grid.refresh ()
-        }
-
         var layout = w2ui ['voc_organization_legal_layout']
 
         var $panel = $(layout.el ('main'))
@@ -79,7 +65,7 @@ define ([], function () {
                 }
             ],
 
-            records: [],
+            records: data.records,
 
             onDblClick: null,
 
@@ -104,9 +90,8 @@ define ([], function () {
             },
 
             onChange: $_DO.patch_voc_organization_legal_hours,
-        })
 
-        $_F5 (data)
+        }).refresh()
 
     }
 

@@ -47,11 +47,18 @@ define ([], function () {
 
             query({type: 'voc_organizations', part: 'hours'}, {}, function (data) {
 
-                grid.unlock()
+                $.each(grid.records, function () {
 
-                data.voc_organization_hours = fill_voc_organization_legal_hours(data)
+                    if (this.weekday == e.recid) {
+                        this [d.k] = d.v
+                    }
 
-                $_F5(data)
+                    delete this.w2ui
+                })
+
+                grid.unlock ()
+
+                grid.refresh()
 
             })
 
@@ -71,11 +78,11 @@ define ([], function () {
         return false
     }
 
-    function fill_voc_organization_legal_hours(data) {
+    function fill_voc_organization_legal_hours(records) {
 
         var day2hours = {}
 
-        $.each(data.voc_organization_hours, function (idx, i) {
+        $.each(records, function (idx, i) {
             day2hours [i.weekday] = i
         })
 
@@ -106,15 +113,18 @@ define ([], function () {
 
     return function (done) {
 
+        var layout = w2ui ['voc_organization_legal_layout']
+
+        if (layout)
+            layout.unlock('main')
+
         query ({type: 'voc_organizations', part: 'hours'}, {}, function (data) {
 
-            data.voc_organization_hours = fill_voc_organization_legal_hours(data)
+            data.records = dia2w2uiRecords(fill_voc_organization_legal_hours(data.voc_organization_hours))
 
-            done (data);
+            done (clone(data));
 
         })
-
-        w2ui ['voc_organization_legal_layout'].unlock ('main')
     }
 
 })
