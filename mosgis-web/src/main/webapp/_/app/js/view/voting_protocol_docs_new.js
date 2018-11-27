@@ -27,6 +27,13 @@ define ([], function () {
                             {name: 'files', type: 'file', options: {max: 1, maxWidth: 400}},
                         ],
 
+                        onChange: function (e) {
+                            if (e.target == "files") {
+                                name = e.value_new[0].name
+                                $('#label').val (name)
+                            }
+                        },
+
                     });
 
                     clickOn ($('#w2ui-popup button'), $_DO.update_voting_protocol_docs_new)
