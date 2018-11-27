@@ -79,7 +79,11 @@ public class CharterPayment extends EnTable {
             + " PRAGMA AUTONOMOUS_TRANSACTION; "
             + "BEGIN "                    
                     
-            + "IF :NEW.is_deleted = 0 THEN "
+            + "IF :NEW.is_deleted = 0 THEN BEGIN "
+                
+                + "  IF :NEW.uuid_charter_object IS NOT NULL THEN "
+                + "     SELECT fiashouseguid INTO :NEW.fiashouseguid FROM tb_charter_objects WHERE uuid=:NEW.uuid_charter_object; "
+                + "  END IF;"
 
                 + " FOR i IN ("
                     + "SELECT "
@@ -102,7 +106,7 @@ public class CharterPayment extends EnTable {
                     + "|| '. Операция отменена.'); "
                 + " END LOOP; "
 
-            + "END IF; "                                        
+            + "END; END IF; "
                     
         + "END;");        
 
