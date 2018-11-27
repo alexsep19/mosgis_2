@@ -18,7 +18,6 @@ define ([], function () {
         var form = w2ui ['charter_payment_new_form']
 
         var v = form.values ()
-        var r = form.record
 
         var it = $('body').data ('data').item
         
@@ -28,19 +27,19 @@ define ([], function () {
         if (v.enddate < v.begindate) die ('enddate', 'Дата начала превышает дату окончания управления')
         
         if (v.payment_1) {
-            if (!r.file_1) die ('file_1', 'Загрузите, пожалуйста, протокол')
-            validate_gis_file ('file_1', r.file_1 [0].file)
+            if (!v.file_1) die ('file_1', 'Загрузите, пожалуйста, протокол')
+            validate_gis_file ('file_1', v.file_1 [0].file)
         }
         else {
-            if (r.file_1) die ('payment_1', 'Вы загрузили протокол, но не указали размер платы')
+            if (v.file_1) die ('payment_1', 'Вы загрузили протокол, но не указали размер платы')
         }
 
         if (v.payment_0) {
-            if (!r.file_0) die ('file_0', 'Загрузите, пожалуйста, протокол')
-            validate_gis_file ('file_0', r.file_0 [0].file)
+            if (!v.file_0) die ('file_0', 'Загрузите, пожалуйста, протокол')
+            validate_gis_file ('file_0', v.file_0 [0].file)
         }
         else {
-            if (r.file_0) die ('payment_0', 'Вы загрузили протокол, но не указали размер платы')
+            if (v.file_0) die ('payment_0', 'Вы загрузили протокол, но не указали размер платы')
         }
 
         v.uuid_charter = $_REQUEST.id
@@ -67,7 +66,7 @@ define ([], function () {
 
                 var fn = 'file_' + n
 
-                var fl = r [fn]; if (!fl) return done ()
+                var fl = v [fn]; if (!fl) return done ()
 
                 var file = fl [0].file
 

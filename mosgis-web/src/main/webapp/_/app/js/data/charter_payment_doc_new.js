@@ -5,85 +5,32 @@ define ([], function () {
         var f = w2ui ['charter_payment_common_service_payments_popup_form']
 
         var v = f.values ()
-        var r = f.record
-
-        if (!r.files || r.files.length == 0) die ('files', 'Укажите, пожалуйста, файл')                
-
-        var n = r.files.length
         
-        var exts   = {pdf:1, doc:1, docx:1, rtf:1, xls:1, xlsx:1, jpg:1, jpeg:1}
-        var max_mb = 10
-        var sum_size = 0;
+        var file = get_valid_gis_file (v, 'files')
+                                                  
+        Base64file.upload (file, {
         
-        for (var i = 0; i < n; i ++) {
-        
-            var file = r.files [i].file
-            
-            var fn = file.name
+            type: 'charter_payment_docs',
 
-            if (fn.length > 255) return alert ('Некорректное имя файла: ' + fn + '. Согласно требованиям ГИС ЖКХ, его длина не может превышать 255 символов')
-
-            var parts = fn.split ('.')         
+            data: {
+                uuid_charter_payment: $_REQUEST.id,
+                description: v.description,
+            },
             
-            if (parts.length < 2) return alert ('Некорректное имя файла: ' + fn + ' (невозможно определить расширение)')
-
-            var ext = parts [parts.length - 1];
+            onprogress: show_popup_progress (file.size),
             
-            if (!exts [ext]) {
-            
-                var l = []; for (var e in exts) l.push (e)
-            
-                return alert ('Некорректное имя файла: ' + fn + '.\n\nСогласно требованиям ГИС ЖКХ, разрешены следующие: ' + l.sort ().join (', ') + '.')
-            
-            }
-            
-            if (file.size > max_mb * 1024 * 1024) return alert ('Файл ' + fn + ' имеет недопустимо большой объём. Согласно требованиям ГИС ЖКХ, его величина не может превышать ' + max_mb + ' Мб.')
-            
-            sum_size += file.size
-
-        }
-        
-        $('#w2ui-popup button').hide ()
-        
-        var $progress = $('#w2ui-popup progress')
-        
-        $progress.prop ({max: sum_size, value: 0}).show ()    
-        
-        var portion = 128 * 1024;
-        var sum = 0;
-
-        w2utils.lock ($('#w2ui-popup .w2ui-page'));
-                
-        var data = {
-            uuid_charter_payment: $_REQUEST.id,
-            description    : v.description,
-        }
-        
-        var n = r.files.length
-
-        var check = setInterval (function () {
-            if (n) return
-            clearInterval (check)
-        }, 100)
-
-        var opt = {
-            data       : data,
-            type       : 'charter_payment_docs',
-            onprogress : function (x, y) {sum += portion; $progress.val (sum)},
-            onloadend  : function (id) {
-                n --
+            onloadend: function (id) {
                 w2popup.close ()
                 var form = w2ui ['charter_payment_common_form']
                 var fn = $_SESSION.delete ('field_name')
-                var o = {id: id, text: r.files [0].name}
+                var o = {id: id, text: file.name}
                 form.get ('uuid_file_0').options.items.push (o)
                 form.get ('uuid_file_1').options.items.push (o)
                 form.record [fn] = id
                 form.refresh ()
             }
-        }
-                   
-        $.each (r.files, function () {Base64file.upload (this.file, opt)})
+            
+        })
     
     }
 
