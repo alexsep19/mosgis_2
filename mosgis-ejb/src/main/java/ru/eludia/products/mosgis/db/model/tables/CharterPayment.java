@@ -125,15 +125,17 @@ public class CharterPayment extends EnTable {
     
     public enum Action {
         
-        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.FAILED_PLACING),
-        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.FAILED_ANNULMENT)
+        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
+        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT)
         ;
         
         VocGisStatus.i nextStatus;
+        VocGisStatus.i okStatus;
         VocGisStatus.i failStatus;
 
-        private Action (VocGisStatus.i nextStatus, VocGisStatus.i failStatus) {
+        private Action (VocGisStatus.i nextStatus, VocGisStatus.i okStatus, VocGisStatus.i failStatus) {
             this.nextStatus = nextStatus;
+            this.okStatus = okStatus;
             this.failStatus = failStatus;
         }
 
@@ -143,6 +145,10 @@ public class CharterPayment extends EnTable {
 
         public VocGisStatus.i getFailStatus () {
             return failStatus;
+        }
+
+        public VocGisStatus.i getOkStatus () {
+            return okStatus;
         }
         
         public static Action forStatus (VocGisStatus.i status) {

@@ -13,7 +13,6 @@ import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
-import ru.eludia.products.mosgis.db.model.tables.CharterPayment;
 import ru.eludia.products.mosgis.db.model.tables.CharterPaymentLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
@@ -31,7 +30,7 @@ import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportResult;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 import ru.eludia.products.mosgis.db.model.tables.CharterPayment.c;
-import ru.eludia.products.mosgis.db.model.tables.ContractPayment;
+import ru.eludia.products.mosgis.db.model.tables.CharterPayment;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 
 @MessageDriven(activationConfig = {
@@ -70,7 +69,7 @@ public class GisPollExportCharterPaymentMDB  extends GisPollMDB {
         
         UUID orgPPAGuid          = (UUID) r.get ("org.orgppaguid");
                 
-        ContractPayment.Action action = ContractPayment.Action.forLogAction (VocAction.i.forName (r.get ("log.action").toString ()));
+        CharterPayment.Action action = CharterPayment.Action.forLogAction (VocAction.i.forName (r.get ("log.action").toString ()));
 
         try {
             
@@ -86,12 +85,12 @@ public class GisPollExportCharterPaymentMDB  extends GisPollMDB {
             
             for (CommonResultType.Error err: commonResult.get (0).getError ()) throw new GisPollException (err);
             
-            VocGisStatus.i status = action.getNextStatus ();
+            final Map<String, Object> h = statusHash (action.getOkStatus ());
+
+            final String guid = commonResult.get (0).getGUID ();
+            if (DB.ok (guid)) h.put (c.VERSIONGUID.lc (), guid);
                         
-            update (db, uuid, r, HASH (c.VERSIONGUID, commonResult.get (0).getGUID (),
-                c.ID_CTR_STATUS,       status.getId (),
-                c.ID_CTR_STATUS_GIS,   status.getId ()
-            ));
+            update (db, uuid, r, h);
 
             db.update (OutSoap.class, HASH (
                 "uuid", getUuid (),
@@ -103,20 +102,26 @@ public class GisPollExportCharterPaymentMDB  extends GisPollMDB {
             return;
         }
         catch (GisPollException ex) {
-            
-            VocGisStatus.i status = action.getFailStatus ();
-
-            update (db, uuid, r, HASH (
-                c.ID_CTR_STATUS,       status.getId (),
-                c.ID_CTR_STATUS_GIS,   status.getId ()
-            ));
-            
+            update (db, uuid, r, statusHash (action.getFailStatus ()));
             ex.register (db, uuid, r);
         }
         
     }
+    
+    private static Map<String, Object> statusHash (VocGisStatus.i status) {
+        
+        final byte id = status.getId ();
+        
+        return HASH (
+            c.ID_CTR_STATUS,     id,
+            c.ID_CTR_STATUS_GIS, id
+        );
+        
+    }
 
     private void update (DB db, UUID uuid, Map<String, Object> r, Map<String, Object> h) throws SQLException {
+        
+logger.info ("h=" + h);
         
         h.put ("uuid", r.get ("ctr.uuid"));
         db.update (CharterPayment.class, h);

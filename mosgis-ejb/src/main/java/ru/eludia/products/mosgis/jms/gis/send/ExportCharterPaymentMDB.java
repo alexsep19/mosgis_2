@@ -65,7 +65,7 @@ public class ExportCharterPaymentMDB extends UUIDMDB<CharterPaymentLog> {
                 .toOne (CharterPayment.class, "AS ctr", "id_ctr_status").on ()
                 .toMaybeOne (CharterPaymentFile.class, "AS doc_0", "*").on ("ctr.uuid_file_0=doc_0.uuid")
                 .toMaybeOne (CharterPaymentFileLog.class, "AS doc_log_0", "ts_start_sending", "err_text").on ("doc_0.id_log=doc_log_0.uuid")
-                .toMaybeOne (CharterPaymentFile.class, "AS doc_1", "*").on ("ctr.uuid_file_0=doc_1.uuid")
+                .toMaybeOne (CharterPaymentFile.class, "AS doc_1", "*").on ("ctr.uuid_file_1=doc_1.uuid")
                 .toMaybeOne (CharterPaymentFileLog.class, "AS doc_log_1", "ts_start_sending", "err_text").on ("doc_1.id_log=doc_log_1.uuid")
                 .toOne (Charter.class, "AS ctrt", "charterversionguid").on ()
                 .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("ctrt.uuid_org=org.uuid")
@@ -126,8 +126,8 @@ public class ExportCharterPaymentMDB extends UUIDMDB<CharterPaymentLog> {
         try {
             
             if (action == CharterPayment.Action.PLACING) {
-                boolean b0 = checkFile (r, db, uuid, "_0");
-                boolean b1 = checkFile (r, db, uuid, "_1");                
+                boolean b0 = isWaitingForFile (r, db, uuid, "_0");
+                boolean b1 = isWaitingForFile (r, db, uuid, "_1");                
                 if (b0 || b1) return;
             }
 
@@ -228,11 +228,11 @@ public class ExportCharterPaymentMDB extends UUIDMDB<CharterPaymentLog> {
         
     }
 
-    private boolean checkFile (Map<String, Object> r, DB db, UUID uuid, String postfix) throws Exception {
+    private boolean isWaitingForFile (Map<String, Object> r, DB db, UUID uuid, String postfix) throws Exception {
                
         final UUID uuidFile = (UUID) r.get ("uuid_file" + postfix);
         
-        if (!DB.ok (uuidFile)) return true;
+        if (!DB.ok (uuidFile)) return false;
         
         final String docLog = "doc_log" + postfix;
             
