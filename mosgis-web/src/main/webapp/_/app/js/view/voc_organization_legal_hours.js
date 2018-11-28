@@ -5,7 +5,7 @@ define ([], function () {
     return function (data, view) {
 
         data._can = {
-            edit: $_USER.role.admin || $_USER.uuid_org == data.id
+            edit: $_USER.role.admin || $_USER.uuid_org == $_REQUEST.id
         }
 
         var layout = w2ui ['voc_organization_legal_layout']
@@ -56,8 +56,8 @@ define ([], function () {
                 },
                 {field: 'is_holiday', caption: 'Выходной', size: 40
                     , editable: !data._can.edit ? null : {type: 'checkbox'}
-                    , render: data._can.edit? null : function (v) {
-                        return '<div style="text-align:center">' + (v ? 'Да' : 'Нет') + '</div>'
+                    , render: data._can.edit? null : function (r) {
+                        return '<div style="text-align:center">' + (r.is_holiday ? 'Да' : 'Нет') + '</div>'
                     }
                 },
                 {field: 'note', caption: 'Комментарии', size: 300
@@ -70,13 +70,18 @@ define ([], function () {
             onDblClick: null,
 
             onEditField: function (e) {
-
                 var grid = this
                 var record = grid.get(e.recid)
                 var col = grid.columns [e.column]
 
                 if (record.is_holiday == 1 && /(_to|_from)$/.test(col.field)) {
-                    w2alert(record.label + ' выходной')
+
+                    var is_next_row_edit = e.originalEvent && e.originalEvent.keyCode == 13
+
+                    if (!is_next_row_edit) {
+                        w2alert(record.label + ' выходной')
+                    }
+
                     return e.preventDefault()
                 }
                 var editable = col.editable

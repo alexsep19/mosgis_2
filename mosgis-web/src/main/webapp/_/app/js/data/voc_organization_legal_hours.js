@@ -12,7 +12,7 @@ define ([], function () {
             v: normalizeValue(e.value_new, col.editable.type)
         }
 
-        if (col.editable.type == 'time' && d.v.length < 5) {
+        if (col.editable.type == 'time' && d.v && d.v.length < 5) {
             d.v = '0' + d.v
         }
 
@@ -69,7 +69,7 @@ define ([], function () {
 
     function grid_hours_edit_failed (msg, e, grid) {
 
-        e.stopPropagation();
+        e.stopPropagation()
 
         e.preventDefault()
 

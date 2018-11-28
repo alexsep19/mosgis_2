@@ -8,6 +8,7 @@ import static ru.eludia.base.model.Type.INTEGER;
 import static ru.eludia.base.model.Type.STRING;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import static ru.eludia.base.model.def.Bool.FALSE;
 
 public class VocOrganizationHours extends EnTable {
 
@@ -21,7 +22,7 @@ public class VocOrganizationHours extends EnTable {
         BREAK_TO             (STRING,                        null,  "Перерыв по"),
         RECEPTION_FROM       (STRING,                        null,  "Часы приема с"),
         RECEPTION_TO         (STRING,                        null,  "Часы приема по"),
-        IS_HOLIDAY           (BOOLEAN,                       0,     "Выходной"),
+        IS_HOLIDAY           (BOOLEAN,                       FALSE, "Выходной"),
         NOTE                 (STRING, 1000,                  null,  "Комментарий"),
         ;
 
