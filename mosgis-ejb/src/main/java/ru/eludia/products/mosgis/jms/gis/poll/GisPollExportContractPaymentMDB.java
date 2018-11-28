@@ -84,38 +84,44 @@ public class GisPollExportContractPaymentMDB  extends GisPollMDB {
             if (commonResult == null || commonResult.isEmpty ()) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
             
             for (CommonResultType.Error err: commonResult.get (0).getError ()) throw new GisPollException (err);
-            
-            VocGisStatus.i status = action.getNextStatus ();
-                        
-            update (db, uuid, r, HASH (c.VERSIONGUID, commonResult.get (0).getGUID (),
-                c.ID_CTR_STATUS,       status.getId (),
-                c.ID_CTR_STATUS_GIS,   status.getId ()
-            ));
+
+            final Map<String, Object> h = statusHash (action.getOkStatus ());
+
+            final String guid = commonResult.get (0).getGUID ();
+            if (DB.ok (guid)) h.put (c.VERSIONGUID.lc (), guid);
+
+            update (db, uuid, r, h);
 
             db.update (OutSoap.class, HASH (
                 "uuid", getUuid (),
                 "id_status", DONE.getId ()
             ));
-            
+
         }
         catch (GisPollRetryException ex) {
             return;
         }
-        catch (GisPollException ex) {
-            
-            VocGisStatus.i status = action.getFailStatus ();
-
-            update (db, uuid, r, HASH (
-                c.ID_CTR_STATUS,       status.getId (),
-                c.ID_CTR_STATUS_GIS,   status.getId ()
-            ));
-            
+        catch (GisPollException ex) {            
+            update (db, uuid, r, statusHash (action.getFailStatus ()));            
             ex.register (db, uuid, r);
         }
         
     }
 
+    private static Map<String, Object> statusHash (VocGisStatus.i status) {
+        
+        final byte id = status.getId ();
+        
+        return HASH (
+            c.ID_CTR_STATUS,     id,
+            c.ID_CTR_STATUS_GIS, id
+        );
+        
+    }
+
     private void update (DB db, UUID uuid, Map<String, Object> r, Map<String, Object> h) throws SQLException {
+        
+logger.info ("h=" + h);
         
         h.put ("uuid", r.get ("ctr.uuid"));
         db.update (ContractPayment.class, h);
