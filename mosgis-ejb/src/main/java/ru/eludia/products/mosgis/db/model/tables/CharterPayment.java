@@ -172,6 +172,8 @@ public class CharterPayment extends EnTable {
     public static ImportCharterRequest.PlaceCharterPaymentsInfo toPlaceCharterPaymentsInfo (Map<String, Object> r) {
 
         final ImportCharterRequest.PlaceCharterPaymentsInfo pc = (ImportCharterRequest.PlaceCharterPaymentsInfo) DB.to.javaBean (ImportCharterRequest.PlaceCharterPaymentsInfo.class, r);
+        
+        pc.setCharterVersionGUID (r.get ("ctrt.charterversionguid").toString ());
 
         for (Map <String, Object> i: (List <Map <String, Object>>) r.get ("svc")) pc.getServicePayment ().add (ServicePayment.tooServicePayment (i));
 
