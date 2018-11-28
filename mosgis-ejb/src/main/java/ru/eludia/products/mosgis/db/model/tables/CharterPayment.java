@@ -214,5 +214,11 @@ public class CharterPayment extends EnTable {
         return pc;
 
     }
+    
+    public static ImportCharterRequest.AnnulmentCharterPaymentsInfo toAnnulmentCharterPaymentsInfo (Map<String, Object> r) {
+        ImportCharterRequest.AnnulmentCharterPaymentsInfo info = new ImportCharterRequest.AnnulmentCharterPaymentsInfo ();
+        info.setCharterPaymentsInfoVersionGUID (r.get ("ctr.versionguid").toString ());
+        return info;
+    }
 
 }

@@ -62,7 +62,7 @@ public class ExportCharterPaymentMDB extends UUIDMDB<CharterPaymentLog> {
                         
             return (Get) m
                 .get (getTable (), uuid, "*")
-                .toOne (CharterPayment.class, "AS ctr", "id_ctr_status").on ()
+                .toOne (CharterPayment.class, "AS ctr", "id_ctr_status", "versionguid").on ()
                 .toMaybeOne (CharterPaymentFile.class, "AS doc_0", "*").on ("ctr.uuid_file_0=doc_0.uuid")
                 .toMaybeOne (CharterPaymentFileLog.class, "AS doc_log_0", "ts_start_sending", "err_text").on ("doc_0.id_log=doc_log_0.uuid")
                 .toMaybeOne (CharterPaymentFile.class, "AS doc_1", "*").on ("ctr.uuid_file_1=doc_1.uuid")
@@ -85,11 +85,7 @@ public class ExportCharterPaymentMDB extends UUIDMDB<CharterPaymentLog> {
             
         switch (action) {
             case PLACING:     return wsGisHouseManagementClient.placeCharterPaymentsInfo (orgPPAGuid, messageGUID, r);
-//            case ANNULMENT:   return wsGisHouseManagementClient.annulCharterPaymentData     (orgPPAGuid, messageGUID, r);
-//            case EDITING:     return wsGisHouseManagementClient.editCharterPaymentData      (orgPPAGuid, messageGUID, r);
-//            case TERMINATION: return wsGisHouseManagementClient.terminateCharterPaymentData (orgPPAGuid, messageGUID, r);
-//            case ROLLOVER:    return wsGisHouseManagementClient.rolloverCharterPaymentData  (orgPPAGuid, messageGUID, r);
-//            case RELOADING:   return wsGisHouseManagementClient.exportCharterPaymentData    (orgPPAGuid, messageGUID, Collections.singletonList ((UUID) r.get ("ctr.charterversionguid")));
+            case ANNULMENT:   return wsGisHouseManagementClient.annulCharterPaymentData  (orgPPAGuid, messageGUID, r);
             default: throw new IllegalArgumentException ("No action implemented for " + action);
         }
 

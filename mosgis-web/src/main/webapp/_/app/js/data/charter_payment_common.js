@@ -118,7 +118,8 @@ define ([], function () {
     }
     
     $_DO.annul_charter_payment_common = function (e) {
-        use.block ('charter_payment_annul_popup')
+        if (!confirm ('Запросить аннулирование этой услуги в ГИС ЖКХ?')) return
+        query ({type: 'charter_payments', action: 'annul'}, {data: {}}, reload_page)
     }
     
     $_DO.create_house_charter_payment_common = function (e) {

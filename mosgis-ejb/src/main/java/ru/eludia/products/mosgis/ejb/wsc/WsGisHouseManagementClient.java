@@ -476,5 +476,17 @@ public class WsGisHouseManagementClient {
         return getPort (orgPPAGuid, messageGUID).importCharterData (importCharterRequest).getAck ();
 
     }
+
+    public AckRequest.Ack annulCharterPaymentData (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        
+        final ImportCharterRequest.AnnulmentCharterPaymentsInfo info = CharterPayment.toAnnulmentCharterPaymentsInfo (r);
+        
+        final ImportCharterRequest importCharterRequest = of.createImportCharterRequest ();        
+        importCharterRequest.setAnnulmentCharterPaymentsInfo (info);
+        importCharterRequest.setTransportGUID (UUID.randomUUID ().toString ());
+
+        return getPort (orgPPAGuid, messageGUID).importCharterData (importCharterRequest).getAck ();
+        
+    }
     
 }
