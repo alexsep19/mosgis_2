@@ -125,38 +125,10 @@ public class ExportCharterPaymentMDB extends UUIDMDB<CharterPaymentLog> {
         
         try {
             
-            if (action == CharterPayment.Action.PLACING && DB.ok (r.get ("uuid_file"))) {
-
-                final Object err = r.get ("doc_log.err_text");
-                if (DB.ok (err)) throw new Exception (err.toString ());
-                
-                final Object ots = r.get ("doc_log.ts_start_sending");            
-                
-                if (!DB.ok (ots)) {
-                    
-                    db.update (CharterPaymentFileLog.class, DB.HASH (
-                        "uuid",              r.get ("doc.id_log"),
-                        "ts_start_sending",  NOW
-                    ));
-                    
-                    UUIDPublisher.publish (inHouseCharterPaymentFilesQueue, (UUID) r.get ("uuid_file"));
-                    
-                    UUIDPublisher.publish (getOwnQueue (), uuid);
-                    
-                    logger.info ("Sending file, bailing out");
-                    
-                    return;
-                    
-                }
-                
-                if (!DB.ok (r.get ("doc.attachmentguid"))) {
-                    
-                    UUIDPublisher.publish (getOwnQueue (), uuid);
-                    
-                    logger.info ("Waiting for " + r.get ("doc.label") + " to be uploaded...");
-                    
-                }
-                
+            if (action == CharterPayment.Action.PLACING) {
+                boolean b0 = checkFile (r, db, uuid, "_0");
+                boolean b1 = checkFile (r, db, uuid, "_1");                
+                if (b0 || b1) return;
             }
 
             AckRequest.Ack ack = invoke (db, action, uuid, r);
@@ -253,6 +225,49 @@ public class ExportCharterPaymentMDB extends UUIDMDB<CharterPaymentLog> {
             return;
             
         }
+        
+    }
+
+    private boolean checkFile (Map<String, Object> r, DB db, UUID uuid, String postfix) throws Exception {
+               
+        final UUID uuidFile = (UUID) r.get ("uuid_file" + postfix);
+        
+        if (!DB.ok (uuidFile)) return true;
+        
+        final String docLog = "doc_log" + postfix;
+            
+        final Object err = r.get (docLog + ".err_text");
+        
+        if (DB.ok (err)) throw new Exception (err.toString ());
+        
+        final Object ots = r.get (docLog + ".ts_start_sending");
+        final String doc = "doc" + postfix;
+        
+        if (!DB.ok (ots)) {
+            
+            db.update (CharterPaymentFileLog.class, DB.HASH (
+                "uuid",              r.get (doc + ".id_log"),
+                "ts_start_sending",  NOW
+            ));
+            
+            UUIDPublisher.publish (inHouseCharterPaymentFilesQueue, uuidFile);
+            UUIDPublisher.publish (getOwnQueue (), uuid);
+            
+            logger.info ("Sending file, bailing out");
+            
+            return true;
+            
+        }
+        
+        if (!DB.ok (r.get (doc + ".attachmentguid"))) {
+                
+            UUIDPublisher.publish (getOwnQueue (), uuid);
+                
+            logger.info ("Waiting for " + r.get (doc + ".label") + " to be uploaded...");
+                
+        }
+        
+        return false;
         
     }
     

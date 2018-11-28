@@ -31,6 +31,8 @@ import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportResult;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 import ru.eludia.products.mosgis.db.model.tables.CharterPayment.c;
+import ru.eludia.products.mosgis.db.model.tables.ContractPayment;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 
 @MessageDriven(activationConfig = {
  @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outExportHouseCharterPaymentsQueue")
@@ -68,6 +70,8 @@ public class GisPollExportCharterPaymentMDB  extends GisPollMDB {
         
         UUID orgPPAGuid          = (UUID) r.get ("org.orgppaguid");
                 
+        ContractPayment.Action action = ContractPayment.Action.forLogAction (VocAction.i.forName (r.get ("log.action").toString ()));
+
         try {
             
             GetStateResult state = getState (orgPPAGuid, r);
@@ -82,7 +86,7 @@ public class GisPollExportCharterPaymentMDB  extends GisPollMDB {
             
             for (CommonResultType.Error err: commonResult.get (0).getError ()) throw new GisPollException (err);
             
-            VocGisStatus.i status = VocGisStatus.i.APPROVED;
+            VocGisStatus.i status = action.getNextStatus ();
                         
             update (db, uuid, r, HASH (c.VERSIONGUID, commonResult.get (0).getGUID (),
                 c.ID_CTR_STATUS,       status.getId (),
@@ -100,7 +104,7 @@ public class GisPollExportCharterPaymentMDB  extends GisPollMDB {
         }
         catch (GisPollException ex) {
             
-            VocGisStatus.i status = VocGisStatus.i.FAILED_PLACING;
+            VocGisStatus.i status = action.getFailStatus ();
 
             update (db, uuid, r, HASH (
                 c.ID_CTR_STATUS,       status.getId (),

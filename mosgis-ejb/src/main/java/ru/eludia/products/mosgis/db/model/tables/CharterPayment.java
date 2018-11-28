@@ -14,6 +14,7 @@ import static ru.eludia.base.model.Type.UUID;
 import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.gosuslugi.dom.schema.integration.house_management.CharterPaymentsInfoType;
@@ -152,6 +153,14 @@ public class CharterPayment extends EnTable {
             }            
         }
                         
+        public static Action forLogAction (VocAction.i a) {
+            switch (a) {
+                case APPROVE: return PLACING;
+                case ANNUL:   return ANNULMENT;
+                default: return null;
+            }            
+        }
+        
     };
     
     public static ImportCharterRequest.PlaceCharterPaymentsInfo toPlaceCharterPaymentsInfo (Map<String, Object> r) {

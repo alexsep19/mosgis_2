@@ -200,8 +200,10 @@ public class CharterPaymentImpl extends BaseCRUD<CharterPayment> implements Char
 
         List<UUID> ids = new ArrayList<> ();        
         
-        db.forEach (db.getModel ().select (CharterPayment.class, "uuid_file").where ("uuid", id), (rs) -> {
-            final Object u = db.getValue (rs, 1);
+        db.forEach (db.getModel ().select (CharterPayment.class, "uuid_file_0", "uuid_file_1").where ("uuid", id), (rs) -> {
+            Object u = db.getValue (rs, 1);
+            if (u != null) ids.add ((UUID) u);
+            u = db.getValue (rs, 2);
             if (u != null) ids.add ((UUID) u);
         });
         
