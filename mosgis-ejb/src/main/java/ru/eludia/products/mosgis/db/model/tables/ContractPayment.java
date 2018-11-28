@@ -16,6 +16,7 @@ import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocContractPaymentType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -132,12 +133,6 @@ public class ContractPayment extends EnTable {
         
         PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.FAILED_PLACING),
         ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.FAILED_ANNULMENT)
-//        EDITING     (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.FAILED_STATE),
-//        TERMINATION (VocGisStatus.i.PENDING_RP_TERMINATE, VocGisStatus.i.FAILED_TERMINATE),
-//        ROLLOVER    (VocGisStatus.i.PENDING_RP_ROLLOVER,  VocGisStatus.i.FAILED_STATE),
-//        RELOADING   (VocGisStatus.i.PENDING_RP_RELOAD,    VocGisStatus.i.FAILED_STATE)
-//        APPROVING   (VocGisStatus.i.PENDING_RP_APPROVAL,  VocGisStatus.i.FAILED_STATE),
-//        REFRESHING  (VocGisStatus.i.PENDING_RP_REFRESH,   VocGisStatus.i.FAILED_STATE),
         ;
         
         VocGisStatus.i nextStatus;
@@ -160,12 +155,14 @@ public class ContractPayment extends EnTable {
             switch (status) {
                 case PENDING_RQ_PLACING:   return PLACING;
                 case PENDING_RQ_ANNULMENT: return ANNULMENT;
-//                case PENDING_RQ_EDIT:      return EDITING;
-//                case PENDING_RQ_TERMINATE: return TERMINATION;
-//                case PENDING_RQ_RELOAD:    return RELOADING;
-//                case PENDING_RQ_ROLLOVER:  return ROLLOVER;
-//                case PENDING_RQ_APPROVAL:  return APPROVING;
-//                case PENDING_RQ_REFRESH:   return REFRESHING;
+                default: return null;
+            }            
+        }
+        
+        public static Action forLogAction (VocAction.i a) {
+            switch (a) {
+                case APPROVE: return PLACING;
+                case ANNUL:   return ANNULMENT;
                 default: return null;
             }            
         }
