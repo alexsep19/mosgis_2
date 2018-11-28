@@ -9,7 +9,7 @@ define ([], function () {
 
     return function (data, view) {
         data._can = {
-            edit: true
+            edit: $_USER.role.admin || $_USER.uuid_org == data.id
         }
 
         $.each (data.vc_pass_fields, function () { id2field [this.id] = this })
