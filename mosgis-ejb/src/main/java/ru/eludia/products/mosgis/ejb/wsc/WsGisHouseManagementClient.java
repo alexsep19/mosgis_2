@@ -20,6 +20,7 @@ import ru.eludia.base.db.util.JDBCConsumer;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
+import ru.eludia.products.mosgis.db.model.tables.CharterPayment;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractFile;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
@@ -462,6 +463,30 @@ public class WsGisHouseManagementClient {
 
         return getPort (orgPPAGuid, messageGUID).importContractData (importContractRequest).getAck ();
 
+    }
+
+    public AckRequest.Ack placeCharterPaymentsInfo (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        
+        final ImportCharterRequest.PlaceCharterPaymentsInfo placeCharterPaymentsInfo = CharterPayment.toPlaceCharterPaymentsInfo (r);
+        
+        final ImportCharterRequest importCharterRequest = of.createImportCharterRequest ();        
+        importCharterRequest.setPlaceCharterPaymentsInfo (placeCharterPaymentsInfo);
+        importCharterRequest.setTransportGUID (UUID.randomUUID ().toString ());
+
+        return getPort (orgPPAGuid, messageGUID).importCharterData (importCharterRequest).getAck ();
+
+    }
+
+    public AckRequest.Ack annulCharterPaymentData (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        
+        final ImportCharterRequest.AnnulmentCharterPaymentsInfo info = CharterPayment.toAnnulmentCharterPaymentsInfo (r);
+        
+        final ImportCharterRequest importCharterRequest = of.createImportCharterRequest ();        
+        importCharterRequest.setAnnulmentCharterPaymentsInfo (info);
+        importCharterRequest.setTransportGUID (UUID.randomUUID ().toString ());
+
+        return getPort (orgPPAGuid, messageGUID).importCharterData (importCharterRequest).getAck ();
+        
     }
     
 }

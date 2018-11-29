@@ -1,16 +1,25 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.Type.DATE;
 import static ru.eludia.base.model.Type.NUMERIC;
 import static ru.eludia.base.model.Type.UUID;
+import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.gosuslugi.dom.schema.integration.house_management.CharterPaymentsInfoType;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportCharterRequest;
+
 
 public class CharterPayment extends EnTable {
 
@@ -79,7 +88,11 @@ public class CharterPayment extends EnTable {
             + " PRAGMA AUTONOMOUS_TRANSACTION; "
             + "BEGIN "                    
                     
-            + "IF :NEW.is_deleted = 0 THEN "
+            + "IF :NEW.is_deleted = 0 THEN BEGIN "
+                
+                + "  IF :NEW.uuid_charter_object IS NOT NULL THEN "
+                + "     SELECT fiashouseguid INTO :NEW.fiashouseguid FROM tb_charter_objects WHERE uuid=:NEW.uuid_charter_object; "
+                + "  END IF;"
 
                 + " FOR i IN ("
                     + "SELECT "
@@ -102,7 +115,7 @@ public class CharterPayment extends EnTable {
                     + "|| '. Операция отменена.'); "
                 + " END LOOP; "
 
-            + "END IF; "                                        
+            + "END; END IF; "
                     
         + "END;");        
 
@@ -112,15 +125,17 @@ public class CharterPayment extends EnTable {
     
     public enum Action {
         
-        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.FAILED_PLACING),
-        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.FAILED_ANNULMENT)
+        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
+        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT)
         ;
         
         VocGisStatus.i nextStatus;
+        VocGisStatus.i okStatus;
         VocGisStatus.i failStatus;
 
-        private Action (VocGisStatus.i nextStatus, VocGisStatus.i failStatus) {
+        private Action (VocGisStatus.i nextStatus, VocGisStatus.i okStatus, VocGisStatus.i failStatus) {
             this.nextStatus = nextStatus;
+            this.okStatus = okStatus;
             this.failStatus = failStatus;
         }
 
@@ -131,6 +146,10 @@ public class CharterPayment extends EnTable {
         public VocGisStatus.i getFailStatus () {
             return failStatus;
         }
+
+        public VocGisStatus.i getOkStatus () {
+            return okStatus;
+        }
         
         public static Action forStatus (VocGisStatus.i status) {
             switch (status) {
@@ -140,6 +159,66 @@ public class CharterPayment extends EnTable {
             }            
         }
                         
+        public static Action forLogAction (VocAction.i a) {
+            switch (a) {
+                case APPROVE: return PLACING;
+                case ANNUL:   return ANNULMENT;
+                default: return null;
+            }            
+        }
+        
     };
     
+    public static ImportCharterRequest.PlaceCharterPaymentsInfo toPlaceCharterPaymentsInfo (Map<String, Object> r) {
+
+        final ImportCharterRequest.PlaceCharterPaymentsInfo pc = (ImportCharterRequest.PlaceCharterPaymentsInfo) DB.to.javaBean (ImportCharterRequest.PlaceCharterPaymentsInfo.class, r);
+        
+        pc.setCharterVersionGUID (r.get ("ctrt.charterversionguid").toString ());
+
+        for (Map <String, Object> i: (List <Map <String, Object>>) r.get ("svc")) pc.getServicePayment ().add (ServicePayment.tooServicePayment (i));
+
+        BigDecimal p0 = (BigDecimal) r.get (c.PAYMENT_0.lc ());
+        if (p0 != null) {
+            final CharterPaymentsInfoType.MaintenanceAndRepairsForNonMembersInfo maintenanceAndRepairsForNonMembersInfo = new CharterPaymentsInfoType.MaintenanceAndRepairsForNonMembersInfo ();
+            maintenanceAndRepairsForNonMembersInfo.setMaintenanceAndRepairsForNonMembersPaymentSize (p0);
+            maintenanceAndRepairsForNonMembersInfo.getMaintenanceAndRepairsForNonMembersProtocol ().add (AttachTable.toAttachmentType (
+                r.get ("doc_0.label"), 
+                r.get ("doc_0.description"), 
+                r.get ("doc_0.attachmentguid"), 
+                r.get ("doc_0.attachmenthash")
+            ));
+            pc.setMaintenanceAndRepairsForNonMembersInfo (maintenanceAndRepairsForNonMembersInfo);            
+        }
+
+        BigDecimal p1 = (BigDecimal) r.get (c.PAYMENT_1.lc ());
+        if (p1 != null) {
+            final CharterPaymentsInfoType.MaintenanceAndRepairsForMembers maintenanceAndRepairsForMembers = new CharterPaymentsInfoType.MaintenanceAndRepairsForMembers ();
+            maintenanceAndRepairsForMembers.setMaintenanceAndRepairsForMembersPaymentSize (p1);
+            maintenanceAndRepairsForMembers.getMaintenanceAndRepairsForMembersProtocol ().add (AttachTable.toAttachmentType (
+                r.get ("doc_1.label"), 
+                r.get ("doc_1.description"), 
+                r.get ("doc_1.attachmentguid"), 
+                r.get ("doc_1.attachmenthash")
+            ));
+            pc.setMaintenanceAndRepairsForMembers (maintenanceAndRepairsForMembers);
+        }
+
+        final Object contractobjectversionguid = r.get ("o.contractobjectversionguid");
+        if (DB.ok (contractobjectversionguid)) {
+            pc.setContractObjectVersionGUID (contractobjectversionguid.toString ());
+        }
+        else {
+            pc.setAllContractObjects (true);
+        }
+
+        return pc;
+
+    }
+    
+    public static ImportCharterRequest.AnnulmentCharterPaymentsInfo toAnnulmentCharterPaymentsInfo (Map<String, Object> r) {
+        ImportCharterRequest.AnnulmentCharterPaymentsInfo info = new ImportCharterRequest.AnnulmentCharterPaymentsInfo ();
+        info.setCharterPaymentsInfoVersionGUID (r.get ("ctr.versionguid").toString ());
+        return info;
+    }
+
 }

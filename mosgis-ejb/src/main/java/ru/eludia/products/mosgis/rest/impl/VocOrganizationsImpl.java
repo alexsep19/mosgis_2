@@ -30,6 +30,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerTypeNsi58;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganizationHours;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTypes;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
@@ -286,6 +287,37 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
         }
 
         return this.getItem (id);
+    }
+
+    @Override
+    public JsonObject doPatchHours(String id, JsonObject p) {return doAction((db) -> {
+
+            JsonObject data = p.getJsonObject("data");
+
+            String k = data.getString("k");
+            String v = data.getString("v", null);
+
+            db.upsert(VocOrganizationHours.class, HASH(
+                    "uuid_org", id,
+                    "weekday", data.getString("weekday"),
+                    k, v
+            ), "uuid_org", "weekday");
+    });}
+
+    @Override
+    public JsonObject getHours(String id) {
+
+        return fetchData((db, job) -> {
+
+            final MosGisModel m = ModelHolder.getModel();
+
+            db.addJsonArrays(job,
+                m.select(VocOrganizationHours.class, "AS voc_organization_hours", "*", "weekday AS id")
+                    .where("uuid_org", id)
+                    .orderBy("weekday")
+            );
+
+        });
     }
 
     protected void logAction (DB db, User user, Object id, VocAction.i action) throws SQLException {

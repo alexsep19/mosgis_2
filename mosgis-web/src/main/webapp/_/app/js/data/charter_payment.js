@@ -53,7 +53,7 @@ define ([], function () {
 
             if (!is_locked && is_own) {
                             
-                switch (it ["ctr.id_ctr_status"]) {
+                switch (it ["ctr.id_ctr_status_gis"]) {
 
                     case 20:
                     case 30:
