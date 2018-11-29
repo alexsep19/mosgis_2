@@ -40,6 +40,9 @@ define ([], function () {
 
             enable_block(tables[v.decisiontype_vc_nsi_63])
 
+            $('#questionname').val (data.vc_nsi_63[v.decisiontype_vc_nsi_63])
+            $('#questionname').trigger ('change')
+
         }
 
         $(view).w2popup('open', {

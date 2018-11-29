@@ -40,7 +40,11 @@ define ([], function () {
 
             var v = w2ui [form_name].values ()
 
-            if (!read_only) enable_block(tables[v.decisiontype_vc_nsi_63])
+            if (!read_only) {
+                enable_block(tables[v.decisiontype_vc_nsi_63])
+                $('#questionname').val (data.vc_nsi_63[v.decisiontype_vc_nsi_63])
+                $('#questionname').trigger ('change')
+            }
 
             $panel_top = $('#layout_passport_layout_panel_top')
             $panel_main = $('#layout_passport_layout_panel_main')
