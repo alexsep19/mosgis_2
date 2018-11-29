@@ -38,6 +38,7 @@ define ([], function () {
             if (!is_locked) switch (it.id_ctr_status_gis) {
                 case 20:
                 case 70:
+                case 90:
                 case 110:
                     is_locked = true
             }
@@ -60,13 +61,13 @@ define ([], function () {
 
                 it._can.update = it._can.cancel = it._can.edit
 
+                if (!it ['house.uuid']) it._can.create_house = 1
+
             }
 
             if (is_own && it.id_ctr_status_gis == 40 && it ["ctr.id_ctr_status_gis"] == 40) {
                 it._can.edit_work_list = 1                
             }
-
-            if (it.is_deleted == 0 && !it ['house.uuid'] && it.id_ctr_status_gis != 110 && ($_USER.role.admin || it ['ctr.uuid_org'] == $_USER.uuid_org)) it._can.create_house = 1
             
             var dt = new Date (data.item.startdate + 'Z')
 
