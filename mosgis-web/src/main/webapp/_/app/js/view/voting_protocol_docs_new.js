@@ -29,8 +29,12 @@ define ([], function () {
 
                         onChange: function (e) {
                             if (e.target == "files") {
-                                name = e.value_new[0].name
-                                $('#label').val (name)
+                                
+                                if (e.value_new[0]) {
+                                    this.record['label'] = e.value_new[0].name
+                                    this.refresh ()
+                                }
+
                             }
                         },
 

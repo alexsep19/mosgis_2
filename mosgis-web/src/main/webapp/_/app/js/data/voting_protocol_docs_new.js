@@ -6,6 +6,8 @@ define ([], function () {
 
         var v = f.values ()
 
+        if (!v ['files']) die (name, 'Укажите, пожалуйста, файл')
+
         v.files[0].file = new File ([v.files[0].file], v.label, {type: v.files[0].file.type})
         
         var file = get_valid_gis_file (v, 'files')
