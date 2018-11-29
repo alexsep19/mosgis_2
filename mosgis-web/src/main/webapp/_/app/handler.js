@@ -374,16 +374,23 @@ function get_valid_gis_file (v, name) {
 
 function validate_gis_file (name, file) {
 
-    var exts   = {pdf:1, doc:1, docx:1, rtf:1, xls:1, xlsx:1, jpg:1, jpeg:1}
     var max_mb = 10
-    
-    var fn = file.name
 
-    if (fn.length > 255) return die (name, 'Некорректное имя файла: ' + fn + '. Согласно требованиям ГИС ЖКХ, его длина не может превышать 255 символов')
+    validate_gis_file_name (file.name, name)
 
-    var parts = fn.split ('.')         
+    if (file.size > max_mb * 1024 * 1024) die (name, 'Файл ' + file.name + ' имеет недопустимо большой объём. Согласно требованиям ГИС ЖКХ, его величина не может превышать ' + max_mb + ' Мб.')
 
-    if (parts.length < 2) die (name, 'Некорректное имя файла: ' + fn + ' (невозможно определить расширение)')
+}
+
+function validate_gis_file_name (filename, name) {
+
+    var exts   = {pdf:1, doc:1, docx:1, rtf:1, xls:1, xlsx:1, jpg:1, jpeg:1}
+
+    if (filename.length > 255) return die (name, 'Некорректное имя файла: ' + filename + '. Согласно требованиям ГИС ЖКХ, его длина не может превышать 255 символов')
+
+    var parts = filename.split ('.')         
+
+    if (parts.length < 2) die (name, 'Некорректное имя файла: ' + filename + ' (невозможно определить расширение)')
 
     var ext = parts [parts.length - 1];
 
@@ -391,11 +398,9 @@ function validate_gis_file (name, file) {
 
         var l = []; for (var e in exts) l.push (e)
 
-        die (name, 'Некорректное имя файла: ' + fn + '.\n\nСогласно требованиям ГИС ЖКХ, разрешены следующие: ' + l.sort ().join (', ') + '.')
+        die (name, 'Некорректное имя файла: ' + filename + '.\n\nСогласно требованиям ГИС ЖКХ, разрешены следующие: ' + l.sort ().join (', ') + '.')
 
     }
-
-    if (file.size > max_mb * 1024 * 1024) die (name, 'Файл ' + fn + ' имеет недопустимо большой объём. Согласно требованиям ГИС ЖКХ, его величина не может превышать ' + max_mb + ' Мб.')
 
 }
 

@@ -30,6 +30,8 @@ define ([], function () {
         var form = w2ui ['voting_protocol_docs_popup_form']
         
         var r = form.values ()
+
+        //label check
         
         query ({type: 'voting_protocol_docs', action: 'edit', id: form.record.id}, {data: r}, reload_page)
 
