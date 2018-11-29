@@ -20,7 +20,7 @@ import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
 
 public class ContractObject extends Table {
-
+    
     public ContractObject () {
         
         super  ("tb_contract_objects", "Объекты договоров управления");
@@ -48,6 +48,7 @@ public class ContractObject extends Table {
         col    ("contractobjectversionguid",     Type.UUID,       null,          "UUID последней версии данного объекта в ГИС ЖКХ");
         
         col    ("fias_start",              Type.STRING,          new Virt ("CONCAT(LOWER(RAWTOHEX(\"FIASHOUSEGUID\")),TO_CHAR(\"STARTDATE\",'YYYY-MM-DD'))"),  "ключ для различения объектов внутри договора");
+        col    ("is_to_ignore",            Type.BOOLEAN,         new Virt (isToIgnoreSrc ()), "1, если объект следует игнорировать в контролях на пересечение периодов");
         
         fk     ("id_log",                  ContractObjectLog.class,  null,      "Последнее событие редактирования");
  
@@ -166,6 +167,18 @@ public class ContractObject extends Table {
                     
         + "END;");
 
+    }
+    
+    private static String isToIgnoreSrc () {
+        StringBuilder sb = new StringBuilder ("CASE");
+        sb.append (" WHEN IS_DELETED=1 THEN 1");
+        sb.append (" WHEN ANNULMENTINFO IS NOT NULL THEN 1");
+        sb.append (" WHEN ID_CTR_STATUS_GIS IN (");
+        sb.append (   VocGisStatus.i.REJECTED.getId ());
+        sb.append (") THEN 1");
+        sb.append (" ELSE 0");
+        sb.append (" END");
+        return sb.toString ();
     }
 
     public static void add (ImportContractRequest.Contract.PlacingContract pc, Map<String, Object> r) {
