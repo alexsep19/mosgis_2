@@ -31,7 +31,7 @@ define ([], function () {
         
         var r = form.values ()
 
-        //label check
+        validate_gis_file_name (r.label, 'label')
         
         query ({type: 'voting_protocol_docs', action: 'edit', id: form.record.id}, {data: r}, reload_page)
 
