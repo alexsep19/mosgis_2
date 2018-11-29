@@ -8,6 +8,11 @@ define ([], function () {
         var changed = false;
         var canceled = false;
 
+        function change_val (name, value) {
+            $('#' + name).val (value)
+            $('#' + name).trigger ('change')
+        }
+
         function recalc () {
 
             var tables = {'11.1': 'management_type_table',
@@ -42,18 +47,8 @@ define ([], function () {
 
             if (!read_only) enable_block(tables[v.decisiontype_vc_nsi_63])
             if (changed) {
-                if (canceled) {
-                    $('#questionname').val (data.item.questionname)
-                    $('#questionname').trigger ('change')
-                }
-                else if (v.decisiontype_vc_nsi_63 != data.item.decisiontype_vc_nsi_63) {
-                    $('#questionname').val (data.vc_nsi_63[v.decisiontype_vc_nsi_63])
-                    $('#questionname').trigger ('change')
-                }
-                else {
-                    $('#questionname').val (data.item.questionname)
-                    $('#questionname').trigger ('change')
-                }
+                if (canceled || v.decisiontype_vc_nsi_63 == data.item.decisiontype_vc_nsi_63) change_val ('questionname', data.item.questionname)
+                else change_val ('questionname', data.vc_nsi_63[v.decisiontype_vc_nsi_63])
                 canceled = false
             }
 
