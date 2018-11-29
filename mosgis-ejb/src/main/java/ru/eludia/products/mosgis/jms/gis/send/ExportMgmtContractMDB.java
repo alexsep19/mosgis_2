@@ -423,6 +423,7 @@ public class ExportMgmtContractMDB extends UUIDMDB<ContractLog> {
                 .where  ("uuid_contract", r.get ("uuid_object"))
                 .and    ("is_deleted", 0)
                 .and    ("id_ctr_status_gis <>", VocGisStatus.i.ANNUL.getId ())
+                .and    ("id_ctr_status_gis <>", VocGisStatus.i.REJECTED.getId ())
                 
             , (rs) -> {
                 Map<String, Object> object = db.HASH (rs);
