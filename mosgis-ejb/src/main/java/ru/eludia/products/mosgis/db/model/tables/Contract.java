@@ -109,7 +109,7 @@ public class Contract extends Table {
                     + " INNER JOIN vc_orgs org    ON c.uuid_org      = org.uuid "
                     + " INNER JOIN vc_build_addresses a ON o.fiashouseguid = a.houseguid "
                     + "WHERE o.is_deleted = 0"
-                    + " AND o.is_annuled = 0"
+                    + " AND o.is_annuled = 0 AND o.id_ctr_status_gis <> " + VocGisStatus.i.REJECTED.getId () + ""
                     + " AND o.fiashouseguid IN (SELECT fiashouseguid FROM tb_contract_objects WHERE is_deleted = 0 AND is_annuled = 0 AND uuid_contract = :NEW.uuid) "
                     + " AND o.enddate   >= :NEW.effectivedate "
                     + " AND o.startdate <= :NEW.rolltodate "
@@ -141,7 +141,7 @@ public class Contract extends Table {
                     + " INNER JOIN vc_orgs org    ON c.uuid_org      = org.uuid "
                     + " INNER JOIN vc_build_addresses a ON o.fiashouseguid = a.houseguid "
                     + "WHERE o.is_deleted = 0"
-                    + " AND o.is_annuled = 0"
+                    + " AND o.is_annuled = 0 AND o.id_ctr_status_gis <> " + VocGisStatus.i.REJECTED.getId ()
                     + " AND o.fiashouseguid IN (SELECT fiashouseguid FROM tb_contract_objects WHERE is_deleted = 0 AND is_annuled = 0 AND uuid_contract = :NEW.uuid) "
                     + " AND (o.enddate IS NULL OR o.enddate   >= :NEW.effectivedate )"
                     + " AND o.startdate <= :NEW.rolltodate "

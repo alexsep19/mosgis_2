@@ -69,7 +69,7 @@ public class ContractObject extends Table {
             + "END IF; "
 
             + "IF INSERTING THEN "
-            + " FOR i IN (SELECT c.uuid FROM tb_contracts c INNER JOIN tb_contract_objects o ON (o.uuid_contract = c.uuid AND o.uuid <> :NEW.uuid AND o.is_deleted = 0 AND o.is_annuled = 0) WHERE c.uuid=:NEW.uuid_contract AND c.id_customer_type=" + OWNERS.getId () + ") LOOP"
+            + " FOR i IN (SELECT c.uuid FROM tb_contracts c INNER JOIN tb_contract_objects o ON (o.uuid_contract = c.uuid AND o.uuid <> :NEW.uuid AND o.is_deleted = 0 AND o.is_annuled = 0 AND o.id_ctr_status_gis <> " + VocGisStatus.i.REJECTED.getId () + ") WHERE c.uuid=:NEW.uuid_contract AND c.id_customer_type=" + OWNERS.getId () + ") LOOP"
             + "   raise_application_error (-20000, 'Поскольку заказчик — собственник объекта жилищного фонда, объект в договоре может быть только один. Операция отменена.'); "
             + " END LOOP; "
             + "END IF; "
@@ -84,7 +84,7 @@ public class ContractObject extends Table {
                     
                     
                     
-            + "IF :NEW.is_deleted = 0 AND :NEW.is_annuled = 0 THEN "
+            + "IF :NEW.is_deleted = 0 AND :NEW.is_annuled = 0 AND :NEW.id_ctr_status_gis <> " + VocGisStatus.i.REJECTED.getId () + " THEN "
             + " FOR i IN ("
                 + "SELECT "
                 + " o.startdate"
@@ -97,7 +97,7 @@ public class ContractObject extends Table {
                 + " INNER JOIN tb_contracts c ON o.uuid_contract = c.uuid"
                 + " INNER JOIN vc_orgs org    ON c.uuid_org      = org.uuid "
                 + "WHERE o.is_deleted = 0"
-                + " AND o.is_annuled = 0"
+                + " AND o.is_annuled = 0 AND :NEW.id_ctr_status_gis <> " + VocGisStatus.i.REJECTED.getId ()
                 + " AND o.fiashouseguid = :NEW.fiashouseguid "
                 + " AND o.enddate   >= :NEW.startdate "
                 + " AND o.startdate <= :NEW.enddate "
@@ -119,7 +119,7 @@ public class ContractObject extends Table {
             + "END IF; "
 
                     
-            + "IF :NEW.is_deleted = 0 AND :NEW.is_annuled = 0 THEN "
+            + "IF :NEW.is_deleted = 0 AND :NEW.is_annuled = 0 AND :NEW.id_ctr_status_gis <> " + VocGisStatus.i.REJECTED.getId () + " THEN "
             + " FOR i IN ("
                 + "SELECT "
                 + " o.startdate"
@@ -131,7 +131,7 @@ public class ContractObject extends Table {
                 + " INNER JOIN vc_orgs org    ON c.uuid_org      = org.uuid "
                 + "WHERE o.is_deleted = 0"
                 + " AND o.ismanagedbycontract = 0"  
-                + " AND o.is_annuled = 0"
+                + " AND o.is_annuled = 0 AND o.id_ctr_status_gis <> " + VocGisStatus.i.REJECTED.getId ()
                 + " AND o.fiashouseguid = :NEW.fiashouseguid "
                 + " AND (o.enddate IS NULL OR o.enddate >= :NEW.startdate) "
                 + " AND o.startdate <= :NEW.enddate "

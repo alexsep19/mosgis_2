@@ -106,7 +106,7 @@ public class Charter extends EnTable {
                     + " tb_charter_objects o "
                     + " LEFT JOIN tb_charter_services s ON (s.uuid_charter_object = o.uuid AND s.is_deleted = 0) "
                     + "WHERE o.is_deleted = 0"
-                    + " AND o.is_annuled = 0"
+                    + " AND o.is_annuled = 0 AND :NEW.id_ctr_status_gis <> " + VocGisStatus.i.REJECTED.getId ()
                     + " AND o.uuid_charter = :NEW.uuid "
                     + " AND (o.enddate >= :NEW.rolltodate OR (o.enddate IS NULL AND s.enddate >= :NEW.rolltodate))"
                     + ") LOOP"
@@ -128,7 +128,7 @@ public class Charter extends EnTable {
                     + " INNER JOIN vc_orgs org    ON c.uuid_org      = org.uuid "
                     + " INNER JOIN vc_build_addresses a ON o.fiashouseguid = a.houseguid "
                     + "WHERE o.is_deleted = 0"
-                    + " AND o.is_annuled = 0"
+                    + " AND o.is_annuled = 0 AND :NEW.id_ctr_status_gis <> " + VocGisStatus.i.REJECTED.getId ()
                     + " AND o.fiashouseguid IN (SELECT fiashouseguid FROM tb_charter_objects WHERE is_deleted = 0 AND is_annuled = 0 AND uuid_charter = :NEW.uuid) "
                     + " AND o.enddate   >= :NEW.date_ "
                     + " AND o.startdate <= :NEW.rolltodate "
@@ -159,7 +159,7 @@ public class Charter extends EnTable {
                     + " INNER JOIN vc_orgs org    ON c.uuid_org      = org.uuid "
                     + " INNER JOIN vc_build_addresses a ON o.fiashouseguid = a.houseguid "
                     + "WHERE o.is_deleted = 0"
-                    + " AND o.is_annuled = 0"
+                    + " AND o.is_annuled = 0 AND :NEW.id_ctr_status_gis <> " + VocGisStatus.i.REJECTED.getId ()
                     + " AND o.ismanagedbycontract = 0"
                     + " AND o.fiashouseguid IN (SELECT fiashouseguid FROM tb_charter_objects WHERE is_deleted = 0 AND is_annuled = 0 AND o.ismanagedbycontract = 0 AND uuid_charter = :NEW.uuid) "
                     + " AND (o.enddate IS NULL OR o.enddate   >= :NEW.date_ )"
