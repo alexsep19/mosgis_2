@@ -30,8 +30,6 @@ define ([], function () {
         var form = w2ui ['voting_protocol_docs_popup_form']
         
         var r = form.values ()
-
-        validate_gis_file_name (r.label, 'label')
         
         query ({type: 'voting_protocol_docs', action: 'edit', id: form.record.id}, {data: r}, reload_page)
 
