@@ -365,37 +365,65 @@ function get_valid_gis_file (v, name) {
     if (!fl) die (name, 'Укажите, пожалуйста, файл')
     
     var file = fl [0].file
+    var magic_number = fl [0].content.slice (0, 6)
     
-    validate_gis_file (name, file)
+    validate_gis_file (name, file, magic_number)
     
     return file
     
 }
 
-function validate_gis_file (name, file) {
+function validate_gis_file (name, file, magic) {
 
-    var exts   = {pdf:1, doc:1, docx:1, rtf:1, xls:1, xlsx:1, jpg:1, jpeg:1}
-    var max_mb = 10
-    
-    var fn = file.name
-
-    if (fn.length > 255) return die (name, 'Некорректное имя файла: ' + fn + '. Согласно требованиям ГИС ЖКХ, его длина не может превышать 255 символов')
-
-    var parts = fn.split ('.')         
-
-    if (parts.length < 2) die (name, 'Некорректное имя файла: ' + fn + ' (невозможно определить расширение)')
-
-    var ext = parts [parts.length - 1];
-
-    if (!exts [ext]) {
-
-        var l = []; for (var e in exts) l.push (e)
-
-        die (name, 'Некорректное имя файла: ' + fn + '.\n\nСогласно требованиям ГИС ЖКХ, разрешены следующие: ' + l.sort ().join (', ') + '.')
-
+    function getExtFromSignature (signature) {
+        switch (signature) {
+            case '25504446':
+                return 'pdf'
+            case 'D0CF11E0':
+                return 'doc/xls'
+            case '504B0304':
+                return 'docx/xlsx'
+            case '7B5C7274':
+                return 'rtf'
+            case 'FFD8FFDB':
+            case 'FFD8FFE0':
+            case 'FFD8FFE1':
+            case 'FFD8FFEE':
+                return 'jpg/jpeg'
+            default:
+                return undefined
+        }
     }
 
-    if (file.size > max_mb * 1024 * 1024) die (name, 'Файл ' + fn + ' имеет недопустимо большой объём. Согласно требованиям ГИС ЖКХ, его величина не может превышать ' + max_mb + ' Мб.')
+    function getExt (str) {
+        const b64 = atob (str)
+        let bytes = []
+        for (var i=0, strLen=b64.length; i < strLen; i++) {
+            bytes.push (b64.charCodeAt(i).toString (16))
+        }
+        const hex = bytes.join('').toUpperCase ()
+        return getExtFromSignature (hex)
+    }
+
+    var filename = file.name
+    var filetype = getExt (magic)
+    var max_mb = 10
+    var exts   = {pdf:1, doc:1, docx:1, rtf:1, xls:1, xlsx:1, jpg:1, jpeg:1}
+    var l = []; for (var e in exts) l.push (e)
+
+    if (filetype == undefined) die (name, 'Некорректный тип файла: ' + filename + '. Согласно требованиям ГИС ЖКХ, разрешены следующие: ' + l.sort ().join (', ') + '.')
+    if (filename.length > 255) die (name, 'Некорректное имя файла: ' + filename + '. Согласно требованиям ГИС ЖКХ, его длина не может превышать 255 символов')
+
+    var parts = filename.split ('.')
+    if (parts.length < 2) die (name, 'Некорректное имя файла: ' + filename + ' (невозможно определить расширение)')
+
+    var ext = parts [parts.length - 1];
+    if (!exts [ext]) die (name, 'Некорректное имя файла: ' + filename + '.\n\nСогласно требованиям ГИС ЖКХ, разрешены следующие: ' + l.sort ().join (', ') + '.')
+
+    var possible_exts = filetype.split ('/')
+    if (possible_exts.indexOf (ext) < 0) die (name, 'Некорректное имя файла: ' + filename + ' (расширение не соответствует типу)')
+
+    if (file.size > max_mb * 1024 * 1024) die (name, 'Файл ' + filename + ' имеет недопустимо большой объём. Согласно требованиям ГИС ЖКХ, его величина не может превышать ' + max_mb + ' Мб.')
 
 }
 
