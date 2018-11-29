@@ -5,7 +5,7 @@ define ([], function () {
         $(view).w2popup ('open', {
 
             width  : 605,
-            height : 245,
+            height : 215,
 
             title   : 'Редактирование документа',
 
@@ -26,7 +26,6 @@ define ([], function () {
                         record: data,
 
                         fields : [
-                            {name: 'label', type: 'text'},
                             {name: 'description',  type: 'textarea' },
                         ],
 
