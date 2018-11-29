@@ -365,6 +365,9 @@ function get_valid_gis_file (v, name) {
     if (!fl) die (name, 'Укажите, пожалуйста, файл')
     
     var file = fl [0].file
+
+    if (file.size == 0) die (name, 'Пожалуйста, укажите не пустой файл')
+
     var magic_number = fl [0].content.slice (0, 6)
     
     validate_gis_file (name, file, magic_number)
