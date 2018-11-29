@@ -2,11 +2,16 @@ define ([], function () {
     
     var form_name = 'vote_decision_list_common_form'
 
-    var read_only = false
-
     return function (data, view) {
 
-        read_only = true;
+        var read_only = true;
+        var changed = false;
+        var canceled = false;
+
+        function change_val (name, value) {
+            $('#' + name).val (value)
+            $('#' + name).trigger ('change')
+        }
 
         function recalc () {
 
@@ -14,16 +19,22 @@ define ([], function () {
                           '2.1': 'forming_fund_table'
             }
 
+            var sizes = {'management_type_table': 314,
+                         'forming_fund_table': 314,
+                         'default': 276}
+
             function disable_block (table_name) {
                 var $table = $('#' + table_name)
                 $table.find('input').each (disable_element)
                 $table.find('label').each (disable_element)
+                $table.hide ()
             }
 
             function enable_block (table_name) {
                 var $table = $('#' + table_name)
                 $table.find('input').each (enable_element)
                 $table.find('label').each (enable_element)
+                $table.show ()
             }
 
             function disable_element (i, element) {
@@ -31,7 +42,9 @@ define ([], function () {
             }
 
             function enable_element (i, element) {
-                $(element).prop ('disabled', false)
+                if (read_only != undefined && !read_only) {
+                    $(element).prop ('disabled', false)
+                }
             }
 
             for (var table in tables) {
@@ -39,22 +52,32 @@ define ([], function () {
             }
 
             var v = w2ui [form_name].values ()
+            var table_name = 'default'
 
-            if (!read_only) enable_block(tables[v.decisiontype_vc_nsi_63])
+            if (tables[v.decisiontype_vc_nsi_63])
+                table_name = tables[v.decisiontype_vc_nsi_63]
+
+            enable_block(table_name)
+            if (changed) {
+                if (canceled || v.decisiontype_vc_nsi_63 == data.item.decisiontype_vc_nsi_63) change_val ('questionname', data.item.questionname)
+                else change_val ('questionname', data.vc_nsi_63[v.decisiontype_vc_nsi_63])
+                canceled = false
+            }
 
             $panel_top = $('#layout_passport_layout_panel_top')
             $panel_main = $('#layout_passport_layout_panel_main')
             $top_form_box = $panel_top.children ('.w2ui-panel-content').children ('.w2ui-form-box')
 
-            $panel_top.height (350)
-            $top_form_box.height (350)
-            $panel_main.css('top', '351px')
+            $panel_top.height (sizes[table_name])
+            $top_form_box.height (sizes[table_name])
+            $panel_main.css('top', sizes[table_name] + 1 + 'px')
 
         }
 
-        $_F5 = function (data) {
-        
+        $_F5 = function (data, cancel) {
+
             read_only = data.__read_only
+            canceled = cancel
 
             var r = clone (data.item)
 
@@ -123,7 +146,7 @@ define ([], function () {
                             ]}},
                         ],
 
-            onChange: function (e) {if (e.target == "decisiontype_vc_nsi_63") e.done (recalc)},
+            onChange: function (e) {if (e.target == "decisiontype_vc_nsi_63") changed = true; e.done (recalc)},
                         
             onRender: function (e) {e.done (setTimeout (recalc, 100))}
             
