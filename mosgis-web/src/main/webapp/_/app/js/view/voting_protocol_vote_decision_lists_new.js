@@ -80,7 +80,7 @@ define ([], function () {
 
         $(view).w2popup('open', {
 
-            width  : 650,
+            width  : 580,
             height : 400,
 
             title   : 'Новая повестка',
