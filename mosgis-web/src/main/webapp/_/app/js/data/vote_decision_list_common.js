@@ -12,7 +12,7 @@ define ([], function () {
 
             data.__read_only = true
 
-            $_F5 (data)
+            $_F5 (data, true)
 
         })
 
