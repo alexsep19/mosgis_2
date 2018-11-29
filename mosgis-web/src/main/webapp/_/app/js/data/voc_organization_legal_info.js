@@ -38,7 +38,7 @@ define ([], function () {
         var uo_rso_tsg_gsk_gk = ["1", "2", "19", "20", "21", "22"]
 
         data.is_on_self_manage = data.vc_orgs_nsi_20
-            .filter(function(i) { return uo_rso_tsg_gsk_gk.indexOf(i.code) > 0 })
+            .filter(function(i) { return uo_rso_tsg_gsk_gk.indexOf(i.code) >= 0 })
             .length > 0
 
         var rows = [
