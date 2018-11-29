@@ -2,11 +2,11 @@ define ([], function () {
     
     var form_name = 'vote_decision_list_common_form'
 
-    var read_only = false
-
     return function (data, view) {
 
-        read_only = true;
+        var read_only = true;
+        var changed = false;
+        var canceled = false;
 
         function recalc () {
 
@@ -40,10 +40,21 @@ define ([], function () {
 
             var v = w2ui [form_name].values ()
 
-            if (!read_only) {
-                enable_block(tables[v.decisiontype_vc_nsi_63])
-                $('#questionname').val (data.vc_nsi_63[v.decisiontype_vc_nsi_63])
-                $('#questionname').trigger ('change')
+            if (!read_only) enable_block(tables[v.decisiontype_vc_nsi_63])
+            if (changed) {
+                if (canceled) {
+                    $('#questionname').val (data.item.questionname)
+                    $('#questionname').trigger ('change')
+                }
+                else if (v.decisiontype_vc_nsi_63 != data.item.decisiontype_vc_nsi_63) {
+                    $('#questionname').val (data.vc_nsi_63[v.decisiontype_vc_nsi_63])
+                    $('#questionname').trigger ('change')
+                }
+                else {
+                    $('#questionname').val (data.item.questionname)
+                    $('#questionname').trigger ('change')
+                }
+                canceled = false
             }
 
             $panel_top = $('#layout_passport_layout_panel_top')
@@ -56,9 +67,10 @@ define ([], function () {
 
         }
 
-        $_F5 = function (data) {
-        
+        $_F5 = function (data, cancel) {
+
             read_only = data.__read_only
+            canceled = cancel
 
             var r = clone (data.item)
 
@@ -127,7 +139,7 @@ define ([], function () {
                             ]}},
                         ],
 
-            onChange: function (e) {if (e.target == "decisiontype_vc_nsi_63") e.done (recalc)},
+            onChange: function (e) {if (e.target == "decisiontype_vc_nsi_63") changed = true; e.done (recalc)},
                         
             onRender: function (e) {e.done (setTimeout (recalc, 100))}
             
