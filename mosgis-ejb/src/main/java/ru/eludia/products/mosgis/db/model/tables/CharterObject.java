@@ -56,7 +56,7 @@ public class CharterObject extends Table {
             + " PRAGMA AUTONOMOUS_TRANSACTION; "
             + "BEGIN "
                 
-            + "IF :NEW.is_deleted = 0 AND :NEW.is_annuled = 0 AND :NEW.ismanagedbycontract = 0 AND :NEW.id_ctr_status_gis <> " + VocGisStatus.i.REJECTED.getId () + " THEN "
+            + "IF :NEW.is_to_ignore = 0 THEN "
             + " FOR i IN ("
                 + "SELECT "
                 + " o.startdate"
@@ -70,8 +70,7 @@ public class CharterObject extends Table {
                 + " INNER JOIN tb_contracts c ON o.uuid_contract = c.uuid"
                 + " INNER JOIN vc_orgs org    ON c.uuid_org      = org.uuid "
                 + " INNER JOIN vc_buildings b ON o.fiashouseguid = b.houseguid "
-                + "WHERE o.is_deleted = 0"
-                + " AND o.is_annuled = 0 AND :NEW.id_ctr_status_gis <> " + VocGisStatus.i.REJECTED.getId ()
+                + "WHERE o.is_to_ignore = 0"
                 + " AND o.fiashouseguid = :NEW.fiashouseguid "
                 +                          " AND o.enddate   >= :NEW.startdate "
                 + " AND (:NEW.enddate IS NULL OR o.startdate <= :NEW.enddate )"
@@ -91,7 +90,7 @@ public class CharterObject extends Table {
             + " END LOOP; "
             + "END IF; "
                     
-            + "IF :NEW.is_deleted = 0 AND :NEW.is_annuled = 0 AND :NEW.is_from_gis = 0 AND :NEW.ismanagedbycontract = 0 AND :NEW.id_ctr_status_gis <> " + VocGisStatus.i.REJECTED.getId () + " THEN "
+            + "IF :NEW.is_to_ignore = 0 THEN "
             + " FOR i IN ("
                 + "SELECT "
                 + " o.startdate"
@@ -103,9 +102,7 @@ public class CharterObject extends Table {
                 + " INNER JOIN tb_charters c ON o.uuid_charter = c.uuid"
                 + " INNER JOIN vc_orgs org    ON c.uuid_org      = org.uuid "
                 + " INNER JOIN vc_buildings b ON o.fiashouseguid = b.houseguid "
-                + "WHERE o.is_deleted = 0"
-                + " AND o.is_annuled = 0 AND o.id_ctr_status_gis <> " + VocGisStatus.i.REJECTED.getId () + ""
-                + " AND o.ismanagedbycontract = 0"
+                + "WHERE o.is_to_ignore = 0"
                 + " AND o.fiashouseguid = :NEW.fiashouseguid "
                 + " AND (   o.enddate IS NULL OR o.enddate >= :NEW.startdate) "
                 + " AND (:NEW.enddate IS NULL OR o.startdate <= :NEW.enddate )"
@@ -128,6 +125,7 @@ public class CharterObject extends Table {
     private static String isToIgnoreSrc () {
         StringBuilder sb = new StringBuilder ("CASE");
         sb.append (" WHEN IS_DELETED=1 THEN 1");
+        sb.append (" WHEN ISMANAGEDBYCONTRACT=1 THEN 1");
         sb.append (" WHEN ANNULMENTINFO IS NOT NULL THEN 1");
         sb.append (" WHEN ID_CTR_STATUS_GIS IN (");
         sb.append (   VocGisStatus.i.REJECTED.getId ());
