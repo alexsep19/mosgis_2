@@ -405,7 +405,6 @@ function validate_gis_file (name, file, magic) {
             bytes.push (('0' + b64.charCodeAt(i).toString (16)).substr(-2))
         }
         const hex = bytes.join('').toUpperCase ()
-        console.log (hex)
         return getExtFromSignature (hex)
     }
 
