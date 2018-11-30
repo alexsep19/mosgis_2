@@ -9,7 +9,8 @@ public class InAccessRequests extends Table {
 
     public InAccessRequests () {        
         super ("in_acc_req", "Запросы на импорт прав делегирования");        
-        pk    ("uuid",        Type.UUID,             NEW_UUID,            "Ключ");        
+        pk    ("uuid",        Type.UUID,             NEW_UUID,            "Ключ");
+        col   ("page",        Type.INTEGER,  null,  "Страница");
         col   ("ts",          Type.TIMESTAMP, NOW,  "Дата/время записи в БД");        
     }
     
