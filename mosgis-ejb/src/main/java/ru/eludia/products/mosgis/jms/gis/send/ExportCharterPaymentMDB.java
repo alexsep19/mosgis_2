@@ -122,9 +122,15 @@ public class ExportCharterPaymentMDB extends UUIDMDB<CharterPaymentLog> {
         try {
             
             if (action == CharterPayment.Action.PLACING) {
+                
                 boolean b0 = isWaitingForFile (r, db, uuid, "_0");
                 boolean b1 = isWaitingForFile (r, db, uuid, "_1");                
-                if (b0 || b1) return;
+                
+                if (b0 || b1) {
+                    UUIDPublisher.publish (getOwnQueue (), uuid);                    
+                    return;
+                }
+                
             }
 
             AckRequest.Ack ack = invoke (db, action, uuid, r);
@@ -247,7 +253,6 @@ public class ExportCharterPaymentMDB extends UUIDMDB<CharterPaymentLog> {
             ));
             
             UUIDPublisher.publish (inHouseCharterPaymentFilesQueue, uuidFile);
-            UUIDPublisher.publish (getOwnQueue (), uuid);
             
             logger.info ("Sending file, bailing out");
             
@@ -256,11 +261,8 @@ public class ExportCharterPaymentMDB extends UUIDMDB<CharterPaymentLog> {
         }
         
         if (!DB.ok (r.get (doc + ".attachmentguid"))) {
-                
-            UUIDPublisher.publish (getOwnQueue (), uuid);
-                
             logger.info ("Waiting for " + r.get (doc + ".label") + " to be uploaded...");
-                
+            return true;
         }
         
         return false;
