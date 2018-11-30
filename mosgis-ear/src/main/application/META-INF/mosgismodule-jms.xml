@@ -171,10 +171,10 @@
 
 
 
-  <!-- очередь обработки запросов на импорт домов -->
-  <uniform-distributed-queue name="inExportHouseQueue">
+  <!-- очередь обработки запросов на импорт/экспорт домов -->
+  <uniform-distributed-queue name="inHouseDataQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-    <jndi-name>mosgis.inExportHouseQueue</jndi-name>
+    <jndi-name>mosgis.inHouseDataQueue</jndi-name>
   </uniform-distributed-queue>
 
   <!-- очередь опроса статуса исходящих запросов на импорт домов -->
@@ -364,11 +364,6 @@
         <time-to-deliver>2000</time-to-deliver>
         <redelivery-delay>10000</redelivery-delay>
     </delivery-params-overrides>
-  </uniform-distributed-queue>
-  <!-- очередь обработки запросов на импорт домов -->
-  <uniform-distributed-queue name="inImportHouseQueue">
-    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-    <jndi-name>mosgis.inImportHouseQueue</jndi-name>
   </uniform-distributed-queue>
   
   <!-- очередь опроса статуса исходящих запросов на импорт домов -->

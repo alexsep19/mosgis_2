@@ -98,12 +98,12 @@ public class WsGisHouseManagementClient {
         return getPort ().getState(getStateRequest);
     }    
 
-    public AckRequest.Ack exportHouseData (String fiasHouseGuid, UUID orgPPAGuid, UUID messageGUID) throws Fault {
+    public AckRequest.Ack exportHouseData (UUID orgPPAGuid, UUID messageGUID, UUID fiasHouseGuid) throws Fault {
         
         if (fiasHouseGuid == null) throw new IllegalArgumentException ("Null FIASHouseGUID passed");
         
         ExportHouseRequest request = of.createExportHouseRequest();
-        request.setFIASHouseGuid(fiasHouseGuid);
+        request.setFIASHouseGuid(fiasHouseGuid.toString());
         
         return getPort (orgPPAGuid, messageGUID).exportHouseData(request).getAck();
         
@@ -287,7 +287,7 @@ public class WsGisHouseManagementClient {
         return getPort (orgPPAGuid, UUID.randomUUID ()).getState (getStateRequest);
     }
     
-    public AckRequest.Ack importHouseUOData (UUID orgPPAGuid, Map<String, Object> r) throws Fault {
+    public AckRequest.Ack importHouseUOData (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
         
         ImportHouseUORequest importHouseUORequest = of.createImportHouseUORequest();
         
@@ -334,10 +334,10 @@ public class WsGisHouseManagementClient {
             ((Collection<Map<String, Object>>) r.get("livingrooms")).forEach((item) -> LivingRoom.add(house, item));
         }
         
-        return getPort (orgPPAGuid, UUID.randomUUID()).importHouseUOData(importHouseUORequest).getAck ();       
+        return getPort (orgPPAGuid, messageGUID).importHouseUOData(importHouseUORequest).getAck ();       
     }
     
-    public AckRequest.Ack importHouseOMSData (UUID orgPPAGuid, Map<String, Object> r) throws Fault {
+    public AckRequest.Ack importHouseOMSData (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
         
         ImportHouseOMSRequest importHouseOMSRequest = of.createImportHouseOMSRequest();
         
@@ -384,10 +384,10 @@ public class WsGisHouseManagementClient {
             ((Collection<Map<String, Object>>) r.get("livingrooms")).forEach((item) -> LivingRoom.add(house, item));
         }
         
-        return getPort (orgPPAGuid, UUID.randomUUID()).importHouseOMSData(importHouseOMSRequest).getAck ();       
+        return getPort (orgPPAGuid, messageGUID).importHouseOMSData(importHouseOMSRequest).getAck ();       
     }
     
-    public AckRequest.Ack importHouseRSOData (UUID orgPPAGuid, Map<String, Object> r) throws Fault {
+    public AckRequest.Ack importHouseRSOData (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
         
         ImportHouseRSORequest importHouseRSORequest = of.createImportHouseRSORequest();
         
@@ -433,10 +433,10 @@ public class WsGisHouseManagementClient {
             ((Collection<Map<String, Object>>) r.get("livingrooms")).forEach((item) -> LivingRoom.add(house, item));
         }
         
-        return getPort (orgPPAGuid, UUID.randomUUID()).importHouseRSOData(importHouseRSORequest).getAck ();       
+        return getPort (orgPPAGuid, messageGUID).importHouseRSOData(importHouseRSORequest).getAck ();       
     }
     
-    public AckRequest.Ack importHouseESPData (UUID orgPPAGuid, Map<String, Object> r) throws Exception {
+    public AckRequest.Ack importHouseESPData (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
         
         ImportHouseESPRequest importHouseESPRequest = of.createImportHouseESPRequest();
         
@@ -462,14 +462,11 @@ public class WsGisHouseManagementClient {
             ((Collection<Map<String, Object>>) r.get("residentialpremises")).forEach((item) -> ResidentialPremise.add(house, item));
             ((Collection<Map<String, Object>>) r.get("nonresidentialpremises")).forEach((item) -> NonResidentialPremise.add(house, item));
         } else {
-            throw new Exception("Данным методом возможно отправить только МКД");
+            throw new IllegalArgumentException("Organization with role ESP can send only MKD");
         }
         
-        return getPort (orgPPAGuid, UUID.randomUUID()).importHouseESPData(importHouseESPRequest).getAck ();       
+        return getPort (orgPPAGuid, messageGUID).importHouseESPData(importHouseESPRequest).getAck ();       
     }
-    
-    
-    
     
     public AckRequest.Ack placeCharterData (UUID orgPPAGuid, UUID messageGUID,  Map<String, Object> r) throws Fault {
         

@@ -81,7 +81,15 @@ define ([], function () {
             
         use.block (name)
             
-    }            
+    }      
+    
+    $_DO.send_house_passport = function (e) {
+        query ({type: 'houses', action: 'send'}, {}, reload_page)
+    }
+    
+    $_DO.reload_house_passport = function (e) {
+        query ({type: 'houses', action: 'reload'}, {}, reload_page)
+    }
 
     return function (done) {        
 
@@ -93,10 +101,12 @@ define ([], function () {
         
             {id: 'house_passport_entrances',    label: 'Подъезды'},
             {id: 'house_passport_lifts',        label: 'Лифты'},
+            {id: 'house_common_log',            label: 'История изменений'},
             
         ]: [
         
             {id: 'house_passport_blocks',       label: 'Блоки', off: !data.item.hasblocks},
+            {id: 'house_common_log',            label: 'История изменений'},
             
         ].filter (not_off)
         
@@ -131,5 +141,5 @@ define ([], function () {
         })        
 
     }
-
+    
 })

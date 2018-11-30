@@ -30,11 +30,8 @@ public class House implements HouseMBean {
     @EJB
     protected UUIDPublisher UUIDPublisher;    
 
-    @Resource (mappedName = "mosgis.inExportHouseQueue")
-    Queue inExportHouseQueue;   
-    
-    @Resource (mappedName = "mosgis.inImportHouseQueue")
-    Queue inImportHouseQueue;   
+    @Resource (mappedName = "mosgis.inHouseDataQueue")
+    private Queue inHouseDataQueue;
         
     @PostConstruct
     public void registerInJMX () {
@@ -68,7 +65,7 @@ public class House implements HouseMBean {
         
         try {
             UUID.fromString(fiasHouseGuid);
-            UUIDPublisher.publish (inExportHouseQueue, fiasHouseGuid);
+            UUIDPublisher.publish (inHouseDataQueue, fiasHouseGuid);
         } catch (IllegalArgumentException e){
             throw new IllegalArgumentException ("Invalid FIASHouseGUID passed: '" + fiasHouseGuid + "'");
         }
@@ -84,7 +81,7 @@ public class House implements HouseMBean {
         JsonObjectBuilder jb = Json.createObjectBuilder ();
         JsonObject jo = jb.add("uuid", uuid).add("orgPPAGuid", orgPPAGuid).build();
         
-        UUIDPublisher.publish (inImportHouseQueue, jo.toString());
+        UUIDPublisher.publish (inHouseDataQueue, jo.toString());
     }
 
 }

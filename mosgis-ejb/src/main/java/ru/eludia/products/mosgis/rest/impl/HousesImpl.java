@@ -1,7 +1,11 @@
 package ru.eludia.products.mosgis.rest.impl;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -30,6 +34,8 @@ import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.ActualCaChObject;
 import ru.eludia.products.mosgis.db.model.tables.Block;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
+import ru.eludia.products.mosgis.db.model.tables.ContractFile;
+import ru.eludia.products.mosgis.db.model.tables.ContractFileLog;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.Entrance;
 import ru.eludia.products.mosgis.db.model.tables.Lift;
@@ -40,6 +46,11 @@ import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
+import ru.eludia.products.mosgis.db.model.voc.VocCharterObjectReason;
+import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
+import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType;
+import static ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType.i.OWNERS;
+import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerTypeNsi58;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
@@ -56,7 +67,7 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
 
     private static final Logger logger = Logger.getLogger (HousesImpl.class.getName ());
         
-    @Resource (mappedName = "mosgis.inExportHouseQueue")
+    @Resource (mappedName = "mosgis.inHouseDataQueue")
     private Queue queue;
 
     @Override
@@ -69,43 +80,50 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
         
         switch (action) {
             case CREATE:
+            case RELOAD:
+            case ALTER:
                 super.publishMessage (action, id_log);
             default:
                 return;
         }
         
     }
-    
-    @Override
-    protected void logAction (DB db, User user, Object id, VocAction.i action) throws SQLException {
+
+    private void logAction (DB db, User user, Object id, String uuidOrg, String fiasHouseGuid, VocAction.i action) throws SQLException {
 
         Table logTable = ModelHolder.getModel ().getLogTable (getTable ());
 
         if (logTable == null) return;
 
-        UUID uuidOrg = null;
-        if (user != null && user.getUuidOrg() != null)
-            uuidOrg = UUID.fromString(user.getUuidOrg());
+        if (uuidOrg == null && user != null && user.getUuidOrg() != null)
+            uuidOrg = user.getUuidOrg();
         
         if (uuidOrg == null) {
-            Model model = db.getModel();
-            ModelHolder.getModel ()
+            Map<String, Object> mgmtOrg = db.getMap(ModelHolder.getModel ()
                     .select(ContractObject.class, "AS root", "uuid")
                     .toOne (Contract.class, "AS contract", "label").on ()
-                    .toOne (VocOrganization.class, "AS org", "orgppaguid").on ()
-                    .where("fiashouseguid", values);
+                    .toOne (VocOrganization.class, "AS org", "uuid").on ()
+                    .where("fiashouseguid", fiasHouseGuid)
+                    .and("startdate <= " + LocalDate.now().format(DateTimeFormatter.ISO_DATE))
+                    .and("enddate >= " + LocalDate.now().format(DateTimeFormatter.ISO_DATE))
+                    .and("id_ctr_status_gis", VocGisStatus.i.APPROVED));
+            if (mgmtOrg.isEmpty())
+                //TODO Искать ОМС
+                logger.log(Level.SEVERE, "Не найдена управляющая организация для дома с идентификтаором " + fiasHouseGuid);
+            else
+                uuidOrg = mgmtOrg.get("org.uuid").toString();
         }
             
         
         String id_log = db.insertId (logTable, HASH (
             "action", action,
             "uuid_object", id,
-            "uuid_user", user == null ? null : user.getId ()
+            "uuid_user", user == null ? null : user.getId (),
+            "uuid_org", uuidOrg
         )).toString ();
         
         db.update (getTable (), HASH (
             "uuid",      id,
-            "id_status", VocAsyncEntityState.i.PENDING.getId (),
             "id_log",    id_log
         ));
 
@@ -257,7 +275,7 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
     }
 
     @Override
-    public JsonObject doUpdate (String id, JsonObject p) {
+    public JsonObject doUpdate (String id, JsonObject p, User user) {
 
         JsonObjectBuilder jb = Json.createObjectBuilder ();
         
@@ -492,15 +510,40 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
         final Table table = getTable ();
 
         Map<String, Object> data = getData (p);
+        data.put("id_status", VocGisStatus.i.PENDING_RQ_RELOAD.getId());
 
         db.upsert (table, data, FIASHOUSEGUID);
 
-        JsonObject upsertId = db.getJsonObject( new Select (table, "uuid").where(FIASHOUSEGUID, data.get(FIASHOUSEGUID)));
+        String upsertId = db.getString( new Select (table, "uuid").where(FIASHOUSEGUID, data.get(FIASHOUSEGUID)));
         
-        logAction (db, user, upsertId, VocAction.i.CREATE);
+        logAction (db, user, upsertId, null, data.get(FIASHOUSEGUID).toString(), VocAction.i.CREATE);
         
-        job.add ("id", upsertId.getString("uuid"));
+        job.add ("id", upsertId);
 
+    });}
+    
+    @Override
+    public JsonObject doReload (String id, String uuidOrg, User user) {return doAction ((db) -> {
+        
+        db.update (getTable (), HASH (
+            "uuid",           id,
+            "id_status",  VocGisStatus.i.PENDING_RQ_RELOAD.getId ()
+        ));
+        
+        logAction (db, user, id, uuidOrg, null, VocAction.i.RELOAD);
+        
+    });}
+    
+    @Override
+    public JsonObject doSend (String id, String uuidOrg, User user) {return doAction ((db) -> {
+
+        db.update (getTable (), HASH (
+            "uuid",           id,
+            "id_status",  VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+        ));
+        
+        logAction (db, user, id, uuidOrg, null, VocAction.i.ALTER);
+        
     });}
     
 }

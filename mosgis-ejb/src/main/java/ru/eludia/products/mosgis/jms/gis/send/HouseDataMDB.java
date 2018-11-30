@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Resource;
@@ -19,8 +18,8 @@ import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import javax.jms.Queue;
-import javax.json.JsonObject;
 import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.base.db.util.TypeConverter;
@@ -28,12 +27,15 @@ import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.Block;
 import ru.eludia.products.mosgis.db.model.tables.Entrance;
 import ru.eludia.products.mosgis.db.model.tables.House;
+import ru.eludia.products.mosgis.db.model.tables.HouseLog;
 import ru.eludia.products.mosgis.db.model.tables.Lift;
 import ru.eludia.products.mosgis.db.model.tables.LivingRoom;
 import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
+import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
 import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
@@ -41,7 +43,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocRdColType;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
-import ru.eludia.products.mosgis.jms.base.JsonMDB;
+import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import ru.eludia.products.mosgis.util.StringUtils;
 import ru.eludia.products.mosgis.util.XmlUtils;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
@@ -51,11 +53,11 @@ import ru.gosuslugi.dom.schema.integration.house_management.OGFDataValue;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 
 @MessageDriven(activationConfig = {
-    @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inImportHouseQueue")
+    @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inHouseDataQueue")
     , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
     , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class ImportHouseMDB extends JsonMDB<House> {
+public class HouseDataMDB extends UUIDMDB<HouseLog> {
 
     private static final Pattern CADASTRAL_NUMBER_PATTERN = Pattern.compile("^[0-9]{2}:[0-9]{2}:[0-9]{6,10}:.+"); 
     
@@ -66,26 +68,155 @@ public class ImportHouseMDB extends JsonMDB<House> {
     private WsGisHouseManagementClient wsGisHouseManagementClient;
     
     @Resource (mappedName = "mosgis.outImportHouseQueue")
-    private Queue outImportHouseQueue;
+    private Queue importQueue;
+    
+    @Resource (mappedName = "mosgis.outExportHouseQueue")
+    private Queue exportQueue;
 
     @Override
     protected Get get(UUID uuid) {
-        return (Get) ModelHolder.getModel().get(getTable(), uuid, "*")
+        return (Get) ModelHolder.getModel().get(getTable(), uuid, "AS root", "*")
+                .toOne (VocOrganization.class, "AS org", "orgppaguid").on()
+                .toOne (House.class, "AS house", "fiashouseguid", "id_status").on()
                 .toOne(VocBuilding.class, "oktmo").on();
     }
     
     @Override
-    protected void handleRecord(DB db, JsonObject params, Map<String, Object> r) throws SQLException {
+    protected void handleRecord(DB db, UUID uuid, Map<String, Object> r) throws SQLException {
+      
+        VocGisStatus.i status = VocGisStatus.i.forId (r.get ("house.id_status"));
+        
+        House.Action action = House.Action.forStatus (status);
+        
+        if (action == null) {
+            logger.warning ("No action is implemented for " + status);
+            return;
+        }
+        
+        try {
+            AckRequest.Ack ack = invoke(db, action, uuid, r);
+        
+            db.begin();
+            db.update(OutSoap.class, DB.HASH(
+                    "uuid",     uuid,
+                    "uuid_ack", ack.getMessageGUID()
+            ));
 
-        Model model = ModelHolder.getModel();
+            db.update(getTable(), DB.HASH(
+                    "uuid",          uuid,
+                    "uuid_out_soap", uuid,
+                    "uuid_message",  ack.getMessageGUID()
+            ));
+            
+            db.update (House.class, DB.HASH (
+                    "uuid",          r.get ("uuid_object"),
+                    "id_status",     action.getNextStatus ().getId ()
+                ));
+            
+            db.commit();
+            
+            UUIDPublisher.publish (getQueue (action), ack.getRequesterMessageGUID ());
+            
+            db.begin ();
+            db.update (OutSoap.class, DB.HASH (
+                "uuid", ack.getRequesterMessageGUID (),
+                "uuid_ack", ack.getMessageGUID ()
+            ));
+            db.commit ();
+                
+            UUIDPublisher.publish (importQueue, ack.getRequesterMessageGUID ()); 
+        }
+        catch (Fault ex) {
 
-        UUID orgPPAGuid = UUID.fromString(params.getString("orgPPAGuid"));
+            logger.log (Level.SEVERE, "Can't get house data from GIS ZKH", ex);
+
+            ru.gosuslugi.dom.schema.integration.base.Fault faultInfo = ex.getFaultInfo ();
+
+            db.begin ();
+
+                db.update (OutSoap.class, HASH (
+                    "uuid",      uuid,
+                    "id_status", DONE.getId (),
+                    "is_failed", 1,
+                    "err_code",  faultInfo.getErrorCode (),
+                    "err_text",  faultInfo.getErrorMessage ()
+                ));
+
+                db.update (getTable (), DB.HASH (
+                    "uuid",          uuid,
+                    "uuid_out_soap", uuid
+                ));
+
+                db.update (House.class, DB.HASH (
+                    "uuid",      r.get ("uuid_object"),
+                    "id_status", action.getFailStatus ().getId ()
+                ));
+
+            db.commit ();
+        }
+        catch (Exception ex) {
+            
+            logger.log (Level.SEVERE, "Cannot invoke WS", ex);
+            
+            db.begin ();
+
+                db.upsert (OutSoap.class, HASH (
+                    "uuid",      uuid,
+                    "svc",       getClass ().getName (),
+                    "op",        action.toString (),
+                    "is_out",    1,
+                    "id_status", DONE.getId (),
+                    "is_failed", 1,
+                    "err_code",  "0",
+                    "err_text",  ex.getMessage ()
+                ));
+
+                db.update (getTable (), DB.HASH (
+                    "uuid",          uuid,
+                    "uuid_out_soap", uuid
+                ));
+
+                db.update (House.class, DB.HASH (
+                    "uuid",      r.get ("uuid_object"),
+                    "id_status", action.getFailStatus ().getId ()
+                ));
+
+            db.commit ();
+        }
+    }
+    
+    private Queue getQueue (House.Action action) {
+        switch (action) {
+            case RELOADING:  return exportQueue;
+            default:         return importQueue;
+        } 
+    }
+    
+    AckRequest.Ack invoke (DB db, House.Action action, UUID messageGUID,  Map<String, Object> r) throws Fault, SQLException {
+            
+        UUID orgPPAGuid = (UUID) r.get("org.orgppaguid");
+            
+        switch (action) {
+            case RELOADING: return wsGisHouseManagementClient.exportHouseData(orgPPAGuid, messageGUID, (UUID) r.get("house.fiashouseguid"));
+            case EDITING:   return invokeImport(db, messageGUID, r);
+            default: throw new IllegalArgumentException ("No action implemented for " + action);
+        }
+
+    }
+    
+    AckRequest.Ack invokeImport (DB db, UUID messageGUID,  Map<String, Object> r) throws Fault, SQLException {
+       
+        UUID orgPPAGuid = (UUID) r.get("org.orgppaguid");
+        
+        Model model = db.getModel();
+        
         Set<OrgRoles> orgRoles = new HashSet<>();
         db.forEach(model.select(VocOrganization.class, "AS org", "orgppaguid")
                 .toMaybeOne(VocOrganizationNsi20.class, "AS roles", "*").on("roles.uuid = org.uuid")
                 .where("orgppaguid", orgPPAGuid),
                 (rs) -> {
                     Map<String, Object> role = db.HASH(rs);
+                    
                     orgRoles.add(OrgRoles.getByNsiCode((String) role.get("roles.code")));
                 });
         
@@ -117,35 +248,12 @@ public class ImportHouseMDB extends JsonMDB<House> {
             r.put("residentialpremises", ((Map<Object, Object>)r.get("residentialpremises")).values());
         else if (hasBlocks)
             r.put("blocks", ((Map<Object, Object>)r.get("blocks")).values());
-        try {
-            AckRequest.Ack ack = null;
         
-            if (orgRoles.contains(OrgRoles.UO)) {
-                ack = wsGisHouseManagementClient.importHouseUOData(orgPPAGuid, r);
-            } else if (orgRoles.contains(OrgRoles.OMS)) {
-                ack = wsGisHouseManagementClient.importHouseOMSData(orgPPAGuid, r);
-            } else if (orgRoles.contains(OrgRoles.ESP)) {
-                ack = wsGisHouseManagementClient.importHouseESPData(orgPPAGuid, r);
-            } else if (orgRoles.contains(OrgRoles.RSO)) {
-                ack = wsGisHouseManagementClient.importHouseRSOData(orgPPAGuid, r);
-            }
-            if (ack == null)
-                return;
-            
-            db.begin ();
-            db.update (OutSoap.class, DB.HASH (
-                "uuid", ack.getRequesterMessageGUID (),
-                "uuid_ack", ack.getMessageGUID ()
-            ));
-            db.commit ();
-                
-            UUIDPublisher.publish (outImportHouseQueue, ack.getRequesterMessageGUID ()); 
-            
-        } catch (Fault ex) {
-            logger.log (Level.SEVERE, ex.getMessage(), ex);
-        } catch (Exception ex) {
-            logger.log (Level.SEVERE, ex.getMessage(), ex);
-        }
+        if (orgRoles.contains(OrgRoles.UO)) return wsGisHouseManagementClient.importHouseUOData(orgPPAGuid, messageGUID, r);
+        else if (orgRoles.contains(OrgRoles.OMS)) return wsGisHouseManagementClient.importHouseOMSData(orgPPAGuid, messageGUID, r);
+        else if (orgRoles.contains(OrgRoles.ESP)) return wsGisHouseManagementClient.importHouseESPData(orgPPAGuid, messageGUID, r);
+        else if (orgRoles.contains(OrgRoles.RSO)) return wsGisHouseManagementClient.importHouseRSOData(orgPPAGuid, messageGUID, r);
+        else throw new IllegalArgumentException ("Method is available only to organizations with roles UO, RSO, OMS, ESP");
     }
     
     private boolean checkCadastralNumber(String cadastralNumber) {

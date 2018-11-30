@@ -16,25 +16,18 @@ import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.base.db.util.TypeConverter;
 import ru.eludia.products.mosgis.db.model.tables.Block;
-import ru.eludia.products.mosgis.db.model.tables.ContractLog;
-import ru.eludia.products.mosgis.db.model.tables.Entrance;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.HouseLog;
-import ru.eludia.products.mosgis.db.model.tables.Lift;
 import ru.eludia.products.mosgis.db.model.tables.LivingRoom;
-import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
-import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
-import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
-import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.house_management.BlockCategoryType;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.eludia.products.mosgis.util.StringUtils;
@@ -141,10 +134,10 @@ public class GisPollExportHouse extends GisPollMDB {
         ));
           
         Map<String, Object> dbHouseData = db.getMap(House.class, houseUuid);
-        putIfNullOrEmpty(record, dbHouseData);
+        Map<String, Object> houseDataForSave = getIfDbDataNullOrEmpty(record, dbHouseData);
         if (record.get("kad_n") != null)
-            dbHouseData.put("kad_n", record.get("kad_n"));
-        db.update(House.class, dbHouseData);
+            houseDataForSave.put("kad_n", record.get("kad_n"));
+        db.update(House.class, houseDataForSave);
          
         dbHouseData.put ("uuid", getUuid ());
         db.update (HouseLog.class, dbHouseData);
@@ -357,7 +350,9 @@ public class GisPollExportHouse extends GisPollMDB {
         ));
             
         Map<String, Object> dbHouseData = db.getMap(House.class, houseUuid);
-        putIfNullOrEmpty(record, dbHouseData);
+        Map<String, Object> houseDataForSave = getIfDbDataNullOrEmpty(record, dbHouseData);
+        if (record.get("kad_n") != null)
+            houseDataForSave.put("kad_n", record.get("kad_n"));
         db.update(House.class, dbHouseData);
          
         dbHouseData.put ("uuid", getUuid ());
@@ -516,12 +511,17 @@ public class GisPollExportHouse extends GisPollMDB {
         });
     }
     
-    private void putIfNullOrEmpty(Map<String, Object> from, Map<String, Object> to) {
-        from.forEach((key, value) -> {
-            Object o = to.get(key);
-            if (o == null || o instanceof String && StringUtils.isEmpty((String)o))
-                to.put(key, value);
-        });
+    private Map<String, Object> getIfDbDataNullOrEmpty(Map<String, Object> newData, Map<String, Object> dbData) {
         
+        Map<String, Object> result = new HashMap<>();
+        
+        newData.forEach((key, value) -> {
+            Object o = dbData.get(key);
+            if (o != null && !(o instanceof String && StringUtils.isEmpty((String)o)))
+                return;
+            result.put(key, value);
+            dbData.put(key, value);
+        });
+        return result;
     }
 }

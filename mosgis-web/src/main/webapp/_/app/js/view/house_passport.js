@@ -59,7 +59,7 @@ define ([], function () {
             cach.click = function () {openTab ('/' + cach.type + '/' + cach.uuid)}
         }
         
-        it._can.update = it._can.edit
+        it._can.update = it._can.reload = it._can.send = it._can.edit
 
         $_F5 = function (data) {
         
