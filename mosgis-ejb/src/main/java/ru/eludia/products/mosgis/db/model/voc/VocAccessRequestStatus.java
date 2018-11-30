@@ -6,6 +6,7 @@ import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 import ru.eludia.base.model.Table;
+import ru.gosuslugi.dom.schema.integration.organizations_registry_common.AccessRequestStatus;
 
 public class VocAccessRequestStatus extends Table {
     
@@ -80,12 +81,16 @@ public class VocAccessRequestStatus extends Table {
             for (i i: values ()) if (i.name.equals (name)) return i;
             return null;
         }
+        
+        public static int valueOf (AccessRequestStatus x) {
+            return forName (x.value ()).getId ();
+        }
 
         @Override
         public String toString () {
             return name;
         }
 
-    }
+    }        
     
 }
