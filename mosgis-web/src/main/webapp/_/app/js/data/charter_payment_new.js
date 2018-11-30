@@ -28,7 +28,7 @@ define ([], function () {
         
         if (v.payment_1) {
             if (!v.file_1) die ('file_1', 'Загрузите, пожалуйста, протокол')
-            validate_gis_file ('file_1', v.file_1 [0].file)
+            validate_gis_file ('file_1', v.file_1 [0].file, v.file_1 [0].content.slice (0, 6))
         }
         else {
             if (v.file_1) die ('payment_1', 'Вы загрузили протокол, но не указали размер платы')
@@ -36,7 +36,7 @@ define ([], function () {
 
         if (v.payment_0) {
             if (!v.file_0) die ('file_0', 'Загрузите, пожалуйста, протокол')
-            validate_gis_file ('file_0', v.file_0 [0].file)
+            validate_gis_file ('file_0', v.file_0 [0].file, v.file_0 [0].content.slice (0, 6))
         }
         else {
             if (v.file_0) die ('payment_0', 'Вы загрузили протокол, но не указали размер платы')
