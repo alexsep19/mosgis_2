@@ -114,7 +114,7 @@ public class ExportCharterPaymentMDB extends UUIDMDB<CharterPaymentLog> {
 
         r.put ("svc", db.getList (m
             .select (ServicePayment.class, "*")
-            .where  (ServicePayment.c.UUID_CONTRACT_PAYMENT.lc (), uuidObject)
+            .where  (ServicePayment.c.UUID_CHARTER_PAYMENT.lc (), uuidObject)
             .and    (EnTable.c.IS_DELETED.lc (), 0)
             .toOne (OrganizationWork.class, "AS w", "elementguid", "uniquenumber").on ()
         ));
