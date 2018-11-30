@@ -20,7 +20,7 @@ import ru.eludia.products.mosgis.ejb.wsc.WsGisOrgClient;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_common_service_async.Fault;
 
 @MessageDriven(activationConfig = {
- @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outExportHouseContractPaymentsQueue")
+ @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outExportAccessRequestQueue")
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })

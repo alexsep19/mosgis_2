@@ -11,8 +11,10 @@ import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import javax.jms.Queue;
 import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.products.mosgis.db.model.incoming.InAccessRequests;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisOrgClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
@@ -43,7 +45,7 @@ public class ExportAccessRequestsMdb extends UUIDMDB<InAccessRequests> {
         
         try {
             
-            AckRequest.Ack ack = wsGisOrgClient.exportDelegatedAccess (DB.to.Long (r.get ("page")), uuid);
+            AckRequest.Ack ack = wsGisOrgClient.exportDelegatedAccess ((int) DB.to.Long (r.get ("page")), uuid);
             
             db.update (OutSoap.class, DB.HASH (
                 "uuid",     uuid,
@@ -54,7 +56,30 @@ public class ExportAccessRequestsMdb extends UUIDMDB<InAccessRequests> {
             
         }
         catch (Fault ex) {
+            
+            db.update (OutSoap.class, HASH (
+                "uuid", uuid,
+                "id_status", DONE.getId (),
+                "is_failed", 1,
+                "err_code",  ex.getFaultInfo ().getErrorCode (),
+                "err_text",  ex.getFaultInfo ().getErrorMessage ()
+            ));            
+            
             Logger.getLogger (ExportAccessRequestsMdb.class.getName()).log (Level.SEVERE, null, ex);
+            
+        }
+        catch (Exception ex) {
+            
+            db.update (OutSoap.class, HASH (
+                "uuid", uuid,
+                "id_status", DONE.getId (),
+                "is_failed", 1,
+                "err_code",  "0",
+                "err_text",  ex.getMessage ()
+            ));            
+            
+            Logger.getLogger (ExportAccessRequestsMdb.class.getName()).log (Level.SEVERE, null, ex);
+            
         }
 
     }

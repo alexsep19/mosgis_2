@@ -86,9 +86,9 @@ public class WsGisOrgClient {
 
     }
 
-    public AckRequest.Ack exportDelegatedAccess (Long page, UUID messageGUID) throws Fault {
+    public AckRequest.Ack exportDelegatedAccess (int page, UUID messageGUID) throws Fault {
         final ExportDelegatedAccessRequest createExportDelegatedAccessRequest = of.createExportDelegatedAccessRequest ();
-        if (page != null) createExportDelegatedAccessRequest.setPage (page.intValue ());
+        if (page > 0) createExportDelegatedAccessRequest.setPage (page);
         return getPort (messageGUID).exportDelegatedAccess (createExportDelegatedAccessRequest).getAck ();
     }
 
