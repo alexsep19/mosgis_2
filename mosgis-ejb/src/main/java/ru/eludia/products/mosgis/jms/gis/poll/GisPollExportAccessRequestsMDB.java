@@ -9,6 +9,7 @@ import javax.ejb.MessageDriven;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
+import ru.eludia.products.mosgis.db.model.incoming.InAccessRequests;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -17,6 +18,7 @@ import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_common.GetStateResult;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisOrgClient;
+import ru.eludia.products.mosgis.jmx.DelegationLocal;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_common_service_async.Fault;
 
 @MessageDriven(activationConfig = {
@@ -28,16 +30,14 @@ public class GisPollExportAccessRequestsMDB  extends GisPollMDB {
 
     @EJB
     protected WsGisOrgClient wsGisOrgClient;
-
-//    @Resource (mappedName = "mosgis.outExportHouseContractPaymentsQueue")
-//    Queue queue;
     
-//    @EJB
-//    protected UUIDPublisher UUIDPublisher;
+    @EJB    
+    DelegationLocal delegation;
     
     @Override
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
+            .toOne (InAccessRequests.class, "AS r", "page").on ("root.uuid=r.uuid")
         ;
     }
 
@@ -54,6 +54,10 @@ public class GisPollExportAccessRequestsMDB  extends GisPollMDB {
                 "uuid", getUuid (),
                 "id_status", DONE.getId ()
             ));
+            
+            if (Boolean.TRUE.equals (state.isIsNextPage ())) {                
+                delegation.importAccessRequests (1 + (int) DB.to.Long (r.get ("r.page")));
+            }
 
         }
         catch (GisPollRetryException ex) {

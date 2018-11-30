@@ -1,7 +1,6 @@
 package ru.eludia.products.mosgis.jmx;
 
 import java.lang.management.ManagementFactory;
-import java.sql.SQLException;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,7 +22,7 @@ import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 @Startup
 @Singleton
 //@DependsOn ("Conf")
-public class Delegation implements DelegationMBean {
+public class Delegation implements DelegationMBean, DelegationLocal {
 
     private ObjectName objectName = null;
     private MBeanServer platformMBeanServer;
@@ -58,15 +57,20 @@ public class Delegation implements DelegationMBean {
             throw new IllegalStateException ("Problem during unregistration of Monitoring into JMX:" + e);
         }
 
-    }
+    }    
 
     @Override
     public void importAccessRequests () {
+        importAccessRequests (null);
+    }
+    
+    @Override
+    public void importAccessRequests (Integer page) {
 
         Model model = ModelHolder.getModel ();
         
         try (DB db = model.getDb ()) {                        
-            UUIDPublisher.publish (inAccessRequestQueue, (UUID) db.insertId (InAccessRequests.class, DB.HASH ("page", null)));
+            UUIDPublisher.publish (inAccessRequestQueue, (UUID) db.insertId (InAccessRequests.class, DB.HASH ("page", page)));
         }
         catch (Exception ex) {
             logger.log (Level.SEVERE, "Can't launch delegation rights import", ex);
