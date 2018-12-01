@@ -9,12 +9,15 @@ define ([], function () {
     return function (done) {
 
         query({type: 'voc_organizations'}, {}, function (data) {
+        
+            data.item.label_delegated = data.is_delegated ? 'Да' : 'Нет'
 
-            $('body').data('data', data)
+            $('body').data ('data', data)
 
-            get_nsi([20], done)
+            get_nsi ([20], done)
 
         })
+        
     }
 
 })
