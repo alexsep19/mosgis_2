@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.jms.Queue;
@@ -60,6 +61,7 @@ public class Delegation implements DelegationMBean, DelegationLocal {
     }    
 
     @Override
+    @Schedule (hour = "04", minute = "02", second = "0", persistent = false)
     public void importAccessRequests () {
         importAccessRequests (null);
     }
