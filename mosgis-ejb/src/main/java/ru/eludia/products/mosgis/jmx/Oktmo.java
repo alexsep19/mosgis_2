@@ -95,8 +95,7 @@ public class Oktmo implements OktmoMBean {
                             HashMap<String, Object> map = new HashMap<>();
                             for (int i = 0; i < VocOktmo.fieldNames.length; i++)
                                 map.put(VocOktmo.fieldNames[i], parts[i + 1]);
-                            map.put ("uuid", randomUUID());
-                            records.add(map);   
+                            records.add(map);
                         }
                         
                     }

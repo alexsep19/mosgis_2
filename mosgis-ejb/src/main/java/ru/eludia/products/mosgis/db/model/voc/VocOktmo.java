@@ -2,11 +2,11 @@ package ru.eludia.products.mosgis.db.model.voc;
 
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
+import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
-import ru.eludia.products.mosgis.db.model.EnTable;
 
-public class VocOktmo extends EnTable {
+public class VocOktmo extends Table {
     
     public enum c implements EnColEnum {
         
@@ -45,6 +45,11 @@ public class VocOktmo extends EnTable {
         super ("vc_oktmo", "Общероссийский классификатор территорий муниципальных образований");
         
         cols (c.class);
+        
+        pk (c.AREA_CODE);
+        pk (c.SETTLEMENT_CODE);
+        pk (c.LOCALITY_CODE);
+        pk (c.SECTION_CODE);
         
         key ("aread_code", "area_code");
         key ("settlement_code", "settlement_code");
