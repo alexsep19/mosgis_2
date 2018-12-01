@@ -25,6 +25,8 @@ import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.AccessRequest;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.voc.VocAccessRequestStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocAccessRequestType;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerTypeNsi20;
 import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerTypeNsi58;
@@ -184,6 +186,9 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
             db.addJsonArrays (jb, ModelHolder.getModel ().select (VocOrganizationNsi20.class, "code").where ("uuid", id));
             
             if (DB.ok (db.getString (m.select (AccessRequest.class, AccessRequest.c.ACCESSREQUESTGUID.lc ()).where (AccessRequest.c.ORGROOTENTITYGUID.lc (), id)))) jb.add ("is_delegated", 1);
+            
+            VocAccessRequestType.addTo (jb);
+            VocAccessRequestStatus.addTo (jb);
 
         }
         catch (Exception ex) {

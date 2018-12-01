@@ -43,6 +43,7 @@ define ([], function () {
 
                         tabs: [
                             {id: 'voc_organization_legal_users', caption: 'Учётные записи', off: !$_USER.role.admin && $_USER.uuid_org != $_REQUEST.id},
+                            {id: 'voc_organization_legal_access_requests', caption: 'Делегированные права', off: !data.is_delegated},
                             {id: 'voc_organization_legal_log', caption: 'История'},
                         ].filter(not_off),
 
