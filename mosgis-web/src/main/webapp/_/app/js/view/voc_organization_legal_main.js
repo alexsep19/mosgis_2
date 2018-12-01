@@ -28,7 +28,12 @@ define ([], function () {
 
         $panel.w2reform({
             name: 'voc_organization_legal_form',
-            record: it
+            record: it,
+            onRefresh: function () {
+                if (data.is_delegated) clickOn ($('#delegated'), function () {
+                    w2ui ['topmost_layout'].get ('main').tabs.click ('voc_organization_legal_access_requests')
+                })
+            }
         })
 
         $('#container').w2relayout({
