@@ -12,6 +12,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ws.base.LoggingOutMessageHandler;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.base.GetStateRequest;
+import ru.gosuslugi.dom.schema.integration.organizations_registry_common.ExportDelegatedAccessRequest;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_common.ExportOrgRegistryRequest;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_common.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_common.ObjectFactory;
@@ -83,6 +84,12 @@ public class WsGisOrgClient {
         r.getSearchCriteria ().add (s);        
         return getPort (messageGUID).exportOrgRegistry (r).getAck ();
 
+    }
+
+    public AckRequest.Ack exportDelegatedAccess (int page, UUID messageGUID) throws Fault {
+        final ExportDelegatedAccessRequest createExportDelegatedAccessRequest = of.createExportDelegatedAccessRequest ();
+        if (page > 0) createExportDelegatedAccessRequest.setPage (page);
+        return getPort (messageGUID).exportDelegatedAccess (createExportDelegatedAccessRequest).getAck ();
     }
 
 }

@@ -2,7 +2,6 @@ package ru.eludia.products.mosgis.rest.impl;
 
 import java.sql.SQLException;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,6 +14,7 @@ import javax.json.JsonObjectBuilder;
 import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
+import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Predicate;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
@@ -22,8 +22,11 @@ import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.incoming.InVocOrganization;
 import ru.eludia.products.mosgis.rest.api.VocOrganizationsLocal;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.AccessRequest;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.voc.VocAccessRequestStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocAccessRequestType;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerTypeNsi20;
 import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerTypeNsi58;
@@ -165,8 +168,10 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
     public JsonObject getItem (String id) {
 
         JsonObjectBuilder jb = Json.createObjectBuilder ();
+        
+        Model m = ModelHolder.getModel ();
 
-        try (DB db = ModelHolder.getModel ().getDb ()) {
+        try (DB db = m.getDb ()) {
 
             JsonObject item = db.getJsonObject (ModelHolder.getModel ()
                 .get (VocOrganization.class, id, "AS root", "*")
@@ -179,6 +184,11 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
             jb.add ("item", item);
             
             db.addJsonArrays (jb, ModelHolder.getModel ().select (VocOrganizationNsi20.class, "code").where ("uuid", id));
+            
+            if (DB.ok (db.getString (m.select (AccessRequest.class, AccessRequest.c.ACCESSREQUESTGUID.lc ()).where (AccessRequest.c.ORGROOTENTITYGUID.lc (), id)))) jb.add ("is_delegated", 1);
+            
+            VocAccessRequestType.addTo (jb);
+            VocAccessRequestStatus.addTo (jb);
 
         }
         catch (Exception ex) {

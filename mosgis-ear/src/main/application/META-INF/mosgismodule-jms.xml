@@ -100,7 +100,7 @@
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
     <jndi-name>mosgis.inOrgQueue</jndi-name>
   </uniform-distributed-queue>
-
+  
   <!-- очередь опроса статуса исходящих запросов на импорт юрлиц по ОГРН-->
   <uniform-distributed-queue name="outExportOrgQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
@@ -111,7 +111,21 @@
     </delivery-params-overrides>
   </uniform-distributed-queue>
   
+  <!-- очередь обработки запросов на импорт делегированных прав -->
+  <uniform-distributed-queue name="inAccessRequestQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.inAccessRequestQueue</jndi-name>
+  </uniform-distributed-queue>
   
+  <!-- очередь опроса статуса исходящих запросов на импорт юрлиц по ОГРН-->
+  <uniform-distributed-queue name="outExportAccessRequestQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.outExportAccessRequestQueue</jndi-name>
+    <delivery-params-overrides>
+        <time-to-deliver>2000</time-to-deliver>
+        <redelivery-delay>10000</redelivery-delay>
+    </delivery-params-overrides>
+  </uniform-distributed-queue>
   
   
   <!-- очередь обработки запросов на импорт юрлиц по OrgRootEntityGUID -->
