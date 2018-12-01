@@ -20,12 +20,10 @@ define ([], function () {
     return function (done) {        
 
         query ({type: 'voc_oktmo'}, {}, function (d) {
-        
-            data.item = d.item
 
-            $('body').data ('data', data)
+            $('body').data ('data', d)
 
-            done (data)
+            done (d)
 
         })
 
