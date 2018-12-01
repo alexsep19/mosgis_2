@@ -35,8 +35,10 @@ public class VocOktmo extends EnTable {
         public boolean isLoggable () {
             return false;
         }
-        
+
     }
+    
+    public static String[] fieldNames;
     
     public VocOktmo () {
         
@@ -48,6 +50,10 @@ public class VocOktmo extends EnTable {
         key ("settlement_code", "settlement_code");
         key ("locality_code", "locality_code");
         key ("section_code", "section_code");
+        
+        fieldNames = new String[c.values ().length];
+        for (int i = 0; i < fieldNames.length; i++)
+            fieldNames[i] = c.values ()[i].lc ();
         
     }
     

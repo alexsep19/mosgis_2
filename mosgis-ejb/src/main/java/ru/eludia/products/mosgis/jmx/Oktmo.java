@@ -8,6 +8,12 @@ import java.lang.management.ManagementFactory;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import static java.util.UUID.randomUUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -58,7 +64,7 @@ public class Oktmo implements OktmoMBean {
     @Override
     public void importOktmo () {
         
-        String areaCodeOfMoscow = "45";
+        String areaCodeOfMoscow = "\"45\"";
         
         try {
             
@@ -76,38 +82,26 @@ public class Oktmo implements OktmoMBean {
                     DB db = ModelHolder.getModel ().getDb ();
                 ) {
                     
-                    String record;
-                    while ((record = br.readLine()) != null) {
-                        
-                        String[] parts = record.split (";");
-                        for (String part : parts) {
-                            part = part.replaceAll("^\"|\"$", "");
-                            //if ("".equals(part)) part = null;
-                        }
-                        if (areaCodeOfMoscow.equals (parts[0])) {
+                    String line;
+                    List<Map<String, Object>> records = new ArrayList<>();
+                    while ((line = br.readLine()) != null) {
+                        if (line.startsWith(areaCodeOfMoscow)) {
                             
-                            db.upsert (
-                                    VocOktmo.class,
-                                    
-                                    db.HASH (
-                                            VocOktmo.c.AREA_CODE.lc (),       parts[ 0],
-                                            VocOktmo.c.SETTLEMENT_CODE.lc (), parts[ 1],
-                                            VocOktmo.c.LOCALITY_CODE.lc (),   parts[ 2],
-                                            VocOktmo.c.CONTROL_NUM.lc (),     parts[ 3],
-                                            VocOktmo.c.SECTION_CODE.lc (),    parts[ 4],
-                                            VocOktmo.c.SITE_NAME.lc (),       parts[ 5],
-                                            VocOktmo.c.ADD_INFO.lc (),        parts[ 6],
-                                            VocOktmo.c.DESCRIPTION.lc (),     parts[ 7],
-                                            VocOktmo.c.AKT_NUM.lc (),         parts[ 8],
-                                            VocOktmo.c.STATUS.lc (),          parts[ 9],
-                                            VocOktmo.c.APPR_DATE.lc (),       parts[10],
-                                            VocOktmo.c.ADOP_DATE.lc (),       parts[11]
-                                    )
-                            );
+                            String[] parts = line.split (";");
+                            for (int i = 0; i < parts.length; i++) {
+                                parts[i] = parts[i].replace("\"", "");
+                            }
                             
+                            HashMap<String, Object> map = new HashMap<>();
+                            for (int i = 0; i < VocOktmo.fieldNames.length; i++)
+                                map.put(VocOktmo.fieldNames[i], parts[i + 1]);
+                            map.put ("uuid", randomUUID());
+                            records.add(map);   
                         }
                         
                     }
+                    
+                    db.upsert (VocOktmo.class, records);
                     
                 }
                 catch (Exception ex) {
