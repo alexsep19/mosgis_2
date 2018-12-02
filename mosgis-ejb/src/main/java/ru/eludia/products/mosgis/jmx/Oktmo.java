@@ -82,12 +82,13 @@ public class Oktmo implements OktmoMBean {
                     DB db = ModelHolder.getModel ().getDb ();
                 ) {
                     
-                    boolean read = true;
+                    boolean inBlock = false;
                     String line;
                     List<Map<String, Object>> records = new ArrayList<>();
-                    while (read && (line = br.readLine()) != null) {
+                    while ((line = br.readLine()) != null) {
                         if (line.startsWith(areaCodeOfMoscow)) {
                             
+                            inBlock = true;
                             String[] parts = line.split (";");
                             for (int i = 0; i < parts.length; i++) {
                                 parts[i] = parts[i].replace("\"", "");
@@ -98,6 +99,7 @@ public class Oktmo implements OktmoMBean {
                                 map.put(VocOktmo.fieldNames[i], parts[i + 1]);
                             records.add(map);
                         }
+                        else if (inBlock) break;
                         
                     }
                     
