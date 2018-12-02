@@ -82,9 +82,10 @@ public class Oktmo implements OktmoMBean {
                     DB db = ModelHolder.getModel ().getDb ();
                 ) {
                     
+                    boolean read = true;
                     String line;
                     List<Map<String, Object>> records = new ArrayList<>();
-                    while ((line = br.readLine()) != null) {
+                    while (read && (line = br.readLine()) != null) {
                         if (line.startsWith(areaCodeOfMoscow)) {
                             
                             String[] parts = line.split (";");

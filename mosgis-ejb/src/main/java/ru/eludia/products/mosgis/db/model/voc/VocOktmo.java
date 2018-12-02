@@ -60,7 +60,7 @@ public class VocOktmo extends Table {
         key ("locality_code", "locality_code");
         key ("section_code", "section_code");
         
-        fieldNames = new String[c.values ().length];
+        fieldNames = new String[c.values ().length - 1];
         for (int i = 0; i < fieldNames.length; i++)
             fieldNames[i] = c.values ()[i].lc ();
         

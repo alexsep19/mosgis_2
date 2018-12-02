@@ -13,15 +13,8 @@ define ([], function () {
                 footer: false,
             },
 
-            columnGroups : [
-                {span: 3, caption: 'Код ОКТМО'},
-                {span: 5, caption: '', master: true},
-            ],
-
             columns: [                
-                {field: 'area_code', caption: '', size: 2},
-                {field: 'settlement_code', caption: '', size: 2},
-                {field: 'locality_code', caption: '', size: 2},
+                {field: 'code', caption: 'Код', size: 7},
                 {field: 'site_name', caption: 'Наименование территории', size: 50},
                 {field: 'add_info', caption: 'Дополнительная информация', size: 10, hidden: 1},
                 {field: 'description', caption: 'Описание', size: 10, hidden: 1},
