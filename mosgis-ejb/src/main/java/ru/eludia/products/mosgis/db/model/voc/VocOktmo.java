@@ -4,6 +4,7 @@ import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
+import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 
 public class VocOktmo extends Table {
@@ -21,7 +22,10 @@ public class VocOktmo extends Table {
         AKT_NUM         (Type.NUMERIC,  3,       "Номер изменения"),
         STATUS          (Type.NUMERIC,  1,       "Тип изменения"),
         APPR_DATE       (Type.DATE,              "Дата утверждения"),
-        ADOP_DATE       (Type.DATE,              "Дата принятия")
+        ADOP_DATE       (Type.DATE,              "Дата принятия"),
+        
+        CODE            (Type.STRING,  11, new Virt ("DECODE(\"LOCALITY_CODE\", '000', ('45' || \"AREA_CODE\" || \"SETTLEMENT_CODE\"), "
+                                                                                    + "('45' || \"AREA_CODE\" || \"SETTLEMENT_CODE\" || \"LOCALITY_CODE\"))"), "Код ОКТМО")
         
         ;
         
