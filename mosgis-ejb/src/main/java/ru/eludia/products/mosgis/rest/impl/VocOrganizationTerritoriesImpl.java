@@ -1,10 +1,14 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.util.Map;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.json.JsonObject;
+import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTerritory;
+import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.VocOrganizationTerritoriesLocal;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
@@ -19,7 +23,15 @@ public class VocOrganizationTerritoriesImpl extends BaseCRUD<VocOrganizationTerr
     }    
     
     @Override
-    public JsonObject select(JsonObject p, User user) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    public JsonObject select(JsonObject p, User user) {return fetchData ((db, job) -> {
+        
+        Map<String, Object> data = getData (p);
+        
+        Select select = ModelHolder.getModel ().select(VocOrganizationTerritory.class, "*")
+                .toOne (VocOktmo.class).on ()
+                .where (VocOrganizationTerritory.c.UUID_ORG.lc (), data.get("uuid_org").toString ());
+        
+        db.addJsonArrayCnt(job, select);
+        
+    });}
 }

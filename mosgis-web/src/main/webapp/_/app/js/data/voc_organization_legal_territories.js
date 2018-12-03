@@ -1,31 +1,36 @@
 define ([], function () {
 
-    $_DO.choose_tab_voc_organization_legal_territories = function (e) {
+    $_DO.create_voc_organization_legal_territories = function (e) {
 
-        var name = e.tab.id
-                
-        var layout = w2ui ['topmost_layout']
+        //use.block ('voting_protocol_vote_decision_lists_new')
+    
+    }
+
+    $_DO.delete_voc_organization_legal_territories = function (e) {    
+
+        if (!e.force) return
+        
+        $('.w2ui-message').remove ()
+
+        e.preventDefault ()
+        
+        query ({
+        
+            type:   'voc_organization_legal_territories', 
+            id:     w2ui [e.target].getSelection () [0],
+            action: 'delete',
             
-        if (layout) {                
-            layout.content ('main', '');
-            layout.lock ('main', 'Загрузка...', true);
-        }
-            
-        localStorage.setItem ('voc_organization_legal_territories.active_tab', name)
-            
-        use.block (name)
-            
-    }            
+        }, {}, reload_page)
+    
+    }
 
-    return function (done) {        
+    return function (done) {
 
-        query ({type: 'voc_organization_territories'}, {}, function (d) {
+        w2ui ['topmost_layout'].unlock ('main')            
 
-            $('body').data ('data', d)
+        data = $('body').data ('data')
 
-            done (d)
-
-        })
+        done(data);
 
     }
 
