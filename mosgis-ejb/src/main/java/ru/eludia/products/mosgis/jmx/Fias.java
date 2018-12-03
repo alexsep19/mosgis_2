@@ -32,6 +32,8 @@ import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import com.github.junrar.Archive;
 import com.github.junrar.rarfile.FileHeader;
 import java.sql.Timestamp;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.json.JsonNumber;
 import javax.json.JsonObject;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
@@ -39,6 +41,7 @@ import ru.eludia.products.mosgis.db.model.incoming.fias.InFiasStatsOverview;
 
 @Startup
 @Singleton
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 //@DependsOn ("Conf")
 public class Fias implements FiasMBean, FiasLocal {
 

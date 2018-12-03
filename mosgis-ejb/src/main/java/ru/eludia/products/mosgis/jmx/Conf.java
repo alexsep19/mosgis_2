@@ -13,6 +13,8 @@ import javax.ejb.DependsOn;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.jms.Topic;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -27,6 +29,7 @@ import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 @Startup
 @Singleton
 @DependsOn ("ModelHolder")
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class Conf implements ConfMBean, ConfLocal {
 
     private ObjectName objectName = null;

@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.util.Base64;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.json.JsonObject;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.WebApplicationException;
@@ -23,6 +25,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocPassportDocFields;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 
 @Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class HouseDocsImpl extends Base<HouseFile> implements HouseDocsLocal  {
 
     private static final Logger logger = Logger.getLogger (HouseDocsImpl.class.getName ());
