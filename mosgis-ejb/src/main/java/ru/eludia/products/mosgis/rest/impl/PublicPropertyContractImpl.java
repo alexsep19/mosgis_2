@@ -7,6 +7,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.jms.Queue;
 import javax.json.JsonObject;
+import ru.eludia.base.DB;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Select;
@@ -92,6 +93,12 @@ public class PublicPropertyContractImpl extends BaseCRUD<PublicPropertyContract>
 
         applySearch (Search.from (p), select);
         
+        JsonObject data = p.getJsonObject ("data");
+        
+        String k = PublicPropertyContract.c.UUID_ORG.lc ();
+        String v = data.getString (k, null);
+        if (DB.ok (v)) select.and (k, v);
+                      
 //        select.and (PublicPropertyContract.c.UUID_CHARTER.lc (), p.getJsonObject ("data").getString ("uuid_charter"));
 
         db.addJsonArrayCnt (job, select);

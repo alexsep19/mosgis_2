@@ -50,18 +50,26 @@ public class PropertyDocuments extends EJBResource <PropertyDocumentLocal> {
 
     }
     
+    private boolean isGlobalUser () {
+        if (securityContext.isUserInRole ("admin")) return true;
+        if (securityContext.isUserInRole ("nsi_20_7")) return true;
+        if (securityContext.isUserInRole ("nsi_20_8")) return true;
+        return false;
+    }
+    
     @POST
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject select (JsonObject p) { 
-        return back.select (p, getUser ()); 
+        if (!isGlobalUser () && !getUserOrg ().equals (p.getJsonObject ("data").getString ("uuid_org"))) throw new ValidationException ("foo", "Доступ запрещён");
+        return back.select (p, getUser ());
     }
-    
+
     @POST
     @Path("create") 
     @Produces (APPLICATION_JSON)
     public JsonObject doCreate (JsonObject p) {
-        getUserOrg ();
+        if (isGlobalUser ()) throw new ValidationException ("foo", "Доступ запрещён");
         return back.doCreate (p, getUser ());
     }
 
