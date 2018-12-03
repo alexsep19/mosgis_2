@@ -24,7 +24,7 @@ define ([], function () {
                             {id: 'voc_organization_legal_main', caption: 'Юридическое лицо'},
                             {id: 'voc_organization_legal_info', caption: 'Информация'},
                             {id: 'voc_organization_legal_hours', caption: 'Режим работы'},
-                            {id: 'voc_organization_territories', caption: 'Территории', off: data.vc_orgs_nsi_20[0].code != 1}
+                            {id: 'voc_organization_legal_territories', caption: 'Территории', off: data.vc_orgs_nsi_20[0].code != 1}
                         ].filter(not_off),
 
                         onClick: $_DO.choose_top_tab_voc_organization_legal
