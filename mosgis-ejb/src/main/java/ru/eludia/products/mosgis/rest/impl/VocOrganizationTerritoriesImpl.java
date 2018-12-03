@@ -12,15 +12,14 @@ import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class VocOrganizationTerritoriesImpl extends BaseCRUD<VocOrganizationTerritory> implements VocOrganizationTerritoriesLocal {
-    
-    @Override
-    public JsonObject select(JsonObject p, User user) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 
     @Override
     public JsonObject getItem(String id) {
         throw new UnsupportedOperationException("Not supported yet.");
     }    
     
+    @Override
+    public JsonObject select(JsonObject p, User user) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

@@ -17,13 +17,13 @@ public class VocOrganizationTerritories extends EJBResource<VocOrganizationTerri
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject select (JsonObject p) { 
-        return back.select (p);
+        return back.select (p, getUser ());
     }
     
     @POST
     @Path("{id}") 
     @Produces (APPLICATION_JSON)
-    public JsonObject getItem (@PathParam ("id") String id) { 
+    public JsonObject getItem (@PathParam ("id") String id) {
         return back.getItem (id);
     }
     
