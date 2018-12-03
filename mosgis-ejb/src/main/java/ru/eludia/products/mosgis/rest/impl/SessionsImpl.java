@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -18,6 +20,7 @@ import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.jmx.Conf;
 
 @Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class SessionsImpl implements SessionsLocal {
 
     private static final Logger logger = Logger.getLogger (SessionsImpl.class.getName ());

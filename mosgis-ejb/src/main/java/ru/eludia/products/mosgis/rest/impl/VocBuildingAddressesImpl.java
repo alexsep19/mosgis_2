@@ -4,6 +4,8 @@ import java.util.StringTokenizer;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.json.JsonObject;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
@@ -11,6 +13,7 @@ import ru.eludia.products.mosgis.rest.api.VocBuildingAddressesLocal;
 import ru.eludia.products.mosgis.rest.impl.base.Base;
 
 @Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class VocBuildingAddressesImpl extends Base implements VocBuildingAddressesLocal {
 
     private static final Logger logger = Logger.getLogger (VocBuildingAddressesImpl.class.getName ());

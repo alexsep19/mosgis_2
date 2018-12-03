@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -23,6 +25,8 @@ import ru.eludia.products.mosgis.rest.impl.base.BasePassport;
 import ru.eludia.products.mosgis.web.base.Search;
 
 @Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+
 public class LiftsImpl extends BasePassport<Lift> implements LiftsLocal {
 
     private static final Logger logger = Logger.getLogger (LiftsImpl.class.getName ());
