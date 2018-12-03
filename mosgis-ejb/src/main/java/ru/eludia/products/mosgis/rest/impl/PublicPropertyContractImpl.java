@@ -13,6 +13,7 @@ import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.tables.ActualPublicPropertyContract;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContract;
 import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContractLog;
@@ -86,9 +87,8 @@ public class PublicPropertyContractImpl extends BaseCRUD<PublicPropertyContract>
         
         final Model m = ModelHolder.getModel ();
 
-        Select select = m.select (PublicPropertyContract.class, "*", "uuid AS id")
-            .toMaybeOne (VocBuilding.class, "label").on ()
-//            .orderBy (PublicPropertyContract.c.BEGINDATE.lc ())
+        Select select = m.select (ActualPublicPropertyContract.class, "*")
+            .orderBy (PublicPropertyContract.c.STARTDATE.lc ())
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
         applySearch (Search.from (p), select);

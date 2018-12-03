@@ -58,15 +58,18 @@ define ([], function () {
 */
             columns: [                
             
-                {field: 'docnum', caption: 'Номер', size: 20},
-                {field: 'signingdate', caption: 'Дата заключения', size: 18, render: _dt},
-                {field: 'id_ctr_status',  caption: 'Статус',     size: 10, voc: data.vc_gis_status},
-                {field: 'org.label', caption: 'Исполнитель', size: 100, off: $_USER.role.nsi_20_1},               
-                {field: 'id_customer_type',  caption: 'Вид заказчика',     size: 30, voc: data.vc_gis_customer_type},                
-                {field: 'org_customer.label', caption: 'Заказчик', size: 100},
-                {field: 'contractbase',  caption: 'Основание заключения',     size: 30, voc: data.vc_nsi_58},                
-                {field: 'effectivedate', caption: 'Дата вступления в силу', size: 18, render: _dt},
-                {field: 'plandatecomptetion', caption: 'Дата окончания', size: 18, render: _dt},               
+                {field: 'contractnumber', caption: 'Номер', size: 20},
+                {field: 'date_', caption: 'Дата заключения', size: 18, render: _dt},
+//                {field: 'id_ctr_status',  caption: 'Статус',     size: 10, voc: data.vc_gis_status},
+                {field: 'address', caption: 'Адрес', size: 100},
+                {field: 'is_customer_org', caption: 'Тип заказчика', size: 20, voc: {0: 'физ. лицо', 1: 'юр. лицо'}},
+                {field: 'customer_label', caption: 'Заказчик', size: 100},
+                {field: 'org_label', caption: 'Исполнитель', size: 100, off: is_owner},
+//                {field: 'id_customer_type',  caption: 'Вид заказчика',     size: 30, voc: data.vc_gis_customer_type},                
+//                {field: 'org_customer.label', caption: 'Заказчик', size: 100},
+//                {field: 'contractbase',  caption: 'Основание заключения',     size: 30, voc: data.vc_nsi_58},                
+                {field: 'startdate', caption: 'Дата вступления в силу', size: 18, render: _dt},
+                {field: 'enddate', caption: 'Дата окончания', size: 18, render: _dt},               
                 
             ].filter (not_off),
             
