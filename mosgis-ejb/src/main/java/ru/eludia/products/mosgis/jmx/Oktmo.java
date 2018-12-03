@@ -81,7 +81,7 @@ public class Oktmo implements OktmoMBean {
                 
                 try (
                     FileInputStream fis   = new FileInputStream (file);
-                    BufferedReader br = new BufferedReader (new InputStreamReader(fis));
+                    BufferedReader br = new BufferedReader (new InputStreamReader(fis, "Cp1251"));
                     DB db = ModelHolder.getModel ().getDb ();
                 ) {
                     
