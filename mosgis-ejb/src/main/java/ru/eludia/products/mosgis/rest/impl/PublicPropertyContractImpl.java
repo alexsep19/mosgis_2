@@ -34,7 +34,7 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class PublicPropertyContractImpl extends BaseCRUD<PublicPropertyContract> implements PublicPropertyContractLocal {
-
+/*
     @Resource (mappedName = "mosgis.inHousePublicPropertyContractsQueue")
     Queue queue;
 
@@ -42,7 +42,7 @@ public class PublicPropertyContractImpl extends BaseCRUD<PublicPropertyContract>
     public Queue getQueue () {
         return queue;
     }
-
+*/
     private static final Logger logger = Logger.getLogger (PublicPropertyContractImpl.class.getName ());    
        
     private void filterOffDeleted (Select select) {
@@ -86,7 +86,6 @@ public class PublicPropertyContractImpl extends BaseCRUD<PublicPropertyContract>
         final Model m = ModelHolder.getModel ();
 
         Select select = m.select (PublicPropertyContract.class, "*", "uuid AS id")
-            .toMaybeOne (CharterObject.class).on ()
             .toMaybeOne (VocBuilding.class, "label").on ()
 //            .orderBy (PublicPropertyContract.c.BEGINDATE.lc ())
             .limit (p.getInt ("offset"), p.getInt ("limit"));
