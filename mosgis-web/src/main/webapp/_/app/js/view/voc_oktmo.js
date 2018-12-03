@@ -10,8 +10,12 @@ define ([], function () {
 
             show: {
                 toolbar: true,
-                footer: false,
+                toolbarSearch: true,
             },
+
+            searches: [
+                {field: 'code', caption: 'Код', type: 'text'},
+            ],
 
             columns: [                
                 {field: 'code', caption: 'Код', size: 7},
