@@ -19,7 +19,7 @@ define ([], function () {
                     {name: 'enddate', type: 'date'},
                     {name: 'startdate', type: 'date'},
                     
-                    {name: 'fiashouseguid', type: 'text'},
+                    {name: 'fiashouseguid', type: 'list', options: {items: data.houses}},
 
                 ],
                 
