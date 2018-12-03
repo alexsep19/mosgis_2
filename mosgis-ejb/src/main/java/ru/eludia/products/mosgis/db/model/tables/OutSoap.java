@@ -14,6 +14,7 @@ import ru.eludia.base.model.def.Num;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.IN_PROGRESS;
+import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 
 
 public class OutSoap extends Table {
@@ -85,6 +86,15 @@ public class OutSoap extends Table {
         
         return uuid;
         
+    }
+    
+    public final static void registerAck (DB db, AckRequest.Ack ack) throws SQLException {
+
+        db.update (OutSoap.class, DB.HASH (
+            "uuid",     ack.getRequesterMessageGUID (),
+            "uuid_ack", ack.getMessageGUID ()
+        ));
+
     }
 
 }

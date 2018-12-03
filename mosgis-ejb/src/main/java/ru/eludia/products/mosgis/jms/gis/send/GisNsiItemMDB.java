@@ -63,13 +63,8 @@ public class GisNsiItemMDB extends UUIDMDB<InNsiItem> {
         abstract AckRequest.Ack getAck () throws Fault;
         abstract Queue getQueue ();
                 
-        void registerAck (AckRequest.Ack ack, final DB db) throws SQLException {
-
-            db.update (OutSoap.class, DB.HASH (
-                "uuid",     ack.getRequesterMessageGUID (),
-                "uuid_ack", ack.getMessageGUID ()
-            ));
-
+        void registerAck (AckRequest.Ack ack, final DB db) throws SQLException {            
+            OutSoap.registerAck (db, ack);
         }
 
         @Override
