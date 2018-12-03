@@ -198,6 +198,16 @@ public class Conf implements ConfMBean, ConfLocal {
     public void setPathOkei (String s) {
         set (VocSetting.i.PATH_OKEI, s);
     }
+    
+    @Override
+    public String getPathOktmo () {
+        return get (VocSetting.i.PATH_OKTMO);
+    }
+    
+    @Override
+    public void setPathOktmo (String s) {
+        set (VocSetting.i.PATH_OKTMO, s);
+    }
 /*
     @Override
     public String getWsGisRdUrl () {

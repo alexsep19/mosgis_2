@@ -26,6 +26,8 @@ define ([], function () {
 
         })
 
+        w2ui['sidebar'].add ({id: 'voc_oktmo', text: 'ОКТМО', img: 'icon-page'})
+
     }
 
 });
