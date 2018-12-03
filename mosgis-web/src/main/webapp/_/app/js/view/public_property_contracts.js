@@ -17,9 +17,18 @@ define ([], function () {
 
             show: {
                 toolbar: true,
-                toolbarAdd: is_owner,
                 footer: true,
             },     
+            
+            toolbar: {
+            
+                items: !is_owner ? [] : [
+                    {type: 'button', id: 'create_org', caption: 'Добавить (юр. лицо)', icon: 'w2ui-icon-plus', onClick: $_DO.create_org_public_property_contracts},
+                    {type: 'button', id: 'create_person', caption: 'Добавить (физ. лицо)', icon: 'w2ui-icon-plus', onClick: $_DO.create_person_public_property_contracts},
+                ].filter (not_off),
+                
+            },         
+            
 /*
             searches: [            
                 
