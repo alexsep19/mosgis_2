@@ -26,6 +26,8 @@ public class PublicPropertyContract extends EnTable {
         UUID_PERSON_CUSTOMER (VocPerson.class,           "Физлицо-заказчик"),
         ID_CTR_STATUS_GIS    (VocGisStatus.class,        VocGisStatus.i.PROJECT.asDef (),     "Статус устава с точки зрения ГИС ЖКХ"),
         ID_CTR_STATE_GIS     (VocGisStatus.class,        VocGisStatus.i.NOT_RUNNING.asDef (), "Состояние устава с точки зрения ГИС ЖКХ"),
+
+        ID_LOG               (PublicPropertyContractLog.class,  "Последнее событие редактирования"),
         
         CONTRACTNUMBER       (STRING, 255,    null,      "Номер договора"),
         DATE_                (DATE,                      "Дата договора"),
@@ -47,7 +49,7 @@ public class PublicPropertyContract extends EnTable {
         @Override
         public boolean isLoggable () {
             switch (this) {
-//                case ID_LOG:
+                case ID_LOG:
                 case UUID_ORG:
                 case UUID_ORG_CUSTOMER:
                 case UUID_PERSON_CUSTOMER:
