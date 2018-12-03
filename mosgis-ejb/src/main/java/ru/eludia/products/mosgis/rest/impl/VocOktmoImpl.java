@@ -12,12 +12,40 @@ import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.api.VocOktmoLocal;
+import ru.eludia.products.mosgis.web.base.ComplexSearch;
+import ru.eludia.products.mosgis.web.base.Search;
+import ru.eludia.products.mosgis.web.base.SimpleSearch;
 
 @Stateless
 public class VocOktmoImpl implements VocOktmoLocal {
 
     private static final Logger logger = Logger.getLogger (VocOktmoImpl.class.getName ());
+    
+    private void applyComplexSearch (final ComplexSearch search, Select select) {
+        search.filter (select, "");
+    }
+    
+    private void applySimpleSearch (final SimpleSearch search, Select select) {
+
+        final String searchString = search.getSearchString ();
         
+        if (searchString == null || searchString.isEmpty ()) return;
+
+        select.and ("code LIKE %?%", searchString.toUpperCase ());
+        
+    }
+    
+    private void applySearch (final Search search, Select select) {        
+
+        if (search instanceof SimpleSearch) {
+            applySimpleSearch  ((SimpleSearch) search, select);
+        }
+        else if (search instanceof ComplexSearch) {
+            applyComplexSearch ((ComplexSearch) search, select);
+        }
+
+    }
+    
     @Override
     public JsonObject select (JsonObject p) {
         
@@ -30,6 +58,9 @@ public class VocOktmoImpl implements VocOktmoLocal {
                     .orderBy (VocOktmo.c.SETTLEMENT_CODE.lc ())
                     .orderBy (VocOktmo.c.LOCALITY_CODE.lc ())
                     .orderBy (VocOktmo.c.SECTION_CODE.lc ());
+            
+            applySearch (Search.from (p), select);
+            
             db.addJsonArrayCnt (job, select);
             
         }
