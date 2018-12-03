@@ -1,0 +1,79 @@
+<span
+	data-popup-width=640
+	data-popup-height=325
+	data-popup-title='Заказчик-юрлицо'
+>
+
+	<style>
+
+        label[data-block-name=public_property_contract_org_new] {
+        	width: 190px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=public_property_contract_org_new] {
+        	width: 370px !important;
+        }
+
+        input.dt[data-block-name=public_property_contract_org_new] {
+        	width: 70px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:270px; margin:8px 0 0 0;">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Заказчик</label>
+                <div>
+                	<input name=uuid_org_customer type=hidden>
+                	<input name=label_org_customer readonly>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>№ документа</label>
+                <div>
+                	<input name=contractnumber maxlength=255>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Дата документа</label>
+                <div>
+                	<input name=date_ placeholder="" class=dt>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Дата вступления в силу</label>
+                <div>
+                	<input name=startdate placeholder="" class=dt>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Планируемая дата окончания </label>
+                <div>
+                	<input name=enddate placeholder="" class=dt>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Адрес МКД</label>
+                <div>
+                	<input name=fiashouseguid>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>
