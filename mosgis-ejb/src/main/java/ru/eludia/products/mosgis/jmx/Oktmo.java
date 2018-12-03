@@ -19,6 +19,8 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import ru.eludia.base.DB;
@@ -28,6 +30,7 @@ import ru.eludia.products.mosgis.ejb.ModelHolder;
 
 @Startup
 @Singleton
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class Oktmo implements OktmoMBean {
     
     private ObjectName objectName = null;
