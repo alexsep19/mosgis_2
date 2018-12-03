@@ -4,6 +4,8 @@ define ([], function () {
     
         var it = data.item
 
+        console.log (data)
+
         it.vc_organization_types_label = it ['vc_organization_types.label']
 
         $('title').text (it.label)
@@ -23,7 +25,8 @@ define ([], function () {
                         tabs: [
                             {id: 'voc_organization_legal_main', caption: 'Юридическое лицо'},
                             {id: 'voc_organization_legal_info', caption: 'Информация'},
-                            {id: 'voc_organization_legal_hours', caption: 'Режим работы'}
+                            {id: 'voc_organization_legal_hours', caption: 'Режим работы'},
+                            {id: 'voc_organization_territories', caption: 'Территории'}
                         ].filter(not_off),
 
                         onClick: $_DO.choose_top_tab_voc_organization_legal
