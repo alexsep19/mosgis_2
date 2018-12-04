@@ -26,18 +26,11 @@ public class VocOrganizationTerritories extends EJBResource<VocOrganizationTerri
     }
     
     @POST
-    @Path("{id}") 
-    @Produces (APPLICATION_JSON)
-    public JsonObject getItem (@PathParam ("id") String id) {
-        return back.getItem (id);
-    }
-    
-    @POST
     @Path("create") 
     @Produces (APPLICATION_JSON)
     public JsonObject doCreate (JsonObject p) {
         checkAdmin ();
-        return back.doCreate (p);
+        return back.doCreate (p, getUser ());
     }
     
     @POST
@@ -45,7 +38,7 @@ public class VocOrganizationTerritories extends EJBResource<VocOrganizationTerri
     @Produces (APPLICATION_JSON)
     public JsonObject doDelete (@PathParam ("id") String id) {
         checkAdmin ();
-        return back.doDelete (id);
+        return back.doDelete (id, getUser ());
     }
     
 }

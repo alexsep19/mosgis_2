@@ -34,14 +34,4 @@ public class VocOrganizationTerritoriesImpl extends BaseCRUD<VocOrganizationTerr
         db.addJsonArrayCnt(job, select);
         
     });}
-
-    @Override
-    public JsonObject doCreate(JsonObject p) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public JsonObject doDelete(String id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }
