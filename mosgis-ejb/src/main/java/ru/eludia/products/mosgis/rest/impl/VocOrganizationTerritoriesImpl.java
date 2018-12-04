@@ -28,7 +28,7 @@ public class VocOrganizationTerritoriesImpl extends BaseCRUD<VocOrganizationTerr
         Map<String, Object> data = getData (p);
         
         Select select = ModelHolder.getModel ().select(VocOrganizationTerritory.class, "*")
-                .toOne (VocOktmo.class).on ()
+                .toOne (VocOktmo.class, "code AS code", "site_name AS label").on ()
                 .where (VocOrganizationTerritory.c.UUID_ORG.lc (), data.get("uuid_org").toString ());
         
         db.addJsonArrayCnt(job, select);
