@@ -20,7 +20,7 @@ import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
 
 public class ContractObject extends Table {
-
+    
     public ContractObject () {
         
         super  ("tb_contract_objects", "Объекты договоров управления");
@@ -48,6 +48,7 @@ public class ContractObject extends Table {
         col    ("contractobjectversionguid",     Type.UUID,       null,          "UUID последней версии данного объекта в ГИС ЖКХ");
         
         col    ("fias_start",              Type.STRING,          new Virt ("CONCAT(LOWER(RAWTOHEX(\"FIASHOUSEGUID\")),TO_CHAR(\"STARTDATE\",'YYYY-MM-DD'))"),  "ключ для различения объектов внутри договора");
+        col    ("is_to_ignore",            Type.BOOLEAN,         new Virt (isToIgnoreSrc ()), "1, если объект следует игнорировать в контролях на пересечение периодов");
         
         fk     ("id_log",                  ContractObjectLog.class,  null,      "Последнее событие редактирования");
  
@@ -69,22 +70,12 @@ public class ContractObject extends Table {
             + "END IF; "
 
             + "IF INSERTING THEN "
-            + " FOR i IN (SELECT c.uuid FROM tb_contracts c INNER JOIN tb_contract_objects o ON (o.uuid_contract = c.uuid AND o.uuid <> :NEW.uuid AND o.is_deleted = 0 AND o.is_annuled = 0) WHERE c.uuid=:NEW.uuid_contract AND c.id_customer_type=" + OWNERS.getId () + ") LOOP"
+            + " FOR i IN (SELECT c.uuid FROM tb_contracts c INNER JOIN tb_contract_objects o ON (o.uuid_contract = c.uuid AND o.uuid <> :NEW.uuid AND o.is_to_ignore = 0) WHERE c.uuid=:NEW.uuid_contract AND c.id_customer_type=" + OWNERS.getId () + ") LOOP"
             + "   raise_application_error (-20000, 'Поскольку заказчик — собственник объекта жилищного фонда, объект в договоре может быть только один. Операция отменена.'); "
             + " END LOOP; "
-            + "END IF; "
-                
-
+            + "END IF; "                    
                     
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-            + "IF :NEW.is_deleted = 0 AND :NEW.is_annuled = 0 THEN "
+            + "IF :NEW.is_to_ignore = 0 THEN "
             + " FOR i IN ("
                 + "SELECT "
                 + " o.startdate"
@@ -96,8 +87,7 @@ public class ContractObject extends Table {
                 + " tb_contract_objects o "
                 + " INNER JOIN tb_contracts c ON o.uuid_contract = c.uuid"
                 + " INNER JOIN vc_orgs org    ON c.uuid_org      = org.uuid "
-                + "WHERE o.is_deleted = 0"
-                + " AND o.is_annuled = 0"
+                + "WHERE o.is_to_ignore = 0"
                 + " AND o.fiashouseguid = :NEW.fiashouseguid "
                 + " AND o.enddate   >= :NEW.startdate "
                 + " AND o.startdate <= :NEW.enddate "
@@ -119,7 +109,7 @@ public class ContractObject extends Table {
             + "END IF; "
 
                     
-            + "IF :NEW.is_deleted = 0 AND :NEW.is_annuled = 0 THEN "
+            + "IF :NEW.is_to_ignore = 0 THEN "
             + " FOR i IN ("
                 + "SELECT "
                 + " o.startdate"
@@ -129,9 +119,7 @@ public class ContractObject extends Table {
                 + " tb_charter_objects o "
                 + " INNER JOIN tb_charters c ON o.uuid_charter = c.uuid"
                 + " INNER JOIN vc_orgs org    ON c.uuid_org      = org.uuid "
-                + "WHERE o.is_deleted = 0"
-                + " AND o.ismanagedbycontract = 0"  
-                + " AND o.is_annuled = 0"
+                + "WHERE o.is_to_ignore = 0"
                 + " AND o.fiashouseguid = :NEW.fiashouseguid "
                 + " AND (o.enddate IS NULL OR o.enddate >= :NEW.startdate) "
                 + " AND o.startdate <= :NEW.enddate "
@@ -166,6 +154,18 @@ public class ContractObject extends Table {
                     
         + "END;");
 
+    }
+    
+    private static String isToIgnoreSrc () {
+        StringBuilder sb = new StringBuilder ("CASE");
+        sb.append (" WHEN IS_DELETED=1 THEN 1");
+        sb.append (" WHEN ANNULMENTINFO IS NOT NULL THEN 1");
+        sb.append (" WHEN ID_CTR_STATUS_GIS IN (");
+        sb.append (   VocGisStatus.i.REJECTED.getId ());
+        sb.append (") THEN 1");
+        sb.append (" ELSE 0");
+        sb.append (" END");
+        return sb.toString ();
     }
 
     public static void add (ImportContractRequest.Contract.PlacingContract pc, Map<String, Object> r) {

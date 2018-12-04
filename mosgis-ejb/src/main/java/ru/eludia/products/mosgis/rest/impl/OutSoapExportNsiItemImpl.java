@@ -3,6 +3,8 @@ package ru.eludia.products.mosgis.rest.impl;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -20,6 +22,7 @@ import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.impl.base.Base;
 
 @Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class OutSoapExportNsiItemImpl implements OutSoapExportNsiItemLocal {
 
     private static final Logger logger = Logger.getLogger (OutSoapExportNsiItemImpl.class.getName ());

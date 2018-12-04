@@ -82,7 +82,7 @@ public class GisPollExportCharterDataMDB extends GisPollMDB {
     }    
     
     public void download (final UUID uuid) {
-        UUIDPublisher.publish (outExportHouseCharterFilesQueue, uuid);
+        uuidPublisher.publish (outExportHouseCharterFilesQueue, uuid);
     }
 
     @Override

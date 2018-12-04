@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
@@ -26,6 +28,7 @@ import ru.eludia.products.mosgis.rest.impl.base.BasePassport;
 import ru.eludia.products.mosgis.web.base.Search;
 
 @Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class ResidentialPremisesImpl extends BasePassport<ResidentialPremise> implements ResidentialPremisesLocal {
     
     @Override

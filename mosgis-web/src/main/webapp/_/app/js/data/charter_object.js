@@ -36,7 +36,17 @@ define ([], function () {
             
             var is_own = ($_USER.role.admin || it ['ctr.uuid_org'] == $_USER.uuid_org)
 
-            if (is_own && !it.is_deleted && it.id_ctr_status_gis != 110) {
+            var is_locked = it.is_deleted
+            
+            if (!is_locked) switch (it.id_ctr_status_gis) {
+                case 20:
+                case 70:
+                case 90:
+                case 110:
+                    is_locked = true
+            }
+
+            if (is_own && !is_locked) {
             
                 switch (it ["ctr.id_ctr_status"]) {
 
@@ -52,7 +62,7 @@ define ([], function () {
 
                 it._can.update = it._can.cancel = it._can.edit
                 
-                if (!it ['house.uuid'] && it.id_ctr_status_gis != 110) it._can.create_house = 1
+                if (!it ['house.uuid']) it._can.create_house = 1
 
             }
             
