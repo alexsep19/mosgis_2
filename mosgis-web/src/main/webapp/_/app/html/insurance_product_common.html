@@ -2,7 +2,7 @@
 
     <div>
 
-        <div class="w2ui-page page-0" style="padding-top: 13px;min-width: 900px">
+        <div class="w2ui-page page-0 page-1">
 
         	<style>
 
@@ -21,7 +21,7 @@
 
         		<tr>
 
-					<td style="min-width:650px;" width=1 valign=top>
+					<td class="left-block" width=1 valign=top>
 
 						<div class="w2ui-field">
 							<label>Страховщик:</label>
@@ -46,7 +46,7 @@
 
 			<div class="w2ui-field" id=file_link_div data-on=__read_only>
 				<label>Файл:</label>
-				<div style="padding-top:7px" id=file_label>
+				<div class=name id=file_label>
 					<u><span data-text=name></span></u>
 				</div>
 			</div>
@@ -91,7 +91,7 @@
 
         <div class="w2ui-buttons">
         	<span>
-	        	<progress style="width:440px;display:none"/>
+	        	<progress/>
 				<button class=w2ui-btn name=edit   data-on=__read_only>Редактировать</button>
 				<button class=w2ui-btn name=update data-off=__read_only>Сохранить</button>
 				<button class=w2ui-btn name=cancel data-off=__read_only>Отменить</button>

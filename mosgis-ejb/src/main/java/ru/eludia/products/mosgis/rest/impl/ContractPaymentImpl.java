@@ -140,6 +140,7 @@ public class ContractPaymentImpl extends BaseCRUD<ContractPayment> implements Co
                 .toMaybeOne (VocOkei.class, "AS okei", "national").on ()
                 .where      ("uuid_org", item.getString ("ctr.uuid_org"))
                 .and        ("id_status", VocAsyncEntityState.i.OK.getId ())
+                .and        ("is_deleted", 0)
                 .orderBy    ("org_works.label")
             
         );        
