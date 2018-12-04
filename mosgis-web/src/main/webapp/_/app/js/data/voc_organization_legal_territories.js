@@ -32,7 +32,10 @@ define ([], function () {
             id:     w2ui [e.target].getSelection () [0],
             action: 'delete',
             
-        }, {}, w2ui [e.target].reload ())
+        }, {}, function () {
+            w2ui [e.target].remove (e.recid)
+            w2ui [e.target].reload ()
+        })
     
     }
 
