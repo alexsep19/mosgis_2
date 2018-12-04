@@ -2,8 +2,6 @@ define ([], function () {
 
     $_DO.create_voc_organization_legal_territories = function (e) {
 
-        console.log (e)
-
         $('body').data ('voc_oktmo_popup.callback', function (r) {
 
             if (!r) return
@@ -30,7 +28,7 @@ define ([], function () {
         
         query ({
         
-            type:   'voc_organization_legal_territories', 
+            type:   'voc_organization_territories', 
             id:     w2ui [e.target].getSelection () [0],
             action: 'delete',
             
