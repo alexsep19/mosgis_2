@@ -15,7 +15,7 @@ define ([], function () {
 
             var grid = w2ui [grid_name]
 
-            grid.records = getData().vc_pass_fields
+            grid.records = data.vc_pass_fields
 
             $.each (grid.records, function () {
                 if (this.w2ui) delete this.w2ui.changes
