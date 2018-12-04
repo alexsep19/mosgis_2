@@ -20,8 +20,8 @@ define ([], function () {
 
             name: 'voc_organization_legal_territories_grid',
 
-            columns: [                
-                {field: 'oktmo', caption: 'Код', size: 7},
+            columns: [
+                {field: 'code', caption: 'Код', size: 7},
                 {field: 'label', caption: 'Наименование территории', size: 50},
             ],
             

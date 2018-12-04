@@ -2,9 +2,17 @@ define ([], function () {
 
     $_DO.create_voc_organization_legal_territories = function (e) {
 
-        $('body').data ('voc_oktmo_popup.callback', function (data) {
+        console.log (e)
 
-            console.log ('TEST')
+        $('body').data ('voc_oktmo_popup.callback', function (r) {
+
+            if (!r) return
+
+            query ({type: 'voc_organization_territories', id: undefined, part: 'create'}, {data: {oktmo: r.id, uuid_org: $_REQUEST.id}} , function (d) {
+
+                w2ui [e.target].reload ()
+
+            })
 
         })
 
