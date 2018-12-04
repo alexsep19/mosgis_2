@@ -16,7 +16,7 @@ define ([], function () {
 
             columnGroups : [
                 {span: 5, caption: 'Событие'},
-                {span: 5, caption: 'Значения полей'},
+                {span: 7, caption: 'Значения полей'},
                 {span: 4, caption: 'Запрос в ГИС ЖКХ'},
             ], 
             
@@ -31,7 +31,9 @@ define ([], function () {
                 {field: 'date_', caption: 'Дата заключения', size: 18, render: _dt},
                 {field: 'startdate', caption: 'Дата вступления в силу', size: 18, render: _dt},
                 {field: 'enddate', caption: 'Дата окончания', size: 18, render: _dt},               
-                {field: 'id_ctr_status',  caption: 'Статус',     size: 10, voc: data.vc_gis_status},
+                {field: 'contractobject', caption: 'Предмет', size: 30},
+                {field: 'comments', caption: 'Комментарии', size: 30},
+                {field: 'isgratuitousbasis', caption: 'Условия использования', size: 10, voc: {0: 'Возмездное', 1: 'Безвозмездное'}},
                 
                 {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: 'data-ref=1'},
                 {field: 'soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: 'data-ref=1'},

@@ -7,7 +7,7 @@ import static ru.eludia.base.model.Type.BOOLEAN;
 import static ru.eludia.base.model.Type.DATE;
 import static ru.eludia.base.model.Type.NUMERIC;
 import static ru.eludia.base.model.Type.STRING;
-import static ru.eludia.base.model.def.Bool.FALSE;
+import ru.eludia.base.model.def.Bool;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
@@ -38,7 +38,7 @@ public class PublicPropertyContract extends EnTable {
         COMMENTS             (STRING, 255,    null,      "Комментарий"),
         PAYMENT              (NUMERIC, 10, 2, null,      "Размер платы за предоставление в пользование части общего имущества собственников помещений в МКД в месяц"),
         MONEYSPENTDIRECTION  (STRING, 255,    null,      "Направление расходования средств, внесенных за пользование частью общего имущества"),
-        ISGRATUITOUSBASIS    (BOOLEAN,        FALSE,     "1, если договор заключен на безвозмездной основе; иначе 0")
+        ISGRATUITOUSBASIS    (BOOLEAN,        Bool.TRUE, "1, если договор заключен на безвозмездной основе; иначе 0")
         ;
 
         @Override

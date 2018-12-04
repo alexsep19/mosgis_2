@@ -63,37 +63,15 @@ define ([], function () {
         var f = w2ui [form_name]
 
         var v = f.values ()
-                                
-        if (!v.docnum) die ('docnum', 'Укажите, пожалуйста, номер договора')
-        if (!v.signingdate) die ('signingdate', 'Укажите, пожалуйста, дату заключения договора')
-        if (!v.code_vc_nsi_58) die ('code_vc_nsi_58', 'Укажите, пожалуйста, основание заключения договора')
-
-        if (!v.effectivedate) die ('effectivedate', 'Укажите, пожалуйста, дату вступления договора в силу')
-        if (v.effectivedate < v.signingdate) die ('effectivedate', 'Дата вступления договора в силу не может предшествовать дате его подписания')
-
-        if (!v.plandatecomptetion) die ('plandatecomptetion', 'Укажите, пожалуйста, плановую дату окончания действия договора')
-        if (v.plandatecomptetion < v.effectivedate) die ('plandatecomptetion', 'Дата окончания не может предшествовать дате вступления договора в силу')
-                
-        if (!v.ddt_m_start) die ('ddt_m_start', 'Укажите, пожалуйста, дату начала ввода показаний ПУ')
-        if (!v.ddt_m_end) die ('ddt_m_start', 'Укажите, пожалуйста, дату окончания ввода показаний ПУ')
         
-        if (v.ddt_m_start_nxt > v.ddt_m_end_nxt) {
-            die ('ddt_m_end_nxt', 'Окончание срока не может предшествовать его началу')
-        }        
-        else if (v.ddt_m_start_nxt == v.ddt_m_end_nxt) {
-            if (v.ddt_m_start > v.ddt_m_end) die ('ddt_m_end', 'Окончание срока не может предшествовать его началу')
-        }
-        else {
-            if (v.ddt_m_start < v.ddt_m_end) die ('ddt_m_end', 'Период сдачи показаний по ИПУ указан некорректно: обнаружено пересечение периодов')
-        }
-                
-        if (!v.ddt_d_start) die ('ddt_d_start', 'Укажите, пожалуйста, срок выставления платёжных документов')
-        if (!v.ddt_i_start) die ('ddt_i_start', 'Укажите, пожалуйста, срок внесения платы')
+        if (!v.contractnumber) die ('contractnumber', 'Вы забыли указать номер договора')
+        if (!v.date_) die ('date_', 'Вы забыли указать дату договора')
+        if (v.date_ > new Date ().toISOString ()) die ('date_', 'Дата договора не может находиться в будущем')
+        
+        if (!v.startdate) die ('startdate', 'Вы забыли указать дату начала действия договора')
+        if (!v.enddate) die ('enddate', 'Вы забыли указать предполагаемую дату окончания действия договора')
 
-        if (v.ddt_d_start_nxt > v.ddt_i_start_nxt) die ('ddt_i_start_nxt', 'Срок выставления платежных документов не должен превышать срок внесения платы')
-        if (v.ddt_d_start_nxt == v.ddt_i_start_nxt) {
-            if (v.ddt_d_start > v.ddt_i_start) die ('ddt_i_start', 'Срок выставления платежных документов не должен превышать срок внесения платы')
-        }
+        if (v.startdate > v.enddate) die ('enddate', 'Дата окончания не может предшествовать дате начала')
         
         query ({type: 'public_property_contracts', action: 'update'}, {data: v}, reload_page)
 

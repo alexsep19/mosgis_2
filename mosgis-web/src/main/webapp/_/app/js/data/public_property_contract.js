@@ -40,8 +40,10 @@ define ([], function () {
 */                
 
                 it._can = {}
-/*
-                if ($_USER.role.nsi_20_1 && !it.is_deleted) {
+                
+                var is_locked = it.is_deleted || (it.uuid_org != $_USER.uuid_org)
+                                
+                if (!is_locked) {
 
                     switch (it.id_ctr_status) {
 
@@ -51,6 +53,7 @@ define ([], function () {
                             it._can.edit    = 1
                             it._can.approve = 1
                             break;
+/*                            
                         case 40:
                             it._can.terminate = 1
                         case 14:
@@ -58,9 +61,9 @@ define ([], function () {
                         case 90:
                             it._can.alter   = 1
                             break;
-
+*/
                     }
-
+/*
                     switch (it.id_ctr_status) {
                         case 40:
                         case 94:
@@ -68,7 +71,7 @@ define ([], function () {
                             it._can.annul   = 1
                             break;
                     }
-                    
+
                     if (it.id_ctr_state_gis == 50) {
                     
                         switch (it.id_ctr_status) {
@@ -93,11 +96,11 @@ define ([], function () {
                                     it._can.reload = 1
                             }
                     }
+*/                    
 
                     it._can.update = it._can.cancel = it._can.edit
 
                 }
-*/                
 
                 $('body').data ('data', data)
 

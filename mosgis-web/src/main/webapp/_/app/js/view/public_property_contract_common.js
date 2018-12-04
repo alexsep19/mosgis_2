@@ -30,7 +30,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 220},
+                {type: 'top', size: 310},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
@@ -63,6 +63,9 @@ define ([], function () {
                 {name: 'date_', type: 'date'},
                 {name: 'enddate', type: 'date'},
                 {name: 'startdate', type: 'date'},
+                {name: 'contractobject', type: 'text'},
+                {name: 'comments', type: 'text'},
+                {name: 'isgratuitousbasis', type: 'list', options: {items:[{id: 0, text: 'Возмездное'}, {id: 1, text: 'Безвозмездное'}]}},
             ],
 
             focus: -1,
