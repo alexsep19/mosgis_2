@@ -2,6 +2,12 @@ define ([], function () {
 
     $_DO.create_voc_organization_legal_territories = function (e) {
 
+        $('body').data ('voc_oktmo_popup.callback', function (data) {
+
+            console.log ('TEST')
+
+        })
+
         use.block ('voc_oktmo_popup')
     
     }

@@ -7,7 +7,9 @@ define ([], function () {
         $(view).w2uppop ({
         
             onClose: function () {
-                //callback ($_SESSION.delete ('voc_oktmo_popup.data'))
+                
+                callback ($_SESSION.delete ('voc_oktmo_popup.data'))
+            
             }
         
         }, function () {
