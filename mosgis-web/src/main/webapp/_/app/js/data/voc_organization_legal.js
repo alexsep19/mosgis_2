@@ -29,8 +29,6 @@ define ([], function () {
 
         query ({type: 'voc_organizations'}, {}, function (data) {
 
-            data.item.label_delegated = data.is_delegated ? 'Да' : 'Нет'
-
             add_vocabularies (data, {
                 vc_acc_req_status: 1,
                 vc_acc_req_types: 1,

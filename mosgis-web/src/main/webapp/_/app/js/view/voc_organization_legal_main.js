@@ -12,6 +12,8 @@ define ([], function () {
     return function (data, view) {
 
         var it = data.item
+        
+        it.label_delegated = data.is_delegated ? 'Да' : 'Нет'        
 
         it.vc_nsi_20 = data.vc_orgs_nsi_20
             .map (function (r) {return data.vc_nsi_20 [r.code]})

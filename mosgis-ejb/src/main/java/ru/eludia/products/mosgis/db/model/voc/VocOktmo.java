@@ -10,7 +10,7 @@ import ru.eludia.products.mosgis.db.model.EnColEnum;
 public class VocOktmo extends Table {
     
     public enum c implements EnColEnum {
-        
+
         AREA_CODE       (Type.STRING,   3,       "Код района/города МО"),
         SETTLEMENT_CODE (Type.STRING,   3,       "Код поселения МО"),
         LOCALITY_CODE   (Type.STRING,   3,       "Код населенного пункта МО"),
@@ -24,6 +24,7 @@ public class VocOktmo extends Table {
         APPR_DATE       (Type.DATE,              "Дата утверждения"),
         ADOP_DATE       (Type.DATE,              "Дата принятия"),
         
+        ID              (Type.STRING,  10,       "Ключ"),
         CODE            (Type.STRING,  11, new Virt ("DECODE(\"LOCALITY_CODE\", '000', ('45' || \"AREA_CODE\" || \"SETTLEMENT_CODE\"), "
                                                                                     + "('45' || \"AREA_CODE\" || \"SETTLEMENT_CODE\" || \"LOCALITY_CODE\"))"), "Код ОКТМО")
         
@@ -50,17 +51,11 @@ public class VocOktmo extends Table {
         
         cols (c.class);
         
-        pk (c.AREA_CODE);
-        pk (c.SETTLEMENT_CODE);
-        pk (c.LOCALITY_CODE);
-        pk (c.SECTION_CODE);
+        pk (c.ID);
         
-        key ("aread_code", "area_code");
-        key ("settlement_code", "settlement_code");
-        key ("locality_code", "locality_code");
-        key ("section_code", "section_code");
+        key ("code", c.CODE);
         
-        fieldNames = new String[c.values ().length - 1];
+        fieldNames = new String[c.values ().length - 2];
         for (int i = 0; i < fieldNames.length; i++)
             fieldNames[i] = c.values ()[i].lc ();
         

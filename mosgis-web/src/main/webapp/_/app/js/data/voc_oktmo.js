@@ -19,7 +19,7 @@ define ([], function () {
 
     return function (done) {        
 
-        query ({type: 'voc_oktmo'}, {}, function (d) {
+        query ({type: 'voc_oktmo', id: undefined}, {}, function (d) {
 
             $('body').data ('data', d)
 
