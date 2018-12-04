@@ -32,7 +32,7 @@ define ([], function () {
             id:     w2ui [e.target].getSelection () [0],
             action: 'delete',
             
-        }, {}, reload_page)
+        }, {}, w2ui [e.target].reload ())
     
     }
 
