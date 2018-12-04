@@ -23,7 +23,8 @@ define ([], function () {
                         tabs: [
                             {id: 'voc_organization_legal_main', caption: 'Юридическое лицо'},
                             {id: 'voc_organization_legal_info', caption: 'Информация'},
-                            {id: 'voc_organization_legal_hours', caption: 'Режим работы'}
+                            {id: 'voc_organization_legal_hours', caption: 'Режим работы'},
+                            {id: 'voc_organization_legal_territories', caption: 'Территории', off: data.vc_orgs_nsi_20[0].code != 8}
                         ].filter(not_off),
 
                         onClick: $_DO.choose_top_tab_voc_organization_legal
@@ -34,7 +35,7 @@ define ([], function () {
             ],
 
             onRender: function (e) {
-                clickActiveTab(this.get('main').tabs, 'voc_organization_legal.active_tab')
+                clickActiveTab(this.get('main').tabs, 'voc_organization_legal.active_top_tab')
             },
 
         });
