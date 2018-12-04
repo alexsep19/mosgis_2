@@ -19,16 +19,15 @@ define ([], function () {
 
     return function (done) {        
     
-        var data = {}
-
-            query ({type: 'public_property_contracts'}, {}, function (d) {
+            query ({type: 'public_property_contracts'}, {}, function (data) {
             
                 add_vocabularies (data, {
+                    voc_gis_status: 1
                 })            
 
-                var it = data.item = d.item
+                var it = data.item
                 
-                it.last_approve = d.last_approve
+                it.last_approve = data.last_approve
                 
 /*                
                 var term = d.last_termination
