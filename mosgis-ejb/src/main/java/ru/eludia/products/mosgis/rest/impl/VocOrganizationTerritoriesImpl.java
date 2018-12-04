@@ -30,7 +30,8 @@ public class VocOrganizationTerritoriesImpl extends BaseCRUD<VocOrganizationTerr
         Select select = ModelHolder.getModel ().select(VocOrganizationTerritory.class, "uuid AS id")
                 .toOne (VocOktmo.class, "id AS oktmo_id", "code AS code", "site_name AS label").on ()
                 .where (VocOrganizationTerritory.c.UUID_ORG.lc (), data.get("uuid_org").toString ())
-                .and   ("is_deleted", "0");
+                .and   ("is_deleted", "0")
+                .orderBy ("code");
         
         db.addJsonArrayCnt(job, select);
         

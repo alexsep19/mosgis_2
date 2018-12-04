@@ -13,6 +13,8 @@ define ([], function () {
             show: {
                 toolbar: true,
                 footer: true,
+                toolbarSearch: false,
+                toolbarInput: false,
                 toolbarColumns: false,
                 toolbarAdd: $_USER.role.admin,
                 toolbarDelete: $_USER.role.admin,
