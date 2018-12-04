@@ -8,6 +8,8 @@ define ([], function () {
 
             name: 'voc_oktmo_grid',
 
+            multiSelect: false,
+
             show: {
                 toolbar: true,
                 toolbarSearch: true,
@@ -30,9 +32,17 @@ define ([], function () {
 
             onDblClick: function (e) {
 
-                if ($_SESSION.delete ('voc_oktmo_popup.on')) {
-                    $_SESSION.set ('voc_oktmo_popup.data', this.get (e.recid))
-                    w2popup.close ()
+                ids = $_SESSION.get ('voc_oktmo_popup.ids')
+                if ($_SESSION.get ('voc_oktmo_popup.on') && ids) {
+                    if (ids.includes (e.recid)) alert ('Эта территория уже в списке')
+                    else {
+                        $_SESSION.set ('voc_oktmo_popup.data', this.get (e.recid))
+
+                        $_SESSION.delete ('voc_oktmo_popup.on')
+                        $_SESSION.delete ('voc_oktmo_popup.ids')
+
+                        w2popup.close ()
+                    }
                 }
 
             }

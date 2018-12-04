@@ -2,6 +2,13 @@ define ([], function () {
 
     $_DO.create_voc_organization_legal_territories = function (e) {
 
+        var ids = []
+        w2ui [e.target].records.forEach ((element, i, arr) => {
+            ids.push (element['oktmo_id'])
+        })
+
+        $_SESSION.set ('voc_oktmo_popup.ids', ids)
+
         $('body').data ('voc_oktmo_popup.callback', function (r) {
 
             if (!r) return
