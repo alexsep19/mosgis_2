@@ -2,7 +2,7 @@ define ([], function () {
 
     $_DO.create_voc_organization_legal_territories = function (e) {
 
-        //use.block ('voting_protocol_vote_decision_lists_new')
+        use.block ('voc_oktmo_popup')
     
     }
 
