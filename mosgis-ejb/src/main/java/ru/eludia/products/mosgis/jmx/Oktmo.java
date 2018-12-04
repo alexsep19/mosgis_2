@@ -88,6 +88,7 @@ public class Oktmo implements OktmoMBean {
                     boolean inBlock = false;
                     String line;
                     List<Map<String, Object>> records = new ArrayList<>();
+                    StringBuilder sb = new StringBuilder();
                     while ((line = br.readLine()) != null) {
                         if (line.startsWith(areaCodeOfMoscow)) {
                             
@@ -96,8 +97,18 @@ public class Oktmo implements OktmoMBean {
                             for (int i = 0; i < parts.length; i++) {
                                 parts[i] = parts[i].replace("\"", "");
                             }
-                            
+
                             HashMap<String, Object> map = new HashMap<>();
+                            
+                            sb.append(parts[1]);
+                            sb.append(parts[2]);
+                            sb.append(parts[3]);
+                            sb.append(parts[5]);
+                            
+                            map.put (VocOktmo.c.ID.lc (), sb.toString ());
+                            
+                            sb.delete(0, sb.length ());
+                            
                             for (int i = 0; i < VocOktmo.fieldNames.length; i++)
                                 map.put(VocOktmo.fieldNames[i], parts[i + 1]);
                             records.add(map);
