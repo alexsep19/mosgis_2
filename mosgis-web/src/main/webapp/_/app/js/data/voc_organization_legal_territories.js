@@ -48,7 +48,10 @@ define ([], function () {
 
     return function (done) {
 
-        w2ui ['topmost_layout'].unlock ('main')            
+        var layout = w2ui ['voc_organization_legal_layout']
+
+        if (layout)
+            layout.unlock('main')
 
         data = $('body').data ('data')
 

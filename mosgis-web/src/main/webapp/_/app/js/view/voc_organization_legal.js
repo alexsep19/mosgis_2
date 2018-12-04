@@ -35,7 +35,7 @@ define ([], function () {
             ],
 
             onRender: function (e) {
-                clickActiveTab(this.get('main').tabs, 'voc_organization_legal.active_tab')
+                clickActiveTab(this.get('main').tabs, 'voc_organization_legal.active_top_tab')
             },
 
         });
