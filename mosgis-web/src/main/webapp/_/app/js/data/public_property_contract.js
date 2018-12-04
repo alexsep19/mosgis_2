@@ -22,9 +22,10 @@ define ([], function () {
             query ({type: 'public_property_contracts'}, {}, function (data) {
             
                 add_vocabularies (data, {
-                    voc_gis_status: 1
+                    vc_actions: 1,
+                    vc_gis_status: 1,
                 })            
-
+                
                 var it = data.item
                 
                 it.last_approve = data.last_approve

@@ -163,7 +163,7 @@ define ([], function () {
         w2ui ['topmost_layout'].unlock ('main')
         
         var data = clone ($('body').data ('data'))
-darn (data)
+
         data.active_tab = localStorage.getItem ('public_property_contract_common.active_tab') || 'public_property_contract_common_log'
 
         data.__read_only = 1

@@ -24,6 +24,7 @@ public class PublicPropertyContract extends EnTable {
         FIASHOUSEGUID        (VocBuilding.class,         "Дом"),
         UUID_ORG_CUSTOMER    (VocOrganization.class,     "Организация-заказчик"),
         UUID_PERSON_CUSTOMER (VocPerson.class,           "Физлицо-заказчик"),
+        ID_CTR_STATUS        (VocGisStatus.class,        VocGisStatus.i.PROJECT.asDef (),     "Статус устава с точки зрения mosgis"),
         ID_CTR_STATUS_GIS    (VocGisStatus.class,        VocGisStatus.i.PROJECT.asDef (),     "Статус устава с точки зрения ГИС ЖКХ"),
         ID_CTR_STATE_GIS     (VocGisStatus.class,        VocGisStatus.i.NOT_RUNNING.asDef (), "Состояние устава с точки зрения ГИС ЖКХ"),
 

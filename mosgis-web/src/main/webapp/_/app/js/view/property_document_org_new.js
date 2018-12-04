@@ -16,7 +16,7 @@ define ([], function () {
                     {name: 'label_org_owner', type: 'text'},
                     {name: 'prc', type: 'float', options: {min: 0, max: 100}},
                     {name: 'id_type', type: 'list', options: {items: data.vc_prop_doc_types.items}},
-                    {name: 'uuid_premise', type: 'list', options: {items: darn(data.premises)}},
+                    {name: 'uuid_premise', type: 'list', options: {items: data.premises}},
                 ],
                 
                 focus: 2,
