@@ -24,7 +24,7 @@ public class VocOktmo extends Table {
         APPR_DATE       (Type.DATE,              "Дата утверждения"),
         ADOP_DATE       (Type.DATE,              "Дата принятия"),
         
-        KEY             (Type.STRING,  10,       "Ключ"),
+        ID              (Type.STRING,  10,       "Ключ"),
         CODE            (Type.STRING,  11, new Virt ("DECODE(\"LOCALITY_CODE\", '000', ('45' || \"AREA_CODE\" || \"SETTLEMENT_CODE\"), "
                                                                                     + "('45' || \"AREA_CODE\" || \"SETTLEMENT_CODE\" || \"LOCALITY_CODE\"))"), "Код ОКТМО")
         
@@ -51,7 +51,7 @@ public class VocOktmo extends Table {
         
         cols (c.class);
         
-        pk (c.KEY);
+        pk (c.ID);
         
         key ("code", c.CODE);
         

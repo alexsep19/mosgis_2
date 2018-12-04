@@ -105,7 +105,7 @@ public class Oktmo implements OktmoMBean {
                             sb.append(parts[3]);
                             sb.append(parts[5]);
                             
-                            map.put (VocOktmo.c.KEY.lc (), sb.toString ());
+                            map.put (VocOktmo.c.ID.lc (), sb.toString ());
                             
                             sb.delete(0, sb.length ());
                             
