@@ -36,6 +36,10 @@ define ([], function () {
 
             data.__read_only = true
 
+            var it = data.item
+            
+            if (it.isgratuitousbasis == 0 && it.other) it.isgratuitousbasis = -1            
+
             $_F5 (data)
 
         })
@@ -72,6 +76,42 @@ define ([], function () {
         if (!v.enddate) die ('enddate', 'Вы забыли указать предполагаемую дату окончания действия договора')
 
         if (v.startdate > v.enddate) die ('enddate', 'Дата окончания не может предшествовать дате начала')
+                
+        if (v.isgratuitousbasis == -1) {
+            if (!v.other) die ('other', 'Укажите, пожалуйста, режим оплаты')
+        }
+        else {
+            v.other = ''
+        }
+                
+        if (v.isgratuitousbasis == 0) {
+        
+            if (!v.ddt_start) die ('ddt_start', 'Укажите, пожалуйста, дату начала периода оплаты')
+            if (!v.ddt_end) die ('ddt_end', 'Укажите, пожалуйста, дату окончания периода оплаты')
+            
+            if (v.ddt_start_nxt > v.ddt_end_nxt) {
+                die ('ddt_end_nxt', 'Окончание срока не может предшествовать его началу')
+            }        
+            else if (v.ddt_start_nxt == v.ddt_end_nxt) {
+                if (v.ddt_start > v.ddt_end) die ('ddt_end', 'Окончание срока не может предшествовать его началу')
+            }
+            else {
+                if (v.ddt_start < v.ddt_end) die ('ddt_end', 'Период оплаты указан некорректно: обнаружено пересечение периодов')
+            }
+            
+        }
+        else {
+            v.ddt_start = null
+            v.ddt_end = null
+        }        
+        
+        if (v.isgratuitousbasis != 1) {
+        
+            if (!(parseFloat (v.payment) >= 0.01)) die ('payment', 'Укажите, пожалуйста, корректный размер платы')
+            
+            v.isgratuitousbasis = 0
+
+        }
         
         query ({type: 'public_property_contracts', action: 'update'}, {data: v}, reload_page)
 
@@ -161,7 +201,9 @@ define ([], function () {
         it.err_text = it ['out_soap.err_text']        
         
         if (it.id_ctr_status_gis == 110) it.is_annuled = 1
-
+        
+        if (it.isgratuitousbasis == 0 && it.other) it.isgratuitousbasis = -1
+        
         done (data)
         
     }
