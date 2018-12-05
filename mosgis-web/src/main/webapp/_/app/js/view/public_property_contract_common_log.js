@@ -1,5 +1,14 @@
 define ([], function () {
 
+    function _ddt (record, ind, col_ind, data) {
+        return data < 99 ? data : 'посл.'
+    }
+    
+    var nxt = {
+        0: 'тек.',
+        1: 'след.',
+    }
+
     return function (data, view) {
     
         data = $('body').data ('data')
@@ -16,7 +25,7 @@ define ([], function () {
 
             columnGroups : [
                 {span: 5, caption: 'Событие'},
-                {span: 7, caption: 'Значения полей'},
+                {span: 14, caption: 'Значения полей'},
                 {span: 4, caption: 'Запрос в ГИС ЖКХ'},
             ], 
             
@@ -34,6 +43,13 @@ define ([], function () {
                 {field: 'contractobject', caption: 'Предмет', size: 30},
                 {field: 'comments', caption: 'Комментарии', size: 30},
                 {field: 'isgratuitousbasis', caption: 'Условия использования', size: 10, voc: {0: 'Возмездное', 1: 'Безвозмездное'}},
+                {field: 'payment', caption: 'Оплата', size: 10},
+                {field: 'ddt_start', caption: 'Оплата с (дата)', size: 5, render: _ddt, hidden: true},
+                {field: 'ddt_start_nxt', caption: 'Оплата с (мес.)', size: 5, voc: nxt, hidden: true},
+                {field: 'ddt_end', caption: 'Оплата по (дата)', size: 5, render: _ddt, hidden: true},
+                {field: 'ddt_end_nxt', caption: 'Оплата по (мес.)', size: 5, voc: nxt, hidden: true},
+                {field: 'other', caption: 'Иное', size: 30, hidden: true},
+                {field: 'moneyspentdirection', caption: 'Направление расходования', size: 30, hidden: true},
                 
                 {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: 'data-ref=1'},
                 {field: 'soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: 'data-ref=1'},
