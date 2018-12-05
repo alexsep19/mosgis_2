@@ -20,6 +20,7 @@ import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContractLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocUserOktmo;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.PublicPropertyContractLocal;
@@ -90,8 +91,8 @@ public class PublicPropertyContractImpl extends BaseCRUD<PublicPropertyContract>
         String v = data.getString (k, null);
         if (DB.ok (v)) select.and (k, v);
                       
-//        select.and (PublicPropertyContract.c.UUID_CHARTER.lc (), p.getJsonObject ("data").getString ("uuid_charter"));
-
+        if (data.containsKey ("is_oms")) select.and ("oktmo", m.select (VocUserOktmo.class, "oktmo").where ("uuid_user", user.getId ()));
+        
         db.addJsonArrayCnt (job, select);
 
     });}

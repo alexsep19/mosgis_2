@@ -6,6 +6,7 @@ define ([], function () {
     
     var postData = {}
     if (is_owner) postData.uuid_org = $_USER.uuid_org
+    if ($_USER.role.nsi_20_8) postData.is_oms = 1
     
     return function (data, view) {
             

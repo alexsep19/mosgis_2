@@ -61,7 +61,9 @@ public class PublicPropertyContracts extends EJBResource <PublicPropertyContract
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject select (JsonObject p) { 
-        if (!isGlobalUser () && !getUserOrg ().equals (p.getJsonObject ("data").getString ("uuid_org"))) throw new ValidationException ("foo", "Доступ запрещён");
+        final JsonObject data = p.getJsonObject ("data");
+        if (!isGlobalUser () && !getUserOrg ().equals (data.getString ("uuid_org"))) throw new ValidationException ("foo", "Доступ запрещён");
+        if (securityContext.isUserInRole ("nsi_20_8") && !data.containsKey ("is_oms")) throw new ValidationException ("foo", "Доступ запрещён");
         return back.select (p, getUser ()); 
     }
     

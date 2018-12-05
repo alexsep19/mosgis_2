@@ -15,6 +15,7 @@ public class ActualPublicPropertyContract extends View {
     public enum c implements ColEnum {
         ID                   (Type.UUID,   "id"),
         IS_CUSTOMER_ORG      (Type.BOOLEAN, "1 для организации, 0 для физлица"),
+        OKTMO                (Type.STRING, "ОКТМО"),
         ORG_LABEL            (Type.STRING, "Исполнитель"),
         ORG_LABEL_UC         (Type.STRING, "ИСПОЛНИТЕЛЬ"),
         ADDRESS              (Type.STRING, "Адрес"),
@@ -46,6 +47,7 @@ public class ActualPublicPropertyContract extends View {
             + " o.*"
             + " , o.uuid id "
             + " , DECODE(o.uuid_org_customer, NULL, 0, 1) is_customer_org"
+            + " , fias.oktmo "
             + " , org.label org_label "
             + " , org.label_uc org_label_uc "
             + " , fias.label address "
