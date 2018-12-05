@@ -18,6 +18,8 @@ import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import javax.jms.Queue;
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
@@ -77,7 +79,7 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
     protected Get get(UUID uuid) {
         return (Get) ModelHolder.getModel().get(getTable(), uuid, "AS root", "*")
                 .toOne (VocOrganization.class, "AS org", "orgppaguid").on()
-                .toOne (House.class, "AS house", "fiashouseguid", "id_status").on()
+                .toOne (House.class, "AS house", "fiashouseguid", "id_status", "gis_unique_number").on()
                 .toOne(VocBuilding.class, "oktmo").on();
     }
     
@@ -97,10 +99,14 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
             AckRequest.Ack ack = invoke(db, action, uuid, r);
         
             db.begin();
-            db.update(OutSoap.class, DB.HASH(
+            
+            Map<String, Object> outSoap = DB.HASH(
                     "uuid",     uuid,
-                    "uuid_ack", ack.getMessageGUID()
-            ));
+                    "uuid_ack", ack.getMessageGUID());
+            if (r.containsKey("object_by_transport_guid")) {
+                outSoap.put("object_by_transport_guid", r.get("object_by_transport_guid"));
+            }
+            db.update(OutSoap.class, outSoap);
 
             db.update(getTable(), DB.HASH(
                     "uuid",          uuid,
@@ -227,13 +233,18 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
         
         addOGFData(r, passportFields, isCondo);
         
+        JsonObjectBuilder objectByTransportGuid = Json.createObjectBuilder();
+        r.put("object_by_transport_guid", objectByTransportGuid);
+        
         r.put("state", XmlUtils.createNsiRef(24, (String) r.get("code_vc_nsi_24")));
         r.put("lifecyclestage", XmlUtils.createNsiRef(336, (String) r.get("code_vc_nsi_336")));
         r.put("olsontz", XmlUtils.createNsiRef(32, "2")); //Москва(+3)
         r.put("oktmo", XmlUtils.createOKTMORef((Long)r.get("vc_buildings.oktmo")));
         r.putAll(getCadastralNumber((String) r.get("kad_n")));
-        r.put("transportguid", r.get("uuid"));
         
+        r.put("transportguid", r.get("uuid_object"));
+        objectByTransportGuid.add(r.get("uuid_object").toString(), Json.createObjectBuilder().add("object", House.Object.HOUSE.name()).build());
+                
         if (isCondo) {
             addEntrances(r, db);
             addLifts(r, passportFields, db);
@@ -248,6 +259,9 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
             r.put("residentialpremises", ((Map<Object, Object>)r.get("residentialpremises")).values());
         else if (hasBlocks)
             r.put("blocks", ((Map<Object, Object>)r.get("blocks")).values());
+        
+        String objectByTransportGuidStr = objectByTransportGuid.build().toString();
+        r.put("object_by_transport_guid", objectByTransportGuidStr);
         
         if (orgRoles.contains(OrgRoles.UO)) return wsGisHouseManagementClient.importHouseUOData(orgPPAGuid, messageGUID, r);
         else if (orgRoles.contains(OrgRoles.OMS)) return wsGisHouseManagementClient.importHouseOMSData(orgPPAGuid, messageGUID, r);
@@ -282,9 +296,11 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
     private void addEntrances (Map<String, Object> r, DB db) throws SQLException {
         List<Map<String, Object>> entrances = new ArrayList<>();
         
+        JsonObjectBuilder objectByTransportGuid = (JsonObjectBuilder)r.get("object_by_transport_guid");
+        
         db.forEach(db.getModel()
                 .select (Entrance.class, "*")
-                .where ("uuid_house", r.get ("uuid"))
+                .where ("uuid_house", r.get ("uuid_object"))
                 .and ("is_deleted", 0)
                 .and ("is_annuled_in_gis", 0), (rs) -> {
             
@@ -292,6 +308,13 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
             
             entrance.put("transportguid", entrance.get("uuid"));
             
+            objectByTransportGuid.add(entrance.get("uuid").toString(), 
+                    Json.createObjectBuilder()
+                            .add("object", House.Object.ENTRANCE.name())
+                            .add("key", entrance.get("entrancenum").toString())
+                            .build()
+            );
+                    
             entrances.add(entrance);
         });
         r.put ("entrances", entrances);
@@ -303,11 +326,13 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
         
         List<Map<String, Object>> lifts = new ArrayList<>();
         
+        JsonObjectBuilder objectByTransportGuid = (JsonObjectBuilder)r.get("object_by_transport_guid");
+        
         db.forEach(db.getModel()
                 .select (Lift.class, "AS root", "*")
                 .toOne(Entrance.class, "AS entrance", "entrancenum").on()
                 .toOne (nsi192, "AS vc_nsi_192", "guid").on ("vc_nsi_192.code=root.code_vc_nsi_192 AND vc_nsi_192.isactual=1")
-                .where ("uuid_house", r.get ("uuid"))
+                .where ("uuid_house", r.get ("uuid_object"))
                 .and ("is_deleted", 0)
                 .and ("is_annuled_in_gis", 0), (rs) -> {
             
@@ -319,6 +344,13 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
             
             lift.put("entrancenum", lift.get("entrance.entrancenum"));
             lift.put("transportguid", lift.get("uuid"));
+
+            objectByTransportGuid.add(lift.get("uuid").toString(), 
+                    Json.createObjectBuilder()
+                            .add("object", House.Object.LIFT.name())
+                            .add("key", lift.get("factorynum").toString())
+                            .build()
+            );
             
             lifts.add(lift);
         });
@@ -329,12 +361,14 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
         
         NsiTable nsi30 = NsiTable.getNsiTable (30);
         
+        JsonObjectBuilder objectByTransportGuid = (JsonObjectBuilder)r.get("object_by_transport_guid");
+        
         Map <Object, Map <String, Object>> premises = db.getIdx(
                 db.getModel()
                 .select (ResidentialPremise.class, "AS root","*")
                 .toMaybeOne(Entrance.class, "AS entrance", "entrancenum").on()
                 .toMaybeOne (nsi30, "AS vc_nsi_30", "guid").on ("vc_nsi_30.code=root.code_vc_nsi_30 AND vc_nsi_30.isactual=1")
-                .where ("uuid_house", r.get ("uuid"))
+                .where ("uuid_house", r.get ("uuid_object"))
                 .and ("is_deleted", 0)
                 .and ("is_annuled_in_gis", 0));
         
@@ -357,6 +391,14 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
             
             premise.putAll(getCadastralNumber((String) premise.get("cadastralnumber")));
             premise.put("transportguid", premise.get("uuid"));
+            
+            objectByTransportGuid.add(premise.get("uuid").toString(), 
+                    Json.createObjectBuilder()
+                            .add("object", House.Object.RESIDENTIAL_PREMISE.name())
+                            .add("key", premise.get("premisesnum").toString())
+                            .build()
+            );
+            
         });
         
         
@@ -366,9 +408,12 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
     private void addNonResidentialPremises (Map<String, Object> r, Map <Object, Map <String, Object>> passportFields, DB db) throws SQLException {
         
         List<Map<String, Object>> premises = new ArrayList<>();
+        
+        JsonObjectBuilder objectByTransportGuid = (JsonObjectBuilder)r.get("object_by_transport_guid");
+        
         db.forEach(db.getModel()
                 .select (NonResidentialPremise.class, "*")
-                .where ("uuid_house", r.get ("uuid"))
+                .where ("uuid_house", r.get ("uuid_object"))
                 .and ("is_deleted", 0)
                 .and ("is_annuled_in_gis", 0), (rs) -> {
             
@@ -378,7 +423,15 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
             
             premise.putAll(getCadastralNumber((String) premise.get("cadastralnumber")));
             premise.put("transportguid", premise.get("uuid"));
-       
+            objectByTransportGuid.add(premise.get("uuid").toString(), House.Object.NON_RESIDENTIAL_PREMISE.name());
+            
+            objectByTransportGuid.add(premise.get("uuid").toString(), 
+                    Json.createObjectBuilder()
+                            .add("object", House.Object.NON_RESIDENTIAL_PREMISE.name())
+                            .add("key", premise.get("premisesnum").toString())
+                            .build()
+            );
+            
             premises.add(premise);
         });
 
@@ -391,9 +444,11 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
         
         Map<Object, Map<String, Object>> premises = (Map<Object, Map<String, Object>>) (isCondo ? r.get("residentialpremises") : r.get("blocks"));
         
+        JsonObjectBuilder objectByTransportGuid = (JsonObjectBuilder)r.get("object_by_transport_guid");
+        
         db.forEach(db.getModel()
                 .select (LivingRoom.class, "*")
-                .where ("uuid_house", r.get ("uuid"))
+                .where ("uuid_house", r.get ("uuid_object"))
                 .and ("is_deleted", 0)
                 .and ("is_annuled_in_gis", 0), (rs) -> {
             Map<String, Object> room = db.HASH (rs);
@@ -405,10 +460,18 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
             
             UUID premiseUuid = (UUID)(isCondo ? room.get("uuid_premise") : room.get("uuid_block"));
             
-            if (premiseUuid != null)
+            JsonObjectBuilder objectData = Json.createObjectBuilder()
+                            .add("object", House.Object.LIVING_ROOM.name())
+                            .add("key", room.get("roomnumber").toString());
+            
+            if (premiseUuid != null) {
                 ((List<Map<String, Object>>)premises.get(premiseUuid).get("livingrooms")).add(room);
+                objectData.add("parent", premiseUuid.toString());
+            }
             else
                 houseRooms.add(room);
+            
+            objectByTransportGuid.add(room.get("uuid").toString(), objectData);
         });
         r.put ("livingrooms", houseRooms);
     }
@@ -417,11 +480,13 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
         
         NsiTable nsi30 = NsiTable.getNsiTable (30);
         
+        JsonObjectBuilder objectByTransportGuid = (JsonObjectBuilder)r.get("object_by_transport_guid");
+        
         Map <Object, Map <String, Object>> blocks = db.getIdx(
                 db.getModel()
                         .select (Block.class, "AS root", "*")
                         .toMaybeOne (nsi30, "AS vc_nsi_30", "guid").on ("vc_nsi_30.code=root.code_vc_nsi_30 AND vc_nsi_30.isactual=1")
-                        .where ("uuid_house", r.get ("uuid"))
+                        .where ("uuid_house", r.get ("uuid_object"))
                         .and ("is_deleted", 0)
                         .and ("is_annuled_in_gis", 0));
         
@@ -431,6 +496,14 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
             
             block.putAll(getCadastralNumber((String) block.get("cadastralnumber")));
             block.put("transportguid", block.get("uuid"));
+            
+            objectByTransportGuid.add(block.get("uuid").toString(), 
+                    Json.createObjectBuilder()
+                            .add("object", House.Object.BLOCK.name())
+                            .add("key", block.get("blocknum").toString())
+                            .build()
+            );
+            
             block.put("premisescharacteristic", NsiTable.toDom((String) block.get("code_vc_nsi_30"), (UUID) block.get("vc_nsi_30.guid")));
             if (block.get("grossarea") == null) 
                 block.put("nogrossares", true);

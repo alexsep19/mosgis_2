@@ -1,19 +1,21 @@
 package ru.eludia.products.mosgis.jms.gis.poll;
 
+import java.io.StringReader;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Level;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import javax.jms.Queue;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
-import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.HouseLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
@@ -23,11 +25,9 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
-import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
-import ru.eludia.products.mosgis.rest.api.MgmtContractLocal;
 import ru.eludia.products.mosgis.util.StringUtils;
 import ru.gosuslugi.dom.schema.integration.base.CommonResultType;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
@@ -53,8 +53,8 @@ public class GisPollImportHouseMDB  extends GisPollMDB {
     
     @Override
     protected Get get(UUID uuid) {
-        return (Get) ModelHolder.getModel().get(getTable(), uuid, "*")
-            .toOne (HouseLog.class,     "AS log", "uuid").on ("log.uuid_out_soap=root.uuid")
+        return (Get) ModelHolder.getModel().get(getTable(), uuid, "AS root", "*")
+            .toOne (HouseLog.class,     "AS log", "uuid", "id_status").on ("log.uuid_out_soap=root.uuid")
             .toOne (House.class,     "AS house", "uuid", "fiashouseguid").on()
             .toOne (VocOrganization.class, "AS org", "orgppaguid").on()
         ;
@@ -103,20 +103,34 @@ public class GisPollImportHouseMDB  extends GisPollMDB {
                 throw new FU (em2, action.getFailStatus());
             }
             
+            String objectByTransportGuidStr = r.get("object_by_transport_guid").toString();
+            JsonObject objectByTransportGuid;
+            try (JsonReader jsonReader = Json.createReader(new StringReader(objectByTransportGuidStr))) {
+                objectByTransportGuid = jsonReader.readObject();
+            }
+            
             List<ImportResult.CommonResult> commonResultList = result.getCommonResult ();
             String commonResultErrors = "";
-            for (ImportResult.CommonResult commonResult : commonResultList) {
-                UUID objectUuid = UUID.fromString(commonResult.getTransportGUID());
-                
-                if (!commonResult.getError().isEmpty())
-                    for (CommonResultType.Error error : commonResult.getError()) {
+            
+            db.begin ();
+                for (ImportResult.CommonResult commonResult : commonResultList) {
+                    String err = saveObject(db, objectByTransportGuid, commonResult);
+                    if (StringUtils.isNotBlank(err)) {
                         if (StringUtils.isNotBlank(commonResultErrors)) commonResultErrors += "\n";
-                        commonResultErrors += (error.getErrorCode() + " " + error.getDescription());
+                        commonResultErrors += err;
                     }
-                else
-                    commonResult.getUniqueNumber();
-                    commonResult.getUpdateDate();
-            }    
+                }
+                if (StringUtils.isNotBlank(commonResultErrors))
+                    throw new FU ("0", commonResultErrors, action.getFailStatus());
+                
+                db.update (OutSoap.class, HASH (
+                    "uuid", uuid,
+                    "id_status", DONE.getId ()
+                ));
+                
+            db.commit ();
+
+            db.getConnection ().setAutoCommit (true);
         }
         catch (FU fu) {
             
@@ -149,6 +163,43 @@ public class GisPollImportHouseMDB  extends GisPollMDB {
         
     }
     
+    private String saveObject(DB db, JsonObject objectByTransportGuid, ImportResult.CommonResult commonResult) throws SQLException {
+        
+        JsonObject object = objectByTransportGuid.getJsonObject(commonResult.getTransportGUID());
+        if (object == null) return "Из ГИС ЖКХ вернулся неизвестный идентификатор " + commonResult.getTransportGUID();
+        
+        House.Object houseObject = House.Object.valueOf(object.getString("object"));
+
+        if (!commonResult.getError().isEmpty()) {
+            String err = "";
+            for (CommonResultType.Error error : commonResult.getError()) {
+                if (StringUtils.isNotBlank(err)) err += "; ";
+                err += (error.getErrorCode() + " " + error.getDescription());
+            }
+            
+            if (object.containsKey("key"))
+                err = houseObject.getName() + " № " + object.getString("key") + ": " + err;
+            
+            if (object.containsKey("parent")) {
+                JsonObject parentJO = objectByTransportGuid.getJsonObject(object.getString("parent"));
+                House.Object parentObject = House.Object.valueOf(parentJO.getString("object"));
+
+                if (parentJO.containsKey("key"))
+                    err = parentObject.getName() + " № " + parentJO.getString("key") + " " + err;
+            }
+            return err;
+        }
+        
+        db.update(houseObject.getClazz(), HASH(
+                "uuid", commonResult.getTransportGUID(),
+                "gis_unique_number", commonResult.getUniqueNumber(),
+                "gis_modification_date", commonResult.getUpdateDate(),
+                houseObject.getGisKey(), commonResult.getGUID()
+        ));
+        
+        return "";
+    }
+    
     private class FU extends GisPollException {
         
         private VocGisStatus.i status;
@@ -179,7 +230,7 @@ public class GisPollImportHouseMDB  extends GisPollMDB {
             super.register (db, uuid, r);
 
             db.update (House.class, HASH (
-                "uuid",          r.get ("ctr.uuid"),
+                "uuid",          r.get ("house.uuid"),
                 "id_status", status.getId ()
             ));
             

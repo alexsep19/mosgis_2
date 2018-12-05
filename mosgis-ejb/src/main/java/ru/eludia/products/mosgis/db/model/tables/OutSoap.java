@@ -39,7 +39,8 @@ public class OutSoap extends Table {
         col ("err_text",     Type.STRING,       null, "Текст ошибки");
         col ("orgppaguid",     Type.UUID,       null, "Идентификатор зарегистрированной организации, с которым отправлялся запрос");
         col ("ym",           Type.STRING,       new Virt ("TO_CHAR(TS,'yyyy-mm')"), "Год-Месяц");
-
+        col ("object_by_transport_guid", Type.TEXT,       null, "JSON со списком объектов по транспортному идентификатору");
+        
         fk ("id_status",     VocAsyncRequestState.class, new Num (IN_PROGRESS.getId ()), "Статус");
 
         unique ("uuid_ack", "uuid_ack");

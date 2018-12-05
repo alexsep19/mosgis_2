@@ -135,6 +135,8 @@ public class GisPollExportHouse extends GisPollMDB {
           
         Map<String, Object> dbHouseData = db.getMap(House.class, houseUuid);
         Map<String, Object> houseDataForSave = getIfDbDataNullOrEmpty(record, dbHouseData);
+        houseDataForSave.put("uuid", houseUuid);
+        
         if (record.get("kad_n") != null)
             houseDataForSave.put("kad_n", record.get("kad_n"));
         db.update(House.class, houseDataForSave);

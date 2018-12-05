@@ -295,7 +295,7 @@ public class WsGisHouseManagementClient {
             //МКД
             ImportHouseUORequest.ApartmentHouse house = new ImportHouseUORequest.ApartmentHouse();
             importHouseUORequest.setApartmentHouse(house);
-            if (StringUtils.isBlank((String) r.get("gis_unique_number"))) {
+            if (StringUtils.isBlank((String) r.get("house.gis_unique_number"))) {
                 //Создание
                 ImportHouseUORequest.ApartmentHouse.ApartmentHouseToCreate apartmentHouse
                         = TypeConverter.javaBean(ImportHouseUORequest.ApartmentHouse.ApartmentHouseToCreate.class, r);
@@ -316,7 +316,7 @@ public class WsGisHouseManagementClient {
             //ЖД
             ImportHouseUORequest.LivingHouse house = new ImportHouseUORequest.LivingHouse();
             importHouseUORequest.setLivingHouse(house);
-            if (r.get("gis_unique_number") == null) {
+            if (r.get("house.gis_unique_number") == null) {
                 //Создание
                 ImportHouseUORequest.LivingHouse.LivingHouseToCreate livingHouse
                         = TypeConverter.javaBean(ImportHouseUORequest.LivingHouse.LivingHouseToCreate.class, r);
@@ -345,7 +345,7 @@ public class WsGisHouseManagementClient {
             //МКД
             ImportHouseOMSRequest.ApartmentHouse house = new ImportHouseOMSRequest.ApartmentHouse();
             importHouseOMSRequest.setApartmentHouse(house);
-            if (StringUtils.isBlank((String) r.get("gis_unique_number"))) {
+            if (StringUtils.isBlank((String) r.get("house.gis_unique_number"))) {
                 //Создание
                 ImportHouseOMSRequest.ApartmentHouse.ApartmentHouseToCreate apartmentHouse
                         = TypeConverter.javaBean(ImportHouseOMSRequest.ApartmentHouse.ApartmentHouseToCreate.class, r);
@@ -366,7 +366,7 @@ public class WsGisHouseManagementClient {
             //ЖД
             ImportHouseOMSRequest.LivingHouse house = new ImportHouseOMSRequest.LivingHouse();
             importHouseOMSRequest.setLivingHouse(house);
-            if (r.get("gis_unique_number") == null) {
+            if (r.get("house.gis_unique_number") == null) {
                 //Создание
                 ImportHouseOMSRequest.LivingHouse.LivingHouseToCreate livingHouse
                         = TypeConverter.javaBean(ImportHouseOMSRequest.LivingHouse.LivingHouseToCreate.class, r);
@@ -395,7 +395,7 @@ public class WsGisHouseManagementClient {
             //МКД
             ImportHouseRSORequest.ApartmentHouse house = new ImportHouseRSORequest.ApartmentHouse();
             importHouseRSORequest.setApartmentHouse(house);
-            if (StringUtils.isBlank((String) r.get("gis_unique_number"))) {
+            if (StringUtils.isBlank((String) r.get("house.gis_unique_number"))) {
                 //Создание
                 ImportHouseRSORequest.ApartmentHouse.ApartmentHouseToCreate apartmentHouse
                         = TypeConverter.javaBean(ImportHouseRSORequest.ApartmentHouse.ApartmentHouseToCreate.class, r);
@@ -415,7 +415,7 @@ public class WsGisHouseManagementClient {
             //ЖД
             ImportHouseRSORequest.LivingHouse house = new ImportHouseRSORequest.LivingHouse();
             importHouseRSORequest.setLivingHouse(house);
-            if (r.get("gis_unique_number") == null) {
+            if (r.get("house.gis_unique_number") == null) {
                 //Создание
                 ImportHouseRSORequest.LivingHouse.LivingHouseToCreate livingHouse
                         = TypeConverter.javaBean(ImportHouseRSORequest.LivingHouse.LivingHouseToCreate.class, r);
@@ -444,7 +444,7 @@ public class WsGisHouseManagementClient {
             //МКД
             ImportHouseESPRequest.ApartmentHouse house = new ImportHouseESPRequest.ApartmentHouse();
             importHouseESPRequest.setApartmentHouse(house);
-            if (StringUtils.isBlank((String) r.get("gis_unique_number"))) {
+            if (StringUtils.isBlank((String) r.get("house.gis_unique_number"))) {
                 //Создание
                 ImportHouseESPRequest.ApartmentHouse.ApartmentHouseToCreate apartmentHouse
                         = TypeConverter.javaBean(ImportHouseESPRequest.ApartmentHouse.ApartmentHouseToCreate.class, r);

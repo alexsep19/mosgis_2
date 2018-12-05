@@ -49,6 +49,7 @@ public class House extends Passport {
         col    ("code_vc_nsi_24",        Type.STRING, 20, null,            "Состояние дома");
         col    ("kad_n",                 Type.STRING, null,                "Кадастровый номер");
         
+        col    ("gis_guid",              Type.UUID,           null,       "Идентификатор паспорта дома из ГИС ЖКХ");
         col    ("gis_unique_number",     Type.STRING,         null,       "Уникальный номер дома из ГИС ЖКХ");
         col    ("gis_modification_date", Type.TIMESTAMP,      null,       "Дата модификации данных дома в ГИС ЖКХ");
         col    ("terminationdate",       Type.DATE,           null,       "Дата аннулирования объекта в ГИС ЖКХ");
@@ -132,8 +133,40 @@ public class House extends Passport {
                 case PENDING_RQ_PLACING:   return EDITING;
                 case PENDING_RQ_RELOAD:    return RELOADING;
                 default: return null;
-            }            
-        }              
+            }
+        }
     };
+    
+    public enum Object {
+        HOUSE(House.class, null, "gis_guid"),
+        ENTRANCE(Entrance.class, "Подъезд", "entranceguid"),
+        LIFT(Lift.class, "Лифт", "liftguid"),
+        RESIDENTIAL_PREMISE(ResidentialPremise.class, "Квартира", "premisesguid"),
+        NON_RESIDENTIAL_PREMISE(NonResidentialPremise.class, "Нежилое помещение", "premisesguid"),
+        BLOCK(Block.class, "Блок", "blockguid"),
+        LIVING_ROOM(LivingRoom.class, "Комната", "livingroomguid");
+        
+        private Class clazz;
+        private String name;
+        private String gisKey;
+        
+        private Object (Class clazz, String name, String gisKey) {
+            this.clazz = clazz;
+            this.name = name;
+            this.gisKey = gisKey;
+        }
+        
+        public Class getClazz() {
+            return clazz;
+        }
+        
+        public String getName() {
+            return name;
+        }
+        
+        public String getGisKey() {
+            return gisKey;
+        }
+    }
 
 }
