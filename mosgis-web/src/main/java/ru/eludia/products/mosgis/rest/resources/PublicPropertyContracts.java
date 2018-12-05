@@ -15,6 +15,13 @@ import ru.eludia.products.mosgis.rest.api.PublicPropertyContractLocal;
 @Path ("public_property_contracts")
 public class PublicPropertyContracts extends EJBResource <PublicPropertyContractLocal> {
     
+    private boolean isGlobalUser () {
+        if (securityContext.isUserInRole ("admin")) return true;
+        if (securityContext.isUserInRole ("nsi_20_7")) return true;
+        if (securityContext.isUserInRole ("nsi_20_8")) return true;
+        return false;
+    }
+
     private JsonObject getInnerItem (String id) {
         final JsonObject data = back.getItem (id);        
         final JsonObject item = data.getJsonObject ("item");
@@ -54,6 +61,7 @@ public class PublicPropertyContracts extends EJBResource <PublicPropertyContract
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject select (JsonObject p) { 
+        if (!isGlobalUser () && !getUserOrg ().equals (p.getJsonObject ("data").getString ("uuid_org"))) throw new ValidationException ("foo", "Доступ запрещён");
         return back.select (p, getUser ()); 
     }
     
@@ -61,7 +69,7 @@ public class PublicPropertyContracts extends EJBResource <PublicPropertyContract
     @Path("create") 
     @Produces (APPLICATION_JSON)
     public JsonObject doCreate (JsonObject p) {
-        getUserOrg ();
+        if (isGlobalUser ()) throw new ValidationException ("foo", "Доступ запрещён");
         return back.doCreate (p, getUser ());
     }
 
