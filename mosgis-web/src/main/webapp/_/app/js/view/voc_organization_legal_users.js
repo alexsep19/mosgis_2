@@ -2,8 +2,6 @@ define ([], function () {
 
     return function (data, view) {
     
-        data = $('body').data ('data')
-        
         $(w2ui ['topmost_layout'].el ('main')).w2regrid ({ 
 
             name: 'voc_organizations_grid',
