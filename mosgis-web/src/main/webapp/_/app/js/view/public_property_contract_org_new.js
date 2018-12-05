@@ -23,7 +23,7 @@ define ([], function () {
 
                 ],
                 
-                focus: 2,
+//                focus: 2,
                 
                 onRefresh: function (e) {e.done (function () {
                 

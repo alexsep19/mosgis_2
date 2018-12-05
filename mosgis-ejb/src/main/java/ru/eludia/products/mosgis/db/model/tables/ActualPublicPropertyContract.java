@@ -16,6 +16,7 @@ public class ActualPublicPropertyContract extends View {
         ID                   (Type.UUID,   "id"),
         IS_CUSTOMER_ORG      (Type.BOOLEAN, "1 для организации, 0 для физлица"),
         ORG_LABEL            (Type.STRING, "Исполнитель"),
+        ORG_LABEL_UC         (Type.STRING, "ИСПОЛНИТЕЛЬ"),
         ADDRESS              (Type.STRING, "Адрес"),
         ADDRESS_UC           (Type.STRING, "АДРЕС"),
         CUSTOMER_LABEL       (Type.STRING, "Заказчик"),
@@ -46,6 +47,7 @@ public class ActualPublicPropertyContract extends View {
             + " , o.uuid id "
             + " , DECODE(o.uuid_org_customer, NULL, 0, 1) is_customer_org"
             + " , org.label org_label "
+            + " , org.label_uc org_label_uc "
             + " , fias.label address "
             + " , fias.label_uc address_uc "
             + " , NVL (org_customer.label, prc_customer.label) AS customer_label"
@@ -55,7 +57,6 @@ public class ActualPublicPropertyContract extends View {
             + " INNER JOIN " + getName (VocBuilding.class) + " fias ON o.fiashouseguid = fias.houseguid"
             + " LEFT  JOIN " + getName (VocOrganization.class) + " org_customer ON o.uuid_org_customer = org_customer.uuid"
             + " LEFT  JOIN " + getName (VocPerson.class) + " prc_customer ON o.uuid_person_customer = prc_customer.uuid"
-            + " WHERE o.is_deleted = 0"
         ;
 
     }

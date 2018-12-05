@@ -8,14 +8,13 @@ define ([], function () {
     if (is_owner) postData.uuid_org = $_USER.uuid_org
     
     return function (data, view) {
-    
-        data = $('body').data ('data')
-        
+            
         $(w2ui ['rosters_layout'].el ('main')).w2regrid ({ 
 
             name: 'public_property_contracts_grid',
 
             show: {
+                toolbarSearch: true,
                 toolbar: true,
                 footer: true,
             },     
@@ -29,11 +28,8 @@ define ([], function () {
                 
             },         
             
-/*
             searches: [            
-                
-                {field: 'docnum', caption: 'Номер',  type: 'text'},
-                {field: 'signingdate', caption: 'Дата заключения',  type: 'date'},
+                {field: 'date_', caption: 'Дата заключения',  type: 'date'},
                 {field: 'id_ctr_status', caption: 'Статус договора', type: 'enum', options: {items: data.vc_gis_status.items.filter (function (i) {
                     switch (i.id) {
                         case 50:
@@ -44,18 +40,21 @@ define ([], function () {
                             return true;
                     }
                 })}}, 
-                {field: 'uuid_org', caption: 'Исполнитель', type: 'enum', options: {items: data.vc_orgs.items}, off: $_USER.role.nsi_20_1},
-                {field: 'id_customer_type', caption: 'Тип заказчика', type: 'enum', options: {items: data.vc_gis_customer_type.items}, off: !($_USER.role.admin || $_USER.role.nsi_20_1)},
-                {field: 'uuid_org_customer', caption: 'Заказчик', type: 'enum', options: {items: data.customers.items}, off: !($_USER.role.admin || $_USER.role.nsi_20_1)},
-                {field: 'contractbase', caption: 'Основание заключения', type: 'enum', options: {items: data.vc_nsi_58.items}},
-                {field: 'effectivedate', caption: 'Дата вступления в силу',  type: 'date'},
-                {field: 'plandatecomptetion', caption: 'Дата окончания',  type: 'date'},
+                {field: 'is_customer_org', caption: 'Тип заказчика', type: 'list', options: {items: [
+                    {id: "0", text: "Физическое лицо"},
+                    {id: "1", text: "Юридическое лицо"},
+                ]}},
+                {field: 'customer_label_uc', caption: 'Заказчик',  type: 'text'},
+                {field: 'org_label_uc', caption: 'Исполнитель',  type: 'text', off: is_owner},
+                {field: 'startdate', caption: 'Дата вступления в силу',  type: 'date'},
+                {field: 'enddate', caption: 'Дата окончания',  type: 'date'},
                 {field: 'is_deleted', caption: 'Статус записи', type: 'enum', options: {items: [
                     {id: "0", text: "Актуальные"},
                     {id: "1", text: "Удалённые"},
                 ]}},
+                
             ].filter (not_off),
-*/
+
             columns: [                
             
                 {field: 'contractnumber', caption: 'Номер', size: 20},

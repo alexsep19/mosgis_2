@@ -4,7 +4,9 @@ import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import ru.eludia.base.DB;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Operator;
@@ -134,5 +136,16 @@ public class PublicPropertyContractImpl extends BaseCRUD<PublicPropertyContract>
         }
         
     }    
+
+    @Override
+    public JsonObject getVocs (JsonObject p) {
+        
+        JsonObjectBuilder job = Json.createObjectBuilder ();
+        
+        VocGisStatus.addTo (job);
+        
+        return job.build ();
+        
+    }
 
 }

@@ -119,5 +119,13 @@ public class PublicPropertyContracts extends EJBResource <PublicPropertyContract
         if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
         return back.getLog (id, p, getUser ());
     }
+    
+    @POST
+    @Path("vocs") 
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject getVocs (JsonObject p) {
+        return back.getVocs (p);
+    }
         
 }
