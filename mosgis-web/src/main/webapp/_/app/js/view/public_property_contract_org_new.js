@@ -33,7 +33,7 @@ define ([], function () {
 
             })
             
-            if (!data.record.uuid_org_customer) $('#label_org_customer').click ()
+//            if (!data.record.uuid_org_customer) $('#label_org_customer').click ()
 
        })
 
