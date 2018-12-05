@@ -32,11 +32,13 @@ define ([], function () {
             name: 'voc_organization_legal_form',
             record: it,
             onRefresh: function () {
-                if (data.is_delegated) clickOn ($('#delegated'), function () {
+                if (data.is_delegated && is_own) clickOn ($('#delegated'), function () {
                     w2ui ['topmost_layout'].get ('main').tabs.click ('voc_organization_legal_access_requests')
                 })
             }
         })
+        
+        var is_own = $_USER.role.admin || $_USER.uuid_org == $_REQUEST.id
 
         $('#container').w2relayout({
 
@@ -49,8 +51,8 @@ define ([], function () {
                     tabs: {
 
                         tabs: [
-                            {id: 'voc_organization_legal_users', caption: 'Учётные записи', off: !$_USER.role.admin && $_USER.uuid_org != $_REQUEST.id},
-                            {id: 'voc_organization_legal_access_requests', caption: 'Делегированные права', off: !data.is_delegated},
+                            {id: 'voc_organization_legal_users', caption: 'Учётные записи', off: !is_own},
+                            {id: 'voc_organization_legal_access_requests', caption: 'Делегированные права', off: !data.is_delegated || !is_own},
                             {id: 'voc_organization_legal_log', caption: 'История'},
                         ].filter(not_off),
 
