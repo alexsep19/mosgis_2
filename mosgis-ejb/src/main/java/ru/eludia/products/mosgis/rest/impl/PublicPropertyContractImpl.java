@@ -57,11 +57,7 @@ public class PublicPropertyContractImpl extends BaseCRUD<PublicPropertyContract>
 
         final String s = search.getSearchString ();
         
-        if (s == null || s.isEmpty ()) return;
-        
-        final String uc = s.toUpperCase ();
-
-        select.andEither ("owner_label_uc LIKE %?%", uc).or ("label", s);
+        if (s != null) select.and ("address_uc LIKE ?%", s.toUpperCase ().replace (' ', '%'));
 
     }
     
