@@ -79,8 +79,19 @@ public class PropertyDocumentImpl extends BaseCRUD<PropertyDocument> implements 
 
         applySearch (Search.from (p), select);
         
-        select.and (Owner.c.UUID_HOUSE.lc (), p.getJsonObject ("data").getString ("uuid_house"));
+        final JsonObject data = p.getJsonObject ("data");
+        
+        {
+            final String k = Owner.c.UUID_HOUSE.lc ();        
+            select.and (k, data.getString (k));
+        }
 
+        {
+            final String k = Owner.c.UUID_ORG.lc ();        
+            final String v = data.getString (k, null);
+            if (v != null) select.and (k, v);
+        }
+        
         db.addJsonArrayCnt (job, select);
 
     });}
@@ -91,7 +102,7 @@ public class PropertyDocumentImpl extends BaseCRUD<PropertyDocument> implements 
         final MosGisModel m = ModelHolder.getModel ();
         
         final JsonObject item = db.getJsonObject (m
-            .get (getTable (), id, "AS root", "*")
+            .get (Owner.class, id, "AS root", "*")
             .toOne (Premise.class, "AS p", "*").on ()
             .toOne (House.class, "AS h", "address", "fiashouseguid").on ()
             .toMaybeOne (VocOrganization.class, "AS org", "label", "id_type").on ("org.uuid=root." + PropertyDocument.c.UUID_ORG_OWNER.lc ())
