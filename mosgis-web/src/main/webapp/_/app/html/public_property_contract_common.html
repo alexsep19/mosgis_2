@@ -14,10 +14,17 @@
         		.w2ui-field > label.short {
         			width: 10px;
         		}
-
         		.w2ui-field > label.short+div {
         			margin-left: 10px;
         		}
+
+        		.w2ui-field > label.medium {
+        			width: 100px;
+        		}
+        		.w2ui-field > label.medium+div {
+        			margin-left: 100px;
+        		}
+
 
         		.w2ui-field input {
         			width: 270px !important;
@@ -27,8 +34,12 @@
 					width: 70px !important;
 				}
 
+				.w2ui-field input.nxt {
+					width: 130px !important;
+				}
+
 				.w2ui-field input.long {
-					width: 600px !important;
+					width: 690px !important;
 				}
 
 				.sync b {
@@ -41,8 +52,27 @@
 
         		<tr>
 
-					<td class="left-block" width=1 valign=top>
+					<td colspan=2 valign=top>
+							<div class="w2ui-field">
+								<label>Заказчик</label>
+								<div>
+									<input name=customer_label readonly class=long>
+								</div>
+							</div>
 
+							<div class="w2ui-field">
+								<label>Исполнитель</label>
+								<div>
+									<input name=org_label readonly class=long>
+								</div>
+							</div>
+					</td>
+
+        		</tr>
+
+        		<tr>
+
+					<td class="left-block" width=1 valign=top>
 
 						<div class="w2ui-field">
 							<label>№ документа</label>
@@ -69,25 +99,6 @@
 							<label>Планируемая дата окончания </label>
 							<div>
 								<input name=enddate placeholder="" class=dt>
-							</div>
-						</div>
-
-						<div class="w2ui-field">
-							<label>Предмет договора</label>
-							<div>
-								<input name=contractobject maxlength=255>
-							</div>
-						</div>
-						<div class="w2ui-field">
-							<label>Комментарий</label>
-							<div>
-								<input name=comments maxlength=255>
-							</div>
-						</div>
-						<div class="w2ui-field">
-							<label>Условие пользования</label>
-							<div>
-								<input name=isgratuitousbasis>
 							</div>
 						</div>
 
@@ -136,6 +147,113 @@
 							</tr>
 
 						</table>
+
+					</td>
+
+        		</tr>
+
+        		<tr>
+
+					<td class="left-block" width=1 valign=top>
+
+						<div class="w2ui-field">
+							<label>Предмет договора</label>
+							<div>
+								<input name=contractobject maxlength=255>
+							</div>
+						</div>
+
+					</td>
+
+					<td valign=top>
+
+						<div class="w2ui-field">
+							<label class=medium>комментарий:</label>
+							<div>
+								<input name=comments maxlength=255>
+							</div>
+						</div>
+
+					</td>
+
+        		</tr>
+
+        		<tr>
+
+					<td class="left-block" width=1 valign=top>
+
+						<div class="w2ui-field">
+							<label>Условие пользования</label>
+							<div>
+								<input name=isgratuitousbasis>
+							</div>
+						</div>
+
+					</td>
+
+					<td valign=top id=td_other style="display:none">
+
+						<div class="w2ui-field">
+							<label class=medium>а именно:</label>
+							<div>
+								<input name=other>
+							</div>
+						</div>
+
+					</td>
+
+        		</tr>
+
+        		<tr id=tr_ddt_start style="display:none">
+					<td valign=top colspan=2>
+
+						<div class="w2ui-field">
+							<label>Период оплаты с</label>
+							<div>
+								<input name=ddt_start>
+								&nbsp;
+								<input name=ddt_start_nxt class=nxt>
+							</div>
+						</div>
+
+					</td>
+        		</tr>
+        		<tr id=tr_ddt_end style="display:none">
+					<td valign=top colspan=2>
+
+						<div class="w2ui-field">
+							<label>...по</label>
+							<div>
+								<input name=ddt_end>
+								&nbsp;
+								<input name=ddt_end_nxt class=nxt>
+							</div>
+						</div>
+
+					</td>
+        		</tr>
+
+        		<tr id=tr_payment style="display:none">
+
+					<td class="left-block" width=1 valign=top>
+
+						<div class="w2ui-field">
+							<label>Размер платы</label>
+							<div>
+								<input name=payment>
+							</div>
+						</div>
+
+					</td>
+
+					<td valign=top>
+
+						<div class="w2ui-field">
+							<label class=medium title="направление расходования средств, внесенных за пользование частью общего имущества">направление:</label>
+							<div>
+								<input name=moneyspentdirection maxlength=255>
+							</div>
+						</div>
 
 					</td>
 

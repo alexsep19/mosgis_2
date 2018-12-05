@@ -30,15 +30,24 @@ public class PublicPropertyContract extends EnTable {
 
         ID_LOG               (PublicPropertyContractLog.class,  "Последнее событие редактирования"),
         
-        CONTRACTNUMBER       (STRING, 255,    null,      "Номер договора"),
-        DATE_                (DATE,                      "Дата договора"),
-        STARTDATE            (DATE,                      "Дата начала действия договора"),
-        ENDDATE              (DATE,                      "Планируемая дата окончания действия договора"),
-        CONTRACTOBJECT       (STRING, 255,    null,      "Предмет договора"),
-        COMMENTS             (STRING, 255,    null,      "Комментарий"),
-        PAYMENT              (NUMERIC, 10, 2, null,      "Размер платы за предоставление в пользование части общего имущества собственников помещений в МКД в месяц"),
-        MONEYSPENTDIRECTION  (STRING, 255,    null,      "Направление расходования средств, внесенных за пользование частью общего имущества"),
-        ISGRATUITOUSBASIS    (BOOLEAN,        Bool.TRUE, "1, если договор заключен на безвозмездной основе; иначе 0")
+        CONTRACTNUMBER       (Type.STRING, 255,    null,       "Номер договора"),
+        DATE_                (Type.DATE,                       "Дата договора"),
+        STARTDATE            (Type.DATE,                       "Дата начала действия договора"),
+        ENDDATE              (Type.DATE,                       "Планируемая дата окончания действия договора"),
+        CONTRACTOBJECT       (Type.STRING, 255,    null,       "Предмет договора"),
+        COMMENTS             (Type.STRING, 255,    null,       "Комментарий"),
+        PAYMENT              (Type.NUMERIC, 10, 2, null,       "Размер платы за предоставление в пользование части общего имущества собственников помещений в МКД в месяц"),
+        MONEYSPENTDIRECTION  (Type.STRING, 255,    null,       "Направление расходования средств, внесенных за пользование частью общего имущества"),
+        
+        DDT_START            (Type.NUMERIC, 2,     null,       "Начало периода внесения платы по договору (1..31 — конкретное число; 99 — последнее число)"),
+        DDT_START_NXT        (Type.BOOLEAN,        Bool.FALSE, "1, если начало периода внесения платы по договору в следующем месяце; иначе 0"),
+        DDT_END              (Type.NUMERIC, 2,     null,       "Окончание периода внесения платы по договору (1..31 — конкретное число; 99 — последнее число)"),
+        DDT_END_NXT          (Type.BOOLEAN,        Bool.FALSE, "1, если окончание периода внесения платы по договору в следующем месяце; иначе 0"),
+        IS_OTHER             (Type.BOOLEAN,        Bool.FALSE, "1, если период внесеняи платы — \"иной\"; иначе 0"),
+        OTHER                (Type.STRING,         null,       "Иное (период внесения платы)"),
+        
+        ISGRATUITOUSBASIS    (Type.BOOLEAN,        Bool.TRUE, "1, если договор заключен на безвозмездной основе; иначе 0")
+
         ;
 
         @Override
