@@ -126,7 +126,9 @@ define ([], function () {
 
             data.vc_pass_fields = fields
 
-            $('body').data('data', data)
+            var voc_organization = $('body').data('data')
+            voc_organization.vc_pass_fields  = fields
+            $('body').data('data', voc_organization)
 
             done (data);
 
