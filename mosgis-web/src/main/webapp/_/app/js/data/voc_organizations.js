@@ -51,6 +51,24 @@ darn (out_soap)
 
     }
 
+    $_DO.create_branch_voc_organizations = function (record) {
+
+        var options = {}
+
+        if (record.id_type == 1) {
+            options = {
+                uuid_org_parent: record.uuid,
+                label_org_parent: record.label,
+                ogrn: record.ogrn,
+                inn : record.inn
+            }
+        }
+
+        $_SESSION.set('record', options)
+
+        use.block('voc_organization_branch_add_new')
+    }
+
     return function (done) {        
         
         var layout = w2ui ['rosters_layout']
