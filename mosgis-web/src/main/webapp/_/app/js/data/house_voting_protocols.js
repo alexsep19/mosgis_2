@@ -32,11 +32,17 @@ define ([], function () {
 
     return function (done) {
 
-        w2ui ['topmost_layout'].unlock ('main')            
+        query ({type: 'voc_organization_territories', id: undefined}, {data: {'uuid_org': $_USER.uuid_org}}, function (d) {
 
-        data = $('body').data ('data')
+            w2ui ['topmost_layout'].unlock ('main')            
 
-        done(data);
+            data = $('body').data ('data')
+
+            data.vc_org_territories = d.vc_org_territories
+
+            done(data)
+
+        })
 
     }
 

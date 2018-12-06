@@ -23,8 +23,8 @@ define ([], function () {
                     $_USER.role.nsi_20_22) && data.cach.is_own)
                     return true
             }
-            else if ($_USER.role.nsi_20_8) return true
-
+            else if ($_USER.role.nsi_20_8 && data.vc_org_territories.findIndex (territory => territory['code'] == data.item['fias.oktmo']) > 0) 
+                return true
             return false
         }
 
