@@ -20,6 +20,8 @@ public class Houses extends EJBResource <HousesLocal> {
         
         if (!(
             securityContext.isUserInRole ("nsi_20_1")
+            || securityContext.isUserInRole ("nsi_20_7")
+            || securityContext.isUserInRole ("nsi_20_8")
             || securityContext.isUserInRole ("nsi_20_19")
             || securityContext.isUserInRole ("nsi_20_20")
             || securityContext.isUserInRole ("nsi_20_21")
