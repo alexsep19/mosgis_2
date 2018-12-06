@@ -2,6 +2,7 @@ package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.base.db.util.TypeConverter;
 import ru.eludia.products.mosgis.db.model.tables.Block;
+import ru.eludia.products.mosgis.db.model.tables.Entrance;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.HouseLog;
 import ru.eludia.products.mosgis.db.model.tables.LivingRoom;
@@ -144,17 +146,76 @@ public class GisPollExportHouse extends GisPollMDB {
         dbHouseData.put ("uuid", getUuid ());
         db.update (HouseLog.class, dbHouseData);
         
+        //Подъезды
+        Map<String, Object> entranceUuidByNum = new HashMap<>();
+        
+        Map<Object, Map<String, Object>> entrancesDb = db.getIdx(m
+                    .select(Entrance.class, "*")
+                    .where("uuid_house", houseUuid)
+                    .and("entranceguid IS NOT NULL"),
+                "entranceguid");
+        
+        for (ExportHouseResultType.ApartmentHouse.Entrance entrance : house.getEntrance()) {
+            Map<String, Object> data = HASH(
+                    "entrancenum",   entrance.getEntranceNum(),
+                    "storeyscount",  entrance.getStoreysCount(),
+                    "creationyear",  entrance.getCreationYear(),
+                    "annulmentinfo", entrance.getAnnulmentInfo()
+            );
+            if (entrance.getAnnulmentReason() != null) {
+                data.put("code_vc_nsi_330", entrance.getAnnulmentReason().getCode());
+            }
+            Map<String, Object> entranceDb = entrancesDb.get(UUID.fromString(entrance.getEntranceGUID()));
+            
+            if (entranceDb == null)
+                entranceDb = db.getMap(m.select(Entrance.class, "*").where("uuid_house", houseUuid).and("entrancenum", entrance.getEntranceNum()));
+            
+            if (entranceDb != null || entranceDb.get("entranceguid") != null)
+                entranceDb = entrancesDb.get(entranceDb.get("entranceguid"));
+            
+            Map<String, Object> entranceDataForSave = getIfDbDataNullOrEmpty(data, entranceDb);
+            
+            if (entranceDb != null) { 
+                entranceDataForSave.put("uuid", entranceDb.get("uuid"));
+                entranceDb.put("is_used", true);
+            }
+            entranceDataForSave.putAll(HASH(
+                    "entranceguid",          entrance.getEntranceGUID(),
+                    "fiaschildhouseguid",    entrance.getFIASChildHouseGuid(),
+                    "terminationdate",       entrance.getTerminationDate(),
+                    "gis_modification_date", entrance.getModificationDate(),
+                    "informationconfirmed",  Boolean.TRUE.equals(entrance.isInformationConfirmed())
+            ));
+            if (entrance.getAnnulmentReason() != null) {
+                entranceDataForSave.put("is_annuled_in_gis", true);
+            } else {
+                entranceDataForSave.put("is_annuled_in_gis", false);
+            }
+            
+            Object entranceUuid;
+            if(entranceDataForSave.containsKey("uuid")) {
+                entranceUuid = entranceDataForSave.get("uuid");
+                db.update(Entrance.class, entranceDataForSave);
+            } else {
+                entranceUuid = db.insertId(Entrance.class, entranceDataForSave);
+            }
+            entranceUuidByNum.put(entrance.getEntranceNum(), entranceUuid);
+        }
+        
+        for (Map.Entry<Object, Map<String, Object>> entry : entrancesDb.entrySet()) {
+            Map<String, Object> entrance = entry.getValue();
+            if (entrance.containsKey("is_used"))
+                continue;
+            entrance.put("code_vc_nsi_330", "4"); //4 - Дублирование информации, на проде поменять на 6 - В связи с ошибкой ввода данных
+            entrance.put("is_annuled_in_gis", true);
+            entrance.put("terminationdate", new Date());
+            db.update(Entrance.class, entrance);
+        }
+        
         /*
         //Подъезды
         Map<UUID, Map<String, Object>> entrances = new HashMap<>();
-            
-            
-            
-            
-            
-            
-            
-            
+
             db.dupsert (
                 Entrance.class, 
                 HASH ("uuid_house", houseUuid),
@@ -514,6 +575,8 @@ public class GisPollExportHouse extends GisPollMDB {
     }
     
     private Map<String, Object> getIfDbDataNullOrEmpty(Map<String, Object> newData, Map<String, Object> dbData) {
+        if (dbData == null)
+            return newData;
         
         Map<String, Object> result = new HashMap<>();
         
