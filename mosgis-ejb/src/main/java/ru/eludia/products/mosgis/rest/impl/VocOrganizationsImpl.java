@@ -3,6 +3,7 @@ package ru.eludia.products.mosgis.rest.impl;
 import java.sql.SQLException;
 import java.util.UUID;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Resource;
@@ -135,7 +136,7 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
 
         if (search == null) {
 //            select.and ("uuid IS NULL");
-        }        
+        }
         else if (search instanceof ComplexSearch) {
             applyComplexSearch ((ComplexSearch) search, select);
         }
@@ -149,6 +150,7 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
     public JsonObject select (JsonObject p) {
         
         Select select = ModelHolder.getModel ().select (VocOrganization.class, "*", "uuid AS id")
+            .where("id_type", p.getString("id_type", null))
             .orderBy ("label")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 

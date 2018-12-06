@@ -2,13 +2,17 @@ define ([], function () {
 
     return function (data, view) {
 
-        var is_popup = 1 == $_SESSION.delete ('voc_organizations_popup.on')
+        var is_popup = 1 == $_SESSION.delete ('voc_organization_proposals_popup.on')
 
-        data = $('body').data ('data')
+        data.label = 'Создание обособленных подразделений и ФПИЮЛ'
 
-        $((w2ui ['popup_layout'] || w2ui ['rosters_layout']).el ('main')).w2regrid ({
+        $('title').text(data.label)
 
-            name: 'voc_organizations_grid' + (is_popup ? '_popup' : ''),
+        fill(view, data, $('body'))
+
+        $('#container').w2regrid ({
+
+            name: 'voc_organization_proposals_grid' + (is_popup ? '_popup' : ''),
 
             show: {
                 toolbar: true,
@@ -20,10 +24,9 @@ define ([], function () {
                 {field: 'label_uc',  caption: 'Наименование / ФИО',  type: 'text'},
                 {field: 'inn',       caption: 'ИНН',                 type: 'text', operator: 'is', operators: ['is']},
                 {field: 'kpp',       caption: 'КПП',                 type: 'text', operator: 'is', operators: ['is']},
-                {field: 'code_vc_nsi_20', caption: 'Полномочия',     type: 'enum', options: {items: data.vc_nsi_20.items}},
-                {field: 'id_type', caption: 'Типы',     type: 'enum', options: {items: data.vc_organization_types.items}
+//                {field: 'id_type', caption: 'Тип',     type: 'enum', options: {items: data.vc_organization_types.items}
 //                    , hidden: is_popup
-                },
+//                },
             ],
 
             columns: [
@@ -33,33 +36,46 @@ define ([], function () {
                 {field: 'kpp', caption: 'КПП',    size: 10},
             ],
 
-            url: '/mosgis/_rest/?type=voc_organizations',
+            url: '/mosgis/_rest/?type=voc_organization_proposals',
 
-            onRequest: function (e) {
-
-                if (is_popup) {
-
-                    var id_type = $_SESSION.delete('voc_organization_popup.id_type');
-
-                    if (id_type) {
-                        e.postData.id_type = id_type
+            toolbar: {
+                items: [
+                    {
+                        type: 'button',
+                        id: 'add',
+                        caption: 'Добавить обособленное подразделение'
+                    }
+                ],
+                onClick: function (target, e) {
+                    if (target == 'add') {
+                        $_DO.add_branch_voc_organization_proposals(e)
                     }
                 }
             },
 
-            toolbar: {
-                items : [
-                    {
-                        type: 'button',
-                        id: 'add',
-                        caption : 'Добавить'
-                    }
-                ],
-                onClick: function(target, e) {
-                    if (target == 'add') {
-                        openTab('/voc_organization_proposals', '_blank')
-                    }
+            onMenuClick: function (e) {
+                var handler = $_DO [e.menuItem.id + '_voc_organization_proposals']
+                var grid = this
+                var record = this.get(e.recid)
+
+                if (!handler) {
+                    throw 'voc_organization_proposals.not_implemented'
                 }
+
+                var confirm = e.menuItem.confirm;
+                var preconfirm = e.menuItem.preconfirm;
+
+                if (!confirm) {
+                    handler(record, grid)
+                    return
+                }
+                if (preconfirm && !preconfirm(record)) {
+                    return
+                }
+
+                w2confirm(confirm).yes(function (answer) {
+                    handler(record, data, grid)
+                })
             },
 
             onDblClick: function (e) {
@@ -68,18 +84,18 @@ define ([], function () {
 
                 if (is_popup) {
 
-                    $_SESSION.set ('voc_organizations_popup.data', clone (r))
+                    $_SESSION.set ('voc_organization_proposals_popup.data', clone (r))
 
                     w2popup.close ()
 
                 }
                 else {
 
-                    function show (postfix) {openTab ('/voc_organization_' + postfix + '/' + r.uuid)}
+                    function show (postfix) {openTab ('/voc_organization_proposal_' + postfix + '/' + r.uuid)}
 
-                    switch (String (r.ogrn).length) {
-                        case 13: return show ('legal')
-                        case 15: return show ('individual')
+                    switch (r.id_type) {
+                        case 2: return show ('branch')
+                        case 3: return show ('alien')
                     }
 
                 }
@@ -95,22 +111,16 @@ define ([], function () {
                         if ($_SESSION.delete ('importing')) {
                             w2alert ('Запрос в ГИС ЖКХ не дал результатов. Вероятно, Вы опечатались, вводя ОГРН[ИП]')
                         }
-                        else if ($_SESSION.delete ('first_post')) {
-                            $_DO.check_voc_organizations (e)
-                        }
-                        else {
-                            $_SESSION.set ('first_post', 1)
-                        }
 
                     }
 
-                    $('#tb_voc_organizations_grid_toolbar_item_w2ui-search .w2ui-search-all').attr ({
+                    $('#tb_voc_organization_proposals_grid_toolbar_item_w2ui-search .w2ui-search-all').attr ({
                         style: 'width: 450px !important',
                         placeholder: 'Введите полный ОГРН[ИП], ИНН или подстроку наименования/ФИО для поиска',
                         title: 'Указав ИНН или ОГРН, Вы можете добавить через пробел КПП.\n\nДостаточно первых двух цифр, например: 7711122233 77',
                     })
 
-                    $('#tb_voc_organizations_grid_toolbar_item_w2ui-search .w2ui-toolbar-search').attr ({
+                    $('#tb_voc_organization_proposals_grid_toolbar_item_w2ui-search .w2ui-toolbar-search').attr ({
                         style: 'width: 450px !important',
                     })
 
