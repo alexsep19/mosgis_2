@@ -6,12 +6,19 @@ define ([], function () {
 
             if (!data.item.is_condo) return false
 
+            if ($_USER.role.nsi_20_8 && Object.keys($_USER.role).length == 1) {
+                if (data.vc_org_territories.findIndex (territory => territory['code'] == data.item['fias.oktmo']) > 0)
+                    return true
+                return false
+            }
+
             if ($_USER.role.nsi_20_1 ||
-                $_USER.role.nsi_20_7 ||
                 $_USER.role.nsi_20_4 ||
+                $_USER.role.nsi_20_7 ||
                 $_USER.role.nsi_20_19 || 
                 $_USER.role.nsi_20_20 || 
                 $_USER.role.nsi_20_21 ||
+                $_USER.role.nsi_20_22 ||
                 $_USER.role.admin) { return true }
             else { return false }
             
