@@ -36,25 +36,34 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
         
     }
     
-    private void checkGetItem (JsonObject item) {
+    private boolean getItemAccessCheck (JsonObject item) {
         
-        if (securityContext.isUserInRole ("admin")) return;
+        if (securityContext.isUserInRole ("admin")) return true;
         
-        if (!(
-            securityContext.isUserInRole ("nsi_20_1")
-            || securityContext.isUserInRole ("nsi_20_4")
-            || securityContext.isUserInRole ("nsi_20_7")
-            || securityContext.isUserInRole ("nsi_20_19")
-            || securityContext.isUserInRole ("nsi_20_20")
-            || securityContext.isUserInRole ("nsi_20_21")
-            || securityContext.isUserInRole ("nsi_20_22")
-        )) throw new ValidationException ("foo", "Доступ запрещён");
-
+        if (securityContext.isUserInRole ("nsi_20_4") || 
+            securityContext.isUserInRole ("nsi_20_7"))
+            return true;
+        
+        String itemOrg = item.getString ("uuid_org", null);
+        String userOrg = getUserOrg ();
+        if ((securityContext.isUserInRole ("nsi_20_1")  ||
+             securityContext.isUserInRole ("nsi_20_19") ||
+             securityContext.isUserInRole ("nsi_20_20") ||
+             securityContext.isUserInRole ("nsi_20_21") ||
+             securityContext.isUserInRole ("nsi_20_22")) && userOrg.equals (itemOrg) && item.containsKey("cach"))
+            return true;
+        
         String itemOktmo = item.getJsonObject ("item").get ("oktmo").toString ();
         JsonObject territoryItem = back.checkOktmo(itemOktmo, getUser ());
-
-        if (securityContext.isUserInRole ("nsi_20_8") && !territoryItem.containsKey("item"))
-            throw new ValidationException ("foo", "Доступ запрещен");
+        if (securityContext.isUserInRole("nsi_20_8") && territoryItem.containsKey("item"))
+            return true;
+        
+        return false;
+    }
+    
+    private void checkGetItem (JsonObject item) {
+        
+        if (!getItemAccessCheck (item)) throw new ValidationException ("foo", "Доступ запрещен");
         
     }
     
