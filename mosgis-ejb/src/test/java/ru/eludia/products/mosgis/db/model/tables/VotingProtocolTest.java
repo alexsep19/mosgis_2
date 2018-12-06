@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -26,6 +27,7 @@ import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.DataSourceImpl;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.TestRuleImpl;
+import ru.eludia.products.mosgis.db.model.voc.VocVotingForm;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportVotingProtocolRequest;
 
 public class VotingProtocolTest {
@@ -65,19 +67,40 @@ public class VotingProtocolTest {
         Table t = m.get (VotingProtocol.class);
         
         for (int i = 0; i < 10; i ++) {
-            
-            Map<String, Object> r = t.randomHASH (DB.HASH (
-                "form_", 0
-            ));
-
-            r.put ("extravoting", !DB.ok (r.get ("annualvoting")));
-
-            logger.info (r.toString ());
-
-            checkRecord (r);
-            
+            Map<String, Object> r = createAVoting (t);
+            process (r);            
         }
 
+    }
+
+    private Map<String, Object> createAVoting (Table t) {
+        Map<String, Object> r = t.randomHASH (DB.HASH (
+            "form_", VocVotingForm.i.AVOTING.getName ()
+        ));
+        return r;
+    }
+
+    private void process (Map<String, Object> r) throws JAXBException {
+        fix (r);
+        dump (r);
+        checkRecord (r);
+    }
+
+    private void fix (Map<String, Object> r) {
+        
+        r.put ("extravoting", !DB.ok (r.get ("annualvoting")));
+        Table ft = m.get (VotingProtocolFile.class);
+        
+        r.put ("files", Collections.singletonList (ft.randomHASH (DB.HASH ())));
+                
+    }
+
+    private void dump (Map<String, Object> r) {
+        System.out.println ('{');
+        r.keySet ().stream ().sorted ().forEach ((k) -> {
+            System.out.println (" " + k + " = " + r.get (k));
+        });
+        System.out.println ('}');
     }
 
     private void checkRecord (Map<String, Object> r) throws JAXBException, PropertyException {

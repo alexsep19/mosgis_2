@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.logging.Logger;
 import ru.eludia.base.DB;
@@ -13,7 +14,9 @@ import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocVotingForm;
+import ru.gosuslugi.dom.schema.integration.house_management.Attachments;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportVotingProtocolRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ProtocolType;
 
 public class VotingProtocol extends Table {
     
@@ -122,11 +125,18 @@ public class VotingProtocol extends Table {
         
         switch (VocVotingForm.i.forName (r.get ("form_").toString ())) {
             case AVOTING:
+                p.setAVoting (toAvoting (r));
                 break;
         }
 
         return p;
 
+    }
+
+    private static ProtocolType.AVoting toAvoting (Map<String, Object> r) {
+        final ProtocolType.AVoting result = (ProtocolType.AVoting) DB.to.javaBean (ProtocolType.AVoting.class, r);
+        for (Map<String, Object> file: (Collection<Map<String, Object>>) r.get ("files")) result.getAttachments ().add ( VotingProtocolFile.toAttachments (file));
+        return result;
     }
 
 }
