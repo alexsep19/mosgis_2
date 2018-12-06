@@ -191,13 +191,12 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
     public JsonObject checkOktmo(String oktmo, User user) {return fetchData ((db, job) -> {
         
         JsonObject item = db.getJsonObject (ModelHolder.getModel ()
-                .select (VocOrganizationTerritory.class, "AS root", "*")
-                .toOne  (VocOktmo.class, "AS oktmo", "code").on()
-                .where  ("root.uuid_org", user.getUuidOrg ())
-                .and    ("oktmo.code", oktmo)
+                .select (VocOrganizationTerritory.class, "*")
+                .where  ("uuid_org", user.getUuidOrg ())
+                .toOne  (VocOktmo.class, "code").on("vc_oktmo.id=vc_org_territories.oktmo AND vc_oktmo.code='" + oktmo + "'")
         );
                 
-        job.add ("item", item);
+        if (item != null) job.add ("item", item);
 
     });}
 }

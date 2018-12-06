@@ -51,9 +51,9 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
         )) throw new ValidationException ("foo", "Доступ запрещён");
 
         String itemOktmo = item.getJsonObject ("item").get ("oktmo").toString ();
-        JsonObject territoryItem = back.checkOktmo(itemOktmo, getUser ()).getJsonObject ("item");
+        JsonObject territoryItem = back.checkOktmo(itemOktmo, getUser ());
 
-        if (securityContext.isUserInRole ("nsi_20_8") && !territoryItem.containsKey("vc_oktmo.code"))
+        if (securityContext.isUserInRole ("nsi_20_8") && !territoryItem.containsKey("item"))
             throw new ValidationException ("foo", "Доступ запрещен");
         
     }
