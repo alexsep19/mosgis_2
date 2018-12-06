@@ -27,7 +27,9 @@ import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTerritory;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.voc.VocVotingForm;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -142,7 +144,7 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
         JsonObject item = db.getJsonObject (ModelHolder.getModel ()
             .get (VotingProtocol.class, id, "AS root", "*")
             .toOne (VocGisStatus.class, "label AS status_label").on("id_prtcl_status_gis")
-            .toOne (VocBuilding.class, "label AS address_label").on ()
+            .toOne (VocBuilding.class, "label AS address_label", "oktmo AS oktmo").on ()
             .toMaybeOne (House.class, "AS house", "uuid AS house_uuid", "fiashouseguid").on ("root.fiashouseguid=house.fiashouseguid")
             .toMaybeOne (VotingProtocolLog.class           ).on ()
             .toMaybeOne (OutSoap.class,             "err_text").on ()
@@ -184,5 +186,18 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
         logAction (db, user, insertId, VocAction.i.CREATE);
 
     });}
-    
+
+    @Override
+    public JsonObject checkOktmo(String oktmo, User user) {return fetchData ((db, job) -> {
+        
+        JsonObject item = db.getJsonObject (ModelHolder.getModel ()
+                .select (VocOrganizationTerritory.class, "AS root", "*")
+                .toOne  (VocOktmo.class, "AS oktmo", "code").on()
+                .where  ("root.uuid_org", user.getUuidOrg ())
+                .and    ("oktmo.code", oktmo)
+        );
+                
+        job.add ("item", item);
+
+    });}
 }

@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.rest.resources;
 
+import java.util.logging.Level;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Path;
@@ -32,6 +33,28 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
         }
 
         return userOrg;
+        
+    }
+    
+    private void checkGetItem (JsonObject item) {
+        
+        if (securityContext.isUserInRole ("admin")) return;
+        
+        if (!(
+            securityContext.isUserInRole ("nsi_20_1")
+            || securityContext.isUserInRole ("nsi_20_4")
+            || securityContext.isUserInRole ("nsi_20_7")
+            || securityContext.isUserInRole ("nsi_20_19")
+            || securityContext.isUserInRole ("nsi_20_20")
+            || securityContext.isUserInRole ("nsi_20_21")
+            || securityContext.isUserInRole ("nsi_20_22")
+        )) throw new ValidationException ("foo", "Доступ запрещён");
+
+        String itemOktmo = item.getJsonObject ("item").get ("oktmo").toString ();
+        JsonObject territoryItem = back.checkOktmo(itemOktmo, getUser ()).getJsonObject ("item");
+
+        if (securityContext.isUserInRole ("nsi_20_8") && !territoryItem.containsKey("vc_oktmo.code"))
+            throw new ValidationException ("foo", "Доступ запрещен");
         
     }
     
@@ -105,7 +128,7 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) { 
         final JsonObject item = back.getItem (id);
-        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
+        checkGetItem (item);
         return item;
     }
     
