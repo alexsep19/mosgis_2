@@ -162,6 +162,8 @@ public class ContractObject extends Table {
         sb.append (" WHEN ANNULMENTINFO IS NOT NULL THEN 1");
         sb.append (" WHEN ID_CTR_STATUS_GIS IN (");
         sb.append (   VocGisStatus.i.REJECTED.getId ());
+        sb.append (     ',');
+        sb.append (   VocGisStatus.i.ANNUL.getId ());
         sb.append (") THEN 1");
         sb.append (" ELSE 0");
         sb.append (" END");

@@ -127,7 +127,7 @@ public class Charter extends EnTable {
                     + " INNER JOIN vc_orgs org    ON c.uuid_org      = org.uuid "
                     + " INNER JOIN vc_build_addresses a ON o.fiashouseguid = a.houseguid "
                     + "WHERE o.is_to_ignore = 0"
-                    + " AND o.fiashouseguid IN (SELECT fiashouseguid FROM tb_charter_objects WHERE is_deleted = 0 AND is_annuled = 0 AND uuid_charter = :NEW.uuid) "
+                    + " AND o.fiashouseguid IN (SELECT fiashouseguid FROM tb_charter_objects WHERE is_to_ignore = 0 AND uuid_charter = :NEW.uuid) "
                     + " AND o.enddate   >= :NEW.date_ "
                     + " AND o.startdate <= :NEW.rolltodate "
                     + ") LOOP"
