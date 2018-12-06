@@ -90,7 +90,7 @@ public class CharterObject extends Table {
             + " END LOOP; "
             + "END IF; "
                     
-            + "IF :NEW.is_to_ignore = 0 THEN "
+            + "IF :NEW.is_to_ignore = 0 AND :NEW.is_from_gis = 0 THEN "
             + " FOR i IN ("
                 + "SELECT "
                 + " o.startdate"
