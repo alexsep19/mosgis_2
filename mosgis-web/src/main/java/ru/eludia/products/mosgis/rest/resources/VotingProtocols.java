@@ -50,7 +50,7 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
              securityContext.isUserInRole ("nsi_20_19") ||
              securityContext.isUserInRole ("nsi_20_20") ||
              securityContext.isUserInRole ("nsi_20_21") ||
-             securityContext.isUserInRole ("nsi_20_22")) && userOrg.equals (itemOrg) && item.containsKey("cach"))
+             securityContext.isUserInRole ("nsi_20_22")) && userOrg.equals (itemOrg))
             return true;
         
         String itemOktmo = item.getJsonObject ("item").get ("oktmo").toString ();
