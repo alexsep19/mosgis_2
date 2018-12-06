@@ -44,7 +44,7 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
             securityContext.isUserInRole ("nsi_20_7"))
             return true;
         
-        String itemOrg = item.getString ("uuid_org", null);
+        String itemOrg = item.getJsonObject ("item").getString ("uuid_org");
         String userOrg = getUserOrg ();
         if ((securityContext.isUserInRole ("nsi_20_1")  ||
              securityContext.isUserInRole ("nsi_20_19") ||
