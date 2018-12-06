@@ -58,8 +58,6 @@ define ([], function () {
 
     return function (done) { 
 
-        console.log ($_USER.role)
-
         query ({type: 'voc_organization_territories', id: undefined}, {data: {'uuid_org': $_USER.uuid_org}}, function (d) {
 
             query ({type: 'houses'}, {}, function (data) {

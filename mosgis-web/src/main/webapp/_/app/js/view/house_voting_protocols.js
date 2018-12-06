@@ -9,11 +9,23 @@ define ([], function () {
     return function (data, view) {
         
         function Permissions () {
-            
-            if (data.cach && data.cach.is_own && data.cach['org.uuid'] == $_USER.uuid_org && data.cach.id_ctr_status_gis != 110)
-                return true
+
+            if ($_USER.role.admin) return true
+
+            if (data.cach) {
+
+                if ($_USER.role.nsi_20_1) 
+                    return true
+
+                if (($_USER.role.nsi_20_19 ||
+                    $_USER.role.nsi_20_20 ||
+                    $_USER.role.nsi_20_21 ||
+                    $_USER.role.nsi_20_22) && data.cach.is_own)
+                    return true
+            }
+            else if ($_USER.role.nsi_20_8) return true
+
             return false
-            
         }
 
         status_list = data.vc_gis_status
@@ -25,8 +37,6 @@ define ([], function () {
         var layout = w2ui ['topmost_layout']
         
         var $panel = $(layout.el ('main'))
-
-        console.log (data)
 
         $panel.w2regrid ({ 
         
