@@ -212,7 +212,7 @@ public class VocOrganizationProposalsImpl extends BaseCRUD<VocOrganizationPropos
                     "okopf", data.getString("okopf", null),
                     "address", data.getString("address", null),
                     "fiashouseguid", data.getString("fiashouseguid", null),
-                    "activityenddate", data.getString("activityenddate"),
+                    "activityenddate", data.getString("activityenddate", null),
                     "info_source", data.getString("info_source", null),
                     "dt_info_source", data.getString("dt_info_source", null)
             ));
