@@ -17,6 +17,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocVotingForm;
 import ru.gosuslugi.dom.schema.integration.house_management.Attachments;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportVotingProtocolRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ProtocolType;
+import ru.gosuslugi.dom.schema.integration.house_management.VoteInitiators;
 
 public class VotingProtocol extends Table {
     
@@ -128,6 +129,8 @@ public class VotingProtocol extends Table {
                 p.setAVoting (toAvoting (r));
                 break;
         }
+        
+        for (Map<String, Object> initiator: (Collection<Map<String, Object>>) r.get ("initiators")) p.getVoteInitiators ().add (VoteInitiator.toDom (initiator));
 
         return p;
 

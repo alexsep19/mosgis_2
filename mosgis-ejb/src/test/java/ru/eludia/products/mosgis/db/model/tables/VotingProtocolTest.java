@@ -89,9 +89,14 @@ public class VotingProtocolTest {
     private void fix (Map<String, Object> r) {
         
         r.put ("extravoting", !DB.ok (r.get ("annualvoting")));
-        Table ft = m.get (VotingProtocolFile.class);
         
+        Table ft = m.get (VotingProtocolFile.class);       
         r.put ("files", Collections.singletonList (ft.randomHASH (DB.HASH ())));
+        
+        Table it = m.get (VoteInitiator.class);       
+        r.put ("initiators", Collections.singletonList (it.randomHASH (DB.HASH ())));
+
+        r.put ("meetingeligibility", "C");
                 
     }
 
