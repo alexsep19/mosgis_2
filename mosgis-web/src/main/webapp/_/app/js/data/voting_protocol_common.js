@@ -105,7 +105,25 @@ define ([], function () {
     
     }
 
-    return function (done) {        
+    return function (done) { 
+
+        function Permissions () {
+
+            if (!data.item.is_deleted) {
+                if ($_USER.role.admin) return true
+                if (data.cach) {
+                    if ($_USER.role.nsi_20_1) 
+                        return true
+                    if (($_USER.role.nsi_20_19 ||
+                        $_USER.role.nsi_20_20 ||
+                        $_USER.role.nsi_20_21 ||
+                        $_USER.role.nsi_20_22) && data.cach.is_own)
+                        return true
+                }
+                else if ($_USER.role.nsi_20_8) return true
+            }
+            return false
+        }       
 
         w2ui ['topmost_layout'].unlock ('main')
 
@@ -117,18 +135,12 @@ define ([], function () {
 
         if ($_USER.role.admin) data.item.org_label = data.item ['vc_orgs.label']
 
-        permissions = 0
-
-        if (!data.item.is_deleted && data.cach && data.cach.is_own && data.cach.id_ctr_status_gis == 40) {
-            permissions = 1
-        }
-
         data.item._can = $_USER.role.admin ? {} : 
         {
-            edit: permissions,
+            edit: Permissions (),
             update: 1,
             cancel: 1,
-            delete: permissions,
+            delete: Permissions (),
         }
 
         done (data)
