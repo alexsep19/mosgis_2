@@ -1,19 +1,19 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
 import java.util.Map;
-import java.util.UUID;
+import java.util.logging.Logger;
 import ru.eludia.base.DB;
-import ru.eludia.base.db.util.SyncMap;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocVotingForm;
-import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportVotingProtocolRequest;
 
 public class VotingProtocol extends Table {
     
@@ -65,34 +65,60 @@ public class VotingProtocol extends Table {
         fk  ("id_log",                VotingProtocolLog.class,    null,         "Последнее событие редактирования");
     }
     
-    private final static String [] keyFields = {""};
-
-    public class Sync extends SyncMap<NsiRef> {
+    public enum Action {
         
-        UUID uuid_org;
+        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
+        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT)
+        ;
+        
+        VocGisStatus.i nextStatus;
+        VocGisStatus.i okStatus;
+        VocGisStatus.i failStatus;
 
-        public Sync (DB db, UUID uuid_org) {
-            super (db);
-            this.uuid_org = uuid_org;
-            commonPart.put ("uuid_org", uuid_org);
-            commonPart.put ("is_deleted", 0);
-        }                
-
-        @Override
-        public String[] getKeyFields () {
-            return keyFields;
+        private Action (VocGisStatus.i nextStatus, VocGisStatus.i okStatus, VocGisStatus.i failStatus) {
+            this.nextStatus = nextStatus;
+            this.okStatus = okStatus;
+            this.failStatus = failStatus;
         }
 
-        @Override
-        public void setFields (Map<String, Object> h, NsiRef o) {
-            //h.put ("uniquenumber", o.getCode ());
+        public VocGisStatus.i getNextStatus () {
+            return nextStatus;
         }
 
-        @Override
-        public Table getTable () {
-            return VotingProtocol.this;
+        public VocGisStatus.i getFailStatus () {
+            return failStatus;
+        }
+
+        public VocGisStatus.i getOkStatus () {
+            return okStatus;
         }
         
+        public static Action forStatus (VocGisStatus.i status) {
+            switch (status) {
+                case PENDING_RQ_PLACING:   return PLACING;
+                case PENDING_RQ_ANNULMENT: return ANNULMENT;
+                default: return null;
+            }            
+        }
+        
+        public static Action forLogAction (VocAction.i a) {
+            switch (a) {
+                case APPROVE: return PLACING;
+                case ANNUL:   return ANNULMENT;
+                default: return null;
+            }            
+        }
+                        
+    };
+
+    private static final Logger logger = Logger.getLogger (VotingProtocol.class.getName ());    
+
+    public static final ImportVotingProtocolRequest.Protocol toDom (Map<String, Object> r) {
+
+        final ImportVotingProtocolRequest.Protocol p = (ImportVotingProtocolRequest.Protocol) DB.to.javaBean (ImportVotingProtocolRequest.Protocol.class, r);
+
+        return p;
+
     }
-    
+
 }

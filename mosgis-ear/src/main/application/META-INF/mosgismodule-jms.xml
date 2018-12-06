@@ -382,9 +382,9 @@
   
                       
   <!-- очередь обработки запросов на экспорт услуг управления ДУ -->
-  <uniform-distributed-queue name="inHouseContractPaymentsQueue">
+  <uniform-distributed-queue name="inHouseVotingProtocolsQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-    <jndi-name>mosgis.inHouseContractPaymentsQueue</jndi-name>
+    <jndi-name>mosgis.inHouseVotingProtocolsQueue</jndi-name>
     <delivery-params-overrides>
         <time-to-deliver>2000</time-to-deliver>
         <redelivery-delay>10000</redelivery-delay>
@@ -392,15 +392,15 @@
   </uniform-distributed-queue>
   
   <!-- очередь обработки запросов на экспорт документов, приложенных к услугам управления ДУ-->
-  <uniform-distributed-queue name="inHouseContractPaymentFilesQueue">
+  <uniform-distributed-queue name="inHouseVotingProtocolFilesQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-    <jndi-name>mosgis.inHouseContractPaymentFilesQueue</jndi-name>
+    <jndi-name>mosgis.inHouseVotingProtocolFilesQueue</jndi-name>
   </uniform-distributed-queue>
 
   <!-- очередь опроса статуса исходящих запросов на экспорт услуг управления ДУ -->
-  <uniform-distributed-queue name="outExportHouseContractPaymentsQueue">
+  <uniform-distributed-queue name="outExportHouseVotingProtocolsQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>    
-    <jndi-name>mosgis.outExportHouseContractPaymentsQueue</jndi-name>
+    <jndi-name>mosgis.outExportHouseVotingProtocolsQueue</jndi-name>
     <delivery-params-overrides>
         <time-to-deliver>2000</time-to-deliver>
         <redelivery-delay>10000</redelivery-delay>
@@ -419,9 +419,9 @@
 
 
   <!-- очередь обработки запросов на экспорт услуг управления уставов -->
-  <uniform-distributed-queue name="inHouseCharterPaymentsQueue">
+  <uniform-distributed-queue name="inHouseVotingProtocolsQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-    <jndi-name>mosgis.inHouseCharterPaymentsQueue</jndi-name>
+    <jndi-name>mosgis.inHouseVotingProtocolsQueue</jndi-name>
     <delivery-params-overrides>
         <time-to-deliver>2000</time-to-deliver>
         <redelivery-delay>10000</redelivery-delay>
@@ -429,15 +429,15 @@
   </uniform-distributed-queue>
   
   <!-- очередь обработки запросов на экспорт документов, приложенных к услугам управления уставов -->
-  <uniform-distributed-queue name="inHouseCharterPaymentFilesQueue">
+  <uniform-distributed-queue name="inHouseVotingProtocolFilesQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-    <jndi-name>mosgis.inHouseCharterPaymentFilesQueue</jndi-name>
+    <jndi-name>mosgis.inHouseVotingProtocolFilesQueue</jndi-name>
   </uniform-distributed-queue>
 
   <!-- очередь опроса статуса исходящих запросов на экспорт услуг управления уставов -->
-  <uniform-distributed-queue name="outExportHouseCharterPaymentsQueue">
+  <uniform-distributed-queue name="outExportHouseVotingProtocolsQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>    
-    <jndi-name>mosgis.outExportHouseCharterPaymentsQueue</jndi-name>
+    <jndi-name>mosgis.outExportHouseVotingProtocolsQueue</jndi-name>
     <delivery-params-overrides>
         <time-to-deliver>2000</time-to-deliver>
         <redelivery-delay>10000</redelivery-delay>
@@ -449,5 +449,43 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+  <!-- очередь обработки запросов на экспорт ОСС -->
+  <uniform-distributed-queue name="inHouseVotingProtocolsQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.inHouseVotingProtocolsQueue</jndi-name>
+    <delivery-params-overrides>
+        <time-to-deliver>2000</time-to-deliver>
+        <redelivery-delay>10000</redelivery-delay>
+    </delivery-params-overrides>
+  </uniform-distributed-queue>
+  
+  <!-- очередь обработки запросов на экспорт документов, приложенных к ОСС -->
+  <uniform-distributed-queue name="inHouseVotingProtocolFilesQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.inHouseVotingProtocolFilesQueue</jndi-name>
+  </uniform-distributed-queue>
+
+  <!-- очередь опроса статуса исходящих запросов на экспорт ОСС -->
+  <uniform-distributed-queue name="outExportHouseVotingProtocolsQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>    
+    <jndi-name>mosgis.outExportHouseVotingProtocolsQueue</jndi-name>
+    <delivery-params-overrides>
+        <time-to-deliver>2000</time-to-deliver>
+        <redelivery-delay>10000</redelivery-delay>
+    </delivery-params-overrides>
+  </uniform-distributed-queue>
+  
+  
 
 </weblogic-jms>

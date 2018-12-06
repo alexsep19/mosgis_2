@@ -26,6 +26,7 @@ import ru.eludia.products.mosgis.db.model.tables.ContractFile;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.ContractPayment;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.tables.VotingProtocol;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
@@ -41,6 +42,7 @@ import ru.gosuslugi.dom.schema.integration.house_management.ExportStatusCAChRequ
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportCharterRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportVotingProtocolRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ObjectFactory;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.HouseManagementPortsTypeAsync;
@@ -486,6 +488,18 @@ public class WsGisHouseManagementClient {
         importCharterRequest.setTransportGUID (UUID.randomUUID ().toString ());
 
         return getPort (orgPPAGuid, messageGUID).importCharterData (importCharterRequest).getAck ();
+        
+    }
+    
+    public AckRequest.Ack placeVotingProtocol (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        
+        final ImportVotingProtocolRequest.Protocol protocol = VotingProtocol.toDom (r);
+
+        final ImportVotingProtocolRequest createImportVotingProtocolRequest = of.createImportVotingProtocolRequest ();
+        createImportVotingProtocolRequest.setProtocol (protocol);
+        createImportVotingProtocolRequest.setTransportGUID (UUID.randomUUID ().toString ());
+        
+        return getPort (orgPPAGuid, messageGUID).importVotingProtocol (createImportVotingProtocolRequest).getAck ();
         
     }
     
