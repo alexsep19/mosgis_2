@@ -116,6 +116,14 @@ public class VotingProtocol extends Table {
     public static final ImportVotingProtocolRequest.Protocol toDom (Map<String, Object> r) {
 
         final ImportVotingProtocolRequest.Protocol p = (ImportVotingProtocolRequest.Protocol) DB.to.javaBean (ImportVotingProtocolRequest.Protocol.class, r);
+        
+        if (!p.isAnnualVoting ()) p.setAnnualVoting (null);
+        if (!p.isExtraVoting ()) p.setExtraVoting (null);
+        
+        switch (VocVotingForm.i.forName (r.get ("form_").toString ())) {
+            case AVOTING:
+                break;
+        }
 
         return p;
 
