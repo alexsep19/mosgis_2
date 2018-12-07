@@ -135,6 +135,9 @@ public class VotingProtocol extends Table {
             case EVOTING:
                 p.setEVoting (toEvoting (r));
                 break;
+            case MEETING:
+                p.setMeeting (toMeeting (r));
+                break;
                 
         }
         
@@ -154,6 +157,12 @@ public class VotingProtocol extends Table {
     
     private static ProtocolType.EVoting toEvoting (Map<String, Object> r) {
         final ProtocolType.EVoting result = (ProtocolType.EVoting) DB.to.javaBean (ProtocolType.EVoting.class, r);
+        for (Map<String, Object> file: (Collection<Map<String, Object>>) r.get ("files")) result.getAttachments ().add ( VotingProtocolFile.toAttachments (file));
+        return result;
+    }
+    
+    private static ProtocolType.Meeting toMeeting (Map<String, Object> r) {
+        final ProtocolType.Meeting result = (ProtocolType.Meeting) DB.to.javaBean (ProtocolType.Meeting.class, r);
         for (Map<String, Object> file: (Collection<Map<String, Object>>) r.get ("files")) result.getAttachments ().add ( VotingProtocolFile.toAttachments (file));
         return result;
     }

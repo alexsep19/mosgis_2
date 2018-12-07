@@ -82,11 +82,11 @@ public class VotingProtocolTest {
     public static void tearDownClass () throws SQLException {
         if (getCn () != null) getCn ().close ();
     }
-        
+            
     @Test (expected = None.class)
     public void testAVoting () {
                 
-        Table.Sampler sampler = votingProtocolTable.new Sampler (commonPart, HASH (
+        testType (HASH (
                 
             "form_", VocVotingForm.i.AVOTING.getName (),
                 
@@ -108,15 +108,12 @@ public class VotingProtocolTest {
             
         ));
         
-        Map<String, Object> r = sampler.nextHASH ();        
-        for (int k = 0; k < sampler.getCount (); k ++) process (sampler.cutOut (r, k));
-        
     }
     
     @Test (expected = None.class)
     public void testEVoting () {
                 
-        Table.Sampler sampler = votingProtocolTable.new Sampler (commonPart, HASH (
+        testType (HASH (
                 
             "form_", VocVotingForm.i.EVOTING.getName (),
                 
@@ -137,40 +134,70 @@ public class VotingProtocolTest {
             "meeting_av_res_place", null
             
         ));
-        
-        Map<String, Object> r = sampler.nextHASH ();        
-        for (int k = 0; k < sampler.getCount (); k ++) process (sampler.cutOut (r, k));
-        
+                
     }
     
+    @Test (expected = None.class)
+    public void testMeeting () {
+                
+        testType (HASH (
+                
+            "form_", VocVotingForm.i.MEETING.getName (),
+                
+            "avotingdate", null,
+            "resolutionplace", null,
+                
+            "meetingdate", Def.NOW,
+            "votingplace", Def.NOW,
 
-    private void process (Map<String, Object> r) {
-        dump (r);
-        checkRecord (r);
+            "evotingdatebegin", null,
+            "evotingdateend", null,
+            "discipline", null,
+            "inforeview", null,
+
+            "meeting_av_date", null,
+            "meeting_av_place", null,
+            "meeting_av_date_end", null,
+            "meeting_av_res_place", null
+            
+        ));
+                
     }
-    
+   
+    private void testType (Map<String, Object> specificPart) {
+        
+        Table.Sampler sampler = votingProtocolTable.new Sampler (commonPart, specificPart);
+        
+        Map<String, Object> sample = sampler.nextHASH ();
+        
+        for (int k = 0; k < sampler.getCount (); k ++) {
+            
+            final Map<String, Object> r = sampler.cutOut (sample, k);
+            
+            dump (r);
+            
+            final ImportVotingProtocolRequest.Protocol p = VotingProtocol.toDom (r);
+
+            p.getDecisionList ().forEach ((t) -> {
+                if (t.getQuestionNumber () < 0) t.setQuestionNumber (-t.getQuestionNumber ());
+            });
+
+            final ImportVotingProtocolRequest rq = new ImportVotingProtocolRequest ();
+            rq.setProtocol (p);
+            rq.setTransportGUID (UUID.randomUUID ().toString ());
+
+            validate (rq);
+            
+        }
+        
+    }   
+        
     private void dump (Map<String, Object> r) {
         System.out.println ('{');
         r.keySet ().stream ().sorted ().forEach ((k) -> {
             System.out.println (" " + k + " = " + r.get (k));
         });
         System.out.println ('}');
-    }
-
-    private void checkRecord (Map<String, Object> r) {
-
-        final ImportVotingProtocolRequest.Protocol p = VotingProtocol.toDom (r);
-        
-        p.getDecisionList ().forEach ((t) -> {
-            if (t.getQuestionNumber () < 0) t.setQuestionNumber (-t.getQuestionNumber ());
-        });
-
-        final ImportVotingProtocolRequest rq = new ImportVotingProtocolRequest ();
-        rq.setProtocol (p);
-        rq.setTransportGUID (UUID.randomUUID ().toString ());
-
-        validate (rq);
-
     }
 
     private void validate (final ImportVotingProtocolRequest rq) throws IllegalStateException {
