@@ -163,7 +163,35 @@ public class VotingProtocolTest {
         ));
                 
     }
-   
+
+    @Test (expected = None.class)
+    public void testMeetAV () {
+                
+        testType (HASH (
+                
+            "form_", VocVotingForm.i.MEET_AV.getName (),
+                
+            "avotingdate", null,
+            "resolutionplace", null,
+                
+            "meetingdate", null,
+            "votingplace", null,
+
+            "evotingdatebegin", null,
+            "evotingdateend", null,
+            "discipline", null,
+            "inforeview", null,
+
+            "meeting_av_date", Def.NOW,
+            "meeting_av_place", Def.NOW,
+            "meeting_av_date_end", Def.NOW,
+            "meeting_av_res_place", Def.NOW
+            
+        ));
+                
+    }
+    
+    
     private void testType (Map<String, Object> specificPart) {
         
         Table.Sampler sampler = votingProtocolTable.new Sampler (commonPart, specificPart);
