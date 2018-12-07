@@ -12,18 +12,16 @@ define ([], function () {
 
             if ($_USER.role.admin) return true
 
-            if (data.cach) {
+            if (data.cach && data.cach.is_own) {
 
-                if ($_USER.role.nsi_20_1) 
-                    return true
-
-                if (($_USER.role.nsi_20_19 ||
+                if ($_USER.role.nsi_20_1 ||
+                    $_USER.role.nsi_20_19 ||
                     $_USER.role.nsi_20_20 ||
                     $_USER.role.nsi_20_21 ||
-                    $_USER.role.nsi_20_22) && data.cach.is_own)
+                    $_USER.role.nsi_20_22)
                     return true
             }
-            else if ($_USER.role.nsi_20_8 && data.vc_org_territories.findIndex (territory => territory['code'] == data.item['fias.oktmo']) > 0) 
+            else if ($_USER.role.nsi_20_8 && $_USER.oktmo[data.item['fias.oktmo']])
                 return true
             return false
         }
