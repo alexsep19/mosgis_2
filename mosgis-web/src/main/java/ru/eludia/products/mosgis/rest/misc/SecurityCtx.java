@@ -10,16 +10,23 @@ import javax.ws.rs.core.SecurityContext;
 public class SecurityCtx implements SecurityContext {
     
     User user;
-    Object [] roles;   
+    Object [] roles;
+    Object [] oktmo;
 
-    public SecurityCtx (String id, String name, String uuid_org, Object [] roles) {
+    public SecurityCtx (String id, String name, String uuid_org, Object [] roles, Object [] oktmo) {
         user = new User (id, name, uuid_org);
         this.roles = roles;
+        this.oktmo = oktmo;
     }
 
     @Override
     public Principal getUserPrincipal () {
         return user;
+    }
+    
+    public boolean isOktmoIn (String oktmo) {
+        for (Object i: roles) if (oktmo.equals(i)) return true;
+        return false;
     }
 
     @Override

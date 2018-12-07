@@ -12,8 +12,10 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
+import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
 import ru.eludia.products.mosgis.rest.api.SessionsLocal;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTerritory;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -44,6 +46,22 @@ public class SessionsImpl implements SessionsLocal {
         return roles.build ();
         
     }
+    
+    private JsonObject getOktmo (final Object uuid_org, final DB db) throws SQLException {
+        
+        JsonObjectBuilder oktmo = Json.createObjectBuilder ();
+        
+        db.forEach (ModelHolder.getModel ()
+                .select (VocOrganizationTerritory.class)
+                .toOne  (VocOktmo.class, "code AS code").on ()
+                .where  ("uuid_org", uuid_org),
+                (rs) -> {
+                    oktmo.add (rs.getString(1), 1);
+                }
+        );
+        
+        return oktmo.build ();
+    }
             
     @Override
     public JsonObject create (String login, String password) {
@@ -66,6 +84,7 @@ public class SessionsImpl implements SessionsLocal {
                     jb.add ("id", user.get ("uuid").toString ());
                     jb.add ("label", user.get ("label").toString ());                                                            
                     jb.add ("role", getRoles (user.get ("uuid_org"), jb, db));
+                    jb.add ("oktmo", getOktmo (user.get ("uuid_org"), db));
 
                     return jb.build ();
 
