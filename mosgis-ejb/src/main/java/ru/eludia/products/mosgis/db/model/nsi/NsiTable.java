@@ -38,7 +38,7 @@ public class NsiTable extends Table {
 
     public static final String CHILDREN = "children";
     
-    protected Logger logger = Logger.getLogger (getClass ().getName ());
+    protected static Logger logger = Logger.getLogger (NsiTable.class.getName ());
     
     Roster <NsiField> nsiFields = new Roster <> ();
     
@@ -47,8 +47,18 @@ public class NsiTable extends Table {
     List<NsiMultipleRefTable> multipleRefTables = Collections.EMPTY_LIST;
     List<NsiMultipleScalarTable> multipleScalarTables = Collections.EMPTY_LIST;
     private static final XMLGregorianCalendar epoch = DB.to.XMLGregorianCalendar (new java.sql.Timestamp (0L));
-    
+
+    public static NsiRef toDom (Map<String, Object> r, String alias) {
+logger.info ("alias + \".code\"=" + alias + ".code");
+logger.info ("r.get (alias + \".code\")=" + r.get (alias + ".code"));
+        return toDom (
+            (String) r.get (alias + ".code"), 
+            (UUID)   r.get (alias + ".guid")
+        );
+    }
+
     public static NsiRef toDom (String code, UUID uuid) {
+        if (code == null) return null;
         NsiRef nsiRef = new NsiRef ();
         nsiRef.setCode (code);
         nsiRef.setGUID (uuid.toString ());

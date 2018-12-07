@@ -64,7 +64,7 @@ public class VotingProtocol extends Table {
         col ("annualvoting", Type.BOOLEAN, new Virt("DECODE(\"EXTRAVOTING\",1,0,1)"), "Ежегодное собрание");
         col ("meetingeligibility", Type.STRING, 1, "Правомочность собрания. (C)OMPETENT - правомочно, (N)OT_COMPETENT - не правомочно");
         
-        col ("modification", Type.STRING, null, "Основание изменения (для протоколов в статусе \"Размещен\")");
+        col ("modification", Type.STRING, 2000, null, "Основание изменения (для протоколов в статусе \"Размещен\")");
         
         fk  ("id_log",                VotingProtocolLog.class,    null,         "Последнее событие редактирования");
     }
@@ -131,6 +131,8 @@ public class VotingProtocol extends Table {
         }
         
         for (Map<String, Object> initiator: (Collection<Map<String, Object>>) r.get ("initiators")) p.getVoteInitiators ().add (VoteInitiator.toDom (initiator));
+        
+        for (Map<String, Object> decision: (Collection<Map<String, Object>>) r.get ("decisions")) p.getDecisionList ().add (VoteDecisionList.toDom (decision));
 
         return p;
 

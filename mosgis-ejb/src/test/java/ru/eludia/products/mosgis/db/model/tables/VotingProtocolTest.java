@@ -29,6 +29,7 @@ import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.TestRuleImpl;
 import ru.eludia.products.mosgis.db.model.voc.VocVotingForm;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportVotingProtocolRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ProtocolType;
 
 public class VotingProtocolTest {
     
@@ -95,8 +96,22 @@ public class VotingProtocolTest {
         
         Table it = m.get (VoteInitiator.class);       
         r.put ("initiators", Collections.singletonList (it.randomHASH (DB.HASH ())));
+        
+        Table dt = m.get (VoteDecisionList.class);       
+        r.put ("decisions", Collections.singletonList (dt.randomHASH (DB.HASH (
+                
+            VoteDecisionList.c.VOTINGRESUME, "M",
+                
+            "vc_nsi_25.code", "00025",
+            "vc_nsi_25.guid", UUID.randomUUID (),
 
-        r.put ("meetingeligibility", "C");
+            "vc_nsi_241.code", "00241",
+            "vc_nsi_241.guid", UUID.randomUUID (),
+
+            "vc_nsi_63.code", "00063",
+            "vc_nsi_63.guid", UUID.randomUUID ()
+                
+        ))));
                 
     }
 
@@ -107,10 +122,22 @@ public class VotingProtocolTest {
         });
         System.out.println ('}');
     }
+    
+    private void fix (ProtocolType.DecisionList t) {
+        if (t.getQuestionNumber () < 0) t.setQuestionNumber (-t.getQuestionNumber ());
+    }
+
+    private void fix (ImportVotingProtocolRequest.Protocol p) {
+        p.getDecisionList ().forEach ((t) -> {fix (t);});
+        p.setMeetingEligibility ("C");
+    }    
 
     private void checkRecord (Map<String, Object> r) throws JAXBException, PropertyException {
         
         final ImportVotingProtocolRequest.Protocol protocol = VotingProtocol.toDom (r);
+        
+        fix (protocol);
+        
         final ImportVotingProtocolRequest rq = new ImportVotingProtocolRequest ();
         rq.setProtocol (protocol);
         rq.setTransportGUID (UUID.randomUUID ().toString ());
@@ -118,7 +145,7 @@ public class VotingProtocolTest {
         final Marshaller mar = jc.createMarshaller ();
         mar.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         mar.marshal (rq, sw);
-        logger.info (sw.toString ());
+        System.out.println (sw);
         
         mar.setSchema (schema);
         mar.marshal (rq, sw);
