@@ -25,7 +25,7 @@ public class SecurityCtx implements SecurityContext {
     }
     
     public boolean isOktmoIn (String oktmo) {
-        for (Object i: roles) if (oktmo.equals(i)) return true;
+        for (Object i: this.oktmo) if (oktmo.equals(i)) return true;
         return false;
     }
 
