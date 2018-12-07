@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
@@ -67,7 +68,8 @@ public abstract class EJBResource<T> {
         }
         
     }
-    protected @Context SecurityContext securityContext;
+    protected @Context ContainerRequestContext context;
+    protected SecurityCtx securityContext = (SecurityCtx) context.getSecurityContext ();
     
     protected final User getUser () {
         return (User) securityContext.getUserPrincipal ();

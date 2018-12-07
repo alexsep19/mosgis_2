@@ -9,6 +9,7 @@ import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import javax.ws.rs.core.SecurityContext;
 import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.rest.misc.EJBResource;
 import ru.eludia.products.mosgis.rest.api.VotingProtocolsLocal;
@@ -40,8 +41,8 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
     private boolean getAccessCheck (JsonObject item) {
         
         if (securityContext.isUserInRole ("admin") ||
-            securityContext.isUserInRole ("nsi_20_4") ||
-            securityContext.isUserInRole ("nsi_20_7"))
+            securityContext.isUserInRole ("nsi_20_4"))
+            //securityContext.isUserInRole ("nsi_20_7"))
             return true;
         
         String itemOrg = item.getJsonObject ("item").getString ("uuid_org");
@@ -54,7 +55,7 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
             return true;
         
         String itemOktmo = item.getJsonObject ("item").get ("oktmo").toString ();
-        if (securityContext.isUserInRole("nsi_20_8") && SecurityCtx.class.cast(securityContext).isOktmoIn(itemOktmo))
+        if (securityContext.isUserInRole("nsi_20_8") && securityContext.isOktmoIn(itemOktmo))
             return true;
         
         return false;
