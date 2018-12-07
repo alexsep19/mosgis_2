@@ -6,6 +6,8 @@ define ([], function () {
 
             if (!data.item.is_condo) return false
 
+                console.log (data)
+
             if ($_USER.role.nsi_20_1 ||
                 $_USER.role.nsi_20_4 ||
                 $_USER.role.nsi_20_7 ||
@@ -14,7 +16,7 @@ define ([], function () {
                 $_USER.role.nsi_20_21 ||
                 $_USER.role.nsi_20_22 ||
                 $_USER.role.admin) { return true }
-            else if ($_USER.role.nsi_20_8 && data.vc_org_territories.findIndex (territory => territory['code'] == data.item['fias.oktmo']) > 0)
+            else if ($_USER.role.nsi_20_8 && $_USER.oktmo[data.item['fias.oktmo']])
                 return true
             return false
             
