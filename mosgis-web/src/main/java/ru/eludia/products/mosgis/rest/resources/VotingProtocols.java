@@ -1,5 +1,7 @@
 package ru.eludia.products.mosgis.rest.resources;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -41,8 +43,8 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
     private boolean getAccessCheck (JsonObject item) {
         
         if (securityContext.isUserInRole ("admin") ||
-            securityContext.isUserInRole ("nsi_20_4"))
-            //securityContext.isUserInRole ("nsi_20_7"))
+            securityContext.isUserInRole ("nsi_20_4") ||
+            securityContext.isUserInRole ("nsi_20_7"))
             return true;
         
         String itemOrg = item.getJsonObject ("item").getString ("uuid_org");
@@ -54,9 +56,13 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
              securityContext.isUserInRole ("nsi_20_22")) && userOrg.equals (itemOrg) && item.containsKey("cach"))
             return true;
         
-        String itemOktmo = item.getJsonObject ("item").get ("oktmo").toString ();
-        if (securityContext.isUserInRole("nsi_20_8") && securityContext.isOktmoIn(itemOktmo))
-            return true;
+        if (securityContext.isUserInRole("nsi_20_8")) {
+            String itemOktmo = item.getJsonObject ("item").get ("oktmo").toString ();
+            Object [] oktmos = (Object []) httpServletRequest.getSession (false).getAttribute("user.oktmo");
+            for (int i = 0; i < oktmos.length; i++)
+                if (itemOktmo.equals (String.valueOf (oktmos[i])))
+                    return true;
+        }
         
         return false;
     }
