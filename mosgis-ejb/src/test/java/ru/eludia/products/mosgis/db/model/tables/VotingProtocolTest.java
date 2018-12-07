@@ -1,19 +1,14 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
-import java.io.File;
 import java.io.StringWriter;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Logger;
-import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -27,15 +22,13 @@ import ru.eludia.products.mosgis.db.model.DataSourceImpl;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.TestRuleImpl;
 import ru.eludia.products.mosgis.db.model.voc.VocVotingForm;
+import ru.eludia.products.mosgis.ws.base.AbstactServiceAsync;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportVotingProtocolRequest;
 
 public class VotingProtocolTest {
-    
-    private static final Logger logger = Logger.getLogger (VotingProtocolTest.class.getName ());
-    
+        
     private static MosGisModel m;
     private static JAXBContext jc;
-    private static SchemaFactory schemaFactory;
     private static Schema schema;
     private static Table votingProtocolTable;
     private static Map<String, Object> commonPart;
@@ -81,11 +74,7 @@ public class VotingProtocolTest {
                 
         );
 
-        System.setProperty ("jdk.xml.maxOccurLimit", "100000");
-        schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        URL resource = m.getClass ().getClassLoader ().getResource ("META-INF/wsdl/house-management/hcs-house-management-types.xsd");
-        File file = new File (resource.toURI ());
-        schema = schemaFactory.newSchema (file);
+        schema = AbstactServiceAsync.loadSchema ("house-management/hcs-house-management-types.xsd");
         
     }
     
@@ -136,18 +125,24 @@ public class VotingProtocolTest {
         });
         System.out.println ('}');
     }
-    
+
     private void checkRecord (Map<String, Object> r) {
-        
+
         final ImportVotingProtocolRequest.Protocol p = VotingProtocol.toDom (r);        
         p.getDecisionList ().forEach ((t) -> {
             if (t.getQuestionNumber () < 0) t.setQuestionNumber (-t.getQuestionNumber ());
         });
-        p.setMeetingEligibility ("C");
-        
+
         final ImportVotingProtocolRequest rq = new ImportVotingProtocolRequest ();
         rq.setProtocol (p);
         rq.setTransportGUID (UUID.randomUUID ().toString ());
+
+        validate (rq);
+
+    }
+
+    private void validate (final ImportVotingProtocolRequest rq) throws IllegalStateException {
+                
         StringWriter sw = new StringWriter ();
         
         try {
