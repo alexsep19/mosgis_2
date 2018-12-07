@@ -38,9 +38,8 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
     
     private boolean getItemAccessCheck (JsonObject item) {
         
-        if (securityContext.isUserInRole ("admin")) return true;
-        
-        if (securityContext.isUserInRole ("nsi_20_4") || 
+        if (securityContext.isUserInRole ("admin") ||
+            securityContext.isUserInRole ("nsi_20_4") ||
             securityContext.isUserInRole ("nsi_20_7"))
             return true;
         
