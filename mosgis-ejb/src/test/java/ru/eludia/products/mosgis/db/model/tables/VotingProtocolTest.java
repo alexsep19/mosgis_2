@@ -112,6 +112,37 @@ public class VotingProtocolTest {
         for (int k = 0; k < sampler.getCount (); k ++) process (sampler.cutOut (r, k));
         
     }
+    
+    @Test (expected = None.class)
+    public void testEVoting () {
+                
+        Table.Sampler sampler = votingProtocolTable.new Sampler (commonPart, HASH (
+                
+            "form_", VocVotingForm.i.EVOTING.getName (),
+                
+            "avotingdate", null,
+            "resolutionplace", null,
+                
+            "meetingdate", null,
+            "votingplace", null,
+
+            "evotingdatebegin", Def.NOW,
+            "evotingdateend", Def.NOW,
+            "discipline", Def.NOW,
+            "inforeview", Def.NOW,
+
+            "meeting_av_date", null,
+            "meeting_av_place", null,
+            "meeting_av_date_end", null,
+            "meeting_av_res_place", null
+            
+        ));
+        
+        Map<String, Object> r = sampler.nextHASH ();        
+        for (int k = 0; k < sampler.getCount (); k ++) process (sampler.cutOut (r, k));
+        
+    }
+    
 
     private void process (Map<String, Object> r) {
         dump (r);
@@ -128,7 +159,8 @@ public class VotingProtocolTest {
 
     private void checkRecord (Map<String, Object> r) {
 
-        final ImportVotingProtocolRequest.Protocol p = VotingProtocol.toDom (r);        
+        final ImportVotingProtocolRequest.Protocol p = VotingProtocol.toDom (r);
+        
         p.getDecisionList ().forEach ((t) -> {
             if (t.getQuestionNumber () < 0) t.setQuestionNumber (-t.getQuestionNumber ());
         });

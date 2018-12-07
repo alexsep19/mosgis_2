@@ -50,8 +50,8 @@ public class VotingProtocol extends Table {
         
         col ("evotingdatebegin", Type.DATETIME, null, "Дата и время начала проведения голосования (заочное голосование с использованием системы)");
         col ("evotingdateend", Type.DATETIME, null, "Дата и время окончания проведения голосования (заочное голосование с использованием системы)");
-        col ("discipline", Type.STRING, null, "Порядок приема оформленных в письменной форме решений собственников (заочное голосование с использованием системы)");
-        col ("inforeview", Type.STRING, null, "Порядок ознакомления с информацией и (или) материалами, которые будут представлены на данном собрании (заочное голосование с использованием системы)");
+        col ("discipline", Type.STRING, 2000, null, "Порядок приема оформленных в письменной форме решений собственников (заочное голосование с использованием системы)");
+        col ("inforeview", Type.STRING, 2000, null, "Порядок ознакомления с информацией и (или) материалами, которые будут представлены на данном собрании (заочное голосование с использованием системы)");
         
         col ("meeting_av_date", Type.DATETIME, null, "Дата и время проведения собрания (очно-заочное голосование)");
         col ("meeting_av_place", Type.STRING, 3000, null, "Место проведения собрания (очно-заочное голосование)");
@@ -132,6 +132,10 @@ public class VotingProtocol extends Table {
             case AVOTING:
                 p.setAVoting (toAvoting (r));
                 break;
+            case EVOTING:
+                p.setEVoting (toEvoting (r));
+                break;
+                
         }
         
         for (Map<String, Object> initiator: (Collection<Map<String, Object>>) r.get ("initiators")) p.getVoteInitiators ().add (VoteInitiator.toDom (initiator));
@@ -144,6 +148,12 @@ public class VotingProtocol extends Table {
 
     private static ProtocolType.AVoting toAvoting (Map<String, Object> r) {
         final ProtocolType.AVoting result = (ProtocolType.AVoting) DB.to.javaBean (ProtocolType.AVoting.class, r);
+        for (Map<String, Object> file: (Collection<Map<String, Object>>) r.get ("files")) result.getAttachments ().add ( VotingProtocolFile.toAttachments (file));
+        return result;
+    }
+    
+    private static ProtocolType.EVoting toEvoting (Map<String, Object> r) {
+        final ProtocolType.EVoting result = (ProtocolType.EVoting) DB.to.javaBean (ProtocolType.EVoting.class, r);
         for (Map<String, Object> file: (Collection<Map<String, Object>>) r.get ("files")) result.getAttachments ().add ( VotingProtocolFile.toAttachments (file));
         return result;
     }
