@@ -6,8 +6,6 @@ define ([], function () {
 
             if (!data.item.is_condo) return false
 
-                console.log (data)
-
             if ($_USER.role.nsi_20_1 ||
                 $_USER.role.nsi_20_4 ||
                 $_USER.role.nsi_20_7 ||
