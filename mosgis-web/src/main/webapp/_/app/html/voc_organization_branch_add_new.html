@@ -1,0 +1,116 @@
+<span
+    data-popup-width=650
+    data-popup-height=520
+    data-popup-title='Новое обособленное подразделение'
+    >
+
+    <style>
+
+        label[data-block-name=voc_organization_branch_add_new] {
+            width: 200px;
+            margin-right: 10px;
+        }
+
+        input[data-block-name=voc_organization_branch_add_new] {
+            width: 380px !important;
+        }
+
+    </style>
+
+    <div class="w2ui-reset w2ui-form" style="height:465px; margin:8px 0 0 0;">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Головная организация</label>
+                <div>
+                    <div>
+                        <input name=uuid_org_parent type=hidden>
+                        <input name=label_org_parent readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="w2ui-field">
+                <label>Полное наименование</label>
+                <div>
+                    <input name=fullname maxlength=500>
+                </div>
+            </div>
+            <div class="w2ui-field">
+                <label>Сокращенное наименование</label>
+                <div>
+                    <input name=shortname maxlength=400>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>ОГРН</label>
+                <div>
+                    <input name=ogrn readonly maxlength=13>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Дата гос. регистрации</label>
+                <div>
+                    <input name=stateregistrationdate>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>ИНН</label>
+                <div>
+                    <input name=inn readonly>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>КПП</label>
+                <div>
+                    <input name=kpp>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>ОКОПФ</label>
+                <div>
+                    <input name=okopf maxlength=5>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Адрес регистрации</label>
+                <div>
+                    <input name=address>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Адрес регистрации (ФИАС)</label>
+                <div>
+                    <input name=fiashouseguid>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Источник информации</label>
+                <div>
+                    <input name=info_source maxlength=255>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Дата от</label>
+                <div>
+                    <input name=dt_info_source>
+                </div>
+            </div>
+        </div>
+
+        <div class="w2ui-buttons">
+            <button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+    </div>
+
+</span>

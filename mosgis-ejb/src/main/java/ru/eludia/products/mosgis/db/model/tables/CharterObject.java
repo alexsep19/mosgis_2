@@ -90,7 +90,7 @@ public class CharterObject extends Table {
             + " END LOOP; "
             + "END IF; "
                     
-            + "IF :NEW.is_to_ignore = 0 THEN "
+            + "IF :NEW.is_to_ignore = 0 AND :NEW.is_from_gis = 0 THEN "
             + " FOR i IN ("
                 + "SELECT "
                 + " o.startdate"
@@ -129,6 +129,8 @@ public class CharterObject extends Table {
         sb.append (" WHEN ANNULMENTINFO IS NOT NULL THEN 1");
         sb.append (" WHEN ID_CTR_STATUS_GIS IN (");
         sb.append (   VocGisStatus.i.REJECTED.getId ());
+        sb.append (     ',');
+        sb.append (   VocGisStatus.i.ANNUL.getId ());
         sb.append (") THEN 1");
         sb.append (" ELSE 0");
         sb.append (" END");
