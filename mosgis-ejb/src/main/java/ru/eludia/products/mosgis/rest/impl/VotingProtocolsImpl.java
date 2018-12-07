@@ -186,17 +186,4 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
         logAction (db, user, insertId, VocAction.i.CREATE);
 
     });}
-
-    @Override
-    public JsonObject checkOktmo(String oktmo, User user) {return fetchData ((db, job) -> {
-        
-        JsonObject item = db.getJsonObject (ModelHolder.getModel ()
-                .select (VocOrganizationTerritory.class, "*")
-                .where  ("uuid_org", user.getUuidOrg ())
-                .toOne  (VocOktmo.class, "code").on("vc_oktmo.id=vc_org_territories.oktmo AND vc_oktmo.code='" + oktmo + "'")
-        );
-                
-        if (item != null) job.add ("item", item);
-
-    });}
 }

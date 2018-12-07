@@ -12,6 +12,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.rest.misc.EJBResource;
 import ru.eludia.products.mosgis.rest.api.VotingProtocolsLocal;
+import ru.eludia.products.mosgis.rest.misc.SecurityCtx;
 
 @Path("voting_protocols")
 public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
@@ -36,7 +37,7 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
         
     }
     
-    private boolean getItemAccessCheck (JsonObject item) {
+    private boolean getAccessCheck (JsonObject item) {
         
         if (securityContext.isUserInRole ("admin") ||
             securityContext.isUserInRole ("nsi_20_4") ||
@@ -53,16 +54,15 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
             return true;
         
         String itemOktmo = item.getJsonObject ("item").get ("oktmo").toString ();
-        JsonObject territoryItem = back.checkOktmo(itemOktmo, getUser ());
-        if (securityContext.isUserInRole("nsi_20_8") && territoryItem.containsKey("item"))
+        if (securityContext.isUserInRole("nsi_20_8") && SecurityCtx.class.cast(securityContext).isOktmoIn(itemOktmo))
             return true;
         
         return false;
     }
     
-    private void checkGetItem (JsonObject item) {
+    private void checkGet (JsonObject item) {
         
-        if (!getItemAccessCheck (item)) throw new ValidationException ("foo", "Доступ запрещен");
+        if (!getAccessCheck (item)) throw new ValidationException ("foo", "Доступ запрещен");
         
     }
     
@@ -136,7 +136,7 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) { 
         final JsonObject item = back.getItem (id);
-        checkGetItem (item);
+        checkGet (item);
         return item;
     }
     
@@ -146,7 +146,7 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
         final JsonObject item = back.getItem (id);
-        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
+        checkGet (item);
         return back.getLog (id, p, getUser ());
     }
 }
