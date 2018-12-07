@@ -16,15 +16,14 @@ import ru.eludia.base.db.sql.gen.Get;
 import static ru.eludia.base.model.def.Def.NOW;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
-import ru.eludia.products.mosgis.db.model.tables.Contract;
-import ru.eludia.products.mosgis.db.model.tables.ContractObject;
-import ru.eludia.products.mosgis.db.model.tables.ContractPayment;
-import ru.eludia.products.mosgis.db.model.tables.ContractPaymentFile;
-import ru.eludia.products.mosgis.db.model.tables.ContractPaymentFileLog;
-import ru.eludia.products.mosgis.db.model.tables.ContractPaymentLog;
-import ru.eludia.products.mosgis.db.model.tables.OrganizationWork;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.VotingProtocol;
+import ru.eludia.products.mosgis.db.model.tables.VotingProtocolFileLog;
+import ru.eludia.products.mosgis.db.model.tables.VotingProtocolLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
-import ru.eludia.products.mosgis.db.model.tables.ServicePayment;
+import ru.eludia.products.mosgis.db.model.tables.VoteDecisionList;
+import ru.eludia.products.mosgis.db.model.tables.VoteInitiator;
+import ru.eludia.products.mosgis.db.model.tables.VotingProtocolFile;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -36,20 +35,20 @@ import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 
 @MessageDriven(activationConfig = {
- @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inHouseContractPaymentsQueue")
+ @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inHouseVotingProtocolsQueue")
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class ExportContractPaymentMDB extends UUIDMDB<ContractPaymentLog> {
+public class ExportVotingProtocolMDB extends UUIDMDB<VotingProtocolLog> {
     
     @EJB
     WsGisHouseManagementClient wsGisHouseManagementClient;
     
-    @Resource (mappedName = "mosgis.outExportHouseContractPaymentsQueue")
-    Queue outExportHouseContractPaymentsQueue;
+    @Resource (mappedName = "mosgis.outExportHouseVotingProtocolsQueue")
+    Queue outExportHouseVotingProtocolsQueue;
     
-    @Resource (mappedName = "mosgis.inHouseContractPaymentFilesQueue")
-    Queue inHouseContractPaymentFilesQueue;
+    @Resource (mappedName = "mosgis.inHouseVotingProtocolFilesQueue")
+    Queue inHouseVotingProtocolFilesQueue;
             
     @EJB
     protected UUIDPublisher UUIDPublisher;
@@ -62,12 +61,8 @@ public class ExportContractPaymentMDB extends UUIDMDB<ContractPaymentLog> {
                         
             return (Get) m
                 .get (getTable (), uuid, "*")
-                .toOne (ContractPayment.class, "AS ctr", "id_ctr_status").on ()
-                .toMaybeOne (ContractPaymentFile.class, "AS doc", "*").on ()
-                .toMaybeOne (ContractPaymentFileLog.class, "AS doc_log", "ts_start_sending", "err_text").on ("doc.id_log=doc_log.uuid")
-                .toOne (Contract.class, "AS ctrt", "contractversionguid").on ()
-                .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("ctrt.uuid_org=org.uuid")
-                .toMaybeOne (ContractObject.class, "AS o", "contractobjectversionguid").on ("ctr.uuid_contract_object=o.uuid")
+                .toOne (VotingProtocol.class, "AS ctr", "id_ctr_status").on ()
+                .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("ctr.uuid_org=org.uuid")
             ;
             
         }
@@ -77,13 +72,12 @@ public class ExportContractPaymentMDB extends UUIDMDB<ContractPaymentLog> {
                 
     }
         
-    AckRequest.Ack invoke (DB db, ContractPayment.Action action, UUID messageGUID,  Map<String, Object> r) throws Fault, SQLException {
+    AckRequest.Ack invoke (DB db, VotingProtocol.Action action, UUID messageGUID,  Map<String, Object> r) throws Fault, SQLException {
             
         UUID orgPPAGuid = getOrgPPAGUID (r);
             
         switch (action) {
-            case PLACING:     return wsGisHouseManagementClient.placeContractPaymentsInfo (orgPPAGuid, messageGUID, r);
-            case ANNULMENT:   return wsGisHouseManagementClient.annulContractPaymentData     (orgPPAGuid, messageGUID, r);
+            case PLACING:     return wsGisHouseManagementClient.placeVotingProtocol (orgPPAGuid, messageGUID, r);
             default: throw new IllegalArgumentException ("No action implemented for " + action);
         }
 
@@ -99,7 +93,7 @@ public class ExportContractPaymentMDB extends UUIDMDB<ContractPaymentLog> {
         
         VocGisStatus.i status = VocGisStatus.i.forId (r.get ("ctr.id_ctr_status"));
         
-        ContractPayment.Action action = ContractPayment.Action.forStatus (status);
+        VotingProtocol.Action action = VotingProtocol.Action.forStatus (status);
         
         if (action == null) {
             logger.warning ("No action is implemented for " + status);
@@ -109,17 +103,32 @@ public class ExportContractPaymentMDB extends UUIDMDB<ContractPaymentLog> {
         final UUID uuidObject = (UUID) r.get ("uuid_object");
 
         Model m = db.getModel ();        
-
-        r.put ("svc", db.getList (m
-            .select (ServicePayment.class, "*")
-            .where  (ServicePayment.c.UUID_CONTRACT_PAYMENT.lc (), uuidObject)
-            .and    (EnTable.c.IS_DELETED.lc (), 0)
-            .toOne (OrganizationWork.class, "AS w", "elementguid", "uniquenumber").on ()
+        
+        r.put ("files", db.getList (m
+            .select (VotingProtocolFile.class, "*")
+            .toOne  (VotingProtocolFileLog.class, "AS log", "ts_start_sending", "err_text").on ()
+            .where  (VotingProtocolFile.c.UUID_PROTOCOL.lc (), r.get ("uuid_object"))
+            .and    ("id_status", 1)
         ));
         
+        r.put ("initiators", db.getList (m
+            .select (VoteInitiator.class, "*")
+            .where  (VoteInitiator.c.UUID_PROTOCOL.lc (), uuidObject)
+            .and    (EnTable.c.IS_DELETED.lc (), 0)
+        ));
+        
+        r.put ("decisions", db.getList (m
+            .select (VoteDecisionList.class, "*")
+            .where  (VoteDecisionList.c.PROTOCOL_UUID.lc (), uuidObject)
+            .and    (EnTable.c.IS_DELETED.lc (), 0)
+            .toOne (NsiTable.getNsiTable (25),  "guid").on ("(root." + VoteDecisionList.c.MANAGEMENTTYPE_VC_NSI_25.lc () + "=vc_nsi_25.code AND vc_nsi_25.isactual=1)")
+            .toOne (NsiTable.getNsiTable (63),  "guid").on ("(root." + VoteDecisionList.c.DECISIONTYPE_VC_NSI_63.lc () + "=vc_nsi_63.code AND vc_nsi_63.isactual=1)")
+            .toOne (NsiTable.getNsiTable (241), "guid").on ("(root." + VoteDecisionList.c.FORMINGFUND_VC_NSI_241.lc () + "=vc_nsi_241.code AND vc_nsi_241.isactual=1)")
+        ));
+       
         try {
             
-            if (action == ContractPayment.Action.PLACING && DB.ok (r.get ("uuid_file"))) {
+            if (action == VotingProtocol.Action.PLACING && DB.ok (r.get ("uuid_file"))) {
 
                 final Object err = r.get ("doc_log.err_text");
                 if (DB.ok (err)) throw new Exception (err.toString ());
@@ -128,12 +137,12 @@ public class ExportContractPaymentMDB extends UUIDMDB<ContractPaymentLog> {
                 
                 if (!DB.ok (ots)) {
                     
-                    db.update (ContractPaymentFileLog.class, DB.HASH (
+                    db.update (VotingProtocolFileLog.class, DB.HASH (
                         "uuid",              r.get ("doc.id_log"),
                         "ts_start_sending",  NOW
                     ));
                     
-                    UUIDPublisher.publish (inHouseContractPaymentFilesQueue, (UUID) r.get ("uuid_file"));
+                    UUIDPublisher.publish (inHouseVotingProtocolFilesQueue, (UUID) r.get ("uuid_file"));
                     
                     UUIDPublisher.publish (getOwnQueue (), uuid);
                     
@@ -168,7 +177,7 @@ public class ExportContractPaymentMDB extends UUIDMDB<ContractPaymentLog> {
                     "uuid_message",  ack.getMessageGUID ()
                 ));
 
-                db.update (ContractPayment.class, DB.HASH (
+                db.update (VotingProtocol.class, DB.HASH (
                     "uuid",          uuidObject,
                     "uuid_out_soap", uuid,
                     "id_ctr_status", action.getNextStatus ().getId ()
@@ -200,7 +209,7 @@ public class ExportContractPaymentMDB extends UUIDMDB<ContractPaymentLog> {
                     "uuid_out_soap", uuid
                 ));
 
-                db.update (ContractPayment.class, DB.HASH (
+                db.update (VotingProtocol.class, DB.HASH (
                     "uuid",              r.get ("uuid_object"),
                     "uuid_out_soap",     uuid,
                     "id_ctr_status",     action.getFailStatus ().getId ()
@@ -236,7 +245,7 @@ public class ExportContractPaymentMDB extends UUIDMDB<ContractPaymentLog> {
                     "uuid_out_soap", uuid
                 ));
 
-                db.update (ContractPayment.class, DB.HASH (
+                db.update (VotingProtocol.class, DB.HASH (
                     "uuid",              r.get ("uuid_object"),
                     "uuid_out_soap",     uuid,
                     "id_ctr_status",     action.getFailStatus ().getId ()
@@ -250,8 +259,8 @@ public class ExportContractPaymentMDB extends UUIDMDB<ContractPaymentLog> {
         
     }
     
-    Queue getQueue (ContractPayment.Action action) {        
-        return outExportHouseContractPaymentsQueue;        
+    Queue getQueue (VotingProtocol.Action action) {        
+        return outExportHouseVotingProtocolsQueue;        
     }
 
 }

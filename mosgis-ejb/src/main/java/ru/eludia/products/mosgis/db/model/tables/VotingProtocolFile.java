@@ -5,11 +5,9 @@ import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
-import static ru.eludia.base.model.def.Blob.EMPTY_BLOB;
 import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.gosuslugi.dom.schema.integration.base.Attachment;
-import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
 import ru.gosuslugi.dom.schema.integration.house_management.Attachments;
 
 public class VotingProtocolFile extends AttachTable {

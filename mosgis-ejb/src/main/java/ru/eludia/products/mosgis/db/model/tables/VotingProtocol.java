@@ -4,11 +4,12 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.logging.Logger;
 import ru.eludia.base.DB;
-import ru.eludia.base.model.Table;
+import ru.eludia.base.model.Col;
+import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
-import ru.eludia.base.model.def.Bool;
-import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.model.EnColEnum;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -17,54 +18,73 @@ import ru.eludia.products.mosgis.db.model.voc.VocVotingForm;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportVotingProtocolRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ProtocolType;
 
-public class VotingProtocol extends Table {
-    
-    public VotingProtocol () {
-        
-        super ("tb_voting_protocols", "Протоколы ОСС");
-        
-        pk  ("uuid", Type.UUID, NEW_UUID, "Ключ");
-        
-        fk  ("uuid_org",                  VocOrganization.class,                      "Организация");
-        
-        fk  ("fiashouseguid",           VocBuilding.class,                   "Глобальный уникальный идентификатор дома по ФИАС");
-        col ("is_deleted",              Type.BOOLEAN, Bool.FALSE,            "1, если запись удалена; иначе 0");
-        
-        fk  ("id_prtcl_status",           VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (),   "Статус протокола с точки зрения mosgis");
-        ref ("id_prtcl_status_gis",       VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (),   "Статус протокола с точки зрения ГИС ЖКХ");
-        
-        fk  ("form_", VocVotingForm.class, null, "Форма проведения");
-        //col ("label_form", Type.STRING, new Virt("DECODE(\"FORM_\", 0, 'Заочное голосование (опросным путем)', 1, 'Очное голосование', 2, 'Заочное голосование с использованием системы', 3, 'Очно-заочное голосование', 'Неизвестная форма проведения')"), "Форма проведения");
-        //col ("label_form_uc", Type.STRING, new Virt("UPPER(\"LABEL_FORM\")"), "ФОРМА ПРОВЕДЕНИЯ");
-        
-        col ("protocolnum", Type.STRING, 30, null, "Номер протокола");
-        col ("protocoldate", Type.DATE, "Дата составления протокола");
-        
-        col ("label", Type.STRING, new Virt("'№' || protocolnum || ' от ' || TO_CHAR (protocoldate, 'DD.MM.YYYY')"), "№/датаы");
-        
-        col ("avotingdate", Type.DATE, null, "Дата окончания приема решений (заочное голосование опросным путем)");
-        col ("resolutionplace", Type.STRING, 3000, null, "Место принятия решений (заочное голосование опросным путем)");
-        
-        col ("meetingdate", Type.DATETIME, null, "Дата и время проведения собрания (очное голосование)");
-        col ("votingplace", Type.STRING, 3000, null, "Место проведения собрания (очное голосование)");
-        
-        col ("evotingdatebegin", Type.DATETIME, null, "Дата и время начала проведения голосования (заочное голосование с использованием системы)");
-        col ("evotingdateend", Type.DATETIME, null, "Дата и время окончания проведения голосования (заочное голосование с использованием системы)");
-        col ("discipline", Type.STRING, 2000, null, "Порядок приема оформленных в письменной форме решений собственников (заочное голосование с использованием системы)");
-        col ("inforeview", Type.STRING, 2000, null, "Порядок ознакомления с информацией и (или) материалами, которые будут представлены на данном собрании (заочное голосование с использованием системы)");
-        
-        col ("meeting_av_date", Type.DATETIME, null, "Дата и время проведения собрания (очно-заочное голосование)");
-        col ("meeting_av_place", Type.STRING, 3000, null, "Место проведения собрания (очно-заочное голосование)");
-        col ("meeting_av_date_end", Type.DATE, null, "Дата окончания приема решений (очно-заочное голосование)");
-        col ("meeting_av_res_place", Type.STRING, 3000, null, "Место приема решения (очно-заочное голосование)");
+public class VotingProtocol extends EnTable {
+            
+    public enum c implements EnColEnum {
 
-        col ("extravoting", Type.BOOLEAN, "Внеочередное собрание");
-        col ("annualvoting", Type.BOOLEAN, new Virt("DECODE(\"EXTRAVOTING\",1,0,1)"), "Ежегодное собрание");
-        col ("meetingeligibility", Type.STRING, 1, "Правомочность собрания. (C)OMPETENT - правомочно, (N)OT_COMPETENT - не правомочно");
+        UUID_ORG             (VocOrganization.class,         "Организация"),
+        FIASHOUSEGUID        (VocBuilding.class,             "Дом"),
+        ID_CTR_STATUS        (VocGisStatus.class,      VocGisStatus.DEFAULT, "Статус протокола с точки зрения mosgis"),
+        ID_CTR_STATUS_GIS    (VocGisStatus.class,      VocGisStatus.DEFAULT, "Статус протокола с точки зрения ГИС ЖКХ"),        
+
+        FORM_                (VocVotingForm.class,        "Форма проведения"),
+
+        LABEL                (Type.STRING, new Virt("'№' || protocolnum || ' от ' || TO_CHAR (protocoldate, 'DD.MM.YYYY')"), "№/дата"),
+
+        PROTOCOLNUM          (Type.STRING, 1000, null,    "Номер протокола"),
+        PROTOCOLDATE         (Type.DATE,                  "Дата составления протокола"),
+
+        AVOTINGDATE          (Type.DATE, null, "Дата окончания приема решений (заочное голосование опросным путем)"),
+        RESOLUTIONPLACE      (Type.STRING, 3000, null, "Место принятия решений (заочное голосование опросным путем)"),
+
+        MEETINGDATE          (Type.DATETIME, null, "Дата и время проведения собрания (очное голосование)"),
+        VOTINGPLACE          (Type.STRING, 3000, null, "Место проведения собрания (очное голосование)"),
+
+        EVOTINGDATEBEGIN     (Type.DATETIME, null, "Дата и время начала проведения голосования (заочное голосование с использованием системы)"),
+        EVOTINGDATEEND       (Type.DATETIME, null, "Дата и время окончания проведения голосования (заочное голосование с использованием системы)"),
+        DISCIPLINE           (Type.STRING, 2000, null, "Порядок приема оформленных в письменной форме решений собственников (заочное голосование с использованием системы)"),
+        INFOREVIEW           (Type.STRING, 2000, null, "Порядок ознакомления с информацией и (или) материалами, которые будут представлены на данном собрании (заочное голосование с использованием системы)"),
+
+        MEETING_AV_DATE      (Type.DATETIME, null, "Дата и время проведения собрания (очно-заочное голосование)"),
+        MEETING_AV_PLACE     (Type.STRING, 3000, null, "Место проведения собрания (очно-заочное голосование)"),
+        MEETING_AV_DATE_END  (Type.DATE, null, "Дата окончания приема решений (очно-заочное голосование)"),
+        MEETING_AV_RES_PLACE (Type.STRING, 3000, null, "Место приема решения (очно-заочное голосование)"),
+
+        EXTRAVOTING          (Type.BOOLEAN, "Внеочередное собрание"),
+        ANNUALVOTING         (Type.BOOLEAN, new Virt("DECODE(\"EXTRAVOTING\",1,0,1)"), "Ежегодное собрание"),
+        MEETINGELIGIBILITY   (Type.STRING, 1, "Правомочность собрания. (C)OMPETENT - правомочно, (N)OT_COMPETENT - не правомочно"),
+
+        MODIFICATION         (Type.STRING, 2000, null, "Основание изменения (для протоколов в статусе \"Размещен\")"),
+
+        ID_LOG               (VotingProtocolLog.class,    null,         "Последнее событие редактирования"),
         
-        col ("modification", Type.STRING, 2000, null, "Основание изменения (для протоколов в статусе \"Размещен\")");
-        
-        fk  ("id_log",                VotingProtocolLog.class,    null,         "Последнее событие редактирования");
+        VOTINGPROTOCOLGUID   (Type.UUID, null,                 "Дата составления протокола")
+
+        ;
+
+        @Override
+        public Col getCol () {return col;}
+        private Col col;        
+        private c (Type type, Object... p) {col = new Col (this, type, p);}
+        private c (Class c,   Object... p) {col = new Ref (this, c, p);}
+
+        @Override
+        public boolean isLoggable () {
+            switch (this) {
+                case ID_LOG:
+                case FIASHOUSEGUID:
+                case UUID_ORG:
+                    return false;
+                default: 
+                    return true;
+            }
+        }
+
+    }
+
+    public VotingProtocol () {
+        super ("tb_voting_protocols", "Протоколы ОСС");
+        cols (c.class);
     }
     
     public enum Action {
