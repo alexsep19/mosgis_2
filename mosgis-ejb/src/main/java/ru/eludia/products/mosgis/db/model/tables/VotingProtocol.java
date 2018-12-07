@@ -14,10 +14,8 @@ import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocVotingForm;
-import ru.gosuslugi.dom.schema.integration.house_management.Attachments;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportVotingProtocolRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ProtocolType;
-import ru.gosuslugi.dom.schema.integration.house_management.VoteInitiators;
 
 public class VotingProtocol extends Table {
     
@@ -121,9 +119,15 @@ public class VotingProtocol extends Table {
 
         final ImportVotingProtocolRequest.Protocol p = (ImportVotingProtocolRequest.Protocol) DB.to.javaBean (ImportVotingProtocolRequest.Protocol.class, r);
         
-        if (!p.isAnnualVoting ()) p.setAnnualVoting (null);
-        if (!p.isExtraVoting ()) p.setExtraVoting (null);
-        
+        if (DB.ok (r.get ("extravoting"))) {
+            p.setExtraVoting (true);
+            p.setAnnualVoting (null);
+        }
+        else {
+            p.setAnnualVoting (true);
+            p.setExtraVoting (null);
+        }
+                
         switch (VocVotingForm.i.forName (r.get ("form_").toString ())) {
             case AVOTING:
                 p.setAVoting (toAvoting (r));

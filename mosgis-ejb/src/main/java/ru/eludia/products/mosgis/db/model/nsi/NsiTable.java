@@ -49,8 +49,6 @@ public class NsiTable extends Table {
     private static final XMLGregorianCalendar epoch = DB.to.XMLGregorianCalendar (new java.sql.Timestamp (0L));
 
     public static NsiRef toDom (Map<String, Object> r, String alias) {
-logger.info ("alias + \".code\"=" + alias + ".code");
-logger.info ("r.get (alias + \".code\")=" + r.get (alias + ".code"));
         return toDom (
             (String) r.get (alias + ".code"), 
             (UUID)   r.get (alias + ".guid")
