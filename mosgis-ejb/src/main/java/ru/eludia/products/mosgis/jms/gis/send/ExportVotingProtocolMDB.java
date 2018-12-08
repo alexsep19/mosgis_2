@@ -119,7 +119,7 @@ public class ExportVotingProtocolMDB extends GisExportMDB<VotingProtocolLog> {
        
         try {            
             AckRequest.Ack ack = invoke (db, action, uuid, r);
-            store (db, ack, r, uuid, action.getNextStatus ());
+            store (db, ack, r, action.getNextStatus ());
             uuidPublisher.publish (getQueue (action), ack.getRequesterMessageGUID ());
         }
         catch (Fault ex) {

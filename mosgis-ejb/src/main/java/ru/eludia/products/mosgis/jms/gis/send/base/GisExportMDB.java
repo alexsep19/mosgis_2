@@ -30,7 +30,7 @@ public abstract class GisExportMDB <LT extends Table> extends UUIDMDB<LT> {
         return ModelHolder.getModel ().get (name.substring (0, name.length () - "__log".length ()));
     }    
     
-    protected void store (DB db, AckRequest.Ack ack, Map<String, Object> r, UUID uuid, VocGisStatus.i nextStatus) throws SQLException {
+    protected void store (DB db, AckRequest.Ack ack, Map<String, Object> r, VocGisStatus.i nextStatus) throws SQLException {
         
         db.begin ();
         
@@ -44,7 +44,7 @@ public abstract class GisExportMDB <LT extends Table> extends UUIDMDB<LT> {
 
             db.update (getEnTable (), DB.HASH (
                 "uuid",          r.get ("uuid_object"),
-                "uuid_out_soap", uuid,
+                "uuid_out_soap", r.get ("uuid"),
                 "id_ctr_status", nextStatus.getId ()
             ));
         
