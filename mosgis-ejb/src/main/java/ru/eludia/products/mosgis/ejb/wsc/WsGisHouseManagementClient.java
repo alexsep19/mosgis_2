@@ -497,6 +497,7 @@ public class WsGisHouseManagementClient {
 
         final ImportVotingProtocolRequest createImportVotingProtocolRequest = of.createImportVotingProtocolRequest ();
         createImportVotingProtocolRequest.setProtocol (protocol);
+        createImportVotingProtocolRequest.setPlacing (true);
         createImportVotingProtocolRequest.setTransportGUID (UUID.randomUUID ().toString ());
         
         return getPort (orgPPAGuid, messageGUID).importVotingProtocol (createImportVotingProtocolRequest).getAck ();
