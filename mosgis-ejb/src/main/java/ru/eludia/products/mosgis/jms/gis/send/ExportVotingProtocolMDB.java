@@ -11,27 +11,23 @@ import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import javax.jms.Queue;
 import ru.eludia.base.DB;
-import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Get;
-import static ru.eludia.base.model.def.Def.NOW;
+import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocol;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocolFileLog;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocolLog;
-import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.VoteDecisionList;
 import ru.eludia.products.mosgis.db.model.tables.VoteInitiator;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocolFile;
-import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
-import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
-import ru.eludia.products.mosgis.jms.base.UUIDMDB;
+import ru.eludia.products.mosgis.jms.gis.send.base.GisExportMDB;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 
@@ -40,7 +36,7 @@ import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class ExportVotingProtocolMDB extends UUIDMDB<VotingProtocolLog> {
+public class ExportVotingProtocolMDB extends GisExportMDB<VotingProtocolLog> {
     
     @EJB
     WsGisHouseManagementClient wsGisHouseManagementClient;
@@ -50,10 +46,7 @@ public class ExportVotingProtocolMDB extends UUIDMDB<VotingProtocolLog> {
     
     @Resource (mappedName = "mosgis.inHouseVotingProtocolFilesQueue")
     Queue inHouseVotingProtocolFilesQueue;
-            
-    @EJB
-    protected UUIDPublisher uuidPublisher;
-    
+                
     protected Get get (UUID uuid) {        
         
         final MosGisModel m = ModelHolder.getModel ();
@@ -75,7 +68,7 @@ public class ExportVotingProtocolMDB extends UUIDMDB<VotingProtocolLog> {
         
     AckRequest.Ack invoke (DB db, VotingProtocol.Action action, UUID messageGUID,  Map<String, Object> r) throws Fault, SQLException {
             
-        UUID orgPPAGuid = getOrgPPAGUID (r);
+        UUID orgPPAGuid = (UUID) r.get ("org.orgppaguid");
             
         switch (action) {
             case PLACING:     return wsGisHouseManagementClient.placeVotingProtocol (orgPPAGuid, messageGUID, r);
@@ -83,48 +76,12 @@ public class ExportVotingProtocolMDB extends UUIDMDB<VotingProtocolLog> {
         }
 
     }
-
-    private UUID getOrgPPAGUID (Map<String, Object> r) {
-        final UUID orgPPAGuid = (UUID) r.get ("org.orgppaguid");
-        return orgPPAGuid;
-    }
     
-    private boolean isWaitingForFile (Map<String, Object> f, DB db) throws Exception {
-
-        final Object err = f.get ("log.err_text"); 
-        if (DB.ok (err)) throw new Exception (err.toString ());
-        
-        if (DB.ok (f.get ("attachmentguid"))) return false;
-
-        if (!DB.ok (f.get ("log.ts_start_sending"))) return startUpload (db, f);
-        
-        logger.info ("Waiting for " + f.get ("label") + " to be upoaded...");
-        return true;
-        
-    }    
-
-    private boolean startUpload (DB db, Map<String, Object> f) throws SQLException {
-        
-        logger.info ("Sending file, bailing out");
-        
-        db.update (VotingProtocolFileLog.class, HASH (
-                "uuid",             f.get ("id_log"),
-                "ts_start_sending", NOW
-        ));
-        
-        uuidPublisher.publish (inHouseVotingProtocolFilesQueue, (UUID) f.get ("uuid"));
-        
-        return true;
-        
-    }
-
     @Override
     protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
         
-        VocGisStatus.i status = VocGisStatus.i.forId (r.get ("ctr.id_ctr_status"));
-        
-        VotingProtocol.Action action = VotingProtocol.Action.forStatus (status);
-        
+        VocGisStatus.i status = VocGisStatus.i.forId (r.get ("ctr.id_ctr_status"));        
+        VotingProtocol.Action action = VotingProtocol.Action.forStatus (status);        
         if (action == null) {
             logger.warning ("No action is implemented for " + status);
             return;
@@ -141,15 +98,7 @@ public class ExportVotingProtocolMDB extends UUIDMDB<VotingProtocolLog> {
             .and    ("id_status", 1)
         );
         
-        boolean isWaitingForSomeFile = false;        
-        try {
-            for (Map<String, Object> file: files) isWaitingForSomeFile = isWaitingForSomeFile || isWaitingForFile (file, db);
-        }
-        catch (Exception ex) {            
-            logger.log (Level.SEVERE, "Cannot send file(s)", ex);            
-            fail (db, uuid, action, ex, r);
-            return;            
-        }
+        if (isWaiting (files, db, action.getFailStatus (), r)) return;
         
         r.put ("files", files);
         
@@ -168,137 +117,36 @@ public class ExportVotingProtocolMDB extends UUIDMDB<VotingProtocolLog> {
             .toOne (NsiTable.getNsiTable (241), "guid", "code").on ("(root." + VoteDecisionList.c.FORMINGFUND_VC_NSI_241.lc () + "=vc_nsi_241.code AND vc_nsi_241.isactual=1)")
         ));
        
-        try {
-            
-            if (action == VotingProtocol.Action.PLACING && DB.ok (r.get ("uuid_file"))) {
-
-                final Object err = r.get ("doc_log.err_text");
-                if (DB.ok (err)) throw new Exception (err.toString ());
-                
-                final Object ots = r.get ("doc_log.ts_start_sending");            
-                
-                if (!DB.ok (ots)) {
-                    
-                    db.update (VotingProtocolFileLog.class, DB.HASH (
-                        "uuid",              r.get ("doc.id_log"),
-                        "ts_start_sending",  NOW
-                    ));
-                    
-                    uuidPublisher.publish (inHouseVotingProtocolFilesQueue, (UUID) r.get ("uuid_file"));
-                    
-                    uuidPublisher.publish (getOwnQueue (), uuid);
-                    
-                    logger.info ("Sending file, bailing out");
-                    
-                    return;
-                    
-                }
-                
-                if (!DB.ok (r.get ("doc.attachmentguid"))) {
-                    
-                    uuidPublisher.publish (getOwnQueue (), uuid);
-                    
-                    logger.info ("Waiting for " + r.get ("doc.label") + " to be uploaded...");
-                    
-                }
-                
-            }
-
+        try {            
             AckRequest.Ack ack = invoke (db, action, uuid, r);
-
-            db.begin ();
-            
-                OutSoap.registerAck (db, ack);
-
-                db.update (getTable (), DB.HASH (
-                    "uuid",          uuid,
-                    "uuid_out_soap", uuid,
-                    "uuid_message",  ack.getMessageGUID ()
-                ));
-
-                db.update (VotingProtocol.class, DB.HASH (
-                    "uuid",          uuidObject,
-                    "uuid_out_soap", uuid,
-                    "id_ctr_status", action.getNextStatus ().getId ()
-                ));
-
-            db.commit ();
-
-            uuidPublisher.publish (getQueue (action), ack.getRequesterMessageGUID ());            
-
+            store (db, ack, r, uuid, action.getNextStatus ());
+            uuidPublisher.publish (getQueue (action), ack.getRequesterMessageGUID ());
         }
         catch (Fault ex) {
-
-            logger.log (Level.SEVERE, "Can't place charter", ex);
-
-            ru.gosuslugi.dom.schema.integration.base.Fault faultInfo = ex.getFaultInfo ();
-
-            db.begin ();
-
-                db.update (OutSoap.class, HASH (
-                    "uuid", uuid,
-                    "id_status", DONE.getId (),
-                    "is_failed", 1,
-                    "err_code",  faultInfo.getErrorCode (),
-                    "err_text",  faultInfo.getErrorMessage ()
-                ));
-
-                db.update (getTable (), DB.HASH (
-                    "uuid",          uuid,
-                    "uuid_out_soap", uuid
-                ));
-
-                db.update (VotingProtocol.class, DB.HASH (
-                    "uuid",              r.get ("uuid_object"),
-                    "uuid_out_soap",     uuid,
-                    "id_ctr_status",     action.getFailStatus ().getId ()
-                ));
-
-            db.commit ();
-
+            logger.log (Level.SEVERE, "Can't place voting protocol", ex);
+            fail (db, ex.getFaultInfo (), r, action.getFailStatus ());
             return;
-
         }
         catch (Exception ex) {            
             logger.log (Level.SEVERE, "Cannot invoke WS", ex);            
-            fail (db, uuid, action, ex, r);
+            fail (db, action.toString (), action.getFailStatus (), ex, r);
             return;            
         }
-        
-    }
-
-    private void fail (DB db, UUID uuid, VotingProtocol.Action action, Exception ex, Map<String, Object> r) throws SQLException {
-        
-        db.begin ();
-        
-            db.upsert (OutSoap.class, HASH (
-                "uuid", uuid,
-                "svc",  getClass ().getName (),
-                "op",   action.toString (),
-                "is_out",  1,
-                "id_status", DONE.getId (),
-                "is_failed", 1,
-                "err_code",  "0",
-                "err_text",  ex.getMessage ()
-            ));
-        
-            db.update (getTable (), DB.HASH (
-                "uuid",          uuid,
-                "uuid_out_soap", uuid
-            ));
-        
-            db.update (VotingProtocol.class, DB.HASH (
-                "uuid",              r.get ("uuid_object"),
-                "uuid_out_soap",     uuid,
-                "id_ctr_status",     action.getFailStatus ().getId ()
-            ));
-        
-        db.commit ();
         
     }
     
     Queue getQueue (VotingProtocol.Action action) {        
         return outExportHouseVotingProtocolsQueue;        
+    }
+
+    @Override
+    protected final Queue getFilesQueue () {
+        return inHouseVotingProtocolFilesQueue;
+    }
+
+    @Override
+    protected Table getFileLogTable () {
+        return ModelHolder.getModel ().get (VotingProtocolFileLog.class);
     }
 
 }
