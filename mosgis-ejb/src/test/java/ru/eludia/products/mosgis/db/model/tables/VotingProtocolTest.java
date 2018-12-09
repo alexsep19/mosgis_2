@@ -52,6 +52,7 @@ public class VotingProtocolTest {
                 
             "annualvoting", 0,
             "meetingeligibility", "C",
+            "fiashouseguid", UUID.randomUUID (),
                 
             "initiators", Collections.singletonList (m.get (VoteInitiator.class).new Sampler ().nextHASH ()),
                 

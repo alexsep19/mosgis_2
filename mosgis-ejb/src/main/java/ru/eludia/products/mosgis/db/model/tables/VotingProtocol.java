@@ -31,7 +31,7 @@ public class VotingProtocol extends EnTable {
 
         LABEL                (Type.STRING, new Virt("'№' || protocolnum || ' от ' || TO_CHAR (protocoldate, 'DD.MM.YYYY')"), "№/дата"),
 
-        PROTOCOLNUM          (Type.STRING, 1000, null,    "Номер протокола"),
+        PROTOCOLNUM          (Type.STRING, 30, null,    "Номер протокола"),
         PROTOCOLDATE         (Type.DATE,                  "Дата составления протокола"),
 
         AVOTINGDATE          (Type.DATE, null, "Дата окончания приема решений (заочное голосование опросным путем)"),
