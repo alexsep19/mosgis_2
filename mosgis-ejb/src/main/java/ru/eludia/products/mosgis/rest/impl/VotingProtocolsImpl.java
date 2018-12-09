@@ -203,8 +203,8 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
     public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
 
         db.update (getTable (), HASH (
-            "uuid",           id,
-            "id_ctr_status",  VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+            EnTable.c.UUID,                   id,
+            VotingProtocol.c.ID_PRTCL_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId ()
         ));
 
         logAction (db, user, id, VocAction.i.APPROVE);

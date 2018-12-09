@@ -56,7 +56,7 @@ public class ExportVotingProtocolMDB extends GisExportMDB<VotingProtocolLog> {
                         
             return (Get) m
                 .get (getTable (), uuid, "*")
-                .toOne (VotingProtocol.class, "AS ctr", "id_ctr_status").on ()
+                .toOne (VotingProtocol.class, "AS ctr", VotingProtocol.c.ID_PRTCL_STATUS.lc () + " AS id_ctr_status").on ()
                 .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("ctr.uuid_org=org.uuid")
             ;
             
