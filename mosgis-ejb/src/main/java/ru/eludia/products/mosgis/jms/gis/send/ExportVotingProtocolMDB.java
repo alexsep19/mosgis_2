@@ -13,6 +13,7 @@ import javax.jms.Queue;
 import ru.eludia.base.DB;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Get;
+import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
@@ -147,6 +148,11 @@ public class ExportVotingProtocolMDB extends GisExportMDB<VotingProtocolLog> {
     @Override
     protected Table getFileLogTable () {
         return ModelHolder.getModel ().get (VotingProtocolFileLog.class);
+    }
+
+    @Override
+    protected Col getStatusCol () {
+        return VotingProtocol.c.ID_PRTCL_STATUS.getCol ();
     }
 
 }

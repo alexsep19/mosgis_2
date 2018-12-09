@@ -103,8 +103,8 @@ public class GisPollExportVotingProtocolMDB  extends GisPollMDB {
         final byte id = status.getId ();
         
         return HASH (
-            c.ID_CTR_STATUS,     id,
-            c.ID_CTR_STATUS_GIS, id
+            c.ID_PRTCL_STATUS,     id,
+            c.ID_PRTCL_STATUS_GIS, id
         );
         
     }

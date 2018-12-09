@@ -24,8 +24,8 @@ public class VotingProtocol extends EnTable {
 
         UUID_ORG             (VocOrganization.class,         "Организация"),
         FIASHOUSEGUID        (VocBuilding.class,             "Дом"),
-        ID_CTR_STATUS        (VocGisStatus.class,      VocGisStatus.DEFAULT, "Статус протокола с точки зрения mosgis"),
-        ID_CTR_STATUS_GIS    (VocGisStatus.class,      VocGisStatus.DEFAULT, "Статус протокола с точки зрения ГИС ЖКХ"),        
+        ID_PRTCL_STATUS      (VocGisStatus.class,      VocGisStatus.DEFAULT, "Статус протокола с точки зрения mosgis"),
+        ID_PRTCL_STATUS_GIS  (VocGisStatus.class,      VocGisStatus.DEFAULT, "Статус протокола с точки зрения ГИС ЖКХ"),        
 
         FORM_                (VocVotingForm.class,        "Форма проведения"),
 

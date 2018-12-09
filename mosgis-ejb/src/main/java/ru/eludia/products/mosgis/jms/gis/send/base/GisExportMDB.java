@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.jms.Queue;
 import ru.eludia.base.DB;
+import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Table;
 import static ru.eludia.base.model.def.Def.NOW;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
@@ -24,6 +25,11 @@ public abstract class GisExportMDB <LT extends Table> extends UUIDMDB<LT> {
 
     protected abstract Queue getFilesQueue ();
     protected abstract Table getFileLogTable ();
+    protected abstract Col   getStatusCol ();
+    
+    private String getStatusColName () {
+        return getStatusCol ().getName ();
+    }
     
     protected final Table getEnTable () {
         final String name = getTable ().getName ();
@@ -45,7 +51,7 @@ public abstract class GisExportMDB <LT extends Table> extends UUIDMDB<LT> {
             db.update (getEnTable (), DB.HASH (
                 "uuid",          r.get ("uuid_object"),
                 "uuid_out_soap", r.get ("uuid"),
-                "id_ctr_status", nextStatus.getId ()
+                getStatusColName (), nextStatus.getId ()
             ));
         
         db.commit ();
@@ -68,7 +74,7 @@ public abstract class GisExportMDB <LT extends Table> extends UUIDMDB<LT> {
             db.update (getEnTable (), DB.HASH (
                 "uuid",              r.get ("uuid_object"),
                 "uuid_out_soap",     uuid,
-                "id_ctr_status",     failStatus.getId ()
+                getStatusColName (), failStatus.getId ()
             ));
         
         db.commit ();
@@ -90,7 +96,7 @@ public abstract class GisExportMDB <LT extends Table> extends UUIDMDB<LT> {
             db.update (getEnTable (), DB.HASH (
                 "uuid",              r.get ("uuid_object"),
                 "uuid_out_soap",     uuid,
-                "id_ctr_status",     status.getId ()
+                getStatusColName (), status.getId ()
             ));
         
         db.commit ();

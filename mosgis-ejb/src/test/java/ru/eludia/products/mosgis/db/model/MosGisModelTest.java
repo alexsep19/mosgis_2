@@ -30,7 +30,7 @@ public class MosGisModelTest {
 
     @Test
     public void testMethod () throws SQLException {
-//        m.update ();
+        m.update ();
     }
     
 }
