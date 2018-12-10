@@ -85,8 +85,8 @@ public class VoteDecisionLists extends EJBResource<VoteDecisionListsLocal> {
         JsonObject protocol = back.getProtocol (item.getJsonObject ("data").getString ("uuid_protocol"));
         if (!protocol.containsKey("protocol") || !(protocol.getJsonObject ("protocol").getInt ("gis_status") == 10 || protocol.getJsonObject ("protocol").getInt ("gis_status") == 11)) return false;
         
-        JsonObject cach = back.getCach(protocol.getString ("fiashouseguid"));
-        JsonObject oktmo = back.getOktmo(protocol.getString ("fiashouseguid"));
+        JsonObject cach = back.getCach(protocol.getJsonObject ("protocol").getString ("fiashouseguid"));
+        JsonObject oktmo = back.getOktmo(protocol.getJsonObject ("protocol").getString ("fiashouseguid"));
         
         if (securityContext.isUserInRole("admin")) return true;
 

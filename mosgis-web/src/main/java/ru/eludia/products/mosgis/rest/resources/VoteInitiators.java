@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.rest.resources;
 
+import java.util.logging.Level;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Path;
@@ -85,8 +86,8 @@ public class VoteInitiators extends EJBResource<VoteInitiatorsLocal> {
         JsonObject protocol = back.getProtocol (item.getJsonObject ("data").getString ("uuid_protocol"));
         if (!protocol.containsKey("protocol") || !(protocol.getJsonObject ("protocol").getInt ("gis_status") == 10 || protocol.getJsonObject ("protocol").getInt ("gis_status") == 11)) return false;
         
-        JsonObject cach = back.getCach(protocol.getString ("fiashouseguid"));
-        JsonObject oktmo = back.getOktmo(protocol.getString ("fiashouseguid"));
+        JsonObject cach = back.getCach(protocol.getJsonObject ("protocol").getString ("fiashouseguid"));
+        JsonObject oktmo = back.getOktmo(protocol.getJsonObject ("protocol").getString ("fiashouseguid"));
         
         if (securityContext.isUserInRole("admin")) return true;
 
