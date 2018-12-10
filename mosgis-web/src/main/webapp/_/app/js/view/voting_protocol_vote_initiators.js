@@ -8,9 +8,21 @@ define ([], function () {
     
     return function (data, view) {
 
-        function show () {
-            if (data.item.house_uuid && (data.item.id_prtcl_status == 10 || data.item.id_prtcl_status == 11))
-                return true
+        function Permissions () {
+
+            if (!data.item.is_deleted && data.item.house_uuid && (data.item.id_prtcl_status_gis == 10 || data.item.id_prtcl_status_gis == 11)) {
+                if ($_USER.role.admin) return true
+                    if (data.cach && data.cach.is_own) {
+                        if ($_USER.role.nsi_20_1 ||
+                            $_USER.role.nsi_20_19 ||
+                            $_USER.role.nsi_20_20 ||
+                            $_USER.role.nsi_20_21 ||
+                            $_USER.role.nsi_20_22)
+                            return true
+                    }
+                    else if ($_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']])
+                        return true
+            }
             return false
         }
 
@@ -27,12 +39,12 @@ define ([], function () {
                                      caption: 'Собственник', 
                                      icon: 'w2ui-icon-plus', 
                                      onClick: $_DO.create_owner_voting_protocol_vote_initiators, 
-                                     off: !show ()},
+                                     off: !Permissions ()},
                     {type: 'button', id: 'create_org', 
                                      caption: 'Юридическое лицо', 
                                      icon: 'w2ui-icon-plus', 
                                      onClick: $_DO.create_org_voting_protocol_vote_initiators, 
-                                     off: !show ()},
+                                     off: !Permissions ()},
                 ].filter (not_off),
                 
             },
@@ -45,7 +57,7 @@ define ([], function () {
                 toolbar: true,
                 footer: true,
                 toolbarColumns: true,
-                toolbarDelete: show (),
+                toolbarDelete: Permissions (),
             },            
 
             textSearch: 'contains',

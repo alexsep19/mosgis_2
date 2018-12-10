@@ -8,9 +8,21 @@ define ([], function () {
     
     return function (data, view) {
 
-        function show () {
-            if (data.item.house_uuid && (data.item.id_prtcl_status == 10 || data.item.id_prtcl_status == 11))
-                return true
+        function Permissions () {
+
+            if (!data.item.is_deleted && data.item.house_uuid && (data.item.id_prtcl_status_gis == 10 || data.item.id_prtcl_status_gis == 11)) {
+                if ($_USER.role.admin) return true
+                    if (data.cach && data.cach.is_own) {
+                        if ($_USER.role.nsi_20_1 ||
+                            $_USER.role.nsi_20_19 ||
+                            $_USER.role.nsi_20_20 ||
+                            $_USER.role.nsi_20_21 ||
+                            $_USER.role.nsi_20_22)
+                            return true
+                    }
+                    else if ($_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']])
+                        return true
+            }
             return false
         }
 
@@ -28,8 +40,8 @@ define ([], function () {
                 toolbar: true,
                 footer: true,
                 toolbarColumns: true,
-                toolbarAdd: show (),
-                toolbarDelete: show (),
+                toolbarAdd: Permissions (),
+                toolbarDelete: Permissions (),
             },            
 
             textSearch: 'contains',
