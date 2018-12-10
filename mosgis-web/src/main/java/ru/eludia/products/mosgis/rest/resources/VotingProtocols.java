@@ -1,8 +1,6 @@
 package ru.eludia.products.mosgis.rest.resources;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -12,21 +10,12 @@ import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import javax.ws.rs.core.SecurityContext;
 import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.rest.misc.EJBResource;
 import ru.eludia.products.mosgis.rest.api.VotingProtocolsLocal;
-import ru.eludia.products.mosgis.rest.misc.SecurityCtx;
 
 @Path("voting_protocols")
 public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
-
-    private JsonObject getInnerItem (String id) {
-        final JsonObject data = back.getItem (id);        
-        final JsonObject item = data.getJsonObject ("item");
-        if (item == null) throw new InternalServerErrorException ("Wrong data from back.getItem (" + id + "), no item: " + data);
-        return item;
-    }
     
     private String getUserOrg () {
 
@@ -71,12 +60,16 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
         
         if (securityContext.isUserInRole ("admin")) return true;
         
+        String itemOrg = item.getJsonObject ("item").getString ("uuid_org");
+        String userOrg = getUserOrg ();
         if (securityContext.isUserInRole ("nsi_20_1") ||
             securityContext.isUserInRole ("nsi_20_19") ||
             securityContext.isUserInRole ("nsi_20_20") ||
             securityContext.isUserInRole ("nsi_20_21") ||
             securityContext.isUserInRole ("nsi_20_22") && 
-            item.containsKey ("cach") && "1".equals (item.getJsonObject ("cach").get ("is_own").toString ()))
+            userOrg.equals (itemOrg) &&
+            item.containsKey ("cach") && 
+            "1".equals (item.getJsonObject ("cach").get ("is_own").toString ()))
             return true;
         
         if (securityContext.isUserInRole("nsi_20_8")) {
@@ -132,21 +125,6 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
         
         if (!newAccessCheck (item)) throw new ValidationException ("foo", "Доступ запрещен");
         
-    }
-    
-    private void checkOrg (JsonObject item) {
-
-        String itemOrg = item.getString ("uuid_org", null);
-
-        if (itemOrg == null) throw new InternalServerErrorException ("Wrong voting protocol, no org: " + item);
-
-        String userOrg = getUserOrg ();
-
-        if (!userOrg.equals (itemOrg)) {
-            logger.warning ("Org mismatch: " + userOrg + " vs. " + itemOrg);
-            throw new ValidationException ("foo", "Доступ запрещён");
-        }
-
     }
     
     @POST
