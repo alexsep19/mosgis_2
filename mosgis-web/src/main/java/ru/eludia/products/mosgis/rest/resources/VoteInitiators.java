@@ -133,7 +133,7 @@ public class VoteInitiators extends EJBResource<VoteInitiatorsLocal> {
     @Path("create") 
     @Produces (APPLICATION_JSON)
     public JsonObject doCreate (JsonObject p) {
-        getUserOrg ();
+        checkNew (p);
         return back.doCreate (p, getUser ());
     }
 
