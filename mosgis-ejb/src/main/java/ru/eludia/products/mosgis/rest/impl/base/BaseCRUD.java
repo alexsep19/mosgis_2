@@ -5,7 +5,9 @@ import java.sql.SQLException;
 import java.util.Map;
 import javax.ejb.EJB;
 import javax.jms.Queue;
+import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
@@ -15,6 +17,7 @@ import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
+import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
@@ -165,6 +168,23 @@ public abstract class BaseCRUD <T extends Table> extends Base<T> implements CRUD
         
         logAction (db, user, id, VocAction.i.UNDELETE);
 
+    });}
+    
+    @Override
+    public JsonObject getCach (String fiashouseguid) {return fetchData ((db, job) -> {
+        
+        VocBuilding.addCaCh(db, job, fiashouseguid);
+        
+    });}
+    
+    @Override
+    public JsonObject getOktmo (String fiashouseguid) {return fetchData ((db, job) -> {
+        
+        JsonObject oktmo = db.getJsonObject(ModelHolder.getModel ()
+                .get(VocBuilding.class, fiashouseguid, "oktmo")
+        );
+        job.add ("oktmo", oktmo);
+        
     });}
 
 }

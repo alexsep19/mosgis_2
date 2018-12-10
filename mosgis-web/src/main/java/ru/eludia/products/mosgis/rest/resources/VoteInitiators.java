@@ -4,7 +4,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Path;
 import javax.json.JsonObject;
-import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -15,12 +14,6 @@ import ru.eludia.products.mosgis.rest.misc.EJBResource;
 @Path("vote_initiators")
 public class VoteInitiators extends EJBResource<VoteInitiatorsLocal> {
 
-    private JsonObject getData (String id) {
-        final JsonObject data = back.getItem (id);        
-        if (data == null) throw new InternalServerErrorException ("Wrong data from back.getItem (" + id + "), no item: " + data);
-        return data;
-    }
-    
     private String getUserOrg () {
 
         String userOrg = getUser ().getUuidOrg ();
@@ -34,20 +27,95 @@ public class VoteInitiators extends EJBResource<VoteInitiatorsLocal> {
         
     }
     
-    private void checkOrg (JsonObject data) {
+    private boolean getAccessCheck (JsonObject item) {
         
-        if (securityContext.isUserInRole ("admin")) return;
+        if (securityContext.isUserInRole ("admin") ||
+            securityContext.isUserInRole ("nsi_20_4") ||
+            securityContext.isUserInRole ("nsi_20_7"))
+            return true;
         
-        if (!(
-            securityContext.isUserInRole ("nsi_20_1")
-            || securityContext.isUserInRole ("nsi_20_19")
-            || securityContext.isUserInRole ("nsi_20_20")
-            || securityContext.isUserInRole ("nsi_20_21")
-            || securityContext.isUserInRole ("nsi_20_22")
-        )) throw new ValidationException ("foo", "Доступ запрещён");
+        String itemOrg = item.getJsonObject ("item").getString ("uuid_org");
+        String userOrg = getUserOrg ();
+        if ((securityContext.isUserInRole ("nsi_20_1")  ||
+             securityContext.isUserInRole ("nsi_20_19") ||
+             securityContext.isUserInRole ("nsi_20_20") ||
+             securityContext.isUserInRole ("nsi_20_21") || 
+             securityContext.isUserInRole ("nsi_20_22")) && userOrg.equals (itemOrg))
+            return true;
         
-        if (!data.containsKey ("cach")) throw new ValidationException ("foo", "Ваша организация не управляет домом по этому адресу. Доступ запрещён.");
+        if (securityContext.isUserInRole("nsi_20_8")) {
+            String itemOktmo = item.getJsonObject ("item").get ("oktmo").toString ();
+            if (securityContext.isUserInRole("oktmo_" + itemOktmo)) return true;
+        }
+        
+        return false;
+    }
+    
+    private boolean modAccessCheck (JsonObject item) {
+        
+        if ("1".equals (item.getJsonObject ("item").get ("is_deleted").toString ())) return false;
+        
+        if (securityContext.isUserInRole ("admin")) return true;
+        
+        String itemOrg = item.getJsonObject ("item").getString ("uuid_org");
+        String userOrg = getUserOrg ();
+        if (securityContext.isUserInRole ("nsi_20_1") ||
+            securityContext.isUserInRole ("nsi_20_19") ||
+            securityContext.isUserInRole ("nsi_20_20") ||
+            securityContext.isUserInRole ("nsi_20_21") ||
+            securityContext.isUserInRole ("nsi_20_22") && 
+            userOrg.equals (itemOrg) &&
+            item.containsKey ("cach") && 
+            "1".equals (item.getJsonObject ("cach").get ("is_own").toString ()))
+            return true;
+        
+        if (securityContext.isUserInRole("nsi_20_8")) {
+            String itemOktmo = item.getJsonObject ("item").get ("oktmo").toString ();
+            if (securityContext.isUserInRole("oktmo_" + itemOktmo)) return true;
+        }
+        
+        return false;
+    }
+    
+    private boolean newAccessCheck (JsonObject item) {
 
+        JsonObject cach = back.getCach(item.getJsonObject ("data").getString ("fiashouseguid"));
+        JsonObject oktmo = back.getOktmo(item.getJsonObject ("data").getString ("fiashouseguid"));
+
+        if (securityContext.isUserInRole("admin")) return true;
+
+        if (securityContext.isUserInRole ("nsi_20_1") ||
+            securityContext.isUserInRole ("nsi_20_19") ||
+            securityContext.isUserInRole ("nsi_20_20") ||
+            securityContext.isUserInRole ("nsi_20_21") ||
+            securityContext.isUserInRole ("nsi_20_22") && 
+                cach.containsKey ("cach") && 
+                "1".equals (cach.getJsonObject ("cach").getString ("is_own")))
+            return true;
+
+        if (securityContext.isUserInRole ("nsi_20_8") && securityContext.isUserInRole("oktmo_" + oktmo.getString ("oktmo")))
+            return true;
+
+        return false;
+        
+    }
+    
+    private void checkGet (JsonObject item) {
+        
+        if (!getAccessCheck (item)) throw new ValidationException ("foo", "Доступ запрещен");
+        
+    }
+    
+    private void checkMod (JsonObject item) {
+        
+        if (!modAccessCheck (item)) throw new ValidationException ("foo", "Доступ запрещен");
+        
+    }
+    
+    private void checkNew (JsonObject item) {
+        
+        if (!newAccessCheck (item)) throw new ValidationException ("foo", "Доступ запрещен");
+        
     }
     
     @POST
@@ -77,8 +145,8 @@ public class VoteInitiators extends EJBResource<VoteInitiatorsLocal> {
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject doUpdate (@PathParam ("id") String id, JsonObject p) {
-        final JsonObject data = getData (id);
-        checkOrg (data);
+        final JsonObject item = back.getItem (id);
+        checkMod (item);
         return back.doUpdate (id, p, getUser ());
     }
     
@@ -86,8 +154,8 @@ public class VoteInitiators extends EJBResource<VoteInitiatorsLocal> {
     @Path("{id}/delete") 
     @Produces (APPLICATION_JSON)
     public JsonObject doDelete (@PathParam ("id") String id) { 
-        final JsonObject data = getData (id);
-        checkOrg (data);
+        final JsonObject item = back.getItem (id);
+        checkMod (item);
         return back.doDelete (id, getUser ());
     }
     
@@ -95,8 +163,8 @@ public class VoteInitiators extends EJBResource<VoteInitiatorsLocal> {
     @Path("{id}/undelete") 
     @Produces (APPLICATION_JSON)
     public JsonObject doUndelete (@PathParam ("id") String id) { 
-        final JsonObject data = getData (id);
-        checkOrg (data);
+        final JsonObject item = back.getItem (id);
+        checkMod (item);
         return back.doUndelete (id, getUser ());
     }
         
@@ -104,9 +172,9 @@ public class VoteInitiators extends EJBResource<VoteInitiatorsLocal> {
     @Path("{id}") 
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) { 
-        final JsonObject data = back.getItem (id);
-        if (!securityContext.isUserInRole ("admin")) checkOrg (data);
-        return data;
+        final JsonObject item = back.getItem (id);
+        checkGet (item);
+        return item;
     }
     
     @POST
@@ -114,8 +182,8 @@ public class VoteInitiators extends EJBResource<VoteInitiatorsLocal> {
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
-        final JsonObject data = back.getItem (id);
-        if (!securityContext.isUserInRole ("admin")) checkOrg (data);
+        final JsonObject item = back.getItem (id);
+        checkGet (item);
         return back.getLog (id, p, getUser ());
     }
 }

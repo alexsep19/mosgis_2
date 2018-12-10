@@ -1,12 +1,10 @@
 package ru.eludia.products.mosgis.rest.resources;
 
-import java.sql.SQLException;
 import java.util.logging.Level;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Path;
 import javax.json.JsonObject;
-import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -81,31 +79,25 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
     }
     
     private boolean newAccessCheck (JsonObject item) {
-        
-        try {
-            
-            JsonObject cachAndOktmo = back.getCachAndOktmo(item.getJsonObject ("data").getString ("fiashouseguid"));
-        
-            if (securityContext.isUserInRole("admin")) return true;
 
-            if (securityContext.isUserInRole ("nsi_20_1") ||
-                securityContext.isUserInRole ("nsi_20_19") ||
-                securityContext.isUserInRole ("nsi_20_20") ||
-                securityContext.isUserInRole ("nsi_20_21") ||
-                securityContext.isUserInRole ("nsi_20_22") && 
-                    cachAndOktmo.containsKey ("cach") && 
-                    "1".equals (cachAndOktmo.getJsonObject ("cach").getString ("is_own")))
-                return true;
-            
-            if (securityContext.isUserInRole ("nsi_20_8") && securityContext.isUserInRole("oktmo_" + cachAndOktmo.getString ("oktmo")))
-                return true;
+        JsonObject cach = back.getCach (item.getJsonObject ("data").getString ("fiashouseguid"));
+        JsonObject oktmo = back.getOktmo (item.getJsonObject ("data").getString ("fiashouseguid"));
 
-            return false;
-        
-        }
-        catch (SQLException ex) {
-            throw new InternalServerErrorException ("DB error");
-        }
+        if (securityContext.isUserInRole("admin")) return true;
+
+        if (securityContext.isUserInRole ("nsi_20_1") ||
+            securityContext.isUserInRole ("nsi_20_19") ||
+            securityContext.isUserInRole ("nsi_20_20") ||
+            securityContext.isUserInRole ("nsi_20_21") ||
+            securityContext.isUserInRole ("nsi_20_22") && 
+                cach.containsKey ("cach") && 
+                "1".equals (cach.getJsonObject ("cach").getString ("is_own")))
+            return true;
+
+        if (securityContext.isUserInRole ("nsi_20_8") && securityContext.isUserInRole("oktmo_" + oktmo.getString ("oktmo")))
+            return true;
+
+        return false;
         
     }
     

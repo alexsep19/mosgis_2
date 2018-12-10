@@ -1,6 +1,5 @@
 package ru.eludia.products.mosgis.rest.impl;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -17,7 +16,6 @@ import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
-import ru.eludia.products.mosgis.db.model.tables.Owner;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.tables.PropertyDocument;
 import ru.eludia.products.mosgis.db.model.tables.VoteInitiator;
@@ -26,11 +24,8 @@ import ru.eludia.products.mosgis.db.model.tables.VotingProtocolLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
-import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
-import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
-import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTerritory;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.voc.VocVotingForm;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -188,21 +183,4 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
 
     });}
     
-    @Override
-    public JsonObject getCachAndOktmo (String fiashouseguid) throws SQLException {
-        
-        DB db = ModelHolder.getModel ().getDb ();
-        JsonObjectBuilder job = Json.createObjectBuilder ();
-        
-        VocBuilding.addCaCh(db, job, fiashouseguid);
-        
-        JsonObject oktmo = db.getJsonObject(ModelHolder.getModel ()
-                .get(VocBuilding.class, fiashouseguid, "oktmo")
-        );
-        
-        job.add ("oktmo", oktmo);
-        
-        return job.build ();
-        
-    }
 }
