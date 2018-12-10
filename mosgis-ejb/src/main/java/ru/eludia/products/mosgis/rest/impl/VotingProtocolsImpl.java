@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -186,4 +187,22 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
         logAction (db, user, insertId, VocAction.i.CREATE);
 
     });}
+    
+    @Override
+    public JsonObject getCachAndOktmo (String fiashouseguid) throws SQLException {
+        
+        DB db = ModelHolder.getModel ().getDb ();
+        JsonObjectBuilder job = Json.createObjectBuilder ();
+        
+        VocBuilding.addCaCh(db, job, fiashouseguid);
+        
+        JsonObject oktmo = db.getJsonObject(ModelHolder.getModel ()
+                .get(VocBuilding.class, fiashouseguid, "oktmo")
+        );
+        
+        job.add ("oktmo", oktmo);
+        
+        return job.build ();
+        
+    }
 }

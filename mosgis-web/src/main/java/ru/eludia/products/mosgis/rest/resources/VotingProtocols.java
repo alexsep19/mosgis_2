@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.rest.resources;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -64,9 +65,72 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
         return false;
     }
     
+    private boolean modAccessCheck (JsonObject item) {
+        
+        if ("1".equals (item.getJsonObject ("item").get ("is_deleted").toString ())) return false;
+        
+        if (securityContext.isUserInRole ("admin")) return true;
+        
+        if (securityContext.isUserInRole ("nsi_20_1") ||
+            securityContext.isUserInRole ("nsi_20_19") ||
+            securityContext.isUserInRole ("nsi_20_20") ||
+            securityContext.isUserInRole ("nsi_20_21") ||
+            securityContext.isUserInRole ("nsi_20_22") && 
+            item.containsKey ("cach") && "1".equals (item.getJsonObject ("cach").get ("is_own").toString ()))
+            return true;
+        
+        if (securityContext.isUserInRole("nsi_20_8")) {
+            String itemOktmo = item.getJsonObject ("item").get ("oktmo").toString ();
+            if (securityContext.isUserInRole("oktmo_" + itemOktmo)) return true;
+        }
+        
+        return false;
+    }
+    
+    private boolean newAccessCheck (JsonObject item) {
+        
+        try {
+            
+            JsonObject cachAndOktmo = back.getCachAndOktmo(item.getJsonObject ("data").getString ("fiashouseguid"));
+        
+            if (securityContext.isUserInRole("admin")) return true;
+
+            if (securityContext.isUserInRole ("nsi_20_1") ||
+                securityContext.isUserInRole ("nsi_20_19") ||
+                securityContext.isUserInRole ("nsi_20_20") ||
+                securityContext.isUserInRole ("nsi_20_21") ||
+                securityContext.isUserInRole ("nsi_20_22") && 
+                    cachAndOktmo.containsKey ("cach") && 
+                    "1".equals (cachAndOktmo.getJsonObject ("cach").getString ("is_own")))
+                return true;
+            
+            if (securityContext.isUserInRole ("nsi_20_8") && securityContext.isUserInRole("oktmo_" + cachAndOktmo.getString ("oktmo")))
+                return true;
+
+            return false;
+        
+        }
+        catch (SQLException ex) {
+            throw new InternalServerErrorException ("DB error");
+        }
+        
+    }
+    
     private void checkGet (JsonObject item) {
         
         if (!getAccessCheck (item)) throw new ValidationException ("foo", "Доступ запрещен");
+        
+    }
+    
+    private void checkMod (JsonObject item) {
+        
+        if (!modAccessCheck (item)) throw new ValidationException ("foo", "Доступ запрещен");
+        
+    }
+    
+    private void checkNew (JsonObject item) {
+        
+        if (!newAccessCheck (item)) throw new ValidationException ("foo", "Доступ запрещен");
         
     }
     
@@ -103,7 +167,7 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
     @Path("create") 
     @Produces (APPLICATION_JSON)
     public JsonObject doCreate (JsonObject p) {
-        getUserOrg ();
+        checkNew (p);
         return back.doCreate (p, getUser ());
     }
 
@@ -112,8 +176,8 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject doUpdate (@PathParam ("id") String id, JsonObject p) {
-        final JsonObject item = getInnerItem (id);
-        checkOrg (item);
+        final JsonObject item = back.getItem (id);
+        checkMod (item);
         return back.doUpdate (id, p, getUser ());
     }
     
@@ -121,8 +185,8 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
     @Path("{id}/delete") 
     @Produces (APPLICATION_JSON)
     public JsonObject doDelete (@PathParam ("id") String id) { 
-        final JsonObject item = getInnerItem (id);
-        checkOrg (item);
+        final JsonObject item = back.getItem (id);
+        checkMod (item);
         return back.doDelete (id, getUser ());
     }
     
@@ -130,8 +194,8 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
     @Path("{id}/undelete") 
     @Produces (APPLICATION_JSON)
     public JsonObject doUndelete (@PathParam ("id") String id) { 
-        final JsonObject item = getInnerItem (id);
-        checkOrg (item);
+        final JsonObject item = back.getItem (id);
+        checkMod (item);
         return back.doUndelete (id, getUser ());
     }
         
