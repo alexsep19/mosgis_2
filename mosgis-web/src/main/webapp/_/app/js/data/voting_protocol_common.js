@@ -121,10 +121,9 @@ define ([], function () {
         data.__read_only = 1
 
         if ($_USER.role.admin) data.item.org_label = data.item ['vc_orgs.label']
-
-        permissions = 0
         
         var it = data.item
+        it.err_text = it ['out_soap.err_text']        
         
         it._can = {cancel: 1}
 
