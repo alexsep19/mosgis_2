@@ -94,10 +94,7 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
                 "1".equals (cach.getJsonObject ("cach").getString ("is_own")))
             return true;
 
-        if (securityContext.isUserInRole ("nsi_20_8") && securityContext.isUserInRole("oktmo_" + oktmo.getString ("oktmo")))
-            return true;
-
-        return false;
+        return securityContext.isUserInRole ("nsi_20_8") && securityContext.isUserInRole("oktmo_" + oktmo.getString ("oktmo"));
         
     }
     

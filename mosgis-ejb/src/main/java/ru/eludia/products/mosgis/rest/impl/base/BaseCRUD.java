@@ -183,7 +183,8 @@ public abstract class BaseCRUD <T extends Table> extends Base<T> implements CRUD
         JsonObject oktmo = db.getJsonObject(ModelHolder.getModel ()
                 .get(VocBuilding.class, fiashouseguid, "oktmo")
         );
-        job.add ("oktmo", oktmo);
+        
+        if (oktmo != null) job.add ("oktmo", oktmo);
         
     });}
 
