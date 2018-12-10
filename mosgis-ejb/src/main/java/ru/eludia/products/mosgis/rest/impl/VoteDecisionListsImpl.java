@@ -125,4 +125,15 @@ public class VoteDecisionListsImpl extends BaseCRUD<VoteDecisionList> implements
 
         return jb.build ();
     }
+
+    @Override
+    public JsonObject getProtocolStatus (String id) {return fetchData ((db, job) -> {
+        
+        JsonObject status = db.getJsonObject(ModelHolder.getModel ()
+            .get (VotingProtocol.class, id, "id_prtcl_status_gis")
+        );
+        
+        if (status != null) job.add ("status", status);
+        
+    });}
 }

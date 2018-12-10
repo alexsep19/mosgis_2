@@ -54,6 +54,9 @@ public class VoteDecisionLists extends EJBResource<VoteDecisionListsLocal> {
     private boolean modAccessCheck (JsonObject item) {
         
         if ("1".equals (item.getJsonObject ("item").get ("is_deleted").toString ())) return false;
+
+        JsonObject protocolStatus = back.getProtocolStatus (item.getJsonObject ("item").getString ("uuid_protocol"));
+        if (!protocolStatus.containsKey("status") || !(protocolStatus.getInt ("status") == 10 || protocolStatus.getInt ("status") == 11)) return false;
         
         if (securityContext.isUserInRole ("admin")) return true;
         
@@ -81,7 +84,10 @@ public class VoteDecisionLists extends EJBResource<VoteDecisionListsLocal> {
 
         JsonObject cach = back.getCach(item.getJsonObject ("data").getString ("fiashouseguid"));
         JsonObject oktmo = back.getOktmo(item.getJsonObject ("data").getString ("fiashouseguid"));
-
+        
+        JsonObject protocolStatus = back.getProtocolStatus (item.getJsonObject ("item").getString ("uuid_protocol"));
+        if (!protocolStatus.containsKey("status") || !(protocolStatus.getInt ("status") == 10 || protocolStatus.getInt ("status") == 11)) return false;
+        
         if (securityContext.isUserInRole("admin")) return true;
 
         if (securityContext.isUserInRole ("nsi_20_1") ||
