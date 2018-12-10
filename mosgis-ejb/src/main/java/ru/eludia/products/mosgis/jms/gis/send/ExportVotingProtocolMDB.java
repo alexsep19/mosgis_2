@@ -56,8 +56,8 @@ public class ExportVotingProtocolMDB extends GisExportMDB<VotingProtocolLog> {
                         
             return (Get) m
                 .get (getTable (), uuid, "*")
-                .toOne (VotingProtocol.class, "AS ctr", VotingProtocol.c.ID_PRTCL_STATUS.lc () + " AS id_ctr_status").on ()
-                .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("ctr.uuid_org=org.uuid")
+                .toOne (getEnTable (), "AS vp", VotingProtocol.c.ID_PRTCL_STATUS.lc ()).on ()
+                .toOne (VocOrganization.class, "AS org", "orgppaguid").on ()
             ;
             
         }
@@ -81,7 +81,7 @@ public class ExportVotingProtocolMDB extends GisExportMDB<VotingProtocolLog> {
     @Override
     protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
         
-        VocGisStatus.i status = VocGisStatus.i.forId (r.get ("ctr.id_ctr_status"));        
+        VocGisStatus.i status = VocGisStatus.i.forId (r.get ("vp." + VotingProtocol.c.ID_PRTCL_STATUS.lc ()));
         VotingProtocol.Action action = VotingProtocol.Action.forStatus (status);        
         if (action == null) {
             logger.warning ("No action is implemented for " + status);
@@ -110,12 +110,12 @@ public class ExportVotingProtocolMDB extends GisExportMDB<VotingProtocolLog> {
         ));
         
         r.put ("decisions", db.getList (m
-            .select (VoteDecisionList.class, "*")
+            .select (VoteDecisionList.class, "AS root", "*")
             .where  (VoteDecisionList.c.PROTOCOL_UUID.lc (), uuidObject)
             .and    (EnTable.c.IS_DELETED.lc (), 0)
-            .toOne (NsiTable.getNsiTable (25),  "guid", "code").on ("(root." + VoteDecisionList.c.MANAGEMENTTYPE_VC_NSI_25.lc () + "=vc_nsi_25.code AND vc_nsi_25.isactual=1)")
-            .toOne (NsiTable.getNsiTable (63),  "guid", "code").on ("(root." + VoteDecisionList.c.DECISIONTYPE_VC_NSI_63.lc () + "=vc_nsi_63.code AND vc_nsi_63.isactual=1)")
-            .toOne (NsiTable.getNsiTable (241), "guid", "code").on ("(root." + VoteDecisionList.c.FORMINGFUND_VC_NSI_241.lc () + "=vc_nsi_241.code AND vc_nsi_241.isactual=1)")
+            .toMaybeOne (NsiTable.getNsiTable (25),  "guid", "code").on ("(root." + VoteDecisionList.c.MANAGEMENTTYPE_VC_NSI_25.lc () + "=vc_nsi_25.code AND vc_nsi_25.isactual=1)")
+            .toMaybeOne (NsiTable.getNsiTable (63),  "guid", "code").on ("(root." + VoteDecisionList.c.DECISIONTYPE_VC_NSI_63.lc () + "=vc_nsi_63.code AND vc_nsi_63.isactual=1)")
+            .toMaybeOne (NsiTable.getNsiTable (241), "guid", "code").on ("(root." + VoteDecisionList.c.FORMINGFUND_VC_NSI_241.lc () + "=vc_nsi_241.code AND vc_nsi_241.isactual=1)")
         ));
        
         try {            
