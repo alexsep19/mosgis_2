@@ -89,7 +89,7 @@ public class VoteDecisionListsImpl extends BaseCRUD<VoteDecisionList> implements
 
         JsonObject item = db.getJsonObject (ModelHolder.getModel ()
             .get (getTable (), id, "*")
-            .toOne (VotingProtocol.class, "AS protocol", "fiashouseguid", "protocoldate", "id_prtcl_status_gis").on ()
+            .toOne (VotingProtocol.class, "AS protocol", "fiashouseguid", "protocoldate", "id_prtcl_status", "id_prtcl_status_gis").on ()
         );
         
         job.add ("item", item);
