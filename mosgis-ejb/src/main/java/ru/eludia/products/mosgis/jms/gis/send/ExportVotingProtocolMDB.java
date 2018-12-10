@@ -56,8 +56,13 @@ public class ExportVotingProtocolMDB extends GisExportMDB<VotingProtocolLog> {
                         
             return (Get) m
                 .get (getTable (), uuid, "*")
-                .toOne (getEnTable (), "AS vp", VotingProtocol.c.ID_PRTCL_STATUS.lc ()).on ()
-                .toOne (VocOrganization.class, "AS org", "orgppaguid").on ()
+                .toOne (getEnTable (), "AS vp", 
+                    VotingProtocol.c.ID_PRTCL_STATUS.lc (), 
+                    VotingProtocol.c.FIASHOUSEGUID.lc () + " AS fiashouseguid"
+                ).on ()
+                .toOne (VocOrganization.class, "AS org", 
+                    "orgppaguid"
+                ).on ()
             ;
             
         }
