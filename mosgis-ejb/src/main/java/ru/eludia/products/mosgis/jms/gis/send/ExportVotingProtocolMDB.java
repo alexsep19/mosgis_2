@@ -117,6 +117,8 @@ public class ExportVotingProtocolMDB extends GisExportMDB<VotingProtocolLog> {
             .toMaybeOne (NsiTable.getNsiTable (63),  "guid", "code").on ("(root." + VoteDecisionList.c.DECISIONTYPE_VC_NSI_63.lc () + "=vc_nsi_63.code AND vc_nsi_63.isactual=1)")
             .toMaybeOne (NsiTable.getNsiTable (241), "guid", "code").on ("(root." + VoteDecisionList.c.FORMINGFUND_VC_NSI_241.lc () + "=vc_nsi_241.code AND vc_nsi_241.isactual=1)")
         ));
+        
+        logger.info ("r=" + DB.to.json (r));
        
         try {            
             AckRequest.Ack ack = invoke (db, action, uuid, r);

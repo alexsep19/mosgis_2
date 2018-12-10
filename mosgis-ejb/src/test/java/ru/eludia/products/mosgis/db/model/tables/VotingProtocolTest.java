@@ -4,8 +4,14 @@ import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonWriter;
+import javax.json.JsonWriterFactory;
+import javax.json.stream.JsonGenerator;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.validation.Schema;
@@ -15,6 +21,7 @@ import org.junit.Test;
 import org.junit.ClassRule;
 import org.junit.Test.None;
 import org.junit.rules.TestRule;
+import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.def.Def;
@@ -32,6 +39,7 @@ public class VotingProtocolTest {
     private static Schema schema;
     private static Table votingProtocolTable;
     private static Map<String, Object> commonPart;
+    private static JsonWriterFactory jwf;
         
     @ClassRule
     public static TestRule classRule = new TestRuleImpl ();
@@ -41,10 +49,14 @@ public class VotingProtocolTest {
     
     @BeforeClass
     public static void setUpClass () throws Exception {
-        
+                        
         m = new MosGisModel (new DataSourceImpl (getCn ()));
         jc = JAXBContext.newInstance (ImportVotingProtocolRequest.class);
         votingProtocolTable = m.get (VotingProtocol.class);
+        
+        Map<String, Boolean> config = new HashMap<> ();
+        config.put(JsonGenerator.PRETTY_PRINTING, true);
+        jwf = Json.createWriterFactory (config);        
         
         commonPart = HASH (    
                 
@@ -202,8 +214,10 @@ public class VotingProtocolTest {
         for (int k = 0; k < sampler.getCount (); k ++) {
             
             final Map<String, Object> r = sampler.cutOut (sample, k);
-            
-            dump (r);
+
+            try (JsonWriter jw = jwf.createWriter (System.out)) {
+                jw.writeObject ((JsonObject) DB.to.json (r));
+            }
             
             final ImportVotingProtocolRequest.Protocol p = VotingProtocol.toDom (r);
 
@@ -221,14 +235,6 @@ public class VotingProtocolTest {
         
     }   
         
-    private void dump (Map<String, Object> r) {
-        System.out.println ('{');
-        r.keySet ().stream ().sorted ().forEach ((k) -> {
-            System.out.println (" " + k + " = " + r.get (k));
-        });
-        System.out.println ('}');
-    }
-
     private void validate (final ImportVotingProtocolRequest rq) throws IllegalStateException {
                 
         StringWriter sw = new StringWriter ();

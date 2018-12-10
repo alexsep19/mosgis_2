@@ -56,7 +56,7 @@ public class NsiTable extends Table {
     }
 
     public static NsiRef toDom (String code, UUID uuid) {
-        if (code == null) return null;
+        if (!DB.ok (code)) return null;
         NsiRef nsiRef = new NsiRef ();
         nsiRef.setCode (code);
         nsiRef.setGUID (uuid.toString ());
