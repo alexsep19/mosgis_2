@@ -8,6 +8,9 @@ define ([], function () {
     
     return function (data, view) {
 
+        console.log (data)
+        console.log ($_USER)
+
         function Permissions () {
 
             if (!data.item.is_deleted && data.item.house_uuid && (data.item.id_prtcl_status_gis == 10 || data.item.id_prtcl_status_gis == 11)) {
@@ -89,7 +92,7 @@ define ([], function () {
                         openTab ('/voc_organization_legal/' + record['uuid_org'])
                     else
                         openTab ('/voc_organization_individual/' + record['uuid_org'])
-                else
+                else if ($_USER.uuid_org == data.item.uuid_org)
                     openTab ('/vc_person/' + record['prop.uuid_person_owner'])
             },
             
