@@ -10,8 +10,6 @@ define ([], function () {
         
         function Permissions () {
 
-            console.log ($_USER)
-
             if ($_USER.role.admin) return true
 
             if (data.cach && data.cach.is_own) {
