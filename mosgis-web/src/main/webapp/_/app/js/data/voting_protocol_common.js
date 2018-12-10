@@ -29,6 +29,11 @@ define ([], function () {
         $_F5 (data)
 
     }
+    
+    $_DO.approve_voting_protocol_common = function (e) {
+        if (!confirm ('Разместить эти данные в ГИС ЖКХ?')) return
+        query ({type: 'voting_protocols', action: 'approve'}, {}, reload_page)
+    }
 
     $_DO.update_voting_protocol_common = function (e) {
     
@@ -118,17 +123,23 @@ define ([], function () {
         if ($_USER.role.admin) data.item.org_label = data.item ['vc_orgs.label']
 
         permissions = 0
+        
+        var it = data.item
+        
+        it._can = {cancel: 1}
 
-        if (!data.item.is_deleted && data.cach && data.cach.is_own && data.cach.id_ctr_status_gis == 40) {
-            permissions = 1
-        }
-
-        data.item._can = $_USER.role.admin ? {} : 
-        {
-            edit: permissions,
-            update: 1,
-            cancel: 1,
-            delete: permissions,
+        if (!$_USER.role.admin && !it.is_deleted && data.cach && data.cach.is_own && data.cach.id_ctr_status_gis == 40) {
+        
+            switch (it.id_prtcl_status) {
+                case 10:
+                    it._can.approve = 1
+                case 11:
+                    it._can.edit = 1
+                    break
+            }
+            
+            it._can.update = it._can.edit
+        
         }
 
         done (data)

@@ -4,11 +4,9 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
-import javax.jms.Queue;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
@@ -40,13 +38,10 @@ public class GisPollExportVotingProtocolMDB  extends GisPollMDB {
     @EJB
     WsGisHouseManagementClient wsGisHouseManagementClient;
 
-    @Resource (mappedName = "mosgis.outExportHouseVotingProtocolsQueue")
-    Queue queue;
-
     @Override
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
-            .toOne (VotingProtocolLog.class,     "AS log", "uuid", "id_ctr_status", "action").on ("log.uuid_out_soap=root.uuid")
+            .toOne (VotingProtocolLog.class,     "AS log", "uuid", "action").on ("log.uuid_out_soap=root.uuid")
             .toOne (VotingProtocol.class,        "AS ctr", "uuid").on ()
             .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("ctr.uuid_org=org.uuid")
         ;
