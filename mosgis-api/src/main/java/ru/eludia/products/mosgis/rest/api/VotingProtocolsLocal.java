@@ -9,5 +9,6 @@ public interface VotingProtocolsLocal extends CRUDBackend {
     public JsonObject getVocs ();
 
     public JsonObject doApprove (String id, User user);
+    public JsonObject doAlter (String id, User user);
     
 }

@@ -244,4 +244,16 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
         
     }
 
+    @Override
+    public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
+        
+        db.update (getTable (), HASH (
+            EnTable.c.UUID,                    id,
+            VotingProtocol.c.ID_PRTCL_STATUS,  VocGisStatus.i.PROJECT.getId ()
+        ));
+        
+        logAction (db, user, id, VocAction.i.ALTER);
+        
+    });}
+
 }

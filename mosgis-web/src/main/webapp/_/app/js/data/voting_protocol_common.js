@@ -34,6 +34,11 @@ define ([], function () {
         if (!confirm ('Разместить эти данные в ГИС ЖКХ?')) return
         query ({type: 'voting_protocols', action: 'approve'}, {}, reload_page)
     }
+    
+    $_DO.alter_voting_protocol_common = function (e) {
+        if (!confirm ('Открыть эту карточку на редактирование?')) return
+        query ({type: 'voting_protocols', action: 'alter'}, {}, reload_page)
+    }
 
     $_DO.update_voting_protocol_common = function (e) {
     
@@ -134,6 +139,9 @@ define ([], function () {
                     it._can.approve = 1
                 case 11:
                     it._can.edit = 1
+                    break
+                case 14:
+                    it._can.alter = 1
                     break
             }
             
