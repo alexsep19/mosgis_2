@@ -37,7 +37,6 @@ public class Sessions extends EJBResource <SessionsLocal> {
             session.setAttribute ("user.label", user.getString ("label"));
             session.setAttribute ("user.uuid_org", user.getString ("uuid_org", null));
             session.setAttribute ("user.roles", user.getJsonObject ("role").keySet ().toArray ());
-            session.setAttribute ("user.oktmo", user.getJsonObject ("oktmo").keySet ().toArray ());
             
             return Json.createObjectBuilder ()
                 .add ("user", user)

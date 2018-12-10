@@ -119,7 +119,7 @@ define ([], function () {
                         $_USER.role.nsi_20_22)
                         return true
                 }
-                else if ($_USER.role.nsi_20_8 && $_USER.oktmo[data.item['fias.oktmo'])
+                else if ($_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']])
                     return true
             }
             return false

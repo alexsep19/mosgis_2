@@ -10,6 +10,8 @@ define ([], function () {
         
         function Permissions () {
 
+            console.log ($_USER)
+
             if ($_USER.role.admin) return true
 
             if (data.cach && data.cach.is_own) {
@@ -21,7 +23,7 @@ define ([], function () {
                     $_USER.role.nsi_20_22)
                     return true
             }
-            else if ($_USER.role.nsi_20_8 && $_USER.oktmo[data.item['fias.oktmo']])
+            else if ($_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']])
                 return true
             return false
         }
