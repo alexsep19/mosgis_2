@@ -60,7 +60,7 @@ public class VoteDecisionLists extends EJBResource<VoteDecisionListsLocal> {
         
         if (securityContext.isUserInRole ("admin")) return true;
         
-        String itemOrg = item.getJsonObject ("item").getString ("uuid_org");
+        String itemOrg = protocol.getJsonObject ("protocol").getString ("uuid_org");
         String userOrg = getUserOrg ();
         if (securityContext.isUserInRole ("nsi_20_1") ||
             securityContext.isUserInRole ("nsi_20_19") ||
