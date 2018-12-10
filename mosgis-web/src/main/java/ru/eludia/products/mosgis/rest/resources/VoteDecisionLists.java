@@ -82,7 +82,7 @@ public class VoteDecisionLists extends EJBResource<VoteDecisionListsLocal> {
     
     private boolean newAccessCheck (JsonObject item) {
 
-        JsonObject protocol = back.getProtocol (item.getJsonObject ("data").getString ("uuid_protocol"));
+        JsonObject protocol = back.getProtocol (item.getJsonObject ("data").getString ("protocol_uuid"));
         if (!protocol.containsKey("protocol") || !(protocol.getJsonObject ("protocol").getInt ("gis_status") == 10 || protocol.getJsonObject ("protocol").getInt ("gis_status") == 11)) return false;
         
         JsonObject cach = back.getCach(protocol.getJsonObject ("protocol").getString ("fiashouseguid"));
