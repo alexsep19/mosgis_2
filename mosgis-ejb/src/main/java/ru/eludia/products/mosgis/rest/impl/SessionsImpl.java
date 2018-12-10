@@ -42,25 +42,19 @@ public class SessionsImpl implements SessionsLocal {
             logger.info ("adding role: " + role);
             roles.add (role, 1);
         });
-            
-        return roles.build ();
-        
-    }
-    
-    private JsonObject getOktmo (final Object uuid_org, final DB db) throws SQLException {
-        
-        JsonObjectBuilder oktmo = Json.createObjectBuilder ();
         
         db.forEach (ModelHolder.getModel ()
                 .select (VocOrganizationTerritory.class)
-                .toOne  (VocOktmo.class, "code AS code").on ()
+                .toOne  (VocOktmo.class, "code").on ()
                 .where  ("uuid_org", uuid_org),
                 (rs) -> {
-                    oktmo.add (rs.getString(1), 1);
-                }
-        );
+                    final String oktmo = "oktmo_" + rs.getString(1);
+                    logger.info ("adding oktmo: " + oktmo);
+                    roles.add (oktmo, 1);
+        });
+            
+        return roles.build ();
         
-        return oktmo.build ();
     }
             
     @Override
@@ -84,7 +78,6 @@ public class SessionsImpl implements SessionsLocal {
                     jb.add ("id", user.get ("uuid").toString ());
                     jb.add ("label", user.get ("label").toString ());                                                            
                     jb.add ("role", getRoles (user.get ("uuid_org"), jb, db));
-                    jb.add ("oktmo", getOktmo (user.get ("uuid_org"), db));
 
                     return jb.build ();
 

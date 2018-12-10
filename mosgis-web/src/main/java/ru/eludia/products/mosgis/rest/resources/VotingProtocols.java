@@ -58,10 +58,7 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
         
         if (securityContext.isUserInRole("nsi_20_8")) {
             String itemOktmo = item.getJsonObject ("item").get ("oktmo").toString ();
-            Object [] oktmos = (Object []) httpServletRequest.getSession (false).getAttribute("user.oktmo");
-            for (int i = 0; i < oktmos.length; i++)
-                if (itemOktmo.equals (String.valueOf (oktmos[i])))
-                    return true;
+            if (securityContext.isUserInRole("oktmo_" + itemOktmo)) return true;
         }
         
         return false;

@@ -13,20 +13,14 @@ public class SecurityCtx implements SecurityContext {
     Object [] roles;
     Object [] oktmo;
 
-    public SecurityCtx (String id, String name, String uuid_org, Object [] roles, Object [] oktmo) {
+    public SecurityCtx (String id, String name, String uuid_org, Object [] roles) {
         user = new User (id, name, uuid_org);
         this.roles = roles;
-        this.oktmo = oktmo;
     }
 
     @Override
     public Principal getUserPrincipal () {
         return user;
-    }
-    
-    public boolean isOktmoIn (String oktmo) {
-        for (Object i: this.oktmo) if (oktmo.equals(i)) return true;
-        return false;
     }
 
     @Override

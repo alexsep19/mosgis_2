@@ -49,8 +49,7 @@ public class SecurityFilter implements ContainerRequestFilter {
                 (String)    session.getAttribute ("user.id"), 
                 (String)    session.getAttribute ("user.label"), 
                 (String)    session.getAttribute ("user.uuid_org"), 
-                (Object []) session.getAttribute ("user.roles"),
-                (Object []) session.getAttribute ("user.oktmo"))
+                (Object []) session.getAttribute ("user.roles"))
             );
             
         }
