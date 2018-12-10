@@ -6,6 +6,6 @@ import ru.eludia.products.mosgis.rest.api.base.CRUDBackend;
 public interface VoteDecisionListsLocal extends CRUDBackend {
     
     public JsonObject getVocs ();
-    public JsonObject getProtocolStatus (String id);
+    public JsonObject getProtocol (String id);
     
 }

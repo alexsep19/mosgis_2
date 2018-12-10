@@ -55,8 +55,8 @@ public class VoteInitiators extends EJBResource<VoteInitiatorsLocal> {
         
         if ("1".equals (item.getJsonObject ("item").get ("is_deleted").toString ())) return false;
 
-        JsonObject protocolStatus = back.getProtocolStatus (item.getJsonObject ("item").getString ("uuid_protocol"));
-        if (!protocolStatus.containsKey("status") || !(protocolStatus.getInt ("status") == 10 || protocolStatus.getInt ("status") == 11)) return false;
+        JsonObject protocol = back.getProtocol (item.getJsonObject ("item").getString ("uuid_protocol"));
+        if (!protocol.containsKey("protocol") || !(protocol.getJsonObject ("protocol").getInt ("gis_status") == 10 || protocol.getJsonObject ("protocol").getInt ("gis_status") == 11)) return false;
         
         if (securityContext.isUserInRole ("admin")) return true;
         
@@ -82,11 +82,11 @@ public class VoteInitiators extends EJBResource<VoteInitiatorsLocal> {
     
     private boolean newAccessCheck (JsonObject item) {
 
-        JsonObject cach = back.getCach(item.getJsonObject ("data").getString ("fiashouseguid"));
-        JsonObject oktmo = back.getOktmo(item.getJsonObject ("data").getString ("fiashouseguid"));
+        JsonObject protocol = back.getProtocol (item.getJsonObject ("data").getString ("uuid_protocol"));
+        if (!protocol.containsKey("protocol") || !(protocol.getJsonObject ("protocol").getInt ("gis_status") == 10 || protocol.getJsonObject ("protocol").getInt ("gis_status") == 11)) return false;
         
-        JsonObject protocolStatus = back.getProtocolStatus (item.getJsonObject ("item").getString ("uuid_protocol"));
-        if (!protocolStatus.containsKey("status") || !(protocolStatus.getInt ("status") == 10 || protocolStatus.getInt ("status") == 11)) return false;
+        JsonObject cach = back.getCach(protocol.getString ("fiashouseguid"));
+        JsonObject oktmo = back.getOktmo(protocol.getString ("fiashouseguid"));
         
         if (securityContext.isUserInRole("admin")) return true;
 

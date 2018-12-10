@@ -169,13 +169,13 @@ public class VoteInitiatorsImpl extends BaseCRUD<VoteInitiator> implements VoteI
     });}
     
     @Override
-    public JsonObject getProtocolStatus (String id) {return fetchData ((db, job) -> {
+    public JsonObject getProtocol (String id) {return fetchData ((db, job) -> {
         
-        JsonObject status = db.getJsonObject(ModelHolder.getModel ()
-            .get (VotingProtocol.class, id, "id_prtcl_status_gis")
+        JsonObject protocol = db.getJsonObject(ModelHolder.getModel ()
+            .get (VotingProtocol.class, id, "id_prtcl_status_gis AS gis_status", "fiashouseguid")
         );
         
-        if (status != null) job.add ("status", status);
+        if (protocol != null) job.add ("protocol", protocol);
         
     });}
     
