@@ -12,13 +12,15 @@ define ([], function () {
 
             if ($_USER.role.admin) return true
 
-            if (data.cach && data.cach.is_own && $_USER.uuid_org == data.cach['org.uuid']) {
+            if (data.cach) {
 
                 return ($_USER.role.nsi_20_1 ||
                         $_USER.role.nsi_20_19 ||
                         $_USER.role.nsi_20_20 ||
                         $_USER.role.nsi_20_21 ||
-                        $_USER.role.nsi_20_22)
+                        $_USER.role.nsi_20_22) && 
+                        data.cach.is_own && 
+                        $_USER.uuid_org == data.cach['org.uuid']
             }
 
             return $_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']]
