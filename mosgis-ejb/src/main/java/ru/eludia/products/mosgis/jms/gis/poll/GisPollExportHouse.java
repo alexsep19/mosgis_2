@@ -299,94 +299,153 @@ public class GisPollExportHouse extends GisPollMDB {
                 "premisesguid");
         
         for (ExportHouseResultType.ApartmentHouse.ResidentialPremises residentialPremise : house.getResidentialPremises()) {
-            
-        }
-        
-        
-        Map<UUID, Map<String, Object>> premises = new HashMap<>();
-            house.getResidentialPremises().forEach( premise -> {
-                
-                List<Map<String, Object>> rooms = premise.getLivingRoom().stream().map(room -> {
-                    Map<String, Object> data = HASH(
-                        "livingroomguid",        room.getLivingRoomGUID(),
-                        "gis_unique_number",     room.getLivingRoomUniqueNumber(),
-                        "cadastralnumber",       room.getCadastralNumber(),
-                        "roomnumber",            room.getRoomNumber(),
-                        "terminationdate",       room.getTerminationDate(),
-                        "floor",                 room.getFloor(),
-                        "square",                room.getSquare(),
-                        "gis_modification_date", room.getModificationDate(),
-                        "informationconfirmed",  Boolean.TRUE.equals(room.isInformationConfirmed())
-                    );
-                    if (room.getAnnulmentReason() != null) {
-                        data.put("code_vc_nsi_330", room.getAnnulmentReason().getCode());
-                        data.put("is_annuled_in_gis", true);
-                    } else {
-                        data.put("code_vc_nsi_330", null);
-                        data.put("is_annuled_in_gis", false);
-                    }
-                    
-                    addOGFData(data, room.getOGFData());
-                    
-                    return data;
-                }).collect(Collectors.toList());
-                
-                Map<String, Object> premisesHash = HASH(
-                    "premisesguid",          premise.getPremisesGUID(),
-                    "fiaschildhouseguid",    premise.getFIASChildHouseGuid(),
-                    "gis_unique_number",     premise.getPremisesUniqueNumber(),
-                    "cadastralnumber",       premise.getCadastralNumber(),
-                    "premisesnum",           premise.getPremisesNum(),
-                    "terminationdate",       premise.getTerminationDate(),
-                    "floor",                 premise.getFloor(),
-                    "uuid_entrance",         entranceUuidByNum.get(premise.getEntranceNum()),
-                    "code_vc_nsi_30",        premise.getPremisesCharacteristic() != null ? premise.getPremisesCharacteristic().getCode() : null,
-                    "totalarea",             premise.getTotalArea(),
-                    "grossarea",             premise.getGrossArea(),
-                    "gis_modification_date", premise.getModificationDate(),
-                    "informationconfirmed",  Boolean.TRUE.equals(premise.isInformationConfirmed()),
-                    "livingrooms",           rooms
-                );
-                
-                if (premise.getAnnulmentReason() != null) {
-                    premisesHash.put("code_vc_nsi_330", premise.getAnnulmentReason().getCode());
-                    premisesHash.put("is_annuled_in_gis", true);
-                } else {
-                    premisesHash.put("code_vc_nsi_330", null);
-                    premisesHash.put("is_annuled_in_gis", false);
-                }
-                
-                addOGFData(premisesHash, premise.getOGFData());
-                
-                premises.put(UUID.fromString(premise.getPremisesGUID()), premisesHash);
-            });
-            
-            db.dupsert(
-                    ResidentialPremise.class,
-                    HASH("uuid_house", houseUuid),
-                    new ArrayList<>(premises.values()), "premisesguid"
+            Map<String, Object> data = HASH(
+                "cadastralnumber",       residentialPremise.getCadastralNumber(),
+                "premisesnum",           residentialPremise.getPremisesNum(),
+                "floor",                 residentialPremise.getFloor(),
+                "uuid_entrance",         entranceUuidByNum.get(residentialPremise.getEntranceNum()),
+                "code_vc_nsi_30",        residentialPremise.getPremisesCharacteristic() != null ? residentialPremise.getPremisesCharacteristic().getCode() : null,
+                "totalarea",             residentialPremise.getTotalArea(),
+                "grossarea",             residentialPremise.getGrossArea()
             );
             
-            db.forEach(m.select(ResidentialPremise.class, "uuid", "premisesguid").where("uuid_house", houseUuid), (rs) -> {
-                premises.get(TypeConverter.UUID(rs.getBytes("premisesguid"))).put("uuid", TypeConverter.UUID(rs.getBytes("uuid")));
-            });
+            addOGFData(data, residentialPremise.getOGFData());
             
-            premises.values().forEach((premise) -> {
-                try {
-                    db.dupsert (
-                        LivingRoom.class,
-                        HASH (
-                            "uuid_premise",   premise.get("uuid")
-                        ),
-                        (List<Map<String, Object>>) premise.get("livingrooms"), "livingroomguid"
-                    );
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex.getMessage(), ex);
+            if (residentialPremise.getAnnulmentReason() != null) {
+                data.put("code_vc_nsi_330", residentialPremise.getAnnulmentReason().getCode());
+            }
+            Map<String, Object> residentialPremiseDb = nonResidentialPremisesDb.get(UUID.fromString(residentialPremise.getPremisesGUID()));
+            
+            if (residentialPremiseDb == null && StringUtils.isNotBlank(residentialPremise.getCadastralNumber()))
+                residentialPremiseDb = db.getMap(m
+                        .select(ResidentialPremise.class, "*")
+                        .where("uuid_house", houseUuid)
+                        .and("cadastralnumber", residentialPremise.getCadastralNumber())
+                        .and("premisesguid IS NULL")
+                );
+            
+            if (residentialPremiseDb == null)
+                residentialPremiseDb = db.getMap(m
+                        .select(ResidentialPremise.class, "*")
+                        .where("uuid_house", houseUuid)
+                        .and("premisesnum", residentialPremise.getPremisesNum())
+                        .and("premisesguid IS NULL")
+                );
+            
+            Map<String, Object> residentialPremiseForSave = getIfDbDataNullOrEmpty(data, residentialPremiseDb);
+            
+            if (residentialPremiseDb != null) { 
+                residentialPremiseForSave.put("uuid", residentialPremiseDb.get("uuid"));
+                residentialPremiseDb.put("is_used", true);
+            }
+            residentialPremiseForSave.putAll(HASH(
+                    "premisesguid",          residentialPremise.getPremisesGUID(),
+                    "fiaschildhouseguid",    residentialPremise.getFIASChildHouseGuid(),
+                    "gis_unique_number",     residentialPremise.getPremisesUniqueNumber(),
+                    "terminationdate",       residentialPremise.getTerminationDate(),
+                    "gis_modification_date", residentialPremise.getModificationDate(),
+                    "informationconfirmed",  Boolean.TRUE.equals(residentialPremise.isInformationConfirmed())
+            ));
+            
+            if (residentialPremise.getAnnulmentReason() != null) {
+                residentialPremiseForSave.put("is_annuled_in_gis", true);
+            } else {
+                residentialPremiseForSave.put("is_annuled_in_gis", false);
+            }
+            
+            Object premiseUuid;
+            if(residentialPremiseForSave.containsKey("uuid")) {
+                premiseUuid = residentialPremiseForSave.get("uuid");
+                db.update(ResidentialPremise.class, residentialPremiseForSave);
+            } else {
+                premiseUuid = db.insertId(ResidentialPremise.class, residentialPremiseForSave);
+            }  
+            
+            Map<Object, Map<String, Object>> livingRoomsDb = db.getIdx(m
+                    .select(LivingRoom.class, "*")
+                    .where("uuid_premise", premiseUuid)
+                    .and("livingroomguid IS NOT NULL"),
+                "livingroomguid");
+            
+            for (ExportHouseResultType.ApartmentHouse.ResidentialPremises.LivingRoom livingRoom : residentialPremise.getLivingRoom()) {
+                Map<String, Object> roomData = HASH(
+                    "cadastralnumber", livingRoom.getCadastralNumber(),
+                    "roomnumber",      livingRoom.getRoomNumber(),
+                    "floor",           livingRoom.getFloor(),
+                    "square",          livingRoom.getSquare()
+                );
+
+                addOGFData(roomData, livingRoom.getOGFData());
+
+                if (livingRoom.getAnnulmentReason() != null) {
+                    roomData.put("code_vc_nsi_330", livingRoom.getAnnulmentReason().getCode());
                 }
-            });
+                Map<String, Object> livingRoomDb = livingRoomsDb.get(UUID.fromString(livingRoom.getLivingRoomGUID()));
+
+                if (livingRoomDb == null && StringUtils.isNotBlank(livingRoom.getCadastralNumber()))
+                    livingRoomDb = db.getMap(m
+                            .select(LivingRoom.class, "*")
+                            .where("uuid_house", premiseUuid)
+                            .and("cadastralnumber", livingRoom.getCadastralNumber())
+                            .and("livingroomguid IS NULL")
+                    );
+
+                if (livingRoomDb == null)
+                    livingRoomDb = db.getMap(m
+                            .select(ResidentialPremise.class, "*")
+                            .where("uuid_house", premiseUuid)
+                            .and("premisesnum", livingRoom.getRoomNumber())
+                            .and("livingroomguid IS NULL")
+                    );
+
+                Map<String, Object> livingRoomForSave = getIfDbDataNullOrEmpty(roomData, livingRoomDb);
+
+                if (livingRoomDb != null) { 
+                    livingRoomForSave.put("uuid", livingRoomDb.get("uuid"));
+                    livingRoomDb.put("is_used", true);
+                }
+                livingRoomForSave.putAll(HASH(
+                        "livingroomguid",        livingRoom.getLivingRoomGUID(),
+                        "gis_unique_number",     livingRoom.getLivingRoomUniqueNumber(),
+                        "terminationdate",       livingRoom.getTerminationDate(),
+                        "gis_modification_date", livingRoom.getModificationDate(),
+                        "informationconfirmed",  Boolean.TRUE.equals(residentialPremise.isInformationConfirmed())
+                ));
+
+                if (livingRoom.getAnnulmentReason() != null) {
+                    livingRoomForSave.put("is_annuled_in_gis", true);
+                } else {
+                    livingRoomForSave.put("is_annuled_in_gis", false);
+                }
+
+                if(livingRoomForSave.containsKey("uuid")) {
+                    db.update(LivingRoom.class, livingRoomForSave);
+                } else {
+                    db.insertId(LivingRoom.class, livingRoomForSave);
+                }  
+            }
+            
+            for (Map.Entry<Object, Map<String, Object>> entry : livingRoomsDb.entrySet()) {
+                Map<String, Object> livingRoom = entry.getValue();
+                if (livingRoom.containsKey("is_used"))
+                    continue;
+                livingRoom.put("code_vc_nsi_330", "4"); //4 - Дублирование информации, на проде поменять на 6 - В связи с ошибкой ввода данных
+                livingRoom.put("is_annuled_in_gis", true);
+                livingRoom.put("terminationdate", new Date());
+                db.update(LivingRoom.class, livingRoom);
+            }
+        }
         
-        
-        
+        for (Map.Entry<Object, Map<String, Object>> entry : residentialPremisesDb.entrySet()) {
+                Map<String, Object> residentialPremise = entry.getValue();
+                if (residentialPremise.containsKey("is_used"))
+                    continue;
+                residentialPremise.put("code_vc_nsi_330", "4"); //4 - Дублирование информации, на проде поменять на 6 - В связи с ошибкой ввода данных
+                residentialPremise.put("is_annuled_in_gis", true);
+                residentialPremise.put("terminationdate", new Date());
+                db.update(ResidentialPremise.class, residentialPremise);
+            }
+
         /*
         //Подъезды
         Map<UUID, Map<String, Object>> entrances = new HashMap<>();
