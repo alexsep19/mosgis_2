@@ -151,29 +151,18 @@ define ([], function () {
         data.__read_only = 1
 
         if ($_USER.role.admin) data.item.org_label = data.item ['vc_orgs.label']
-        
-        var it = data.item
-        it.err_text = it ['out_soap.err_text']        
-        
-        it._can = {cancel: 1}
 
-        data.item._can = $_USER.role.admin ? {} : 
-        {
-            edit: Permissions (),
-            update: 1,
+        data.item.err_text = data.item ['out_soap.err_text']
+
+        var permissions = Permissions ()
+
+        data.item._can = {
+            edit: permissions,
+            update: permissions,
             cancel: 1,
-            delete: Permissions (),
-        }
-
-        if (!$_USER.role.admin && !it.is_deleted && data.cach && data.cach.is_own && data.cach.id_ctr_status_gis == 40) {
-            switch (it.id_prtcl_status) {
-                case 10:
-                    it._can.approve = 1
-                    break
-                case 14:
-                    it._can.alter = 1
-                    break
-            }
+            delete: permissions,
+            approve: permissions && data.item.id_prtcl_status == 10,
+            alter: permissions && data.item.id_prtcl_status == 14,
         }
 
         done (data)

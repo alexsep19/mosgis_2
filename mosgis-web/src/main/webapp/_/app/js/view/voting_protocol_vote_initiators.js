@@ -11,18 +11,24 @@ define ([], function () {
         function Permissions () {
 
             if (!data.item.is_deleted && data.item.house_uuid && (data.item.id_prtcl_status_gis == 10 || data.item.id_prtcl_status_gis == 11)) {
+                
                 if ($_USER.role.admin) return true
-                    if (data.cach && data.cach.is_own) {
-                        if ($_USER.role.nsi_20_1 ||
+
+                if (data.cach) {
+
+                    return ($_USER.role.nsi_20_1 ||
                             $_USER.role.nsi_20_19 ||
                             $_USER.role.nsi_20_20 ||
                             $_USER.role.nsi_20_21 ||
-                            $_USER.role.nsi_20_22)
-                            return true
-                    }
-                    else if ($_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']])
-                        return true
+                            $_USER.role.nsi_20_22) &&
+                            data.cach.is_own &&
+                            $_USER.uuid_org == data.cach['org.uuid']
+
+                }
+
+                return $_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']]
             }
+
             return false
         }
 
