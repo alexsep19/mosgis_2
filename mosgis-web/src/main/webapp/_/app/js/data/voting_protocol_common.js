@@ -110,18 +110,23 @@ define ([], function () {
         function Permissions () {
 
             if (!data.item.is_deleted) {
+
                 if ($_USER.role.admin) return true
-                if (data.cach && data.cach.is_own) {
-                    if ($_USER.role.nsi_20_1 ||
-                        $_USER.role.nsi_20_19 ||
-                        $_USER.role.nsi_20_20 ||
-                        $_USER.role.nsi_20_21 ||
-                        $_USER.role.nsi_20_22)
-                        return true
+
+                if (data.cach && data.cach.is_own && $_USER.uuid_org == data.cach['org.uuid']) {
+                    
+                    return ($_USER.role.nsi_20_1 ||
+                            $_USER.role.nsi_20_19 ||
+                            $_USER.role.nsi_20_20 ||
+                            $_USER.role.nsi_20_21 ||
+                            $_USER.role.nsi_20_22)
+
                 }
-                else if ($_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']])
-                    return true
+
+                return $_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']]
+
             }
+
             return false
         }       
 

@@ -12,18 +12,16 @@ define ([], function () {
 
             if ($_USER.role.admin) return true
 
-            if (data.cach && data.cach.is_own) {
+            if (data.cach && data.cach.is_own && $_USER.uuid_org == data.cach['org.uuid']) {
 
-                if ($_USER.role.nsi_20_1 ||
-                    $_USER.role.nsi_20_19 ||
-                    $_USER.role.nsi_20_20 ||
-                    $_USER.role.nsi_20_21 ||
-                    $_USER.role.nsi_20_22)
-                    return true
+                return ($_USER.role.nsi_20_1 ||
+                        $_USER.role.nsi_20_19 ||
+                        $_USER.role.nsi_20_20 ||
+                        $_USER.role.nsi_20_21 ||
+                        $_USER.role.nsi_20_22)
             }
-            else if ($_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']])
-                return true
-            return false
+
+            return $_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']]
         }
 
         status_list = data.vc_gis_status
