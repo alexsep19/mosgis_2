@@ -35,47 +35,42 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
             securityContext.isUserInRole ("nsi_20_7"))
             return true;
         
-        String itemOrg = item.getJsonObject ("item").getString ("uuid_org");
+        String itemOktmo = item.getJsonObject ("item").get ("oktmo").toString ();
         String userOrg = getUserOrg ();
-        if ((securityContext.isUserInRole ("nsi_20_1")  ||
-             securityContext.isUserInRole ("nsi_20_19") ||
-             securityContext.isUserInRole ("nsi_20_20") ||
-             securityContext.isUserInRole ("nsi_20_21") || 
-             securityContext.isUserInRole ("nsi_20_22")) && userOrg.equals (itemOrg))
-            return true;
-        
-        if (securityContext.isUserInRole("nsi_20_8")) {
-            String itemOktmo = item.getJsonObject ("item").get ("oktmo").toString ();
-            if (securityContext.isUserInRole("oktmo_" + itemOktmo)) return true;
+        if (item.containsKey ("cach") && userOrg.equals (item.getJsonObject ("cach").getString("org.uuid"))) {
+            
+            return securityContext.isUserInRole ("nsi_20_1") ||
+                   securityContext.isUserInRole ("nsi_20_19") ||
+                   securityContext.isUserInRole ("nsi_20_20") ||
+                   securityContext.isUserInRole ("nsi_20_21") ||
+                   securityContext.isUserInRole ("nsi_20_22");
+            
         }
-        
-        return false;
+        else
+            return securityContext.isUserInRole("nsi_20_8") && securityContext.isUserInRole("oktmo_" + itemOktmo);
     }
     
     private boolean modAccessCheck (JsonObject item) {
         
-        if ("1".equals (item.getJsonObject ("item").get ("is_deleted").toString ())) return false;
+        if (item.getJsonObject ("item").getInt ("is_deleted") == 1) return false;
         
         if (securityContext.isUserInRole ("admin")) return true;
-        
-        String itemOrg = item.getJsonObject ("item").getString ("uuid_org");
+
+        String itemOktmo = item.getJsonObject ("item").get ("oktmo").toString ();
         String userOrg = getUserOrg ();
-        if (securityContext.isUserInRole ("nsi_20_1") ||
-            securityContext.isUserInRole ("nsi_20_19") ||
-            securityContext.isUserInRole ("nsi_20_20") ||
-            securityContext.isUserInRole ("nsi_20_21") ||
-            securityContext.isUserInRole ("nsi_20_22") && 
-            userOrg.equals (itemOrg) &&
-            item.containsKey ("cach") && 
-            "1".equals (item.getJsonObject ("cach").get ("is_own").toString ()))
-            return true;
-        
-        if (securityContext.isUserInRole("nsi_20_8")) {
-            String itemOktmo = item.getJsonObject ("item").get ("oktmo").toString ();
-            if (securityContext.isUserInRole("oktmo_" + itemOktmo)) return true;
+        if (item.containsKey ("cach") && 
+            item.getJsonObject ("cach").getInt ("is_own") == 1 && 
+            userOrg.equals (item.getJsonObject ("cach").getString("org.uuid"))) {
+            
+            return securityContext.isUserInRole ("nsi_20_1") ||
+                   securityContext.isUserInRole ("nsi_20_19") ||
+                   securityContext.isUserInRole ("nsi_20_20") ||
+                   securityContext.isUserInRole ("nsi_20_21") ||
+                   securityContext.isUserInRole ("nsi_20_22");
+            
         }
-        
-        return false;
+        else
+            return securityContext.isUserInRole("nsi_20_8") && securityContext.isUserInRole("oktmo_" + itemOktmo);
     }
     
     private boolean newAccessCheck (JsonObject item) {
@@ -85,16 +80,20 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
 
         if (securityContext.isUserInRole("admin")) return true;
 
-        if (securityContext.isUserInRole ("nsi_20_1") ||
-            securityContext.isUserInRole ("nsi_20_19") ||
-            securityContext.isUserInRole ("nsi_20_20") ||
-            securityContext.isUserInRole ("nsi_20_21") ||
-            securityContext.isUserInRole ("nsi_20_22") && 
-                cach.containsKey ("cach") && 
-                "1".equals (cach.getJsonObject ("cach").getString ("is_own")))
-            return true;
-
-        return securityContext.isUserInRole ("nsi_20_8") && securityContext.isUserInRole("oktmo_" + oktmo.getString ("oktmo"));
+        String userOrg = getUserOrg ();
+        if (cach.containsKey("cach") && 
+            cach.getJsonObject ("cach").getInt ("is_own") == 1 &&
+            userOrg.equals (cach.getJsonObject ("cach").getString("org.uuid"))) {
+            
+            return securityContext.isUserInRole ("nsi_20_1") ||
+                   securityContext.isUserInRole ("nsi_20_19") ||
+                   securityContext.isUserInRole ("nsi_20_20") ||
+                   securityContext.isUserInRole ("nsi_20_21") ||
+                   securityContext.isUserInRole ("nsi_20_22");
+            
+        }
+        else
+            return securityContext.isUserInRole ("nsi_20_8") && securityContext.isUserInRole("oktmo_" + oktmo.getString ("oktmo"));
         
     }
     
