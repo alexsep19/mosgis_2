@@ -74,7 +74,7 @@ define ([], function () {
             {"id_type": 2, "id": "slf_mng_org", "label": "Наименование саморегулируемой организации", "off": !data.is_on_self_manage},
             {"id_type": 8, "id": "dt_from_slf_mng_org", "label": "Дата вступления в члены организации", "off": !data.is_on_self_manage},
             {"id_type": 8, "id": "dt_to_slf_mng_org", "label": "Дата исключения/выхода из членов организации", "off": !data.is_on_self_manage},
-            {"id_type": 2, "id": "reason_slf_mng_org", "label": "Причина исключения из членов организации", "off": !data.is_on_self_manage},
+            {"id_type": 2, "id": "rsn_slf_mng_org", "label": "Причина исключения из членов организации", "off": !data.is_on_self_manage},
 
             {"id": "h_staff", "label": "Штатная численность"},
             {"id_type": 1, "id": "staff_cnt", "label": "Количество штатных единиц"},
