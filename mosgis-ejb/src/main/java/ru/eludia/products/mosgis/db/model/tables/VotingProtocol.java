@@ -83,8 +83,23 @@ public class VotingProtocol extends EnTable {
     }
 
     public VotingProtocol () {
+        
         super ("tb_voting_protocols", "Протоколы ОСС");
+        
         cols (c.class);
+        
+        trigger ("BEFORE UPDATE", 
+                
+            "BEGIN " +                    
+                "IF :NEW.is_deleted=0 AND :NEW.ID_PRTCL_STATUS <> :OLD.ID_PRTCL_STATUS AND :NEW.ID_PRTCL_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING.getId () + " THEN BEGIN " +
+                        
+                    "IF :NEW.AVOTINGDATE > TRUNC(SYSDATE) THEN raise_application_error (-20000, 'Приём решений ещё не завершён. Операция отменена.'); END IF; " +
+                        
+                "END; END IF; " +                        
+            "END;"
+                
+        );
+        
     }
     
     public enum Action {

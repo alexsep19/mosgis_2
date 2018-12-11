@@ -155,7 +155,7 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
 
         JsonObject item = db.getJsonObject (ModelHolder.getModel ()
             .get (VotingProtocol.class, id, "AS root", "*")
-            .toOne (VocGisStatus.class, "label AS status_label").on("id_prtcl_status_gis")
+            .toOne (VocGisStatus.class, "label AS status_label").on("id_prtcl_status")
             .toOne (VocBuilding.class, "label AS address_label").on ()
             .toMaybeOne (House.class, "AS house", "uuid AS house_uuid", "fiashouseguid").on ("root.fiashouseguid=house.fiashouseguid")
             .toMaybeOne (VotingProtocolLog.class           ).on ()
