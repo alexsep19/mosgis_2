@@ -11,10 +11,10 @@ define ([], function () {
         function Permissions () {
 
             if (!data.item.is_deleted && data.item.house_uuid && (data.item.id_prtcl_status_gis == 10 || data.item.id_prtcl_status_gis == 11)) {
-                
-                if ($_USER.role.admin) return true
 
                 if (data.cach) {
+
+                    if ($_USER.role.admin) return true
 
                     return ($_USER.role.nsi_20_1 ||
                             $_USER.role.nsi_20_19 ||

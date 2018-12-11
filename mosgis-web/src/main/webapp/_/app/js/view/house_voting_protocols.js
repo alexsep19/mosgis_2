@@ -10,9 +10,9 @@ define ([], function () {
         
         function Permissions () {
 
-            if ($_USER.role.admin) return true
-
             if (data.cach) {
+
+                if ($_USER.role.admin) return true
 
                 return ($_USER.role.nsi_20_1 ||
                         $_USER.role.nsi_20_19 ||

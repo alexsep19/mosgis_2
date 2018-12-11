@@ -121,9 +121,9 @@ define ([], function () {
 
             if (!data.item.is_deleted) {
 
-                if ($_USER.role.admin) return true
-
                 if (data.cach) {
+
+                    if ($_USER.role.admin) return true
                     
                     return ($_USER.role.nsi_20_1 ||
                             $_USER.role.nsi_20_19 ||
@@ -156,13 +156,15 @@ define ([], function () {
 
         var permissions = Permissions ()
 
+        console.log (data)
+
         data.item._can = {
             edit: permissions,
             update: permissions,
             cancel: 1,
             delete: permissions,
-            approve: permissions && data.item.id_prtcl_status == 10,
-            alter: permissions && data.item.id_prtcl_status == 14,
+            approve: permissions && data.cach && data.cach.id_ctr_status_gis == 40 && data.item.id_prtcl_status == 10,
+            alter: permissions && data.cach && data.cach.id_ctr_status_gis == 40 && data.item.id_prtcl_status == 14,
         }
 
         done (data)

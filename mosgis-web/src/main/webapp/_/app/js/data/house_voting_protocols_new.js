@@ -50,6 +50,7 @@ define ([], function () {
         
         var data = clone ($('body').data ('data'))
         
+        console.log (data)
         v['fiashouseguid'] = data.item.fiashouseguid
         v['uuid_org'] = data.cach['org.uuid']
 
