@@ -3,6 +3,7 @@ package ru.eludia.products.mosgis.rest.resources;
 import ru.eludia.products.mosgis.rest.misc.EJBResource;
 import javax.json.JsonObject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -28,7 +29,14 @@ public class Houses extends EJBResource <HousesLocal> {
         
         if (!item.containsKey ("cach")) throw new ValidationException ("foo", "Ваша организация не управляет домом по этому адресу. Доступ запрещён.");
 
-    }    
+    }
+    
+    private JsonObject getInnerItem (String id) {
+        final JsonObject data = back.getItem (id);        
+        final JsonObject item = data.getJsonObject ("item");
+        if (item == null) throw new InternalServerErrorException ("Wrong data from back.getItem (" + id + "), no item: " + data);
+        return item;
+    }
 
     @POST
     @Consumes (APPLICATION_JSON)
@@ -50,7 +58,7 @@ public class Houses extends EJBResource <HousesLocal> {
     @Path("create") 
     @Produces (APPLICATION_JSON)
     public JsonObject doCreate (JsonObject p) {
-        return back.doCreate (p);
+        return back.doCreate (p, getUser());
     }
     
     @POST
@@ -58,7 +66,7 @@ public class Houses extends EJBResource <HousesLocal> {
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject doUpdate (@PathParam ("id") String id, JsonObject p) { 
-        return back.doUpdate (id, p);
+        return back.doUpdate (id, p, getUser());
     }
     
     @POST
@@ -326,4 +334,31 @@ public class Houses extends EJBResource <HousesLocal> {
         return back.getVocPassportFields (id, vocPassportFieldsSysElectro);
     }
     
+    @POST
+    @Path("{id}/log") 
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
+        final JsonObject item = back.getItem (id);
+        checkOrg (item);
+        return back.getLog (id, p, getUser ());
+    }
+        
+    @POST
+    @Path("{id}/reload") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject doReload (@PathParam ("id") String id) { 
+        final JsonObject item = back.getItem (id);
+        checkOrg (item);
+        return back.doReload (id, item.getJsonObject("cach").getString("org.uuid"), getUser());
+    }
+    
+    @POST
+    @Path("{id}/send") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject doApprove (@PathParam ("id") String id) { 
+        final JsonObject item = back.getItem (id);
+        checkOrg (item);
+        return back.doSend (id, item.getJsonObject("cach").getString("org.uuid"), getUser ());
+    }
 }
