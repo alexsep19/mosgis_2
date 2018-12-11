@@ -20,10 +20,10 @@ public class VocRd1House extends View {
     @Override
     public String getSQL () {
         
-        final String src = getName (VocRd1HouseRaw.class);
+        final String src = getName (VocRd1HouseRaw.class);  
         
         return 
-            "SELECT * FROM " + src + " WHERE unom NOT IN (" +
+            "SELECT id, unom, address, is_condo, fiashouseguid FROM " + src + " WHERE unom NOT IN (" +
                 "  SELECT unom FROM " + src + " GROUP BY unom HAVING COUNT (id) > 1" +
             ")";
         

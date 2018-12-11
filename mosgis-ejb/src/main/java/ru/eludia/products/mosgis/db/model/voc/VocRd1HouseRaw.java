@@ -22,7 +22,7 @@ public class VocRd1HouseRaw extends View {
     public String getSQL () {
         
         return 
-            " SELECT" +
+            "SELECT" +
             "  o.id" +
             "  , o.unom" +
             "  , o.address" +
