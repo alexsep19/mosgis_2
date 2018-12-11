@@ -34,13 +34,13 @@ public class VoteDecisionLists extends EJBResource<VoteDecisionListsLocal> {
             securityContext.isUserInRole ("nsi_20_7"))
             return true;
         
-        String itemOrg = item.getJsonObject ("item").getString ("uuid_org");
+        JsonObject protocol = back.getProtocol (item.getJsonObject ("item").getString ("protocol_uuid")).getJsonObject("protocol");
         String userOrg = getUserOrg ();
         if ((securityContext.isUserInRole ("nsi_20_1")  ||
              securityContext.isUserInRole ("nsi_20_19") ||
-             securityContext.isUserInRole ("nsi_20_20") ||
+             securityContext.isUserInRole ("nsi_20_20") || 
              securityContext.isUserInRole ("nsi_20_21") || 
-             securityContext.isUserInRole ("nsi_20_22")) && userOrg.equals (itemOrg))
+             securityContext.isUserInRole ("nsi_20_22")) && userOrg.equals (protocol.getString ("uuid_org")))
             return true;
         
         if (securityContext.isUserInRole("nsi_20_8")) {
@@ -55,7 +55,7 @@ public class VoteDecisionLists extends EJBResource<VoteDecisionListsLocal> {
         
         if ("1".equals (item.getJsonObject ("item").get ("is_deleted").toString ())) return false;
 
-        JsonObject protocol = back.getProtocol (item.getJsonObject ("item").getString ("uuid_protocol"));
+        JsonObject protocol = back.getProtocol (item.getJsonObject ("item").getString ("protocol_uuid"));
         if (!protocol.containsKey("protocol") || !(protocol.getJsonObject ("protocol").getInt ("gis_status") == 10 || protocol.getJsonObject ("protocol").getInt ("gis_status") == 11)) return false;
         
         if (securityContext.isUserInRole ("admin")) return true;

@@ -35,13 +35,13 @@ public class VoteInitiators extends EJBResource<VoteInitiatorsLocal> {
             securityContext.isUserInRole ("nsi_20_7"))
             return true;
         
-        String itemOrg = item.getJsonObject ("item").getString ("uuid_org");
+        JsonObject protocol = back.getProtocol (item.getJsonObject ("item").getString ("uuid_protocol")).getJsonObject("protocol");
         String userOrg = getUserOrg ();
         if ((securityContext.isUserInRole ("nsi_20_1")  ||
              securityContext.isUserInRole ("nsi_20_19") ||
              securityContext.isUserInRole ("nsi_20_20") ||
              securityContext.isUserInRole ("nsi_20_21") || 
-             securityContext.isUserInRole ("nsi_20_22")) && userOrg.equals (itemOrg))
+             securityContext.isUserInRole ("nsi_20_22")) && userOrg.equals (protocol.getString ("uuid_org")))
             return true;
         
         if (securityContext.isUserInRole("nsi_20_8")) {
