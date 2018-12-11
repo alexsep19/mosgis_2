@@ -56,6 +56,7 @@ public class VocSetting extends Table {
                 
         PATH_OKEI ("path.okei", "URL JSON/ZIP ОКЕИ на портале открытых данных Правительства Москвы", "c:/projects/mosgis/incoming/opendata/okei"),
         PATH_OKTMO ("path.oktmo", "Директория с CSV файлом, содержищим справочник ОКТМО", "c:/projects/mosgis/incoming/opendata/oktmo"),
+        PATH_OKSM("path.oksm", "URL JSON/ZIP ОКСМ на портале открытых данных Правительства Москвы", "c:/projects/mosgis/incoming/opendata/oksm"),
         PATH_FIAS ("path.fias", "Директория с распакованной из RAR XML-выгрузкой ФИАС", "c:/projects/mosgis/incoming/fias/fias_xml"),
         PATH_OPENDATA ("path.opendata", "Директория с распакованной из ZIP XML-выгрузкой с портала открытых данных Правительства Москвы", "c:/projects/mosgis/incoming/opendata"),
 

@@ -1,8 +1,8 @@
 define ([], function () {
 
-    var form_name = 'voc_organization_branch_add_new_form'
+    var form_name = 'voc_organization_proposal_alien_add_new_form'
 
-    $_DO.open_orgs_voc_organization_branch_add_new = function (e) {
+    $_DO.open_orgs_voc_organization_proposal_alien_add_new = function (e) {
 
         var f = w2ui [form_name]
 
@@ -17,7 +17,7 @@ define ([], function () {
 
             $_SESSION.set('record', saved.record)
 
-            use.block('voc_organization_branch_add_new')
+            use.block('voc_organization_proposal_alien_add_new')
         }
 
         $('body').data('voc_organizations_popup.callback', function (r) {
@@ -44,17 +44,13 @@ define ([], function () {
 
     }
 
-    $_DO.update_voc_organization_branch_add_new = function (e) {
+    $_DO.update_voc_organization_proposal_alien_add_new = function (e) {
 
         var form = w2ui [form_name]
 
         var v = form.values ()
 
-        v.id_type = "2";
-
-        if (!v.uuid_org_parent)
-            die ('f', 'Укажите, пожалуйста, головную организацию')
-
+        v.id_type = "3";
 
         if (!v.fullname)
             die ('fullname', 'Укажите, пожалуйста, полное наименование')
@@ -62,17 +58,23 @@ define ([], function () {
         if (!v.shortname)
             die('shortname', 'Укажите, пожалуйста, сокращенное наименование')
 
-        if (!v.stateregistrationdate)
-            die('stateregistrationdate', 'Укажите, пожалуйста, дату государственной регистрации')
+        if (!/^\d{11}$/.test(v.nza))
+            die('nza', 'Укажите, пожалуйста, номер записи об аккредитации (11 цифр)')
 
-        if (!/^\d{13}$/.test(v.ogrn))
-            die('ogrn', 'Укажите, пожалуйста ОГРН(13 цифр)')
+        if (!v.accreditationstartdate)
+            die('accreditationstartdate', 'Укажите, пожалуйста, дату внесения в реестр аккредитованных')
+
+        if (!/^(\d{10})|(\d{12})$/.test(v.inn))
+            die('inn', 'Укажите, пожалуйста ИНН(10 или 12 цифр)')
 
         if (!/^\d{9}$/.test(v.kpp))
             die('kpp', 'Укажите, пожалуйста КПП (9 цифр)')
 
-        if (!/^\d{1,5}$/.test(v.okopf))
-            die('okopf', 'Укажите, пожалуйста ОКОПФ(1-5 цифр)')
+        if (!v.fiashouseguid)
+            die('fiashouseguid', 'Укажите, пожалуйста, Адрес регистрации (ФИАС)')
+
+        if (!v.registrationcountry)
+            die('registrationcountry', 'Укажите, пожалуйста, страну регистрации')
 
         var tia = {type: 'voc_organization_proposals', action: 'create'}
 

@@ -1,6 +1,7 @@
 package ru.eludia.products.mosgis.rest.impl;
 
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,6 +21,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationProposal;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTypes;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocOksm;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
@@ -119,7 +121,7 @@ public class VocOrganizationProposalsImpl extends BaseCRUD<VocOrganizationPropos
 
         Select select = ModelHolder.getModel ().select (VocOrganizationProposal.class, "*", "uuid AS id")
             .where("is_deleted", 0)
-            .orderBy ("label")
+            .orderBy ("accreditationstartdate DESC, stateregistrationdate DESC")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
         applySearch (Search.from (p), select);
@@ -148,8 +150,9 @@ public class VocOrganizationProposalsImpl extends BaseCRUD<VocOrganizationPropos
                 .get (VocOrganizationProposal.class, id, "AS root", "*")
                 .toMaybeOne (VocOrganizationTypes.class, "label").on ()
                 .toMaybeOne (VocOrganization.class, "AS parent_org", "label").on ("parent")
-                .toMaybeOne(VocBuildingAddress.class, "AS vc_build_address", "label").on("fiashouseguid")
-                .toMaybeOne(VocGisStatus.class, "AS status", "label").on("id_org_pr_status")
+                .toMaybeOne (VocBuildingAddress.class, "AS vc_build_address", "label").on("fiashouseguid")
+                .toMaybeOne (VocOksm.class, "*").on("registrationcountry")
+                .toMaybeOne (VocGisStatus.class, "AS status", "label").on("id_org_pr_status")
 //                .toMaybeOne (VocOrganizationProposalLog.class).on ()
 //                .toMaybeOne (OutSoap.class, "id_status").on ()
             );
@@ -166,27 +169,48 @@ public class VocOrganizationProposalsImpl extends BaseCRUD<VocOrganizationPropos
     }
 
     @Override
+    public JsonObject getVocs() { return fetchData((db, job) -> {
+
+            db.addJsonArrays(job,
+                ModelHolder.getModel().select(VocOrganizationTypes.class, "*").where("id IN", 2, 3).orderBy("label")
+            );
+    }); }
+
+    @Override
     public JsonObject doCreate(JsonObject p, User user) {
 
         return doAction((db, job) -> {
 
             JsonObject data = p.getJsonObject("data");
 
-            Object id = db.insertId(VocOrganizationProposal.class, HASH(
-                    "parent", data.getString("uuid_org_parent"),
-                    "id_type", data.getString("id_type"),
-                    "fullname", data.getString("fullname"),
-                    "shortname", data.getString("shortname"),
-                    "ogrn", data.getString("ogrn"),
-                    "stateregistrationdate", data.getString("stateregistrationdate"),
-                    "inn", data.getString("inn"),
-                    "kpp", data.getString("kpp"),
-                    "okopf", data.getString("okopf", null),
-                    "address", data.getString("address", null),
-                    "fiashouseguid", data.getString("fiashouseguid", null),
-                    "info_source", data.getString("info_source", null),
-                    "dt_info_source", data.getString("dt_info_source", null)
-            ));
+            Map<String, Object> r = HASH(
+                "id_type", data.getString("id_type"),
+                "fullname", data.getString("fullname"),
+                "shortname", data.getString("shortname"),
+                "inn", data.getString("inn"),
+                "kpp", data.getString("kpp"),
+                "address", data.getString("address", null)
+            );
+
+            if (data.getString("id_type").equals ("2")) { // Обособленное подразделение
+                r.put("fiashouseguid", data.getString("fiashouseguid"));
+                r.put("parent", data.getString("uuid_org_parent"));
+                r.put("stateregistrationdate", data.getString("stateregistrationdate"));
+                r.put("ogrn", data.getString("ogrn"));
+                r.put("okopf", data.getString("okopf", null));
+                r.put("info_source", data.getString("info_source", null));
+                r.put("dt_info_source", data.getString("dt_info_source", null));
+            }
+
+            if (data.getString("id_type").equals("3")) { // ФПИЮЛ
+                r.put("fiashouseguid", data.getString("fiashouseguid", null));
+                r.put("nza", data.getString("nza"));
+                r.put("accreditationstartdate", data.getString("accreditationstartdate"));
+                r.put("accreditationenddate", data.getString("accreditationenddate", null));
+                r.put("registrationcountry", data.getString("registrationcountry"));
+            }
+
+            Object id = db.insertId(VocOrganizationProposal.class, r);
 
             job.add("id", id.toString());
 
@@ -201,21 +225,34 @@ public class VocOrganizationProposalsImpl extends BaseCRUD<VocOrganizationPropos
 
             JsonObject data = p.getJsonObject("data");
 
-            db.update(VocOrganizationProposal.class, HASH(
-                    "uuid", id,
-                    "fullname", data.getString("fullname"),
-                    "shortname", data.getString("shortname"),
-                    "ogrn", data.getString("ogrn"),
-                    "stateregistrationdate", data.getString("stateregistrationdate"),
-                    "inn", data.getString("inn"),
-                    "kpp", data.getString("kpp"),
-                    "okopf", data.getString("okopf", null),
-                    "address", data.getString("address", null),
-                    "fiashouseguid", data.getString("fiashouseguid", null),
-                    "activityenddate", data.getString("activityenddate", null),
-                    "info_source", data.getString("info_source", null),
-                    "dt_info_source", data.getString("dt_info_source", null)
-            ));
+            Map<String, Object> r = HASH(
+                "uuid", id,
+                "fullname", data.getString("fullname"),
+                "shortname", data.getString("shortname"),
+                "inn", data.getString("inn"),
+                "kpp", data.getString("kpp"),
+                "address", data.getString("address", null),
+                "activityenddate", data.getString("activityenddate", null)
+            );
+
+            if (data.getString("id_type").equals("2")) { // Обособленное подразделение
+                r.put("fiashouseguid", data.getString("fiashouseguid", null));
+                r.put("stateregistrationdate", data.getString("stateregistrationdate"));
+                r.put("ogrn", data.getString("ogrn"));
+                r.put("okopf", data.getString("okopf", null));
+                r.put("info_source", data.getString("info_source", null));
+                r.put("dt_info_source", data.getString("dt_info_source", null));
+            }
+
+            if (data.getString("id_type").equals("3")) { // ФПИЮЛ
+                r.put("fiashouseguid", data.getString("fiashouseguid"));
+                r.put("nza", data.getString("nza"));
+                r.put("accreditationstartdate", data.getString("accreditationstartdate"));
+                r.put("accreditationenddate", data.getString("accreditationenddate", null));
+                r.put("registrationcountry", data.getString("registrationcountry"));
+            }
+
+            db.update(VocOrganizationProposal.class, r);
 
             job.add("id", id);
 

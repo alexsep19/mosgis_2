@@ -2,6 +2,11 @@ define ([], function () {
 
     return function (data, view) {
 
+        data._can = {
+            add_branch: $_USER.role.admin,
+            add_alien: $_USER.role.admin
+        }
+
         var is_popup = 1 == $_SESSION.delete ('voc_organization_proposals_popup.on')
 
         data.label = 'Создание обособленных подразделений и ФПИЮЛ'
@@ -16,22 +21,31 @@ define ([], function () {
 
             show: {
                 toolbar: true,
+                toolbarColumns: false,
                 footer: true
             },
 
             searches: [
                 {field: 'ogrn',      caption: 'ОГРН(ИП)',            type: 'text', operator: 'is', operators: ['is']},
-                {field: 'label_uc',  caption: 'Наименование / ФИО',  type: 'text'},
+                {field: 'label_uc',  caption: 'Наименование',  type: 'text'},
                 {field: 'inn',       caption: 'ИНН',                 type: 'text', operator: 'is', operators: ['is']},
                 {field: 'kpp',       caption: 'КПП',                 type: 'text', operator: 'is', operators: ['is']},
-//                {field: 'id_type', caption: 'Тип',     type: 'enum', options: {items: data.vc_organization_types.items}
-//                    , hidden: is_popup
-//                },
+                {field: 'id_type', caption: 'Тип',     type: 'enum'
+                    , hidden: is_popup
+                    , options: {
+                        items: data.vc_organization_types.items.map(function(i) {
+                            if (i.id == 3) { // HACK: длинный ФПИЮЛ (...) коверкает окно поиска
+                                i.text = i.text.replace(/ \(.*\)/, '')
+                            }
+                            return i
+                        })
+                    }
+                },
             ],
 
             columns: [
                 {field: 'ogrn', caption: 'ОГРН(ИП)',    size: 20},
-                {field: 'label', caption: 'Наименование (ФИО)',    size: 100},
+                {field: 'label', caption: 'Наименование',    size: 100},
                 {field: 'inn', caption: 'ИНН',    size: 15},
                 {field: 'kpp', caption: 'КПП',    size: 10},
             ],
@@ -42,14 +56,25 @@ define ([], function () {
                 items: [
                     {
                         type: 'button',
-                        id: 'add',
-                        caption: 'Добавить обособленное подразделение'
+                        id: 'add_branch',
+                        caption: 'Добавить обособленное подразделение',
+                        off: !data._can.add_branch
+                    },
+                    {
+                        type: 'button',
+                        id: 'add_alien',
+                        caption: 'Добавить ФПИЮЛ',
+                        off: !data._can.add_alien
                     }
-                ],
+                ].filter(not_off),
                 onClick: function (target, e) {
-                    if (target == 'add') {
-                        $_DO.add_branch_voc_organization_proposals(e)
+                    var handler = $_DO[target + '_voc_organization_proposals']
+
+                    if (!handler) {
+                        return false
                     }
+
+                    handler(e)
                 }
             },
 
@@ -116,7 +141,7 @@ define ([], function () {
 
                     $('#tb_voc_organization_proposals_grid_toolbar_item_w2ui-search .w2ui-search-all').attr ({
                         style: 'width: 450px !important',
-                        placeholder: 'Введите полный ОГРН[ИП], ИНН или подстроку наименования/ФИО для поиска',
+                        placeholder: 'Введите полный ОГРН[ИП], ИНН или подстроку наименования',
                         title: 'Указав ИНН или ОГРН, Вы можете добавить через пробел КПП.\n\nДостаточно первых двух цифр, например: 7711122233 77',
                     })
 
