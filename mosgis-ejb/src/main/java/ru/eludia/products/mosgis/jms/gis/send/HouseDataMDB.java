@@ -122,15 +122,6 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
             db.commit();
             
             UUIDPublisher.publish (getQueue (action), ack.getRequesterMessageGUID ());
-            
-            db.begin ();
-            db.update (OutSoap.class, DB.HASH (
-                "uuid", ack.getRequesterMessageGUID (),
-                "uuid_ack", ack.getMessageGUID ()
-            ));
-            db.commit ();
-                
-            UUIDPublisher.publish (importQueue, ack.getRequesterMessageGUID ()); 
         }
         catch (Fault ex) {
 

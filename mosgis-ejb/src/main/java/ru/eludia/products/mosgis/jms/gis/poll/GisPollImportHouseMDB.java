@@ -5,11 +5,9 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
-import javax.jms.Queue;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
@@ -23,7 +21,6 @@ import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
-import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
@@ -44,12 +41,6 @@ public class GisPollImportHouseMDB  extends GisPollMDB {
 
     @EJB
     private WsGisHouseManagementClient wsGisHouseManagementClient;
-    
-    @EJB
-    private UUIDPublisher UUIDPublisher;
-    
-    @Resource (mappedName = "mosgis.outImportHouseQueue")
-    private Queue queue;
     
     @Override
     protected Get get(UUID uuid) {
