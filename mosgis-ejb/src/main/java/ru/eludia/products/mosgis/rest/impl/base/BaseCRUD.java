@@ -184,7 +184,7 @@ public abstract class BaseCRUD <T extends Table> extends Base<T> implements CRUD
                 .get(VocBuilding.class, fiashouseguid, "oktmo")
         );
         
-        if (oktmo != null) job.add ("oktmo", oktmo);
+        if (oktmo != null) job.add ("oktmo", oktmo.getString("oktmo"));
         
     });}
 
