@@ -90,13 +90,26 @@ public class VotingProtocol extends EnTable {
         
         trigger ("BEFORE UPDATE", 
                 
-            "BEGIN " +                    
-                "IF :NEW.is_deleted=0 AND :NEW.ID_PRTCL_STATUS <> :OLD.ID_PRTCL_STATUS AND :NEW.ID_PRTCL_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING.getId () + " THEN BEGIN " +
-                        
-                    "IF :NEW.AVOTINGDATE > TRUNC(SYSDATE) THEN raise_application_error (-20000, 'Приём решений ещё не завершён. Операция отменена.'); END IF; " +
-                        
-                "END; END IF; " +                        
-            "END;"
+            "BEGIN "
+                + "IF :NEW.is_deleted=0 AND :NEW.ID_PRTCL_STATUS <> :OLD.ID_PRTCL_STATUS AND :NEW.ID_PRTCL_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING.getId () + " THEN BEGIN "
+
+                    + "IF :NEW.AVOTINGDATE > TRUNC(SYSDATE) THEN raise_application_error (-20000, 'Приём решений ещё не завершён. Операция отменена.'); END IF; "
+
+                    + " FOR i IN ("
+                        + "SELECT "
+                        + " o.uuid "
+                        + "FROM "
+                        + " tb_vote_decision_lists o "
+                        + "WHERE o.is_deleted = 0"
+                        + " AND o.PROTOCOL_UUID = :NEW.uuid "
+                        + " AND o.DECISIONTYPE_VC_NSI_63 = '2.1' "
+                        + " AND o.FORMINGFUND_VC_NSI_241 = '1' "
+                        + ") LOOP"
+                    + " raise_application_error (-20000, 'Для выбора способа формирования фонда капитального ремонта запрещено передавать «Значение не выбрано». Операция отменена.'); "
+                    + " END LOOP; "
+
+                + "END; END IF; "
+            + "END;"
                 
         );
         
