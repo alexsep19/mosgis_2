@@ -3,6 +3,7 @@ package ru.eludia.products.mosgis.rest.impl.base;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.jms.Queue;
 import javax.json.Json;
@@ -184,7 +185,7 @@ public abstract class BaseCRUD <T extends Table> extends Base<T> implements CRUD
                 .get(VocBuilding.class, fiashouseguid, "oktmo")
         );
         
-        if (oktmo != null) job.add ("oktmo", oktmo.getString("oktmo"));
+        if (oktmo != null) job.add ("oktmo", String.valueOf (oktmo.getInt("oktmo")));
         
     });}
 
