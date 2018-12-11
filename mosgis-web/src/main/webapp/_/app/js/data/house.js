@@ -56,7 +56,7 @@ define ([], function () {
             
     }            
 
-    return function (done) {        
+    return function (done) { 
 
         query ({type: 'houses'}, {}, function (data) {
         
@@ -160,7 +160,7 @@ define ([], function () {
                 20122: 11665,
                 12545: 11665,
 
-            }            
+            }
                                                 
             $('body').data ('data', data)
             $('body').data ('area_codes', area_codes)
@@ -168,7 +168,6 @@ define ([], function () {
             done (data)        
             
         })
-        
     }
 
 })

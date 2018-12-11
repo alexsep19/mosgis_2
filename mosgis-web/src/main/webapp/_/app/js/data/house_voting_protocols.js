@@ -36,7 +36,7 @@ define ([], function () {
 
         data = $('body').data ('data')
 
-        done(data);
+        done(data)
 
     }
 

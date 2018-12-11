@@ -1,7 +1,7 @@
 define ([], function () {
 
     return function (data, view) {
-        
+
         $('title').text (data.item.label)
         
         data.item.protocoldate = dt_dmy (data.item.protocoldate)

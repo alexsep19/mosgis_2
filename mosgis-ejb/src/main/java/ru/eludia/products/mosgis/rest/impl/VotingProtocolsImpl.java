@@ -101,7 +101,6 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
             .where ("fiashouseguid", p.getJsonObject("data").getJsonString("uuid_house").getString ())
             .toOne (VocGisStatus.class, "label AS status_label").on("id_prtcl_status_gis")
             .toMaybeOne (VotingProtocolLog.class         ).on ()
-            .and ("uuid_org", user.getUuidOrg ())
             .orderBy ("root.id_prtcl_status_gis")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
@@ -156,7 +155,7 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
         JsonObject item = db.getJsonObject (ModelHolder.getModel ()
             .get (VotingProtocol.class, id, "AS root", "*")
             .toOne (VocGisStatus.class, "label AS status_label").on("id_prtcl_status")
-            .toOne (VocBuilding.class, "label AS address_label").on ()
+            .toOne (VocBuilding.class, "label AS address_label", "oktmo AS oktmo").on ()
             .toMaybeOne (House.class, "AS house", "uuid AS house_uuid", "fiashouseguid").on ("root.fiashouseguid=house.fiashouseguid")
             .toMaybeOne (VotingProtocolLog.class           ).on ()
             .toMaybeOne (OutSoap.class,             "err_text").on ()

@@ -8,9 +8,27 @@ define ([], function () {
     
     return function (data, view) {
 
-        function show () {
-            if (data.item.house_uuid && (data.item.id_prtcl_status == 10 || data.item.id_prtcl_status == 11))
-                return true
+        function Permissions () {
+
+            if (!data.item.is_deleted && data.item.house_uuid && (data.item.id_prtcl_status_gis == 10 || data.item.id_prtcl_status_gis == 11)) {
+
+                if (data.cach) {
+
+                    if ($_USER.role.admin) return true
+
+                    return ($_USER.role.nsi_20_1 ||
+                            $_USER.role.nsi_20_19 ||
+                            $_USER.role.nsi_20_20 ||
+                            $_USER.role.nsi_20_21 ||
+                            $_USER.role.nsi_20_22) &&
+                            data.cach.is_own &&
+                            $_USER.uuid_org == data.cach['org.uuid']
+
+                }
+
+                return $_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']]
+            }
+
             return false
         }
 
@@ -28,8 +46,7 @@ define ([], function () {
                 toolbar: true,
                 footer: true,
                 toolbarColumns: true,
-                toolbarAdd: show (),
-                toolbarDelete: show (),
+                toolbarAdd: Permissions (),
             },            
 
             textSearch: 'contains',

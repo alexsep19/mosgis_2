@@ -12,8 +12,10 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
+import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
 import ru.eludia.products.mosgis.rest.api.SessionsLocal;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTerritory;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -39,6 +41,16 @@ public class SessionsImpl implements SessionsLocal {
             final String role = "nsi_20_" + rs.getString (1);
             logger.info ("adding role: " + role);
             roles.add (role, 1);
+        });
+        
+        db.forEach (ModelHolder.getModel ()
+                .select (VocOrganizationTerritory.class)
+                .toOne  (VocOktmo.class, "code").on ()
+                .where  ("uuid_org", uuid_org),
+                (rs) -> {
+                    final String oktmo = "oktmo_" + rs.getString(1);
+                    logger.info ("adding oktmo: " + oktmo);
+                    roles.add (oktmo, 1);
         });
             
         return roles.build ();

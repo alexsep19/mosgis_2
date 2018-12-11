@@ -115,7 +115,32 @@ define ([], function () {
     
     }
 
-    return function (done) {        
+    return function (done) { 
+
+        function Permissions () {
+
+            if (!data.item.is_deleted) {
+
+                if (data.cach) {
+
+                    if ($_USER.role.admin) return true
+                    
+                    return ($_USER.role.nsi_20_1 ||
+                            $_USER.role.nsi_20_19 ||
+                            $_USER.role.nsi_20_20 ||
+                            $_USER.role.nsi_20_21 ||
+                            $_USER.role.nsi_20_22) &&
+                            data.cach.is_own && 
+                            $_USER.uuid_org == data.cach['org.uuid']
+
+                }
+
+                return $_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']]
+
+            }
+
+            return false
+        }       
 
         w2ui ['topmost_layout'].unlock ('main')
 
@@ -126,27 +151,20 @@ define ([], function () {
         data.__read_only = 1
 
         if ($_USER.role.admin) data.item.org_label = data.item ['vc_orgs.label']
-        
-        var it = data.item
-        it.err_text = it ['out_soap.err_text']        
-        
-        it._can = {cancel: 1}
 
-        if (!$_USER.role.admin && !it.is_deleted && data.cach && data.cach.is_own && data.cach.id_ctr_status_gis == 40) {
-        
-            switch (it.id_prtcl_status) {
-                case 10:
-                    it._can.approve = 1
-                case 11:
-                    it._can.edit = 1
-                    break
-                case 14:
-                    it._can.alter = 1
-                    break
-            }
-            
-            it._can.update = it._can.edit
-        
+        data.item.err_text = data.item ['out_soap.err_text']
+
+        var permissions = Permissions ()
+
+        console.log (data)
+
+        data.item._can = {
+            edit: permissions,
+            update: permissions,
+            cancel: 1,
+            delete: permissions,
+            approve: permissions && data.cach && data.cach.id_ctr_status_gis == 40 && data.item.id_prtcl_status == 10,
+            alter: permissions && data.cach && data.cach.id_ctr_status_gis == 40 && data.item.id_prtcl_status == 14,
         }
 
         done (data)

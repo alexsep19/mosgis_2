@@ -8,7 +8,29 @@ define ([], function () {
             
     return function (data, view) {
 
-        var permissions = data.item.id_prtcl_status_gis == 10 || data.item.id_prtcl_status_gis == 11
+        function Permissions () {
+
+            if (!data.item.is_deleted && data.item.house_uuid && (data.item.id_prtcl_status_gis == 10 || data.item.id_prtcl_status_gis == 11)) {
+
+                if (data.cach) {
+
+                    if ($_USER.role.admin) return true
+
+                    return ($_USER.role.nsi_20_1 ||
+                            $_USER.role.nsi_20_19 ||
+                            $_USER.role.nsi_20_20 ||
+                            $_USER.role.nsi_20_21 ||
+                            $_USER.role.nsi_20_22) &&
+                            data.cach.is_own &&
+                            $_USER.uuid_org == data.cach['org.uuid']
+
+                }
+
+                return $_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']]
+            }
+
+            return false
+        }
 
         var layout = w2ui ['topmost_layout']
 
@@ -21,14 +43,14 @@ define ([], function () {
             name: grid_name,
 
             show: {
-                toolbar: true,
+                toolbar: Permissions (),
                 footer: 1,
                 toolbarReload: false,
                 toolbarColumns: false,
                 toolbarInput: false,
-                toolbarAdd: permissions,
-                toolbarDelete: permissions,
-                toolbarEdit: permissions,
+                toolbarAdd: true,
+                toolbarDelete: true,
+                toolbarEdit: true,
             },            
 
             textSearch: 'contains',

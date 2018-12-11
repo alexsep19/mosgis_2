@@ -8,9 +8,27 @@ define ([], function () {
     
     return function (data, view) {
 
-        function show () {
-            if (data.item.house_uuid && (data.item.id_prtcl_status == 10 || data.item.id_prtcl_status == 11))
-                return true
+        function Permissions () {
+
+            if (!data.item.is_deleted && data.item.house_uuid && (data.item.id_prtcl_status_gis == 10 || data.item.id_prtcl_status_gis == 11)) {
+
+                if (data.cach) {
+
+                    if ($_USER.role.admin) return true
+
+                    return ($_USER.role.nsi_20_1 ||
+                            $_USER.role.nsi_20_19 ||
+                            $_USER.role.nsi_20_20 ||
+                            $_USER.role.nsi_20_21 ||
+                            $_USER.role.nsi_20_22) &&
+                            data.cach.is_own &&
+                            $_USER.uuid_org == data.cach['org.uuid']
+
+                }
+
+                return $_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']]
+            }
+
             return false
         }
 
@@ -27,12 +45,12 @@ define ([], function () {
                                      caption: 'Собственник', 
                                      icon: 'w2ui-icon-plus', 
                                      onClick: $_DO.create_owner_voting_protocol_vote_initiators, 
-                                     off: !show ()},
+                                     off: !Permissions ()},
                     {type: 'button', id: 'create_org', 
                                      caption: 'Юридическое лицо', 
                                      icon: 'w2ui-icon-plus', 
                                      onClick: $_DO.create_org_voting_protocol_vote_initiators, 
-                                     off: !show ()},
+                                     off: !Permissions ()},
                 ].filter (not_off),
                 
             },
@@ -45,7 +63,7 @@ define ([], function () {
                 toolbar: true,
                 footer: true,
                 toolbarColumns: true,
-                toolbarDelete: show (),
+                toolbarDelete: Permissions (),
             },            
 
             textSearch: 'contains',
@@ -77,7 +95,7 @@ define ([], function () {
                         openTab ('/voc_organization_legal/' + record['uuid_org'])
                     else
                         openTab ('/voc_organization_individual/' + record['uuid_org'])
-                else
+                else if ($_USER.uuid_org == data.item.uuid_org)
                     openTab ('/vc_person/' + record['prop.uuid_person_owner'])
             },
             

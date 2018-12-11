@@ -6,14 +6,22 @@ define ([], function () {
 
             if (!data.item.is_condo) return false
 
-            if ($_USER.role.nsi_20_1 ||
-                $_USER.role.nsi_20_7 ||
+            if ($_USER.role.admin ||
                 $_USER.role.nsi_20_4 ||
-                $_USER.role.nsi_20_19 || 
-                $_USER.role.nsi_20_20 || 
-                $_USER.role.nsi_20_21 ||
-                $_USER.role.admin) { return true }
-            else { return false }
+                $_USER.role.nsi_20_7) 
+                return true
+
+            if (data.cach && $_USER.uuid_org == data.cach['org.uuid']) {
+
+                return ($_USER.role.nsi_20_1 ||
+                        $_USER.role.nsi_20_19 ||
+                        $_USER.role.nsi_20_20 ||
+                        $_USER.role.nsi_20_21 ||
+                        $_USER.role.nsi_20_22)
+
+            }
+
+            return $_USER.role.nsi_20_8 && $_USER.oktmo[data.item['fias.oktmo']]
             
         }
         
