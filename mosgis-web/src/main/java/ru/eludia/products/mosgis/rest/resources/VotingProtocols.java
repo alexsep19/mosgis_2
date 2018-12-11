@@ -15,6 +15,13 @@ import ru.eludia.products.mosgis.rest.api.VotingProtocolsLocal;
 @Path("voting_protocols")
 public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
     
+    private JsonObject getInnerItem (String id) {
+        final JsonObject data = back.getItem (id);        
+        final JsonObject item = data.getJsonObject ("item");
+        if (item == null) throw new InternalServerErrorException ("Wrong data from back.getItem (" + id + "), no item: " + data);
+        return item;
+    }
+    
     private String getUserOrg () {
 
         String userOrg = getUser ().getUuidOrg ();
@@ -26,6 +33,21 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
 
         return userOrg;
         
+    }
+    
+    private void checkOrg (JsonObject item) {
+
+        String itemOrg = item.getString ("uuid_org", null);
+
+        if (itemOrg == null) throw new InternalServerErrorException ("Wrong voting protocol, no org: " + item);
+
+        String userOrg = getUserOrg ();
+
+        if (!userOrg.equals (itemOrg)) {
+            logger.warning ("Org mismatch: " + userOrg + " vs. " + itemOrg);
+            throw new ValidationException ("foo", "Доступ запрещён");
+        }
+
     }
     
     private boolean selectAccessCheck (JsonObject item) {
