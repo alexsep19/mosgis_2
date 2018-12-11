@@ -42,10 +42,23 @@ public class ActualPublicPropertyContract extends View {
 
     @Override
     public final String getSQL () {
+        
+        StringBuilder sb = new StringBuilder ("SELECT ");
+        
+        for (EnTable.c i: EnTable.c.values ()) {
+            sb.append ("o.");
+            sb.append (i.lc ());
+            sb.append (',');
+        }
 
-        return "SELECT "
-            + " o.*"
-            + " , o.uuid id "
+        for (PublicPropertyContract.c i: PublicPropertyContract.c.values ()) {
+            sb.append ("o.");
+            sb.append (i.lc ());
+            sb.append (',');
+        }
+
+        return sb.toString ()
+            + " o.uuid id "
             + " , DECODE(o.uuid_org_customer, NULL, 0, 1) is_customer_org"
             + " , fias.oktmo "
             + " , org.label org_label "

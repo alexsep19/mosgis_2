@@ -61,9 +61,7 @@ define ([], function () {
         }
         else if (!v['abstent'].match(/^[0-9]*\.?[0-9]+$/)) die ('abstent', 'Введено неверное количество голосов "Воздержалось"')
 
-        if (!v.hasOwnProperty('votingresume')) die ('votingresume', 'Пожалуйста, укажите итог голосования')
-
-        v['votingresume'] = (v['votingresume'] == 0) ? "M" : "N"
+        if (!v.votingresume) die ('votingresume', 'Пожалуйста, укажите итог голосования')
 
         query ({type: 'vote_decision_lists', action: 'update'}, {data: v}, reload_page)
 
@@ -113,7 +111,7 @@ define ([], function () {
         if (!data.item.is_deleted && 
             data.cach && 
             data.cach.is_own && 
-            (data.item['protocol.id_prtcl_status_gis'] == 10 || data.item['protocol.id_prtcl_status_gis'] == 11)) {
+            (data.item['protocol.id_prtcl_status'] <= 11 || data.item['protocol.id_prtcl_status_gis'] == 11)) {
             permissions = 1
         }
 

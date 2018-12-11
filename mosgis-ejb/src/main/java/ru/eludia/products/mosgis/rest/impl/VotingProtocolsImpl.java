@@ -1,18 +1,24 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
+import java.util.UUID;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.jms.Queue;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
@@ -20,6 +26,8 @@ import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.tables.PropertyDocument;
 import ru.eludia.products.mosgis.db.model.tables.VoteInitiator;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocol;
+import ru.eludia.products.mosgis.db.model.tables.VotingProtocolFile;
+import ru.eludia.products.mosgis.db.model.tables.VotingProtocolFileLog;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocolLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
@@ -39,6 +47,14 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements VotingProtocolsLocal {
+
+    @Resource (mappedName = "mosgis.inHouseVotingProtocolsQueue")
+    Queue queue;
+
+    @Override
+    public Queue getQueue () {
+        return queue;
+    }
 
     private void filterOffDeleted (Select select) {
         select.and ("is_deleted", 0);
@@ -138,7 +154,7 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
 
         JsonObject item = db.getJsonObject (ModelHolder.getModel ()
             .get (VotingProtocol.class, id, "AS root", "*")
-            .toOne (VocGisStatus.class, "label AS status_label").on("id_prtcl_status_gis")
+            .toOne (VocGisStatus.class, "label AS status_label").on("id_prtcl_status")
             .toOne (VocBuilding.class, "label AS address_label", "oktmo AS oktmo").on ()
             .toMaybeOne (House.class, "AS house", "uuid AS house_uuid", "fiashouseguid").on ("root.fiashouseguid=house.fiashouseguid")
             .toMaybeOne (VotingProtocolLog.class           ).on ()
@@ -182,4 +198,61 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
 
     });}
     
+    @Override
+    public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
+
+        db.update (getTable (), HASH (
+            EnTable.c.UUID,                   id,
+            VotingProtocol.c.ID_PRTCL_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+        ));
+
+        logAction (db, user, id, VocAction.i.APPROVE);
+
+        List<UUID> ids = new ArrayList<> ();        
+        db.forEach (db.getModel ().select (VotingProtocolFile.class, "uuid").where (VotingProtocolFile.c.UUID_PROTOCOL.lc (), id).and (EnTable.c.IS_DELETED.lc (), 0), (rs) -> {
+            final Object u = db.getValue (rs, 1);
+            if (u != null) ids.add ((UUID) u);
+        });
+
+        for (UUID idFile: ids) {
+
+            String idFileLog = db.insertId (VotingProtocolFileLog.class, HASH (
+                "action", VocAction.i.APPROVE.getName (),
+                "uuid_object", idFile,
+                "uuid_user", user == null ? null : user.getId ()
+            )).toString ();
+
+            db.update (VotingProtocolFile.class, HASH (
+                "uuid",      idFile,
+                "id_log",    idFileLog
+            ));
+
+        }
+
+    });}  
+    
+    @Override
+    protected void publishMessage (VocAction.i action, String id_log) {
+        
+        switch (action) {
+            case APPROVE:
+                super.publishMessage (action, id_log);
+            default:
+                return;
+        }
+        
+    }
+
+    @Override
+    public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
+        
+        db.update (getTable (), HASH (
+            EnTable.c.UUID,                    id,
+            VotingProtocol.c.ID_PRTCL_STATUS,  VocGisStatus.i.PROJECT.getId ()
+        ));
+        
+        logAction (db, user, id, VocAction.i.ALTER);
+        
+    });}
+
 }
