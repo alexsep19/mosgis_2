@@ -5,6 +5,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Path;
 import javax.json.JsonObject;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -58,6 +59,7 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
             return true;
         
         JsonObject cach = back.getCach (item.getJsonObject ("data").getString ("uuid_house"));
+        JsonObject oktmo = back.getOktmo (item.getJsonObject ("data").getString ("uuid_house"));
         String userOrg = getUserOrg ();
         if (cach.containsKey ("cach") && userOrg.equals (cach.getJsonObject ("cach").getString("org.uuid"))) {
             
@@ -68,8 +70,8 @@ public class VotingProtocols extends EJBResource<VotingProtocolsLocal> {
                    securityContext.isUserInRole ("nsi_20_22");
             
         }
-        
-        return true;
+        else
+            return securityContext.isUserInRole("nsi_20_8") && securityContext.isUserInRole("oktmo_" + oktmo.getString ("oktmo"));
         
     }
     
