@@ -46,11 +46,12 @@ public class PublicPropertyContractDocsImpl extends BaseCRUD<PublicPropertyContr
         
             Object id = db.insertId (getTable (), HASH (
                 PARENT_REF,       file.getString (PARENT_REF),
+                "protocolnum",    file.getString ("protocolnum"),
+                "protocoldate",   file.getString ("protocoldate"),
                 "label",          file.getString ("label"),
                 "description",    file.getString ("description", ""),
                 "mime",           file.getString ("type"),
-                "len",            file.getInt    ("size")
-                
+                "len",            file.getInt    ("size")                
             ));
         
             job.add ("id", id.toString ());
