@@ -14,11 +14,6 @@ public class VocVotingForm extends Table {
     
     private static final String TABLE_NAME = "vc_voting_forms";
     
-    private static JsonArray jsonArray = i.toJsonArray ();    
-    public  static final void addTo (JsonObjectBuilder job) {
-        job.add (TABLE_NAME, jsonArray);
-    }
-
     public VocVotingForm () {       
         super (TABLE_NAME, "Формы проведения ОСС");
         cols  (c.class);        
@@ -78,6 +73,11 @@ public class VocVotingForm extends Table {
             return builder.build ();            
         }
 
+    }
+    
+    private static JsonArray jsonArray = i.toJsonArray ();    
+    public  static final void addTo (JsonObjectBuilder job) {
+        job.add (TABLE_NAME, jsonArray);
     }
     
 }

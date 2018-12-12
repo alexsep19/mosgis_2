@@ -15,6 +15,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocVotingForm;
+import ru.eludia.products.mosgis.db.model.voc.VocVotingMeetingEligibility;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportVotingProtocolRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ProtocolType;
 
@@ -52,7 +53,7 @@ public class VotingProtocol extends EnTable {
 
         EXTRAVOTING          (Type.BOOLEAN, "Внеочередное собрание"),
         ANNUALVOTING         (Type.BOOLEAN, new Virt("DECODE(\"EXTRAVOTING\",1,0,1)"), "Ежегодное собрание"),
-        MEETINGELIGIBILITY   (Type.STRING, 1, "Правомочность собрания. (C)OMPETENT - правомочно, (N)OT_COMPETENT - не правомочно"),
+        MEETINGELIGIBILITY   (VocVotingMeetingEligibility.class, "Правомочность собрания"),
 
         MODIFICATION         (Type.STRING, 2000, null, "Основание изменения (для протоколов в статусе \"Размещен\")"),
 
