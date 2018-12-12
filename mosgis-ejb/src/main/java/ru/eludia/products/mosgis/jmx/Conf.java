@@ -200,6 +200,16 @@ public class Conf implements ConfMBean, ConfLocal {
     }
     
     @Override
+    public String getPathOksm() {
+        return get(VocSetting.i.PATH_OKSM);
+    }
+
+    @Override
+    public void setPathOksm(String s) {
+        set(VocSetting.i.PATH_OKSM, s);
+    }
+
+    @Override
     public String getPathOktmo () {
         return get (VocSetting.i.PATH_OKTMO);
     }

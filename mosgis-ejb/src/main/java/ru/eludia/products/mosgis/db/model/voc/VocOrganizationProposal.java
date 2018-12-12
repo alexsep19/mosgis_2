@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.db.model.voc;
 
+import ru.eludia.products.mosgis.db.model.voc.VocOksm;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
@@ -39,6 +40,13 @@ public class VocOrganizationProposal extends Table {
         LABEL_UC             (STRING, new Virt("UPPER(NVL(\"SHORTNAME\",\"FULLNAME\"))"), "НАИМЕНОВАНИЕ В ВЕРХНЕМ РЕГИСТРЕ"),
         INFO_SOURCE          (STRING, null, "Источник данных"),
         DT_INFO_SOURCE       (DATE, null, "Дата получения информации от источника данных"),
+
+        // для ФПИЮЛ
+        REGISTRATIONCOUNTRY    (VocOksm.class, null, "Страна регистрации"),
+        NZA                    (NUMERIC, 11, null, "Номер записи об аккредитации"),
+        ACCREDITATIONSTARTDATE (DATE, null, "Дата внесения в реестр аккредитованных"),
+        ACCREDITATIONENDDATE   (DATE, null, "Дата прекращения аккредитации "),
+
 
         ID_TYPE              (VocOrganizationTypes.class, null, "Тип организации"),
         ID_LOG               (VocOrganizationProposalLog.class, null, "Последний запрос"),

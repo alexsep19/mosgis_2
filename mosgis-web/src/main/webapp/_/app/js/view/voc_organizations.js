@@ -52,9 +52,10 @@ define ([], function () {
                     {
                         type: 'button',
                         id: 'add',
-                        caption : 'Добавить'
+                        caption : 'Добавить',
+                        off: !$_USER.role.admin
                     }
-                ],
+                ].filter(not_off),
                 onClick: function(target, e) {
                     if (target == 'add') {
                         openTab('/voc_organization_proposals', '_blank')
