@@ -7,7 +7,7 @@ define ([], function () {
         $(view).w2popup('open', {
 
             width  : 605,
-            height : 245,
+            height : 285,
 
             title   : 'Добавление документа',
 
@@ -22,6 +22,7 @@ define ([], function () {
                         name: name,
 
                         fields : [
+                            {name: 'id_type', type: 'list', options: {items: data.vc_pp_ctr_file_types.items}},
                             {name: 'label', type: 'text'},
                             {name: 'description',  type: 'textarea' },
                             {name: 'files', type: 'file', options: {max: 1, maxWidth: 400}},

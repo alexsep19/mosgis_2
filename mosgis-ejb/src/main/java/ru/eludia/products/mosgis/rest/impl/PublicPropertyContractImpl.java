@@ -25,6 +25,7 @@ import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContractVotingPro
 import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContractVotingProtocolLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocPublicPropertyContractFileType;
 import ru.eludia.products.mosgis.db.model.voc.VocUserOktmo;
 import ru.eludia.products.mosgis.db.model.voc.VocVotingForm;
 import ru.eludia.products.mosgis.db.model.voc.VocVotingMeetingEligibility;
@@ -124,6 +125,7 @@ public class PublicPropertyContractImpl extends BaseCRUD<PublicPropertyContract>
         VocVotingForm.addTo (job);
         VocVotingType.addTo (job);
         VocVotingMeetingEligibility.addTo (job);
+        VocPublicPropertyContractFileType.addTo (job);
 
     });}            
     

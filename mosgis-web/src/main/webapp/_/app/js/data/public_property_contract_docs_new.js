@@ -38,7 +38,7 @@ define ([], function () {
     
         var data = clone ($('body').data ('data'))
         
-        data.record = $_SESSION.delete ('record')
+        data.record = {id_type: 1}
         
         done (data)
         
