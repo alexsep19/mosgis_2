@@ -9,6 +9,8 @@ import javax.json.JsonObjectBuilder;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Table;
+import ru.eludia.base.model.def.Def;
+import ru.eludia.base.model.def.Num;
 
 public class VocPublicPropertyContractFileType extends Table {
     
@@ -25,6 +27,11 @@ public class VocPublicPropertyContractFileType extends Table {
         ID         (Type.NUMERIC, 1, "Идентификатор"),
         LABEL      (Type.STRING,     "Наименование");        
                                                                                     @Override public Col getCol () {return col;} private Col col; private c (Type type, Object... p) {col = new Col (this, type, p);}
+    }
+    
+    final static Num def = new Num (i.CONTRACT.getId ());
+    public static Def getDefault () {
+        return def;
     }
     
     public enum i {
