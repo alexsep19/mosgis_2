@@ -26,12 +26,6 @@ define ([], function () {
             return $_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']]
         }
 
-        status_list = data.vc_gis_status
-
-        status_list.forEach((el, i, arr) => {
-            el['text'] = el['label']
-        })
-
         var layout = w2ui ['topmost_layout']
         
         var $panel = $(layout.el ('main'))
@@ -53,7 +47,7 @@ define ([], function () {
             textSearch: 'contains',
 
             searches: [            
-                {field: 'id_prtcl_status_gis',  caption: 'Статус протокола',  type: 'enum', options: {items: status_list}},
+                {field: 'id_prtcl_status_gis',  caption: 'Статус протокола',  type: 'enum', options: {items: data.vc_gis_status}},
                 {field: 'form_',  caption: 'Форма собрания',  type: 'enum', options: {items: data.vc_voting_forms.items}},
                 {field: 'is_deleted', caption: 'Статус записи', type: 'enum', options: {items: [
                     {id: "0", text: "Актуальные"},
