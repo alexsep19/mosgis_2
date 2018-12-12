@@ -27,18 +27,24 @@ define ([], function () {
             },            
 
             textSearch: 'contains',
-
+/*
+Дата и время проведения собрания;
+Период приема решений;
+*/
             columns: [                               
-                {field: 'label', caption: 'Наименование', size: 100},
-                {field: 'len', caption: 'Объём, Мб', size: 15, render: function (r) {return (r.len/1024/1024).toFixed(3)}},
-                {field: 'description', caption: 'Описание', size: 50},
+                {field: 'protocolnum', caption: '№', size: 5},
+                {field: 'protocoldate', caption: 'Дата', size: 7, render: _dt},
+                {field: 'extravoting', caption: 'Вид собрания', size: 7, voc: data.vc_voting_types},
+                {field: 'meetingeligibility', caption: 'Правомочность проведения собрания', size: 10, voc: data.vc_voting_eligibility},
+                {field: 'form_', caption: 'Форма проведения', size: 15, voc: data.vc_voting_forms},
+                {field: 'id_prtcl_status', caption: 'Статус', size: 10, voc: data.vc_gis_status},
             ],
             
             postData: {data: {uuid_ctr: $_REQUEST.id}},
 
             url: '/mosgis/_rest/?type=public_property_contract_voting_protocols',
             
-//            onDblClick: $_DO.download_public_property_contract_voting_protocols,
+            onDblClick: function (e) {openTab ('/voting_protocol/' + e.recid)},
             
             onDelete: $_DO.delete_public_property_contract_voting_protocols,
             

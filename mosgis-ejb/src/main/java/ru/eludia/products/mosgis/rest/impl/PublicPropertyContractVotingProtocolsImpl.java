@@ -66,12 +66,13 @@ public class PublicPropertyContractVotingProtocolsImpl extends BaseCRUD<PublicPr
         Model m = ModelHolder.getModel ();
         
         Select select = m.select (VotingProtocol.class, "AS root", "*", "uuid AS id")
-            .where ("uuid",  
-                m.select (PublicPropertyContractVotingProtocol.class, PublicPropertyContractVotingProtocol.c.UUID_VP.lc ())
-                    .where (PARENT_REF, p.getJsonObject ("data").getString (PARENT_REF))
-                )
             .orderBy (VotingProtocol.c.PROTOCOLDATE.lc ())
-            .limit (p.getInt ("offset"), p.getInt ("limit"));
+            .limit (p.getInt ("offset"), p.getInt ("limit"))
+            .toOne (PublicPropertyContractVotingProtocol.class, "AS m2m", "uuid")
+                .where (PARENT_REF, p.getJsonObject ("data").getString (PARENT_REF))
+                .and ("is_deleted", 0)
+                .on ("root.uuid=m2m." + PublicPropertyContractVotingProtocol.c.UUID_VP.lc ())
+            ;
 
         applySearch (Search.from (p), select);
 
