@@ -12,16 +12,12 @@ public class PublicPropertyContractVotingProtocol extends EnTable {
         
         UUID_CTR       (PublicPropertyContract.class,  "Договор на пользование общим имуществом"),
         UUID_VP        (VotingProtocol.class,          "Протокол ОСС"),
+        ID_LOG         (PublicPropertyContractVotingProtocolLog.class, "Последнее событие редактирования"),        
         ;
         
         @Override
         public boolean isLoggable () {
-            switch (this) {
-//                case ID_LOG:
-//                    return false;
-                default:
-                    return true;
-            }
+            return false;
         }
 
         @Override

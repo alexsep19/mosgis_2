@@ -7,7 +7,10 @@ import javax.ejb.TransactionAttributeType;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonString;
+import javax.json.JsonValue;
 import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Select;
@@ -18,6 +21,8 @@ import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContract;
 import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContractLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContractVotingProtocol;
+import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContractVotingProtocolLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocUserOktmo;
@@ -150,5 +155,30 @@ public class PublicPropertyContractImpl extends BaseCRUD<PublicPropertyContract>
         return job.build ();
         
     }
+
+    @Override
+    public JsonObject doAddVotingProtocols (String id, JsonObject p, User user) {return doAction ((db) -> {
+        
+        for (JsonValue t: p.getJsonObject ("data").getJsonArray ("ids")) {
+            
+            String uuid = db.insertId (PublicPropertyContractVotingProtocol.class, HASH (
+                 PublicPropertyContractVotingProtocol.c.UUID_CTR.lc (), id,
+                 PublicPropertyContractVotingProtocol.c.UUID_VP.lc (), ((JsonString) t).getString ()
+            )).toString ();
+            
+            String id_log = db.insertId (PublicPropertyContractVotingProtocolLog.class, HASH (
+                "action", VocAction.i.CREATE.getName (),
+                "uuid_object", uuid,
+                "uuid_user", user.getId ()
+            )).toString ();
+
+            db.update (PublicPropertyContractVotingProtocol.class, HASH (
+                "uuid",      uuid,
+                "id_log",    id_log
+            ));
+            
+        }        
+        
+    });}
 
 }
