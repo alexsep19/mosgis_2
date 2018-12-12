@@ -38,6 +38,7 @@ import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
 import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
@@ -230,7 +231,7 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
         r.put("state", XmlUtils.createNsiRef(24, (String) r.get("code_vc_nsi_24")));
         r.put("lifecyclestage", XmlUtils.createNsiRef(336, (String) r.get("code_vc_nsi_336")));
         r.put("olsontz", XmlUtils.createNsiRef(32, "2")); //Москва(+3)
-        r.put("oktmo", XmlUtils.createOKTMORef((Long)r.get("vc_buildings.oktmo")));
+        r.put("oktmo", VocOktmo.createOKTMORef((Long)r.get("vc_buildings.oktmo")));
         r.putAll(getCadastralNumber((String) r.get("kad_n")));
         
         r.put("transportguid", r.get("uuid_object"));

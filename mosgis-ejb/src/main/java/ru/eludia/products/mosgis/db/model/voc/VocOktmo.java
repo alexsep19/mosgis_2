@@ -1,11 +1,13 @@
 package ru.eludia.products.mosgis.db.model.voc;
 
+import java.sql.SQLException;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
+import ru.gosuslugi.dom.schema.integration.base.OKTMORefType;
 
 public class VocOktmo extends Table {
     
@@ -58,6 +60,17 @@ public class VocOktmo extends Table {
         fieldNames = new String[c.values ().length - 2];
         for (int i = 0; i < fieldNames.length; i++)
             fieldNames[i] = c.values ()[i].lc ();
+        
+    }
+    
+    public static OKTMORefType createOKTMORef(Long oktmo) throws SQLException {
+        if (oktmo == null) {
+            return null;
+        }
+        
+        OKTMORefType oktmoRef = new OKTMORefType();
+        oktmoRef.setCode(oktmo.toString());
+        return oktmoRef;
         
     }
     

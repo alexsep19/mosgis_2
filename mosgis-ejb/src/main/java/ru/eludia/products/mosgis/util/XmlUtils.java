@@ -10,7 +10,6 @@ import ru.eludia.base.Model;
 import ru.eludia.base.model.def.Bool;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
-import ru.gosuslugi.dom.schema.integration.base.OKTMORefType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
 
 public class XmlUtils {
@@ -49,16 +48,5 @@ public class XmlUtils {
 
             return NsiTable.toDom(code, (UUID) nsiItem.get("guid"));
         }
-    }
-    
-    public static final OKTMORefType createOKTMORef(Long oktmo) throws SQLException {
-        if (oktmo == null) {
-            return null;
-        }
-        
-        OKTMORefType oktmoRef = new OKTMORefType();
-        oktmoRef.setCode(oktmo.toString());
-        return oktmoRef;
-        
     }
 }
