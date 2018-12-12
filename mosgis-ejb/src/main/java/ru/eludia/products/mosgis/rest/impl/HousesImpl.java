@@ -55,6 +55,31 @@ public class HousesImpl extends Base<House> implements HousesLocal {
     private static final Logger logger = Logger.getLogger (HousesImpl.class.getName ());
         
     @Override
+    public JsonObject selectAll (JsonObject p) {
+        
+        Model m = ModelHolder.getModel ();
+        
+        Select select = m.select (House.class, "uuid AS id", "address", "is_condo", "fiashouseguid", "unom")
+                .orderBy ("address")
+                .limit (p.getInt ("offset"), p.getInt ("limit"));
+        
+        final Search search = Search.from (p);
+
+        if (search != null) select = search.filter (select, simple (search, "unom", "fiashouseguid", "address_uc LIKE %?%"));
+        
+        JsonObjectBuilder jb = Json.createObjectBuilder ();
+
+        try (DB db = ModelHolder.getModel ().getDb ()) {
+            db.addJsonArrayCnt (jb, select);
+        }
+        catch (Exception ex) {
+            throw new InternalServerErrorException (ex);
+        }
+        
+        return jb.build ();
+    }
+    
+    @Override
     public JsonObject select (JsonObject p, User user) {
         
         Model m = ModelHolder.getModel ();
