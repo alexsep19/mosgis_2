@@ -11,9 +11,11 @@ public class PublicPropertyContractFile extends AttachTable {
     
     public enum c implements EnColEnum {
 
-        UUID_CTR (PublicPropertyContract.class,    "Ссылка на договор на пользование общим имуществом"),
-        ID_TYPE  (VocPublicPropertyContractFileType.class, VocPublicPropertyContractFileType.getDefault (), "Тип"),
-        ID_LOG   (PublicPropertyContractFileLog.class,  "Последнее событие редактирования")
+        UUID_CTR     (PublicPropertyContract.class,         "Ссылка на договор на пользование общим имуществом"),
+        ID_TYPE      (VocPublicPropertyContractFileType.class, VocPublicPropertyContractFileType.getDefault (), "Тип"),
+        PROTOCOLNUM  (Type.STRING, 30,  null,               "Номер протокола"),
+        PROTOCOLDATE (Type.DATE,        null,               "Дата составления протокола"),
+        ID_LOG       (PublicPropertyContractFileLog.class,  "Последнее событие редактирования")
         ;
 
         @Override

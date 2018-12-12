@@ -35,6 +35,9 @@ define ([], function () {
 
             columns: [                               
                 {field: 'label', caption: 'Наименование', size: 100},
+                {field: 'id_type', caption: 'Тип', size: 30, voc: data.vc_pp_ctr_file_types},
+                {field: 'protocolnum', caption: '№ протокола', size: 30},
+                {field: 'protocoldate', caption: 'Дата протокола', size: 18, render: _dt},
                 {field: 'len', caption: 'Объём, Мб', size: 15, render: function (r) {return (r.len/1024/1024).toFixed(3)}},
                 {field: 'description', caption: 'Описание', size: 50},
             ],

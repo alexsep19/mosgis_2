@@ -6,7 +6,16 @@ define ([], function () {
 
         var v = f.values ()
 
-        if (!v ['files']) die (name, 'Укажите, пожалуйста, файл')
+        if (!v ['files']) die ('files', 'Укажите, пожалуйста, файл')
+        
+        if (v.id_type == 3) {
+            if (!v.protocolnum) die ('protocolnum', 'Укажите, пожалуйста, номер протокола ОСС')
+            if (!v.protocoldate) die ('protocoldate', 'Укажите, пожалуйста, дату протокола ОСС')
+        }
+        else {
+            v.protocolnum = null
+            v.protocoldate = null
+        }
 
         v.files[0].file = new File ([v.files[0].file], v.label, {type: v.files[0].file.type})
         
