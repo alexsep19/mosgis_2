@@ -57,11 +57,10 @@ define ([], function () {
 
             columns: 
             [                
-                {field: 'protocolnum', caption: 'Номер протокола', size: 10, hidden: 1},
+                {field: 'protocolnum', caption: 'Номер протокола', size: 5},
                 {field: 'protocoldate', caption: 'Дата составления протокола', size: 7, render: _dt},
                 {field: 'extravoting', caption: 'Вид собрания', size: 7, render: function (r) {return r.extravoting ? 'Внеочередное' : 'Ежегодное'}},
                 {field: 'meetingeligibility', caption: 'Правомочность проведения собрания', size: 10, render: function (r) {return r.meetingeligibility == "C" ? 'Правомочное' : 'Неправомочное'}},
-                {field: 'modification', caption: 'Основания изменения', size: 15, hidden: 1},
                 {field: 'form_', caption: 'Форма проведения', size: 15, voc: data.vc_voting_forms},
                 {field: 'status_label', caption: 'Статус протокола', size: 10},
             ].filter (not_off),

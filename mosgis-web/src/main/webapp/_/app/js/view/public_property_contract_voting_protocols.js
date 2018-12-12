@@ -27,10 +27,7 @@ define ([], function () {
             },            
 
             textSearch: 'contains',
-/*
-Дата и время проведения собрания;
-Период приема решений;
-*/
+
             columns: [                               
                 {field: 'protocolnum', caption: '№', size: 5},
                 {field: 'protocoldate', caption: 'Дата', size: 7, render: _dt},
