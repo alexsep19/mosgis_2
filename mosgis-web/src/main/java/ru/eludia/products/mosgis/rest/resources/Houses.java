@@ -14,6 +14,17 @@ import ru.eludia.products.mosgis.rest.api.HousesLocal;
 @Path ("houses")
 public class Houses extends EJBResource <HousesLocal> {
     
+    private JsonObject selectWrapper (JsonObject p) {
+        
+        if (securityContext.isUserInRole ("admin")    ||
+            securityContext.isUserInRole ("nsi_20_4") ||
+            securityContext.isUserInRole ("nsi_20_7"))
+            return back.selectAll(p);
+        
+        return back.select (p, getUser ());
+        
+    }
+    
     private void checkOrg (JsonObject item) {
         
         if (securityContext.isUserInRole ("admin")) return;
@@ -34,7 +45,7 @@ public class Houses extends EJBResource <HousesLocal> {
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject select (JsonObject p) { 
-        return back.select (p, getUser ()); 
+        return selectWrapper (p);
     }
 
     @POST
