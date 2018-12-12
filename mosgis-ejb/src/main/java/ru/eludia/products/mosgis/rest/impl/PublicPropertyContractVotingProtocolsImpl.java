@@ -3,15 +3,11 @@ package ru.eludia.products.mosgis.rest.impl;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.json.Json;
 import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContractVotingProtocol;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocol;
-import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
-import ru.eludia.products.mosgis.db.model.voc.VocVotingForm;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.PublicPropertyContractVotingProtocolsLocal;
@@ -62,7 +58,7 @@ public class PublicPropertyContractVotingProtocolsImpl extends BaseCRUD<PublicPr
 
     }
     
-    private static final String PARENT_REF = PublicPropertyContractVotingProtocol.c.UUID_VP.lc ();
+    private static final String PARENT_REF = PublicPropertyContractVotingProtocol.c.UUID_CTR.lc ();
 
     @Override
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
@@ -71,7 +67,7 @@ public class PublicPropertyContractVotingProtocolsImpl extends BaseCRUD<PublicPr
         
         Select select = m.select (VotingProtocol.class, "AS root", "*", "uuid AS id")
             .where ("uuid",  
-                m.select (PublicPropertyContractVotingProtocol.class, PARENT_REF)
+                m.select (PublicPropertyContractVotingProtocol.class, PublicPropertyContractVotingProtocol.c.UUID_VP.lc ())
                     .where (PARENT_REF, p.getJsonObject ("data").getString (PARENT_REF))
                 )
             .orderBy (VotingProtocol.c.PROTOCOLDATE.lc ())
@@ -82,36 +78,6 @@ public class PublicPropertyContractVotingProtocolsImpl extends BaseCRUD<PublicPr
         db.addJsonArrayCnt (job, select);
 
     });}
-
-    @Override
-    public JsonObject getVocs() {
-        
-        JsonObjectBuilder jb = Json.createObjectBuilder ();
-        
-        VocGisStatus.addTo (jb);
-        VocVotingForm.addTo (jb);
-/*        
-        VocAction.addTo (jb);
-        
-        final MosGisModel model = ModelHolder.getModel ();
-        
-        try (DB db = model.getDb ()) {
-            
-            db.addJsonArrays (jb,
-                    
-                NsiTable.getNsiTable ( 25).getVocSelect (),
-                NsiTable.getNsiTable ( 63).getVocSelect (),
-                NsiTable.getNsiTable (241).getVocSelect ()
-
-            );
-
-        }
-        catch (Exception ex) {
-            throw new InternalServerErrorException (ex);
-        }
-*/
-        return jb.build ();
-    }
 
     @Override
     public JsonObject getItem (String id) {

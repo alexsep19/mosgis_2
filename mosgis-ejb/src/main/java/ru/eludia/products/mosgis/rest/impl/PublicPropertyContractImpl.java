@@ -21,6 +21,9 @@ import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocUserOktmo;
+import ru.eludia.products.mosgis.db.model.voc.VocVotingForm;
+import ru.eludia.products.mosgis.db.model.voc.VocVotingMeetingEligibility;
+import ru.eludia.products.mosgis.db.model.voc.VocVotingType;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.PublicPropertyContractLocal;
@@ -110,9 +113,12 @@ public class PublicPropertyContractImpl extends BaseCRUD<PublicPropertyContract>
         );
 
         job.add ("item", item);        
-        
+
         VocGisStatus.addTo (job);
         VocAction.addTo (job);
+        VocVotingForm.addTo (job);
+        VocVotingType.addTo (job);
+        VocVotingMeetingEligibility.addTo (job);
 
     });}            
     
