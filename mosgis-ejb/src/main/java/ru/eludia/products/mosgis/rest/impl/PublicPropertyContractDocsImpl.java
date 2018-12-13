@@ -41,23 +41,24 @@ public class PublicPropertyContractDocsImpl extends BaseCRUD<PublicPropertyContr
     public JsonObject doCreate (JsonObject p, User user) {return fetchData ((db, job) -> {
 
         JsonObject file = p.getJsonObject ("file");
-                       
+
         db.begin ();
-        
+
             Object id = db.insertId (getTable (), HASH (
                 PARENT_REF,       file.getString (PARENT_REF),
-                "protocolnum",    file.getString ("protocolnum"),
-                "protocoldate",   file.getString ("protocoldate"),
+                "id_type",        file.getInt    ("id_type", 1),
+                "protocolnum",    file.getString ("protocolnum", null),
+                "protocoldate",   file.getString ("protocoldate", null),
                 "label",          file.getString ("label"),
                 "description",    file.getString ("description", ""),
                 "mime",           file.getString ("type"),
                 "len",            file.getInt    ("size")                
             ));
-        
+
             job.add ("id", id.toString ());
 
             logAction (db, user, id, VocAction.i.CREATE);
-            
+
         db.commit ();
         
     });}
