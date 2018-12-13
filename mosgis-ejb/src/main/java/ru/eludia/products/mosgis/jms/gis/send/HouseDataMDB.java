@@ -286,24 +286,30 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
     }
     
     private void addEntrances (Map<String, Object> r, DB db) throws SQLException {
+        
+        NsiTable nsi330 = NsiTable.getNsiTable (330);
+        
         List<Map<String, Object>> entrances = new ArrayList<>();
         
         JsonObjectBuilder objectByTransportGuid = (JsonObjectBuilder)r.get("object_by_transport_guid");
         
         db.forEach(db.getModel()
-                .select (Entrance.class, "*")
+                .select (Entrance.class, "AS root", "*")
+                .toMaybeOne (nsi330, "AS vc_nsi_330", "guid").on ("vc_nsi_330.code=root.code_vc_nsi_330 AND vc_nsi_330.isactual=1")
                 .where ("uuid_house", r.get ("uuid_object"))
                 .and ("is_deleted", 0)
                 .and ("is_annuled_in_gis", 0), (rs) -> {
             
             Map<String, Object> entrance = db.HASH (rs);
             
+            entrance.put("annulmentreason", NsiTable.toDom((String) entrance.get("code_vc_nsi_330"), (UUID) entrance.get("vc_nsi_330.guid")));
             entrance.put("transportguid", entrance.get("uuid"));
             
             objectByTransportGuid.add(entrance.get("uuid").toString(), 
                     Json.createObjectBuilder()
                             .add("object", House.Object.ENTRANCE.name())
                             .add("key", entrance.get("entrancenum").toString())
+                            .add("is_annuled", entrance.get("annulmentreason") != null)
                             .build()
             );
                     
@@ -315,6 +321,7 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
     private void addLifts (Map<String, Object> r, Map <Object, Map <String, Object>> passportFields, DB db) throws SQLException {
         
         NsiTable nsi192 = NsiTable.getNsiTable (192);
+        NsiTable nsi330 = NsiTable.getNsiTable (330);
         
         List<Map<String, Object>> lifts = new ArrayList<>();
         
@@ -324,6 +331,7 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
                 .select (Lift.class, "AS root", "*")
                 .toOne(Entrance.class, "AS entrance", "entrancenum").on()
                 .toOne (nsi192, "AS vc_nsi_192", "guid").on ("vc_nsi_192.code=root.code_vc_nsi_192 AND vc_nsi_192.isactual=1")
+                .toMaybeOne (nsi330, "AS vc_nsi_330", "guid").on ("vc_nsi_330.code=root.code_vc_nsi_330 AND vc_nsi_330.isactual=1")
                 .where ("uuid_house", r.get ("uuid_object"))
                 .and ("is_deleted", 0)
                 .and ("is_annuled_in_gis", 0), (rs) -> {
@@ -333,7 +341,7 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
             addOGFData(lift, passportFields);
             
             lift.put("type", NsiTable.toDom((String) lift.get("code_vc_nsi_192"), (UUID) lift.get("vc_nsi_192.guid")));
-            
+            lift.put("annulmentreason", NsiTable.toDom((String) lift.get("code_vc_nsi_330"), (UUID) lift.get("vc_nsi_330.guid")));
             lift.put("entrancenum", lift.get("entrance.entrancenum"));
             lift.put("transportguid", lift.get("uuid"));
 
@@ -341,6 +349,7 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
                     Json.createObjectBuilder()
                             .add("object", House.Object.LIFT.name())
                             .add("key", lift.get("factorynum").toString())
+                            .add("is_annuled", lift.get("annulmentreason") != null)
                             .build()
             );
             
@@ -352,6 +361,7 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
     private void addResidentialPremises (Map<String, Object> r, Map <Object, Map <String, Object>> passportFields, DB db) throws SQLException {
         
         NsiTable nsi30 = NsiTable.getNsiTable (30);
+        NsiTable nsi330 = NsiTable.getNsiTable (330);
         
         JsonObjectBuilder objectByTransportGuid = (JsonObjectBuilder)r.get("object_by_transport_guid");
         
@@ -360,6 +370,7 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
                 .select (ResidentialPremise.class, "AS root","*")
                 .toMaybeOne(Entrance.class, "AS entrance", "entrancenum").on()
                 .toMaybeOne (nsi30, "AS vc_nsi_30", "guid").on ("vc_nsi_30.code=root.code_vc_nsi_30 AND vc_nsi_30.isactual=1")
+                .toMaybeOne (nsi330, "AS vc_nsi_330", "guid").on ("vc_nsi_330.code=root.code_vc_nsi_330 AND vc_nsi_330.isactual=1")
                 .where ("uuid_house", r.get ("uuid_object"))
                 .and ("is_deleted", 0)
                 .and ("is_annuled_in_gis", 0));
@@ -375,6 +386,7 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
                 premise.put("entrancenum", entranceNum);
             
             premise.put("premisescharacteristic", NsiTable.toDom((String) premise.get("code_vc_nsi_30"), (UUID) premise.get("vc_nsi_30.guid")));
+            premise.put("annulmentreason", NsiTable.toDom((String) premise.get("code_vc_nsi_330"), (UUID) premise.get("vc_nsi_330.guid")));
             
             if (premise.get("grossarea") == null) 
                 premise.put("nogrossares", true);
@@ -388,6 +400,7 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
                     Json.createObjectBuilder()
                             .add("object", House.Object.RESIDENTIAL_PREMISE.name())
                             .add("key", premise.get("premisesnum").toString())
+                            .add("is_annuled", premise.get("annulmentreason") != null)
                             .build()
             );
             
@@ -399,12 +412,15 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
     
     private void addNonResidentialPremises (Map<String, Object> r, Map <Object, Map <String, Object>> passportFields, DB db) throws SQLException {
         
+        NsiTable nsi330 = NsiTable.getNsiTable (330);
+        
         List<Map<String, Object>> premises = new ArrayList<>();
         
         JsonObjectBuilder objectByTransportGuid = (JsonObjectBuilder)r.get("object_by_transport_guid");
         
         db.forEach(db.getModel()
-                .select (NonResidentialPremise.class, "*")
+                .select (NonResidentialPremise.class, "AS root", "*")
+                .toMaybeOne (nsi330, "AS vc_nsi_330", "guid").on ("vc_nsi_330.code=root.code_vc_nsi_330 AND vc_nsi_330.isactual=1")
                 .where ("uuid_house", r.get ("uuid_object"))
                 .and ("is_deleted", 0)
                 .and ("is_annuled_in_gis", 0), (rs) -> {
@@ -414,6 +430,7 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
             addOGFData(premise, passportFields);
             
             premise.putAll(getCadastralNumber((String) premise.get("cadastralnumber")));
+            premise.put("annulmentreason", NsiTable.toDom((String) premise.get("code_vc_nsi_330"), (UUID) premise.get("vc_nsi_330.guid")));
             premise.put("transportguid", premise.get("uuid"));
             objectByTransportGuid.add(premise.get("uuid").toString(), House.Object.NON_RESIDENTIAL_PREMISE.name());
             
@@ -421,6 +438,7 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
                     Json.createObjectBuilder()
                             .add("object", House.Object.NON_RESIDENTIAL_PREMISE.name())
                             .add("key", premise.get("premisesnum").toString())
+                            .add("is_annuled", premise.get("annulmentreason") != null)
                             .build()
             );
             
@@ -432,6 +450,8 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
     
     private void addLivingRooms (Map<String, Object> r, Map <Object, Map <String, Object>> passportFields, DB db, boolean isCondo) throws SQLException {
         
+        NsiTable nsi330 = NsiTable.getNsiTable (330);
+        
         List<Map<String, Object>> houseRooms = new ArrayList<>();
         
         Map<Object, Map<String, Object>> premises = (Map<Object, Map<String, Object>>) (isCondo ? r.get("residentialpremises") : r.get("blocks"));
@@ -439,7 +459,8 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
         JsonObjectBuilder objectByTransportGuid = (JsonObjectBuilder)r.get("object_by_transport_guid");
         
         db.forEach(db.getModel()
-                .select (LivingRoom.class, "*")
+                .select (LivingRoom.class, "AS root", "*")
+                .toMaybeOne (nsi330, "AS vc_nsi_330", "guid").on ("vc_nsi_330.code=root.code_vc_nsi_330 AND vc_nsi_330.isactual=1")
                 .where ("uuid_house", r.get ("uuid_object"))
                 .and ("is_deleted", 0)
                 .and ("is_annuled_in_gis", 0), (rs) -> {
@@ -448,13 +469,15 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
             addOGFData(room, passportFields);
             
             room.putAll(getCadastralNumber((String) room.get("cadastralnumber")));
+            room.put("annulmentreason", NsiTable.toDom((String) room.get("code_vc_nsi_330"), (UUID) room.get("vc_nsi_330.guid")));
             room.put("transportguid", room.get("uuid"));
             
             UUID premiseUuid = (UUID)(isCondo ? room.get("uuid_premise") : room.get("uuid_block"));
             
             JsonObjectBuilder objectData = Json.createObjectBuilder()
                             .add("object", House.Object.LIVING_ROOM.name())
-                            .add("key", room.get("roomnumber").toString());
+                            .add("key", room.get("roomnumber").toString())
+                            .add("is_annuled", room.get("annulmentreason") != null);
             
             if (premiseUuid != null) {
                 ((List<Map<String, Object>>)premises.get(premiseUuid).get("livingrooms")).add(room);
@@ -471,6 +494,7 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
     private void addBlocks (Map<String, Object> r, Map <Object, Map <String, Object>> passportFields, DB db) throws SQLException {
         
         NsiTable nsi30 = NsiTable.getNsiTable (30);
+        NsiTable nsi330 = NsiTable.getNsiTable (330);
         
         JsonObjectBuilder objectByTransportGuid = (JsonObjectBuilder)r.get("object_by_transport_guid");
         
@@ -478,6 +502,7 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
                 db.getModel()
                         .select (Block.class, "AS root", "*")
                         .toMaybeOne (nsi30, "AS vc_nsi_30", "guid").on ("vc_nsi_30.code=root.code_vc_nsi_30 AND vc_nsi_30.isactual=1")
+                        .toMaybeOne (nsi330, "AS vc_nsi_330", "guid").on ("vc_nsi_330.code=root.code_vc_nsi_330 AND vc_nsi_330.isactual=1")
                         .where ("uuid_house", r.get ("uuid_object"))
                         .and ("is_deleted", 0)
                         .and ("is_annuled_in_gis", 0));
@@ -493,10 +518,12 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
                     Json.createObjectBuilder()
                             .add("object", House.Object.BLOCK.name())
                             .add("key", block.get("blocknum").toString())
+                            .add("is_annuled", block.get("annulmentreason") != null)
                             .build()
             );
             
             block.put("premisescharacteristic", NsiTable.toDom((String) block.get("code_vc_nsi_30"), (UUID) block.get("vc_nsi_30.guid")));
+            block.put("annulmentreason", NsiTable.toDom((String) block.get("code_vc_nsi_330"), (UUID) block.get("vc_nsi_330.guid")));
             if (block.get("grossarea") == null) 
                 block.put("nogrossares", true);
             if (TypeConverter.Boolean(block.get("is_nrs")))

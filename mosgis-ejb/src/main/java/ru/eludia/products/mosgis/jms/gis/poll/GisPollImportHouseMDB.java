@@ -181,12 +181,16 @@ public class GisPollImportHouseMDB  extends GisPollMDB {
             return err;
         }
         
-        db.update(houseObject.getClazz(), HASH(
+        Map<String, Object> record = HASH(
                 "uuid", commonResult.getTransportGUID(),
                 "gis_unique_number", commonResult.getUniqueNumber(),
                 "gis_modification_date", commonResult.getUpdateDate(),
                 houseObject.getGisKey(), commonResult.getGUID()
-        ));
+        );
+        if (object.containsKey("is_annuled"))
+            record.put("is_annuled_in_gis", object.getBoolean("is_annuled"));
+        
+        db.update(houseObject.getClazz(), record);
         
         return "";
     }
