@@ -1,6 +1,7 @@
-package ru.eludia.products.mosgis.jms.gis.poll;
+    package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -208,12 +209,14 @@ public class GisPollExportHouse extends GisPollMDB {
         
         for (Map.Entry<Object, Map<String, Object>> entry : entrancesDb.entrySet()) {
             Map<String, Object> entrance = entry.getValue();
-            if (entrance.containsKey("is_used"))
-                continue;
-            entrance.put("code_vc_nsi_330", "4"); //4 - Дублирование информации, на проде поменять на 6 - В связи с ошибкой ввода данных
-            entrance.put("is_annuled_in_gis", true);
-            entrance.put("terminationdate", new Date());
-            db.update(Entrance.class, entrance);
+            if (entrance.containsKey("is_used")) continue;
+
+            db.update(Entrance.class, HASH(
+                    "uuid",              entrance.get("uuid"),
+                    "code_vc_nsi_330",   "4", //4 - Дублирование информации, на проде поменять на 6 - В связи с ошибкой ввода данных
+                    "is_annuled_in_gis", true, 
+                    "terminationdate",   LocalDate.now()
+            ));
         }
         
         //Нежилые помещения
@@ -287,12 +290,14 @@ public class GisPollExportHouse extends GisPollMDB {
         
         for (Map.Entry<Object, Map<String, Object>> entry : nonResidentialPremisesDb.entrySet()) {
             Map<String, Object> nonResidentialPremise = entry.getValue();
-            if (nonResidentialPremise.containsKey("is_used"))
-                continue;
-            nonResidentialPremise.put("code_vc_nsi_330", "4"); //4 - Дублирование информации, на проде поменять на 6 - В связи с ошибкой ввода данных
-            nonResidentialPremise.put("is_annuled_in_gis", true);
-            nonResidentialPremise.put("terminationdate", new Date());
-            db.update(NonResidentialPremise.class, nonResidentialPremise);
+            if (nonResidentialPremise.containsKey("is_used")) continue;
+
+            db.update(NonResidentialPremise.class, HASH(
+                    "uuid",              nonResidentialPremise.get("uuid"),
+                    "code_vc_nsi_330",   "4", //4 - Дублирование информации, на проде поменять на 6 - В связи с ошибкой ввода данных
+                    "is_annuled_in_gis", true, 
+                    "terminationdate",   LocalDate.now()
+            ));
         }
         
         //Жилые помещения
@@ -372,12 +377,14 @@ public class GisPollExportHouse extends GisPollMDB {
         
         for (Map.Entry<Object, Map<String, Object>> entry : residentialPremisesDb.entrySet()) {
             Map<String, Object> residentialPremise = entry.getValue();
-            if (residentialPremise.containsKey("is_used"))
-                continue;
-            residentialPremise.put("code_vc_nsi_330", "4"); //4 - Дублирование информации, на проде поменять на 6 - В связи с ошибкой ввода данных
-            residentialPremise.put("is_annuled_in_gis", true);
-            residentialPremise.put("terminationdate", new Date());
-            db.update(ResidentialPremise.class, residentialPremise);
+            if (residentialPremise.containsKey("is_used")) continue;
+            
+            db.update(ResidentialPremise.class, HASH(
+                    "uuid",              residentialPremise.get("uuid"),
+                    "code_vc_nsi_330",   "4", //4 - Дублирование информации, на проде поменять на 6 - В связи с ошибкой ввода данных
+                    "is_annuled_in_gis", true, 
+                    "terminationdate",   LocalDate.now()
+            ));
         }
         
         //Лифты
@@ -442,10 +449,12 @@ public class GisPollExportHouse extends GisPollMDB {
             Map<String, Object> lift = entry.getValue();
             if (lift.containsKey("is_used"))
                 continue;
-            lift.put("code_vc_nsi_330", "4"); //4 - Дублирование информации, на проде поменять на 6 - В связи с ошибкой ввода данных
-            lift.put("is_annuled_in_gis", true);
-            lift.put("terminationdate", new Date());
-            db.update(Lift.class, lift);
+            db.update(Lift.class, HASH(
+                    "uuid",              lift.get("uuid"),
+                    "code_vc_nsi_330",   "4", //4 - Дублирование информации, на проде поменять на 6 - В связи с ошибкой ввода данных
+                    "is_annuled_in_gis", true, 
+                    "terminationdate",   LocalDate.now()
+            ));
         }
     }
     
@@ -549,10 +558,12 @@ public class GisPollExportHouse extends GisPollMDB {
             
             if (block.containsKey("is_used")) continue;
             
-            block.put("code_vc_nsi_330", "4"); //4 - Дублирование информации, на проде поменять на 6 - В связи с ошибкой ввода данных
-            block.put("is_annuled_in_gis", true);
-            block.put("terminationdate", new Date());
-            db.update(Block.class, block);
+            db.update(Block.class, HASH(
+                    "uuid",              block.get("uuid"),
+                    "code_vc_nsi_330",   "4", //4 - Дублирование информации, на проде поменять на 6 - В связи с ошибкой ввода данных
+                    "is_annuled_in_gis", true, 
+                    "terminationdate",   LocalDate.now()
+            ));
         }
         
         saveLivingRooms(db, m, houseUuid, house.getLivingRoom(), ExportHouseResultType.LivingHouse.LivingRoom.class);
@@ -663,10 +674,12 @@ public class GisPollExportHouse extends GisPollMDB {
             
             if (livingRoom.containsKey("is_used")) continue;
             
-            livingRoom.put("code_vc_nsi_330", "4"); //4 - Дублирование информации, на проде поменять на 6 - В связи с ошибкой ввода данных
-            livingRoom.put("is_annuled_in_gis", true);
-            livingRoom.put("terminationdate", new Date());
-            db.update(LivingRoom.class, livingRoom);
+            db.update(LivingRoom.class, HASH(
+                    "uuid",              livingRoom.get("uuid"),
+                    "code_vc_nsi_330",   "4", //4 - Дублирование информации, на проде поменять на 6 - В связи с ошибкой ввода данных
+                    "is_annuled_in_gis", true, 
+                    "terminationdate",   LocalDate.now()
+            ));
         }
     }
     
