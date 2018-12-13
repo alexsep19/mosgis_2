@@ -37,11 +37,11 @@ public class LiftsImpl extends BasePassport<Lift> implements LiftsLocal {
         final JsonObject data = p.getJsonObject ("data");
                 
         Select select = ModelHolder.getModel ()               
-            .select (getTable (), "*", "uuid AS id")
+            .select (getTable (), "AS root","*", "uuid AS id")
             .where ("uuid_house", data.getString ("uuid_house"))
             .and   ("is_deleted",  0)
-            .toOne (Entrance.class, "entrancenum").on ()
-            .orderBy ("entrancenum")
+            .toOne (Entrance.class, "AS entrance", "entrancenum").on ()
+            .orderBy ("entrance.entrancenum")
             .orderBy ("code_vc_nsi_192")
             .orderBy ("factorynum");
         

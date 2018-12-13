@@ -29,9 +29,18 @@ define ([], function () {
     
         var form = w2ui ['public_property_contract_docs_popup_form']
         
-        var r = form.values ()
+        var v = form.values ()
         
-        query ({type: 'public_property_contract_docs', action: 'edit', id: form.record.id}, {data: r}, reload_page)
+        if (v.id_type == 3) {
+            if (!v.protocolnum) die ('protocolnum', 'Укажите, пожалуйста, номер протокола ОСС')
+            if (!v.protocoldate) die ('protocoldate', 'Укажите, пожалуйста, дату протокола ОСС')
+        }
+        else {
+            v.protocolnum = null
+            v.protocoldate = null
+        }
+
+        query ({type: 'public_property_contract_docs', action: 'edit', id: form.record.id}, {data: v}, reload_page)
 
     }
 
@@ -42,7 +51,7 @@ define ([], function () {
         var id = grid.getSelection () [0]
 
         var data = grid.get (id)
-
+        
         done (data)
 
     }

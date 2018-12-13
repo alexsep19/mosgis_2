@@ -15,6 +15,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocVotingForm;
+import ru.eludia.products.mosgis.db.model.voc.VocVotingMeetingEligibility;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportVotingProtocolRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ProtocolType;
 
@@ -52,7 +53,7 @@ public class VotingProtocol extends EnTable {
 
         EXTRAVOTING          (Type.BOOLEAN, "Внеочередное собрание"),
         ANNUALVOTING         (Type.BOOLEAN, new Virt("DECODE(\"EXTRAVOTING\",1,0,1)"), "Ежегодное собрание"),
-        MEETINGELIGIBILITY   (Type.STRING, 1, "Правомочность собрания. (C)OMPETENT - правомочно, (N)OT_COMPETENT - не правомочно"),
+        MEETINGELIGIBILITY   (VocVotingMeetingEligibility.class, "Правомочность собрания"),
 
         MODIFICATION         (Type.STRING, 2000, null, "Основание изменения (для протоколов в статусе \"Размещен\")"),
 
@@ -91,11 +92,15 @@ public class VotingProtocol extends EnTable {
         trigger ("BEFORE UPDATE", 
                 
             "DECLARE "
+            + " cnt_files NUMBER;"
             + " uuid_init RAW(16);"
             + "BEGIN "
                 + "IF :NEW.is_deleted=0 AND :NEW.ID_PRTCL_STATUS <> :OLD.ID_PRTCL_STATUS AND :NEW.ID_PRTCL_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING.getId () + " THEN BEGIN "
 
                     + "IF :NEW.AVOTINGDATE > TRUNC(SYSDATE) THEN raise_application_error (-20000, 'Приём решений ещё не завершён. Операция отменена.'); END IF; "
+
+                    + " SELECT COUNT(*) INTO cnt_files FROM tb_voting_protocol_files WHERE id_status=1 AND UUID_PROTOCOL=:NEW.uuid; "
+                    + " IF cnt_files=0 THEN raise_application_error (-20000, 'Файл протокола не загружен на сервер. Операция отменена.'); END IF; "
 
                     + " SELECT MIN(uuid) INTO uuid_init FROM tb_vote_initiators WHERE is_deleted = 0 AND UUID_PROTOCOL=:NEW.uuid AND UUID_ORG=:NEW.UUID_ORG; "
                     + " IF uuid_init IS NULL THEN raise_application_error (-20000, 'Вашей организации нет в списке инициаторов. Операция отменена.'); END IF; "

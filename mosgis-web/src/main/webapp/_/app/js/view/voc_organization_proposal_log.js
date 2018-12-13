@@ -13,6 +13,9 @@ define([], function () {
 
         data = $('body').data('data')
 
+        var is_branch = data.item.id_type == 2
+        var is_alien  = data.item.id_type == 3
+
         $(w2ui ['topmost_layout'].el('main')).w2regrid({
 
             name: 'voc_organization_proposal_log',
@@ -37,14 +40,20 @@ define([], function () {
                 {field: 'ogrn', caption: 'ОГРН', size: 15},
                 {field: 'inn', caption: 'ИНН', size: 15},
                 {field: 'kpp', caption: 'КПП', size: 10},
-                {field: 'okopf', caption: 'ОКОПФ', size: 10},
-                {field: 'stateregistrationdate', caption: 'Дата государственной регистрации', size: 18, render: _dt},
-                {field: 'activityenddate', caption: 'Дата прекращения деятельности', size: 18, render: _dt},
+
+                {field: 'nza', caption: 'Номер записи об аккредитации', size: 11, off: !is_alien},
+                {field: 'stateregistrationdate', caption: 'Дата внесения в реестр аккредитованных', size: 18, render: _dt, off: !is_alien},
+                {field: 'accreditationenddate', caption: 'Дата прекращения аккредитации', size: 18, render: _dt, off: !is_alien},
+
+                {field: 'okopf', caption: 'ОКОПФ', size: 10, off: !is_branch},
+                {field: 'stateregistrationdate', caption: 'Дата государственной регистрации', size: 18, render: _dt, off: !is_branch},
+                {field: 'activityenddate', caption: 'Дата прекращения деятельности', size: 18, render: _dt, off: !is_branch},
+
                 {field: 'address', caption: 'Адрес', size: 10},
 
                 {field: 'soap.ts', caption: 'Отправлено', size: 30, render: _ts, attr: 'data-ref=1'},
                 {field: 'soap.ts_rp', caption: 'Обработано', size: 30, render: _ts, attr: 'data-ref=1'},
-            ],
+            ].filter(not_off),
 
             url: '/mosgis/_rest/?type=voc_organization_proposals&part=log&id=' + $_REQUEST.id,
 

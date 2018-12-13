@@ -50,6 +50,8 @@ define ([], function () {
 
         var v = form.values ()
 
+        v.id_type = "2";
+
         if (!v.uuid_org_parent)
             die ('f', 'Укажите, пожалуйста, головную организацию')
 

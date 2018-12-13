@@ -6,7 +6,16 @@ define ([], function () {
 
         var v = f.values ()
 
-        if (!v ['files']) die (name, 'Укажите, пожалуйста, файл')
+        if (!v ['files']) die ('files', 'Укажите, пожалуйста, файл')
+        
+        if (v.id_type == 3) {
+            if (!v.protocolnum) die ('protocolnum', 'Укажите, пожалуйста, номер протокола ОСС')
+            if (!v.protocoldate) die ('protocoldate', 'Укажите, пожалуйста, дату протокола ОСС')
+        }
+        else {
+            v.protocolnum = null
+            v.protocoldate = null
+        }
 
         v.files[0].file = new File ([v.files[0].file], v.label, {type: v.files[0].file.type})
         
@@ -19,6 +28,9 @@ define ([], function () {
             data: {
                 uuid_ctr: $_REQUEST.id,
                 description: v.description,
+                id_type: v.id_type,
+                protocolnum: v.protocolnum,
+                protocoldate: v.protocoldate
             },
             
             onprogress: show_popup_progress (file.size),
@@ -38,7 +50,7 @@ define ([], function () {
     
         var data = clone ($('body').data ('data'))
         
-        data.record = $_SESSION.delete ('record')
+        data.record = {id_type: 1}
         
         done (data)
         

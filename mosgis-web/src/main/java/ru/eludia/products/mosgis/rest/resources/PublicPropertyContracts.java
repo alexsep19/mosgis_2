@@ -86,6 +86,16 @@ public class PublicPropertyContracts extends EJBResource <PublicPropertyContract
     }
     
     @POST
+    @Path("{id}/add_voting_protocols") 
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject doAddVotingProtocols (@PathParam ("id") String id, JsonObject p) {
+        final JsonObject item = getInnerItem (id);
+        checkOrg (item);
+        return back.doAddVotingProtocols (id, p, getUser ());
+    }
+    
+    @POST
     @Path("{id}/delete") 
     @Produces (APPLICATION_JSON)
     public JsonObject doDelete (@PathParam ("id") String id) { 

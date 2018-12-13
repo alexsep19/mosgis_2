@@ -28,6 +28,13 @@ public class VocOrganizationProposals extends EJBResource <VocOrganizationPropos
     }
 
     @POST
+    @Path("vocs")
+    @Produces(APPLICATION_JSON)
+    public JsonObject getVocs() {
+        return back.getVocs();
+    }
+
+    @POST
     @Path("create")
     @Produces(APPLICATION_JSON)
     public JsonObject doCreate(JsonObject p) {

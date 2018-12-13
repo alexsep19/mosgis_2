@@ -8,7 +8,10 @@ import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
+import static ru.eludia.products.mosgis.db.model.tables.Charter.Action.PLACING;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
 import ru.eludia.products.mosgis.db.model.voc.VocRdColType;
 
@@ -23,7 +26,9 @@ public class House extends Passport {
         pk     ("uuid",                  Type.UUID,   NEW_UUID,            "Ключ");
         col    ("unom",                  Type.NUMERIC, 12, null,           "UNOM (код дома в московских ИС)");
         
-        fk     ("fiashouseguid",         VocBuilding.class, null,          "Глобальный уникальный идентификатор дома по ФИАС");
+        fk     ("fiashouseguid",         VocBuilding.class,  null,                           "Глобальный уникальный идентификатор дома по ФИАС");
+        fk     ("id_status",             VocGisStatus.class, VocGisStatus.i.PROJECT.asDef(), "Статус");
+        fk     ("id_log",                HouseLog.class,     null ,                          "Последнее событие редактирования");
 
         col    ("address",               Type.STRING,                      "Адрес");
         col    ("address_uc",            Type.STRING,  new Virt ("UPPER(\"ADDRESS\")"),  "АДРЕС В ВЕРХНЕМ РЕГИСТРЕ");
@@ -44,6 +49,15 @@ public class House extends Passport {
         col    ("code_vc_nsi_24",        Type.STRING, 20, null,            "Состояние дома");
         col    ("kad_n",                 Type.STRING, null,                "Кадастровый номер");
         
+        col    ("gis_guid",              Type.UUID,           null,       "Идентификатор паспорта дома из ГИС ЖКХ");
+        col    ("gis_unique_number",     Type.STRING,         null,       "Уникальный номер дома из ГИС ЖКХ");
+        col    ("gis_modification_date", Type.TIMESTAMP,      null,       "Дата модификации данных дома в ГИС ЖКХ");
+        col    ("terminationdate",       Type.DATE,           null,       "Дата аннулирования объекта в ГИС ЖКХ");
+        col    ("code_vc_nsi_330",       Type.STRING,  20,    null,       "Причина аннулирования объекта жилищного фонда (НСИ 330)");
+        col    ("annulmentinfo",         Type.STRING,         null,       "Причина аннулирования.Дополнительная информация");
+        col    ("code_vc_nsi_241",       Type.STRING,  20,    null,       "Способ формирования фонда капитального ремонта (НСИ 241)");
+        col    ("code_vc_nsi_25",        Type.STRING,  20,    null,       "Способ управления домом (НСИ 25)");
+        col    ("code_vc_nsi_336",       Type.STRING,  20,    null,       "Стадия жизненного цикла (НСИ 336)");
         
         col    ("ts",                    Type.TIMESTAMP,                   "Дата/время последнего изменения в БД");
 //        fk     ("uuid_in_open_data",     InOpenData.class,                 "Последний пакет импорта");
@@ -92,6 +106,67 @@ public class House extends Passport {
             
             db.adjustTable (this);
             
+    }
+    
+    public enum Action {
+        EDITING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.FAILED_PLACING),
+        RELOADING   (VocGisStatus.i.PENDING_RP_RELOAD,    VocGisStatus.i.FAILED_STATE);
+        
+        VocGisStatus.i nextStatus;
+        VocGisStatus.i failStatus;
+
+        private Action (VocGisStatus.i nextStatus, VocGisStatus.i failStatus) {
+            this.nextStatus = nextStatus;
+            this.failStatus = failStatus;
         }
+
+        public VocGisStatus.i getNextStatus () {
+            return nextStatus;
+        }
+
+        public VocGisStatus.i getFailStatus () {
+            return failStatus;
+        }
+        
+        public static Action forStatus (VocGisStatus.i status) {
+            switch (status) {
+                case PENDING_RQ_PLACING:   return EDITING;
+                case PENDING_RQ_RELOAD:    return RELOADING;
+                default: return null;
+            }
+        }
+    };
+    
+    public enum Object {
+        HOUSE(House.class, null, "gis_guid"),
+        ENTRANCE(Entrance.class, "Подъезд", "entranceguid"),
+        LIFT(Lift.class, "Лифт", "liftguid"),
+        RESIDENTIAL_PREMISE(ResidentialPremise.class, "Квартира", "premisesguid"),
+        NON_RESIDENTIAL_PREMISE(NonResidentialPremise.class, "Нежилое помещение", "premisesguid"),
+        BLOCK(Block.class, "Блок", "blockguid"),
+        LIVING_ROOM(LivingRoom.class, "Комната", "livingroomguid");
+        
+        private Class clazz;
+        private String name;
+        private String gisKey;
+        
+        private Object (Class clazz, String name, String gisKey) {
+            this.clazz = clazz;
+            this.name = name;
+            this.gisKey = gisKey;
+        }
+        
+        public Class getClazz() {
+            return clazz;
+        }
+        
+        public String getName() {
+            return name;
+        }
+        
+        public String getGisKey() {
+            return gisKey;
+        }
+    }
 
 }

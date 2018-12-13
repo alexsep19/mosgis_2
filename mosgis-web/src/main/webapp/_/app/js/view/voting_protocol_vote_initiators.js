@@ -10,7 +10,7 @@ define ([], function () {
 
         function Permissions () {
 
-            if (!data.item.is_deleted && data.item.house_uuid && (data.item.id_prtcl_status_gis == 10 || data.item.id_prtcl_status_gis == 11)) {
+            if (!data.item.is_deleted && data.item.house_uuid && (data.item.id_prtcl_status == 10 || data.item.id_prtcl_status == 11)) {
 
                 if (data.cach) {
 

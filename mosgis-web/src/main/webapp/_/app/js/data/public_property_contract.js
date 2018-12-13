@@ -24,7 +24,11 @@ define ([], function () {
                 add_vocabularies (data, {
                     vc_actions: 1,
                     vc_gis_status: 1,
-                })            
+                    vc_voting_eligibility: 1,
+                    vc_voting_forms: 1,
+                    vc_voting_types: 1,
+                    vc_pp_ctr_file_types: 1
+                })
                 
                 var it = data.item
                 

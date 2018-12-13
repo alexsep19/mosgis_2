@@ -185,10 +185,10 @@
 
 
 
-  <!-- очередь обработки запросов на импорт домов -->
-  <uniform-distributed-queue name="inExportHouseQueue">
+  <!-- очередь обработки запросов на импорт/экспорт домов -->
+  <uniform-distributed-queue name="inHouseDataQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-    <jndi-name>mosgis.inExportHouseQueue</jndi-name>
+    <jndi-name>mosgis.inHouseDataQueue</jndi-name>
   </uniform-distributed-queue>
 
   <!-- очередь опроса статуса исходящих запросов на импорт домов -->
@@ -407,6 +407,15 @@
     </delivery-params-overrides>
   </uniform-distributed-queue>
   
+  <!-- очередь опроса статуса исходящих запросов на импорт домов -->
+  <uniform-distributed-queue name="outImportHouseQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.outImportHouseQueue</jndi-name>
+    <delivery-params-overrides>
+        <time-to-deliver>10000</time-to-deliver>
+        <redelivery-delay>10000</redelivery-delay>
+    </delivery-params-overrides>
+  </uniform-distributed-queue>
   
 
 </weblogic-jms>

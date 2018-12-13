@@ -1,15 +1,22 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
 import java.sql.SQLException;
+import java.util.Map;
 import ru.eludia.base.DB;
+import ru.eludia.base.db.util.TypeConverter;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
+import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
 import ru.eludia.products.mosgis.db.model.voc.VocRdColType;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseESPRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseOMSRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseRSORequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseUORequest;
 
 public class NonResidentialPremise extends Passport {
     
@@ -32,6 +39,14 @@ public class NonResidentialPremise extends Passport {
         col    ("cadastralnumber",    Type.STRING,         null,       "Кадастровый номер");
         col    ("totalarea",          Type.NUMERIC, 25, 4, null,       "Общая площадь");
         col    ("iscommonproperty",   Type.BOOLEAN,        Bool.FALSE, "1, если помещение составляет общее имущество в многоквартирном доме; иначе 0");
+        col    ("floor",              Type.STRING,         null,       "Этаж");
+        
+        ref    ("fiaschildhouseguid",    VocBuilding.class, null,       "ГУИД дочернего дома по ФИАС, к которому относится подъезд для группирующих домов");
+        col    ("gis_unique_number",     Type.STRING,       null,       "Уникальный номер");
+        col    ("gis_modification_date", Type.TIMESTAMP,    null,       "Дата модификации данных в ГИС ЖКХ");
+        col    ("informationconfirmed",  Type.BOOLEAN,      Bool.TRUE,  "Информация подтверждена поставщиком");
+        col    ("premisesguid",          Type.UUID,         null,       "Идентификатор в ГИС ЖКХ");
+        col    ("is_annuled_in_gis",     Type.BOOLEAN,      Bool.FALSE, "1, если запись аннулирована в ГИС ЖКХ; иначе 0");
 
         trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
             + "IF :NEW.premisesnum IS NULL        THEN raise_application_error (-20000, '#premisesnum#: Необходимо указать номер помещения.'); END IF; "
@@ -73,6 +88,46 @@ public class NonResidentialPremise extends Passport {
             
             db.adjustTable (this);
             
+    }
+    
+    public static void add(ImportHouseUORequest.ApartmentHouse house, Map<String, Object> r) {
+        if (r.get("premisesguid") == null) {
+            ImportHouseUORequest.ApartmentHouse.NonResidentialPremiseToCreate premise = TypeConverter.javaBean(ImportHouseUORequest.ApartmentHouse.NonResidentialPremiseToCreate.class, r);
+            house.getNonResidentialPremiseToCreate().add(premise);
+        } else {
+            ImportHouseUORequest.ApartmentHouse.NonResidentialPremiseToUpdate premise = TypeConverter.javaBean(ImportHouseUORequest.ApartmentHouse.NonResidentialPremiseToUpdate.class, r);
+            house.getNonResidentialPremiseToUpdate().add(premise);
+        }
+    }
+    
+    public static void add(ImportHouseOMSRequest.ApartmentHouse house, Map<String, Object> r) {
+        if (r.get("premisesguid") == null) {
+            ImportHouseOMSRequest.ApartmentHouse.NonResidentialPremiseToCreate premise = TypeConverter.javaBean(ImportHouseOMSRequest.ApartmentHouse.NonResidentialPremiseToCreate.class, r);
+            house.getNonResidentialPremiseToCreate().add(premise);
+        } else {
+            ImportHouseOMSRequest.ApartmentHouse.NonResidentialPremiseToUpdate premise = TypeConverter.javaBean(ImportHouseOMSRequest.ApartmentHouse.NonResidentialPremiseToUpdate.class, r);
+            house.getNonResidentialPremiseToUpdate().add(premise);
+        }
+    }
+    
+    public static void add(ImportHouseRSORequest.ApartmentHouse house, Map<String, Object> r) {
+        if (r.get("premisesguid") == null) {
+            ImportHouseRSORequest.ApartmentHouse.NonResidentialPremiseToCreate premise = TypeConverter.javaBean(ImportHouseRSORequest.ApartmentHouse.NonResidentialPremiseToCreate.class, r);
+            house.getNonResidentialPremiseToCreate().add(premise);
+        } else {
+            ImportHouseRSORequest.ApartmentHouse.NonResidentialPremiseToUpdate premise = TypeConverter.javaBean(ImportHouseRSORequest.ApartmentHouse.NonResidentialPremiseToUpdate.class, r);
+            house.getNonResidentialPremiseToUpdate().add(premise);
+        }
+    }
+    
+    public static void add(ImportHouseESPRequest.ApartmentHouse house, Map<String, Object> r) {
+        if (r.get("premisesguid") == null) {
+            ImportHouseESPRequest.ApartmentHouse.NonResidentialPremiseToCreate premise = TypeConverter.javaBean(ImportHouseESPRequest.ApartmentHouse.NonResidentialPremiseToCreate.class, r);
+            house.getNonResidentialPremiseToCreate().add(premise);
+        } else {
+            ImportHouseESPRequest.ApartmentHouse.NonResidentialPremiseToUpdate premise = TypeConverter.javaBean(ImportHouseESPRequest.ApartmentHouse.NonResidentialPremiseToUpdate.class, r);
+            house.getNonResidentialPremiseToUpdate().add(premise);
+        }
     }
     
 }

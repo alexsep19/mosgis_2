@@ -1532,7 +1532,7 @@
 							</xs:annotation>
 						</xs:element>
 					</xs:sequence>
-					<xs:attribute ref="base:version" use="required"/>
+					<xs:attribute ref="base:version" use="required" fixed="12.2.0.1"/>
 				</xs:extension>
 			</xs:complexContent>
 		</xs:complexType>

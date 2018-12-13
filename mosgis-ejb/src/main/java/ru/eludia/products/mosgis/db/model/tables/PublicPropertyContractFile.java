@@ -5,13 +5,17 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
+import ru.eludia.products.mosgis.db.model.voc.VocPublicPropertyContractFileType;
 
 public class PublicPropertyContractFile extends AttachTable {
     
     public enum c implements EnColEnum {
 
-        UUID_CTR (PublicPropertyContract.class,    "Ссылка на договор на пользование общим имуществом"),
-        ID_LOG   (PublicPropertyContractFileLog.class,  "Последнее событие редактирования")
+        UUID_CTR     (PublicPropertyContract.class,         "Ссылка на договор на пользование общим имуществом"),
+        ID_TYPE      (VocPublicPropertyContractFileType.class, VocPublicPropertyContractFileType.getDefault (), "Тип"),
+        PROTOCOLNUM  (Type.STRING, 30,  null,               "Номер протокола"),
+        PROTOCOLDATE (Type.DATE,        null,               "Дата составления протокола"),
+        ID_LOG       (PublicPropertyContractFileLog.class,  "Последнее событие редактирования")
         ;
 
         @Override
