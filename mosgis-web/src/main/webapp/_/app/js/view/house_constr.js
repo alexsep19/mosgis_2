@@ -8,6 +8,16 @@ define ([], function () {
             
     return function (data, view) {
     
+        function editable () {
+
+            if ($_USER.role.nsi_20_4 ||
+                $_USER.role.nsi_20_7)
+                return false
+
+            return data.is_passport_editable
+
+        }
+
         $_F5 = function () {
 
             var grid = w2ui [grid_name]
@@ -48,7 +58,7 @@ define ([], function () {
             columns: [                
 //                {field: 'ord_src', caption: '№ п/п', size: 5},
                 {field: 'label', caption: 'Реквизит', size: 100},
-                {field: 'value', caption: 'Значение', size: 20, attr: 'data-status', editable: !data.is_passport_editable ? null : function (voc) {                
+                {field: 'value', caption: 'Значение', size: 20, attr: 'data-status', editable: !editable () ? null : function (voc) {                
                     switch (voc.id_type) {
                         case 0:  return {type: 'int'}
                         case 1:  return {type: 'float', precision: 4, autoFormat: true, keyboard: false, min: 0}
