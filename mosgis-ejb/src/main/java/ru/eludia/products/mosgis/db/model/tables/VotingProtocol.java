@@ -106,8 +106,12 @@ public class VotingProtocol extends EnTable {
                 + "; END IF; "
 
                 + "IF :NEW.is_deleted=0 AND :NEW.ID_PRTCL_STATUS <> :OLD.ID_PRTCL_STATUS AND :NEW.ID_PRTCL_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING.getId () + " THEN BEGIN "
-                        
-                    + "IF :NEW.AVOTINGDATE > TRUNC(SYSDATE) THEN raise_application_error (-20000, 'Приём решений ещё не завершён. Операция отменена.'); END IF; "
+
+                    + "IF :NEW.FORM_=" + VocVotingForm.i.AVOTING + " AND :NEW.AVOTINGDATE > TRUNC(SYSDATE) THEN raise_application_error (-20000, 'Дата окончания приема решений не должна быть позже текущей даты.'); END IF; "
+                    + "IF :NEW.FORM_=" + VocVotingForm.i.MEET_AV + " AND :NEW.MEETING_AV_DATE_END > TRUNC(SYSDATE) THEN raise_application_error (-20000, 'Дата окончания приема решений не должна быть позже текущей даты.'); END IF; "
+
+                    + "IF :NEW.FORM_=" + VocVotingForm.i.MEETING + " AND :NEW.MEETINGDATE > TRUNC(SYSDATE) THEN raise_application_error (-20000, 'Дата проведения собрания не должна быть позже текущей даты.'); END IF; "
+                    + "IF :NEW.FORM_=" + VocVotingForm.i.MEET_AV + " AND :NEW.MEETING_AV_DATE > TRUNC(SYSDATE) THEN raise_application_error (-20000, 'Дата проведения собрания не должна быть позже текущей даты.'); END IF; "
 
                     + " SELECT COUNT(*) INTO cnt_files FROM tb_voting_protocol_files WHERE id_status=1 AND UUID_PROTOCOL=:NEW.uuid; "
                     + " IF cnt_files=0 THEN raise_application_error (-20000, 'Файл протокола не загружен на сервер. Операция отменена.'); END IF; "
