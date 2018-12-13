@@ -2,7 +2,7 @@ define ([], function () {
 
     return function (data, view) {
         
-        function voting_ptocols_view_permit () {
+        function voting_protocols_view_permit () {
 
             if (!data.item.is_condo) return false
 
@@ -48,7 +48,7 @@ define ([], function () {
                             {id: 'house_premises', caption: 'Помещения', off: !data.item.is_condo},
                             {id: 'house_living_rooms', caption: 'Комнаты', off: (data.item.is_condo && !data.has_shared_premises_res)},
                             {id: 'house_property_documents', caption: 'Собственники'},
-                            {id: 'house_voting_protocols', caption: 'Общие собрания', off: !voting_ptocols_view_permit()},
+                            {id: 'house_voting_protocols', caption: 'Общие собрания', off: !voting_protocols_view_permit()},
                             {id: 'house_docs',     caption: 'Документы'},
                         ].filter (not_off),
 
