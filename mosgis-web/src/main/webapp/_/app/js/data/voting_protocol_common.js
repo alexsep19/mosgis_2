@@ -57,9 +57,10 @@ define ([], function () {
 
         switch (v.form_) {
             case '0':
+                if (!v.avotingstartdate) die ('avotingstartdate', 'Пожалуйста, введите дату начала приема решений')
                 if (!v.avotingdate) die ('avotingdate', 'Пожалуйста, введите дату окончания приема решений')
+                if ( v.avotingdate < v.avotingstartdate) die ('avotingdate', 'Дата окончания не может предшествовать дате начала')
                 if (!v.resolutionplace) die ('resolutionplace', 'Пожалуйста, введите место принятия решений')
-
                 break;
             case '1':
                 if (!v.meetingdate) die ('meetingdate', 'Пожалуйста, введите дату проведения собрания')
@@ -76,7 +77,9 @@ define ([], function () {
                 break;
             case '3':
                 if (!v.meeting_av_date) die ('meeting_av_date', 'Пожалуйста, введите дату и время проведения собрания')
+                if (!v.meeting_av_date_start) die ('meeting_av_date_start', 'Пожалуйста, введите дату начала приема решений')
                 if (!v.meeting_av_date_end) die ('meeting_av_date_end', 'Пожалуйста, введите дату окончания приема решений')
+                if ( v.meeting_av_date_end < v.meeting_av_date_start) die ('meeting_av_date_end', 'Дата окончания не может предшествовать дате начала')
                 if (!v.meeting_av_place) die ('meeting_av_place', 'Пожалуйста, введите место проведения собрания')
                 if (!v.meeting_av_res_place) die ('meeting_av_res_place', 'Пожалуйста, введите место приема решения')
                 

@@ -35,6 +35,7 @@ public class VotingProtocol extends EnTable {
         PROTOCOLNUM          (Type.STRING, 30, null,    "Номер протокола"),
         PROTOCOLDATE         (Type.DATE,                  "Дата составления протокола"),
 
+        AVOTINGSTARTDATE     (Type.DATE, null, "Дата начала приема решений (заочное голосование опросным путем)"),
         AVOTINGDATE          (Type.DATE, null, "Дата окончания приема решений (заочное голосование опросным путем)"),
         RESOLUTIONPLACE      (Type.STRING, 3000, null, "Место принятия решений (заочное голосование опросным путем)"),
 
@@ -48,6 +49,7 @@ public class VotingProtocol extends EnTable {
 
         MEETING_AV_DATE      (Type.DATETIME, null, "Дата и время проведения собрания (очно-заочное голосование)"),
         MEETING_AV_PLACE     (Type.STRING, 3000, null, "Место проведения собрания (очно-заочное голосование)"),
+        MEETING_AV_DATE_START(Type.DATE, null, "Дата начала приема решений (очно-заочное голосование)"),
         MEETING_AV_DATE_END  (Type.DATE, null, "Дата окончания приема решений (очно-заочное голосование)"),
         MEETING_AV_RES_PLACE (Type.STRING, 3000, null, "Место приема решения (очно-заочное голосование)"),
 
@@ -239,6 +241,7 @@ public class VotingProtocol extends EnTable {
     private static ProtocolType.MeetingAVoting toMeetingAVoting (Map<String, Object> r) {
         r.put ("meetingdate", r.get ("meeting_av_date"));
         r.put ("avotingdate", r.get ("meeting_av_date_end"));
+        r.put ("avotingstartdate", r.get ("meeting_av_date_start"));
         r.put ("votingplace", r.get ("meeting_av_place"));
         r.put ("resolutionplace", r.get ("meeting_av_res_place"));
         final ProtocolType.MeetingAVoting result = (ProtocolType.MeetingAVoting) DB.to.javaBean (ProtocolType.MeetingAVoting.class, r);
