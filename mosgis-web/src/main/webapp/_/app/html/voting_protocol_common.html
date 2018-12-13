@@ -1,5 +1,12 @@
 <span>
 
+	<style>
+		table.vote-table {
+			color:#666;
+		}
+	</style>
+
+
     <div>
 
         <div class="w2ui-page page-0 page-1">
@@ -129,11 +136,13 @@
                 <tr>
                     <td class=labels>
                         <div class="w2ui-field">
-                            <label id=avotingdate_label class=gen>Дата окончания приема решений</label>
+                            <label id=avotingdate_label class=gen>Приём решений с</label>
                         </div>
                     </td>
                     <td>
                         <div class="w2ui-field">
+                            <input id=avotingstartdate name=avotingstartdate placeholder="" class=dt>
+                            по&nbsp;&nbsp;
                             <input id=avotingdate name=avotingdate placeholder="" class=dt>
                         </div>
                     </td>
@@ -181,28 +190,15 @@
 <!--||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
             <table id=evoting_period_table class="vote-table" border=0>
                 <tr>
-                    <td class=labels>
-                        <div class="w2ui-field">
-                            <label id=evotingdatebegin_label class=gen>Период проведения голосования:</label>
-                        </div>
-                    </td>
                     <td>
                         <div class="w2ui-field">
-                            <label id=evoting_from_label class=from_to>с</label>
+                            <label id=evotingdatebegin_label class=gen>Период проведения голосования с</label>
                         </div>
                     </td>
                     <td>
                         <div class="w2ui-field">
                             <input id=evotingdatebegin name=evotingdatebegin placeholder="" class=dt_tm >
-                        </div>
-                    </td>
-                    <td>
-                        <div class="w2ui-field">
-                            <label id=evoting_to_label class=from_to>по</label>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="w2ui-field">
+                            по&nbsp;&nbsp;
                             <input id=evotingdateend name=evotingdateend placeholder="" class=dt_tm >
                         </div>
                     </td>
@@ -253,11 +249,13 @@
                 <tr>
                     <td>
                         <div class="w2ui-field">
-                            <label id=meeting_av_date_end_label class=gen>Дата окончания приема решений</label>
+                            <label id=meeting_av_date_end_label class=gen>Прием решений с</label>
                         </div>
                     </td>
                     <td>
                         <div class="w2ui-field">
+                            <input id=meeting_av_date_start name=meeting_av_date_start placeholder="" class=dt >
+                            по&nbsp;&nbsp;
                             <input id=meeting_av_date_end name=meeting_av_date_end placeholder="" class=dt >
                         </div>
                     </td>

@@ -10,9 +10,9 @@ define ([], function () {
 
             var tables = {'avoting_table': [], 'meeting_table': [], 'evoting_table': ['evoting_period_table'], 'meet_av_table': []}
             var sizes = {
-                          'avoting_table': 332, 
+                          'avoting_table': 333, 
                           'meeting_table': 331, 
-                          'evoting_table': 369, 
+                          'evoting_table': 370, 
                           'meet_av_table': 400
             }
 
@@ -142,6 +142,9 @@ define ([], function () {
                 ]}},
                 
                 {name: 'form_', type: 'list', options: { items: data.vc_voting_forms.items }},
+                
+                {name: 'avotingstartdate', type: 'date'},
+                {name: 'meeting_av_date_start', type: 'date'},
                 
                 {name: 'avotingdate', type: 'date'},
                 {name: 'resolutionplace', type: 'text'},

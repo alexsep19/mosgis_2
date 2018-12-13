@@ -57,9 +57,10 @@ define ([], function () {
 
         switch (v.form_) {
             case '0':
+                if (!v.avotingstartdate) die ('avotingstartdate', 'Пожалуйста, введите дату начала приема решений')
                 if (!v.avotingdate) die ('avotingdate', 'Пожалуйста, введите дату окончания приема решений')
+                if ( v.avotingdate < v.avotingstartdate) die ('avotingdate', 'Дата окончания не может предшествовать дате начала')
                 if (!v.resolutionplace) die ('resolutionplace', 'Пожалуйста, введите место принятия решений')
-
                 break;
             case '1':
                 if (!v.meetingdate) die ('meetingdate', 'Пожалуйста, введите дату проведения собрания')
@@ -76,7 +77,9 @@ define ([], function () {
                 break;
             case '3':
                 if (!v.meeting_av_date) die ('meeting_av_date', 'Пожалуйста, введите дату и время проведения собрания')
+                if (!v.meeting_av_date_start) die ('meeting_av_date_start', 'Пожалуйста, введите дату начала приема решений')
                 if (!v.meeting_av_date_end) die ('meeting_av_date_end', 'Пожалуйста, введите дату окончания приема решений')
+                if ( v.meeting_av_date_end < v.meeting_av_date_start) die ('meeting_av_date_end', 'Дата окончания не может предшествовать дате начала')
                 if (!v.meeting_av_place) die ('meeting_av_place', 'Пожалуйста, введите место проведения собрания')
                 if (!v.meeting_av_res_place) die ('meeting_av_res_place', 'Пожалуйста, введите место приема решения')
                 
@@ -117,31 +120,6 @@ define ([], function () {
 
     return function (done) { 
 
-        function Permissions () {
-
-            if (!data.item.is_deleted) {
-
-                if (data.cach) {
-
-                    if ($_USER.role.admin) return true
-                    
-                    return ($_USER.role.nsi_20_1 ||
-                            $_USER.role.nsi_20_19 ||
-                            $_USER.role.nsi_20_20 ||
-                            $_USER.role.nsi_20_21 ||
-                            $_USER.role.nsi_20_22) &&
-                            data.cach.is_own && 
-                            $_USER.uuid_org == data.cach['org.uuid']
-
-                }
-
-                return $_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']]
-
-            }
-
-            return false
-        }       
-
         w2ui ['topmost_layout'].unlock ('main')
 
         var data = clone ($('body').data ('data'))
@@ -154,18 +132,7 @@ define ([], function () {
 
         data.item.err_text = data.item ['out_soap.err_text']
 
-        var permissions = Permissions ()
-
         console.log (data)
-
-        data.item._can = {
-            edit: permissions,
-            update: permissions,
-            cancel: 1,
-            delete: permissions,
-            approve: permissions && data.cach && data.cach.id_ctr_status_gis == 40 && data.item.id_prtcl_status == 10,
-            alter: permissions && data.cach && data.cach.id_ctr_status_gis == 40 && data.item.id_prtcl_status == 14,
-        }
 
         done (data)
         

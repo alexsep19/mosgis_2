@@ -35,6 +35,7 @@ public class VotingProtocol extends EnTable {
         PROTOCOLNUM          (Type.STRING, 30, null,    "Номер протокола"),
         PROTOCOLDATE         (Type.DATE,                  "Дата составления протокола"),
 
+        AVOTINGSTARTDATE     (Type.DATE, null, "Дата начала приема решений (заочное голосование опросным путем)"),
         AVOTINGDATE          (Type.DATE, null, "Дата окончания приема решений (заочное голосование опросным путем)"),
         RESOLUTIONPLACE      (Type.STRING, 3000, null, "Место принятия решений (заочное голосование опросным путем)"),
 
@@ -48,6 +49,7 @@ public class VotingProtocol extends EnTable {
 
         MEETING_AV_DATE      (Type.DATETIME, null, "Дата и время проведения собрания (очно-заочное голосование)"),
         MEETING_AV_PLACE     (Type.STRING, 3000, null, "Место проведения собрания (очно-заочное голосование)"),
+        MEETING_AV_DATE_START(Type.DATE, null, "Дата начала приема решений (очно-заочное голосование)"),
         MEETING_AV_DATE_END  (Type.DATE, null, "Дата окончания приема решений (очно-заочное голосование)"),
         MEETING_AV_RES_PLACE (Type.STRING, 3000, null, "Место приема решения (очно-заочное голосование)"),
 
@@ -95,9 +97,21 @@ public class VotingProtocol extends EnTable {
             + " cnt_files NUMBER;"
             + " uuid_init RAW(16);"
             + "BEGIN "
+
+                + "IF :NEW.ID_PRTCL_STATUS <> :OLD.ID_PRTCL_STATUS "
+                    + " AND :OLD.ID_PRTCL_STATUS <> " + VocGisStatus.i.FAILED_PLACING.getId ()
+                    + " AND :NEW.ID_PRTCL_STATUS =  " + VocGisStatus.i.PROJECT.getId ()
+                + " THEN "
+                    + " :NEW.ID_PRTCL_STATUS := " + VocGisStatus.i.MUTATING.getId ()
+                + "; END IF; "
+
                 + "IF :NEW.is_deleted=0 AND :NEW.ID_PRTCL_STATUS <> :OLD.ID_PRTCL_STATUS AND :NEW.ID_PRTCL_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING.getId () + " THEN BEGIN "
 
-                    + "IF :NEW.AVOTINGDATE > TRUNC(SYSDATE) THEN raise_application_error (-20000, 'Приём решений ещё не завершён. Операция отменена.'); END IF; "
+                    + "IF :NEW.FORM_=" + VocVotingForm.i.AVOTING + " AND :NEW.AVOTINGDATE > TRUNC(SYSDATE) THEN raise_application_error (-20000, 'Дата окончания приема решений не должна быть позже текущей даты.'); END IF; "
+                    + "IF :NEW.FORM_=" + VocVotingForm.i.MEET_AV + " AND :NEW.MEETING_AV_DATE_END > TRUNC(SYSDATE) THEN raise_application_error (-20000, 'Дата окончания приема решений не должна быть позже текущей даты.'); END IF; "
+
+                    + "IF :NEW.FORM_=" + VocVotingForm.i.MEETING + " AND :NEW.MEETINGDATE > TRUNC(SYSDATE) THEN raise_application_error (-20000, 'Дата проведения собрания не должна быть позже текущей даты.'); END IF; "
+                    + "IF :NEW.FORM_=" + VocVotingForm.i.MEET_AV + " AND :NEW.MEETING_AV_DATE > TRUNC(SYSDATE) THEN raise_application_error (-20000, 'Дата проведения собрания не должна быть позже текущей даты.'); END IF; "
 
                     + " SELECT COUNT(*) INTO cnt_files FROM tb_voting_protocol_files WHERE id_status=1 AND UUID_PROTOCOL=:NEW.uuid; "
                     + " IF cnt_files=0 THEN raise_application_error (-20000, 'Файл протокола не загружен на сервер. Операция отменена.'); END IF; "
@@ -231,6 +245,7 @@ public class VotingProtocol extends EnTable {
     private static ProtocolType.MeetingAVoting toMeetingAVoting (Map<String, Object> r) {
         r.put ("meetingdate", r.get ("meeting_av_date"));
         r.put ("avotingdate", r.get ("meeting_av_date_end"));
+        r.put ("avotingstartdate", r.get ("meeting_av_date_start"));
         r.put ("votingplace", r.get ("meeting_av_place"));
         r.put ("resolutionplace", r.get ("meeting_av_res_place"));
         final ProtocolType.MeetingAVoting result = (ProtocolType.MeetingAVoting) DB.to.javaBean (ProtocolType.MeetingAVoting.class, r);
