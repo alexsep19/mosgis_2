@@ -160,6 +160,9 @@ public class PublicPropertyContractDocsImpl extends BaseCRUD<PublicPropertyContr
 
         db.update (PublicPropertyContractFile.class, HASH (
             "uuid",            id,
+            "id_type",        data.getInt    ("id_type", 1),
+            "protocolnum",    data.getString ("protocolnum", null),
+            "protocoldate",   data.getString ("protocoldate", null),
             "description",     data.getString ("description",     "")
         ));
         

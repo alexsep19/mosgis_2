@@ -5,7 +5,7 @@ define ([], function () {
         $(view).w2popup ('open', {
 
             width  : 605,
-            height : 215,
+            height : 245,
 
             title   : 'Редактирование документа',
 
@@ -19,17 +19,34 @@ define ([], function () {
 
                     if (w2ui [name]) w2ui [name].destroy ()
 
-                    $('#w2ui-popup .w2ui-form').w2form ({
+                    $('#w2ui-popup .w2ui-form').w2reform ({
 
                         name: name,
 
                         record: data,
 
                         fields : [
+                            {name: 'id_type', type: 'list', options: {items: $('body').data ('data').vc_pp_ctr_file_types.items}},
+                            {name: 'protocolnum', type: 'text'},
+                            {name: 'protocoldate', type: 'date'},
                             {name: 'description',  type: 'textarea' },
                         ],
+                        
+                        focus: -1,
 
-                        focus: -1
+                        onChange: function (e) {
+                                                    
+                            if (e.target == "id_type") {
+                                $('#proto').css ({visibility: e.value_new.id == 3 ? 'visible' : 'hidden'})
+                            }
+                            
+                        },
+                        
+                        onRender: function (e) {
+                            e.done (function (e) {
+                                $('#proto').css ({visibility: data.id_type == 3 ? 'visible' : 'hidden'})
+                            })
+                        }
 
                     });
 

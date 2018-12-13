@@ -25,9 +25,9 @@ define ([], function () {
 
                         fields : [
                             {name: 'id_type', type: 'list', options: {items: data.vc_pp_ctr_file_types.items}},
-                            {name: 'label', type: 'text'},
                             {name: 'protocolnum', type: 'text'},
                             {name: 'protocoldate', type: 'date'},
+                            {name: 'label', type: 'text'},
                             {name: 'description',  type: 'textarea' },
                             {name: 'files', type: 'file', options: {max: 1, maxWidth: 400}},
                         ],
