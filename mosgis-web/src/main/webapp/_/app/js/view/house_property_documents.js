@@ -14,8 +14,8 @@ define ([], function () {
             toolbar: {
             
                 items: [
-                    {type: 'button', id: 'create_person', caption: 'Физическое лицо', icon: 'w2ui-icon-plus', onClick: $_DO.create_person_house_property_documents},
-                    {type: 'button', id: 'create_org', caption: 'Юридическое лицо', icon: 'w2ui-icon-plus', onClick: $_DO.create_org_house_property_documents},
+                    {type: 'button', id: 'create_person', caption: 'Физическое лицо', icon: 'w2ui-icon-plus', onClick: $_DO.create_person_house_property_documents, off: !data.is_passport_editable},
+                    {type: 'button', id: 'create_org', caption: 'Юридическое лицо', icon: 'w2ui-icon-plus', onClick: $_DO.create_org_house_property_documents, off: !data.is_passport_editable},
                 ].filter (not_off),
                 
             },         
@@ -26,6 +26,7 @@ define ([], function () {
 
             show: {
                 toolbar: true,
+                toolbarInput: false,
                 footer: 1,
             },            
 
