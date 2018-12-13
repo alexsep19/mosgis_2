@@ -37,7 +37,7 @@ public class VotingProtocolTest {
     private static MosGisModel m;
     private static JAXBContext jc;
     private static Schema schema;
-    private static Table votingProtocolTable;
+    private static Table table;
     private static Map<String, Object> commonPart;
     private static JsonWriterFactory jwf;
         
@@ -52,11 +52,12 @@ public class VotingProtocolTest {
                         
         m = new MosGisModel (new DataSourceImpl (getCn ()));
         jc = JAXBContext.newInstance (ImportVotingProtocolRequest.class);
-        votingProtocolTable = m.get (VotingProtocol.class);
+        table = m.get (VotingProtocol.class);
         
         Map<String, Boolean> config = new HashMap<> ();
         config.put(JsonGenerator.PRETTY_PRINTING, true);
         jwf = Json.createWriterFactory (config);        
+        schema = AbstactServiceAsync.loadSchema ("house-management/hcs-house-management-types.xsd");
         
         commonPart = HASH (    
                 
@@ -86,8 +87,6 @@ public class VotingProtocolTest {
             )).nextHASH ())
                 
         );
-
-        schema = AbstactServiceAsync.loadSchema ("house-management/hcs-house-management-types.xsd");
         
     }
     
@@ -207,7 +206,7 @@ public class VotingProtocolTest {
     
     private void testType (Map<String, Object> specificPart) {
         
-        Table.Sampler sampler = votingProtocolTable.new Sampler (commonPart, specificPart);
+        Table.Sampler sampler = table.new Sampler (commonPart, specificPart);
         
         Map<String, Object> sample = sampler.nextHASH ();
         

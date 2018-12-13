@@ -33,6 +33,7 @@ import ru.eludia.products.mosgis.db.model.tables.LivingRoom;
 import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContract;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocol;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
@@ -64,6 +65,7 @@ import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseESPReques
 import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseOMSRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseRSORequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseUORequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportPublicPropertyContractRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.LivingHouseOMSType;
 import ru.gosuslugi.dom.schema.integration.house_management.ObjectFactory;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
@@ -704,4 +706,8 @@ public class WsGisHouseManagementClient {
         
     }
     
+    public AckRequest.Ack importPublicPropertyContract (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importPublicPropertyContract (PublicPropertyContract.toImportPublicPropertyContractRequest (r)).getAck ();
+    }    
+
 }
