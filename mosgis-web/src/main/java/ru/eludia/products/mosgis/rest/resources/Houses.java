@@ -22,6 +22,9 @@ public class Houses extends EJBResource <HousesLocal> {
             securityContext.isUserInRole ("nsi_20_7"))
             return back.selectAll(p);
         
+        if (securityContext.isUserInRole ("nsi_20_8"))
+            return back.selectOktmo(p, getUserOrg ());
+        
         return back.select (p, getUser ());
         
     }

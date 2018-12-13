@@ -9,7 +9,7 @@ import ru.eludia.products.mosgis.rest.api.base.CRUDBackend;
 public interface HousesLocal extends CRUDBackend {
 
     JsonObject selectAll (JsonObject p);
-    //JsonObject selectOktmo (JsonObject p);
+    JsonObject selectOktmo (JsonObject p, String uuid_org);
     
     JsonObject select (JsonObject p, User user);
     JsonObject getItem (String id);
