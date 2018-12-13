@@ -21,7 +21,7 @@ define ([], function () {
 
             }
 
-            return $_USER.role.nsi_20_8 && $_USER.oktmo[data.item['fias.oktmo']]
+            return $_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']]
             
         }
         
