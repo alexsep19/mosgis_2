@@ -117,6 +117,28 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
     }
 
     @Override
+    public JsonObject selectAll (JsonObject p) {return fetchData ((db, job) -> {
+        
+        final MosGisModel model = ModelHolder.getModel ();
+        
+        final JsonObject data = p.getJsonObject ("data");
+logger.info ("data=" + data);
+        Select select = model.select (MgmtContract.class, "AS root", "*", "uuid AS id")
+            .toOne (VocOrganization.class, "AS org", "label").on ("uuid_org")
+            .toMaybeOne (VocOrganization.class, "AS org_customer", "label").on ("uuid_org_customer")
+            .toMaybeOne (ContractLog.class         ).on ()
+            .toMaybeOne (OutSoap.class,           "err_text").on ()
+            .orderBy ("org.label")
+            .orderBy ("root.docnum")
+            .limit (p.getInt ("offset"), p.getInt ("limit"));
+
+        applySearch (Search.from (p), select);
+
+        db.addJsonArrayCnt (job, select);
+
+    });}
+    
+    @Override
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
         
         final MosGisModel model = ModelHolder.getModel ();

@@ -89,6 +89,11 @@ public class MgmtContracts extends EJBResource <MgmtContractLocal> {
             }
             
         }
+        
+        if (false 
+            || securityContext.isUserInRole ("nsi_20_4")
+            || securityContext.isUserInRole ("nsi_20_7"))
+            return back.selectAll (p);
 
         return back.select (p, getUser ()); 
         
