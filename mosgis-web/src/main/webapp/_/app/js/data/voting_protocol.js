@@ -16,6 +16,37 @@ define ([], function () {
         use.block (name)
             
     }            
+    
+    function is_own (data) {
+    
+//        if (data.item.is_deleted) return false
+        if ($_USER.role.admin)    return true
+        
+        var cach = data.cach
+        
+        if (!cach) return false
+        if (!cach.is_own) return false
+        if (cach ['org.uuid'] != $_USER.uuid_org)
+        
+        
+                    
+
+                
+                return ($_USER.role.nsi_20_1 ||
+                        $_USER.role.nsi_20_19 ||
+                        $_USER.role.nsi_20_20 ||
+                        $_USER.role.nsi_20_21 ||
+                        $_USER.role.nsi_20_22) &&
+                        data.cach.is_own && 
+                        $_USER.uuid_org == data.cach['org.uuid']
+
+            }
+
+            return $_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']]
+
+
+        return false
+    }    
 
     return function (done) {        
 
@@ -40,6 +71,12 @@ define ([], function () {
                     add_vocabularies (d, {owners: {}})
                     data.owners = d.owners
                 }
+                
+                var it = data.item
+                
+                it._can = {}
+                
+                
 
                 $('body').data ('data', data)
     
