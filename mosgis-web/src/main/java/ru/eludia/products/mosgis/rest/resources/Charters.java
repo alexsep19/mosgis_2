@@ -175,7 +175,7 @@ public class Charters extends EJBResource <CharterLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
         final JsonObject item = back.getItem (id);
-        checkOrg (item.getJsonObject ("item"));
+        if (!securityContext.isUserInRole ("nsi_20_4") && !securityContext.isUserInRole ("nsi_20_7")) checkOrg (item.getJsonObject ("item"));
         return back.getLog (id, p, getUser ());
     }
     

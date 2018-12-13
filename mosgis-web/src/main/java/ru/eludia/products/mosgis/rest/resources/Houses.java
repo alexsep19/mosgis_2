@@ -391,7 +391,7 @@ public class Houses extends EJBResource <HousesLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
         final JsonObject item = back.getItem (id);
-        checkOrg (item);
+        checkGet (item);
         return back.getLog (id, p, getUser ());
     }
         
