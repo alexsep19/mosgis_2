@@ -44,6 +44,7 @@ define ([], function () {
                 toolbar: true,
                 footer: true,
                 toolbarColumns: true,
+                toolbarInput: false,
                 toolbarAdd: Permissions (),
                 //toolbarDelete: Permissions (),
             },            
