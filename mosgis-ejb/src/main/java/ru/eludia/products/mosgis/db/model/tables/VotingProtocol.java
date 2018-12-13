@@ -95,8 +95,16 @@ public class VotingProtocol extends EnTable {
             + " cnt_files NUMBER;"
             + " uuid_init RAW(16);"
             + "BEGIN "
-                + "IF :NEW.is_deleted=0 AND :NEW.ID_PRTCL_STATUS <> :OLD.ID_PRTCL_STATUS AND :NEW.ID_PRTCL_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING.getId () + " THEN BEGIN "
 
+                + "IF :NEW.ID_PRTCL_STATUS <> :OLD.ID_PRTCL_STATUS "
+                    + " AND :OLD.ID_PRTCL_STATUS <> " + VocGisStatus.i.FAILED_PLACING.getId ()
+                    + " AND :NEW.ID_PRTCL_STATUS =  " + VocGisStatus.i.PROJECT.getId ()
+                + " THEN "
+                    + " :NEW.ID_PRTCL_STATUS := " + VocGisStatus.i.MUTATING.getId ()
+                + "; END IF; "
+
+                + "IF :NEW.is_deleted=0 AND :NEW.ID_PRTCL_STATUS <> :OLD.ID_PRTCL_STATUS AND :NEW.ID_PRTCL_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING.getId () + " THEN BEGIN "
+                        
                     + "IF :NEW.AVOTINGDATE > TRUNC(SYSDATE) THEN raise_application_error (-20000, 'Приём решений ещё не завершён. Операция отменена.'); END IF; "
 
                     + " SELECT COUNT(*) INTO cnt_files FROM tb_voting_protocol_files WHERE id_status=1 AND UUID_PROTOCOL=:NEW.uuid; "
