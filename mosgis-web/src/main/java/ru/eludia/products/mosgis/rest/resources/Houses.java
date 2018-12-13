@@ -25,6 +25,43 @@ public class Houses extends EJBResource <HousesLocal> {
         
     }
     
+    private String getUserOrg () {
+
+        String userOrg = getUser ().getUuidOrg ();
+
+        if (userOrg == null) {
+            logger.warning ("User has no org set, access prohibited");
+            throw new ValidationException ("foo", "Доступ запрещён");
+        }
+
+        return userOrg;
+        
+    }
+    
+    private boolean getAccessCheck (JsonObject item) {
+        
+        if (securityContext.isUserInRole ("admin")    ||
+            securityContext.isUserInRole ("nsi_20_4") ||
+            securityContext.isUserInRole ("nsi_20_7"))
+            return true;
+        
+        if (securityContext.isUserInRole ("nsi_20_1")  ||
+            securityContext.isUserInRole ("nsi_20_19") ||
+            securityContext.isUserInRole ("nsi_20_20") ||
+            securityContext.isUserInRole ("nsi_20_21") ||
+            securityContext.isUserInRole ("nsi_20_22"))
+            return item.containsKey ("cach") && getUserOrg ().equals (item.getJsonObject ("cach").getString("org.uuid"));
+        
+        String itemOktmo = item.getJsonObject ("item").get ("fias.oktmo").toString ();
+        return securityContext.isUserInRole("nsi_20_8") && securityContext.isUserInRole("oktmo_" + itemOktmo);
+    }
+    
+    private void checkGet (JsonObject item) {
+        
+        if (!getAccessCheck (item)) throw new ValidationException ("foo", "Доступ запрещен");
+        
+    }
+    
     private void checkOrg (JsonObject item) {
         
         if (securityContext.isUserInRole ("admin")) return;
@@ -53,7 +90,7 @@ public class Houses extends EJBResource <HousesLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) { 
         final JsonObject item = back.getItem (id);
-        checkOrg (item);
+        checkGet (item);
         return item;
     }
 
