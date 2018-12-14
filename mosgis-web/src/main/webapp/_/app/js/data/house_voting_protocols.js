@@ -31,12 +31,20 @@ define ([], function () {
     }
 
     return function (done) {
+    
+        var data = $('body').data ('data')
 
-        w2ui ['topmost_layout'].unlock ('main')            
+        query ({type: 'voting_protocols', part: 'vocs', id: undefined}, {}, function (d) {
+        
+            add_vocabularies (d, d)
 
-        data = $('body').data ('data')
+            w2ui ['topmost_layout'].unlock ('main')
+            
+            data.vc_gis_status = d.vc_gis_status
 
-        done(data)
+            done (data)
+        
+        })
 
     }
 
