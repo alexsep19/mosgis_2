@@ -83,6 +83,39 @@ public class VotingProtocol extends EnTable {
                     return true;
             }
         }
+        
+        public VocVotingForm.i getVotingForm () {
+            
+            switch (this) {
+                
+                case AVOTINGSTARTDATE:
+                case AVOTINGDATE:
+                case RESOLUTIONPLACE:
+                    return VocVotingForm.i.AVOTING;
+                    
+                case MEETINGDATE:
+                case VOTINGPLACE:
+                    return VocVotingForm.i.MEETING;
+                    
+                case EVOTINGDATEBEGIN:
+                case EVOTINGDATEEND:
+                case DISCIPLINE:
+                case INFOREVIEW:
+                    return VocVotingForm.i.EVOTING;
+                    
+                case MEETING_AV_DATE:
+                case MEETING_AV_PLACE:
+                case MEETING_AV_DATE_START:
+                case MEETING_AV_DATE_END:
+                case MEETING_AV_RES_PLACE:
+                    return VocVotingForm.i.MEET_AV;
+                    
+                default: 
+                    return null;
+                    
+            }
+            
+        }
 
     }
 
