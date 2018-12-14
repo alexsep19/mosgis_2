@@ -34,7 +34,7 @@ import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContract;
-import ru.eludia.products.mosgis.db.model.tables.VotingProtocol;
+import ru.eludia.products.mosgis.db.model.tables.VotingProtocolLog;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
@@ -694,7 +694,7 @@ public class WsGisHouseManagementClient {
     }
     
     public AckRequest.Ack placeVotingProtocol (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
-        return getPort (orgPPAGuid, messageGUID).importVotingProtocol (VotingProtocol.toImportVotingProtocolPlacingRequest (r)).getAck ();
+        return getPort (orgPPAGuid, messageGUID).importVotingProtocol (VotingProtocolLog.toImportVotingProtocolPlacingRequest (r)).getAck ();
     }
     
     public AckRequest.Ack importPublicPropertyContract (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {

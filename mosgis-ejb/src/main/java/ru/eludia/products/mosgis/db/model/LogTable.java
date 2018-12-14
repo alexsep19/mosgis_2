@@ -3,8 +3,10 @@ package ru.eludia.products.mosgis.db.model;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
+import ru.eludia.base.model.def.Def;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import static ru.eludia.base.model.def.Def.NOW;
+import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
 
@@ -29,23 +31,32 @@ public abstract class LogTable extends Table {
                 
                 EnColEnum c = (EnColEnum) o;
                 
-                if (!c.isLoggable ()) continue;
+                if (!c.isLoggable ()) continue;                                
                 
                 Col col = c.getCol ().clone ();
                 
-                col.setDef (null);
-                col.setNullable (true);
+                Def def = col.getDef ();
+                boolean isVirtual = def != null && def instanceof Virt;
+                
+                if (!isVirtual) {
+                    col.setDef (null);
+                    col.setNullable (true);
+                }
                 
                 add (col);
                 
-                if (sbSelect.length () > 0) {
-                    sbSelect.append (',');
-                    sbInto.append (',');
+                if (!isVirtual) {
+                    
+                    if (sbSelect.length () > 0) {
+                        sbSelect.append (',');
+                        sbInto.append (',');
+                    }
+
+                    sbSelect.append (col.getName ());
+                    sbInto.append (":NEW.");
+                    sbInto.append (col.getName ());
+                    
                 }
-                
-                sbSelect.append (col.getName ());
-                sbInto.append (":NEW.");
-                sbInto.append (col.getName ());
                 
             }
             
