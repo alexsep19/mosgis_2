@@ -694,16 +694,7 @@ public class WsGisHouseManagementClient {
     }
     
     public AckRequest.Ack placeVotingProtocol (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
-        
-        final ImportVotingProtocolRequest.Protocol protocol = VotingProtocol.toDom (r);
-
-        final ImportVotingProtocolRequest createImportVotingProtocolRequest = of.createImportVotingProtocolRequest ();
-        protocol.setPlacing (true);
-        createImportVotingProtocolRequest.setProtocol (protocol);
-        createImportVotingProtocolRequest.setTransportGUID (UUID.randomUUID ().toString ());
-        
-        return getPort (orgPPAGuid, messageGUID).importVotingProtocol (createImportVotingProtocolRequest).getAck ();
-        
+        return getPort (orgPPAGuid, messageGUID).importVotingProtocol (VotingProtocol.toImportVotingProtocolPlacingRequest (r)).getAck ();
     }
     
     public AckRequest.Ack importPublicPropertyContract (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {

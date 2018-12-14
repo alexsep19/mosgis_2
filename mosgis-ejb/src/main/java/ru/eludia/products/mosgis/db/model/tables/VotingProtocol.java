@@ -2,6 +2,7 @@ package ru.eludia.products.mosgis.db.model.tables;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Logger;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
@@ -186,8 +187,21 @@ public class VotingProtocol extends EnTable {
     };
 
     private static final Logger logger = Logger.getLogger (VotingProtocol.class.getName ());    
+    
+    public static final ImportVotingProtocolRequest toImportVotingProtocolPlacingRequest (Map<String, Object> r) {
+        
+        final ImportVotingProtocolRequest.Protocol protocol = VotingProtocol.toImportVotingProtocolRequestProtocol (r);
 
-    public static final ImportVotingProtocolRequest.Protocol toDom (Map<String, Object> r) {
+        final ImportVotingProtocolRequest createImportVotingProtocolRequest = new ImportVotingProtocolRequest ();
+        protocol.setPlacing (true);
+        createImportVotingProtocolRequest.setProtocol (protocol);
+        createImportVotingProtocolRequest.setTransportGUID (UUID.randomUUID ().toString ());
+        
+        return createImportVotingProtocolRequest;
+        
+    }
+
+    private static final ImportVotingProtocolRequest.Protocol toImportVotingProtocolRequestProtocol (Map<String, Object> r) {
 
         final ImportVotingProtocolRequest.Protocol p = (ImportVotingProtocolRequest.Protocol) DB.to.javaBean (ImportVotingProtocolRequest.Protocol.class, r);
         
