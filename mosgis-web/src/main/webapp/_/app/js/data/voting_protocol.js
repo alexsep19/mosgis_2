@@ -69,6 +69,7 @@ define ([], function () {
                 }
                 
                 var it = data.item
+                it.status_label = data.vc_gis_status [it.id_prtcl_status]
                 
                 it._can = {cancel: 1}
                 

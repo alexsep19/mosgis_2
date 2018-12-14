@@ -117,6 +117,7 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
         
         VocAction.addTo (jb);
         VocVotingForm.addTo (jb);
+        VocGisStatus.addLiteTo (jb);
         
         try (DB db = ModelHolder.getModel ().getDb ()) {
             
@@ -132,12 +133,8 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
 
                 ModelHolder.getModel ()
                     .select (VocAsyncEntityState.class, "id", "label")
-                    .orderBy ("label"),
+                    .orderBy ("label")
                     
-                ModelHolder.getModel ()
-                    .select(VocGisStatus.class, "id", "label")
-                    .orderBy ("id")
-
             );
 
         }
@@ -154,7 +151,6 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
 
         JsonObject item = db.getJsonObject (ModelHolder.getModel ()
             .get (VotingProtocol.class, id, "AS root", "*")
-            .toOne (VocGisStatus.class, "label AS status_label").on("id_prtcl_status")
             .toOne (VocBuilding.class, "label AS address_label", "oktmo AS oktmo").on ()
             .toMaybeOne (House.class, "AS house", "uuid AS house_uuid", "fiashouseguid").on ("root.fiashouseguid=house.fiashouseguid")
             .toMaybeOne (VotingProtocolLog.class           ).on ()
