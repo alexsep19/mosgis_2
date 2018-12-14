@@ -64,10 +64,10 @@ define ([], function () {
         if (!v.accreditationstartdate)
             die('accreditationstartdate', 'Укажите, пожалуйста, дату внесения в реестр аккредитованных')
 
-        if (!/^(\d{10}|\d{12})$/.test(v.inn))
+        if (!valid_inn(v.inn))
             die('inn', 'Укажите, пожалуйста ИНН(10 или 12 цифр)')
 
-        if (!/^\d{9}$/.test(v.kpp))
+        if (!valid_kpp(v.kpp))
             die('kpp', 'Укажите, пожалуйста КПП (9 цифр)')
 
         if (!v.fiashouseguid)
