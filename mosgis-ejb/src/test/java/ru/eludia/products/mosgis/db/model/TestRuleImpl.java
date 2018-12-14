@@ -6,6 +6,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.Connection;
 import java.sql.Driver;
+import java.sql.SQLException;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -25,6 +26,10 @@ public class TestRuleImpl implements TestRule {
 
     public Connection getCn () {
         return cn;
+    }
+    
+    public void closeConnection () throws SQLException {
+        if (cn != null) cn.close ();
     }
     
     private static final Logger logger = Logger.getLogger (TestRuleImpl.class.getName ());
