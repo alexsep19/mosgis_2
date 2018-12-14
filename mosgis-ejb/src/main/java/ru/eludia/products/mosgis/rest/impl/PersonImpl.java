@@ -76,10 +76,14 @@ public class PersonImpl extends BaseCRUD<VocPerson> implements PersonLocal {
     @Override
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
 
+        String uuidOrg = p.getString("uuid_org", null);
+
+        uuidOrg = uuidOrg instanceof String? uuidOrg : user.getUuidOrg();
+
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
             .toOne (VocOrganization.class, "AS org", "label").on ()
             .toMaybeOne (VocPersonLog.class         ).on ()
-            .and ("uuid_org", user.getUuidOrg ())
+            .and ("uuid_org", uuidOrg)
             .orderBy ("org.label")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
