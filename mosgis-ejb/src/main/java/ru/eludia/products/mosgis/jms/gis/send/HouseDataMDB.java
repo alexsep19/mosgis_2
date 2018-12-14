@@ -80,14 +80,14 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
     protected Get get(UUID uuid) {
         return (Get) ModelHolder.getModel().get(getTable(), uuid, "AS root", "*")
                 .toOne (VocOrganization.class, "AS org", "orgppaguid").on()
-                .toOne (House.class, "AS house", "fiashouseguid", "id_status", "gis_unique_number").on()
+                .toOne (House.class, "AS house", "fiashouseguid", "id_status", "id_status_gis", "gis_unique_number").on()
                 .toOne(VocBuilding.class, "oktmo").on();
     }
     
     @Override
     protected void handleRecord(DB db, UUID uuid, Map<String, Object> r) throws SQLException {
       
-        VocGisStatus.i status = VocGisStatus.i.forId (r.get ("house.id_status"));
+        VocGisStatus.i status = VocGisStatus.i.forId (r.get ("house.id_status_gis"));
         
         House.Action action = House.Action.forStatus (status);
         
@@ -117,7 +117,7 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
             
             db.update (House.class, DB.HASH (
                     "uuid",          r.get ("uuid_object"),
-                    "id_status",     action.getNextStatus ().getId ()
+                    "id_status_gis", action.getNextStatus ().getId ()
                 ));
             
             db.commit();
@@ -146,8 +146,8 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
                 ));
 
                 db.update (House.class, DB.HASH (
-                    "uuid",      r.get ("uuid_object"),
-                    "id_status", action.getFailStatus ().getId ()
+                    "uuid",          r.get ("uuid_object"),
+                    "id_status_gis", action.getFailStatus ().getId ()
                 ));
 
             db.commit ();
@@ -175,8 +175,8 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
                 ));
 
                 db.update (House.class, DB.HASH (
-                    "uuid",      r.get ("uuid_object"),
-                    "id_status", action.getFailStatus ().getId ()
+                    "uuid",          r.get ("uuid_object"),
+                    "id_status_gis", action.getFailStatus ().getId ()
                 ));
 
             db.commit ();

@@ -12,6 +12,7 @@ import static ru.eludia.products.mosgis.db.model.tables.Charter.Action.PLACING;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
 import ru.eludia.products.mosgis.db.model.voc.VocRdColType;
 
@@ -26,9 +27,10 @@ public class House extends Passport {
         pk     ("uuid",                  Type.UUID,   NEW_UUID,            "Ключ");
         col    ("unom",                  Type.NUMERIC, 12, null,           "UNOM (код дома в московских ИС)");
         
-        fk     ("fiashouseguid",         VocBuilding.class,  null,                           "Глобальный уникальный идентификатор дома по ФИАС");
-        fk     ("id_status",             VocGisStatus.class, VocGisStatus.i.PROJECT.asDef(), "Статус");
-        fk     ("id_log",                HouseLog.class,     null ,                          "Последнее событие редактирования");
+        fk     ("fiashouseguid",         VocBuilding.class,  null,                     "Глобальный уникальный идентификатор дома по ФИАС");
+        fk     ("id_status_gis",         VocGisStatus.class, null,                     "Статус обмена с ГИС ЖКХ");
+        fk     ("id_status",             VocHouseStatus.class, VocHouseStatus.DEFAULT, "Статус размещения в ГИС ЖКХ");
+        fk     ("id_log",                HouseLog.class,     null ,                    "Последнее событие редактирования");
 
         col    ("address",               Type.STRING,                      "Адрес");
         col    ("address_uc",            Type.STRING,  new Virt ("UPPER(\"ADDRESS\")"),  "АДРЕС В ВЕРХНЕМ РЕГИСТРЕ");

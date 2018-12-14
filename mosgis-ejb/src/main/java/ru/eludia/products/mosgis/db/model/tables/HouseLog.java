@@ -11,6 +11,7 @@ import static ru.eludia.base.model.def.Def.NOW;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
 import ru.eludia.products.mosgis.db.model.voc.VocRdColType;
@@ -34,7 +35,8 @@ public class HouseLog extends Passport {
         
         col    ("unom",                  Type.NUMERIC,      12,    null, "UNOM (код дома в московских ИС)");
         fk     ("fiashouseguid",         VocBuilding.class,        null, "Глобальный уникальный идентификатор дома по ФИАС");
-        fk     ("id_status",             VocGisStatus.class,       null, "Статус");
+        fk     ("id_status_gis",         VocGisStatus.class,       null, "Статус обмена с ГИС ЖКХ");
+        fk     ("id_status",             VocHouseStatus.class,     null, "Статус размещения в ГИС ЖКХ");
         col    ("address",               Type.STRING,              null, "Адрес");
         col    ("totalsquare",           Type.NUMERIC,      25, 4, null, "Общая площадь");
         col    ("usedyear",              Type.NUMERIC,      4,     null, "Год ввода в эксплуатацию");
@@ -60,6 +62,7 @@ public class HouseLog extends Passport {
             + "SELECT"
             + "    unom"
             + "    , fiashouseguid"
+            + "    , id_status_gis" 
             + "    , id_status"   
             + "    , address"
             + "    , totalsquare"
@@ -83,6 +86,7 @@ public class HouseLog extends Passport {
             + " INTO"
             + "    :NEW.unom"
             + "    , :NEW.fiashouseguid"
+            + "    , :NEW.id_status_gis"
             + "    , :NEW.id_status"
             + "    , :NEW.address"
             + "    , :NEW.totalsquare"

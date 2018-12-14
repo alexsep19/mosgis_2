@@ -11,6 +11,7 @@ import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
+import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
 import ru.eludia.products.mosgis.db.model.voc.VocRdColType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseESPRequest;
@@ -47,6 +48,8 @@ public class LivingRoom extends Passport {
         col    ("informationconfirmed",  Type.BOOLEAN,   Bool.TRUE,  "Информация подтверждена поставщиком");
         col    ("livingroomguid",        Type.UUID,      null,       "Идентификатор в ГИС ЖКХ");
         col    ("is_annuled_in_gis",     Type.BOOLEAN,   Bool.FALSE, "1, если запись аннулирована в ГИС ЖКХ; иначе 0");
+        
+        fk     ("id_status", VocHouseStatus.class, new Virt("DECODE(\"LIVINGROOMGUID\",NULL," + VocHouseStatus.i.MISSING.getId() + "," + VocHouseStatus.i.PUBLISHED.getId() + ")"), "Статус размещения в ГИС ЖКХ");
         
         trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
                 

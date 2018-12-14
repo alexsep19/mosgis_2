@@ -19,6 +19,7 @@ import ru.eludia.products.mosgis.db.model.tables.HouseLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
@@ -45,7 +46,7 @@ public class GisPollImportHouseMDB  extends GisPollMDB {
     @Override
     protected Get get(UUID uuid) {
         return (Get) ModelHolder.getModel().get(getTable(), uuid, "AS root", "*")
-            .toOne (HouseLog.class,     "AS log", "uuid", "id_status").on ("log.uuid_out_soap=root.uuid")
+            .toOne (HouseLog.class,     "AS log", "uuid", "id_status", "id_status_gis").on ("log.uuid_out_soap=root.uuid")
             .toOne (House.class,     "AS house", "uuid", "fiashouseguid").on()
             .toOne (VocOrganization.class, "AS org", "orgppaguid").on()
         ;
@@ -62,7 +63,7 @@ public class GisPollImportHouseMDB  extends GisPollMDB {
         
         UUID orgPPAGuid = (UUID) r.get("org.orgppaguid");
 
-        final VocGisStatus.i lastStatus = VocGisStatus.i.forId (r.get ("log.id_status"));
+        final VocGisStatus.i lastStatus = VocGisStatus.i.forId (r.get ("log.id_status_gis"));
         
         if (lastStatus == null) {
             logger.severe ("Cannot detect last status for " + r);
@@ -113,6 +114,12 @@ public class GisPollImportHouseMDB  extends GisPollMDB {
                 }
                 if (StringUtils.isNotBlank(commonResultErrors))
                     throw new FU ("0", commonResultErrors, action.getFailStatus());
+                
+                db.update (House.class, HASH (
+                    "uuid", r.get("house.uuid"),
+                    "id_status", VocHouseStatus.i.PUBLISHED.getId(),
+                    "id_status_gis", null
+                ));
                 
                 db.update (OutSoap.class, HASH (
                     "uuid", uuid,
@@ -226,7 +233,7 @@ public class GisPollImportHouseMDB  extends GisPollMDB {
 
             db.update (House.class, HASH (
                 "uuid",          r.get ("house.uuid"),
-                "id_status", status.getId ()
+                "id_status_gis", status.getId ()
             ));
             
         }
