@@ -64,7 +64,7 @@ define ([], function () {
         if (!v.accreditationstartdate)
             die('accreditationstartdate', 'Укажите, пожалуйста, дату внесения в реестр аккредитованных')
 
-        if (!/^(\d{10})|(\d{12})$/.test(v.inn))
+        if (!/^(\d{10}|\d{12})$/.test(v.inn))
             die('inn', 'Укажите, пожалуйста ИНН(10 или 12 цифр)')
 
         if (!/^\d{9}$/.test(v.kpp))
