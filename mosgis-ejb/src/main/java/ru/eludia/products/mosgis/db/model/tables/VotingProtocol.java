@@ -121,7 +121,7 @@ public class VotingProtocol extends EnTable {
         trigger ("BEFORE UPDATE", 
                 
             "DECLARE "
-            + " cnt_files NUMBER;"
+            + " cnt NUMBER;"
             + " uuid_init RAW(16);"
             + "BEGIN "
 
@@ -140,8 +140,11 @@ public class VotingProtocol extends EnTable {
                     + "IF :NEW.FORM_=" + VocVotingForm.i.MEETING + " AND :NEW.MEETINGDATE > TRUNC(SYSDATE) THEN raise_application_error (-20000, 'Дата проведения собрания не должна быть позже текущей даты.'); END IF; "
                     + "IF :NEW.FORM_=" + VocVotingForm.i.MEET_AV + " AND :NEW.MEETING_AV_DATE > TRUNC(SYSDATE) THEN raise_application_error (-20000, 'Дата проведения собрания не должна быть позже текущей даты.'); END IF; "
 
-                    + " SELECT COUNT(*) INTO cnt_files FROM tb_voting_protocol_files WHERE id_status=1 AND UUID_PROTOCOL=:NEW.uuid; "
-                    + " IF cnt_files=0 THEN raise_application_error (-20000, 'Файл протокола не загружен на сервер. Операция отменена.'); END IF; "
+                    + " SELECT COUNT(*) INTO cnt FROM tb_voting_protocol_files WHERE id_status=1 AND UUID_PROTOCOL=:NEW.uuid; "
+                    + " IF cnt=0 THEN raise_application_error (-20000, 'Файл протокола не загружен на сервер. Операция отменена.'); END IF; "
+                
+                    + " SELECT COUNT(*) INTO cnt FROM tb_vote_decision_lists WHERE is_deleted=0 AND PROTOCOL_UUID=:NEW.uuid; "
+                    + " IF cnt=0 THEN raise_application_error (-20000, 'Не заполнена повестка собрания. Операция отменена.'); END IF; "
 
                     + " SELECT MIN(uuid) INTO uuid_init FROM tb_vote_initiators WHERE is_deleted = 0 AND UUID_PROTOCOL=:NEW.uuid AND UUID_ORG=:NEW.UUID_ORG; "
                     + " IF uuid_init IS NULL THEN raise_application_error (-20000, 'Вашей организации нет в списке инициаторов. Операция отменена.'); END IF; "

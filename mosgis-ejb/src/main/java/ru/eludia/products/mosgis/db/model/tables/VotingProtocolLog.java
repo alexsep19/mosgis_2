@@ -5,12 +5,12 @@ import java.util.Map;
 import java.util.UUID;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.GisFileLogTable;
+import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import ru.eludia.products.mosgis.db.model.voc.VocVotingForm;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportVotingProtocolRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ProtocolType;
 
-public class VotingProtocolLog extends GisFileLogTable {
+public class VotingProtocolLog extends GisWsLogTable {
     
     public VotingProtocolLog () {
         super ("tb_voting_protocols__log", "История изменения протоколов ОСС", VotingProtocol.class
