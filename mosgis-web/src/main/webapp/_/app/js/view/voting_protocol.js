@@ -25,7 +25,7 @@ define ([], function () {
                         tabs: [
                             {id: 'voting_protocol_common',   caption: 'Общие'},
                             {id: 'voting_protocol_vote_initiators', caption: 'Инициаторы собрания'},
-                            {id: 'voting_protocol_vote_decision_lists', caption: 'Повестки'},
+                            {id: 'voting_protocol_vote_decision_lists', caption: 'Повестка'},
                             {id: 'voting_protocol_docs', caption: 'Файлы'},
                         ].filter (not_off),
 

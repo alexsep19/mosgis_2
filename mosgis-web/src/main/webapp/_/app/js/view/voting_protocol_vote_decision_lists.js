@@ -1,36 +1,8 @@
 define ([], function () {
     
     var grid_name = 'voting_protocol_vote_decision_lists_grid'
-    
-    function getData () {
-        return $('body').data ('data')
-    }
-    
+        
     return function (data, view) {
-
-        function Permissions () {
-
-            if (!data.item.is_deleted && data.item.house_uuid && (data.item.id_prtcl_status_gis == 10 || data.item.id_prtcl_status_gis == 11)) {
-
-                if (data.cach) {
-
-                    if ($_USER.role.admin) return true
-
-                    return ($_USER.role.nsi_20_1 ||
-                            $_USER.role.nsi_20_19 ||
-                            $_USER.role.nsi_20_20 ||
-                            $_USER.role.nsi_20_21 ||
-                            $_USER.role.nsi_20_22) &&
-                            data.cach.is_own &&
-                            $_USER.uuid_org == data.cach['org.uuid']
-
-                }
-
-                return $_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']]
-            }
-
-            return false
-        }
 
         var layout = w2ui ['topmost_layout']
         
@@ -46,7 +18,7 @@ define ([], function () {
                 toolbar: true,
                 footer: true,
                 toolbarColumns: true,
-                toolbarAdd: Permissions (),
+                toolbarAdd: data.item._can.edit,
             },            
 
             textSearch: 'contains',
