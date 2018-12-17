@@ -41,26 +41,9 @@ public abstract class BaseCRUD <T extends Table> extends Base<T> implements CRUD
         
     }
 
-    protected void logAction (DB db, User user, Object id, VocAction.i action) throws SQLException {
-
-        Table logTable = ModelHolder.getModel ().getLogTable (getTable ());
-
-        if (logTable == null) return;
-
-        String id_log = db.insertId (logTable, HASH (
-            "action", action,
-            "uuid_object", id,
-            "uuid_user", user == null ? null : user.getId ()
-        )).toString ();
-        
-        db.update (getTable (), HASH (
-            "uuid",      id,
-            "id_status", VocAsyncEntityState.i.PENDING.getId (),
-            "id_log",    id_log
-        ));
-
-        publishMessage (action, id_log);
-
+    protected void logAction (DB db, User user, Object id, VocAction.i action) throws SQLException {        
+        String idLog = ModelHolder.getModel ().createIdLog (db, getTable (), user, id, action);
+        if (idLog != null) publishMessage (action, idLog);
     }
 
     @Override

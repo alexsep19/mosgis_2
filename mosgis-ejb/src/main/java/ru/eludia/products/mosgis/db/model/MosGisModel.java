@@ -6,10 +6,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
 import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiList;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.Passport;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
+import ru.eludia.products.mosgis.rest.User;
 
 public final class MosGisModel extends ru.eludia.base.Model {
 
@@ -23,6 +27,28 @@ public final class MosGisModel extends ru.eludia.base.Model {
     
     public Table getLogTable (Table t) {
         return get (t.getName () + "__log");
+    }
+    
+    public String createIdLog (DB db, Table table, User user, Object id, VocAction.i action) throws SQLException {
+
+        Table logTable = getLogTable (table);
+
+        if (logTable == null) return null;
+        
+        String idLog = db.insertId (logTable, HASH (
+            "action", action,
+            "uuid_object", id,
+            "uuid_user", user == null ? null : user.getId ()
+        )).toString ();
+        
+        db.update (table, HASH (
+            "uuid",      id,
+            "id_status", VocAsyncEntityState.i.PENDING.getId (),
+            "id_log",    idLog
+        ));
+                
+        return idLog;
+        
     }
     
     public MosGisModel (DataSource ds) throws SQLException, IOException {
