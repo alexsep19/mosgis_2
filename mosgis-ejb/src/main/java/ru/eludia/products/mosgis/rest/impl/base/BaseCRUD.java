@@ -1,14 +1,11 @@
 package ru.eludia.products.mosgis.rest.impl.base;
 
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.jms.Queue;
-import javax.json.Json;
 import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;

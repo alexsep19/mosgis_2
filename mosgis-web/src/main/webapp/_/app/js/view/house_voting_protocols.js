@@ -14,6 +14,10 @@ define ([], function () {
 
                 if ($_USER.role.admin) return true
 
+                if ($_USER.role.nsi_20_4 ||
+                    $_USER.role.nsi_20_7)
+                    return false
+
                 return ($_USER.role.nsi_20_1 ||
                         $_USER.role.nsi_20_19 ||
                         $_USER.role.nsi_20_20 ||
@@ -40,6 +44,7 @@ define ([], function () {
                 toolbar: true,
                 footer: true,
                 toolbarColumns: true,
+                toolbarInput: false,
                 toolbarAdd: Permissions (),
                 //toolbarDelete: Permissions (),
             },            

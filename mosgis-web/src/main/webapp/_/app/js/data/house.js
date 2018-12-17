@@ -73,7 +73,19 @@ define ([], function () {
             
             data.item.type = data.item.is_condo ? 'МКД' : 'ЖД'
             
-            if ($_USER.role.admin || (data.cach && data.cach.is_own && data.cach.id_ctr_status_gis == 40)) data.is_passport_editable = 1
+            data.controlled = data.cach && data.cach.is_own && data.cach.id_ctr_status_gis == 40
+            data.is_under_nsi_20_8 = $_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']]
+
+            function editable () {
+
+                if ($_USER.role.admin) return true
+
+                if (data.controlled) return $_USER.uuid_org == data.cach['org.uuid']
+                else return (data.is_under_nsi_20_8)
+
+            }
+
+            data.is_passport_editable = editable ()
             
             data.depends = {
 

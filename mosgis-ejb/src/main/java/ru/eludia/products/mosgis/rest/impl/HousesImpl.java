@@ -47,8 +47,10 @@ import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
 import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTerritory;
 import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
 import ru.eludia.products.mosgis.db.model.voc.VocPropertyDocumentType;
 import static ru.eludia.products.mosgis.db.model.voc.VocRdColType.i.REF;
@@ -127,6 +129,63 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
 
         publishMessage (action, id_log);
 
+    }
+    
+    @Override
+    public JsonObject selectAll (JsonObject p) {
+        
+        Model m = ModelHolder.getModel ();
+        
+        Select select = m.select (House.class, "uuid AS id", "address", "is_condo", "fiashouseguid", "unom")
+                .orderBy ("address")
+                .limit (p.getInt ("offset"), p.getInt ("limit"));
+        
+        final Search search = Search.from (p);
+
+        if (search != null) select = search.filter (select, simple (search, "unom", "fiashouseguid", "address_uc LIKE %?%"));
+        
+        JsonObjectBuilder jb = Json.createObjectBuilder ();
+
+        try (DB db = ModelHolder.getModel ().getDb ()) {
+            db.addJsonArrayCnt (jb, select);
+        }
+        catch (Exception ex) {
+            throw new InternalServerErrorException (ex);
+        }
+        
+        return jb.build ();
+    }
+    
+    @Override
+    public JsonObject selectOktmo (JsonObject p, String uuid_org) {
+        
+        Model m = ModelHolder.getModel ();
+        
+        Select select = m.select(House.class, "uuid AS id", "address", "is_condo", "fiashouseguid", "unom")
+                .toOne (VocBuilding.class, "oktmo")
+                .where ("oktmo IN", ModelHolder.getModel ()
+                        .select (VocOrganizationTerritory.class)
+                        .toOne  (VocOktmo.class, "code").on ()
+                        .where  ("uuid_org", uuid_org)
+                       ).on ()
+                .orderBy ("address")
+                .limit (p.getInt ("offset"), p.getInt ("limit"));
+        
+        final Search search = Search.from (p);
+
+        if (search != null) select = search.filter (select, simple (search, "unom", "fiashouseguid", "address_uc LIKE %?%"));
+        
+        JsonObjectBuilder jb = Json.createObjectBuilder ();
+
+        try (DB db = ModelHolder.getModel ().getDb ()) {
+            db.addJsonArrayCnt (jb, select);
+        }
+        catch (Exception ex) {
+            throw new InternalServerErrorException (ex);
+        }
+        
+        return jb.build ();
+        
     }
     
     @Override
@@ -277,7 +336,7 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
     }
 
     @Override
-    public JsonObject doUpdate (String id, JsonObject p, User user) {
+    public JsonObject doUpdate (String id, JsonObject p) {
 
         JsonObjectBuilder jb = Json.createObjectBuilder ();
         
