@@ -8,8 +8,6 @@ define ([], function () {
             
     return function (data, view) {
 
-        var permissions = data.item.id_prtcl_status_gis == 10 || data.item.id_prtcl_status_gis == 11
-
         var layout = w2ui ['topmost_layout']
 
         var $panel = $(layout.el ('main'))
@@ -21,14 +19,14 @@ define ([], function () {
             name: grid_name,
 
             show: {
-                toolbar: true,
+                toolbar: data.item._can.edit,
                 footer: 1,
                 toolbarReload: false,
                 toolbarColumns: false,
                 toolbarInput: false,
-                toolbarAdd: permissions,
-                toolbarDelete: permissions,
-                toolbarEdit: permissions,
+                toolbarAdd: true,
+                toolbarDelete: true,
+                toolbarEdit: true,
             },            
 
             textSearch: 'contains',

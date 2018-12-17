@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.UUID;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.jms.Queue;
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -47,6 +49,7 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 import ru.eludia.products.mosgis.rest.api.MgmtContractLocal;
 
 @Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContractLocal {
 
     @Resource (mappedName = "mosgis.inHouseMgmtContractsQueue")
@@ -113,6 +116,28 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
 
     }
 
+    @Override
+    public JsonObject selectAll (JsonObject p) {return fetchData ((db, job) -> {
+        
+        final MosGisModel model = ModelHolder.getModel ();
+        
+        final JsonObject data = p.getJsonObject ("data");
+logger.info ("data=" + data);
+        Select select = model.select (MgmtContract.class, "AS root", "*", "uuid AS id")
+            .toOne (VocOrganization.class, "AS org", "label").on ("uuid_org")
+            .toMaybeOne (VocOrganization.class, "AS org_customer", "label").on ("uuid_org_customer")
+            .toMaybeOne (ContractLog.class         ).on ()
+            .toMaybeOne (OutSoap.class,           "err_text").on ()
+            .orderBy ("org.label")
+            .orderBy ("root.docnum")
+            .limit (p.getInt ("offset"), p.getInt ("limit"));
+
+        applySearch (Search.from (p), select);
+
+        db.addJsonArrayCnt (job, select);
+
+    });}
+    
     @Override
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
         

@@ -7,6 +7,12 @@ public interface ConfMBean {
     
     public String getPathOkei ();
     public void   setPathOkei (String s);
+    
+    public String getPathOktmo ();
+    public void setPathOktmo (String s);
+
+    public String getPathOksm();
+    public void setPathOksm(String s);
 
     public String getPathFias ();
     public void   setPathFias (String s);

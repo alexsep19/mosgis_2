@@ -17,6 +17,33 @@ define ([], function () {
             
     }            
 
+    function is_blocked (it) {
+    
+        if (it.is_deleted) return true
+        
+        return false
+    
+    }
+    
+    function is_own (data) {
+    
+        if ($_USER.role.admin) return true
+        
+        var cach = data.cach
+                
+        if (cach && cach.is_own) { // есть ОУ — редактировать может сотрудник его организации
+        
+            return $_USER.uuid_org == data.cach ['org.uuid']
+            
+        }
+        else {                     // нет ОУ — редактировать может ОМСУ соответствующего района
+        
+            $_USER.role.nsi_20_8 && $_USER.role ['oktmo_' + data.item ['fias.oktmo']]
+            
+        }
+        
+    }    
+    
     return function (done) {        
 
         query ({type: 'voting_protocols', part: 'vocs', id: undefined}, {}, function (data) {
@@ -40,6 +67,37 @@ define ([], function () {
                     add_vocabularies (d, {owners: {}})
                     data.owners = d.owners
                 }
+                
+                var it = data.item
+                it.status_label = data.vc_gis_status [it.id_prtcl_status]
+                
+                it._can = {cancel: 1}
+                
+                if (!is_blocked (it) && is_own (data)) {
+                
+                    switch (it.id_prtcl_status) {
+                        case 10:
+                        case 14:
+                            it._can.delete = 1
+                    }
+                    
+                    switch (it.id_prtcl_status) {
+                        case 10:
+                        case 11:
+                            it._can.edit = 1
+                            it._can.approve = 1
+                    }
+                    
+                    it._can.update = it._can.edit
+
+                    switch (it.id_prtcl_status) {
+                        case 14:
+                        case 34:
+                        case 40:
+                            it._can.alter = 1
+                    }
+
+                }                
 
                 $('body').data ('data', data)
     

@@ -10,7 +10,8 @@ import javax.ws.rs.core.SecurityContext;
 public class SecurityCtx implements SecurityContext {
     
     User user;
-    Object [] roles;   
+    Object [] roles;
+    Object [] oktmo;
 
     public SecurityCtx (String id, String name, String uuid_org, Object [] roles) {
         user = new User (id, name, uuid_org);

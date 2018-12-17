@@ -2,6 +2,8 @@ package ru.eludia.products.mosgis.rest.impl;
 
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.json.JsonObject;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
@@ -24,6 +26,7 @@ import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 import ru.eludia.products.mosgis.web.base.ComplexSearch;
 
 @Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class ContractObjectsImpl extends BaseCRUD<ContractObject> implements ContractObjectsLocal  {
 
     private static final Logger logger = Logger.getLogger (ContractObjectsImpl.class.getName ());    

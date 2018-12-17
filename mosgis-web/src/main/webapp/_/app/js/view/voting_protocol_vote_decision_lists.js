@@ -1,18 +1,8 @@
 define ([], function () {
     
     var grid_name = 'voting_protocol_vote_decision_lists_grid'
-    
-    function getData () {
-        return $('body').data ('data')
-    }
-    
+        
     return function (data, view) {
-
-        function show () {
-            if (data.item.house_uuid && (data.item.id_prtcl_status == 10 || data.item.id_prtcl_status == 11))
-                return true
-            return false
-        }
 
         var layout = w2ui ['topmost_layout']
         
@@ -28,8 +18,7 @@ define ([], function () {
                 toolbar: true,
                 footer: true,
                 toolbarColumns: true,
-                toolbarAdd: show (),
-                toolbarDelete: show (),
+                toolbarAdd: data.item._can.edit,
             },            
 
             textSearch: 'contains',

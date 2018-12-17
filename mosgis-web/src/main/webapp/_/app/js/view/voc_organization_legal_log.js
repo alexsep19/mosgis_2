@@ -65,16 +65,16 @@ define ([], function () {
                 {field: "dispatch_phone", caption: "Контактные телефоны", size: 20, hidden: true},
                 {field: "dispatch_schedule", caption: "Режим работы", size: 20, hidden: true},
                 {
-                    field: "self_manage_org",
+                    field: "slf_mng_org",
                     caption: "Наименование саморегулируемой организации",
                     off: !data.is_on_self_manage,
                     size: 10,
                     hidden: true
                 },
 
-                {field: "dt_from_self_manage_org", caption: "Дата вступления в члены организации", off: !data.is_on_self_manage, size: 15, render: _dt, hidden: true},
-                {field: "dt_to_self_manage_org", caption: "Дата исключения/выхода из членов организации", off: !data.is_on_self_manage, size: 15, render: _dt, hidden: true},
-                {field: "reason_cancel_self_manage_org", caption: "Причина исключения из членов организации", off: !data.is_on_self_manage, size: 20, hidden: true},
+                {field: "dt_from_slf_mng_org", caption: "Дата вступления в члены организации", off: !data.is_on_self_manage, size: 15, render: _dt, hidden: true},
+                {field: "dt_to_slf_mng_org", caption: "Дата исключения/выхода из членов организации", off: !data.is_on_self_manage, size: 15, render: _dt, hidden: true},
+                {field: "rsn_slf_mng_org", caption: "Причина исключения из членов организации", off: !data.is_on_self_manage, size: 20, hidden: true},
 
                 {field: "staff_cnt", caption: "Количество штатных единиц", size: 4, hidden: true},
                 {field: "staff_work_cnt", caption: "Количество работающих человек", size: 4, hidden: true},

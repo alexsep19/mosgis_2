@@ -12,5 +12,7 @@ public interface CRUDBackend {
     JsonObject doDelete   (String id, User user);
     JsonObject doUndelete (String id, User user);
     JsonObject getLog     (String id, JsonObject p, User user);
+    JsonObject getCach    (String fiashouseguid);
+    JsonObject getOktmo   (String fiashouseguid);
 
 }

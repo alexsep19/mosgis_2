@@ -14,7 +14,7 @@ import ru.gosuslugi.dom.schema.integration.base.BaseAsyncResponseType;
 public abstract class GisPollMDB extends UUIDMDB<OutSoap> {
 
     @EJB
-    protected UUIDPublisher UUIDPublisher;
+    public UUIDPublisher uuidPublisher;
     
     @Override
     protected Class getTableClass () {
@@ -29,7 +29,7 @@ public abstract class GisPollMDB extends UUIDMDB<OutSoap> {
         
         logger.info ("requestState = " + requestState + ", retrying request");
         
-        UUIDPublisher.publish (getOwnQueue (), getUuid ());
+        uuidPublisher.publish (getOwnQueue (), getUuid ());
         
         throw new GisPollRetryException ();
 

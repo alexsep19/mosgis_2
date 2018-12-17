@@ -1,5 +1,7 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Map;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
@@ -11,6 +13,9 @@ import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.gosuslugi.dom.schema.integration.house_management.VoteInitiators;
+import ru.gosuslugi.dom.schema.integration.house_management.VotingInitiatorIndType;
+import ru.gosuslugi.dom.schema.integration.organizations_registry_base.RegOrgRootAndVersionType;
 
 public class VoteInitiator extends EnTable {
     
@@ -118,5 +123,28 @@ public class VoteInitiator extends EnTable {
                 + "END;"
                 );
     }
+    
+    public final static VoteInitiators toDom (Map<String, Object> r) {
+        
+        final VoteInitiators result = new VoteInitiators ();
+        
+        final Object orgRootEntityGUID = r.get (c.UUID_ORG.lc ());
+        
+        if (DB.ok (orgRootEntityGUID)) {
+            final RegOrgRootAndVersionType org = new RegOrgRootAndVersionType ();
+            org.setOrgRootEntityGUID (orgRootEntityGUID.toString ());
+            result.setOrg (org);
+        }
+        else {
+            final VotingInitiatorIndType ind = new VotingInitiatorIndType ();
+            ind.setSurname (r.get (c.IND_SURNAME.lc ()).toString ());
+            ind.setFirstName (r.get (c.IND_FIRSTNAME.lc ()).toString ());
+            result.setInd (ind);
+        }
+        
+        return result;
+        
+    }    
+
     
 }

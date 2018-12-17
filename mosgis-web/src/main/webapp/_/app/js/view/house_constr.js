@@ -7,7 +7,7 @@ define ([], function () {
     }
             
     return function (data, view) {
-    
+
         $_F5 = function () {
 
             var grid = w2ui [grid_name]

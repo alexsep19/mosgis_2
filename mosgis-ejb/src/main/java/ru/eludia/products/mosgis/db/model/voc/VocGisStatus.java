@@ -11,6 +11,7 @@ import ru.eludia.base.model.def.Num;
 public class VocGisStatus extends Table {
     
     private static JsonArray jsonArray;
+    private static JsonArray jsonArrayLite;
     
     private static final String TABLE_NAME = "vc_gis_status";
     
@@ -20,16 +21,31 @@ public class VocGisStatus extends Table {
         job.add (TABLE_NAME, jsonArray);
     }       
     
+    public static final void addLiteTo (JsonObjectBuilder job) {
+        job.add (TABLE_NAME, jsonArrayLite);
+    }
+    
     static {
         
         JsonArrayBuilder builder = Json.createArrayBuilder ();
+        JsonArrayBuilder builderLite = Json.createArrayBuilder ();
         
-        for (i value: i.values ()) builder.add (Json.createObjectBuilder ()
-            .add ("id",    value.id)
-            .add ("label", value.label)
-        );
+        for (i value: i.values ()) {
+            
+            builder.add (Json.createObjectBuilder ()
+                .add ("id",    value.id)
+                .add ("label", value.label)
+            );
+            
+            builderLite.add (Json.createObjectBuilder ()
+                .add ("id",    value.id)
+                .add ("label", value == i.APPROVED ? "размещён" : value.label)
+            );
+            
+        }
                     
         jsonArray = builder.build ();
+        jsonArrayLite = builderLite.build ();
         
     }    
 

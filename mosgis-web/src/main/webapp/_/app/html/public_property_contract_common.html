@@ -1,0 +1,293 @@
+<span>
+
+    <div>
+
+        <div class="w2ui-page page-1 page-0">
+
+        	<style>
+
+        		.w2ui-field > label {
+        			width: 330px;
+        			margin-right: 10px;
+        		}
+
+        		.w2ui-field > label.short {
+        			width: 10px;
+        		}
+        		.w2ui-field > label.short+div {
+        			margin-left: 10px;
+        		}
+
+        		.w2ui-field > label.medium {
+        			width: 100px;
+        		}
+        		.w2ui-field > label.medium+div {
+        			margin-left: 100px;
+        		}
+
+
+        		.w2ui-field input {
+        			width: 270px !important;
+        		}
+
+				.w2ui-field input.dt {
+					width: 70px !important;
+				}
+
+				.w2ui-field input.nxt {
+					width: 140px !important;
+				}
+
+				.w2ui-field input.long {
+					width: 690px !important;
+				}
+
+				.sync b {
+					color: red;
+				}
+
+        	</style>
+
+        	<table border=0 cellpadding=0 cellspacing=0 width=90%>
+
+        		<tr>
+
+					<td colspan=2 valign=top>
+							<div class="w2ui-field">
+								<label>Заказчик</label>
+								<div>
+									<input name=customer_label readonly class=long>
+								</div>
+							</div>
+
+							<div class="w2ui-field">
+								<label>Исполнитель</label>
+								<div>
+									<input name=org_label readonly class=long>
+								</div>
+							</div>
+					</td>
+
+        		</tr>
+
+        		<tr>
+
+					<td class="left-block" width=1 valign=top>
+
+						<div class="w2ui-field">
+							<label>№ документа</label>
+							<div>
+								<input name=contractnumber maxlength=255>
+							</div>
+						</div>
+
+						<div class="w2ui-field">
+							<label>Дата документа</label>
+							<div>
+								<input name=date_ placeholder="" class=dt>
+							</div>
+						</div>
+
+						<div class="w2ui-field">
+							<label>Дата вступления в силу</label>
+							<div>
+								<input name=startdate placeholder="" class=dt>
+							</div>
+						</div>
+
+						<div class="w2ui-field">
+							<label>Планируемая дата окончания </label>
+							<div>
+								<input name=enddate placeholder="" class=dt>
+							</div>
+						</div>
+
+					</td>
+
+					<td valign=top>
+
+						<table border=0 cellpadding=0 cellspacing=0 width=100% class=sync>
+
+							<tr>
+								<td>Статус:</td>
+								<td data-text=status_label />
+							</tr>
+
+							<tr data-on=gis_state_label>
+								<td>Состояние:</td>
+								<td>
+									<span data-text=gis_state_label/>
+								</td>
+							</tr>
+
+							<tr data-on=is_annuled>
+								<td>Причина аннулирования:</td>
+								<td data-text=reasonofannulment />
+							</tr>
+
+							<tr data-on=last_termination>
+								<td>Дата расторжения:</td>
+								<td data-text=last_termination.terminate data-date/>
+							</tr>
+
+							<tr data-on=last_termination>
+								<td>Причина:</td>
+								<td data-text=last_termination.reason/>
+							</tr>
+
+							<tr data-on=last_termination>
+								<td>Основание:</td>
+								<td>
+									<div id=termination_file data-text=last_termination.file.label/>
+								</td>
+							</tr>
+
+							<tr>
+								<th colspan=2 data-text=err_text></th>
+							</tr>
+
+						</table>
+
+					</td>
+
+        		</tr>
+
+        		<tr>
+
+					<td class="left-block" width=1 valign=top>
+
+						<div class="w2ui-field">
+							<label>Предмет договора</label>
+							<div>
+								<input name=contractobject maxlength=255>
+							</div>
+						</div>
+
+					</td>
+
+					<td valign=top>
+
+						<div class="w2ui-field">
+							<label class=medium>комментарий:</label>
+							<div>
+								<input name=comments maxlength=255>
+							</div>
+						</div>
+
+					</td>
+
+        		</tr>
+
+        		<tr>
+
+					<td class="left-block" width=1 valign=top>
+
+						<div class="w2ui-field">
+							<label>Условие пользования</label>
+							<div>
+								<input name=isgratuitousbasis>
+							</div>
+						</div>
+
+					</td>
+
+					<td valign=top id=td_other style="display:none">
+
+						<div class="w2ui-field">
+							<label class=medium>а именно:</label>
+							<div>
+								<input name=other>
+							</div>
+						</div>
+
+					</td>
+
+        		</tr>
+
+        		<tr id=tr_ddt_start style="display:none">
+					<td valign=top colspan=2>
+
+						<div class="w2ui-field">
+							<label>Период оплаты с</label>
+							<div>
+								<input name=ddt_start>
+								&nbsp;
+								<input name=ddt_start_nxt class=nxt>
+							</div>
+						</div>
+
+					</td>
+        		</tr>
+        		<tr id=tr_ddt_end style="display:none">
+					<td valign=top colspan=2>
+
+						<div class="w2ui-field">
+							<label>...по</label>
+							<div>
+								<input name=ddt_end>
+								&nbsp;
+								<input name=ddt_end_nxt class=nxt>
+							</div>
+						</div>
+
+					</td>
+        		</tr>
+
+        		<tr id=tr_payment style="display:none">
+
+					<td class="left-block" width=1 valign=top>
+
+						<div class="w2ui-field">
+							<label>Размер платы</label>
+							<div>
+								<input name=payment>
+							</div>
+						</div>
+
+					</td>
+
+					<td valign=top>
+
+						<div class="w2ui-field">
+							<label class=medium title="направление расходования средств, внесенных за пользование частью общего имущества">направление:</label>
+							<div>
+								<input name=moneyspentdirection maxlength=255>
+							</div>
+						</div>
+
+					</td>
+
+        		</tr>
+
+        	</table>
+
+        </div>
+
+        <div class="w2ui-buttons">
+        	<span>
+
+				<button class=w2ui-btn name=edit   data-on=__read_only>Редактировать</button>
+				<button class=w2ui-btn name=update data-off=__read_only>Сохранить</button>
+				<button class=w2ui-btn name=cancel data-off=__read_only>Отменить</button>
+
+				<button class=w2ui-btn name=delete  data-on=__read_only>Удалить</button>
+
+<!--
+
+				<button class=w2ui-btn name=approve data-on=__read_only>Утвердить</button>
+				<button class=w2ui-btn name=refresh data-on=__read_only>Обновить статус из ГИС ЖКХ</button>
+				<button class=w2ui-btn name=reload  data-on=__read_only>Обновить из ГИС ЖКХ</button>
+				<button class=w2ui-btn name=alter   data-on=__read_only>Изменить</button>
+				<button class=w2ui-btn name=rollover   data-on=__read_only>Продлить</button>
+				<button class=w2ui-btn name=terminate  data-on=__read_only>Расторгнуть</button>
+				<button class=w2ui-btn name=annul  data-on=__read_only>Аннулировать</button>
+
+				<button class=w2ui-btn name=undelete data-on=__read_only>Восстановить</button>
+-->
+
+            </span>
+        </div>
+
+    </div>
+
+</span>

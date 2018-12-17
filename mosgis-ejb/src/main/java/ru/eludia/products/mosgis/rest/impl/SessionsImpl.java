@@ -5,19 +5,24 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
+import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
 import ru.eludia.products.mosgis.rest.api.SessionsLocal;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTerritory;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.jmx.Conf;
 
 @Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class SessionsImpl implements SessionsLocal {
 
     private static final Logger logger = Logger.getLogger (SessionsImpl.class.getName ());
@@ -36,6 +41,16 @@ public class SessionsImpl implements SessionsLocal {
             final String role = "nsi_20_" + rs.getString (1);
             logger.info ("adding role: " + role);
             roles.add (role, 1);
+        });
+        
+        db.forEach (ModelHolder.getModel ()
+                .select (VocOrganizationTerritory.class)
+                .toOne  (VocOktmo.class, "code").on ()
+                .where  ("uuid_org", uuid_org),
+                (rs) -> {
+                    final String oktmo = "oktmo_" + rs.getString(1);
+                    logger.info ("adding oktmo: " + oktmo);
+                    roles.add (oktmo, 1);
         });
             
         return roles.build ();

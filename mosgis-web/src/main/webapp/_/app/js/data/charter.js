@@ -31,7 +31,8 @@ define ([], function () {
 
                 it._can = {}
 
-                if (it.uuid_org == $_USER.uuid_org || $_USER.role.admin) {
+                if ((it.uuid_org == $_USER.uuid_org || $_USER.role.admin) && 
+                    !$_USER.role.nsi_20_4 && !$_USER.role.nsi_20_7) {
 
                     switch (it.id_ctr_status) {
 

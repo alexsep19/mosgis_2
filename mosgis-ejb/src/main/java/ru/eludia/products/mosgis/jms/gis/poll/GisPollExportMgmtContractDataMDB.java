@@ -79,7 +79,7 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
     }    
     
     public void download (final UUID uuid) {
-        UUIDPublisher.publish (outExportHouseMgmtContractFilesQueue, uuid);
+        uuidPublisher.publish (outExportHouseMgmtContractFilesQueue, uuid);
     }
 
     @Override

@@ -56,21 +56,36 @@ define ([], function () {
             
     }            
 
-    return function (done) {        
+    return function (done) { 
 
         query ({type: 'houses'}, {}, function (data) {
         
             add_vocabularies (data, {
                 vc_nsi_24: 1,
                 vc_prop_doc_types: 1,
-                vc_voting_forms: 1
+                vc_voting_forms: 1,
+                vc_actions: 1,
+                vc_gis_status: 1,
+                vc_house_status: 1
             })
             
             data.active_tab = localStorage.getItem ('house.active_tab') || 'house_address'
             
             data.item.type = data.item.is_condo ? 'МКД' : 'ЖД'
             
-            if ($_USER.role.admin || (data.cach && data.cach.is_own && data.cach.id_ctr_status_gis == 40)) data.is_passport_editable = 1
+            data.controlled = data.cach && data.cach.is_own && data.cach.id_ctr_status_gis == 40
+            data.is_under_nsi_20_8 = $_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']]
+
+            function editable () {
+
+                if ($_USER.role.admin) return true
+
+                if (data.controlled) return $_USER.uuid_org == data.cach['org.uuid']
+                else return (data.is_under_nsi_20_8)
+
+            }
+
+            data.is_passport_editable = editable ()
             
             data.depends = {
 
@@ -160,7 +175,7 @@ define ([], function () {
                 20122: 11665,
                 12545: 11665,
 
-            }            
+            }
                                                 
             $('body').data ('data', data)
             $('body').data ('area_codes', area_codes)
@@ -168,7 +183,6 @@ define ([], function () {
             done (data)        
             
         })
-        
     }
 
 })

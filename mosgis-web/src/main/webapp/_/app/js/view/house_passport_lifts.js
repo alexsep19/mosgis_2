@@ -82,6 +82,7 @@ define ([], function () {
                 {field: "f_20124", caption: "Год проведения последнего капитального ремонта", size: 20, editable: {type: 'int', min: house.usedyear, max: (new Date ()).getFullYear (), autoFormat: false}},
                 {field: 'terminationdate', caption: 'Дата аннулирования', render: _dt, size: 20, render: _dt},
                 {field: "annulmentinfo", caption: "Причина аннулирования. Дополнительная информация", size: 20},
+                {field: 'id_status',  caption: 'ГИС ЖКХ',     size: 10, voc: d.vc_house_status},
             ],
 
             postData: {data: {uuid_house: $_REQUEST.id}},

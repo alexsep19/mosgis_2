@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -38,6 +40,7 @@ import ru.gosuslugi.dom.schema.integration.nsi_common.ExportNsiItemResult;
     wsdlLocation = "META-INF/wsdl/nsi-common/hcs-nsi-common-service.wsdl"
 )
 @Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class NsiCommonService {    
     
     protected Logger logger = Logger.getLogger (getClass ().getName ());

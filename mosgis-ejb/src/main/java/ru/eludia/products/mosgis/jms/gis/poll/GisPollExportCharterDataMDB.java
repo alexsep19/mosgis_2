@@ -82,7 +82,7 @@ public class GisPollExportCharterDataMDB extends GisPollMDB {
     }    
     
     public void download (final UUID uuid) {
-        UUIDPublisher.publish (outExportHouseCharterFilesQueue, uuid);
+        uuidPublisher.publish (outExportHouseCharterFilesQueue, uuid);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class GisPollExportCharterDataMDB extends GisPollMDB {
                 
         if (DB.ok (r.get ("is_failed"))) throw new IllegalStateException (r.get ("err_text").toString ());
         
-        UUID orgPPAGuid          = (UUID) r.get ("org.orgppaguid");
+        UUID orgPPAGuid          = (UUID) r.get ("orgppaguid");
         UUID ctrUuid             = (UUID) r.get ("ctr.uuid");
         UUID orgUuid             = (UUID) r.get ("ctr.uuid_org");
         UUID charterversionguid = (UUID) r.get ("ctr.charterversionguid");

@@ -1,18 +1,8 @@
 define ([], function () {
     
     var grid_name = 'voting_protocol_vote_initiators_grid'
-    
-    function getData () {
-        return $('body').data ('data')
-    }
-    
-    return function (data, view) {
 
-        function show () {
-            if (data.item.house_uuid && (data.item.id_prtcl_status == 10 || data.item.id_prtcl_status == 11))
-                return true
-            return false
-        }
+    return function (data, view) {
 
         var layout = w2ui ['topmost_layout']
         
@@ -27,12 +17,12 @@ define ([], function () {
                                      caption: 'Собственник', 
                                      icon: 'w2ui-icon-plus', 
                                      onClick: $_DO.create_owner_voting_protocol_vote_initiators, 
-                                     off: !show ()},
+                                     off: !data.item._can.edit},
                     {type: 'button', id: 'create_org', 
                                      caption: 'Юридическое лицо', 
                                      icon: 'w2ui-icon-plus', 
                                      onClick: $_DO.create_org_voting_protocol_vote_initiators, 
-                                     off: !show ()},
+                                     off: !data.item._can.edit},
                 ].filter (not_off),
                 
             },
@@ -45,7 +35,7 @@ define ([], function () {
                 toolbar: true,
                 footer: true,
                 toolbarColumns: true,
-                toolbarDelete: show (),
+                toolbarDelete: data.item._can.edit,
             },            
 
             textSearch: 'contains',
@@ -77,7 +67,7 @@ define ([], function () {
                         openTab ('/voc_organization_legal/' + record['uuid_org'])
                     else
                         openTab ('/voc_organization_individual/' + record['uuid_org'])
-                else
+                else if ($_USER.uuid_org == data.item.uuid_org)
                     openTab ('/vc_person/' + record['prop.uuid_person_owner'])
             },
             

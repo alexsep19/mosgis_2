@@ -1,7 +1,6 @@
 define ([], function () {
 
     var grid_name = 'voc_organization_legal_info_grid'
-    var id2field = {}
 
     function getData () {
         return $('body').data ('data')
@@ -11,8 +10,6 @@ define ([], function () {
         data._can = {
             edit: $_USER.role.admin || $_USER.uuid_org == $_REQUEST.id
         }
-
-        $.each (data.vc_pass_fields, function () { id2field [this.id] = this })
 
         $_F5 = function () {
 

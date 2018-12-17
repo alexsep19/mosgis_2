@@ -29,6 +29,27 @@ define ([], function () {
         $_F5 (data)
 
     }
+    
+    $_DO.approve_voting_protocol_common = function (e) {
+        if (!confirm ('Разместить эти данные в ГИС ЖКХ?')) return
+        query ({type: 'voting_protocols', action: 'approve'}, {}, reload_page)
+    }
+    
+    $_DO.alter_voting_protocol_common = function (e) {
+
+        if ($('body').data ('data').item.id_prtcl_status == 40) {
+        
+            use.block ('voting_protocol_alter_popup')
+
+        }
+        else {
+        
+            if (!confirm ('Открыть эту карточку на редактирование?')) return
+            query ({type: 'voting_protocols', action: 'alter'}, {data: {}}, reload_page)
+            
+        }
+        
+    }
 
     $_DO.update_voting_protocol_common = function (e) {
     
@@ -47,9 +68,10 @@ define ([], function () {
 
         switch (v.form_) {
             case '0':
+                if (!v.avotingstartdate) die ('avotingstartdate', 'Пожалуйста, введите дату начала приема решений')
                 if (!v.avotingdate) die ('avotingdate', 'Пожалуйста, введите дату окончания приема решений')
+                if ( v.avotingdate < v.avotingstartdate) die ('avotingdate', 'Дата окончания не может предшествовать дате начала')
                 if (!v.resolutionplace) die ('resolutionplace', 'Пожалуйста, введите место принятия решений')
-
                 break;
             case '1':
                 if (!v.meetingdate) die ('meetingdate', 'Пожалуйста, введите дату проведения собрания')
@@ -66,7 +88,9 @@ define ([], function () {
                 break;
             case '3':
                 if (!v.meeting_av_date) die ('meeting_av_date', 'Пожалуйста, введите дату и время проведения собрания')
+                if (!v.meeting_av_date_start) die ('meeting_av_date_start', 'Пожалуйста, введите дату начала приема решений')
                 if (!v.meeting_av_date_end) die ('meeting_av_date_end', 'Пожалуйста, введите дату окончания приема решений')
+                if ( v.meeting_av_date_end < v.meeting_av_date_start) die ('meeting_av_date_end', 'Дата окончания не может предшествовать дате начала')
                 if (!v.meeting_av_place) die ('meeting_av_place', 'Пожалуйста, введите место проведения собрания')
                 if (!v.meeting_av_res_place) die ('meeting_av_res_place', 'Пожалуйста, введите место приема решения')
                 
@@ -105,7 +129,7 @@ define ([], function () {
     
     }
 
-    return function (done) {        
+    return function (done) { 
 
         w2ui ['topmost_layout'].unlock ('main')
 
@@ -117,19 +141,7 @@ define ([], function () {
 
         if ($_USER.role.admin) data.item.org_label = data.item ['vc_orgs.label']
 
-        permissions = 0
-
-        if (!data.item.is_deleted && data.cach && data.cach.is_own && data.cach.id_ctr_status_gis == 40) {
-            permissions = 1
-        }
-
-        data.item._can = $_USER.role.admin ? {} : 
-        {
-            edit: permissions,
-            update: 1,
-            cancel: 1,
-            delete: permissions,
-        }
+        data.item.err_text = data.item ['out_soap.err_text']
 
         done (data)
         

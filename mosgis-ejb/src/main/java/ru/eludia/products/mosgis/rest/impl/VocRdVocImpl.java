@@ -4,6 +4,8 @@ import java.sql.SQLException;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -20,6 +22,7 @@ import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.jmx.RdMBean;
 
 @Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class VocRdVocImpl implements VocRdVocLocal {
 
     private static final Logger logger = Logger.getLogger (VocRdVocImpl.class.getName ());

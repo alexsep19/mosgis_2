@@ -3,11 +3,15 @@ package ru.eludia.products.mosgis.ws.base;
 import javax.xml.ws.WebServiceContext;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Header;
+import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.UUID;
 import javax.ejb.EJB;
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -15,6 +19,9 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.soap.SOAPHeader;
 import javax.xml.soap.SOAPHeaderElement;
 import javax.xml.soap.SOAPMessage;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import org.xml.sax.SAXException;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.base.RequestHeader;
@@ -47,6 +54,14 @@ public abstract class AbstactServiceAsync {
             throw new IllegalStateException ("Cannot create JAXBContext", ex);
         }
 
+    }
+    
+    public static final Schema loadSchema (String path) throws URISyntaxException, SAXException {
+        System.setProperty ("jdk.xml.maxOccurLimit", "100000");
+        SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        URL resource =  (ru.eludia.products.mosgis.ws.base.Error.EXP001000).getClass ().getClassLoader ().getResource ("META-INF/wsdl/" + path);
+        File file = new File (resource.toURI ());
+        return schemaFactory.newSchema (file);
     }
     
     public static final void setRequestHeader (SOAPMessage msg, HeaderType rh) {

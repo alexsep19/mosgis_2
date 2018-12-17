@@ -10,6 +10,8 @@ import java.sql.SQLException;
 import java.util.Base64;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.json.JsonObject;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.WebApplicationException;
@@ -21,7 +23,6 @@ import ru.eludia.products.mosgis.rest.api.CharterDocsLocal;
 import ru.eludia.products.mosgis.db.model.tables.CharterFile;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
-import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
@@ -29,6 +30,7 @@ import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 import ru.eludia.products.mosgis.web.base.ComplexSearch;
 
 @Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class CharterDocsImpl extends BaseCRUD<CharterFile> implements CharterDocsLocal  {
 
     private static final Logger logger = Logger.getLogger (CharterDocsImpl.class.getName ());    

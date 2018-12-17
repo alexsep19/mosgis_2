@@ -10,10 +10,10 @@ define ([], function () {
 
             var tables = {'avoting_table': [], 'meeting_table': [], 'evoting_table': ['evoting_period_table'], 'meet_av_table': []}
             var sizes = {
-                          'avoting_table': 332, 
-                          'meeting_table': 331, 
-                          'evoting_table': 369, 
-                          'meet_av_table': 400
+                          'avoting_table': 340, 
+                          'meeting_table': 340, 
+                          'evoting_table': 370, 
+                          'meet_av_table': 400  
             }
 
             function disable_block (table_name) {
@@ -66,10 +66,21 @@ define ([], function () {
             $panel_top = $('#layout_passport_layout_panel_top')
             $panel_main = $('#layout_passport_layout_panel_main')
             $top_form_box = $panel_top.children ('.w2ui-panel-content').children ('.w2ui-form-box')
+            
+            var size = sizes [table_name]
 
-            $panel_top.height (sizes[table_name])
-            $top_form_box.height (sizes[table_name])
-            $panel_main.css('top', sizes[table_name] + 1 + 'px')
+            if ($('body').data ('data').item.modification != '') {
+                $('#modification_table').show ()
+                size += 30
+            }
+            else {
+                $('#modification_table').hide ()
+            }
+
+            $panel_top.height (size)
+            $top_form_box.height (size)
+//            $panel_main.css ('top', (size + 1) + 'px')
+            
         }
 
         $_F5 = function (data) {
@@ -85,8 +96,6 @@ define ([], function () {
             $('div[data-block-name=voting_protocol_common] input').prop ({disabled: data.__read_only})
 
             w2ui [form_name].refresh ()
-
-            recalc ()
 
         }
 
@@ -143,6 +152,9 @@ define ([], function () {
                 
                 {name: 'form_', type: 'list', options: { items: data.vc_voting_forms.items }},
                 
+                {name: 'avotingstartdate', type: 'date'},
+                {name: 'meeting_av_date_start', type: 'date'},
+                
                 {name: 'avotingdate', type: 'date'},
                 {name: 'resolutionplace', type: 'text'},
 
@@ -158,11 +170,14 @@ define ([], function () {
                 {name: 'meeting_av_date_end', type: 'date'},
                 {name: 'meeting_av_place', type: 'text'},
                 {name: 'meeting_av_res_place', type: 'text'},
+                
+                {name: 'modification', type: 'text'},
+                
             ],
 
-            onChange: function (e) {if (e.target == "form_") e.done (recalc)},
-                        
-            onRender: function (e) {e.done (setTimeout (recalc, 100))},
+            onChange:  function (e) {if (e.target == "form_") e.done (recalc)},                       
+            onRefresh: function (e) {e.done (recalc)},
+//            onRender:  function (e) {e.done (recalc)},
             
         })
 

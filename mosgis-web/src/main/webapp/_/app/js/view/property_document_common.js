@@ -30,7 +30,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 270},
+                {type: 'top', size: 280},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
@@ -48,9 +48,13 @@ define ([], function () {
 
         });
         
+        var it = data.item
+        
+        if (it.uuid_org == $_USER.uuid_org) it.is_own = 1
+        
         var $panel = $(w2ui ['passport_layout'].el ('top'))
                 
-        fill (view, data.item, $panel)        
+        fill (view, it, $panel)        
                 
         $panel.w2reform ({ 
         
@@ -65,6 +69,7 @@ define ([], function () {
                 {name: 'dt_to', type: 'date'},
                 {name: 'prc', type: 'float', options: {min: 0, max: 100}},
                 {name: 'id_type', type: 'list', options: {items: data.vc_prop_doc_types.items}},
+                {name: 'author_label', type: 'text'},
             ],
 
             focus: -1,

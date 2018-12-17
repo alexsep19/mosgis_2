@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
@@ -24,6 +26,7 @@ import ru.eludia.products.mosgis.rest.impl.base.BasePassport;
 import ru.eludia.products.mosgis.web.base.Search;
 
 @Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class EntrancesImpl extends BasePassport<Entrance> implements EntrancesLocal {
 
     @Override
@@ -59,7 +62,7 @@ public class EntrancesImpl extends BasePassport<Entrance> implements EntrancesLo
         JsonArrayBuilder ab = Json.createArrayBuilder ();
         
         Select select = ModelHolder.getModel ()
-            .select (Entrance.class, "uuid AS id", "entrancenum", "storeyscount", "creationyear", "terminationdate", "is_annuled")
+            .select (Entrance.class, "uuid AS id", "entrancenum", "storeyscount", "creationyear", "terminationdate", "is_annuled", "id_status")
             .where ("uuid_house", uuidHouse)
             .and   ("is_deleted",  0)
             .orderBy ("entrancenum");

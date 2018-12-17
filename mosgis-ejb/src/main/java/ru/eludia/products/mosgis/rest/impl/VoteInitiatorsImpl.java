@@ -3,6 +3,8 @@ package ru.eludia.products.mosgis.rest.impl;
 import java.util.Map;
 import java.util.logging.Level;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -27,6 +29,7 @@ import ru.eludia.products.mosgis.web.base.Search;
 import ru.eludia.products.mosgis.web.base.SimpleSearch;
 
 @Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class VoteInitiatorsImpl extends BaseCRUD<VoteInitiator> implements VoteInitiatorsLocal {
     
     private void filterOffDeleted (Select select) {
@@ -163,6 +166,17 @@ public class VoteInitiatorsImpl extends BaseCRUD<VoteInitiator> implements VoteI
         final String fiashouseguid = item.getString ("protocol.fiashouseguid");
         VocBuilding.addCaCh (db, job, fiashouseguid);
 
+    });}
+    
+    @Override
+    public JsonObject getProtocol (String id) {return fetchData ((db, job) -> {
+        
+        JsonObject protocol = db.getJsonObject(ModelHolder.getModel ()
+            .get (VotingProtocol.class, id, "id_prtcl_status_gis AS gis_status", "fiashouseguid", "uuid_org")
+        );
+        
+        if (protocol != null) job.add ("protocol", protocol);
+        
     });}
     
 }

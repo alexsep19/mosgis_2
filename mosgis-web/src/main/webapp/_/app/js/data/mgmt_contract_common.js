@@ -109,7 +109,7 @@ define ([], function () {
         if (v.plandatecomptetion < v.effectivedate) die ('plandatecomptetion', 'Дата окончания не может предшествовать дате вступления договора в силу')
                 
         if (!v.ddt_m_start) die ('ddt_m_start', 'Укажите, пожалуйста, дату начала ввода показаний ПУ')
-        if (!v.ddt_m_end) die ('ddt_m_start', 'Укажите, пожалуйста, дату окончания ввода показаний ПУ')
+        if (!v.ddt_m_end) die ('ddt_m_end', 'Укажите, пожалуйста, дату окончания ввода показаний ПУ')
         
         if (v.ddt_m_start_nxt > v.ddt_m_end_nxt) {
             die ('ddt_m_end_nxt', 'Окончание срока не может предшествовать его началу')

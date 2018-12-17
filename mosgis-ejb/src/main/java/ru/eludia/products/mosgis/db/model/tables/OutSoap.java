@@ -1,10 +1,10 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
 import java.sql.SQLException;
-import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.Table;
 import static ru.eludia.base.model.def.Bool.TRUE;
@@ -13,7 +13,10 @@ import static ru.eludia.base.model.def.Def.*;
 import ru.eludia.base.model.def.Num;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState;
+import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.IN_PROGRESS;
+import ru.gosuslugi.dom.schema.integration.base.AckRequest;
+import ru.gosuslugi.dom.schema.integration.base.Fault;
 
 
 public class OutSoap extends Table {
@@ -39,7 +42,8 @@ public class OutSoap extends Table {
         col ("err_text",     Type.STRING,       null, "Текст ошибки");
         col ("orgppaguid",     Type.UUID,       null, "Идентификатор зарегистрированной организации, с которым отправлялся запрос");
         col ("ym",           Type.STRING,       new Virt ("TO_CHAR(TS,'yyyy-mm')"), "Год-Месяц");
-
+        col ("object_by_transport_guid", Type.TEXT,       null, "JSON со списком объектов по транспортному идентификатору");
+        
         fk ("id_status",     VocAsyncRequestState.class, new Num (IN_PROGRESS.getId ()), "Статус");
 
         unique ("uuid_ack", "uuid_ack");
@@ -85,6 +89,41 @@ public class OutSoap extends Table {
         
         return uuid;
         
+    }
+    
+    public final static void registerAck (DB db, AckRequest.Ack ack) throws SQLException {
+
+        db.update (OutSoap.class, DB.HASH (
+            "uuid",     ack.getRequesterMessageGUID (),
+            "uuid_ack", ack.getMessageGUID ()
+        ));
+
+    }
+    
+    public static void registerException (DB db, Object uuid, String svc, String op, Exception ex) throws SQLException {
+        
+        db.upsert (OutSoap.class, DB.HASH ("uuid", uuid,
+            "svc", svc,
+            "op",   op,
+            "is_out",  1,
+            "id_status", DONE.getId (),
+            "is_failed", 1,
+            "err_code",  "0",
+            "err_text",  ex.getMessage ()
+        ));
+        
+    }
+    
+    public static void registerFault (DB db, Object uuid, Fault faultInfo) throws SQLException {
+
+        db.update (OutSoap.class, DB.HASH (
+            "uuid", uuid,
+            "id_status", DONE.getId (),
+            "is_failed", 1,
+            "err_code",  faultInfo.getErrorCode (),
+            "err_text",  faultInfo.getErrorMessage ()
+        ));
+
     }
 
 }

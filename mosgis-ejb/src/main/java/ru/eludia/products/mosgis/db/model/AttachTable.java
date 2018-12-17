@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.db.model;
 
+import java.util.Map;
 import java.util.UUID;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
@@ -19,11 +20,11 @@ public abstract class AttachTable extends EnTable {
 
     public enum c implements EnColEnum {
 
-        LABEL          (Type.STRING,                        "Имя файла"),
+        LABEL          (Type.STRING, 1024,                  "Имя файла"),
         MIME           (Type.STRING,                        "Тип содержимого"),
         LEN            (Type.INTEGER,                       "Тип содержимого"),
         BODY           (Type.BLOB,              EMPTY_BLOB, "Содержимое"),
-        DESCRIPTION    (Type.TEXT, null,                    "Имя файла"),
+        DESCRIPTION    (Type.STRING, 500,             null, "Имя файла"),
         ATTACHMENTGUID (Type.UUID,                    null, "Идентификатор сохраненного вложения"),
         ATTACHMENTHASH (Type.BINARY, 32,              null, "ГОСТ Р 34.11-94"),
         ID_STATUS      (Type.INTEGER,                 ZERO, "Статус"),
@@ -56,6 +57,17 @@ public abstract class AttachTable extends EnTable {
         a.setAttachment (aa);
         aa.setAttachmentGUID (guid.toString ());
         return a;
+    }
+    
+    public static final AttachmentType toAttachmentType (Map<String, Object> r) {
+        
+        return toAttachmentType (
+            r.get (c.LABEL.lc ()), 
+            r.get (c.DESCRIPTION.lc ()), 
+            r.get (c.ATTACHMENTGUID.lc ()), 
+            r.get (c.ATTACHMENTHASH.lc ())
+        );
+        
     }
 
 }
