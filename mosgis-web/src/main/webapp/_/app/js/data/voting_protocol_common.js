@@ -143,8 +143,6 @@ define ([], function () {
 
         data.item.err_text = data.item ['out_soap.err_text']
 
-        console.log (data)
-
         done (data)
         
     }

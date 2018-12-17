@@ -10,8 +10,6 @@ define ([], function () {
 
     $_DO.update_voting_protocol_alter_popup = function (e) {
 
-        if (!confirm ('Открыть протокол на изменение?')) return
-
         var form = w2ui ['voting_protocol_alter_popup_form']
 
         var v = form.values ()
