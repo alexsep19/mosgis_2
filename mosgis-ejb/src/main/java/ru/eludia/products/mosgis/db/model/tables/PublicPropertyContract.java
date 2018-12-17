@@ -1,8 +1,5 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
-import java.util.Map;
-import java.util.UUID;
-import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
@@ -13,7 +10,6 @@ import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
-import ru.gosuslugi.dom.schema.integration.house_management.ImportPublicPropertyContractRequest;
 
 
 public class PublicPropertyContract extends EnTable {

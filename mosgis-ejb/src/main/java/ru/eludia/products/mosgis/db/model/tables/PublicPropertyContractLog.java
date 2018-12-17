@@ -3,6 +3,7 @@ package ru.eludia.products.mosgis.db.model.tables;
 import java.util.Map;
 import java.util.UUID;
 import ru.eludia.base.DB;
+import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportPublicPropertyContractRequest;
@@ -31,6 +32,10 @@ public class PublicPropertyContractLog extends GisWsLogTable {
     private static ImportPublicPropertyContractRequest.Contract.PublicPropertyContract toContractPublicPropertyContract (Map<String, Object> r) {
         ImportPublicPropertyContractRequest.Contract.PublicPropertyContract result = DB.to.javaBean (ImportPublicPropertyContractRequest.Contract.PublicPropertyContract.class, r);
         return result;
+    }
+
+    public Get get (Object id) {
+        return getModel ().get (this, id, "*");
     }
                 
 }
