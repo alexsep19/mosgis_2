@@ -80,8 +80,15 @@ define ([], function () {
                     $_USER.role.nsi_20_7)
                     return false
 
-                if (data.cach && data.cach.is_own && data.cach.id_ctr_status_gis == 40) return !$_USER.role.nsi_20_8
-                return false
+                if (data.cach && data.cach.is_own && data.cach.id_ctr_status_gis == 40) {
+                    if ($_USER.role.nsi_20_1 ||
+                        $_USER.role.nsi_20_19 ||
+                        $_USER.role.nsi_20_20 ||
+                        $_USER.role.nsi_20_21 ||
+                        $_USER.role.nsi_20_22)
+                        return true
+                }
+                else return $_USER.role.nsi_20_8
 
             }
 
