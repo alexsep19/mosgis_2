@@ -33,18 +33,22 @@ import ru.eludia.products.mosgis.rest.api.HousesLocal;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.ActualCaChObject;
 import ru.eludia.products.mosgis.db.model.tables.Block;
+import ru.eludia.products.mosgis.db.model.tables.CharterLog;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.Entrance;
 import ru.eludia.products.mosgis.db.model.tables.Lift;
 import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.House;
+import ru.eludia.products.mosgis.db.model.tables.HouseLog;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
+import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTerritory;
 import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
@@ -260,6 +264,8 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
                     .get (House.class, id, "*")
                     .toMaybeOne (VocBuilding.class,        "AS fias",      "postalcode", "okato", "oktmo").on ()
                     .toMaybeOne (VocBuildingAddress.class, "AS fias_addr", "label").on ("fias.houseguid = fias_addr.houseguid")
+                    .toMaybeOne (HouseLog.class).on ()
+                    .toMaybeOne (OutSoap.class, "err_text").on ()
             );
             
             jb.add ("item", item);
@@ -323,6 +329,7 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
         VocAction.addTo (jb);
         VocGisStatus.addTo(jb);
         VocVotingForm.addTo (jb);
+        VocHouseStatus.addTo(jb);
         
         return jb.build ();
 
@@ -581,7 +588,7 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
         
         db.update (getTable (), HASH (
             "uuid",           id,
-            "id_status",  VocGisStatus.i.PENDING_RQ_RELOAD.getId ()
+            "id_status_gis",  VocGisStatus.i.PENDING_RQ_RELOAD.getId ()
         ));
         
         logAction (db, user, id, uuidOrg, null, VocAction.i.RELOAD);
@@ -593,7 +600,7 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
 
         db.update (getTable (), HASH (
             "uuid",           id,
-            "id_status",  VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+            "id_status_gis",  VocGisStatus.i.PENDING_RQ_PLACING.getId ()
         ));
         
         logAction (db, user, id, uuidOrg, null, VocAction.i.ALTER);

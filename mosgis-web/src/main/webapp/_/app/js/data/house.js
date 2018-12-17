@@ -65,7 +65,8 @@ define ([], function () {
                 vc_prop_doc_types: 1,
                 vc_voting_forms: 1,
                 vc_actions: 1,
-                vc_gis_status: 1
+                vc_gis_status: 1,
+                vc_house_status: 1
             })
             
             data.active_tab = localStorage.getItem ('house.active_tab') || 'house_address'

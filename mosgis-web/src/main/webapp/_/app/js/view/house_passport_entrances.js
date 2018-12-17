@@ -47,7 +47,9 @@ define ([], function () {
                 _is_lift: true,
             })
             
-        }) 
+        })
+        
+        columns.push({field: 'id_status',  caption: 'ГИС ЖКХ',     size: 10, voc: d.vc_house_status})
 
         $(w2ui ['passport_layout'].el ('main')).w2regrid ({ 
 
@@ -80,6 +82,7 @@ define ([], function () {
                 {master: true},
                 {master: true},
                 {span: d.vc_nsi_192.items.length, caption: 'Количество лифтов'},
+                {master: true},
             ],            
 
             searches: [            

@@ -51,7 +51,7 @@ define ([], function () {
         if (!v.stateregistrationdate)
             die('stateregistrationdate', 'Укажите, пожалуйста, дату государственной регистрации')
 
-        if (!/^\d{9}$/.test(v.kpp))
+        if (!valid_kpp(v.kpp))
             die('kpp', 'Укажите, пожалуйста КПП (9 цифр)')
 
         if (!/^\d{5}$/.test(v.okopf))

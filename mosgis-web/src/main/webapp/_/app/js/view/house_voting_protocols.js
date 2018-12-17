@@ -52,7 +52,7 @@ define ([], function () {
             textSearch: 'contains',
 
             searches: [            
-                {field: 'id_prtcl_status_gis',  caption: 'Статус протокола',  type: 'enum', options: {items: data.vc_gis_status}},
+                {field: 'id_prtcl_status',  caption: 'Статус протокола',  type: 'enum', options: {items: data.vc_gis_status.items}},
                 {field: 'form_',  caption: 'Форма собрания',  type: 'enum', options: {items: data.vc_voting_forms.items}},
                 {field: 'is_deleted', caption: 'Статус записи', type: 'enum', options: {items: [
                     {id: "0", text: "Актуальные"},
@@ -67,7 +67,7 @@ define ([], function () {
                 {field: 'extravoting', caption: 'Вид собрания', size: 7, render: function (r) {return r.extravoting ? 'Внеочередное' : 'Ежегодное'}},
                 {field: 'meetingeligibility', caption: 'Правомочность проведения собрания', size: 10, render: function (r) {return r.meetingeligibility == "C" ? 'Правомочное' : 'Неправомочное'}},
                 {field: 'form_', caption: 'Форма проведения', size: 15, voc: data.vc_voting_forms},
-                {field: 'status_label', caption: 'Статус протокола', size: 10},
+                {field: 'id_prtcl_status', caption: 'Статус протокола', size: 10, voc: data.vc_gis_status},
             ].filter (not_off),
 
             postData: {data: {"uuid_house": data.item.fiashouseguid}},

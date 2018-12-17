@@ -1,9 +1,5 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.logging.Logger;
-import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
@@ -16,8 +12,6 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocVotingForm;
 import ru.eludia.products.mosgis.db.model.voc.VocVotingMeetingEligibility;
-import ru.gosuslugi.dom.schema.integration.house_management.ImportVotingProtocolRequest;
-import ru.gosuslugi.dom.schema.integration.house_management.ProtocolType;
 
 public class VotingProtocol extends EnTable {
             
@@ -82,6 +76,39 @@ public class VotingProtocol extends EnTable {
                     return true;
             }
         }
+        
+        public VocVotingForm.i getVotingForm () {
+            
+            switch (this) {
+                
+                case AVOTINGSTARTDATE:
+                case AVOTINGDATE:
+                case RESOLUTIONPLACE:
+                    return VocVotingForm.i.AVOTING;
+                    
+                case MEETINGDATE:
+                case VOTINGPLACE:
+                    return VocVotingForm.i.MEETING;
+                    
+                case EVOTINGDATEBEGIN:
+                case EVOTINGDATEEND:
+                case DISCIPLINE:
+                case INFOREVIEW:
+                    return VocVotingForm.i.EVOTING;
+                    
+                case MEETING_AV_DATE:
+                case MEETING_AV_PLACE:
+                case MEETING_AV_DATE_START:
+                case MEETING_AV_DATE_END:
+                case MEETING_AV_RES_PLACE:
+                    return VocVotingForm.i.MEET_AV;
+                    
+                default: 
+                    return null;
+                    
+            }
+            
+        }
 
     }
 
@@ -94,7 +121,7 @@ public class VotingProtocol extends EnTable {
         trigger ("BEFORE UPDATE", 
                 
             "DECLARE "
-            + " cnt_files NUMBER;"
+            + " cnt NUMBER;"
             + " uuid_init RAW(16);"
             + "BEGIN "
 
@@ -113,8 +140,11 @@ public class VotingProtocol extends EnTable {
                     + "IF :NEW.FORM_=" + VocVotingForm.i.MEETING + " AND :NEW.MEETINGDATE > TRUNC(SYSDATE) THEN raise_application_error (-20000, 'Дата проведения собрания не должна быть позже текущей даты.'); END IF; "
                     + "IF :NEW.FORM_=" + VocVotingForm.i.MEET_AV + " AND :NEW.MEETING_AV_DATE > TRUNC(SYSDATE) THEN raise_application_error (-20000, 'Дата проведения собрания не должна быть позже текущей даты.'); END IF; "
 
-                    + " SELECT COUNT(*) INTO cnt_files FROM tb_voting_protocol_files WHERE id_status=1 AND UUID_PROTOCOL=:NEW.uuid; "
-                    + " IF cnt_files=0 THEN raise_application_error (-20000, 'Файл протокола не загружен на сервер. Операция отменена.'); END IF; "
+                    + " SELECT COUNT(*) INTO cnt FROM tb_voting_protocol_files WHERE id_status=1 AND UUID_PROTOCOL=:NEW.uuid; "
+                    + " IF cnt=0 THEN raise_application_error (-20000, 'Файл протокола не загружен на сервер. Операция отменена.'); END IF; "
+                
+                    + " SELECT COUNT(*) INTO cnt FROM tb_vote_decision_lists WHERE is_deleted=0 AND PROTOCOL_UUID=:NEW.uuid; "
+                    + " IF cnt=0 THEN raise_application_error (-20000, 'Не заполнена повестка собрания. Операция отменена.'); END IF; "
 
                     + " SELECT MIN(uuid) INTO uuid_init FROM tb_vote_initiators WHERE is_deleted = 0 AND UUID_PROTOCOL=:NEW.uuid AND UUID_ORG=:NEW.UUID_ORG; "
                     + " IF uuid_init IS NULL THEN raise_application_error (-20000, 'Вашей организации нет в списке инициаторов. Операция отменена.'); END IF; "
@@ -184,73 +214,5 @@ public class VotingProtocol extends EnTable {
         }
                         
     };
-
-    private static final Logger logger = Logger.getLogger (VotingProtocol.class.getName ());    
-
-    public static final ImportVotingProtocolRequest.Protocol toDom (Map<String, Object> r) {
-
-        final ImportVotingProtocolRequest.Protocol p = (ImportVotingProtocolRequest.Protocol) DB.to.javaBean (ImportVotingProtocolRequest.Protocol.class, r);
-        
-        if (DB.ok (r.get ("extravoting"))) {
-            p.setExtraVoting (true);
-            p.setAnnualVoting (null);
-        }
-        else {
-            p.setAnnualVoting (true);
-            p.setExtraVoting (null);
-        }
-                
-        switch (VocVotingForm.i.forName (r.get ("form_").toString ())) {
-            case AVOTING:
-                p.setAVoting (toAvoting (r));
-                break;
-            case EVOTING:
-                p.setEVoting (toEvoting (r));
-                break;
-            case MEETING:
-                p.setMeeting (toMeeting (r));
-                break;
-            case MEET_AV:
-                p.setMeetingAVoting (toMeetingAVoting (r));
-                break;
-                
-        }
-        
-        for (Map<String, Object> initiator: (Collection<Map<String, Object>>) r.get ("initiators")) p.getVoteInitiators ().add (VoteInitiator.toDom (initiator));
-        
-        for (Map<String, Object> decision: (Collection<Map<String, Object>>) r.get ("decisions")) p.getDecisionList ().add (VoteDecisionList.toDom (decision));
-
-        return p;
-
-    }
-
-    private static ProtocolType.AVoting toAvoting (Map<String, Object> r) {
-        final ProtocolType.AVoting result = (ProtocolType.AVoting) DB.to.javaBean (ProtocolType.AVoting.class, r);
-        for (Map<String, Object> file: (Collection<Map<String, Object>>) r.get ("files")) result.getAttachments ().add ( VotingProtocolFile.toAttachments (file));
-        return result;
-    }
     
-    private static ProtocolType.EVoting toEvoting (Map<String, Object> r) {
-        final ProtocolType.EVoting result = (ProtocolType.EVoting) DB.to.javaBean (ProtocolType.EVoting.class, r);
-        for (Map<String, Object> file: (Collection<Map<String, Object>>) r.get ("files")) result.getAttachments ().add ( VotingProtocolFile.toAttachments (file));
-        return result;
-    }
-    
-    private static ProtocolType.Meeting toMeeting (Map<String, Object> r) {
-        final ProtocolType.Meeting result = (ProtocolType.Meeting) DB.to.javaBean (ProtocolType.Meeting.class, r);
-        for (Map<String, Object> file: (Collection<Map<String, Object>>) r.get ("files")) result.getAttachments ().add ( VotingProtocolFile.toAttachments (file));
-        return result;
-    }
-    
-    private static ProtocolType.MeetingAVoting toMeetingAVoting (Map<String, Object> r) {
-        r.put ("meetingdate", r.get ("meeting_av_date"));
-        r.put ("avotingdate", r.get ("meeting_av_date_end"));
-        r.put ("avotingstartdate", r.get ("meeting_av_date_start"));
-        r.put ("votingplace", r.get ("meeting_av_place"));
-        r.put ("resolutionplace", r.get ("meeting_av_res_place"));
-        final ProtocolType.MeetingAVoting result = (ProtocolType.MeetingAVoting) DB.to.javaBean (ProtocolType.MeetingAVoting.class, r);
-        for (Map<String, Object> file: (Collection<Map<String, Object>>) r.get ("files")) result.getAttachments ().add ( VotingProtocolFile.toAttachments (file));
-        return result;
-    }
-
 }

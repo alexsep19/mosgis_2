@@ -59,6 +59,10 @@ define ([], function () {
             cach.click = function () {openTab ('/' + cach.type + '/' + cach.uuid)}
         }
         
+        it.status_label = data.vc_house_status[it.id_status] + (it.id_status_gis ? " - " + data.vc_gis_status[it.id_status_gis] : "")
+        
+        it.err_text = it ['out_soap.err_text']
+        
         it._can.update = it._can.reload = it._can.send = it._can.edit
 
         $_F5 = function (data) {

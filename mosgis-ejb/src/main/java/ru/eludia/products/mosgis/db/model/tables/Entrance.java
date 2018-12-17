@@ -8,6 +8,7 @@ import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseESPRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseOMSRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseRSORequest;
@@ -41,6 +42,8 @@ public class Entrance extends Table {
         col    ("informationconfirmed",  Type.BOOLEAN,      Bool.TRUE,  "Информация подтверждена поставщиком");
         col    ("entranceguid",          Type.UUID,         null,       "Идентификатор в ГИС ЖКХ");
         col    ("is_annuled_in_gis",     Type.BOOLEAN,      Bool.FALSE, "1, если запись аннулирована в ГИС ЖКХ; иначе 0");
+        
+        fk     ("id_status", VocHouseStatus.class, new Virt("DECODE(\"ENTRANCEGUID\",NULL," + VocHouseStatus.i.MISSING.getId() + "," + VocHouseStatus.i.PUBLISHED.getId() + ")"), "Статус размещения в ГИС ЖКХ");
         
         trigger ("BEFORE UPDATE", ""
                 

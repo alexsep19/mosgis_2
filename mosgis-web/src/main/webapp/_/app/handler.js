@@ -430,6 +430,18 @@ function validate_gis_file (name, file, magic) {
 
 }
 
+function valid_inn(inn) {
+
+    return /^(\d{10}|\d{12})$/.test(inn)
+
+}
+
+function valid_kpp(kpp) {
+
+    return /^\d{9}$/.test(kpp)
+
+}
+
 function show_popup_progress (file_size) {
 
     w2utils.lock ($('#w2ui-popup .w2ui-page'));
