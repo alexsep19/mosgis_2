@@ -74,6 +74,7 @@ define ([], function () {
             data.item.type = data.item.is_condo ? 'МКД' : 'ЖД'
             
             data.controlled = data.cach && data.cach.is_own && data.cach.id_ctr_status_gis == 40
+            data.is_under_nsi_20_8 = $_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']]
 
             function editable () {
 
@@ -86,7 +87,7 @@ define ([], function () {
                            $_USER.role.nsi_20_21 ||
                            $_USER.role.nsi_20_22
                 }
-                else return ($_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']])
+                else return (data.is_under_nsi_20_8)
 
             }
 

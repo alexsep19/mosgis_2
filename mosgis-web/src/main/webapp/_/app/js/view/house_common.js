@@ -10,7 +10,7 @@ define ([], function () {
     return function (data, view) {
 
         function editable_nsi_20_8 () {
-            return (data.controlled && $_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']])
+            return (data.controlled && data.is_under_nsi_20_8)
         }
 
         $.each (data.vc_pass_fields, function () { id2field [this.id] = this })
