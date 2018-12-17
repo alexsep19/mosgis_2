@@ -79,7 +79,9 @@ define ([], function () {
                 if ($_USER.role.nsi_20_4 ||
                     $_USER.role.nsi_20_7)
                     return false
-                return data.cach && data.cach.is_own && data.cach.id_ctr_status_gis == 40
+
+                if (data.cach && data.cach.is_own && data.cach.id_ctr_status_gis == 40) return $_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']]
+                return false
 
             }
 
