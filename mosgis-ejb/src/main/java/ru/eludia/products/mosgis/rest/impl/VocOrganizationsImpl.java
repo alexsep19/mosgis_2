@@ -168,6 +168,33 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
         return jb.build ();
 
     }    
+    
+    @Override
+    public JsonObject list (JsonObject p) {
+        
+        int limit = p.getInt ("max");
+        Object[] ids = p.getJsonArray("ids_off").toArray ();
+        Search search = Search.from (p);
+        
+        Select select = ModelHolder.getModel ().select (VocOrganization.class, "*", "uuid AS id", "label AS text")
+                .where ("uuid NOT IN", ids)
+                .orderBy ("label")
+                .limit (0, limit);
+        
+        applySearch (search, select);
+        
+        JsonObjectBuilder jb = Json.createObjectBuilder ();
+
+        try (DB db = ModelHolder.getModel ().getDb ()) {
+            db.addJsonArrayCnt (jb, select);
+        }
+        catch (Exception ex) {
+            throw new InternalServerErrorException (ex);
+        }
+        
+        return jb.build ();
+        
+    }
 
     @Override
     public JsonObject getItem (String id) {

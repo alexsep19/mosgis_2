@@ -31,7 +31,7 @@ define ([], function () {
                         fields : [
                             {name: 'uuid_org', type: 'list', options: 
                                 {
-                                    url: '/mosgis/_rest/?type=voc_organizations',
+                                    url: '/mosgis/_rest/?type=voc_organizations&part=list',
                                     postData: {'ids_off': ids},
                                     cachMax: 10,
                                 }
