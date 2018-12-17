@@ -40,6 +40,7 @@ public class PublicPropertyContractLogTest extends BaseTest {
             PublicPropertyContract.c.ID_CTR_STATUS, 10,
             PublicPropertyContract.c.ID_CTR_STATUS_GIS, 10,
             PublicPropertyContract.c.ID_CTR_STATE_GIS, 10,
+            PublicPropertyContract.c.PAYMENT, "1.23",
             PublicPropertyContract.c.ID_LOG, null
         );
         
@@ -63,8 +64,8 @@ public class PublicPropertyContractLogTest extends BaseTest {
     }
     
     @Test (expected = Test.None.class)
-    public void test () throws SQLException {        
-        checkSample (table.new Sampler (commonPart).nextHASH ());
+    public void testOrg () throws SQLException {        
+        checkSample (table.new Sampler (commonPart, HASH (PublicPropertyContract.c.UUID_ORG_CUSTOMER, getOrgUuid ())).nextHASH ());
     }
     
     protected String getOrgUuid () throws SQLException {
@@ -84,16 +85,15 @@ public class PublicPropertyContractLogTest extends BaseTest {
                 PublicPropertyContract.c.ID_LOG, idLog
             ));
             
-            Map<String, Object> map = db.getMap (logTable.get (idLog));
-            
-            dump (map);
+            Map<String, Object> map = db.getMap (logTable.getForExport (idLog));
+            check (map);
             
         }
         
     }
 
     private void check (final Map<String, Object> r) throws IllegalStateException {
-        dump (r);        
+        dump (r);
         validate (PublicPropertyContractLog.toImportPublicPropertyContractRequest (r));
     }
         
