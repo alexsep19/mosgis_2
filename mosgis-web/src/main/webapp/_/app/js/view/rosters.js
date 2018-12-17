@@ -22,6 +22,7 @@ define ([], function () {
                             {id: 'mgmt_contracts', caption: 'Договоры управления', off: !($_USER.role.admin || $_USER.is_building_society () || $_USER.has_nsi_20 (1, 4))},
                             {id: 'voc_organizations', caption: 'Организации'},
                             {id: 'voc_users', caption: 'Учётные записи', off: !$_USER.role.admin},
+                            {id: 'voc_licenses', caption: 'Лицензии'},
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_rosters

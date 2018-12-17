@@ -2,41 +2,44 @@ package ru.eludia.products.mosgis.db.model.voc;
 
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
+import ru.eludia.base.model.Col;
+import ru.eludia.base.model.ColEnum;
 
 public class VocLicenseStatus extends Table {
     
     private static final String TABLE_NAME = "vc_license_status";
 
     public VocLicenseStatus () {
-
-        super (TABLE_NAME, "Статусы лицензий");
-
-        pk    ("id",           Type.INTEGER, "Ключ");        
-        col   ("name",         Type.STRING,  "Идентификатор");
-        col   ("label",        Type.STRING,  "Наименование");
-        
-        data  (i.class);
-        
+        super   (TABLE_NAME, "Статусы лицензий");
+        cols    (c.class);
+        pk      (c.ID);
+        data    (i.class);
     }
+    
+    public enum c implements ColEnum {        
+        ID         (Type.NUMERIC, 2, "Идентификатор"),
+        LABEL      (Type.STRING,     "Наименование"),        
+        NAME       (Type.STRING,     "Имя");      
+        @Override public Col getCol () {return col;} private Col col; private c (Type type, Object... p) {col = new Col (this, type, p);}
+    }        
     
     public enum i {
 
-        ACTIVE      (10,  "A", "включена в реестр, действующая"),
-        FINISHED    (20,  "F", "включена в реестр, действие прекращено в зависимости от даты окончания действия лицензии"),
-        CANCELED    (30,  "C", "аннулирована"),
-        REJECTED    (40,  "R", "отменена в зависимости от основания"),
-        INACTIVE    (50,  "I", "не включена в реестр, не действующая");
-    
+        ACTIVE      (10,  "включена в реестр, действующая",                                                             "A"),
+        FINISHED    (20,  "включена в реестр, действие прекращено в зависимости от даты окончания действия лицензии",   "F"),
+        CANCELED    (30,  "аннулирована",                                                                               "C"),
+        REJECTED    (40,  "отменена в зависимости от основания",                                                        "R"),
+        INACTIVE    (50,  "не включена в реестр, не действующая",                                                       "I");
 
-        byte id;
-        String name;
+        int id;
         String label;
+        String name;
         
         public ru.eludia.base.model.def.Num asDef () {
             return new ru.eludia.base.model.def.Num (id);
         }        
         
-        public byte getId () {
+        public int getId () {
             return id;
         }
 
@@ -48,8 +51,8 @@ public class VocLicenseStatus extends Table {
             return label;
         }
 
-        private i (int id, String name, String label) {
-            this.id = (byte) id;
+        private i (int id, String label, String name) {
+            this.id = id;
             this.name = name;
             this.label = label;            
         }
