@@ -24,10 +24,17 @@ public class VotingProtocolLog extends GisWsLogTable {
         final ImportVotingProtocolRequest.Protocol protocol = VotingProtocolLog.toImportVotingProtocolRequestProtocol (r);
 
         final ImportVotingProtocolRequest createImportVotingProtocolRequest = new ImportVotingProtocolRequest ();
-//        protocol.setPlacing (true);
+        protocol.setPlacing (true);
         createImportVotingProtocolRequest.setProtocol (protocol);
-        createImportVotingProtocolRequest.setPlacing (true);
         createImportVotingProtocolRequest.setTransportGUID (UUID.randomUUID ().toString ());
+
+        Object guid = r.get (VotingProtocol.c.VOTINGPROTOCOLGUID.lc ());
+        if (guid == null) {
+            protocol.setModification (null);
+        }
+        else {
+            createImportVotingProtocolRequest.setProtocolGUID (guid.toString ());
+        }
         
         return createImportVotingProtocolRequest;
         

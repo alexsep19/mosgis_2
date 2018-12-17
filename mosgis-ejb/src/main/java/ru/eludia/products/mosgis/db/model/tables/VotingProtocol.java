@@ -55,7 +55,7 @@ public class VotingProtocol extends EnTable {
 
         ID_LOG               (VotingProtocolLog.class,    null,         "Последнее событие редактирования"),
         
-        VOTINGPROTOCOLGUID   (Type.UUID, null,                 "Дата составления протокола")
+        VOTINGPROTOCOLGUID   (Type.UUID, null,                 "UUID протокола в ГИС ЖКХ")
 
         ;
 
