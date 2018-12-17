@@ -9,14 +9,14 @@ import ru.eludia.products.mosgis.db.model.tables.base.BaseTest;
 import ru.eludia.products.mosgis.ws.base.AbstactServiceAsync;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportPublicPropertyContractRequest;
 
-public class PublicPropertyContractTest extends BaseTest {
+public class PublicPropertyContractLogTest extends BaseTest {
     
     private Table table;
     private Map<String, Object> commonPart = HASH (
         "id_log", null
     );
     
-    public PublicPropertyContractTest () throws Exception {
+    public PublicPropertyContractLogTest () throws Exception {
         super ();
         jc     = JAXBContext.newInstance (ImportPublicPropertyContractRequest.class);
         schema = AbstactServiceAsync.loadSchema ("house-management/hcs-house-management-types.xsd");
@@ -32,7 +32,7 @@ public class PublicPropertyContractTest extends BaseTest {
 
     private void check (final Map<String, Object> r) throws IllegalStateException {
         dump (r);        
-        validate (PublicPropertyContract.toImportPublicPropertyContractRequest (r));
+        validate (PublicPropertyContractLog.toImportPublicPropertyContractRequest (r));
     }
         
 }
