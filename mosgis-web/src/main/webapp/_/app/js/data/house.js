@@ -78,10 +78,6 @@ define ([], function () {
             function editable () {
 
                 if ($_USER.role.admin) return true
-                    
-                if ($_USER.role.nsi_20_4 ||
-                    $_USER.role.nsi_20_7)
-                    return false
 
                 if (data.controlled) {
                     return $_USER.role.nsi_20_1  ||
