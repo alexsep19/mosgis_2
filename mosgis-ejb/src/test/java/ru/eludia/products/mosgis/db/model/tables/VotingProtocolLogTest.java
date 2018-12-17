@@ -97,6 +97,6 @@ public class VotingProtocolLogTest extends BaseTest {
     private void check (final Map<String, Object> r) throws IllegalStateException {
         dump (r);
         validate (VotingProtocolLog.toImportVotingProtocolPlacingRequest (r));
-    }    
+    }
     
 }
