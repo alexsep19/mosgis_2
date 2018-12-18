@@ -103,7 +103,7 @@ define ([], function () {
         query ({type: 'public_property_contracts', action: 'approve'}, {}, reload_page)
     }    
     
-    $_DO.alter_voting_protocol_common = function (e) {
+    $_DO.alter_public_property_contract_common = function (e) {
         if (!confirm ('Открыть эту карточку на редактирование?')) return
         query ({type: 'public_property_contracts', action: 'alter'}, {data: {}}, reload_page)
     }
