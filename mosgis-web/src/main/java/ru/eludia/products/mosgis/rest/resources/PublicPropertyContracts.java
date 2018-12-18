@@ -148,5 +148,14 @@ public class PublicPropertyContracts extends EJBResource <PublicPropertyContract
         checkOrg (item);
         return back.doApprove (id, getUser ());
     }
+    
+    @POST
+    @Path("{id}/alter") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject doAlter (@PathParam ("id") String id, JsonObject p) { 
+        final JsonObject item = getInnerItem (id);
+        checkOrg (item);
+        return back.doAlter (id, p, getUser ());
+    }
         
 }

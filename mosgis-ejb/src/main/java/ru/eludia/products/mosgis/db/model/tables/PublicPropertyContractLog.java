@@ -162,6 +162,7 @@ public class PublicPropertyContractLog extends GisWsLogTable {
             .toOne (PublicPropertyContract.class, "AS ctr"
                 , PublicPropertyContract.c.FIASHOUSEGUID.lc () + " AS fiashouseguid"
                 , PublicPropertyContract.c.UUID_ORG_CUSTOMER.lc ()
+                , PublicPropertyContract.c.ID_CTR_STATUS.lc ()
             ).on ()
             .toMaybeOne (VocPerson.class, "AS p", "*").on ("ctr.uuid_person_customer=p.uuid")
             .toMaybeOne (nsi95, "AS vc_nsi_95", "code", "guid").on ("vc_nsi_95.code=p.code_vc_nsi_95 AND vc_nsi_95.isactual=1")

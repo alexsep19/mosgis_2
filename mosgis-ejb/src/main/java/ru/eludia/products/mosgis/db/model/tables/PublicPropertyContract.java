@@ -78,6 +78,25 @@ public class PublicPropertyContract extends EnTable {
         cols   (c.class);
         
         key    ("uuid_org", c.UUID_ORG);
+        
+        trigger ("BEFORE UPDATE", 
+                
+            "DECLARE "
+            + " cnt NUMBER;"
+            + " uuid_init RAW(16);"
+            + "BEGIN "
+
+                + "IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS "
+                    + " AND :OLD.ID_CTR_STATUS <> " + VocGisStatus.i.FAILED_PLACING.getId ()
+                    + " AND :NEW.ID_CTR_STATUS =  " + VocGisStatus.i.PROJECT.getId ()
+                + " THEN "
+                    + " :NEW.ID_CTR_STATUS := " + VocGisStatus.i.MUTATING.getId ()
+                + "; END IF; "
+                        
+            + "END;"
+                
+        );
+        
 
     }
     public enum Action {
