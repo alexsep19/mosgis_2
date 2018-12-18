@@ -13,8 +13,8 @@ import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.voc.VocPublicPropertyContractFileType;
+import ru.gosuslugi.dom.schema.integration.house_management.DaySelectionType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportPublicPropertyContractRequest;
-import ru.gosuslugi.dom.schema.integration.house_management.PublicPropertyContractType;
 import ru.gosuslugi.dom.schema.integration.individual_registry_base.ID;
 import ru.gosuslugi.dom.schema.integration.individual_registry_base.IndType;
 
@@ -39,6 +39,42 @@ public class PublicPropertyContractLog extends GisWsLogTable {
         return createImportPublicPropertyContractRequest;
     }
     
+    private static DaySelectionType toDaySelectionType (Map<String, Object> r, String k) {
+        
+        final DaySelectionType result = new DaySelectionType ();
+        
+        String f = "ddt_" + k;
+        
+        byte d = Byte.parseByte (r.get (f).toString ());
+        
+        if (d == 32) {
+            result.setLastDay (true);
+        }
+        else {
+            result.setLastDay (null);
+            result.setDate (d);
+        }
+        
+        result.setIsNextMonth (DB.ok (r.get (f + "_nxt")));
+        
+        return result;
+        
+    }
+    
+    private static ImportPublicPropertyContractRequest.Contract.PublicPropertyContract.PaymentInterval toPaymentInterval (Map<String, Object> r) {
+        
+        final ImportPublicPropertyContractRequest.Contract.PublicPropertyContract.PaymentInterval result = DB.to.javaBean (ImportPublicPropertyContractRequest.Contract.PublicPropertyContract.PaymentInterval.class, r);
+        
+        if (!DB.ok (r.get ("is_other"))) {
+            result.setOther (null);
+            result.setStartDate (toDaySelectionType (r, "start"));
+            result.setEndDate (toDaySelectionType (r, "end"));
+        }
+                
+        return result;
+        
+    }
+    
     private static ImportPublicPropertyContractRequest.Contract.PublicPropertyContract toContractPublicPropertyContract (Map<String, Object> r) {
         
         r.put ("date", r.get ("date_"));
@@ -46,6 +82,8 @@ public class PublicPropertyContractLog extends GisWsLogTable {
         ImportPublicPropertyContractRequest.Contract.PublicPropertyContract result = DB.to.javaBean (ImportPublicPropertyContractRequest.Contract.PublicPropertyContract.class, r);
         
         if (Boolean.FALSE.equals (result.isIsGratuitousBasis ())) result.setIsGratuitousBasis (null);
+        
+        if (result.isIsGratuitousBasis () == null) result.setPaymentInterval (toPaymentInterval (r));
         
         UUID uuidOrg = (UUID) r.get ("ctr.uuid_org_customer");
         if (uuidOrg != null) {

@@ -53,6 +53,9 @@ public class BaseTest {
     public BaseTest () throws SQLException, IOException {
         modelHolder = new ModelHolder (new DataSourceImpl (getCn ()));
         model = modelHolder.getModel ();
+        try (DB db = model.getDb ()) {
+            db.adjustModel ();
+        }
     }
     
     protected void dump (final Map<String, Object> r) {

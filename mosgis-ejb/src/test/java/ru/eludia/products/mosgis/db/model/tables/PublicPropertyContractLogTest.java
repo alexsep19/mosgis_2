@@ -10,7 +10,6 @@ import org.junit.Before;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.build.QP;
-import ru.eludia.base.model.Table;
 import ru.eludia.base.model.def.Def;
 import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.db.model.EnTable;
@@ -45,6 +44,10 @@ public class PublicPropertyContractLogTest extends BaseTest {
             PublicPropertyContract.c.ID_CTR_STATUS_GIS, 10,
             PublicPropertyContract.c.ID_CTR_STATE_GIS, 10,
             PublicPropertyContract.c.PAYMENT, "1.23",
+            PublicPropertyContract.c.DDT_START, null,
+            PublicPropertyContract.c.DDT_START_NXT, 0,
+            PublicPropertyContract.c.DDT_END, null,
+            PublicPropertyContract.c.DDT_END_NXT, 0,
             PublicPropertyContract.c.ID_LOG, null
         );
         
@@ -76,17 +79,52 @@ public class PublicPropertyContractLogTest extends BaseTest {
 
     }
 
-//    @Test (expected = Test.None.class)
-    public void testOrg () throws SQLException {        
-        checkSample (table.new Sampler (commonPart, HASH (PublicPropertyContract.c.UUID_ORG_CUSTOMER, getOrgUuid ())).nextHASH ());
+    @Test (expected = Test.None.class)
+    public void test0 () throws SQLException {        
+        checkSample (HASH (
+                
+            PublicPropertyContract.c.UUID_ORG_CUSTOMER, getOrgUuid (),
+                            
+            PublicPropertyContract.c.ISGRATUITOUSBASIS, 1
+                
+        ));
+
     }
     
     @Test (expected = Test.None.class)
-    public void testPerson () throws SQLException {        
-        checkSample (table.new Sampler (commonPart, HASH (PublicPropertyContract.c.UUID_PERSON_CUSTOMER, getPersonUuid ())).nextHASH ());
+    public void test1 () throws SQLException {        
+        checkSample (HASH (
+                
+            PublicPropertyContract.c.UUID_ORG_CUSTOMER, getOrgUuid (),
+                
+            PublicPropertyContract.c.IS_OTHER, 1,
+            PublicPropertyContract.c.OTHER, "other",
+            
+            PublicPropertyContract.c.ISGRATUITOUSBASIS, 0
+                
+        ));
+    }
+            
+    @Test (expected = Test.None.class)
+    public void test2 () throws SQLException {        
+        checkSample (HASH (
+                
+            PublicPropertyContract.c.UUID_PERSON_CUSTOMER, getPersonUuid (),
+                
+            PublicPropertyContract.c.IS_OTHER, 0,
+            PublicPropertyContract.c.DDT_START, 10,
+            PublicPropertyContract.c.DDT_START_NXT, 0,
+            PublicPropertyContract.c.DDT_END, 32,
+            PublicPropertyContract.c.DDT_END_NXT, 1,
+            
+            PublicPropertyContract.c.ISGRATUITOUSBASIS, 0
+                
+        ));
     }
     
-    private void checkSample (Map<String, Object> sample) throws SQLException {
+    private void checkSample (Map<String, Object> rr) throws SQLException {
+        
+        Map<String, Object> sample = table.new Sampler (commonPart, rr).nextHASH ();
         
         try (DB db = model.getDb ()) {            
             String idLog = createData (db, sample);           

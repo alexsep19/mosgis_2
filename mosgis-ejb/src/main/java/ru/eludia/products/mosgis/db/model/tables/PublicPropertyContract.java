@@ -40,7 +40,7 @@ public class PublicPropertyContract extends EnTable {
         DDT_END              (Type.NUMERIC, 2,     null,       "Окончание периода внесения платы по договору (1..31 — конкретное число; 99 — последнее число)"),
         DDT_END_NXT          (Type.BOOLEAN,        Bool.FALSE, "1, если окончание периода внесения платы по договору в следующем месяце; иначе 0"),
         IS_OTHER             (Type.BOOLEAN,        Bool.FALSE, "1, если период внесеняи платы — \"иной\"; иначе 0"),
-        OTHER                (Type.STRING,         null,       "Иное (период внесения платы)"),
+        OTHER                (Type.STRING,  500,   null,       "Иное (период внесения платы)"),
         
         ISGRATUITOUSBASIS    (Type.BOOLEAN,        Bool.TRUE, "1, если договор заключен на безвозмездной основе; иначе 0")
 
