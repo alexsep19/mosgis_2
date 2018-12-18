@@ -6,11 +6,15 @@ import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportPublicPropertyContractRequest;
+import ru.gosuslugi.dom.schema.integration.individual_registry_base.ID;
+import ru.gosuslugi.dom.schema.integration.individual_registry_base.IndType;
 
 public class PublicPropertyContractLog extends GisWsLogTable {
-
+    
     public PublicPropertyContractLog () {
 
         super ("tb_pp_ctr__log", "История редактирования [сведений о размере платы за] услуги управления", PublicPropertyContract.class
@@ -43,19 +47,49 @@ public class PublicPropertyContractLog extends GisWsLogTable {
             result.setOrganization (VocOrganization.regOrgType (uuidOrg));
         }
         else {
+            Map<String, Object> pr = DB.HASH ();
+            for (Map.Entry<String, Object> i: r.entrySet ()) {
+                String k = i.getKey ();
+                if (k.startsWith ("p."))         pr.put (k.substring (2), i.getValue ());
+                if (k.startsWith ("vc_nsi_95.")) pr.put (k, i.getValue ());
+            }
+            pr.put ("number", pr.get ("number_"));
+            result.setEntrepreneur (toIndType (pr));
         }
         return result;
     }
 
+    private static IndType toIndType (Map<String, Object> r) {
+        
+        final IndType result = DB.to.javaBean (IndType.class, r);
+        
+        if (DB.ok (r.get ("vc_nsi_95.code"))) {
+            result.setID (toID (r));
+            result.setSNILS (null);
+        }
+        
+        return result;
+        
+    }
+
+    private static ID toID (Map<String, Object> r) {
+        final ID id = DB.to.javaBean (ID.class, r);
+        id.setType (NsiTable.toDom (r, "vc_nsi_95"));
+        return id;
+    }
+
     public Get getForExport (Object id) {
+        
+        NsiTable nsi95 = NsiTable.getNsiTable (95);        
         
         return (Get) getModel ()
             .get (this, id, "*")
             .toOne (PublicPropertyContract.class, "AS ctr"
                 , PublicPropertyContract.c.FIASHOUSEGUID.lc () + " AS fiashouseguid"
                 , PublicPropertyContract.c.UUID_ORG_CUSTOMER.lc ()
-                , PublicPropertyContract.c.UUID_PERSON_CUSTOMER.lc ()
             ).on ()
+            .toMaybeOne (VocPerson.class, "AS p", "*").on ("ctr.uuid_person_customer=p.uuid")
+            .toMaybeOne (nsi95, "AS vc_nsi_95", "code", "guid").on ("vc_nsi_95.code=p.code_vc_nsi_95 AND vc_nsi_95.isactual=1")
         ;
         
     }

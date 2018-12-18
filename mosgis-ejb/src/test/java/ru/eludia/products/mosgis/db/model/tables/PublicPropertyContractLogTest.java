@@ -14,7 +14,6 @@ import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.base.BaseTest;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
-import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ws.base.AbstactServiceAsync;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportPublicPropertyContractRequest;
 
@@ -63,17 +62,16 @@ public class PublicPropertyContractLogTest extends BaseTest {
         
     }
     
-    @Test (expected = Test.None.class)
+//    @Test (expected = Test.None.class)
     public void testOrg () throws SQLException {        
         checkSample (table.new Sampler (commonPart, HASH (PublicPropertyContract.c.UUID_ORG_CUSTOMER, getOrgUuid ())).nextHASH ());
     }
     
-    protected String getOrgUuid () throws SQLException {
-        try (DB db = model.getDb ()) {
-            return db.getString (model.select (VocOrganization.class, "uuid").where ("is_deleted", 0));
-        }
+    @Test (expected = Test.None.class)
+    public void testPerson () throws SQLException {        
+        checkSample (table.new Sampler (commonPart, HASH (PublicPropertyContract.c.UUID_PERSON_CUSTOMER, getPersonUuid ())).nextHASH ());
     }
-
+    
     private void checkSample (Map<String, Object> sample) throws SQLException {
         
         try (DB db = model.getDb ()) {
