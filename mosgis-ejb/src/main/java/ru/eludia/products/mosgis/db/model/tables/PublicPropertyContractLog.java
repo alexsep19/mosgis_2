@@ -100,17 +100,9 @@ public class PublicPropertyContractLog extends GisWsLogTable {
         r.put ("files", db.getList (db.getModel ()
             .select (PublicPropertyContractFile.class, "*")
             .where  (PublicPropertyContractFile.c.UUID_CTR.lc (), r.get ("uuid_object"))
+            .toOne  (PublicPropertyContractFileLog.class, "AS log", "ts_start_sending", "err_text").on ()
             .and    ("id_status", 1)
         ));
-        
-/*
-        final List<Map<String, Object>> files = db.getList (m
-            .select (VotingProtocolFile.class, "*")
-            .toOne  (VotingProtocolFileLog.class, "AS log", "ts_start_sending", "err_text").on ()
-            .where  (VotingProtocolFile.c.UUID_PROTOCOL.lc (), r.get ("uuid_object"))
-            .and    ("id_status", 1)
-        );
-        */        
 
     }
                 

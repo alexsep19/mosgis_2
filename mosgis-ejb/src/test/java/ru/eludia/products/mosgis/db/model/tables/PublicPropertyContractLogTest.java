@@ -96,7 +96,7 @@ public class PublicPropertyContractLogTest extends BaseTest {
                 PublicPropertyContract.c.ID_LOG, idLog
             ));
             
-            db.insert (fileTable, HASH (
+            UUID idFile = (UUID) db.insertId (fileTable, HASH (
                EnTable.c.IS_DELETED, 0,
                AttachTable.c.ID_STATUS, 1,
                AttachTable.c.LABEL, "1.doc",
@@ -105,6 +105,12 @@ public class PublicPropertyContractLogTest extends BaseTest {
                PublicPropertyContractFile.c.UUID_CTR, uuid,
                PublicPropertyContractFile.c.ID_TYPE, VocPublicPropertyContractFileType.i.CONTRACT.getId ()
             ));            
+            String idFileLog = model.createIdLog (db, fileTable, null, idFile, VocAction.i.APPROVE);
+            db.update (fileTable, HASH (
+                EnTable.c.UUID, idFile,
+                AttachTable.c.ID_STATUS, 1,
+                PublicPropertyContract.c.ID_LOG, idFileLog
+            ));
             
             Map<String, Object> r = db.getMap (logTable.getForExport (idLog));
             PublicPropertyContractLog.addFilesForExport (db, r);
