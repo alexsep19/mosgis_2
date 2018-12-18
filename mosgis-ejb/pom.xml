@@ -177,6 +177,7 @@
                             <bindingDirectory>src/main/resources/gis_zhkh</bindingDirectory>
                             <bindingFiles>
                                 <bindingFile>bindings.xjb</bindingFile>
+                                <bindingFile>wsdl/lib/hcs-bills-base.xsd</bindingFile>
                             </bindingFiles>
                             <vmArgs>
                                 <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>

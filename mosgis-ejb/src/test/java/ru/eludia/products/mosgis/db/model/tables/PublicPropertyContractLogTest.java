@@ -43,7 +43,7 @@ public class PublicPropertyContractLogTest extends BaseTest {
             PublicPropertyContract.c.ID_CTR_STATUS, 10,
             PublicPropertyContract.c.ID_CTR_STATUS_GIS, 10,
             PublicPropertyContract.c.ID_CTR_STATE_GIS, 10,
-            PublicPropertyContract.c.PAYMENT, "1.23",
+            PublicPropertyContract.c.PAYMENT, "1.2",
             PublicPropertyContract.c.DDT_START, null,
             PublicPropertyContract.c.DDT_START_NXT, 0,
             PublicPropertyContract.c.DDT_END, null,
