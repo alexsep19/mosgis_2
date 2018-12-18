@@ -47,16 +47,16 @@ public class PublicPropertyContractFile extends AttachTable {
 
     }
 
-    private static PublicPropertyContractType.RentAgrConfirmationDocument.ProtocolMeetingOwners toProtocolMeetingOwners (Map<String, Object> r) {
+    public static PublicPropertyContractType.RentAgrConfirmationDocument.ProtocolMeetingOwners toProtocolMeetingOwners (Map<String, Object> r) {
         PublicPropertyContractType.RentAgrConfirmationDocument.ProtocolMeetingOwners result = DB.to.javaBean (PublicPropertyContractType.RentAgrConfirmationDocument.ProtocolMeetingOwners.class, r);
         result.getTrustDocAttachment ().add (AttachTable.toAttachmentType (r));
         return result;
     }
-
+/*
     public static PublicPropertyContractType.RentAgrConfirmationDocument toRentAgrConfirmationDocument (Map<String, Object> r) {
         PublicPropertyContractType.RentAgrConfirmationDocument result = new PublicPropertyContractType.RentAgrConfirmationDocument ();
         result.getProtocolMeetingOwners ().add (toProtocolMeetingOwners (r));
         return result;
     }
-    
+*/    
 }

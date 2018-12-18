@@ -15,6 +15,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.voc.VocPublicPropertyContractFileType;
 import ru.gosuslugi.dom.schema.integration.house_management.DaySelectionType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportPublicPropertyContractRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.PublicPropertyContractType;
 import ru.gosuslugi.dom.schema.integration.individual_registry_base.ID;
 import ru.gosuslugi.dom.schema.integration.individual_registry_base.IndType;
 
@@ -102,25 +103,35 @@ public class PublicPropertyContractLog extends GisWsLogTable {
         
         List <Map <String, Object>> files = (List <Map <String, Object>>) r.get ("files");
         if (files == null) throw new IllegalStateException ("No files fetched: " + r);
-        
+
         for (Map <String, Object> file: files) {
-            
+
             switch (VocPublicPropertyContractFileType.i.forId (DB.to.Long (file.get ("id_type")))) {
                 case ADDENDUM:
                 case CONTRACT:
                     result.getContractAttachment ().add (AttachTable.toAttachmentType (file));
                     break;
                 case VOTING_PROTO:
-                    result.getRentAgrConfirmationDocument ().add (PublicPropertyContractFile.toRentAgrConfirmationDocument (file));
+                    if (result.getRentAgrConfirmationDocument ().isEmpty ()) result.getRentAgrConfirmationDocument ().add (new PublicPropertyContractType.RentAgrConfirmationDocument ());
+                    result.getRentAgrConfirmationDocument ().get (0).getProtocolMeetingOwners ().add (PublicPropertyContractFile.toProtocolMeetingOwners (file));
                     break;
                 default:
                     throw new IllegalStateException ("Invalid file type: " + r);
             }
-            
+
+        }
+
+        List <Map <String, Object>> refs = (List <Map <String, Object>>) r.get ("refs");
+        if (refs == null) throw new IllegalStateException ("No refs fetched: " + r);
+        
+        if (!refs.isEmpty ()) {
+            PublicPropertyContractType.RentAgrConfirmationDocument rentAgrConfirmationDocument = new PublicPropertyContractType.RentAgrConfirmationDocument ();
+            for (Map <String, Object> ref: refs) rentAgrConfirmationDocument.getProtocolGUID ().add (ref.get ("guid").toString ());
+            result.getRentAgrConfirmationDocument ().add (rentAgrConfirmationDocument);
         }
         
         return result;
-        
+
     }
 
     private static IndType toIndType (Map<String, Object> r) {
@@ -168,5 +179,16 @@ public class PublicPropertyContractLog extends GisWsLogTable {
         ));
 
     }
-                
+
+    public static void addRefsForExport (DB db, Map<String, Object> r) throws SQLException {
+
+        r.put ("refs", db.getList (db.getModel ()
+            .select (PublicPropertyContractVotingProtocol.class)
+            .toOne  (VotingProtocol.class, VotingProtocol.c.VOTINGPROTOCOLGUID.lc () + " AS guid").on ()
+            .where  (PublicPropertyContractVotingProtocol.c.UUID_CTR.lc (), r.get ("uuid_object"))
+            .and    ("is_deleted", 0)
+        ));
+
+    }
+
 }

@@ -25,6 +25,8 @@ public class PublicPropertyContractLogTest extends BaseTest {
     private PublicPropertyContractLog logTable;
     private PublicPropertyContractFile fileTable;
     private PublicPropertyContractFileLog fileLogTable;
+    private PublicPropertyContractVotingProtocol refTable;
+    private PublicPropertyContractVotingProtocolLog refLogTable;
     
     private static final UUID uuid = UUID.fromString ("00000000-0000-0000-0000-000000000000");
     private final Map<String, Object> commonPart;
@@ -57,7 +59,8 @@ public class PublicPropertyContractLogTest extends BaseTest {
         logTable = (PublicPropertyContractLog) model.get (PublicPropertyContractLog.class);
         fileTable = (PublicPropertyContractFile) model.get (PublicPropertyContractFile.class);
         fileLogTable = (PublicPropertyContractFileLog) model.get (PublicPropertyContractFileLog.class);
-        
+        refTable  = (PublicPropertyContractVotingProtocol) model.get (PublicPropertyContractVotingProtocol.class);
+        refLogTable  = (PublicPropertyContractVotingProtocolLog) model.get (PublicPropertyContractVotingProtocolLog.class);
         
     }
 
@@ -66,6 +69,10 @@ public class PublicPropertyContractLogTest extends BaseTest {
     public void clean () throws SQLException {
 
         try (DB db = model.getDb ()) {            
+
+            db.d0 (new QP ("UPDATE tb_pp_ctr_vp SET id_log = NULL WHERE uuid_ctr = '00000000000000000000000000000000'"));
+            db.d0 (new QP ("DELETE FROM tb_pp_ctr_vp__log WHERE uuid_object IN (SELECT uuid FROM tb_pp_ctr_files WHERE uuid_ctr = '00000000000000000000000000000000')"));
+            db.d0 (new QP ("DELETE FROM tb_pp_ctr_vp WHERE uuid_ctr = '00000000000000000000000000000000'"));
 
             db.d0 (new QP ("UPDATE tb_pp_ctr_files SET id_log = NULL WHERE uuid_ctr = '00000000000000000000000000000000'"));
             db.d0 (new QP ("DELETE FROM tb_pp_ctr_files__log WHERE uuid_object IN (SELECT uuid FROM tb_pp_ctr_files WHERE uuid_ctr = '00000000000000000000000000000000')"));
@@ -81,6 +88,7 @@ public class PublicPropertyContractLogTest extends BaseTest {
 
     @Test (expected = Test.None.class)
     public void test0 () throws SQLException {        
+        
         checkSample (HASH (
                 
             PublicPropertyContract.c.UUID_ORG_CUSTOMER, getOrgUuid (),
@@ -93,6 +101,7 @@ public class PublicPropertyContractLogTest extends BaseTest {
     
     @Test (expected = Test.None.class)
     public void test1 () throws SQLException {        
+        
         checkSample (HASH (
                 
             PublicPropertyContract.c.UUID_ORG_CUSTOMER, getOrgUuid (),
@@ -107,6 +116,7 @@ public class PublicPropertyContractLogTest extends BaseTest {
             
     @Test (expected = Test.None.class)
     public void test2 () throws SQLException {        
+        
         checkSample (HASH (
                 
             PublicPropertyContract.c.UUID_PERSON_CUSTOMER, getPersonUuid (),
@@ -130,6 +140,7 @@ public class PublicPropertyContractLogTest extends BaseTest {
             String idLog = createData (db, sample);           
             Map<String, Object> r = db.getMap (logTable.getForExport (idLog));
             PublicPropertyContractLog.addFilesForExport (db, r);
+            PublicPropertyContractLog.addRefsForExport (db, r);
             check (r);            
         }
         
@@ -160,8 +171,20 @@ public class PublicPropertyContractLogTest extends BaseTest {
             PublicPropertyContractFile.c.PROTOCOLNUM, 1
         ));
         
+        createVPRef (db);
+        
         return id;
         
+    }
+
+    private void createVPRef (final DB db) throws SQLException {
+
+        db.insert (refTable, HASH (
+            EnTable.c.IS_DELETED, 0,
+            PublicPropertyContractVotingProtocol.c.UUID_VP, getSomeUuid (VotingProtocol.class),
+            PublicPropertyContractVotingProtocol.c.UUID_CTR, uuid
+        ));
+
     }
 
     private void createFile (final DB db, Map<String, Object> sample) throws SQLException {
@@ -178,14 +201,14 @@ public class PublicPropertyContractLogTest extends BaseTest {
         
         r.putAll (sample);
         
-        UUID idFile = (UUID) db.insertId (fileTable, r);
+        UUID id = (UUID) db.insertId (fileTable, r);
         
-        String idFileLog = model.createIdLog (db, fileTable, null, idFile, VocAction.i.APPROVE);
+        String idLog = model.createIdLog (db, fileTable, null, id, VocAction.i.APPROVE);
         
         db.update (fileTable, HASH (
-            EnTable.c.UUID, idFile,
+            EnTable.c.UUID, id,
             AttachTable.c.ID_STATUS, 1,
-            PublicPropertyContract.c.ID_LOG, idFileLog
+            PublicPropertyContract.c.ID_LOG, idLog
         ));
         
     }

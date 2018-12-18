@@ -89,10 +89,14 @@ public class BaseTest {
         
     }    
     
-    protected String getOrgUuid () throws SQLException {
+    protected String getSomeUuid (Class c) throws SQLException {
         try (DB db = model.getDb ()) {
-            return db.getString (model.select (VocOrganization.class, "uuid").where ("is_deleted", 0));
+            return db.getString (model.select (c, "uuid").where ("is_deleted", 0));
         }
+    }
+    
+    protected String getOrgUuid () throws SQLException {
+        return getSomeUuid (VocOrganization.class);
     }
     
     protected String getPersonUuid () throws SQLException {
