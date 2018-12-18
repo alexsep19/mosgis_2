@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
 import ru.eludia.base.DB;
@@ -92,6 +93,25 @@ public class PublicPropertyContractLog extends GisWsLogTable {
             .toMaybeOne (nsi95, "AS vc_nsi_95", "code", "guid").on ("vc_nsi_95.code=p.code_vc_nsi_95 AND vc_nsi_95.isactual=1")
         ;
         
+    }
+    
+    public static void addFilesForExport (DB db, Map<String, Object> r) throws SQLException {
+        
+        r.put ("files", db.getList (db.getModel ()
+            .select (PublicPropertyContractFile.class, "*")
+            .where  (PublicPropertyContractFile.c.UUID_CTR.lc (), r.get ("uuid_object"))
+            .and    ("id_status", 1)
+        ));
+        
+/*
+        final List<Map<String, Object>> files = db.getList (m
+            .select (VotingProtocolFile.class, "*")
+            .toOne  (VotingProtocolFileLog.class, "AS log", "ts_start_sending", "err_text").on ()
+            .where  (VotingProtocolFile.c.UUID_PROTOCOL.lc (), r.get ("uuid_object"))
+            .and    ("id_status", 1)
+        );
+        */        
+
     }
                 
 }
