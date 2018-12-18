@@ -19,7 +19,7 @@ public class License extends EnTable {
         ID_LOG                          (LicenseLog.class,                  null,   "Последнее событие редактирования"), 
         LICENSENUMBER                   (STRING,                    9,              "Номер лицензии"),
         LICENSE_REG_DATE                (DATE,                                      "Дата регистрации лицензии"),   
-        LICENSESTATUS                   (VocLicenseStatus.class,            VocLicenseStatus.i.INACTIVE.asDef (),        "Статус лицензии с точки зрения mosgis"),
+        LICENSESTATUS                   (VocLicenseStatus.class,            VocLicenseStatus.i.INACTIVE.asDef (),        "Статус лицензии"),
         LICENSINGAUTHORITY              (VocOrganization.class,                                                          "Наименование лицензирующего органа"),
         REGION_FIAS_GUID                (Type.UUID,                         null,   "Адрес осуществления лицензируемого вида деятельности (код по ФИАС)"),
         LICENSEABLE_TYPE_OF_ACTIVITY    (STRING,                    255,            "Лицензируемый вид деятельности с указанием выполняемых работ, оказываемых услуг, составляющих лицензируемый вид деятельности"),

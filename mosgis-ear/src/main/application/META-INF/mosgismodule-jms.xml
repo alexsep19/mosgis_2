@@ -467,6 +467,22 @@
        <time-to-deliver>2000</time-to-deliver>
        <redelivery-delay>10000</redelivery-delay>
    </delivery-params-overrides>
+ </uniform-distributed-queue>
+ 
+  <!-- очередь обработки запросов на экспорт лицензий -->
+ <uniform-distributed-queue name="inExportLicenseQueue">
+   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+   <jndi-name>mosgis.inExportLicenseQueue</jndi-name>
+ </uniform-distributed-queue>
+ 
+ <!-- очередь опроса статуса исходящих запросов на экспорт лицензий -->
+ <uniform-distributed-queue name="outExportLicenseQueue">
+   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>    
+   <jndi-name>mosgis.outExportLicenseQueue</jndi-name>
+   <delivery-params-overrides>
+       <time-to-deliver>10000</time-to-deliver>
+       <redelivery-delay>10000</redelivery-delay>
+   </delivery-params-overrides>
  </uniform-distributed-queue> 
  
 </weblogic-jms>
