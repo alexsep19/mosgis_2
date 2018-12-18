@@ -453,6 +453,7 @@ public class Conf implements ConfMBean, ConfLocal {
         set (VocSetting.i.WS_GIS_NSI_COMMON_URL, s + VocSetting.i.WS_GIS_NSI_COMMON_URL.getValue().substring(VocSetting.WS_GIS_URL_ROOT_DEFAULT.length()));
         set (VocSetting.i.WS_GIS_NSI_URL, s + VocSetting.i.WS_GIS_NSI_URL.getValue().substring(VocSetting.WS_GIS_URL_ROOT_DEFAULT.length()));
         set (VocSetting.i.WS_GIS_ORG_COMMON_URL, s + VocSetting.i.WS_GIS_ORG_COMMON_URL.getValue().substring(VocSetting.WS_GIS_URL_ROOT_DEFAULT.length()));
+        set (VocSetting.i.WS_GIS_LICENSES_URL, s + VocSetting.i.WS_GIS_LICENSES_URL.getValue().substring(VocSetting.WS_GIS_URL_ROOT_DEFAULT.length()));
     }
     
     @Override
@@ -494,6 +495,37 @@ public class Conf implements ConfMBean, ConfLocal {
     @Override
     public void setTtlCharters (int i) {
         setInt (VocSetting.i.TTL_CHARTERS, i);
-    }    
+    }
+    
+    @Override
+    public String getWsGisLicensesUrl() {
+       return get (VocSetting.i.WS_GIS_LICENSES_URL);
+    }
+
+    @Override
+    public void setWsGisLicensesUrl(String s) {
+        set (VocSetting.i.WS_GIS_LICENSES_URL, s);
+        set (VocSetting.i.WS_GIS_URL_ROOT, "");
+    }
+
+    @Override
+    public int getWsGisLicensesConnTimeout() {
+        return getInt (VocSetting.i.WS_GIS_LICENSES_TMT_CONN);
+    }
+
+    @Override
+    public void setWsGisLicensesConnTimeout(int i) {
+        setInt (VocSetting.i.WS_GIS_LICENSES_TMT_CONN, i);
+    }
+
+    @Override
+    public int getWsGisLicensesRespTimeout() {
+        return getInt (VocSetting.i.WS_GIS_LICENSES_TMT_RESP);
+    }
+
+    @Override
+    public void setWsGisLicensesRespTimeout(int i) {
+        setInt (VocSetting.i.WS_GIS_LICENSES_TMT_RESP, i);
+    }
 
 }
