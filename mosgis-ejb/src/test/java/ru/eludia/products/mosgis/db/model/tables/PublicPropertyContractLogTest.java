@@ -11,6 +11,7 @@ import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.base.model.Table;
+import ru.eludia.base.model.def.Def;
 import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.base.BaseTest;
@@ -87,36 +88,67 @@ public class PublicPropertyContractLogTest extends BaseTest {
     
     private void checkSample (Map<String, Object> sample) throws SQLException {
         
-        try (DB db = model.getDb ()) {
-            
-            db.insert (table, sample);
-            String idLog = model.createIdLog (db, table, null, uuid, VocAction.i.APPROVE);
-            db.update (table, HASH (
-                EnTable.c.UUID, uuid,
-                PublicPropertyContract.c.ID_LOG, idLog
-            ));
-            
-            UUID idFile = (UUID) db.insertId (fileTable, HASH (
-               EnTable.c.IS_DELETED, 0,
-               AttachTable.c.ID_STATUS, 1,
-               AttachTable.c.LABEL, "1.doc",
-               AttachTable.c.LEN, 1,
-               AttachTable.c.MIME, "application/octet-stream",
-               PublicPropertyContractFile.c.UUID_CTR, uuid,
-               PublicPropertyContractFile.c.ID_TYPE, VocPublicPropertyContractFileType.i.CONTRACT.getId ()
-            ));            
-            String idFileLog = model.createIdLog (db, fileTable, null, idFile, VocAction.i.APPROVE);
-            db.update (fileTable, HASH (
-                EnTable.c.UUID, idFile,
-                AttachTable.c.ID_STATUS, 1,
-                PublicPropertyContract.c.ID_LOG, idFileLog
-            ));
-            
+        try (DB db = model.getDb ()) {            
+            String idLog = createData (db, sample);           
             Map<String, Object> r = db.getMap (logTable.getForExport (idLog));
             PublicPropertyContractLog.addFilesForExport (db, r);
-            check (r);
-            
+            check (r);            
         }
+        
+    }
+
+    private String createData (final DB db, Map<String, Object> sample) throws SQLException {
+        
+        db.insert (table, sample);
+        
+        String id = model.createIdLog (db, table, null, uuid, VocAction.i.APPROVE);
+        
+        db.update (table, HASH (
+            EnTable.c.UUID, uuid,
+            PublicPropertyContract.c.ID_LOG, id
+        ));
+        
+        createFile (db, HASH (
+            PublicPropertyContractFile.c.ID_TYPE, VocPublicPropertyContractFileType.i.CONTRACT.getId ()
+        ));
+        
+        createFile (db, HASH (
+            PublicPropertyContractFile.c.ID_TYPE, VocPublicPropertyContractFileType.i.ADDENDUM.getId ()
+        ));
+        
+        createFile (db, HASH (
+            PublicPropertyContractFile.c.ID_TYPE, VocPublicPropertyContractFileType.i.VOTING_PROTO.getId (),
+            PublicPropertyContractFile.c.PROTOCOLDATE, Def.NOW,
+            PublicPropertyContractFile.c.PROTOCOLNUM, 1
+        ));
+        
+        return id;
+        
+    }
+
+    private void createFile (final DB db, Map<String, Object> sample) throws SQLException {
+        
+        final Map<String, Object> r = HASH (
+            EnTable.c.IS_DELETED, 0,
+            AttachTable.c.LABEL, "1.doc",
+            AttachTable.c.LEN, 1,
+            AttachTable.c.MIME, "application/octet-stream",
+            AttachTable.c.ATTACHMENTGUID, UUID.randomUUID (),
+            AttachTable.c.ATTACHMENTHASH, "00000000",
+            PublicPropertyContractFile.c.UUID_CTR, uuid
+        );
+        
+        r.putAll (sample);
+        
+        UUID idFile = (UUID) db.insertId (fileTable, r);
+        
+        String idFileLog = model.createIdLog (db, fileTable, null, idFile, VocAction.i.APPROVE);
+        
+        db.update (fileTable, HASH (
+            EnTable.c.UUID, idFile,
+            AttachTable.c.ID_STATUS, 1,
+            PublicPropertyContract.c.ID_LOG, idFileLog
+        ));
         
     }
 
