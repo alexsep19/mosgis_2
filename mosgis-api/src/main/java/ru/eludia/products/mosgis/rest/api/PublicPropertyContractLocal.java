@@ -10,7 +10,7 @@ public interface PublicPropertyContractLocal extends CRUDBackend {
     
     JsonObject getVocs  (JsonObject p);
 
-//    JsonObject doApprove   (String id, User user);
+    JsonObject doApprove   (String id, User user);
 //    JsonObject doAlter     (String id, User user);
 //    JsonObject doAnnul     (String id, JsonObject p, User user);
 

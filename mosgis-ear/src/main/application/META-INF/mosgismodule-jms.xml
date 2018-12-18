@@ -469,4 +469,43 @@
    </delivery-params-overrides>
  </uniform-distributed-queue> 
  
+
+
+
+
+
+
+
+
+
+
+ <!-- очередь обработки запросов на экспорт услуг управления ДПОИ -->
+ <uniform-distributed-queue name="inHousePublicPropertyContractsQueue">
+   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+   <jndi-name>mosgis.inHousePublicPropertyContractsQueue</jndi-name>
+   <delivery-params-overrides>
+       <time-to-deliver>2000</time-to-deliver>
+       <redelivery-delay>10000</redelivery-delay>
+   </delivery-params-overrides>
+ </uniform-distributed-queue>
+ 
+ <!-- очередь обработки запросов на экспорт документов, приложенных к ДПОИ -->
+ <uniform-distributed-queue name="inHousePublicPropertyContractFilesQueue">
+   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+   <jndi-name>mosgis.inHousePublicPropertyContractFilesQueue</jndi-name>
+ </uniform-distributed-queue>
+ 
+ <!-- очередь опроса статуса исходящих запросов на экспорт ДПОИ -->
+ <uniform-distributed-queue name="outExportHousePublicPropertyContractsQueue">
+   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>    
+   <jndi-name>mosgis.outExportHousePublicPropertyContractsQueue</jndi-name>
+   <delivery-params-overrides>
+       <time-to-deliver>2000</time-to-deliver>
+       <redelivery-delay>10000</redelivery-delay>
+   </delivery-params-overrides>
+ </uniform-distributed-queue> 
+
+
+
+
 </weblogic-jms>

@@ -6,6 +6,7 @@ import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -42,7 +43,9 @@ public class PublicPropertyContract extends EnTable {
         IS_OTHER             (Type.BOOLEAN,        Bool.FALSE, "1, если период внесеняи платы — \"иной\"; иначе 0"),
         OTHER                (Type.STRING,  500,   null,       "Иное (период внесения платы)"),
         
-        ISGRATUITOUSBASIS    (Type.BOOLEAN,        Bool.TRUE, "1, если договор заключен на безвозмездной основе; иначе 0")
+        ISGRATUITOUSBASIS    (Type.BOOLEAN,        Bool.TRUE, "1, если договор заключен на безвозмездной основе; иначе 0"),
+        
+        CONTRACTVERSIONGUID  (Type.UUID, null, "Идентификатор версии ДОГПОИ в ГИС ЖКХ")
 
         ;
 
@@ -77,5 +80,50 @@ public class PublicPropertyContract extends EnTable {
         key    ("uuid_org", c.UUID_ORG);
 
     }
+    public enum Action {
+        
+        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
+        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT)
+        ;
+        
+        VocGisStatus.i nextStatus;
+        VocGisStatus.i okStatus;
+        VocGisStatus.i failStatus;
+
+        private Action (VocGisStatus.i nextStatus, VocGisStatus.i okStatus, VocGisStatus.i failStatus) {
+            this.nextStatus = nextStatus;
+            this.okStatus = okStatus;
+            this.failStatus = failStatus;
+        }
+
+        public VocGisStatus.i getNextStatus () {
+            return nextStatus;
+        }
+
+        public VocGisStatus.i getFailStatus () {
+            return failStatus;
+        }
+
+        public VocGisStatus.i getOkStatus () {
+            return okStatus;
+        }
+        
+        public static Action forStatus (VocGisStatus.i status) {
+            switch (status) {
+                case PENDING_RQ_PLACING:   return PLACING;
+                case PENDING_RQ_ANNULMENT: return ANNULMENT;
+                default: return null;
+            }            
+        }
+        
+        public static Action forLogAction (VocAction.i a) {
+            switch (a) {
+                case APPROVE: return PLACING;
+                case ANNUL:   return ANNULMENT;
+                default: return null;
+            }            
+        }
+                        
+    };
         
 }

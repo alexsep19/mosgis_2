@@ -1,5 +1,8 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -21,6 +24,8 @@ import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContract;
 import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContractLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContractFile;
+import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContractFileLog;
 import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContractVotingProtocol;
 import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContractVotingProtocolLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -181,6 +186,39 @@ public class PublicPropertyContractImpl extends BaseCRUD<PublicPropertyContract>
             
         }        
         
+    });}
+
+    @Override
+    public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
+
+        db.update (getTable (), HASH (
+            EnTable.c.UUID,                   id,
+            PublicPropertyContract.c.ID_CTR_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+        ));
+
+        logAction (db, user, id, VocAction.i.APPROVE);
+
+        List<UUID> ids = new ArrayList<> ();        
+        db.forEach (db.getModel ().select (PublicPropertyContractFile.class, "uuid").where (PublicPropertyContractFile.c.UUID_CTR.lc (), id).and (EnTable.c.IS_DELETED.lc (), 0), (rs) -> {
+            final Object u = db.getValue (rs, 1);
+            if (u != null) ids.add ((UUID) u);
+        });
+
+        for (UUID idFile: ids) {
+
+            String idFileLog = db.insertId (PublicPropertyContractFileLog.class, HASH (
+                "action", VocAction.i.APPROVE.getName (),
+                "uuid_object", idFile,
+                "uuid_user", user == null ? null : user.getId ()
+            )).toString ();
+
+            db.update (PublicPropertyContractFile.class, HASH (
+                "uuid",      idFile,
+                "id_log",    idFileLog
+            ));
+
+        }
+
     });}
 
 }
