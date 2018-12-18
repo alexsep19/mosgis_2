@@ -1,16 +1,20 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
+import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
+import ru.eludia.products.mosgis.db.model.voc.VocPublicPropertyContractFileType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportPublicPropertyContractRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.PublicPropertyContractType;
 import ru.gosuslugi.dom.schema.integration.individual_registry_base.ID;
 import ru.gosuslugi.dom.schema.integration.individual_registry_base.IndType;
 
@@ -57,7 +61,28 @@ public class PublicPropertyContractLog extends GisWsLogTable {
             pr.put ("number", pr.get ("number_"));
             result.setEntrepreneur (toIndType (pr));
         }
+        
+        List <Map <String, Object>> files = (List <Map <String, Object>>) r.get ("files");
+        if (files == null) throw new IllegalStateException ("No files fetched: " + r);
+        
+        for (Map <String, Object> file: files) {
+            
+            switch (VocPublicPropertyContractFileType.i.forId (DB.to.Long (file.get ("id_type")))) {
+                case ADDENDUM:
+                case CONTRACT:
+                    result.getContractAttachment ().add (AttachTable.toAttachmentType (file));
+                    break;
+                case VOTING_PROTO:
+                    result.getRentAgrConfirmationDocument ().add (PublicPropertyContractFile.toRentAgrConfirmationDocument (file));
+                    break;
+                default:
+                    throw new IllegalStateException ("Invalid file type: " + r);
+            }
+            
+        }
+        
         return result;
+        
     }
 
     private static IndType toIndType (Map<String, Object> r) {

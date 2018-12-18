@@ -57,6 +57,11 @@ public class VocPublicPropertyContractFileType extends Table {
             this.label = label;            
         }
         
+        public static i forId (long id) {
+            for (i i: values ()) if (i.id == id) return i;
+            return null;
+        }
+        
         private JsonObject toJsonObject () {
             return Json.createObjectBuilder ()
                 .add ("id",    id)
