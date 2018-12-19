@@ -75,6 +75,11 @@ public class VocPublicPropertyContractFileType extends Table {
             return builder.build ();            
         }
 
+        @Override
+        public String toString () {
+            return Integer.toString (id);
+        }
+
     }
     
     private static JsonArray jsonArray = i.toJsonArray ();    

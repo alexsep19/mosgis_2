@@ -12,6 +12,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
+import ru.eludia.products.mosgis.db.model.voc.VocPublicPropertyContractFileType;
 
 
 public class PublicPropertyContract extends EnTable {
@@ -96,6 +97,41 @@ public class PublicPropertyContract extends EnTable {
                 + " THEN "
                     + " :NEW.ID_CTR_STATUS := " + VocGisStatus.i.MUTATING.getId ()
                 + "; END IF; "
+                        
+                + "IF :NEW.is_deleted=0 AND :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING.getId () + " THEN BEGIN "
+                        
+                    + " IF :NEW.ENDDATE<SYSDATE THEN raise_application_error (-20000, 'Для договора указанная дата окончания действия меньше текущей даты. Договоры с истекшим сроком действия не размещаются'); END IF; "
+                        
+                    + " SELECT COUNT(*) INTO cnt FROM vw_ca_ch_objects WHERE FIASHOUSEGUID=:NEW.FIASHOUSEGUID; "
+                    + " IF cnt=0 THEN FOR i IN (SELECT label FROM vc_buildings WHERE houseguid=:NEW.FIASHOUSEGUID) LOOP "
+                        + "raise_application_error (-20000, 'Для адреса дома '||i.label||' не указан действующий договор управления/устав'); "
+                    + "END LOOP; END IF; "                        
+
+                    + " SELECT COUNT(*) INTO cnt FROM tb_pp_ctr_files WHERE id_type=" + VocPublicPropertyContractFileType.i.CONTRACT + " AND id_status=1 AND UUID_CTR=:NEW.uuid; "
+                    + " IF cnt=0 THEN raise_application_error (-20000, 'Файл договора не загружен на сервер. Операция отменена.'); END IF; "
+
+                    + " cnt:=0; "
+                    + " FOR i IN ("
+                        + "SELECT "
+                        + " vp.votingprotocolguid guid "
+                        + " , vp.PROTOCOLNUM no "
+                        + " , TO_CHAR (vp.PROTOCOLDATE, 'YYYY-MM-DD') dt "
+                        + "FROM "
+                        + " tb_pp_ctr_vp o "
+                        + " INNER JOIN tb_voting_protocols vp ON o.UUID_VP=vp.UUID "
+                        + "WHERE o.is_deleted = 0"
+                        + " AND o.UUID_CTR = :NEW.uuid "
+                        + ") LOOP BEGIN "
+                    + " IF i.guid IS NULL THEN raise_application_error (-20000, 'Протокол общего собрания собственников не отправлен в ГИС ЖКХ (№'||i.no||' от '||i.dt||'). Отправьте сначала в ГИС ЖКХ информацию о проведении Общего собрания собственников'); END IF; "
+                    + " cnt:=cnt+1; "
+                    + " END; END LOOP; "                            
+                            
+                    + " IF cnt=0 THEN BEGIN "
+                    + "   SELECT COUNT(*) INTO cnt FROM tb_pp_ctr_files WHERE id_type=" + VocPublicPropertyContractFileType.i.VOTING_PROTO + " AND id_status=1 AND UUID_CTR=:NEW.uuid; "
+                    + "   IF cnt=0 THEN raise_application_error (-20000, 'Не приведён протокол общего собрания собственников. Операция отменена.'); END IF; "
+                    + " END; END IF; "
+                            
+                + "END; END IF; "
                         
             + "END;"
                 
