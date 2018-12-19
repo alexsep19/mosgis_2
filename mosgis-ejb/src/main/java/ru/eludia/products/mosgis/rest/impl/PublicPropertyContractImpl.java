@@ -139,9 +139,7 @@ public class PublicPropertyContractImpl extends BaseCRUD<PublicPropertyContract>
                     .and    ("uuid_object", id)
                     .and    ("action",      VocAction.i.ANNUL.getName ())
                     .orderBy ("root.ts DESC")
-                    .toOne  (OutSoap.class, "AS soap")
-                    .and ("id_status", VocAsyncRequestState.i.DONE.getId ())
-                    .and ("is_failed", 0)
+                    .toMaybeOne (OutSoap.class, "AS soap")
                     .on ()
                 );
 
