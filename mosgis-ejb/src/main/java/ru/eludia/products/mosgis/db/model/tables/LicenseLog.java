@@ -37,7 +37,7 @@ public class LicenseLog extends Table {
 //        col   ("uuid_message",              Type.UUID,                          null,   "UUID запроса в ГИС ЖКХ");
 //        col   ("elementguid_new",           Type.UUID,                          null,   "Идентификатор новой версии существующего (в ГИС) элемента справочника");        
 //        col   ("is_deleted",                Type.BOOLEAN,                       null,   "1, если запись удалена; иначе 0");
-
+/*
        trigger ("BEFORE INSERT", "BEGIN "
                
            + "SELECT"
@@ -65,7 +65,7 @@ public class LicenseLog extends Table {
            + " WHERE uuid=:NEW.uuid_object; "
 
        + "END;");      
-        
+*/        
     }    
     
 }

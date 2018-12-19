@@ -6,17 +6,17 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
-import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import static ru.eludia.base.model.Type.STRING;
 
 
 public class LicenseHouse extends EnTable {
 
     public enum Columns implements ColEnum {
 
-        FIASHOUSEGUID                       (VocBuilding.class,         "Глобальный уникальный идентификатор дома по ФИАС"),
-        HOUSEADRESS                         (VocBuilding.class,         "Адрес дома"),
-        LICENSE                             (License.class,     null,   "Лицензия"), 
-        CONTRACT                            (Contract.class,    null,   "Информация о договоре управления");
+        FIASHOUSEGUID  (VocBuilding.class,         "Глобальный уникальный идентификатор дома по ФИАС"),
+        HOUSEADRESS    (STRING,       null,   "Адрес дома"),
+        UUID_LICENSE   (License.class,     null,   "Лицензия"), 
+        UUID_CONTRACT  (Contract.class,    null,   "Информация о договоре управления");
 
         @Override
         public Col getCol () {return col;}
@@ -27,13 +27,13 @@ public class LicenseHouse extends EnTable {
     }
         
     public LicenseHouse () {
-        super ("tb_licence_houses", "Информация о доме");
+        super ("tb_licence_houses", "Информация о доме в лицензии");
         
         cols   (Columns.class);
         
-        key    ("licensehouseguid", LicenseHouse.Columns.FIASHOUSEGUID);
-        key    ("licensehouseguid", LicenseHouse.Columns.LICENSE);
-        key    ("licensehouseguid", LicenseHouse.Columns.CONTRACT);
+        key    ("fiashouseguid", LicenseHouse.Columns.FIASHOUSEGUID);
+        key    ("uuid_license",  LicenseHouse.Columns.UUID_LICENSE);
+        key    ("uuid_contract", LicenseHouse.Columns.UUID_CONTRACT);
 
     }
     

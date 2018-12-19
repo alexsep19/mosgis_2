@@ -5,26 +5,28 @@ import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
-import static ru.eludia.base.model.Type.DATE;
-import static ru.eludia.base.model.Type.STRING;
 import ru.eludia.products.mosgis.db.model.voc.VocLicenseStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import static ru.eludia.base.model.Type.DATE;
+import static ru.eludia.base.model.Type.STRING;
+import static ru.eludia.base.model.Type.UUID;
+import static ru.eludia.base.model.Type.INTEGER;
 
 public class License extends Table {
 
     public enum c implements ColEnum {
         
-        LICENSEGUID                     (Type.UUID,                         null,   "UUID лицензии в системе"),
-        LICENSE_VERSION                 (Type.INTEGER,                      null,   "Версия лицензии" ),
-        ID_LOG                          (LicenseLog.class,                  null,   "Последнее событие редактирования"), 
-        LICENSE_NUMBER                  (STRING,                    9,              "Номер лицензии"),
-        LICENSE_REG_DATE                (DATE,                                      "Дата регистрации лицензии"),   
-        LICENSE_STATUS                  (VocLicenseStatus.class,            null,   "Статус лицензии с точки зрения mosgis"),
-        LICENSING_AUTHORITY             (VocOrganization.class,                     "Наименование лицензирующего органа"),
-        REGION_FIAS_GUID                (Type.UUID,                         null,   "Адрес осуществления лицензируемого вида деятельности (код по ФИАС)"),
-        LICENSEABLE_TYPE_OF_ACTIVITY    (STRING,                    2000,           "Лицензируемый вид деятельности с указанием выполняемых работ, оказываемых услуг, составляющих лицензируемый вид деятельности"),
-        ADDITIONAL_INFORMATION          (STRING,                    2000,    null,  "Дополнительная информация"),
-        LICENSE_ORGANIZATION            (VocOrganization.class,                    "Лицензиат"); 
+        LICENSEGUID                     (UUID,                    null,   "UUID лицензии в системе"),
+        LICENSE_VERSION                 (INTEGER,                 null,   "Версия лицензии" ),
+        ID_LOG                          (LicenseLog.class,        null,   "Последнее событие редактирования"), 
+        LICENSE_NUMBER                  (STRING,            9,            "Номер лицензии"),
+        LICENSE_REG_DATE                (DATE,                            "Дата регистрации лицензии"),   
+        ID_STATUS                       (VocLicenseStatus.class,  null,   "Статус лицензии с точки зрения mosgis"),
+        UUID_ORG_AUTHORITY              (VocOrganization.class,           "Наименование лицензирующего органа"),
+        REGION_FIAS_GUID                (UUID,                    null,   "Адрес осуществления лицензируемого вида деятельности (код по ФИАС)"),
+        LICENSEABLE_TYPE_OF_ACTIVITY    (STRING,            2000,         "Лицензируемый вид деятельности с указанием выполняемых работ, оказываемых услуг, составляющих лицензируемый вид деятельности"),
+        ADDITIONAL_INFORMATION          (STRING,            2000, null,   "Дополнительная информация"),
+        UUID_ORG                        (VocOrganization.class,           "Лицензиат"); 
         
         @Override
         public Col getCol () {return col;}
@@ -39,10 +41,10 @@ public class License extends Table {
 
         super ("tb_licences", "Лицензии");
         
-        cols   (c.class);
+        cols  (c.class);
         
         pk    (c.LICENSEGUID);
-        key    ("license_organization", c.LICENSE_ORGANIZATION);
+        key   ("uuid_org", c.UUID_ORG);
     
     }    
     

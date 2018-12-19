@@ -14,29 +14,24 @@ public class LicenseAccompanyingDocument extends EnTable {
     
     public enum Columns implements ColEnum {
 
-//        DOCUMENTGUID                    (Type.UUID,                  null,  "UUID документа в системе"),
-//        REGDATE                         (DATE,                              "Дата включения в реестр"),
-        LICENSE                         (License.class,              null,  "Лицензия"),
+        UUID_LICENSE              (License.class,                 "Лицензия"),
         
         //Document(Реквизиты размещаемого документа)
-        DOCTYPE                         (STRING,    20,                     "Тип документа (НСИ 75)"),
-        REG_DATE                        (DATE,                              "Дата включения в реестр"),
-        DECISIONORG                     (VocOrganization.class,     null,   "Наименование организации, принявшей решение"),
-        //todo - 2000?
-        NAME                            (STRING,    2000,                   "Наименование документа"),
-        NUMBER                          (STRING,    2000,                   "Номер документа"),
-        DOCUMENT_STATUS                 (VocDocumentStatus.class,     null,   "Статус документа"),
+        DOC_TYPE                  (STRING,                  20,   "Тип документа (НСИ 75)"),
+        REG_DATE                  (DATE,                    null, "Дата включения в реестр"),
+        UUID_ORG_DECISION         (VocOrganization.class,   null, "Наименование организации, принявшей решение"),
+        NAME                      (STRING,                        "Наименование документа"),
+        NUM                       (STRING,                  null, "Номер документа"),
+        ID_STATUS                 (VocDocumentStatus.class,       "Статус документа"),
 
         //BaseDocument(Реквизиты документа, являющегося основанием для размещения информации)
-        BASE_DOCTYPE                    (STRING,    20,                     "Тип документа (НСИ 75)"),
-        BASE_DECISIONORG                (VocOrganization.class,     null,   "Наименование организации, принявшей решение"),
-        //todo - 2000?
-        BASE_DOC_NAME                   (STRING,    2000,                   "Наименование документа"),
-        BASE_DOC_NUMBER                 (STRING,    2000,                   "Номер документа"),
-        BASE_DOC_DATE                   (DATE,                              "Дата документа"),
-        DATE_FROM                       (DATE,                              "Дата вступления документа в силу"),
-        ADDITIONAL_INFO                 (STRING,    2000,                   "Дополнительная информация"),
-        ;
+        BASE_DOC_TYPE             (STRING, 20,   null, "Тип документа (НСИ 75)"),
+        BASE_DOC_DECISIONORG      (STRING,       null, "Наименование организации, принявшей решение"),
+        BASE_DOC_NAME             (STRING,       null, "Наименование документа"),
+        BASE_DOC_NUMBER           (STRING,       null, "Номер документа"),
+        BASE_DOC_DATE             (DATE,         null, "Дата документа"),
+        BASE_DOC_DATE_FROM        (DATE,         null, "Дата вступления документа в силу"),
+        BASE_DOC_ADDITIONAL_INFO  (STRING, 2000, null, "Дополнительная информация");
 
 
         @Override
@@ -51,8 +46,5 @@ public class LicenseAccompanyingDocument extends EnTable {
         super ("tb_lic_accompanying_document", "Документы лицензионного дела");
         
         cols   (Columns.class);
-        
-//        key    ("documentguid", AccompanyingDocument.Columns.DOCUMENTGUID);
-        
     }
 }
