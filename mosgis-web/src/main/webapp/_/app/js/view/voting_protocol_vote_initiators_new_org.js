@@ -40,18 +40,14 @@ define ([], function () {
                                         if (e.xhr.status != 200) return $_DO.apologize ({jqXHR: e.xhr})
 
                                         var content = JSON.parse (e.xhr.responseText).content
-                                        var data = { status : "success" }
+                                        var data = { status : "success", total : content.cnt }
 
                                         delete content.cnt
                                         delete content.portion
                                         delete content.total
 
                                         for (key in content) {
-                                            var key_content = []
-                                            content [key].forEach ((element, i, array) => {
-                                                key_content.push ({'id': element['id'], 'text': element['text']})
-                                            })
-                                            data.records = key_content
+                                            data.records = dia2w2uiRecords (content [key])
                                             e.xhr.responseText = JSON.stringify (data)
                                             e.xhr.responseJSON = data
                                             e.data = e.xhr.responseJSON
