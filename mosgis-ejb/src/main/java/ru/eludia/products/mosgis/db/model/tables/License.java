@@ -56,12 +56,12 @@ public class License extends Table {
     
     public License () {
 
-            super ("tb_licences", "Лицензии");
+        super ("tb_licences", "Лицензии");
 
-            cols  (c.class);
+        cols  (c.class);
 
-            pk    (c.LICENSEGUID);
-            key   ("uuid_org", c.UUID_ORG);
+        pk    (c.LICENSEGUID);
+        key   ("uuid_org", c.UUID_ORG);
 
     }  
     
