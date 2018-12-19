@@ -53,7 +53,9 @@ public class PublicPropertyContractLog extends GisWsLogTable {
     }
 
     private static ImportContractRequest.Contract.AnnulmentContract toAnnulmentContract (Map<String, Object> r) {
-        return DB.to.javaBean (ImportContractRequest.Contract.AnnulmentContract.class, r);
+        final ImportContractRequest.Contract.AnnulmentContract a = DB.to.javaBean (ImportContractRequest.Contract.AnnulmentContract.class, r);
+        a.setContractVersionGUID (null);
+        return a;
     }
     
     private static DaySelectionType toDaySelectionType (Map<String, Object> r, String k) {

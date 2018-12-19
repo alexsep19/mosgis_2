@@ -9,7 +9,7 @@ define ([], function () {
             width  : 580,
             height : 240,
 
-            title   : 'Аннулирование устава',
+            title   : 'Аннулирование ДПОИ',
 
             onOpen: function (event) {
 

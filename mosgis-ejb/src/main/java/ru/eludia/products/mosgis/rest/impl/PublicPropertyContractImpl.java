@@ -133,6 +133,7 @@ public class PublicPropertyContractImpl extends BaseCRUD<PublicPropertyContract>
             case ANNUL:
             case PENDING_RQ_ANNULMENT:
             case PENDING_RP_ANNULMENT:
+            case FAILED_ANNULMENT:
             
                 JsonObject lastAnnul = db.getJsonObject (m
                     .select  (CharterLog.class, "AS root", "*")
