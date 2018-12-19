@@ -12,5 +12,11 @@
                 printMethod="ru.eludia.products.mosgis.util.XmlUtils.printRubKop"
             />
         </jxb:bindings>        
+        <jxb:bindings node="//xsd:simpleType[@name='SmallMoneyType']">
+            <jxb:javaType name="java.math.BigDecimal"
+                parseMethod="javax.xml.bind.DatatypeConverter.parseDecimal"
+                printMethod="ru.eludia.products.mosgis.util.XmlUtils.printRubKop"
+            />
+        </jxb:bindings>        
     </jxb:bindings>        
 </jxb:bindings>
