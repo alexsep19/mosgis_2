@@ -12,9 +12,11 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 
 public class LicenseAccompanyingDocument extends EnTable {
     
-    public enum Columns implements ColEnum {
+    public enum c implements ColEnum {
 
         UUID_LICENSE              (License.class,                 "Лицензия"),
+        DATE_FROM                 (DATE,                    null, "Дата вступления документа в силу"),
+        ID_STATUS                 (VocDocumentStatus.class,       "Статус документа"),
         
         //Document(Реквизиты размещаемого документа)
         DOC_TYPE                  (STRING,                  20,   "Тип документа (НСИ 75)"),
@@ -22,7 +24,7 @@ public class LicenseAccompanyingDocument extends EnTable {
         UUID_ORG_DECISION         (VocOrganization.class,   null, "Наименование организации, принявшей решение"),
         NAME                      (STRING,                        "Наименование документа"),
         NUM                       (STRING,                  null, "Номер документа"),
-        ID_STATUS                 (VocDocumentStatus.class,       "Статус документа"),
+        ID_DOC_STATUS             (VocDocumentStatus.class,       "Статус размещаемого документа"),
 
         //BaseDocument(Реквизиты документа, являющегося основанием для размещения информации)
         BASE_DOC_TYPE             (STRING, 20,   null, "Тип документа (НСИ 75)"),
@@ -37,14 +39,14 @@ public class LicenseAccompanyingDocument extends EnTable {
         @Override
         public Col getCol () {return col;}
         private Col col;        
-        private Columns (Type type, Object... p) {col = new Col (this, type, p);}
-        private Columns (Class c,   Object... p) {col = new Ref (this, c, p);} 
+        private c (Type type, Object... p) {col = new Col (this, type, p);}
+        private c (Class c,   Object... p) {col = new Ref (this, c, p);} 
         
     }
         
     public LicenseAccompanyingDocument () {
         super ("tb_lic_accompanying_document", "Документы лицензионного дела");
         
-        cols   (Columns.class);
+        cols   (c.class);
     }
 }

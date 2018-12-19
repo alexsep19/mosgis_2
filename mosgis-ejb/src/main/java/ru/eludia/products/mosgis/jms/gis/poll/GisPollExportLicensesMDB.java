@@ -1,6 +1,8 @@
 package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -12,20 +14,22 @@ import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.tables.License;
+import ru.eludia.products.mosgis.db.model.tables.LicenseAccompanyingDocument;
 import ru.eludia.products.mosgis.db.model.tables.LicenseHouse;
 import ru.eludia.products.mosgis.db.model.tables.LicenseLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
+import ru.eludia.products.mosgis.db.model.voc.VocDocumentStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocLicenseStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
-import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisLicenseClient;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.eludia.products.mosgis.util.StringUtils;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
+import ru.gosuslugi.dom.schema.integration.licenses.AccompanyingDocumentType;
 import ru.gosuslugi.dom.schema.integration.licenses.ExportLicenseResultType;
 import ru.gosuslugi.dom.schema.integration.licenses.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.licenses.LicenseOrganizationType;
@@ -65,15 +69,18 @@ public class GisPollExportLicensesMDB  extends GisPollMDB {
                     throw new GisPollException(errorMessage);
                 }
             }
+            db.begin ();
+            
+                for (ExportLicenseResultType license : result.getLicense()) {
+                    saveLicense(db, uuid, license);
+                }
 
-            for (ExportLicenseResultType license : result.getLicense()) {
-                saveLicense(db, uuid, license);
-            }
-
-            db.update (OutSoap.class, HASH (
-                "uuid", uuid,
-                "id_status", DONE.getId ()
-            ));
+                db.update (OutSoap.class, HASH (
+                    "uuid", uuid,
+                    "id_status", DONE.getId ()
+                ));
+            
+            db.begin ();
 
         } catch (GisPollRetryException ex) {
         } catch (GisPollException ex) {            
@@ -152,8 +159,40 @@ public class GisPollExportLicensesMDB  extends GisPollMDB {
                 }).collect(Collectors.toList()),
                 "fiashouseguid"
         );
-
-//license.getAccompanyingDocument();
+        
+        db.delete(db.getModel()
+                .select(LicenseAccompanyingDocument.class, "*")
+                .where(LicenseAccompanyingDocument.c.UUID_LICENSE.name(), uuid)
+        );
+        
+        List<Map<String, Object>> documents = new ArrayList<>();
+        
+        for (LicenseType.AccompanyingDocument d : license.getAccompanyingDocument()) {
+            AccompanyingDocumentType.BaseDocument baseDocument = d.getBaseDocument();
+            AccompanyingDocumentType.Document document = d.getDocument();
+            Map<String, Object> r = HASH(
+                    LicenseAccompanyingDocument.c.UUID_LICENSE,             uuid,
+                    LicenseAccompanyingDocument.c.BASE_DOC_ADDITIONAL_INFO, baseDocument.getAdditionalInfo(),
+                    LicenseAccompanyingDocument.c.BASE_DOC_DATE,            baseDocument.getBaseDocDate(),
+                    LicenseAccompanyingDocument.c.BASE_DOC_DECISIONORG,     baseDocument.getBaseDocDecisionOrg(),
+                    LicenseAccompanyingDocument.c.BASE_DOC_NAME,            baseDocument.getBaseDocName(),
+                    LicenseAccompanyingDocument.c.BASE_DOC_NUMBER,          baseDocument.getBaseDocNumber(),
+                    LicenseAccompanyingDocument.c.BASE_DOC_DATE_FROM,       baseDocument.getDateFrom(),
+                    LicenseAccompanyingDocument.c.DOC_TYPE,                 document.getDocType().getCode(),
+                    LicenseAccompanyingDocument.c.ID_DOC_STATUS,            VocDocumentStatus.i.forName(document.getDocumentStatus()).getId(),
+                    LicenseAccompanyingDocument.c.NAME,                     document.getName(),
+                    LicenseAccompanyingDocument.c.NUM,                      document.getNumber(),
+                    LicenseAccompanyingDocument.c.REG_DATE,                 document.getRegDate(),
+                    LicenseAccompanyingDocument.c.DATE_FROM,                d.getDateFrom(),
+                    LicenseAccompanyingDocument.c.ID_STATUS,                VocDocumentStatus.i.forName(d.getDocumentStatus()).getId(),
+                    LicenseAccompanyingDocument.c.UUID_ORG_DECISION,        getOrgId(db, document.getDecisionOrg().getOGRN(), document.getDecisionOrg().getKPP())
+            );
+            if (baseDocument.getBaseDocType() != null) {
+                r.put(LicenseAccompanyingDocument.c.BASE_DOC_TYPE.name(), baseDocument.getBaseDocType().getCode());
+            }
+        }
+        
+        db.insert(LicenseAccompanyingDocument.class, documents);
     }
     
     private String getOrgId(DB db, String ogrn, String kpp) throws SQLException {

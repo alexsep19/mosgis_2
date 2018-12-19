@@ -1,6 +1,5 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
-import java.util.UUID;
 import ru.eludia.products.mosgis.db.model.LogTable;
 
 public class LicenseLog extends LogTable {
@@ -9,7 +8,7 @@ public class LicenseLog extends LogTable {
 
     public LicenseLog () {
 
-        super  ("tb_licences__log","Лицензии: история", License.class,
+        super  ("tb_licenses__log","Лицензии: история", License.class,
                 License.c.class
         );
 

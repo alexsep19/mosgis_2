@@ -9,15 +9,15 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import static ru.eludia.base.model.Type.DATE;
 import static ru.eludia.base.model.Type.STRING;
 import static ru.eludia.base.model.Type.INTEGER;
+import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 
 public class License extends Table {
 
     public enum c implements EnColEnum {
         
-        LICENSEGUID                     (Type.UUID,               null,   "UUID лицензии в системе"),
+        LICENSEGUID                     (Type.UUID,                       "UUID лицензии в системе"),
         LICENSE_VERSION                 (INTEGER,                 null,   "Версия лицензии" ),
-        ID_LOG                          (LicenseLog.class,        null,   "Последнее событие редактирования"), 
         LICENSE_NUMBER                  (STRING,            9,            "Номер лицензии"),
         LICENSE_REG_DATE                (DATE,                            "Дата регистрации лицензии"),   
         ID_STATUS                       (VocLicenseStatus.class,  null,   "Статус лицензии с точки зрения mosgis"),
@@ -25,7 +25,9 @@ public class License extends Table {
         REGION_FIAS_GUID                (Type.UUID,               null,   "Адрес осуществления лицензируемого вида деятельности (код по ФИАС)"),
         LICENSEABLE_TYPE_OF_ACTIVITY    (STRING,            2000,         "Лицензируемый вид деятельности с указанием выполняемых работ, оказываемых услуг, составляющих лицензируемый вид деятельности"),
         ADDITIONAL_INFORMATION          (STRING,            2000, null,   "Дополнительная информация"),
-        UUID_ORG                        (VocOrganization.class,           "Лицензиат"); 
+        UUID_ORG                        (VocOrganization.class,           "Лицензиат"), 
+        
+        UUID                            (Type.UUID,  new Virt ("HEXTORAW(''||RAWTOHEX(\"LICENSEGUID\"))"),  "uuid");
         
         @Override
         public Col getCol() {
@@ -45,7 +47,7 @@ public class License extends Table {
         public boolean isLoggable() {
             switch (this) {
                 case LICENSEGUID:
-                case REGION_FIAS_GUID:
+                case UUID:
                     return false;
                 default:
                     return true;
@@ -54,15 +56,15 @@ public class License extends Table {
     
     }
     
-    public License () {
+    public License() {
 
-        super ("tb_licences", "Лицензии");
+        super("tb_licenses", "Лицензии");
 
-        cols  (c.class);
+        cols(c.class);
 
-        pk    (c.LICENSEGUID);
-        key   ("uuid_org", c.UUID_ORG);
+        pk(c.LICENSEGUID);
+        key("uuid_org", c.UUID_ORG);
 
-    }  
+    }
     
 }
