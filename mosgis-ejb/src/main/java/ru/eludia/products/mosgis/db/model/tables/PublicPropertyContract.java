@@ -45,6 +45,8 @@ public class PublicPropertyContract extends EnTable {
         
         ISGRATUITOUSBASIS    (Type.BOOLEAN,        Bool.TRUE, "1, если договор заключен на безвозмездной основе; иначе 0"),
         
+        REASONOFANNULMENT    (Type.STRING,  1000,  null,       "Причина аннулирования"),
+        
         CONTRACTVERSIONGUID  (Type.UUID, null, "Идентификатор версии ДОГПОИ в ГИС ЖКХ")
 
         ;
