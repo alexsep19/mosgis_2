@@ -23,7 +23,6 @@ import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.ActualPublicPropertyContract;
-import ru.eludia.products.mosgis.db.model.tables.CharterLog;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContract;
 import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContractLog;
@@ -136,7 +135,7 @@ public class PublicPropertyContractImpl extends BaseCRUD<PublicPropertyContract>
             case FAILED_ANNULMENT:
             
                 JsonObject lastAnnul = db.getJsonObject (m
-                    .select  (CharterLog.class, "AS root", "*")
+                    .select  (PublicPropertyContractLog.class, "AS root", "*")
                     .and    ("uuid_object", id)
                     .and    ("action",      VocAction.i.ANNUL.getName ())
                     .orderBy ("root.ts DESC")
