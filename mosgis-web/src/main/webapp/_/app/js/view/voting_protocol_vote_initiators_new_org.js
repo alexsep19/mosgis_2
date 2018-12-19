@@ -34,6 +34,30 @@ define ([], function () {
                                     url: '/mosgis/_rest/?type=voc_organizations&part=list',
                                     postData: {'ids_off': ids},
                                     cachMax: 10,
+
+                                    onLoad: function (e) {
+
+                                        if (e.xhr.status != 200) return $_DO.apologize ({jqXHR: e.xhr})
+
+                                        var content = JSON.parse (e.xhr.responseText).content
+                                        var data = { status : "success" }
+
+                                        delete content.cnt
+                                        delete content.portion
+                                        delete content.total
+
+                                        for (key in content) {
+                                            var key_content = []
+                                            content [key].forEach ((element, i, array) => {
+                                                key_content.push ({'id': element['id'], 'text': element['text']})
+                                            })
+                                            data.records = key_content
+                                            e.xhr.responseText = JSON.stringify (data)
+                                            e.xhr.responseJSON = data
+                                            e.data = e.xhr.responseJSON
+                                        }
+                                        
+                                    }
                                 }
                             },
                         ],

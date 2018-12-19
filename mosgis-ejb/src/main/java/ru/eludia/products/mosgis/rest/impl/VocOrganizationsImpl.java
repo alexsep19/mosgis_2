@@ -176,7 +176,7 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
         Object[] ids = p.getJsonArray("ids_off").toArray ();
         Search search = Search.from (p);
         
-        Select select = ModelHolder.getModel ().select (VocOrganization.class, "*", "uuid AS id", "label AS text")
+        Select select = ModelHolder.getModel ().select (VocOrganization.class, "AS root", "uuid AS id", "label AS text")
                 .where ("uuid NOT IN", ids)
                 .orderBy ("label")
                 .limit (0, limit);
