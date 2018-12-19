@@ -137,6 +137,7 @@ public class PublicPropertyContractLogTest extends BaseTest {
     public void testAnnul () throws SQLException {        
 
         checkSample (HASH (
+            PublicPropertyContract.c.CONTRACTVERSIONGUID, uuid,
             PublicPropertyContract.c.REASONOFANNULMENT, Def.NOW
         ));
         
