@@ -55,9 +55,11 @@ define ([], function () {
                 
         if (v.isgratuitousbasis == -1) {
             if (!v.other) die ('other', 'Укажите, пожалуйста, режим оплаты')
+            v.is_other = 1
         }
         else {
             v.other = ''
+            v.is_other = 0
         }
                 
         if (v.isgratuitousbasis == 0) {
