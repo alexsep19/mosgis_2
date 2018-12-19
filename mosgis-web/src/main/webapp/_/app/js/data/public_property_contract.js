@@ -33,15 +33,6 @@ define ([], function () {
                 var it = data.item
                 
                 it.last_approve = data.last_approve
-                
-/*                
-                var term = d.last_termination
-                if (term) {
-                    term.reason = data.vc_nsi_54 [term.code_vc_nsi_54]
-                    term.file = d.termination_file
-                    it.last_termination = term
-                }                
-*/                
 
                 it._can = {}
                 
@@ -50,59 +41,26 @@ define ([], function () {
                 if (!is_locked) {
 
                     switch (it.id_ctr_status) {
-
                         case 10:
-                            it._can.delete  = 1
+                        case 14:
+                            it._can.delete = 1
+                    }
+                    
+                    switch (it.id_ctr_status) {
+                        case 10:
                         case 11:
-                            it._can.edit    = 1
+                            it._can.edit = 1
                             it._can.approve = 1
-                            break;
-/*                            
-                        case 40:
-                            it._can.terminate = 1
+                    }
+                    
+                    it._can.update = it._can.edit
+
+                    switch (it.id_ctr_status) {
                         case 14:
                         case 34:
-                        case 90:
-                            it._can.alter   = 1
-                            break;
-*/
-                    }
-/*
-                    switch (it.id_ctr_status) {
                         case 40:
-                        case 94:
-                        case 100:
-                            it._can.annul   = 1
-                            break;
+                            it._can.alter = 1
                     }
-
-                    if (it.id_ctr_state_gis == 50) {
-                    
-                        switch (it.id_ctr_status) {
-                            case 40:
-                                it._can.rollover = 1
-                                break;
-                        }
-                        
-                    }
-                    
-                    switch (it.id_ctr_status) {
-                        case 10: // Project
-                        case 14: // _failed_placing
-                            break;
-                        default:
-                            switch ((0 + it.id_ctr_status) % 10) {
-                                case 2: // _pending_rq_...
-                                case 3: // _pending_rp_...
-                                    break;
-                                default:
-                                    it._can.refresh = 1
-                                    it._can.reload = 1
-                            }
-                    }
-*/                    
-
-                    it._can.update = it._can.cancel = it._can.edit
 
                 }
 

@@ -55,7 +55,7 @@ public class VotingProtocol extends EnTable {
 
         ID_LOG               (VotingProtocolLog.class,    null,         "Последнее событие редактирования"),
         
-        VOTINGPROTOCOLGUID   (Type.UUID, null,                 "Дата составления протокола")
+        VOTINGPROTOCOLGUID   (Type.UUID, null,                 "UUID протокола в ГИС ЖКХ")
 
         ;
 
@@ -131,6 +131,8 @@ public class VotingProtocol extends EnTable {
                 + " THEN "
                     + " :NEW.ID_PRTCL_STATUS := " + VocGisStatus.i.MUTATING.getId ()
                 + "; END IF; "
+                        
+                + " IF :NEW.ID_PRTCL_STATUS = " + VocGisStatus.i.MUTATING.getId () + " AND :NEW.MODIFICATION IS NULL THEN raise_application_error (-20000, '#modification#: Не указано основание изменения. Операция отменена.'); END IF; "
 
                 + "IF :NEW.is_deleted=0 AND :NEW.ID_PRTCL_STATUS <> :OLD.ID_PRTCL_STATUS AND :NEW.ID_PRTCL_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING.getId () + " THEN BEGIN "
 

@@ -1,9 +1,15 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Logger;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.jms.Queue;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -21,6 +27,8 @@ import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContract;
 import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContractLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContractFile;
+import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContractFileLog;
 import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContractVotingProtocol;
 import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContractVotingProtocolLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -41,7 +49,7 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class PublicPropertyContractImpl extends BaseCRUD<PublicPropertyContract> implements PublicPropertyContractLocal {
-/*
+
     @Resource (mappedName = "mosgis.inHousePublicPropertyContractsQueue")
     Queue queue;
 
@@ -49,7 +57,7 @@ public class PublicPropertyContractImpl extends BaseCRUD<PublicPropertyContract>
     public Queue getQueue () {
         return queue;
     }
-*/
+
     private static final Logger logger = Logger.getLogger (PublicPropertyContractImpl.class.getName ());    
        
     private void filterOffDeleted (Select select) {
@@ -120,7 +128,7 @@ public class PublicPropertyContractImpl extends BaseCRUD<PublicPropertyContract>
 
         job.add ("item", item);        
 
-        VocGisStatus.addTo (job);
+        VocGisStatus.addLiteTo (job);
         VocAction.addTo (job);
         VocVotingForm.addTo (job);
         VocVotingType.addTo (job);
@@ -152,7 +160,7 @@ public class PublicPropertyContractImpl extends BaseCRUD<PublicPropertyContract>
         
         JsonObjectBuilder job = Json.createObjectBuilder ();
         
-        VocGisStatus.addTo (job);
+        VocGisStatus.addLiteTo (job);
         
         return job.build ();
         
@@ -180,6 +188,53 @@ public class PublicPropertyContractImpl extends BaseCRUD<PublicPropertyContract>
             ));
             
         }        
+        
+    });}
+
+    @Override
+    public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
+
+        db.update (getTable (), HASH (
+            EnTable.c.UUID,                   id,
+            PublicPropertyContract.c.ID_CTR_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+        ));
+
+        logAction (db, user, id, VocAction.i.APPROVE);
+
+        List<UUID> ids = new ArrayList<> ();        
+        db.forEach (db.getModel ().select (PublicPropertyContractFile.class, "uuid").where (PublicPropertyContractFile.c.UUID_CTR.lc (), id).and (EnTable.c.IS_DELETED.lc (), 0), (rs) -> {
+            final Object u = db.getValue (rs, 1);
+            if (u != null) ids.add ((UUID) u);
+        });
+
+        for (UUID idFile: ids) {
+
+            String idFileLog = db.insertId (PublicPropertyContractFileLog.class, HASH (
+                "action", VocAction.i.APPROVE.getName (),
+                "uuid_object", idFile,
+                "uuid_user", user == null ? null : user.getId ()
+            )).toString ();
+
+            db.update (PublicPropertyContractFile.class, HASH (
+                "uuid",      idFile,
+                "id_log",    idFileLog
+            ));
+
+        }
+
+    });}
+
+    @Override
+    public JsonObject doAlter (String id, JsonObject p, User user) {return doAction ((db) -> {
+                
+        final Map<String, Object> r = HASH (
+            EnTable.c.UUID,                    id,
+            PublicPropertyContract.c.ID_CTR_STATUS,  VocGisStatus.i.PROJECT.getId ()
+        );
+                
+        db.update (getTable (), r);
+        
+        logAction (db, user, id, VocAction.i.ALTER);
         
     });}
 

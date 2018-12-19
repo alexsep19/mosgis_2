@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.UUID;
 import javax.xml.bind.JAXBContext;
 import org.junit.Test;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.model.Table;
@@ -57,26 +59,14 @@ public class VotingProtocolLogTest extends BaseTest {
     }
     
     @Test (expected = Test.None.class)
-    public void testAVoting () {
-        testType (VocVotingForm.i.AVOTING);
+    public void testAll () {        
+        for (VocVotingForm.i type: VocVotingForm.i.values ()) {            
+            testType (type, false);
+            testType (type, true);
+        }        
     }
 
-    @Test (expected = Test.None.class)
-    public void testEVoting () {
-        testType (VocVotingForm.i.EVOTING);
-    }
-    
-    @Test (expected = Test.None.class)
-    public void testMeeting () {
-        testType (VocVotingForm.i.MEETING);
-    }
-
-    @Test (expected = Test.None.class)
-    public void testMeetAV () {
-        testType (VocVotingForm.i.MEET_AV);
-    }
-
-    private void testType (VocVotingForm.i form) {
+    private void testType (VocVotingForm.i form, boolean isPlaced) {
         
         Map<String, Object> specificPart = DB.HASH (VotingProtocol.c.FORM_, form.getName ());
         
@@ -86,17 +76,33 @@ public class VotingProtocolLogTest extends BaseTest {
             specificPart.put (i.lc (), votingForm == form ? Def.NOW : null);
         }
         
+        if (isPlaced) {
+            specificPart.put (VotingProtocol.c.MODIFICATION.lc (), "modmodmod");
+            specificPart.put (VotingProtocol.c.VOTINGPROTOCOLGUID.lc (), UUID.randomUUID ());
+        }
+        else {
+            specificPart.put (VotingProtocol.c.MODIFICATION.lc (), null);
+            specificPart.put (VotingProtocol.c.VOTINGPROTOCOLGUID.lc (), null);
+        }
+        
         Table.Sampler sampler = table.new Sampler (commonPart, specificPart);        
         
         Map<String, Object> sample = sampler.nextHASH ();        
         
-        for (int k = 0; k < sampler.getCount (); k ++) check (sampler.cutOut (sample, k));
+        for (int k = 0; k < sampler.getCount (); k ++) check (sampler.cutOut (sample, k), isPlaced);
         
     }
 
-    private void check (final Map<String, Object> r) throws IllegalStateException {
+    private void check (final Map<String, Object> r, boolean isPlaced) throws IllegalStateException {
         dump (r);
-        validate (VotingProtocolLog.toImportVotingProtocolPlacingRequest (r));
-    }    
+        final ImportVotingProtocolRequest rq = VotingProtocolLog.toImportVotingProtocolPlacingRequest (r);
+        validate (rq);
+        if (isPlaced) {
+            assertNotNull ("ProtocolGUID must not be null", rq.getProtocolGUID ());
+        }
+        else {
+            assertNull ("ProtocolGUID must be null", rq.getProtocolGUID ());
+        }
+    }
     
 }

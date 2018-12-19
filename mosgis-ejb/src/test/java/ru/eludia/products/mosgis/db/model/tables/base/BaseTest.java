@@ -18,10 +18,12 @@ import org.junit.AfterClass;
 import org.junit.ClassRule;
 import org.junit.rules.TestRule;
 import ru.eludia.base.DB;
-import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.DataSourceImpl;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.TestRuleImpl;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocPerson;
+import ru.eludia.products.mosgis.ejb.ModelHolder;
 
 public class BaseTest {
     
@@ -29,6 +31,7 @@ public class BaseTest {
     protected JAXBContext jc;
     protected Schema schema;
     protected MosGisModel model;
+    protected ModelHolder modelHolder;   
     
     static {
         Map<String, Boolean> config = new HashMap<> ();
@@ -48,7 +51,11 @@ public class BaseTest {
     }    
     
     public BaseTest () throws SQLException, IOException {
-        model = new MosGisModel (new DataSourceImpl (getCn ()));
+        modelHolder = new ModelHolder (new DataSourceImpl (getCn ()));
+        model = modelHolder.getModel ();
+        try (DB db = model.getDb ()) {
+            db.adjustModel ();
+        }
     }
     
     protected void dump (final Map<String, Object> r) {
@@ -81,5 +88,21 @@ public class BaseTest {
         }
         
     }    
+    
+    protected String getSomeUuid (Class c) throws SQLException {
+        try (DB db = model.getDb ()) {
+            return db.getString (model.select (c, "uuid").where ("is_deleted", 0));
+        }
+    }
+    
+    protected String getOrgUuid () throws SQLException {
+        return getSomeUuid (VocOrganization.class);
+    }
+    
+    protected String getPersonUuid () throws SQLException {
+        try (DB db = model.getDb ()) {
+            return db.getString (model.select (VocPerson.class, "uuid").where ("is_deleted", 0).and ("code_vc_nsi_95 IS NOT NULL"));
+        }
+    }
     
 }

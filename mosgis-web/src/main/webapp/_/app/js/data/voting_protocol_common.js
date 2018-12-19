@@ -36,8 +36,19 @@ define ([], function () {
     }
     
     $_DO.alter_voting_protocol_common = function (e) {
-        if (!confirm ('Открыть эту карточку на редактирование?')) return
-        query ({type: 'voting_protocols', action: 'alter'}, {}, reload_page)
+
+        if ($('body').data ('data').item.id_prtcl_status == 40) {
+        
+            use.block ('voting_protocol_alter_popup')
+
+        }
+        else {
+        
+            if (!confirm ('Открыть эту карточку на редактирование?')) return
+            query ({type: 'voting_protocols', action: 'alter'}, {data: {}}, reload_page)
+            
+        }
+        
     }
 
     $_DO.update_voting_protocol_common = function (e) {
@@ -131,8 +142,6 @@ define ([], function () {
         if ($_USER.role.admin) data.item.org_label = data.item ['vc_orgs.label']
 
         data.item.err_text = data.item ['out_soap.err_text']
-
-        console.log (data)
 
         done (data)
         

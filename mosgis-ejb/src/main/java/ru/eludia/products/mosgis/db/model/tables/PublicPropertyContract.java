@@ -1,19 +1,16 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
-import java.util.Map;
-import java.util.UUID;
-import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
-import ru.gosuslugi.dom.schema.integration.house_management.ImportPublicPropertyContractRequest;
 
 
 public class PublicPropertyContract extends EnTable {
@@ -44,9 +41,11 @@ public class PublicPropertyContract extends EnTable {
         DDT_END              (Type.NUMERIC, 2,     null,       "Окончание периода внесения платы по договору (1..31 — конкретное число; 99 — последнее число)"),
         DDT_END_NXT          (Type.BOOLEAN,        Bool.FALSE, "1, если окончание периода внесения платы по договору в следующем месяце; иначе 0"),
         IS_OTHER             (Type.BOOLEAN,        Bool.FALSE, "1, если период внесеняи платы — \"иной\"; иначе 0"),
-        OTHER                (Type.STRING,         null,       "Иное (период внесения платы)"),
+        OTHER                (Type.STRING,  500,   null,       "Иное (период внесения платы)"),
         
-        ISGRATUITOUSBASIS    (Type.BOOLEAN,        Bool.TRUE, "1, если договор заключен на безвозмездной основе; иначе 0")
+        ISGRATUITOUSBASIS    (Type.BOOLEAN,        Bool.TRUE, "1, если договор заключен на безвозмездной основе; иначе 0"),
+        
+        CONTRACTVERSIONGUID  (Type.UUID, null, "Идентификатор версии ДОГПОИ в ГИС ЖКХ")
 
         ;
 
@@ -79,22 +78,71 @@ public class PublicPropertyContract extends EnTable {
         cols   (c.class);
         
         key    ("uuid_org", c.UUID_ORG);
+        
+        trigger ("BEFORE UPDATE", 
+                
+            "DECLARE "
+            + " cnt NUMBER;"
+            + " uuid_init RAW(16);"
+            + "BEGIN "
+
+                + "IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS "
+                    + " AND :OLD.ID_CTR_STATUS <> " + VocGisStatus.i.FAILED_PLACING.getId ()
+                    + " AND :NEW.ID_CTR_STATUS =  " + VocGisStatus.i.PROJECT.getId ()
+                + " THEN "
+                    + " :NEW.ID_CTR_STATUS := " + VocGisStatus.i.MUTATING.getId ()
+                + "; END IF; "
+                        
+            + "END;"
+                
+        );
+        
 
     }
-    
-    public static ImportPublicPropertyContractRequest toImportPublicPropertyContractRequest (Map<String, Object> r) {
-        final ImportPublicPropertyContractRequest createImportPublicPropertyContractRequest = new ImportPublicPropertyContractRequest ();
-        final ImportPublicPropertyContractRequest.Contract contract = new ImportPublicPropertyContractRequest.Contract ();
-        final ImportPublicPropertyContractRequest.Contract.PublicPropertyContract publicPropertyContract = toContractPublicPropertyContract (r);
-        contract.setPublicPropertyContract (publicPropertyContract);
-        contract.setTransportGUID (UUID.randomUUID ().toString ());
-        createImportPublicPropertyContractRequest.getContract ().add (contract);
-        return createImportPublicPropertyContractRequest;
-    }
-    
-    private static ImportPublicPropertyContractRequest.Contract.PublicPropertyContract toContractPublicPropertyContract (Map<String, Object> r) {
-        ImportPublicPropertyContractRequest.Contract.PublicPropertyContract result = DB.to.javaBean (ImportPublicPropertyContractRequest.Contract.PublicPropertyContract.class, r);
-        return result;
-    }
-    
+    public enum Action {
+        
+        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
+        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT)
+        ;
+        
+        VocGisStatus.i nextStatus;
+        VocGisStatus.i okStatus;
+        VocGisStatus.i failStatus;
+
+        private Action (VocGisStatus.i nextStatus, VocGisStatus.i okStatus, VocGisStatus.i failStatus) {
+            this.nextStatus = nextStatus;
+            this.okStatus = okStatus;
+            this.failStatus = failStatus;
+        }
+
+        public VocGisStatus.i getNextStatus () {
+            return nextStatus;
+        }
+
+        public VocGisStatus.i getFailStatus () {
+            return failStatus;
+        }
+
+        public VocGisStatus.i getOkStatus () {
+            return okStatus;
+        }
+        
+        public static Action forStatus (VocGisStatus.i status) {
+            switch (status) {
+                case PENDING_RQ_PLACING:   return PLACING;
+                case PENDING_RQ_ANNULMENT: return ANNULMENT;
+                default: return null;
+            }            
+        }
+        
+        public static Action forLogAction (VocAction.i a) {
+            switch (a) {
+                case APPROVE: return PLACING;
+                case ANNUL:   return ANNULMENT;
+                default: return null;
+            }            
+        }
+                        
+    };
+        
 }
