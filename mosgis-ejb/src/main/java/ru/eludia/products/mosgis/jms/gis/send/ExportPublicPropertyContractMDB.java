@@ -51,6 +51,7 @@ public class ExportPublicPropertyContractMDB extends GisExportMDB<PublicProperty
             
         switch (action) {
             case PLACING:     return wsGisHouseManagementClient.importPublicPropertyContract (orgPPAGuid, messageGUID, r);
+            case ANNULMENT:   return wsGisHouseManagementClient.annulPublicPropertyContract  (orgPPAGuid, messageGUID, r);
             default: throw new IllegalArgumentException ("No action implemented for " + action);
         }
 
@@ -61,18 +62,21 @@ public class ExportPublicPropertyContractMDB extends GisExportMDB<PublicProperty
         
         VocGisStatus.i status = VocGisStatus.i.forId (r.get ("ctr." + PublicPropertyContract.c.ID_CTR_STATUS.lc ()));
         PublicPropertyContract.Action action = PublicPropertyContract.Action.forStatus (status);        
+
         if (action == null) {
             logger.warning ("No action is implemented for " + status);
             return;
         }
-
-        PublicPropertyContractLog.addFilesForExport (db, r);
-        List<Map<String, Object>> files = (List<Map<String, Object>>) r.get ("files");
-        if (isWaiting (files, db, action.getFailStatus (), r)) return;        
         
-        PublicPropertyContractLog.addRefsForExport (db, r);
+        if (action == PublicPropertyContract.Action.PLACING) {
+            
+            PublicPropertyContractLog.addFilesForExport (db, r);
+            List<Map<String, Object>> files = (List<Map<String, Object>>) r.get ("files");
+            if (isWaiting (files, db, action.getFailStatus (), r)) return;        
 
-        Model m = db.getModel ();                
+            PublicPropertyContractLog.addRefsForExport (db, r);
+            
+        }
                         
         logger.info ("r=" + DB.to.json (r));
        

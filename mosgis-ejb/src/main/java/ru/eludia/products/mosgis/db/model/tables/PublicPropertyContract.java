@@ -3,7 +3,6 @@ package ru.eludia.products.mosgis.db.model.tables;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
-import static ru.eludia.base.model.Type.BOOLEAN;
 import ru.eludia.base.model.def.Bool;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;

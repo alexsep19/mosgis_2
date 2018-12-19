@@ -698,5 +698,9 @@ public class WsGisHouseManagementClient {
     public AckRequest.Ack importPublicPropertyContract (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
         return getPort (orgPPAGuid, messageGUID).importPublicPropertyContract (PublicPropertyContractLog.toImportPublicPropertyContractRequest (r)).getAck ();
     }    
+    
+    public AckRequest.Ack annulPublicPropertyContract (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importPublicPropertyContract (PublicPropertyContractLog.toAnnulPublicPropertyContractRequest (r)).getAck ();
+    }    
 
 }
