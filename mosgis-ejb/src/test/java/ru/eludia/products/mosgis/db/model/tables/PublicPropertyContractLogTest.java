@@ -50,6 +50,7 @@ public class PublicPropertyContractLogTest extends BaseTest {
             PublicPropertyContract.c.DDT_START_NXT, 0,
             PublicPropertyContract.c.DDT_END, null,
             PublicPropertyContract.c.DDT_END_NXT, 0,
+            PublicPropertyContract.c.REASONOFANNULMENT, null,
             PublicPropertyContract.c.ID_LOG, null
         );
         
@@ -132,16 +133,31 @@ public class PublicPropertyContractLogTest extends BaseTest {
         ));
     }
     
+    @Test (expected = Test.None.class)
+    public void testAnnul () throws SQLException {        
+
+        checkSample (HASH (
+            PublicPropertyContract.c.REASONOFANNULMENT, Def.NOW
+        ));
+        
+    }    
+    
     private void checkSample (Map<String, Object> rr) throws SQLException {
         
         Map<String, Object> sample = table.new Sampler (commonPart, rr).nextHASH ();
-        
+        sample.remove (PublicPropertyContract.c.IS_ANNULED.lc ());
+
         try (DB db = model.getDb ()) {            
             String idLog = createData (db, sample);           
             Map<String, Object> r = db.getMap (logTable.getForExport (idLog));
             PublicPropertyContractLog.addFilesForExport (db, r);
             PublicPropertyContractLog.addRefsForExport (db, r);
-            check (r);            
+            if (DB.ok (r.get (PublicPropertyContract.c.IS_ANNULED.lc ()))) {
+                checkAnnul (r);
+            }
+            else {
+                checkImport (r);
+            }
         }
         
     }
@@ -213,9 +229,14 @@ public class PublicPropertyContractLogTest extends BaseTest {
         
     }
 
-    private void check (final Map<String, Object> r) throws IllegalStateException {
+    private void checkImport (final Map<String, Object> r) throws IllegalStateException {
         dump (r);
         validate (PublicPropertyContractLog.toImportPublicPropertyContractRequest (r));
+    }
+    
+    private void checkAnnul (final Map<String, Object> r) throws IllegalStateException {
+        dump (r);
+        validate (PublicPropertyContractLog.toAnnulPublicPropertyContractRequest (r));
     }
         
 }

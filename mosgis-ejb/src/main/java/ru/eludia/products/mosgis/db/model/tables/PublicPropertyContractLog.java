@@ -14,6 +14,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.voc.VocPublicPropertyContractFileType;
 import ru.gosuslugi.dom.schema.integration.house_management.DaySelectionType;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportPublicPropertyContractRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.PublicPropertyContractType;
 import ru.gosuslugi.dom.schema.integration.individual_registry_base.ID;
@@ -36,8 +37,23 @@ public class PublicPropertyContractLog extends GisWsLogTable {
         final ImportPublicPropertyContractRequest.Contract.PublicPropertyContract publicPropertyContract = toContractPublicPropertyContract (r);
         contract.setPublicPropertyContract (publicPropertyContract);
         contract.setTransportGUID (UUID.randomUUID ().toString ());
+        contract.setContractVersionGUID (r.get (PublicPropertyContract.c.CONTRACTVERSIONGUID.lc ()).toString ());
         createImportPublicPropertyContractRequest.getContract ().add (contract);
         return createImportPublicPropertyContractRequest;
+    }
+    
+    public static ImportPublicPropertyContractRequest toAnnulPublicPropertyContractRequest (Map<String, Object> r) {
+        final ImportPublicPropertyContractRequest createImportPublicPropertyContractRequest = new ImportPublicPropertyContractRequest ();
+        final ImportPublicPropertyContractRequest.Contract contract = new ImportPublicPropertyContractRequest.Contract ();
+        contract.setAnnulmentContract (toAnnulmentContract (r));
+        contract.setTransportGUID (UUID.randomUUID ().toString ());
+        contract.setContractVersionGUID (r.get (PublicPropertyContract.c.CONTRACTVERSIONGUID.lc ()).toString ());
+        createImportPublicPropertyContractRequest.getContract ().add (contract);
+        return createImportPublicPropertyContractRequest;
+    }
+
+    private static ImportContractRequest.Contract.AnnulmentContract toAnnulmentContract (Map<String, Object> r) {
+        return DB.to.javaBean (ImportContractRequest.Contract.AnnulmentContract.class, r);
     }
     
     private static DaySelectionType toDaySelectionType (Map<String, Object> r, String k) {

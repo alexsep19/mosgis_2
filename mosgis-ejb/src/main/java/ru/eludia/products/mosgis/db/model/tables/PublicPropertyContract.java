@@ -3,7 +3,9 @@ package ru.eludia.products.mosgis.db.model.tables;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
+import static ru.eludia.base.model.Type.BOOLEAN;
 import ru.eludia.base.model.def.Bool;
+import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -46,6 +48,7 @@ public class PublicPropertyContract extends EnTable {
         ISGRATUITOUSBASIS    (Type.BOOLEAN,        Bool.TRUE, "1, если договор заключен на безвозмездной основе; иначе 0"),
         
         REASONOFANNULMENT    (Type.STRING,  1000,  null,       "Причина аннулирования"),
+        IS_ANNULED           (Type.BOOLEAN,        new Virt ("DECODE(\"REASONOFANNULMENT\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0"),
         
         CONTRACTVERSIONGUID  (Type.UUID, null, "Идентификатор версии ДОГПОИ в ГИС ЖКХ")
 
