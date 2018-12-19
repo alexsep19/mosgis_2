@@ -15,16 +15,16 @@ public class License extends Table {
     public enum c implements ColEnum {
         
         LICENSEGUID                     (Type.UUID,                         null,   "UUID лицензии в системе"),
-        LICENSEVERSION                  (Type.INTEGER,                      null,   "Версия лицензии" ),
+        LICENSE_VERSION                 (Type.INTEGER,                      null,   "Версия лицензии" ),
         ID_LOG                          (LicenseLog.class,                  null,   "Последнее событие редактирования"), 
-        LICENSENUMBER                   (STRING,                    9,              "Номер лицензии"),
+        LICENSE_NUMBER                  (STRING,                    9,              "Номер лицензии"),
         LICENSE_REG_DATE                (DATE,                                      "Дата регистрации лицензии"),   
-        LICENSESTATUS                   (VocLicenseStatus.class,            null,        "Статус лицензии с точки зрения mosgis"),
-        LICENSINGAUTHORITY              (VocOrganization.class,                                                          "Наименование лицензирующего органа"),
+        LICENSE_STATUS                  (VocLicenseStatus.class,            null,   "Статус лицензии с точки зрения mosgis"),
+        LICENSING_AUTHORITY             (VocOrganization.class,                     "Наименование лицензирующего органа"),
         REGION_FIAS_GUID                (Type.UUID,                         null,   "Адрес осуществления лицензируемого вида деятельности (код по ФИАС)"),
         LICENSEABLE_TYPE_OF_ACTIVITY    (STRING,                    2000,           "Лицензируемый вид деятельности с указанием выполняемых работ, оказываемых услуг, составляющих лицензируемый вид деятельности"),
         ADDITIONAL_INFORMATION          (STRING,                    2000,    null,  "Дополнительная информация"),
-        LICENSEORGANIZATION             (VocOrganization.class,                     "Лицензиат"); 
+        LICENSE_ORGANIZATION            (VocOrganization.class,                    "Лицензиат"); 
         
         @Override
         public Col getCol () {return col;}
@@ -42,8 +42,7 @@ public class License extends Table {
         cols   (c.class);
         
         pk    (c.LICENSEGUID);
-        //todo - add _ to name
-        key    ("licenseorganization", c.LICENSEORGANIZATION);
+        key    ("license_organization", c.LICENSE_ORGANIZATION);
     
     }    
     

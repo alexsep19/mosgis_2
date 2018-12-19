@@ -18,53 +18,48 @@ public class LicenseLog extends Table {
         super ("tb_licenses__log",                                 "История изменения лицензий");
         
         pk    ("uuid",                      Type.UUID,             NEW_UUID,            "Ключ");
-        ref   ("action",                    VocAction.class,                            "Действие");
         
         fk    ("uuid_object",               License.class,                              "Ссылка на запись");
         col   ("ts",                        Type.TIMESTAMP,        NOW,                 "Дата/время события");
         fk    ("uuid_user",                 VocUser.class,                      null,   "Оператор");
         fk    ("uuid_out_soap",             OutSoap.class,                      null,   "Последний запрос на импорт в ГИС ЖКХ");
         
-        //todo
-        col   ("uuid_message",              Type.UUID,                          null,   "UUID запроса в ГИС ЖКХ");
-        col   ("elementguid_new",           Type.UUID,                          null,   "Идентификатор новой версии существующего (в ГИС) элемента справочника");        
-        col   ("is_deleted",                Type.BOOLEAN,                       null,   "1, если запись удалена; иначе 0");
-        
-        col ("licenseguid",                     Type.UUID,                  null, "UUID лицензии в системе");
-        col ("licenseversionguid",              Type.UUID,                  null, "Идентификатор последней известной версии лицензии" );
-        col ("licensenumber",                   STRING,                     9,    "Номер лицензии");
-        col ("license_reg_date",                DATE,                             "Дата регистрации лицензии");
-        fk ("licensestatus",                    VocLicenseStatus.class,     null, "Статус лицензии с точки зрения mosgis");
-        fk ("licensingauthority",               VocOrganization.class,      null, "Наименование лицензирующего органа");
-        col ("region_fias_guid",                Type.UUID,                  null, "Адрес осуществления лицензируемого вида деятельности (код по ФИАС)");
-        col ("licenseable_type_of_activity",    STRING,                     255,  "Лицензируемый вид деятельности с указанием выполняемых работ, оказываемых услуг, составляющих лицензируемый вид деятельности");
-        col ("additional_information",          STRING,                     255,  "Дополнительная информация");
-        fk  ("licenseorganization",              VocOrganization.class,  null, "Лицензиат"); 
+        col ("license_version",             Type.INTEGER,                       null, "Версия лицензии");
+        col ("license_number",              STRING,                9,                 "Номер лицензии");
+        col ("license_reg_date",            DATE,                                     "Дата регистрации лицензии");
+        fk  ("license_status",              VocLicenseStatus.class,             null, "Статус лицензии с точки зрения mosgis");
+        fk  ("licensing_authority",         VocOrganization.class,              null, "Наименование лицензирующего органа");
+        col ("region_fias_guid",            Type.UUID,             null,              "Адрес осуществления лицензируемого вида деятельности (код по ФИАС)");
+        col ("licenseable_type_of_activity",STRING,                             2000, "Лицензируемый вид деятельности с указанием выполняемых работ, оказываемых услуг, составляющих лицензируемый вид деятельности");
+        col ("additional_information",      STRING,                             2000, "Дополнительная информация");
+        fk  ("license_organization",        VocOrganization.class,              null, "Лицензиат"); 
+
+//        col   ("uuid_message",              Type.UUID,                          null,   "UUID запроса в ГИС ЖКХ");
+//        col   ("elementguid_new",           Type.UUID,                          null,   "Идентификатор новой версии существующего (в ГИС) элемента справочника");        
+//        col   ("is_deleted",                Type.BOOLEAN,                       null,   "1, если запись удалена; иначе 0");
 
        trigger ("BEFORE INSERT", "BEGIN "
                
            + "SELECT"
            + "       license_reg_date,              "
-           + "       licenseorganization,           "
-           + "       licensenumber,                 "
+           + "       license_organization,           "
+           + "       license_number,                 "
            + "       licenseable_type_of_activity,  "
-           + "       licenseversionguid,            "
-           + "       licenseguid,                          "
+           + "       license_version,            "
            + "       additional_information,        "
-           + "       licensestatus,                 "
+           + "       license_status,                 "
            + "       region_fias_guid,              "
-           + "       licensingauthority             "
+           + "       licensing_authority             "
            + "INTO "                
            + "       :NEW.license_reg_date,              "
-           + "       :NEW.licenseorganization,           "
-           + "       :NEW.licensenumber,                 "
+           + "       :NEW.license_organization,           "
+           + "       :NEW.license_number,                 "
            + "       :NEW.licenseable_type_of_activity,  "
-           + "       :NEW.licenseversionguid,            "
-           + "       :NEW.licenseguid,                   "
+           + "       :NEW.license_version,            "
            + "       :NEW.additional_information,        "
-           + "       :NEW.licensestatus,                 "
+           + "       :NEW.license_status,                 "
            + "       :NEW.region_fias_guid,              "                   
-           + "       :NEW.licensingauthority             "
+           + "       :NEW.licensing_authority             "
            + " FROM "
            + "  tb_licences                   "
            + " WHERE uuid=:NEW.uuid_object; "
