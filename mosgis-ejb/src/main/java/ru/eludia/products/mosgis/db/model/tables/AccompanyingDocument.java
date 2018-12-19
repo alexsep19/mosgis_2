@@ -12,11 +12,11 @@ public class AccompanyingDocument extends EnTable {
     
     public enum Columns implements ColEnum {
 
-        DOCUMENTGUID                    (Type.UUID,                  null,  "UUID документа в системе"),
+//        DOCUMENTGUID                    (Type.UUID,                  null,  "UUID документа в системе"),
         REGDATE                         (DATE,                              "Дата включения в реестр"),
         LICENSE                         (License.class,              null,  "Лицензия"),
-        DOCTYPE                         (STRING,    20,                     "Тип документа (НСИ 75)"),
-        DECISIONORG                     (LicenseOrganization.class,  null,  "Наименование организации, принявшей решение");
+        DOCTYPE                         (STRING,    20,                     "Тип документа (НСИ 75)");
+//todo        DECISIONORG                     (LicenseOrganization.class,  null,  "Наименование организации, принявшей решение");
 
         @Override
         public Col getCol () {return col;}
@@ -31,7 +31,7 @@ public class AccompanyingDocument extends EnTable {
         
         cols   (Columns.class);
         
-        key    ("documentguid", AccompanyingDocument.Columns.DOCUMENTGUID);
+//        key    ("documentguid", AccompanyingDocument.Columns.DOCUMENTGUID);
         
     }
 }

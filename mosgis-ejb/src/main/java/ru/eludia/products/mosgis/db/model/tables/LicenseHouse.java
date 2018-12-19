@@ -13,7 +13,6 @@ public class LicenseHouse extends EnTable {
 
     public enum Columns implements ColEnum {
 
-        LICENSEHOUSEGUID                    (Type.UUID,         null,   "UUID лицензии в системе"),
         FIASHOUSEGUID                       (VocBuilding.class,         "Глобальный уникальный идентификатор дома по ФИАС"),
         HOUSEADRESS                         (VocBuilding.class,         "Адрес дома"),
         LICENSE                             (License.class,     null,   "Лицензия"), 
@@ -32,7 +31,9 @@ public class LicenseHouse extends EnTable {
         
         cols   (Columns.class);
         
-        key    ("licensehouseguid", LicenseHouse.Columns.LICENSEHOUSEGUID);
+        key    ("licensehouseguid", LicenseHouse.Columns.FIASHOUSEGUID);
+        key    ("licensehouseguid", LicenseHouse.Columns.LICENSE);
+        key    ("licensehouseguid", LicenseHouse.Columns.CONTRACT);
 
     }
     

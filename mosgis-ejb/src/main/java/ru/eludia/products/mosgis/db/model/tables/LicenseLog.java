@@ -13,17 +13,19 @@ import ru.eludia.products.mosgis.db.model.voc.VocUser;
 
 public class LicenseLog extends Table {
     
-    public LicenseLog () {
+    public LicenseLog() {
         
-        super ("tb_licenses__log", "История изменения лицензий");
+        super ("tb_licenses__log",                                 "История изменения лицензий");
         
         pk    ("uuid",                      Type.UUID,             NEW_UUID,            "Ключ");
         ref   ("action",                    VocAction.class,                            "Действие");
+        
         fk    ("uuid_object",               License.class,                              "Ссылка на запись");
         col   ("ts",                        Type.TIMESTAMP,        NOW,                 "Дата/время события");
-        fk    ("uuid_user",                 VocUser.class,         null,                "Оператор");   
-        
+        fk    ("uuid_user",                 VocUser.class,                      null,   "Оператор");
         fk    ("uuid_out_soap",             OutSoap.class,                      null,   "Последний запрос на импорт в ГИС ЖКХ");
+        
+        //todo
         col   ("uuid_message",              Type.UUID,                          null,   "UUID запроса в ГИС ЖКХ");
         col   ("elementguid_new",           Type.UUID,                          null,   "Идентификатор новой версии существующего (в ГИС) элемента справочника");        
         col   ("is_deleted",                Type.BOOLEAN,                       null,   "1, если запись удалена; иначе 0");
@@ -37,7 +39,7 @@ public class LicenseLog extends Table {
         col ("region_fias_guid",                Type.UUID,                  null, "Адрес осуществления лицензируемого вида деятельности (код по ФИАС)");
         col ("licenseable_type_of_activity",    STRING,                     255,  "Лицензируемый вид деятельности с указанием выполняемых работ, оказываемых услуг, составляющих лицензируемый вид деятельности");
         col ("additional_information",          STRING,                     255,  "Дополнительная информация");
-        fk ("licenseorganization",              LicenseOrganization.class,  null, "Лицензиат"); 
+        fk  ("licenseorganization",              VocOrganization.class,  null, "Лицензиат"); 
 
        trigger ("BEFORE INSERT", "BEGIN "
                

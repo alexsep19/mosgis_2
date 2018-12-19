@@ -3,28 +3,34 @@ package ru.eludia.products.mosgis.db.model.tables;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
+import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.Type.DATE;
 import static ru.eludia.base.model.Type.STRING;
-import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocLicenseStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 
-public class License extends EnTable {
+public class License extends Table {
+
+    //todo
+    private void pk(String licenseguid, c c) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
     public enum c implements ColEnum {
         
         LICENSEGUID                     (Type.UUID,                         null,   "UUID лицензии в системе"),
-        LICENSEVERSIONGUID              (Type.UUID,                         null,   "Идентификатор последней известной версии лицензии" ),
+        //todo - which type better for nonNegativeInteger?
+        LICENSEVERSION                  (Type.UUID,                         null,   "Версия лицензии" ),
         ID_LOG                          (LicenseLog.class,                  null,   "Последнее событие редактирования"), 
         LICENSENUMBER                   (STRING,                    9,              "Номер лицензии"),
         LICENSE_REG_DATE                (DATE,                                      "Дата регистрации лицензии"),   
-        LICENSESTATUS                   (VocLicenseStatus.class,            VocLicenseStatus.i.INACTIVE.asDef (),        "Статус лицензии с точки зрения mosgis"),
+        LICENSESTATUS                   (VocLicenseStatus.class,            null,        "Статус лицензии с точки зрения mosgis"),
         LICENSINGAUTHORITY              (VocOrganization.class,                                                          "Наименование лицензирующего органа"),
         REGION_FIAS_GUID                (Type.UUID,                         null,   "Адрес осуществления лицензируемого вида деятельности (код по ФИАС)"),
-        LICENSEABLE_TYPE_OF_ACTIVITY    (STRING,                    255,            "Лицензируемый вид деятельности с указанием выполняемых работ, оказываемых услуг, составляющих лицензируемый вид деятельности"),
-        ADDITIONAL_INFORMATION          (STRING,                    255,    null,   "Дополнительная информация"),
-        LICENSEORGANIZATION             (LicenseOrganization.class,                 "Лицензиат"); 
+        LICENSEABLE_TYPE_OF_ACTIVITY    (STRING,                    2000,           "Лицензируемый вид деятельности с указанием выполняемых работ, оказываемых услуг, составляющих лицензируемый вид деятельности"),
+        ADDITIONAL_INFORMATION          (STRING,                    2000,    null,  "Дополнительная информация"),
+        LICENSEORGANIZATION             (VocOrganization.class,                     "Лицензиат"); 
         
         @Override
         public Col getCol () {return col;}
@@ -41,7 +47,9 @@ public class License extends EnTable {
         
         cols   (c.class);
         
-        key    ("licenseguid", c.LICENSEGUID);
+        pk    ("licenseguid", c.LICENSEGUID);
+        //todo - add _ to name
+        key    ("licenseorganization", c.LICENSEORGANIZATION);
     
     }    
     
