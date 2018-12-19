@@ -14,6 +14,8 @@ import javax.annotation.PreDestroy;
 import javax.ejb.DependsOn;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
@@ -27,6 +29,7 @@ import ru.eludia.products.mosgis.ejb.ModelHolder;
 
 @Startup
 @Singleton
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 //@DependsOn ("Conf")
 public class Okei implements OkeiMBean {
 

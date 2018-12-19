@@ -1,5 +1,7 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Map;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
@@ -8,6 +10,8 @@ import static ru.eludia.base.model.Type.STRING;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.gosuslugi.dom.schema.integration.house_management.ProtocolType;
 
 public class VoteDecisionList extends EnTable {
     
@@ -69,4 +73,16 @@ public class VoteDecisionList extends EnTable {
                     + ":NEW.questionnumber := (max_num + 1); "
                 + "END; ");
     }   
+    
+    public static ProtocolType.DecisionList toDom (Map<String, Object> r) {
+        
+        final ProtocolType.DecisionList result = (ProtocolType.DecisionList) DB.to.javaBean (ProtocolType.DecisionList.class, r);
+        
+        result.setDecisionsType  (NsiTable.toDom (r, "vc_nsi_63"));
+        result.setFormingFund    (NsiTable.toDom (r, "vc_nsi_241"));
+        result.setManagementType (NsiTable.toDom (r, "vc_nsi_25"));
+                
+        return result;
+    }
+    
 }

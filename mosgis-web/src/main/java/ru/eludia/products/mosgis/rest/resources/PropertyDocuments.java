@@ -49,19 +49,18 @@ public class PropertyDocuments extends EJBResource <PropertyDocumentLocal> {
         }
 
     }
-    
+        
     @POST
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject select (JsonObject p) { 
-        return back.select (p, getUser ()); 
+        return back.select (p, getUser ());
     }
-    
+
     @POST
     @Path("create") 
     @Produces (APPLICATION_JSON)
     public JsonObject doCreate (JsonObject p) {
-        getUserOrg ();
         return back.doCreate (p, getUser ());
     }
 

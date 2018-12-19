@@ -54,7 +54,9 @@ public class VocSetting extends Table {
         USER_ADMIN_LOGIN ("user.admin.login", "УЗ администратора для первого входа: login", "test"),
         USER_ADMIN_PASSWORD ("user.admin.password", "УЗ администратора для первого входа: пароль", "test"),
                 
-        PATH_OKEI ("path.okei", "URL JSON/ZIP ОКЕИ на портале открытых данных Правительства Москвы", "c:/projects/mosgis/incoming/opendata/okei"),        
+        PATH_OKEI ("path.okei", "URL JSON/ZIP ОКЕИ на портале открытых данных Правительства Москвы", "c:/projects/mosgis/incoming/opendata/okei"),
+        PATH_OKTMO ("path.oktmo", "Директория с CSV файлом, содержищим справочник ОКТМО", "c:/projects/mosgis/incoming/opendata/oktmo"),
+        PATH_OKSM("path.oksm", "URL JSON/ZIP ОКСМ на портале открытых данных Правительства Москвы", "c:/projects/mosgis/incoming/opendata/oksm"),
         PATH_FIAS ("path.fias", "Директория с распакованной из RAR XML-выгрузкой ФИАС", "c:/projects/mosgis/incoming/fias/fias_xml"),
         PATH_OPENDATA ("path.opendata", "Директория с распакованной из ZIP XML-выгрузкой с портала открытых данных Правительства Москвы", "c:/projects/mosgis/incoming/opendata"),
 
@@ -70,6 +72,10 @@ public class VocSetting extends Table {
         WS_GIS_BILLS_TMT_CONN ("ws.gis.bills.timeout.connection", "Время ожидания подключения к сервису обмена сведениями о начислениях, взаиморасчетах ГИС ЖКХ (BillsServiceAsync), мс", "10000"),
         WS_GIS_BILLS_TMT_RESP ("ws.gis.bills.timeout.response", "Время ожидания подключения к сервису обмена сведениями о начислениях, взаиморасчетах ГИС ЖКХ (BillsServiceAsync), мс", "10000"),
 
+        WS_GIS_LICENSES_URL      ("ws.gis.licenses.url", "Endpoint URL сервиса управления экспортом лицензий и дисквалифицированных лиц ГИС ЖКХ (LicenseServiceAsync)", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-licenses-service/services/LicensesAsync"),
+        WS_GIS_LICENSES_TMT_CONN ("ws.gis.licenses.timeout.connection", "Время ожидания подключения к сервису управления экспортом лицензий и дисквалифицированных лиц ГИС ЖКХ (LicenseServiceAsync), мс", "10000"),
+        WS_GIS_LICENSES_TMT_RESP ("ws.gis.licenses.timeout.response", "Время ожидания подключения к сервису управления экспортом лицензий и дисквалифицированных лиц ГИС ЖКХ (LicenseServiceAsync), мс", "10000"),
+        
         WS_GIS_NSI_URL      ("ws.gis.nsi.url", "Endpoint URL сервиса частной НСИ ГИС ЖКХ (NsiAsyncService)", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-nsi-service/services/NsiAsync"),
         WS_GIS_NSI_TMT_CONN ("ws.gis.nsi.timeout.connection", "Время ожидания подключения к сервису частной НСИ ГИС ЖКХ (NsiAsyncService), мс", "10000"),
         WS_GIS_NSI_TMT_RESP ("ws.gis.nsi.timeout.response", "Время ожидания подключения к сервису частной НСИ ГИС ЖКХ (NsiAsyncService), мс", "10000"),
@@ -81,7 +87,7 @@ public class VocSetting extends Table {
         WS_GIS_ORG_COMMON_URL      ("ws.gis.org.common.url", "Endpoint URL сервиса реестра юрлиц ГИС ЖКХ (NsiCommonAsyncService)", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-org-registry-common-service/services/OrgRegistryCommonAsync"),
         WS_GIS_ORG_COMMON_TMT_CONN ("ws.gis.org.common.timeout.connection", "Время ожидания подключения к сервису реестра юрлиц ГИС ЖКХ (NsiCommonAsyncService), мс", "10000"),
         WS_GIS_ORG_COMMON_TMT_RESP ("ws.gis.org.common.timeout.response", "Время ожидания подключения к сервису реестра юрлиц ГИС ЖКХ (NsiCommonAsyncService), мс", "10000"),
-
+        
         WS_GIS_HOUSE_MANAGEMENT_URL      ("ws.gis.house.management.url", "Endpoint URL сервиса обмена сведениями о жилищном фонде ГИС ЖКХ (HouseManagementServiceAsync)", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-home-management-service/services/HomeManagementAsync"),
         WS_GIS_HOUSE_MANAGEMENT_TMT_CONN ("ws.gis.house.management.timeout.connection", "Время ожидания подключения к сервису обмена сведениями о жилищном фонде ГИС ЖКХ (HouseManagementServiceAsync), мс", "10000"),
         WS_GIS_HOUSE_MANAGEMENT_TMT_RESP ("ws.gis.house.management.timeout.response", "Время ожидания подключения к сервису обмена сведениями о жилищном фонде ГИС ЖКХ (HouseManagementServiceAsync), мс", "10000"),

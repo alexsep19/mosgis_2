@@ -7,6 +7,12 @@ public interface ConfMBean {
     
     public String getPathOkei ();
     public void   setPathOkei (String s);
+    
+    public String getPathOktmo ();
+    public void setPathOktmo (String s);
+
+    public String getPathOksm();
+    public void setPathOksm(String s);
 
     public String getPathFias ();
     public void   setPathFias (String s);
@@ -27,6 +33,13 @@ public interface ConfMBean {
     public void   setWsGisBillsConnTimeout (int i);
     public int    getWsGisBillsRespTimeout ();     
     public void   setWsGisBillsRespTimeout (int i);
+    
+    public String getWsGisLicensesUrl ();
+    public void   setWsGisLicensesUrl (String s);    
+    public int    getWsGisLicensesConnTimeout ();     
+    public void   setWsGisLicensesConnTimeout (int i);
+    public int    getWsGisLicensesRespTimeout ();     
+    public void   setWsGisLicensesRespTimeout (int i);  
 
     public String getWsGisNsiUrl ();
     public void   setWsGisNsiUrl (String s);    

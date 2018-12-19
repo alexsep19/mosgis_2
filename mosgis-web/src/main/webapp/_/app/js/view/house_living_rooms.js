@@ -19,8 +19,8 @@ define ([], function () {
             show: {
                 toolbar: true,
                 footer: true,
-                toolbarAdd: true,
-                toolbarDelete: true,
+                toolbarAdd: data.is_passport_editable,
+                toolbarDelete: data.is_passport_editable,
                 toolbarInput: false,
                 toolbarSearch: true,
                 toolbarReload: false,

@@ -13,6 +13,8 @@ import javax.ejb.DependsOn;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.jms.Topic;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -27,6 +29,7 @@ import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 @Startup
 @Singleton
 @DependsOn ("ModelHolder")
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class Conf implements ConfMBean, ConfLocal {
 
     private ObjectName objectName = null;
@@ -194,6 +197,26 @@ public class Conf implements ConfMBean, ConfLocal {
     @Override
     public void setPathOkei (String s) {
         set (VocSetting.i.PATH_OKEI, s);
+    }
+    
+    @Override
+    public String getPathOksm() {
+        return get(VocSetting.i.PATH_OKSM);
+    }
+
+    @Override
+    public void setPathOksm(String s) {
+        set(VocSetting.i.PATH_OKSM, s);
+    }
+
+    @Override
+    public String getPathOktmo () {
+        return get (VocSetting.i.PATH_OKTMO);
+    }
+    
+    @Override
+    public void setPathOktmo (String s) {
+        set (VocSetting.i.PATH_OKTMO, s);
     }
 /*
     @Override
@@ -430,6 +453,7 @@ public class Conf implements ConfMBean, ConfLocal {
         set (VocSetting.i.WS_GIS_NSI_COMMON_URL, s + VocSetting.i.WS_GIS_NSI_COMMON_URL.getValue().substring(VocSetting.WS_GIS_URL_ROOT_DEFAULT.length()));
         set (VocSetting.i.WS_GIS_NSI_URL, s + VocSetting.i.WS_GIS_NSI_URL.getValue().substring(VocSetting.WS_GIS_URL_ROOT_DEFAULT.length()));
         set (VocSetting.i.WS_GIS_ORG_COMMON_URL, s + VocSetting.i.WS_GIS_ORG_COMMON_URL.getValue().substring(VocSetting.WS_GIS_URL_ROOT_DEFAULT.length()));
+        set (VocSetting.i.WS_GIS_LICENSES_URL, s + VocSetting.i.WS_GIS_LICENSES_URL.getValue().substring(VocSetting.WS_GIS_URL_ROOT_DEFAULT.length()));
     }
     
     @Override
@@ -471,6 +495,37 @@ public class Conf implements ConfMBean, ConfLocal {
     @Override
     public void setTtlCharters (int i) {
         setInt (VocSetting.i.TTL_CHARTERS, i);
-    }    
+    }
+    
+    @Override
+    public String getWsGisLicensesUrl() {
+       return get (VocSetting.i.WS_GIS_LICENSES_URL);
+    }
+
+    @Override
+    public void setWsGisLicensesUrl(String s) {
+        set (VocSetting.i.WS_GIS_LICENSES_URL, s);
+        set (VocSetting.i.WS_GIS_URL_ROOT, "");
+    }
+
+    @Override
+    public int getWsGisLicensesConnTimeout() {
+        return getInt (VocSetting.i.WS_GIS_LICENSES_TMT_CONN);
+    }
+
+    @Override
+    public void setWsGisLicensesConnTimeout(int i) {
+        setInt (VocSetting.i.WS_GIS_LICENSES_TMT_CONN, i);
+    }
+
+    @Override
+    public int getWsGisLicensesRespTimeout() {
+        return getInt (VocSetting.i.WS_GIS_LICENSES_TMT_RESP);
+    }
+
+    @Override
+    public void setWsGisLicensesRespTimeout(int i) {
+        setInt (VocSetting.i.WS_GIS_LICENSES_TMT_RESP, i);
+    }
 
 }

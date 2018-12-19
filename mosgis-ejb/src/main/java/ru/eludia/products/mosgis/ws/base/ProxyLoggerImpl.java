@@ -3,6 +3,8 @@ package ru.eludia.products.mosgis.ws.base;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import ru.eludia.base.DB;
 import static ru.eludia.base.model.def.Def.NOW;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
@@ -14,6 +16,7 @@ import ru.eludia.products.mosgis.proxy.GisWsAddress;
 import ru.eludia.products.mosgis.proxy.ProxyLoggerLocal;
 
 @Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class ProxyLoggerImpl implements ProxyLoggerLocal {
 
     private static final Logger logger = Logger.getLogger (ProxyLoggerImpl.class.getName ());

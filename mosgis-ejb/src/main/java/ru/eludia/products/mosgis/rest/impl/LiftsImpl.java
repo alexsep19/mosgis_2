@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -23,6 +25,8 @@ import ru.eludia.products.mosgis.rest.impl.base.BasePassport;
 import ru.eludia.products.mosgis.web.base.Search;
 
 @Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+
 public class LiftsImpl extends BasePassport<Lift> implements LiftsLocal {
 
     private static final Logger logger = Logger.getLogger (LiftsImpl.class.getName ());
@@ -33,11 +37,11 @@ public class LiftsImpl extends BasePassport<Lift> implements LiftsLocal {
         final JsonObject data = p.getJsonObject ("data");
                 
         Select select = ModelHolder.getModel ()               
-            .select (getTable (), "*", "uuid AS id")
+            .select (getTable (), "AS root","*", "uuid AS id")
             .where ("uuid_house", data.getString ("uuid_house"))
             .and   ("is_deleted",  0)
-            .toOne (Entrance.class, "entrancenum").on ()
-            .orderBy ("entrancenum")
+            .toOne (Entrance.class, "AS entrance", "entrancenum").on ()
+            .orderBy ("entrance.entrancenum")
             .orderBy ("code_vc_nsi_192")
             .orderBy ("factorynum");
         

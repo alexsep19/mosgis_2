@@ -9,6 +9,7 @@ define ([], function () {
         var $panel = $(layout.el ('main'))
         
         var is_editable = data.item._can.edit
+        var is_customer_coop = data.item ['ch.uuid']
 
         $panel.w2regrid ({ 
         
@@ -22,13 +23,13 @@ define ([], function () {
                 toolbarReload: false,
                 toolbarColumns: false,
                 toolbarInput: false,
-                toolbarAdd: is_editable,
+                toolbarAdd: is_editable && !is_customer_coop,
             },            
 
             toolbar: {
             
-                items: !is_editable || !data.item ['ch.uuid'] ? [] : [
-                    {type: 'button', id: 'add', caption: 'Скопировать из устава', onClick: $_DO.add_mgmt_contract_objects, icon: 'w2ui-icon-plus'},
+                items: !is_editable || !is_customer_coop ? [] : [
+                    {type: 'button', id: 'add', caption: 'Добавить из устава', onClick: $_DO.add_mgmt_contract_objects, icon: 'w2ui-icon-plus'},
                 ].filter (not_off),
                 
             },             

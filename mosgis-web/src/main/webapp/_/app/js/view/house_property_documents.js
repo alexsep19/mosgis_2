@@ -3,14 +3,19 @@ define ([], function () {
     var grid_name = 'house_property_documents_grid'
                 
     return function (data, view) {
+        
+        var is_author = $_USER.role.nsi_20_1 || $_USER.is_building_society ()
+    
+        var postData = {data: {uuid_house: $_REQUEST.id}}                
+        if (is_author) postData.data.uuid_org = $_USER.uuid_org
     
         $(w2ui ['topmost_layout'].el ('main')).w2regrid ({
         
             toolbar: {
             
                 items: [
-                    {type: 'button', id: 'create_person', caption: 'Физическое лицо', icon: 'w2ui-icon-plus', onClick: $_DO.create_person_house_property_documents},
-                    {type: 'button', id: 'create_org', caption: 'Юридическое лицо', icon: 'w2ui-icon-plus', onClick: $_DO.create_org_house_property_documents},
+                    {type: 'button', id: 'create_person', caption: 'Физическое лицо', icon: 'w2ui-icon-plus', onClick: $_DO.create_person_house_property_documents, off: !data.is_passport_editable},
+                    {type: 'button', id: 'create_org', caption: 'Юридическое лицо', icon: 'w2ui-icon-plus', onClick: $_DO.create_org_house_property_documents, off: !data.is_passport_editable},
                 ].filter (not_off),
                 
             },         
@@ -21,6 +26,7 @@ define ([], function () {
 
             show: {
                 toolbar: true,
+                toolbarInput: false,
                 footer: 1,
             },            
 
@@ -43,9 +49,10 @@ define ([], function () {
                 {field: 'id_type', caption: 'Документ', size: 25, voc: data.vc_prop_doc_types},
                 {field: 'no', caption: '№', size: 25},
                 {field: 'dt', caption: 'Дата', size: 18, render:_dt},
-            ],
+                {field: 'author_label', caption: 'Поставщик информации', size: 30, off: is_author},
+            ].filter (not_off),
             
-            postData: {data: {"uuid_house": $_REQUEST.id}},
+            postData: postData,
 
             url: '/mosgis/_rest/?type=property_documents',
             

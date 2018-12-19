@@ -6,6 +6,8 @@ import java.util.UUID;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.jms.Queue;
 import javax.json.JsonObject;
 import javax.json.JsonString;
@@ -44,6 +46,7 @@ import ru.eludia.products.mosgis.web.base.Search;
 import ru.eludia.products.mosgis.web.base.SimpleSearch;
 
 @Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class ContractPaymentImpl extends BaseCRUD<ContractPayment> implements ContractPaymentLocal {
     
     @Resource (mappedName = "mosgis.inHouseContractPaymentsQueue")
@@ -137,6 +140,7 @@ public class ContractPaymentImpl extends BaseCRUD<ContractPayment> implements Co
                 .toMaybeOne (VocOkei.class, "AS okei", "national").on ()
                 .where      ("uuid_org", item.getString ("ctr.uuid_org"))
                 .and        ("id_status", VocAsyncEntityState.i.OK.getId ())
+                .and        ("is_deleted", 0)
                 .orderBy    ("org_works.label")
             
         );        

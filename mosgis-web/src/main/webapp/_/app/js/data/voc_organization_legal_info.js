@@ -71,10 +71,10 @@ define ([], function () {
             {"id_type": 2, "id": "dispatch_schedule", "label": "Режим работы"},
 
             {"id": "h_self_manage", "label": "Саморегулируемая организация", "off": !data.is_on_self_manage},
-            {"id_type": 2, "id": "self_manage_org", "label": "Наименование саморегулируемой организации", "off": !data.is_on_self_manage},
-            {"id_type": 8, "id": "dt_from_self_manage_org", "label": "Дата вступления в члены организации", "off": !data.is_on_self_manage},
-            {"id_type": 8, "id": "dt_to_self_manage_org", "label": "Дата исключения/выхода из членов организации", "off": !data.is_on_self_manage},
-            {"id_type": 2, "id": "reason_cancel_self_manage_org", "label": "Причина исключения из членов организации", "off": !data.is_on_self_manage},
+            {"id_type": 2, "id": "slf_mng_org", "label": "Наименование саморегулируемой организации", "off": !data.is_on_self_manage},
+            {"id_type": 8, "id": "dt_from_slf_mng_org", "label": "Дата вступления в члены организации", "off": !data.is_on_self_manage},
+            {"id_type": 8, "id": "dt_to_slf_mng_org", "label": "Дата исключения/выхода из членов организации", "off": !data.is_on_self_manage},
+            {"id_type": 2, "id": "rsn_slf_mng_org", "label": "Причина исключения из членов организации", "off": !data.is_on_self_manage},
 
             {"id": "h_staff", "label": "Штатная численность"},
             {"id_type": 1, "id": "staff_cnt", "label": "Количество штатных единиц"},
@@ -126,7 +126,9 @@ define ([], function () {
 
             data.vc_pass_fields = fields
 
-            $('body').data('data', data)
+            var voc_organization = $('body').data('data')
+            voc_organization.vc_pass_fields  = fields
+            $('body').data('data', voc_organization)
 
             done (data);
 

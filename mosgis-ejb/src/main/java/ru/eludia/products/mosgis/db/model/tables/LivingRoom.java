@@ -1,15 +1,23 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Map;
 import ru.eludia.base.DB;
+import ru.eludia.base.db.util.TypeConverter;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
+import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
 import ru.eludia.products.mosgis.db.model.voc.VocRdColType;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseESPRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseOMSRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseRSORequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseUORequest;
 
 public class LivingRoom extends Passport {
     
@@ -30,9 +38,18 @@ public class LivingRoom extends Passport {
         ref    ("uuid_premise",       ResidentialPremise.class, null,  "Квартира");
         ref    ("uuid_block",         Block.class,              null,  "Блок");
         
-        col    ("roomnumber",         Type.STRING, 255,    null,        "Номер комнаты");
+        col    ("roomnumber",         Type.STRING, 255,    null,       "Номер комнаты");
         col    ("cadastralnumber",    Type.STRING,         null,       "Кадастровый номер");
         col    ("square",             Type.NUMERIC, 25, 4, null,       "Площадь");
+        col    ("floor",              Type.STRING,         null,       "Этаж");
+        
+        col    ("gis_unique_number",     Type.STRING,    null,       "Уникальный номер");
+        col    ("gis_modification_date", Type.TIMESTAMP, null,       "Дата модификации данных в ГИС ЖКХ");
+        col    ("informationconfirmed",  Type.BOOLEAN,   Bool.TRUE,  "Информация подтверждена поставщиком");
+        col    ("livingroomguid",        Type.UUID,      null,       "Идентификатор в ГИС ЖКХ");
+        col    ("is_annuled_in_gis",     Type.BOOLEAN,   Bool.FALSE, "1, если запись аннулирована в ГИС ЖКХ; иначе 0");
+        
+        fk     ("id_status", VocHouseStatus.class, new Virt("DECODE(\"LIVINGROOMGUID\",NULL," + VocHouseStatus.i.MISSING.getId() + "," + VocHouseStatus.i.PUBLISHED.getId() + ")"), "Статус размещения в ГИС ЖКХ");
         
         trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
                 
@@ -105,4 +122,103 @@ public class LivingRoom extends Passport {
             
     }
     
+    public static void add(ImportHouseUORequest.LivingHouse house, Map<String, Object> r) {
+        if (r.get("livingroomguid") == null) {
+            ImportHouseUORequest.LivingHouse.LivingRoomToCreate livingRoom = TypeConverter.javaBean(ImportHouseUORequest.LivingHouse.LivingRoomToCreate.class, r);
+            house.getLivingRoomToCreate().add(livingRoom);
+        } else {
+            ImportHouseUORequest.LivingHouse.LivingRoomToUpdate livingRoom = TypeConverter.javaBean(ImportHouseUORequest.LivingHouse.LivingRoomToUpdate.class, r);
+            house.getLivingRoomToUpdate().add(livingRoom);
+        }
+    }
+    
+    public static void add(ImportHouseUORequest.LivingHouse.Blocks block, Map<String, Object> r) {
+        if (r.get("livingroomguid") == null) {
+            ImportHouseUORequest.LivingHouse.Blocks.LivingRoomToCreate livingRoom = TypeConverter.javaBean(ImportHouseUORequest.LivingHouse.Blocks.LivingRoomToCreate.class, r);
+            block.getLivingRoomToCreate().add(livingRoom);
+        } else {
+            ImportHouseUORequest.LivingHouse.Blocks.LivingRoomToUpdate livingRoom = TypeConverter.javaBean(ImportHouseUORequest.LivingHouse.Blocks.LivingRoomToUpdate.class, r);
+            block.getLivingRoomToUpdate().add(livingRoom);
+        }
+    }
+    
+    public static void add(ImportHouseUORequest.ApartmentHouse.ResidentialPremises premise, Map<String, Object> r) {
+        if (r.get("livingroomguid") == null) {
+            ImportHouseUORequest.ApartmentHouse.ResidentialPremises.LivingRoomToCreate livingRoom = TypeConverter.javaBean(ImportHouseUORequest.ApartmentHouse.ResidentialPremises.LivingRoomToCreate.class, r);
+            premise.getLivingRoomToCreate().add(livingRoom);
+        } else {
+            ImportHouseUORequest.ApartmentHouse.ResidentialPremises.LivingRoomToUpdate livingRoom = TypeConverter.javaBean(ImportHouseUORequest.ApartmentHouse.ResidentialPremises.LivingRoomToUpdate.class, r);
+            premise.getLivingRoomToUpdate().add(livingRoom);
+        }
+    }
+    
+    public static void add(ImportHouseOMSRequest.LivingHouse house, Map<String, Object> r) {
+        if (r.get("livingroomguid") == null) {
+            ImportHouseOMSRequest.LivingHouse.LivingRoomToCreate livingRoom = TypeConverter.javaBean(ImportHouseOMSRequest.LivingHouse.LivingRoomToCreate.class, r);
+            house.getLivingRoomToCreate().add(livingRoom);
+        } else {
+            ImportHouseOMSRequest.LivingHouse.LivingRoomToUpdate livingRoom = TypeConverter.javaBean(ImportHouseOMSRequest.LivingHouse.LivingRoomToUpdate.class, r);
+            house.getLivingRoomToUpdate().add(livingRoom);
+        }
+    }
+    
+    public static void add(ImportHouseOMSRequest.LivingHouse.Blocks block, Map<String, Object> r) {
+        if (r.get("livingroomguid") == null) {
+            ImportHouseOMSRequest.LivingHouse.Blocks.LivingRoomToCreate livingRoom = TypeConverter.javaBean(ImportHouseOMSRequest.LivingHouse.Blocks.LivingRoomToCreate.class, r);
+            block.getLivingRoomToCreate().add(livingRoom);
+        } else {
+            ImportHouseOMSRequest.LivingHouse.Blocks.LivingRoomToUpdate livingRoom = TypeConverter.javaBean(ImportHouseOMSRequest.LivingHouse.Blocks.LivingRoomToUpdate.class, r);
+            block.getLivingRoomToUpdate().add(livingRoom);
+        }
+    }
+    
+    public static void add(ImportHouseOMSRequest.ApartmentHouse.ResidentialPremises premise, Map<String, Object> r) {
+        if (r.get("livingroomguid") == null) {
+            ImportHouseOMSRequest.ApartmentHouse.ResidentialPremises.LivingRoomToCreate livingRoom = TypeConverter.javaBean(ImportHouseOMSRequest.ApartmentHouse.ResidentialPremises.LivingRoomToCreate.class, r);
+            premise.getLivingRoomToCreate().add(livingRoom);
+        } else {
+            ImportHouseOMSRequest.ApartmentHouse.ResidentialPremises.LivingRoomToUpdate livingRoom = TypeConverter.javaBean(ImportHouseOMSRequest.ApartmentHouse.ResidentialPremises.LivingRoomToUpdate.class, r);
+            premise.getLivingRoomToUpdate().add(livingRoom);
+        }
+    }
+    
+    public static void add(ImportHouseRSORequest.LivingHouse house, Map<String, Object> r) {
+        if (r.get("livingroomguid") == null) {
+            ImportHouseRSORequest.LivingHouse.LivingRoomToCreate livingRoom = TypeConverter.javaBean(ImportHouseRSORequest.LivingHouse.LivingRoomToCreate.class, r);
+            house.getLivingRoomToCreate().add(livingRoom);
+        } else {
+            ImportHouseRSORequest.LivingHouse.LivingRoomToUpdate livingRoom = TypeConverter.javaBean(ImportHouseRSORequest.LivingHouse.LivingRoomToUpdate.class, r);
+            house.getLivingRoomToUpdate().add(livingRoom);
+        }
+    }
+    
+    public static void add(ImportHouseRSORequest.LivingHouse.Blocks block, Map<String, Object> r) {
+        if (r.get("livingroomguid") == null) {
+            ImportHouseRSORequest.LivingHouse.Blocks.LivingRoomToCreate livingRoom = TypeConverter.javaBean(ImportHouseRSORequest.LivingHouse.Blocks.LivingRoomToCreate.class, r);
+            block.getLivingRoomToCreate().add(livingRoom);
+        } else {
+            ImportHouseRSORequest.LivingHouse.Blocks.LivingRoomToUpdate livingRoom = TypeConverter.javaBean(ImportHouseRSORequest.LivingHouse.Blocks.LivingRoomToUpdate.class, r);
+            block.getLivingRoomToUpdate().add(livingRoom);
+        }
+    }
+    
+    public static void add(ImportHouseRSORequest.ApartmentHouse.ResidentialPremises premise, Map<String, Object> r) {
+        if (r.get("livingroomguid") == null) {
+            ImportHouseRSORequest.ApartmentHouse.ResidentialPremises.LivingRoomToCreate livingRoom = TypeConverter.javaBean(ImportHouseRSORequest.ApartmentHouse.ResidentialPremises.LivingRoomToCreate.class, r);
+            premise.getLivingRoomToCreate().add(livingRoom);
+        } else {
+            ImportHouseRSORequest.ApartmentHouse.ResidentialPremises.LivingRoomToUpdate livingRoom = TypeConverter.javaBean(ImportHouseRSORequest.ApartmentHouse.ResidentialPremises.LivingRoomToUpdate.class, r);
+            premise.getLivingRoomToUpdate().add(livingRoom);
+        }
+    }
+    
+    public static void add(ImportHouseESPRequest.ApartmentHouse.ResidentialPremises premise, Map<String, Object> r) {
+        if (r.get("livingroomguid") == null) {
+            ImportHouseESPRequest.ApartmentHouse.ResidentialPremises.LivingRoomToCreate livingRoom = TypeConverter.javaBean(ImportHouseESPRequest.ApartmentHouse.ResidentialPremises.LivingRoomToCreate.class, r);
+            premise.getLivingRoomToCreate().add(livingRoom);
+        } else {
+            ImportHouseESPRequest.ApartmentHouse.ResidentialPremises.LivingRoomToUpdate livingRoom = TypeConverter.javaBean(ImportHouseESPRequest.ApartmentHouse.ResidentialPremises.LivingRoomToUpdate.class, r);
+            premise.getLivingRoomToUpdate().add(livingRoom);
+        }
+    }
 }

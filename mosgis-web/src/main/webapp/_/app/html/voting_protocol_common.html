@@ -1,8 +1,15 @@
 <span>
 
+	<style>
+		table.vote-table {
+			color:#666;
+		}
+	</style>
+
+
     <div>
 
-        <div class="w2ui-page page-0" style="padding-top: 13px;min-width: 900px">
+        <div class="w2ui-page page-0 page-1">
 
         	<style>
                 td.labels {
@@ -32,7 +39,7 @@
                     width: 70px !important;
                     margin-right: 10px !important;
                 }
-                
+
                 .w2ui-field input.dt_tm {
                     width: 95px !important;
                     margin-right: 10px !important;
@@ -43,7 +50,24 @@
                 }
             </style>
 
-            <table style="border-spacing: 4px 4px;" border=0>
+
+
+
+
+
+        	<table border=0 cellpadding=0 cellspacing=0 width=90%>
+
+        		<tr>
+
+					<td class="left-block" width=1 valign=top>
+
+
+
+
+
+
+
+            <table class="vote-table" border=0>
                 <tr>
                     <td class=labels>
                         <div class="w2ui-field">
@@ -92,7 +116,7 @@
                             <input class=gen name=meetingeligibility placeholder="">
                         </div>
                     </td>
-                </tr>       
+                </tr>
 
                 <tr>
                     <td>
@@ -108,15 +132,17 @@
                 </tr>
             </table>
 <!--||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
-            <table id=avoting_table style="border-spacing: 4px 4px;" border=0>
+            <table id=avoting_table class="vote-table" border=0>
                 <tr>
                     <td class=labels>
                         <div class="w2ui-field">
-                            <label id=avotingdate_label class=gen>Дата окончания приема решений</label>
+                            <label id=avotingdate_label class=gen>Приём решений с</label>
                         </div>
                     </td>
                     <td>
                         <div class="w2ui-field">
+                            <input id=avotingstartdate name=avotingstartdate placeholder="" class=dt>
+                            по&nbsp;&nbsp;
                             <input id=avotingdate name=avotingdate placeholder="" class=dt>
                         </div>
                     </td>
@@ -135,7 +161,7 @@
                 </tr>
             </table>
 <!--||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
-            <table id=meeting_table style="border-spacing: 4px 4px;" border=0>
+            <table id=meeting_table class="vote-table" border=0>
                 <tr>
                     <td class=labels>
                         <div class="w2ui-field">
@@ -162,37 +188,24 @@
                 </tr>
             </table>
 <!--||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
-            <table id=evoting_period_table style="border-spacing: 4px 4px;" border=0>
+            <table id=evoting_period_table class="vote-table" border=0>
                 <tr>
-                    <td class=labels>
-                        <div class="w2ui-field">
-                            <label id=evotingdatebegin_label class=gen>Период проведения голосования:</label>
-                        </div>
-                    </td>
                     <td>
                         <div class="w2ui-field">
-                            <label id=evoting_from_label class=from_to>с</label>
+                            <label id=evotingdatebegin_label class=gen>Период проведения голосования с</label>
                         </div>
                     </td>
                     <td>
                         <div class="w2ui-field">
                             <input id=evotingdatebegin name=evotingdatebegin placeholder="" class=dt_tm >
-                        </div>
-                    </td>
-                    <td>
-                        <div class="w2ui-field">
-                            <label id=evoting_to_label class=from_to>по</label>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="w2ui-field">
+                            по&nbsp;&nbsp;
                             <input id=evotingdateend name=evotingdateend placeholder="" class=dt_tm >
                         </div>
                     </td>
                 </tr>
             </table>
 
-            <table id=evoting_table style="border-spacing: 4px 4px;" border=0>
+            <table id=evoting_table class="vote-table" border=0>
                 <tr>
                     <td>
                         <div class="w2ui-field">
@@ -219,7 +232,7 @@
                 </tr>
             </table>
 <!--||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
-            <table id=meet_av_table style="border-spacing: 4px 4px;" border=0>
+            <table id=meet_av_table class="vote-table" border=0>
                 <tr>
                     <td class=labels>
                         <div class="w2ui-field">
@@ -232,15 +245,17 @@
                         </div>
                     </td>
                 </tr>
-                
+
                 <tr>
                     <td>
                         <div class="w2ui-field">
-                            <label id=meeting_av_date_end_label class=gen>Дата окончания приема решений</label>
+                            <label id=meeting_av_date_end_label class=gen>Прием решений с</label>
                         </div>
                     </td>
                     <td>
                         <div class="w2ui-field">
+                            <input id=meeting_av_date_start name=meeting_av_date_start placeholder="" class=dt >
+                            по&nbsp;&nbsp;
                             <input id=meeting_av_date_end name=meeting_av_date_end placeholder="" class=dt >
                         </div>
                     </td>
@@ -269,9 +284,74 @@
                         </div>
                     </td>
                 </tr>
-                
+
             </table>
 <!--||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
+
+            <table id=modification_table class="vote-table" border=0 style="display:none">
+                <tr>
+                    <td class=labels>
+                        <div class="w2ui-field">
+                            <label id=modification_label class=gen>Основание изменения</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="w2ui-field">
+                            <input name=modification class=gen>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+					</td>
+
+					<td valign=top>
+
+						<table border=0 cellpadding=0 cellspacing=0 width=100% class=sync>
+
+							<tr>
+								<td>Статус:</td>
+								<td>
+									<span data-text=status_label/>
+ 								</td>
+							</tr>
+
+							<tr data-on=err_text>
+								<th colspan=2 data-text=err_text></th>
+							</tr>
+
+							<tr data-on=is_annuled>
+								<td>Причина аннулирования:</td>
+								<td>
+									<span data-text=reason/>
+ 								</td>
+							</tr>
+
+						</table>
+
+					</td>
+
+        		</tr>
+
+        	</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         </div>
 
         <div class="w2ui-buttons">
@@ -280,6 +360,8 @@
 				<button class=w2ui-btn name=update data-off=__read_only>Сохранить</button>
 				<button class=w2ui-btn name=cancel data-off=__read_only>Отменить</button>
 				<button class=w2ui-btn name=delete  data-on=__read_only>Удалить</button>
+				<button class=w2ui-btn name=approve data-on=__read_only>Разместить</button>
+				<button class=w2ui-btn name=alter   data-on=__read_only>Изменить</button>
 <!--
 				<button class=w2ui-btn name=undelete data-on=__read_only>Восстановить</button>
 -->

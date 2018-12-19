@@ -3,6 +3,8 @@ package ru.eludia.products.mosgis.rest.impl;
 import java.io.IOException;
 import java.io.OutputStream;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.json.JsonObject;
 import javax.ws.rs.WebApplicationException;
 import ru.eludia.base.db.sql.gen.Select;
@@ -17,6 +19,7 @@ import ru.eludia.products.mosgis.rest.api.InsuranceProductLogLocal;
 import ru.eludia.products.mosgis.rest.impl.base.Base;
 
 @Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class InsuranceProductLogImpl extends Base<InsuranceProductLog> implements InsuranceProductLogLocal {
 
     @Override

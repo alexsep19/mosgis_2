@@ -19,7 +19,6 @@ import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
-import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
@@ -44,9 +43,6 @@ public class GisPollExportMgmtContractStatusMDB extends GisPollMDB {
     @Resource (mappedName = "mosgis.outExportHouseMgmtContractStatusQueue")
     Queue queue;
     
-    @EJB
-    protected UUIDPublisher UUIDPublisher;
-
     @EJB
     MgmtContractLocal mgmtContract;
     

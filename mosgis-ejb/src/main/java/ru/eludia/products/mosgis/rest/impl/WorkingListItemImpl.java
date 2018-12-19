@@ -2,6 +2,8 @@ package ru.eludia.products.mosgis.rest.impl;
 
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.json.JsonObject;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Select;
@@ -16,6 +18,7 @@ import ru.eludia.products.mosgis.rest.api.WorkingListItemLocal;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 
 @Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class WorkingListItemImpl extends BaseCRUD<WorkingListItem> implements WorkingListItemLocal {
     
     private static final Logger logger = Logger.getLogger (WorkingListItemImpl.class.getName ());           

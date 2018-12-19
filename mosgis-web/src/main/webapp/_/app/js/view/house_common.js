@@ -9,6 +9,10 @@ define ([], function () {
         
     return function (data, view) {
 
+        function editable_nsi_20_8 () {
+            return (data.controlled && data.is_under_nsi_20_8)
+        }
+
         $.each (data.vc_pass_fields, function () { id2field [this.id] = this })
 
         $_F5 = function () {
@@ -62,7 +66,7 @@ define ([], function () {
             columns: [                
 //                {field: 'ord_src', caption: '№ п/п', size: 5},
                 {field: 'label', caption: 'Реквизит', size: 100},
-                {field: 'value', caption: 'Значение', size: 20, attr: 'data-status', editable: !data.is_passport_editable ? null : function (voc) {                
+                {field: 'value', caption: 'Значение', size: 20, attr: 'data-status', editable: !data.is_passport_editable && !editable_nsi_20_8 () ? null : function (voc) {                
                     switch (voc.id_type) {
                         case 0:  return {type: 'int'}
                         case 1:  return {type: 'float', precision: 4, autoFormat: true, keyboard: false, min: 0}

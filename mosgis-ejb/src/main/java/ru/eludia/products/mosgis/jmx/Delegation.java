@@ -11,6 +11,8 @@ import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.jms.Queue;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -22,6 +24,7 @@ import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 
 @Startup
 @Singleton
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 //@DependsOn ("Conf")
 public class Delegation implements DelegationMBean, DelegationLocal {
 

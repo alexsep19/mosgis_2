@@ -41,6 +41,11 @@ public class Owner extends View {
         sb.append (PropertyDocument.c.UUID_ORG_OWNER.lc ());
 
         sb.append (" LEFT JOIN ");
+        sb.append (getName (VocOrganization.class));
+        sb.append (" org_auth ON org_auth.uuid = root.");
+        sb.append (PropertyDocument.c.UUID_ORG.lc ());
+
+        sb.append (" LEFT JOIN ");
         sb.append (getName (VocPerson.class));
         sb.append (" person ON person.uuid = root.");
         sb.append (PropertyDocument.c.UUID_PERSON_OWNER.lc ());
@@ -63,6 +68,8 @@ public class Owner extends View {
         DT_TO                     (PropertyDocument.c.DT_TO),
         UUID_PREMISE              (PropertyDocument.c.UUID_PREMISE),
         UUID_ORG                  (PropertyDocument.c.UUID_ORG),
+        UUID_PERSON_OWNER         (PropertyDocument.c.UUID_PERSON_OWNER),
+        UUID_ORG_OWNER            (PropertyDocument.c.UUID_ORG_OWNER),
 
         UUID_HOUSE                (Premise.c.UUID_HOUSE),
         LABEL                     (Premise.c.LABEL),
@@ -71,6 +78,8 @@ public class Owner extends View {
         OWNER_LABEL               (STRING, "ФИО/Наименование организации"),
         OWNER_LABEL_UC            (STRING, "ФИО/НАИМЕНОВАНИЕ ОРГАНИЗАЦИИ"),
         
+        AUTHOR_LABEL              (STRING, "Источник данных"),
+
         ;
         
         @Override
@@ -94,6 +103,7 @@ public class Owner extends View {
             if (sql != null) return sql;
             
             switch (this) {
+                case AUTHOR_LABEL:   return "org_auth.label";
                 case OWNER_LABEL:    return "NVL(person.label, org.label) ";
                 case OWNER_LABEL_UC: return "UPPER(" + OWNER_LABEL.getSql () + ") ";
                 default: throw new IllegalStateException ("SQL expression not defined for " + this);
