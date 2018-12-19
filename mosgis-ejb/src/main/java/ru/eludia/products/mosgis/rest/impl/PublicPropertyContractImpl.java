@@ -237,5 +237,18 @@ public class PublicPropertyContractImpl extends BaseCRUD<PublicPropertyContract>
         logAction (db, user, id, VocAction.i.ALTER);
         
     });}
+    
+    @Override
+    public JsonObject doAnnul (String id, JsonObject p, User user) {return doAction ((db) -> {
+        
+        db.update (getTable (), getData (p,
+            EnTable.c.UUID, id,
+            PublicPropertyContract.c.ID_CTR_STATUS,     VocGisStatus.i.PENDING_RQ_ANNULMENT.getId (),
+            PublicPropertyContract.c.REASONOFANNULMENT, p.getJsonObject ("data").getString (PublicPropertyContract.c.REASONOFANNULMENT.lc ())
+        ));
+        
+        logAction (db, user, id, VocAction.i.ANNUL);
+                        
+    });}
 
 }

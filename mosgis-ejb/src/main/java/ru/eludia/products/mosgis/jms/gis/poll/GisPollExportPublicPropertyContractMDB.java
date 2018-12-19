@@ -72,8 +72,10 @@ public class GisPollExportPublicPropertyContractMDB  extends GisPollMDB {
 
             final Map<String, Object> h = statusHash (action.getOkStatus ());
 
-            final String guid = commonResult.get (0).getGUID ();
-            if (DB.ok (guid)) h.put (c.CONTRACTVERSIONGUID.lc (), guid);
+            if (action == PublicPropertyContract.Action.PLACING) {
+                final String guid = commonResult.get (0).getGUID ();
+                if (DB.ok (guid)) h.put (c.CONTRACTVERSIONGUID.lc (), guid);
+            }
 
             update (db, uuid, r, h);
 

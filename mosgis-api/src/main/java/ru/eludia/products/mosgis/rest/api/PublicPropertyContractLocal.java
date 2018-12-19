@@ -8,9 +8,11 @@ import ru.eludia.products.mosgis.rest.api.base.CRUDBackend;
 @Local
 public interface PublicPropertyContractLocal extends CRUDBackend {
     
-    JsonObject getVocs  (JsonObject p);
-    JsonObject doApprove   (String id, User user);
+    JsonObject getVocs   (JsonObject p);    
     JsonObject doAddVotingProtocols (String id, JsonObject p, User user);
-    JsonObject doAlter (String id, JsonObject p, User user);
+    
+    JsonObject doApprove (String id, User user);
+    JsonObject doAlter   (String id, JsonObject p, User user);
+    JsonObject doAnnul   (String id, JsonObject p, User user);
         
 }
