@@ -1,0 +1,66 @@
+<span
+	data-popup-width=440
+	data-popup-height=260
+	data-popup-title='Данные об оплате'
+>
+
+	<style>
+
+        label[data-block-name=agreement_payment_new] {
+        	width: 220px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=agreement_payment_new] {
+        	width: 130px !important;
+        }
+
+        input[data-block-name=agreement_payment_new].dt {
+        	width: 70px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:215px ">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Период: с</label>
+                <div>
+                    <input name=datefrom placeholder="" class=dt />
+по
+                    <input name=dateto placeholder="" class=dt />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Начислено за период</label>
+                <div>
+                    <input name=bill />&nbsp;&nbsp;руб.
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Задолженность (-) / переплата (+)</label>
+                <div>
+                    <input name=debt />&nbsp;&nbsp;руб.
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Оплачено за период</label>
+                <div>
+                    <input name=paid />&nbsp;&nbsp;руб.
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>

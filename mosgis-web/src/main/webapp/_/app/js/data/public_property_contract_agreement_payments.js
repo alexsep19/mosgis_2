@@ -2,16 +2,16 @@ define ([], function () {
 
     $_DO.create_public_property_contract_agreement_payments = function (e) {
 
-        use.block ('public_property_contract_agreement_payment_new')   
-        
+        use.block ('agreement_payment_new')
+
     }
-        
+
     return function (done) {
 
         w2ui ['topmost_layout'].unlock ('main')               
 
         var data = clone ($('body').data ('data'))
-        
+
         var it = data.item
 
 //        if (!is_editable (it)) return done (data)
