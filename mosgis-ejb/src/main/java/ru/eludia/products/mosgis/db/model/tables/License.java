@@ -12,16 +12,10 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 
 public class License extends Table {
 
-    //todo
-    private void pk(String licenseguid, c c) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
     public enum c implements ColEnum {
         
         LICENSEGUID                     (Type.UUID,                         null,   "UUID лицензии в системе"),
-        //todo - which type better for nonNegativeInteger?
-        LICENSEVERSION                  (Type.UUID,                         null,   "Версия лицензии" ),
+        LICENSEVERSION                  (Type.INTEGER,                      null,   "Версия лицензии" ),
         ID_LOG                          (LicenseLog.class,                  null,   "Последнее событие редактирования"), 
         LICENSENUMBER                   (STRING,                    9,              "Номер лицензии"),
         LICENSE_REG_DATE                (DATE,                                      "Дата регистрации лицензии"),   
@@ -47,7 +41,7 @@ public class License extends Table {
         
         cols   (c.class);
         
-        pk    ("licenseguid", c.LICENSEGUID);
+        pk    (c.LICENSEGUID);
         //todo - add _ to name
         key    ("licenseorganization", c.LICENSEORGANIZATION);
     
