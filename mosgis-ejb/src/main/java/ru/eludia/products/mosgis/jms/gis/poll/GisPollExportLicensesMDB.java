@@ -1,29 +1,35 @@
 package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.stream.Collectors;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
-import ru.eludia.base.db.sql.gen.Get;
-import ru.eludia.products.mosgis.db.model.incoming.InAccessRequests;
-import ru.eludia.products.mosgis.db.model.tables.AccessRequest;
+import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.products.mosgis.db.model.tables.License;
+import ru.eludia.products.mosgis.db.model.tables.LicenseHouse;
+import ru.eludia.products.mosgis.db.model.tables.LicenseLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.db.model.voc.VocLicenseStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisLicenseClient;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
-import ru.eludia.products.mosgis.ejb.wsc.WsGisOrgClient;
-import ru.eludia.products.mosgis.jmx.DelegationLocal;
+import ru.eludia.products.mosgis.util.StringUtils;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
+import ru.gosuslugi.dom.schema.integration.licenses.ExportLicenseResultType;
 import ru.gosuslugi.dom.schema.integration.licenses.GetStateResult;
+import ru.gosuslugi.dom.schema.integration.licenses.LicenseOrganizationType;
+import ru.gosuslugi.dom.schema.integration.licenses.LicenseType;
 import ru.gosuslugi.dom.schema.integration.licenses_service_async.Fault;
 
 @MessageDriven(activationConfig = {
@@ -39,21 +45,33 @@ public class GisPollExportLicensesMDB  extends GisPollMDB {
     @Override
     protected void handleOutSoapRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
         
-        UUID orgPPAGuid = (UUID) r.get("orgppaguid");
-        
         try {
             
-            GetStateResult state = getState (r);
-            
-            ErrorMessageType errorMessage = state.getErrorMessage ();
-            if (errorMessage != null) throw new GisPollException (errorMessage);
-           /*             
-            List <Map<String, Object>> l = new ArrayList <> ();
-            for (ExportDelegatedAccessType i: state.getExportDelegatedAccessResult ()) AccessRequest.add (l, i);
-            db.upsert (AccessRequest.class, l);
-            */
+            GetStateResult result = getState(r);
+
+            ErrorMessageType errorMessage = result.getErrorMessage();
+            if (errorMessage != null) {
+                if ("INT002012".equals(errorMessage.getErrorCode())) {
+
+                    logger.warning("License not found");
+
+                    db.update(OutSoap.class, HASH(
+                            "uuid", uuid,
+                            "id_status", DONE.getId()
+                    ));
+
+                    return;
+                } else {
+                    throw new GisPollException(errorMessage);
+                }
+            }
+
+            for (ExportLicenseResultType license : result.getLicense()) {
+                saveLicense(db, uuid, license);
+            }
+
             db.update (OutSoap.class, HASH (
-                "uuid", getUuid (),
+                "uuid", uuid,
                 "id_status", DONE.getId ()
             ));
 
@@ -82,6 +100,77 @@ public class GisPollExportLicensesMDB  extends GisPollMDB {
         
         return rp;
         
-    }    
+    }
+    
+    private void saveLicense(DB db, UUID uuidOutSoap, ExportLicenseResultType license) throws SQLException {
+
+        final String uuid = license.getLicenseGUID();
+
+        Map<String, Object> record = HASH(
+                License.c.ADDITIONAL_INFORMATION,       license.getAdditionalInformation(),
+                License.c.LICENSEABLE_TYPE_OF_ACTIVITY, license.getLicensableTypeOfActivity(),
+                License.c.LICENSEGUID,                  uuid,
+                License.c.LICENSE_NUMBER,               license.getLicenseNumber(),
+                License.c.LICENSE_REG_DATE,             license.getLicenseRegDate(),
+                License.c.ID_STATUS,                    VocLicenseStatus.i.forName(license.getLicenseStatus()),
+                License.c.LICENSE_VERSION,              license.getLicenseVersion(),
+                License.c.REGION_FIAS_GUID,             license.getRegionFIASGuid()
+        );
+
+        LicenseOrganizationType organization = license.getLicenseOrganization();
+        String licenseOrgOgrn = "";
+        String licenseOrgKpp = "";
+        if (organization.getEntrp() != null) {
+            licenseOrgOgrn = organization.getEntrp().getOGRNIP();
+        } else if (organization.getLegal() != null) {
+            licenseOrgOgrn = organization.getLegal().getOGRN();
+            licenseOrgKpp = organization.getLegal().getKPP();
+        }
+        record.put(License.c.UUID_ORG.name(), getOrgId(db, licenseOrgOgrn, licenseOrgKpp));
+
+        LicenseType.LicensingAuthority licensingAuthority = license.getLicensingAuthority();
+        record.put(License.c.UUID_ORG_AUTHORITY.name(), getOrgId(db, licensingAuthority.getOGRN(), licensingAuthority.getKPP()));
+
+        db.upsert(License.class, record);
+
+        record.put("uuid_object",   uuid);
+        record.put("uuid_out_soap", uuidOutSoap);
+        record.put("action",        VocAction.i.REFRESH);
+
+        db.insert(LicenseLog.class, record);
+
+        db.dupsert(
+                LicenseHouse.class,
+                HASH("uuid", uuid),
+                license.getHouse().stream().map((l) -> {
+                    return HASH(
+                            "is_deleted",    0,
+                            "fiashouseguid", l.getFIASHouseGUID(),
+                            "houseaddress",  l.getHouseAddress()
+                    // TODO l.getContract()
+                    );
+                }).collect(Collectors.toList()),
+                "fiashouseguid"
+        );
+
+//license.getAccompanyingDocument();
+    }
+    
+    private String getOrgId(DB db, String ogrn, String kpp) throws SQLException {
+        Select orgSelect = db.getModel()
+                .select(VocOrganization.class, "uuid")
+                .where("ogrn", ogrn)
+                .and("is_deleted", 0);
+        if (StringUtils.isNotBlank(kpp)) {
+            orgSelect.and("kpp", kpp);
+        }
+        String orgUuid = db.getString(orgSelect);
+        if (StringUtils.isBlank(orgUuid)) {
+            logger.log(Level.SEVERE, "Не найдена организация с ОГРН " + ogrn);
+
+            //TODO Скачивание организации
+        }
+        return orgUuid;
+    }
     
 }
