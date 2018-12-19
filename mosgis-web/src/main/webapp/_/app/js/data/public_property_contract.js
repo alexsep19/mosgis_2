@@ -32,7 +32,7 @@ define ([], function () {
                 
                 var it = data.item
                 
-                it.last_approve = data.last_approve
+                it.last_annul = data.last_annul
 
                 it._can = {}
                 
