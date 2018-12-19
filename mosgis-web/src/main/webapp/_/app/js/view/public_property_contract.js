@@ -42,6 +42,7 @@ define ([], function () {
                             {id: 'public_property_contract_common',   caption: 'Общие'},
                             {id: 'public_property_contract_docs',     caption: 'Документы'},
                             {id: 'public_property_contract_voting_protocols', caption: 'Протоколы голосования'},
+                            {id: 'public_property_contract_agreement_payments', caption: 'Расчеты', off: it.id_ctr_status == 10},
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_public_property_contract

@@ -65,8 +65,9 @@ define ([], function () {
                     switch (it.id_ctr_status) {
                         case 40:
                             it._can.annul = 1
+                            it._can.create_payment = 1
                     }
-
+                    
                 }
 
                 $('body').data ('data', data)
