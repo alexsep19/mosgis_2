@@ -23,6 +23,7 @@ import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.ActualPublicPropertyContract;
+import ru.eludia.products.mosgis.db.model.tables.CharterLog;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContract;
 import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContractLog;
@@ -32,6 +33,7 @@ import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContractFileLog;
 import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContractVotingProtocol;
 import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContractVotingProtocolLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocPublicPropertyContractFileType;
 import ru.eludia.products.mosgis.db.model.voc.VocUserOktmo;
@@ -125,6 +127,31 @@ public class PublicPropertyContractImpl extends BaseCRUD<PublicPropertyContract>
             .toMaybeOne (OutSoap.class, "err_text").on ("cpl.uuid_out_soap=out_soap.uuid")
             .toMaybeOne (House.class, "AS house", "uuid").on ("root.fiashouseguid=house.fiashouseguid")
         );
+
+        switch (VocGisStatus.i.forId (item.getInt (PublicPropertyContract.c.ID_CTR_STATUS.lc (), 10))) {
+            
+            case ANNUL:
+            case PENDING_RQ_ANNULMENT:
+            case PENDING_RP_ANNULMENT:
+            
+                JsonObject lastAnnul = db.getJsonObject (m
+                    .select  (CharterLog.class, "AS root", "*")
+                    .and    ("uuid_object", id)
+                    .and    ("action",      VocAction.i.ANNUL.getName ())
+                    .orderBy ("root.ts DESC")
+                    .toOne  (OutSoap.class, "AS soap")
+                    .and ("id_status", VocAsyncRequestState.i.DONE.getId ())
+                    .and ("is_failed", 0)
+                    .on ()
+                );
+
+                if (lastAnnul != null) job.add ("last_annul", lastAnnul);                                
+                
+                break;
+             
+            default:
+                
+        }        
 
         job.add ("item", item);        
 

@@ -107,6 +107,10 @@ define ([], function () {
         if (!confirm ('Открыть эту карточку на редактирование?')) return
         query ({type: 'public_property_contracts', action: 'alter'}, {data: {}}, reload_page)
     }
+    
+    $_DO.annul_public_property_contract_common = function (e) {
+        use.block ('public_property_contract_annul_popup')
+    }    
 
     $_DO.choose_tab_public_property_contract_common = function (e) {
     
