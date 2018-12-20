@@ -62,7 +62,16 @@ public class EntrancesImpl extends BasePassport<Entrance> implements EntrancesLo
         JsonArrayBuilder ab = Json.createArrayBuilder ();
         
         Select select = ModelHolder.getModel ()
-            .select (Entrance.class, "uuid AS id", "entrancenum", "storeyscount", "creationyear", "terminationdate", "is_annuled", "id_status", "code_vc_nsi_330", "annulmentinfo")
+            .select (Entrance.class, "uuid AS id", 
+                                     "entrancenum", 
+                                     "storeyscount", 
+                                     "creationyear", 
+                                     "terminationdate", 
+                                     "is_annuled",
+                                     "is_annuled_in_gis",
+                                     "id_status", 
+                                     "code_vc_nsi_330", 
+                                     "annulmentinfo")
             .where ("uuid_house", uuidHouse)
             .and   ("is_deleted",  0)
             .orderBy ("entrancenum");

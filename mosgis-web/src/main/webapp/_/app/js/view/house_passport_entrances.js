@@ -16,11 +16,13 @@ define ([], function () {
         if (g.getSelection ().length != 1) return
 
         var annuled = g.get (g.getSelection () [0]).is_annuled
+        var annuled_in_gis = g.get (g.getSelection () [0]).is_annuled_in_gis
         var status = g.get (g.getSelection () [0]).id_status
 
         t.enable (b [annuled])
 
         if (annuled) {
+            if (!annuled_in_gis) t.disable ('restoreButton')
             t.disable ('editButton')
             t.disable ('deleteButton')
         }
