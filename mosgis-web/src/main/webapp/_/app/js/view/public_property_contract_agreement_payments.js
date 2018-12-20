@@ -42,6 +42,11 @@ define ([], function () {
             onAdd:    $_DO.create_public_property_contract_agreement_payments,            
             onDelete: $_DO.delete_public_property_contract_agreement_payments,
             onEdit:   $_DO.edit_public_property_contract_agreement_payments,
+            onDblClick: function (e) {
+                if (!data.item._can.create_payment) return
+                w2ui [e.target].select (e.recid)
+                $_DO.edit_public_property_contract_agreement_payments (e)
+            }            
             
         })
 
