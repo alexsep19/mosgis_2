@@ -14,8 +14,8 @@ public class AgreementPayment extends EnTable {
 
         UUID_CTR             (PublicPropertyContract.class, "Ссылка на договор на пользования общим имуществом"),       
         
-        ID_STATUS            (VocGisStatus.class,        VocGisStatus.i.PROJECT.asDef (),     "Статус устава с точки зрения mosgis"),
-        ID_STATUS_GIS        (VocGisStatus.class,        VocGisStatus.i.PROJECT.asDef (),     "Статус устава с точки зрения ГИС ЖКХ"),
+        ID_AP_STATUS          (VocGisStatus.class,        VocGisStatus.i.PROJECT.asDef (),     "Статус с точки зрения mosgis"),
+        ID_AP_STATUS_GIS      (VocGisStatus.class,        VocGisStatus.i.PROJECT.asDef (),     "Статус с точки зрения ГИС ЖКХ"),
 //        ID_CTR_STATE_GIS     (VocGisStatus.class,        VocGisStatus.i.NOT_RUNNING.asDef (), "Состояние устава с точки зрения ГИС ЖКХ"),
 
         ID_LOG                (AgreementPaymentLog.class,  "Последнее событие редактирования"),

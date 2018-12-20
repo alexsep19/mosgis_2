@@ -24,7 +24,9 @@ public class AgreementPaymentLog extends GisWsLogTable {
 
         return (Get) getModel ()
             .get (this, id, "*")
-            .toOne (AgreementPayment.class, "AS ap").on ()
+            .toOne (AgreementPayment.class, "AS ap"
+                , AgreementPayment.c.ID_AP_STATUS.lc ()
+            ).on ()
             .toOne (PublicPropertyContract.class, "AS ctr"
                 , PublicPropertyContract.c.CONTRACTVERSIONGUID.lc ()
             ).on ()

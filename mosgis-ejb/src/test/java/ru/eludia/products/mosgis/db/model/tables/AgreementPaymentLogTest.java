@@ -35,14 +35,13 @@ public class AgreementPaymentLogTest extends BaseTest {
         table    = (AgreementPayment) model.get (AgreementPayment.class);
         logTable = (AgreementPaymentLog) model.get (AgreementPaymentLog.class);        
         
-        this.commonPart = HASH (
-            EnTable.c.UUID, uuid,
+        this.commonPart = HASH (EnTable.c.UUID, uuid,
             EnTable.c.IS_DELETED, 0,
             AgreementPayment.c.UUID_CTR, getSomeUuid (PublicPropertyContract.class),
             AgreementPayment.c.AGREEMENTPAYMENTVERSIONGUID, null,
             AgreementPayment.c.ID_LOG, null, 
-            AgreementPayment.c.ID_STATUS, 10, 
-            AgreementPayment.c.ID_STATUS_GIS, 10, 
+            AgreementPayment.c.ID_AP_STATUS, 10, 
+            AgreementPayment.c.ID_AP_STATUS_GIS, 10, 
             AgreementPayment.c.DEBT, "1.5",
             AgreementPayment.c.BILL, "2.3",
             AgreementPayment.c.PAID, "0.7"

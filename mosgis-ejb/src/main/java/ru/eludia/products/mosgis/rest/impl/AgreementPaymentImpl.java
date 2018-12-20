@@ -45,7 +45,7 @@ public class AgreementPaymentImpl extends BaseCRUD<AgreementPayment> implements 
        
     private void filterOffDeleted (Select select) {
         select.and (EnTable.c.IS_DELETED, Operator.EQ, 0);
-        select.and (AgreementPayment.c.ID_STATUS.lc () + " NOT IN", VocGisStatus.i.ANNUL);
+        select.and (AgreementPayment.c.ID_AP_STATUS.lc () + " NOT IN", VocGisStatus.i.ANNUL);
     }
 
     private void applyComplexSearch (final ComplexSearch search, Select select) {
@@ -135,9 +135,8 @@ public class AgreementPaymentImpl extends BaseCRUD<AgreementPayment> implements 
     @Override
     public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
 
-        db.update (getTable (), HASH (
-            EnTable.c.UUID,               id,
-            AgreementPayment.c.ID_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+        db.update (getTable (), HASH (EnTable.c.UUID,               id,
+            AgreementPayment.c.ID_AP_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId ()
         ));
 
         logAction (db, user, id, VocAction.i.APPROVE);

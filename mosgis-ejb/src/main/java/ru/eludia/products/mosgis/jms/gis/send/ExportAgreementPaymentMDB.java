@@ -53,7 +53,7 @@ public class ExportAgreementPaymentMDB extends GisExportMDB<AgreementPaymentLog>
     @Override
     protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
         
-        VocGisStatus.i status = VocGisStatus.i.forId (r.get ("ctr." + AgreementPayment.c.ID_STATUS.lc ()));
+        VocGisStatus.i status = VocGisStatus.i.forId (r.get ("ap." + AgreementPayment.c.ID_AP_STATUS.lc ()));
         AgreementPayment.Action action = AgreementPayment.Action.forStatus (status);        
 
         if (action == null) {
@@ -92,7 +92,7 @@ public class ExportAgreementPaymentMDB extends GisExportMDB<AgreementPaymentLog>
 
     @Override
     protected Col getStatusCol () {
-        return AgreementPayment.c.ID_STATUS.getCol ();
+        return AgreementPayment.c.ID_AP_STATUS.getCol ();
     }
 
     @Override

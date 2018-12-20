@@ -99,9 +99,8 @@ public class GisPollExportAgreementPaymentMDB  extends GisPollMDB {
         
         final byte id = status.getId ();
         
-        return HASH (
-            c.ID_STATUS,     id,
-            c.ID_STATUS_GIS, id
+        return HASH (c.ID_AP_STATUS,     id,
+            c.ID_AP_STATUS_GIS, id
         );
         
     }
