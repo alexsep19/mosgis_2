@@ -10,10 +10,13 @@ define ([], function () {
 
         t.disable (b [0])
         t.disable (b [1])
+        t.disable ('editButton')
+        t.disable ('deleteButton')
 
         if (g.getSelection ().length != 1) return
 
         var annuled = g.get (g.getSelection () [0]).is_annuled
+        var status = g.get (g.getSelection () [0]).id_status
 
         t.enable (b [annuled])
 
@@ -25,6 +28,9 @@ define ([], function () {
             t.enable ('editButton')
             t.enable ('deleteButton')
         }
+
+        if (status == 10) t.disable ('annulButton')
+        else if (status == 20) t.disable ('deleteButton')
 
     })}
 
