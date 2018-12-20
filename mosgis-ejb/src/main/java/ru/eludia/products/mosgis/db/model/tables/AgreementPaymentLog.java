@@ -6,6 +6,7 @@ import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportPublicPropertyContractRequest;
 
 public class AgreementPaymentLog extends GisWsLogTable {
@@ -27,6 +28,7 @@ public class AgreementPaymentLog extends GisWsLogTable {
             .toOne (PublicPropertyContract.class, "AS ctr"
                 , PublicPropertyContract.c.CONTRACTVERSIONGUID.lc ()
             ).on ()
+            .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("ctr.uuid_org=org.uuid")
         ;
         
     }    
