@@ -111,7 +111,7 @@ public class GisPollExportAgreementPaymentMDB  extends GisPollMDB {
         
 logger.info ("h=" + h);
         
-        h.put ("uuid", r.get ("ctr.uuid"));
+        h.put ("uuid", r.get ("ap.uuid"));
         db.update (AgreementPayment.class, h);
         
         h.put ("uuid", uuid);
