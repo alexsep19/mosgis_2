@@ -156,6 +156,11 @@ public class VocGisStatus extends Table {
             return forId (Integer.parseInt (id.toString ()));
         }
 
+        @Override
+        public String toString () {
+            return Byte.toString (id);
+        }
+
     }
 
 }

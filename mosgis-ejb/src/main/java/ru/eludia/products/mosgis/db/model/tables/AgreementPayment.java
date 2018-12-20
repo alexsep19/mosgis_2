@@ -5,6 +5,7 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 
 public class AgreementPayment extends EnTable {
 
@@ -12,8 +13,8 @@ public class AgreementPayment extends EnTable {
 
         UUID_CTR             (PublicPropertyContract.class, "Ссылка на договор на пользования общим имуществом"),       
         
-//        ID_CTR_STATUS        (VocGisStatus.class,        VocGisStatus.i.PROJECT.asDef (),     "Статус устава с точки зрения mosgis"),
-//        ID_CTR_STATUS_GIS    (VocGisStatus.class,        VocGisStatus.i.PROJECT.asDef (),     "Статус устава с точки зрения ГИС ЖКХ"),
+        ID_STATUS            (VocGisStatus.class,        VocGisStatus.i.PROJECT.asDef (),     "Статус устава с точки зрения mosgis"),
+        ID_STATUS_GIS        (VocGisStatus.class,        VocGisStatus.i.PROJECT.asDef (),     "Статус устава с точки зрения ГИС ЖКХ"),
 //        ID_CTR_STATE_GIS     (VocGisStatus.class,        VocGisStatus.i.NOT_RUNNING.asDef (), "Состояние устава с точки зрения ГИС ЖКХ"),
 
         ID_LOG                (AgreementPaymentLog.class,  "Последнее событие редактирования"),
@@ -66,6 +67,7 @@ public class AgreementPayment extends EnTable {
                     + "FROM "
                     + " tb_pp_ctr_ap o "
                     + "WHERE o.is_deleted = 0"
+                    + " AND o.id_status NOT IN (" + VocGisStatus.i.ANNUL + ")"
                     + " AND o.UUID_CTR = :NEW.UUID_CTR "
                     + " AND o.DATETO   >= :NEW.DATEFROM "
                     + " AND o.DATEFROM <= :NEW.DATETO "
