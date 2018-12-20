@@ -17,7 +17,6 @@ import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.AgreementPayment;
 import ru.eludia.products.mosgis.db.model.tables.AgreementPaymentLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
-import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContract;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -84,6 +83,8 @@ public class AgreementPaymentImpl extends BaseCRUD<AgreementPayment> implements 
 
         Select select = m.select (AgreementPayment.class, "*", "uuid AS id")
             .orderBy (AgreementPayment.c.DATEFROM.lc () + " DESC")
+            .toMaybeOne (AgreementPaymentLog.class, "AS cpl").on ()
+            .toMaybeOne (OutSoap.class, "AS soap", "id_status", "is_failed", "ts", "ts_rp", "err_text", "uuid_ack").on ("cpl.uuid_out_soap=out_soap.uuid")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
         applySearch (Search.from (p), select);

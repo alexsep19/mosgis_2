@@ -26,6 +26,7 @@ import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportResult;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 import ru.eludia.products.mosgis.db.model.tables.AgreementPayment.c;
+import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContract;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 
 @MessageDriven(activationConfig = {
@@ -42,7 +43,8 @@ public class GisPollExportAgreementPaymentMDB  extends GisPollMDB {
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
             .toOne (AgreementPaymentLog.class,     "AS log", "uuid", "action").on ("log.uuid_out_soap=root.uuid")
-            .toOne (AgreementPayment.class,        "AS ctr", "uuid").on ()
+            .toOne (AgreementPayment.class,        "AS ap", "uuid").on ()
+            .toOne (PublicPropertyContract.class, "AS ctr").on ()
             .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("ctr.uuid_org=org.uuid")
         ;
     }
