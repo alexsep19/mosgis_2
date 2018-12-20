@@ -38,7 +38,7 @@ define ([], function () {
 
         if (!confirm ('Отменить аннулирование записи?')) return
 
-        query (getTia (), {data: {        
+        query ({type: 'entrances', id: getId (), action: 'restore'}, {data: {        
 
             terminationdate: null,
             annulmentinfo: null,

@@ -50,4 +50,12 @@ public class Entrances extends EJBResource <EntrancesLocal> {
         return back.doDelete (id, getUser ());
     }
     
+    @POST
+    @Path ("{id}/restore")
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject doRestore (@PathParam ("id") String id, JsonObject p) {
+        return back.doRestore(id, p);
+    }
+    
 }

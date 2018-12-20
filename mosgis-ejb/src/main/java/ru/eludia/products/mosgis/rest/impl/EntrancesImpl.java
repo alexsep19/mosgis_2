@@ -145,5 +145,18 @@ public class EntrancesImpl extends BasePassport<Entrance> implements EntrancesLo
         db.update (table, record);
 
     });}
+    
+    @Override
+    public JsonObject doRestore (String id, JsonObject p) {return doAction ((db) -> {
+        
+        JsonObject data = p.getJsonObject ("data");
+
+        final Table table = getTable ();
+
+        Map<String, Object> record = table.HASH (data, "uuid", id, "entranceguid", null);
+
+        db.update (table, record);
+        
+    });}
 
 }
