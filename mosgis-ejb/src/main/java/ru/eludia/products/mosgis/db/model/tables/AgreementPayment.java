@@ -49,7 +49,40 @@ public class AgreementPayment extends EnTable {
     public AgreementPayment () {        
         super ("tb_pp_ctr_ap", "Плата по договорам на пользование общим имуществом");
         cols   (c.class);        
-        key    ("uuid_org", c.UUID_CTR);
+        key    ("uuid_org", c.UUID_CTR);        
+
+        trigger ("BEFORE INSERT OR UPDATE", ""
+                
+            + "DECLARE" 
+            + " PRAGMA AUTONOMOUS_TRANSACTION; "
+            + "BEGIN "                    
+                    
+            + "IF :NEW.is_deleted = 0 THEN BEGIN "
+                
+                + " FOR i IN ("
+                    + "SELECT "
+                    + " o.DATEFROM"
+                    + " , o.DATETO "
+                    + "FROM "
+                    + " tb_pp_ctr_ap o "
+                    + "WHERE o.is_deleted = 0"
+                    + " AND o.UUID_CTR = :NEW.UUID_CTR "
+                    + " AND o.DATETO   >= :NEW.DATEFROM "
+                    + " AND o.DATEFROM <= :NEW.DATETO "
+                    + " AND o.uuid <> NVL(:NEW.uuid, '00') "
+                    + ") LOOP"
+                + " raise_application_error (-20000, "
+                    + "'Указанный период пересекается с другой информацией об оплате по данному договору с ' "
+                    + "|| TO_CHAR (i.DATEFROM, 'DD.MM.YYYY')"
+                    + "||' по '"
+                    + "|| TO_CHAR (i.DATETO, 'DD.MM.YYYY')"
+                    + "|| '. Операция отменена.'); "
+                + " END LOOP; "
+
+            + "END; END IF; "
+                    
+        + "END;");        
+        
     }
 /*    
     public enum Action {
