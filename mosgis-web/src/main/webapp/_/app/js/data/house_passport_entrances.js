@@ -50,24 +50,20 @@ define ([], function () {
 
     $_DO.delete_house_passport_entrances = function (e) {
     
-        var grid = w2ui [e.target]
-        var id   = grid.getSelection () [0]
+        var grid = getGrid ()
+        var id   = getId ()
         var r    = grid.get (id)
     
-        if (!e.force) {
+        if (!confirm ('Удалить запись?')) return 
+
+        for (code in $('body').data ('data').vc_nsi_192) {
         
-            for (code in $('body').data ('data').vc_nsi_192) {
+            if (code == 'items') continue
             
-                if (code == 'items') continue
-                
-                if (r ['cnt_' + code] > 0) {                
-                    e.preventDefault ()
-                    return alert ('Пока к подъезду относится хотя бы один лифт, удаление невозможно')                
-                }
-
+            if (r ['cnt_' + code] > 0) {                
+                e.preventDefault ()
+                return alert ('Пока к подъезду относится хотя бы один лифт, удаление невозможно')                
             }
-
-            return
 
         }
 

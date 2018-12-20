@@ -13,7 +13,18 @@ define ([], function () {
 
         if (g.getSelection ().length != 1) return
 
-        t.enable (b [g.get (g.getSelection () [0]).is_annuled])
+        var annuled = g.get (g.getSelection () [0]).is_annuled
+
+        t.enable (b [annuled])
+
+        if (annuled) {
+            t.disable ('editButton')
+            t.disable ('deleteButton')
+        }
+        else {
+            t.enable ('editButton')
+            t.enable ('deleteButton')
+        }
 
     })}
 
@@ -63,8 +74,6 @@ define ([], function () {
                 toolbar: data.is_passport_editable,
                 footer: true,
                 toolbarAdd: true,
-                toolbarEdit: true,
-                toolbarDelete: true,
                 toolbarInput: false,
                 toolbarReload: false,
             },     
@@ -72,6 +81,8 @@ define ([], function () {
             toolbar: {
             
                 items: [
+                    {type: 'button', id: 'deleteButton', caption: 'Удалить', onClick: $_DO.delete_house_passport_entrances, icon: 'w2ui-icon-cross', disabled: true},
+                    {type: 'button', id: 'editButton', caption: 'Изменить', onClick: $_DO.edit_house_passport_entrances, icon: 'w2ui-icon-pencil', disabled: true},
                     {type: 'button', id: b [0], caption: 'Аннулировать', onClick: $_DO.annul_house_passport_entrances, disabled: true},
                     {type: 'button', id: b [1], caption: 'Восстановить', onClick: $_DO.restore_house_passport_entrances, disabled: true},
                 ],
@@ -114,9 +125,6 @@ define ([], function () {
             onDblClick: null,
 
             onAdd: function () {use.block ('entrance_new')},
-            onEdit: $_DO.edit_house_passport_entrances,
-
-            onDelete: $_DO.delete_house_passport_entrances,
             onChange: $_DO.patch_house_passport_entrances,
 
             onEditField: function (e) {
