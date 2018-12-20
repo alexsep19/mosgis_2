@@ -21,6 +21,14 @@ public class VocOrganizations extends EJBResource <VocOrganizationsLocal> {
     }
     
     @POST
+    @Path("list")
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject list (JsonObject p) {
+        return back.list (p);
+    }
+    
+    @POST
     @Path("import") 
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
