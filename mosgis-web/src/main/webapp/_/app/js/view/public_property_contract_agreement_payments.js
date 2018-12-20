@@ -1,6 +1,23 @@
 define ([], function () {
     
     var grid_name = 'public_property_contract_agreement_payments_grid'
+    
+/*
+    function recalcToolbar (e) {e.done (function () {
+
+        var g = w2ui ['house_passport_lifts_grid']
+
+        var t = g.toolbar
+
+        t.disable (b [0])
+        t.disable (b [1])
+
+        if (g.getSelection ().length != 1) return
+
+        t.enable (b [g.get (g.getSelection () [0]).is_annuled])
+
+    })}
+*/    
                 
     return function (data, view) {
     
@@ -25,6 +42,15 @@ define ([], function () {
                 toolbarDelete: data.item._can.create_payment,
                 toolbarEdit: data.item._can.create_payment,
             },            
+            
+            
+            toolbar: {
+            
+                items: [
+                    {type: 'button', id: 'approve', caption: 'Разместить', onClick: $_DO.delete_add_services, disabled: true, off: $_USER.role.admin},
+                ].filter (not_off),
+                
+            }, 
 
             textSearch: 'contains',
             
