@@ -6,7 +6,7 @@ define ([], function () {
 
             $('#w2ui-popup .w2ui-form').w2reform ({
 
-                name: 'agreement_payment_new_form',
+                name: 'agreement_payment_popup_form',
 
                 record: data.record,
 

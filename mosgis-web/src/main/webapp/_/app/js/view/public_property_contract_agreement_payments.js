@@ -21,6 +21,7 @@ define ([], function () {
                 toolbarColumns: false,
                 toolbarInput: false,
                 toolbarAdd: data.item._can.create_payment,
+                toolbarDelete: data.item._can.create_payment,
             },            
 
             textSearch: 'contains',
@@ -37,9 +38,11 @@ define ([], function () {
 
             url: '/mosgis/_rest/?type=agreement_payments',
                                     
-            onDblClick: function (e) {openTab ('/public_property_contract_agreement_payment/' + e.recid)},
+//            onDblClick: function (e) {openTab ('/public_property_contract_agreement_payment/' + e.recid)},
             
             onAdd: $_DO.create_public_property_contract_agreement_payments,
+            
+            onDelete: $_DO.delete_public_property_contract_agreement_payments,
             
         })
 

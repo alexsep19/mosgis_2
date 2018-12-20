@@ -1,8 +1,8 @@
 define ([], function () {
     
-    $_DO.update_agreement_payment_new = function (e) {
+    $_DO.update_agreement_payment_popup = function (e) {
 
-        var form = w2ui ['agreement_payment_new_form']
+        var form = w2ui ['agreement_payment_popup_form']
 
         var v = form.values ()
 
