@@ -31,6 +31,7 @@ define ([], function () {
                                     url: '/mosgis/_rest/?type=voc_organizations&part=list',
                                     postData: {'protocol_uuid': data.item.uuid, 'searchLogic': 'OR'},
                                     cacheMax: 10,
+                                    filter: false,
 
                                     onSearch: function (e) {
 
