@@ -5,6 +5,7 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 
 public class AgreementPayment extends EnTable {
@@ -88,7 +89,7 @@ public class AgreementPayment extends EnTable {
         + "END;");        
         
     }
-/*    
+
     public enum Action {
         
         PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
@@ -116,7 +117,7 @@ public class AgreementPayment extends EnTable {
         public VocGisStatus.i getOkStatus () {
             return okStatus;
         }
-        
+
         public static Action forStatus (VocGisStatus.i status) {
             switch (status) {
                 case PENDING_RQ_PLACING:   return PLACING;
@@ -124,15 +125,15 @@ public class AgreementPayment extends EnTable {
                 default: return null;
             }            
         }
-        
+
         public static Action forLogAction (VocAction.i a) {
             switch (a) {
                 case APPROVE: return PLACING;
                 case ANNUL:   return ANNULMENT;
                 default: return null;
-            }            
+            }
         }
-                        
+
     };
-*/        
+
 }

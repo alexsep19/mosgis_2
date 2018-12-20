@@ -7,6 +7,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.jms.Queue;
 import javax.json.JsonObject;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Select;
@@ -129,41 +130,17 @@ public class AgreementPaymentImpl extends BaseCRUD<AgreementPayment> implements 
         }
         
     }
-/*    
+    
     @Override
     public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
 
         db.update (getTable (), HASH (
-            "uuid",           id,
-            "id_ctr_status",  VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+            "uuid",          id,
+            "id_ctr_status", VocGisStatus.i.PENDING_RQ_PLACING.getId ()
         ));
-        
+
         logAction (db, user, id, VocAction.i.APPROVE);
 
-        List<UUID> ids = new ArrayList<> ();        
-        
-        db.forEach (db.getModel ().select (AgreementPayment.class, "uuid_file_0", "uuid_file_1").where ("uuid", id), (rs) -> {
-            Object u = db.getValue (rs, 1);
-            if (u != null) ids.add ((UUID) u);
-            u = db.getValue (rs, 2);
-            if (u != null) ids.add ((UUID) u);
-        });
-        
-        for (UUID idFile: ids) {
-            
-            String idFileLog = db.insertId (AgreementPaymentFileLog.class, HASH (
-                "action", VocAction.i.APPROVE.getName (),
-                "uuid_object", idFile,
-                "uuid_user", user == null ? null : user.getId ()
-            )).toString ();
-            
-            db.update (AgreementPaymentFile.class, HASH (
-                "uuid",      idFile,
-                "id_log",    idFileLog
-            ));
-            
-        }        
-
-    });}    
-*/        
+    });}
+    
 }
