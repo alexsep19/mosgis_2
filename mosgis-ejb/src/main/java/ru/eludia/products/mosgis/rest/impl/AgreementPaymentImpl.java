@@ -17,6 +17,7 @@ import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.AgreementPayment;
 import ru.eludia.products.mosgis.db.model.tables.AgreementPaymentLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContract;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -135,8 +136,8 @@ public class AgreementPaymentImpl extends BaseCRUD<AgreementPayment> implements 
     public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
 
         db.update (getTable (), HASH (
-            "uuid",          id,
-            "id_ctr_status", VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+            EnTable.c.UUID,               id,
+            AgreementPayment.c.ID_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId ()
         ));
 
         logAction (db, user, id, VocAction.i.APPROVE);

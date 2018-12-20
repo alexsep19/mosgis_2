@@ -34,10 +34,7 @@ public class ExportAgreementPaymentMDB extends GisExportMDB<AgreementPaymentLog>
     
     @Resource (mappedName = "mosgis.outExportHouseAgreementPaymentsQueue")
     Queue outExportHouseAgreementPaymentsQueue;
-    
-    @Resource (mappedName = "mosgis.inHouseAgreementPaymentFilesQueue")
-    Queue inHouseAgreementPaymentFilesQueue;
-                
+                    
     protected Get get (UUID uuid) {        
         return ((AgreementPaymentLog) ModelHolder.getModel ().get (AgreementPaymentLog.class)).getForExport (uuid);
     }
@@ -90,7 +87,7 @@ public class ExportAgreementPaymentMDB extends GisExportMDB<AgreementPaymentLog>
 
     @Override
     protected final Queue getFilesQueue () {
-        return inHouseAgreementPaymentFilesQueue;
+        return null;
     }
 
     @Override
@@ -100,7 +97,7 @@ public class ExportAgreementPaymentMDB extends GisExportMDB<AgreementPaymentLog>
 
     @Override
     protected Table getFileLogTable () {
-        throw new UnsupportedOperationException ("No files here");
+        return null;
     }
 
 }

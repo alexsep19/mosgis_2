@@ -2,22 +2,25 @@ define ([], function () {
     
     var grid_name = 'public_property_contract_agreement_payments_grid'
     
-/*
     function recalcToolbar (e) {e.done (function () {
-
-        var g = w2ui ['house_passport_lifts_grid']
+    
+        var g = w2ui [grid_name]
 
         var t = g.toolbar
+        var r = g.get (g.getSelection () [0])
 
-        t.disable (b [0])
-        t.disable (b [1])
+        var id_status = r ? r.id_status : -1
 
-        if (g.getSelection ().length != 1) return
-
-        t.enable (b [g.get (g.getSelection () [0]).is_annuled])
+        switch (id_status) {        
+            case 10:
+                t.enable ('approve')
+                break
+            default:
+                t.disable ('approve')                
+        }
 
     })}
-*/    
+
                 
     return function (data, view) {
     
@@ -47,7 +50,7 @@ define ([], function () {
             toolbar: {
             
                 items: [
-                    {type: 'button', id: 'approve', caption: 'Разместить', onClick: $_DO.delete_add_services, disabled: true, off: $_USER.role.admin},
+                    {type: 'button', id: 'approve', caption: 'Разместить', onClick: $_DO.approve_public_property_contract_agreement_payments, disabled: true, off: $_USER.role.admin},
                 ].filter (not_off),
                 
             }, 
@@ -83,7 +86,10 @@ define ([], function () {
             },
             
             onRefresh: function (e) {e.done (color_data_mandatory)},
-            
+
+            onSelect: !data.item._can.create_payment ? null : recalcToolbar,
+            onUnselect: !data.item._can.create_payment ? null : recalcToolbar,
+
         })
 
     }
