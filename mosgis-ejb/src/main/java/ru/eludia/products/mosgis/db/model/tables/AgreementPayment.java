@@ -24,7 +24,9 @@ public class AgreementPayment extends EnTable {
 
         BILL                  (Type.NUMERIC, 10, 2, null,      "Начислено за период"),
         DEBT                  (Type.NUMERIC, 10, 2, null,      "Размер задолженности (-)/переплаты (+) за период"),
-        PAID                  (Type.NUMERIC, 10, 2, null,      "Оплачено за период")
+        PAID                  (Type.NUMERIC, 10, 2, null,      "Оплачено за период"),
+        
+        AGREEMENTPAYMENTVERSIONGUID  (Type.UUID, null, "Идентификатор версии сведений о внесении платы в ГИС ЖКХ")
 
         ;
 
