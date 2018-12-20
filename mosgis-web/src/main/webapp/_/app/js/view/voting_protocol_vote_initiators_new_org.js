@@ -29,26 +29,20 @@ define ([], function () {
                             {name: 'uuid_org', type: 'list', options: 
                                 {
                                     url: '/mosgis/_rest/?type=voc_organizations&part=list',
-                                    postData: {'protocol_uuid': data.item.uuid},
+                                    postData: {'protocol_uuid': data.item.uuid, 'searchLogic': 'OR'},
                                     cacheMax: 10,
+
+                                    onSearch: function (e) {
+
+                                        this.options.postData['search'] = [{'value': e.search}]
+
+                                    },
 
                                     onLoad: function (e) {
 
-                                        if (e.xhr.status != 200) return $_DO.apologize ({jqXHR: e.xhr})
-
-                                        var content = JSON.parse (e.xhr.responseText).content
-                                        var data = { status : "success", total : content.cnt }
-
-                                        delete content.cnt
-                                        delete content.portion
-                                        delete content.total
-
-                                        for (key in content) {
-                                            data.records = dia2w2uiRecords (content [key])
-                                            e.xhr.responseText = JSON.stringify (data)
-                                            e.xhr.responseJSON = data
-                                            e.data = e.xhr.responseJSON
-                                        }
+                                        dia2w2ui (e)
+                                        e.xhr.responseJSON = JSON.parse (e.xhr.responseText)
+                                        e.data = e.xhr.responseJSON
                                         
                                     }
                                 }
