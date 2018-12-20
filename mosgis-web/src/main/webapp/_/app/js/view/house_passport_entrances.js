@@ -31,10 +31,12 @@ define ([], function () {
         if (!house.minfloorcount) house.minfloorcount = 1
         
         var columns = [
-            {field: 'entrancenum', caption: 'Номер',    size: 100},
+            {field: 'entrancenum', caption: 'Номер',    size: 80},
             {field: 'storeyscount', caption: 'Этажность',  size: 20,  editable: {type: 'int', min: house.minfloorcount, max: house.floorcount}},
             {field: 'creationyear', caption: 'Год постройки',    size: 20,  editable: {type: 'int', min: house.usedyear, max: (new Date ()).getFullYear (), autoFormat: false}},
             {field: 'terminationdate', caption: 'Дата аннулирования', render: _dt,    size: 20},
+            {field: 'code_vc_nsi_330', caption: 'Причина аннулирования', size: 20, voc: d.vc_nsi_330, hidden: 1},
+            {field: 'annulmentinfo', caption: 'Дополнительно', size: 20, hidden: 1}
         ]
         
         $.each (d.vc_nsi_192.items, function () {
@@ -80,7 +82,7 @@ define ([], function () {
                 {master: true},
                 {master: true},
                 {master: true},
-                {master: true},
+                {span: 3, caption: 'Аннулирование'},
                 {span: d.vc_nsi_192.items.length, caption: 'Количество лифтов'},
                 {master: true},
             ],            
