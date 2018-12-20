@@ -27,38 +27,22 @@ define ([], function () {
         v.uuid_ctr = $_REQUEST.id
         
         form.lock ()
+        
+        var tia = {type: 'agreement_payments'}        
+        tia.action = (tia.id = form.record.uuid) ? 'update' : 'create'
 
-        query ({type: 'agreement_payments', action: 'create', id: undefined}, {data: v}, function (data) {
+        query (tia, {data: v}, function (data) {
+            w2popup.close ()
             var grid = w2ui ['public_property_contract_agreement_payments_grid']
-            grid.reload (grid.refresh)                                           
+            grid.reload (grid.refresh)
         })
         
     }
 
     return function (done) {
 
-        var data = clone ($('body').data ('data'))
-        var it = data.item        
-        
-        datefrom = new Date ()
-        datefrom.setDate (1)
-        datefrom = datefrom.toISOString ()
-        if (datefrom < it.startdate.substr (0, 10)) datefrom = it.startdate
-        
-        dateto = new Date ()
-        dateto.setMonth (1 + dateto.getMonth ())
-        dateto.setDate (0)
-        dateto = dateto.toISOString ()
-        if (dateto > it.enddate.substr (0, 10)) dateto = it.enddate
-
-        data.record = {
-            datefrom: datefrom,
-            dateto: dateto,
-            bill: 0,
-            debt: 0,
-            paid: 0,
-        }
-        
+        var data = clone ($('body').data ('data'))        
+        data.record = $_SESSION.delete ('record')        
         done (data)
 
     }
