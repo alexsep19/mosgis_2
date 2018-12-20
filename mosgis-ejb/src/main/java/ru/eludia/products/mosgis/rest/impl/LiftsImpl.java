@@ -137,4 +137,17 @@ public class LiftsImpl extends BasePassport<Lift> implements LiftsLocal {
 
     }    
 
+    @Override
+    public JsonObject doRestore (String id, JsonObject p) {return doAction ((db) -> {
+        
+        JsonObject data = p.getJsonObject ("data");
+
+        final Table table = getTable ();
+
+        Map<String, Object> record = table.HASH (data, "uuid", id, "entranceguid", null);
+
+        db.update (table, record);
+        
+    });}
+    
 }

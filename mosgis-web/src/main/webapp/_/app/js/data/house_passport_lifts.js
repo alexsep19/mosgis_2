@@ -38,7 +38,7 @@ define ([], function () {
 
         if (!confirm ('Отменить аннулирование записи?')) return
 
-        query (getTia (), {data: {        
+        query ({type: 'lifts', id: getId (), action: 'restore'}, {data: {        
 
             terminationdate: null,
             annulmentinfo: null,
@@ -50,7 +50,11 @@ define ([], function () {
     
     $_DO.delete_house_passport_lifts = function (e) {
     
-        if (!e.force) return
+        var grid = getGrid ()
+        var id   = getId ()
+        var r    = grid.get (id)
+
+        if (!confirm ('Удалить запись?')) return 
     
         $('.w2ui-message').remove ()
 
@@ -59,7 +63,7 @@ define ([], function () {
         query ({
         
             type:   'lifts', 
-            id:     w2ui [e.target].getSelection () [0],
+            id:     id,
             action: 'delete',
             
         }, {}, reload_page)
