@@ -88,6 +88,7 @@ w2utils.settings = {
         "Type": "Тип",
         "Modified": "Дата изменения",
         "No items found": "Ничего не найдено",
+        "No matches": "Совпадений не найдено",
         "No": "Нет",
         "none": "пусто",
         "not null": "не пусто",
