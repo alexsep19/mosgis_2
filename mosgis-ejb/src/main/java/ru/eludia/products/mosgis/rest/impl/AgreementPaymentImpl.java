@@ -43,13 +43,12 @@ public class AgreementPaymentImpl extends BaseCRUD<AgreementPayment> implements 
        
     private void filterOffDeleted (Select select) {
         select.and (EnTable.c.IS_DELETED, Operator.EQ, 0);
+        select.and (AgreementPayment.c.ID_STATUS.lc () + " NOT IN", VocGisStatus.i.ANNUL);
     }
 
     private void applyComplexSearch (final ComplexSearch search, Select select) {
-/*
         search.filter (select, "");
         if (!search.getFilters ().containsKey ("is_deleted")) filterOffDeleted (select);
-*/        
     }
     
     private void applySimpleSearch (final SimpleSearch search, Select select) {
