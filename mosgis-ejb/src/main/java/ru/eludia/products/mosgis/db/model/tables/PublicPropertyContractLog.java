@@ -37,7 +37,8 @@ public class PublicPropertyContractLog extends GisWsLogTable {
         final ImportPublicPropertyContractRequest.Contract.PublicPropertyContract publicPropertyContract = toContractPublicPropertyContract (r);
         contract.setPublicPropertyContract (publicPropertyContract);
         contract.setTransportGUID (UUID.randomUUID ().toString ());
-        contract.setContractVersionGUID (r.get (PublicPropertyContract.c.CONTRACTVERSIONGUID.lc ()).toString ());
+        final Object ver = r.get (PublicPropertyContract.c.CONTRACTVERSIONGUID.lc ());
+        if (ver != null) contract.setContractVersionGUID (ver.toString ());
         createImportPublicPropertyContractRequest.getContract ().add (contract);
         return createImportPublicPropertyContractRequest;
     }
