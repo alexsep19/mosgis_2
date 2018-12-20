@@ -28,6 +28,7 @@ import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.AccessRequest;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.tables.VoteInitiator;
 import ru.eludia.products.mosgis.db.model.voc.VocAccessRequestStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocAccessRequestType;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -173,11 +174,16 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
     public JsonObject list (JsonObject p) {
         
         int limit = p.getInt ("max");
-        Object[] ids = p.getJsonArray("ids_off").toArray ();
+        String protocol = p.getString("protocol_uuid");
         Search search = Search.from (p);
         
         Select select = ModelHolder.getModel ().select (VocOrganization.class, "AS root", "uuid AS id", "label AS text")
-                .where ("uuid NOT IN", ids)
+                .where ("uuid NOT IN", ModelHolder.getModel ()
+                    .select (VoteInitiator.class, "uuid_org")
+                    .where  ("uuid_protocol", protocol)
+                    .and    ("uuid_org IS NOT NULL")
+                    .and    ("is_deleted", 0)
+                )
                 .orderBy ("label")
                 .limit (0, limit);
         

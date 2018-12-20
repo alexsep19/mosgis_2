@@ -6,9 +6,6 @@ define ([], function () {
 
         var grid = w2ui ['voting_protocol_vote_initiators_grid']
 
-        var ids = []
-        grid.records.forEach ((element, i, arr) => {if (element['uuid_org']) ids.push(element['uuid_org'])})
-
         $(view).w2popup('open', {
 
             width  : 500,
@@ -32,8 +29,8 @@ define ([], function () {
                             {name: 'uuid_org', type: 'list', options: 
                                 {
                                     url: '/mosgis/_rest/?type=voc_organizations&part=list',
-                                    postData: {'ids_off': ids},
-                                    cachMax: 10,
+                                    postData: {'protocol_uuid': data.item.uuid},
+                                    cacheMax: 10,
 
                                     onLoad: function (e) {
 
