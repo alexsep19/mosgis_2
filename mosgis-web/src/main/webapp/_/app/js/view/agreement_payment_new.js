@@ -6,7 +6,7 @@ define ([], function () {
 
             $('#w2ui-popup .w2ui-form').w2reform ({
 
-                name: 'charter_payment_new_form',
+                name: 'agreement_payment_new_form',
 
                 record: data.record,
 
@@ -22,9 +22,9 @@ define ([], function () {
 //                        start:    dt_dmy (data.item.effectivedate),
 //                        end:      dt_dmy (data.item.plandatecomptetion),
                     }},                                        
-                    {name: 'bill', type: 'float', options: {min: 0}},
-                    {name: 'debt', type: 'float', options: {min: 0}},
-                    {name: 'paid', type: 'float', options: {min: 0}},
+                    {name: 'bill', type: 'float', options: {precision: 2}},
+                    {name: 'debt', type: 'float', options: {precision: 2}},
+                    {name: 'paid', type: 'float', options: {precision: 2}},
 
                 ],
                 
