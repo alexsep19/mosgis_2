@@ -9,7 +9,7 @@ define ([], function () {
         var t = g.toolbar
         var r = g.get (g.getSelection () [0])
 
-        var id_status = r ? r.id_status : -1
+        var id_status = r ? r.id_ap_status : -1
 
         switch (id_status) {        
             case 10:
@@ -60,7 +60,7 @@ define ([], function () {
             searches: [            
                 {field: 'datefrom', caption: 'Начало периода', type: 'date'},
                 {field: 'dateto', caption: 'Окончание периода', type: 'date'},
-                {field: 'id_status', caption: 'Статус', type: 'enum', options: {items: data.vc_gis_status.items}},
+                {field: 'id_ap_status', caption: 'Статус', type: 'enum', options: {items: data.vc_gis_status.items}},
             ].filter (not_off),
 
             columns: [              
@@ -69,7 +69,12 @@ define ([], function () {
                 {field: 'bill', caption: 'Начислено', size: 20, render: 'money:2'},
                 {field: 'debt', caption: 'Задолженность/переплата', size: 20, render: 'money:2'},
                 {field: 'paid', caption: 'Оплачено', size: 20, render: 'money:2'},
-                {field: 'id_status', caption: 'Статус', size: 100, voc: data.vc_gis_status},
+                {field: 'id_ap_status', caption: 'Статус', size: 100, voc: data.vc_gis_status},
+
+                {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: 'data-ref=1'},
+                {field: 'soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: 'data-ref=1'},
+                {field: 'soap.err_text', caption: 'Ошибка',    size: 30},
+                
             ],
             
             postData: {data: {uuid_ctr: $_REQUEST.id}},
@@ -89,6 +94,17 @@ define ([], function () {
 
             onSelect: !data.item._can.create_payment ? null : recalcToolbar,
             onUnselect: !data.item._can.create_payment ? null : recalcToolbar,
+            onClick: function (e) {
+            
+                var c = this.columns [e.column]
+                var r = this.get (e.recid)
+                
+                switch (c.field) {
+                    case 'soap.ts':    if (r ['soap.ts']) return openTab ('/out_soap_rq/' + r.id_log)
+                    case 'soap.ts_rp': if (r ['soap.ts_rp']) return openTab ('/out_soap_rp/' + r ['soap.uuid_ack'])
+                }
+            
+            },
 
         })
 

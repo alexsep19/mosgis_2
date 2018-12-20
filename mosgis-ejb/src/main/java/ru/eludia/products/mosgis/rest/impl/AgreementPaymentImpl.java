@@ -81,8 +81,8 @@ public class AgreementPaymentImpl extends BaseCRUD<AgreementPayment> implements 
         
         final Model m = ModelHolder.getModel ();
 
-        Select select = m.select (AgreementPayment.class, "*", "uuid AS id")
-            .orderBy (AgreementPayment.c.DATEFROM.lc () + " DESC")
+        Select select = m.select (AgreementPayment.class, "AS root", "*", "uuid AS id")
+            .orderBy ("root." + AgreementPayment.c.DATEFROM.lc () + " DESC")
             .toMaybeOne (AgreementPaymentLog.class, "AS cpl").on ()
             .toMaybeOne (OutSoap.class, "AS soap", "id_status", "is_failed", "ts", "ts_rp", "err_text", "uuid_ack").on ("cpl.uuid_out_soap=soap.uuid")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
