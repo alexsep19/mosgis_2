@@ -101,7 +101,7 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
         if (uuidOrg == null) {
             Map<String, Object> mgmtOrg = db.getMap(ModelHolder.getModel ()
                     .select(ContractObject.class, "AS root", "uuid")
-                    .toOne (Contract.class, "AS contract", "label").on ()
+                    .toOne (Contract.class, "AS contract", "uuid").on ()
                     .toOne (VocOrganization.class, "AS org", "uuid").on ()
                     .where("fiashouseguid", fiasHouseGuid)
                     .and("startdate <= " + LocalDate.now().format(DateTimeFormatter.ISO_DATE))
