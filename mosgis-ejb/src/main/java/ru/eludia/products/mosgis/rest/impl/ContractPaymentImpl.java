@@ -17,6 +17,7 @@ import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
@@ -235,6 +236,7 @@ public class ContractPaymentImpl extends BaseCRUD<ContractPayment> implements Co
             
             db.update (ContractPaymentFile.class, HASH (
                 "uuid",      idFile,
+                AttachTable.c.ATTACHMENTGUID, null,
                 "id_log",    idFileLog
             ));
             
