@@ -6,7 +6,7 @@ define ([], function () {
         
         data.item.protocoldate = dt_dmy (data.item.protocoldate)
 
-        fill (view, data.item, $('body'))
+        fill (view, data.item, $('#body'))
 
         if (data.item.protocolnum == undefined || data.item.protocolnum == "") {
             $('label[id="num"]').hide ();

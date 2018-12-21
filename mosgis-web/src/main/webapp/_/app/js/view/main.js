@@ -3,7 +3,7 @@ define ([], function () {
     
     return function (data, view) {           
         
-        fill (view, data, $('body'))
+        fill (view, data, $('#body'))
         
         if (!$_USER) return use.block ('login') 
                 

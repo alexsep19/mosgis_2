@@ -9,7 +9,7 @@ define ([], function () {
             .sort ()
             .join (',<br>')
 
-        fill (view, data.item, $('body'))
+        fill (view, data.item, $('#body'))
 
     }
 

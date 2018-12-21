@@ -6,7 +6,7 @@ define ([], function () {
         
         $('title').text ('Работы / ' + it ['fias.label'])
         
-        fill (view, it, $('body'))
+        fill (view, it, $('#body'))
 
         $('#container').w2relayout ({
         

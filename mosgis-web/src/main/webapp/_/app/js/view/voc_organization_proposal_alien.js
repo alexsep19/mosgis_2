@@ -50,7 +50,7 @@ define ([], function () {
 
         $('title').text (it.label)
 
-        fill (view, it, $('body'))
+        fill (view, it, $('#body'))
 
         $('body').w2reform({
             name: form_name,

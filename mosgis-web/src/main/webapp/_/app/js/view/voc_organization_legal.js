@@ -15,7 +15,7 @@ define ([], function () {
 
         $('title').text (it.label)
 
-        fill (view, it, $('body'))
+        fill (view, it, $('#body'))
 
         $('#main_container').w2relayout({
 

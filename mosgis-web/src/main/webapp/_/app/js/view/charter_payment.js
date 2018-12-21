@@ -6,7 +6,7 @@ define ([], function () {
         
         $('title').text (dt_dmy (it.begindate) + '-' + dt_dmy (it.enddate) + ' ' + it ['fias.label'])
         
-        fill (view, it, $('body'))
+        fill (view, it, $('#body'))
 
         $('#container').w2relayout ({
         

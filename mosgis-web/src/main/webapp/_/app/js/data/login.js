@@ -2,7 +2,7 @@ define ([], function () {
 
     $_DO.execute_login = function (e) {
         
-        var param = values ($('main'))
+        var param = values ($('body'))
         
         w2ui ['form'].lock ()
 
