@@ -16,7 +16,6 @@ public class AgreementPayment extends EnTable {
         
         ID_AP_STATUS          (VocGisStatus.class,        VocGisStatus.i.PROJECT.asDef (),     "Статус с точки зрения mosgis"),
         ID_AP_STATUS_GIS      (VocGisStatus.class,        VocGisStatus.i.PROJECT.asDef (),     "Статус с точки зрения ГИС ЖКХ"),
-//        ID_CTR_STATE_GIS     (VocGisStatus.class,        VocGisStatus.i.NOT_RUNNING.asDef (), "Состояние устава с точки зрения ГИС ЖКХ"),
 
         ID_LOG                (AgreementPaymentLog.class,  "Последнее событие редактирования"),
         
@@ -54,6 +53,21 @@ public class AgreementPayment extends EnTable {
         super ("tb_pp_ctr_ap", "Плата по договорам на пользование общим имуществом");
         cols   (c.class);        
         key    ("uuid_org", c.UUID_CTR);        
+        
+        trigger ("BEFORE UPDATE", 
+
+            "BEGIN "
+
+                + "IF :NEW.ID_AP_STATUS <> :OLD.ID_AP_STATUS "
+                    + " AND :OLD.ID_AP_STATUS <> " + VocGisStatus.i.FAILED_PLACING.getId ()
+                    + " AND :NEW.ID_AP_STATUS =  " + VocGisStatus.i.PROJECT.getId ()
+                + " THEN "
+                    + " :NEW.ID_AP_STATUS := " + VocGisStatus.i.MUTATING.getId ()
+                + "; END IF; "
+
+            + " END;"
+
+        );
 
         trigger ("BEFORE INSERT OR UPDATE", ""
                 

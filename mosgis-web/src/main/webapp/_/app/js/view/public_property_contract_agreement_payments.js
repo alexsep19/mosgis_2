@@ -27,6 +27,16 @@ define ([], function () {
             default:
                 t.disable ('delete')
         }        
+        
+        switch (id_status) {        
+            case 10:
+            case 14:
+            case 40:
+                t.enable ('edit')
+                break
+            default:
+                t.disable ('edit')
+        }        
 
     })}
 
@@ -52,13 +62,14 @@ define ([], function () {
                 toolbarInput: false,
                 toolbarAdd: data.item._can.create_payment,
                 toolbarDelete: false, //data.item._can.create_payment,
-                toolbarEdit: data.item._can.create_payment,
+                toolbarEdit: false, //data.item._can.create_payment,
             },            
             
             
             toolbar: {
             
                 items: !data.item._can.create_payment ? null : [
+                    {type: 'button', id: 'edit', caption: 'Изменить', onClick: $_DO.edit_public_property_contract_agreement_payments, disabled: true, icon: 'w2ui-icon-pencil'},
                     {type: 'button', id: 'delete', caption: 'Удалить', onClick: $_DO.delete_public_property_contract_agreement_payments, disabled: true, icon: 'w2ui-icon-cross'},
                     {type: 'button', id: 'approve', caption: 'Разместить', onClick: $_DO.approve_public_property_contract_agreement_payments, disabled: true, off: $_USER.role.admin},
                 ].filter (not_off),
@@ -92,7 +103,6 @@ define ([], function () {
             url: '/mosgis/_rest/?type=agreement_payments',
                                                 
             onAdd:    $_DO.create_public_property_contract_agreement_payments,            
-            onEdit:   $_DO.edit_public_property_contract_agreement_payments,
             onDblClick: function (e) {
                 if (!data.item._can.create_payment) return
                 w2ui [e.target].select (e.recid)

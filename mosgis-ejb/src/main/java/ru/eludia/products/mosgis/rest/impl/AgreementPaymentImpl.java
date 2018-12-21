@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
@@ -143,5 +144,19 @@ public class AgreementPaymentImpl extends BaseCRUD<AgreementPayment> implements 
         logAction (db, user, id, VocAction.i.APPROVE);
 
     });}
+    
+    @Override
+    public JsonObject doAlter (String id, JsonObject p, User user) {return doAction ((db) -> {
+                
+        final Map<String, Object> r = HASH (
+            EnTable.c.UUID,                   id,
+            AgreementPayment.c.ID_AP_STATUS,  VocGisStatus.i.PROJECT.getId ()
+        );
+                
+        db.update (getTable (), r);
+        
+        logAction (db, user, id, VocAction.i.ALTER);
+        
+    });}    
     
 }

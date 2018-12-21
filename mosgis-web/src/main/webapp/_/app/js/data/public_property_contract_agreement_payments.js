@@ -45,11 +45,25 @@ define ([], function () {
     
     $_DO.edit_public_property_contract_agreement_payments = function (e) {    
     
-        var grid = w2ui [e.target]
+        var grid = w2ui ['public_property_contract_agreement_payments_grid']
         var id = grid.getSelection () [0]
+        var r = grid.get (id)
+       
+        switch (r.id_ap_status) {        
         
-        $_SESSION.set ('record', grid.get (id))        
-        use.block ('agreement_payment_popup')
+            case 10:
+                $_SESSION.set ('record', grid.get (id))        
+                return use.block ('agreement_payment_popup')
+            case 40:
+                if (!confirm ('Вернуть на редактирование информацию об оплате с ' + dt_dmy (r.datefrom) + ' по ' + dt_dmy (r.dateto) + '?')) return
+            case 14:
+                grid.lock ()
+                query ({type: 'agreement_payments', id: id, action: 'alter'}, {}, function () {
+                    grid.unlock ()
+                    grid.reload (grid.refresh)
+                })
+
+        }
         
     }
     
