@@ -1,5 +1,17 @@
 define ([], function () {
 
+    $_DO.logout_page = function (e) {    
+    
+        if (!confirm ('Выйти из системы?')) return
+    
+        query ({type: 'sessions', action: 'delete', id: undefined}, {}, $.noop, $.noop)        
+        
+        $_SESSION.end ()
+        
+        redirect ('/')        
+
+    }
+
     return function (done) {        
                 
         done ({
