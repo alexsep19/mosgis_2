@@ -2,13 +2,14 @@ define ([], function () {
 
     return function (data, view) {
 
-        var is_popup = $_SESSION.delete ('voc_licenses_popup.on')
+        var is_popup = $_SESSION.delete ('voc_organizations_popup.on')
     
         data = $('body').data ('data')
 
         $((w2ui ['popup_layout'] || w2ui ['rosters_layout']).el ('main')).w2regrid ({ 
-
-            name: 'voc_licenses_grid',
+            
+            //todo        
+            name: 'voc_organizations_grid',
 
             show: {
                 toolbar: true,
@@ -17,7 +18,7 @@ define ([], function () {
 
             searches: [            
 //                {field: 'ogrn',      caption: 'ОГРН(ИП)',            type: 'text', operator: 'is', operators: ['is']},
-                  {field: 'licensenumber',  caption: 'Наименование',        type: 'text'},
+                  {field: 'licensegiud',  caption: 'Наименование',        type: 'text'},
 //                {field: 'inn',       caption: 'ИНН',                 type: 'text', operator: 'is', operators: ['is']},
 //                {field: 'kpp',       caption: 'КПП',                 type: 'text', operator: 'is', operators: ['is']},
 //                {field: 'code_vc_nsi_20', caption: 'Полномочия',     type: 'enum', options: {items: data.vc_nsi_20.items}},
@@ -25,13 +26,13 @@ define ([], function () {
             ],
 
             columns: [                
-                {field: 'label', caption: 'Статус',    size: 20},
-                {field: 'label', caption: 'Лицензиат',    size: 100},
-                {field: 'label', caption: 'Лицензирующий орган',    size: 40},
-                {field: 'label', caption: 'Лицензируемый вид деятельности',    size: 100},
-                {field: 'label', caption: 'Адрес осуществления лицензируемого вида деятельности',    size: 100},
+                {field: 'licensegiud', caption: 'Статус',    size: 20},
+                {field: 'licensegiud', caption: 'Лицензиат',    size: 100},
+                {field: 'licensegiud', caption: 'Лицензирующий орган',    size: 40},
+                {field: 'licensegiud', caption: 'Лицензируемый вид деятельности',    size: 100},
+                {field: 'licensegiud', caption: 'Адрес осуществления лицензируемого вида деятельности',    size: 100},
             ],
-
+//            url: '/mosgis/_rest/?type=voc_organizations',
             url: '/mosgis/_rest/?type=voc_licenses',
             
             onDblClick: function (e) {
@@ -40,14 +41,14 @@ define ([], function () {
 
                 if (is_popup) {                
 
-                    $_SESSION.set ('voc_licenses_popup.data', clone (r))
+                    $_SESSION.set ('voc_organizations_popup.data', clone (r))
 
                     w2popup.close ()                
 
                 }
                 else {
 
-                    function show (postfix) {openTab ('/voc_licenses_' + postfix + '/' + r.uuid)}
+                    function show (postfix) {openTab ('/voc_organizations_' + postfix + '/' + r.uuid)}
 
                     switch (String (r.ogrn).length) {
                         case 13: return show ('legal')
