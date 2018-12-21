@@ -2,14 +2,14 @@ define ([], function () {
 
     return function (data, view) {
 
-        var is_popup = $_SESSION.delete ('voc_organizations_popup.on')
+        var is_popup = $_SESSION.delete ('licenses_popup.on')
     
         data = $('body').data ('data')
 
         $((w2ui ['popup_layout'] || w2ui ['rosters_layout']).el ('main')).w2regrid ({ 
             
             //todo        
-            name: 'voc_organizations_grid',
+            name: 'licenses_grid',
 
             show: {
                 toolbar: true,
@@ -33,7 +33,7 @@ define ([], function () {
                 {field: 'licensegiud', caption: 'Адрес осуществления лицензируемого вида деятельности',    size: 100},
             ],
 //            url: '/mosgis/_rest/?type=voc_organizations',
-            url: '/mosgis/_rest/?type=voc_licenses',
+            url: '/mosgis/_rest/?type=licenses',
             
             onDblClick: function (e) {
 
@@ -41,19 +41,19 @@ define ([], function () {
 
                 if (is_popup) {                
 
-                    $_SESSION.set ('voc_organizations_popup.data', clone (r))
+                    $_SESSION.set ('licenses_popup.data', clone (r))
 
                     w2popup.close ()                
 
                 }
                 else {
 
-                    function show (postfix) {openTab ('/voc_organizations_' + postfix + '/' + r.uuid)}
+                    function show (postfix) {openTab ('/licenses_' + postfix + '/' + r.uuid)}
 
-                    switch (String (r.ogrn).length) {
-                        case 13: return show ('legal')
-                        case 15: return show ('individual')
-                    }
+//                    switch (String (r.ogrn).length) {
+//                        case 13: return show ('legal')
+//                        case 15: return show ('individual')
+//                    }
 
                 }
 
@@ -69,7 +69,7 @@ define ([], function () {
                             w2alert ('Запрос в ГИС ЖКХ не дал результатов. Вероятно, Вы опечатались, вводя ОГРН[ИП]')
                         }
                         else if ($_SESSION.delete ('first_post')) {
-                            $_DO.check_voc_licenses (e)
+                            $_DO.check_licenses (e)
                         }
                         else {
                             $_SESSION.set ('first_post', 1)
@@ -77,13 +77,13 @@ define ([], function () {
 
                     }                
 
-                    $('#tb_voc_licenses_grid_toolbar_item_w2ui-search .w2ui-search-all').attr ({
+                    $('#tb_licenses_grid_toolbar_item_w2ui-search .w2ui-search-all').attr ({
                         style: 'width: 160px !important',
                         placeholder: 'Все поля',
                         title: 'Все поля',
                     })
                     
-                    $('#tb_voc_licenses_grid_toolbar_item_w2ui-search .w2ui-toolbar-search').attr ({
+                    $('#tb_licenses_grid_toolbar_item_w2ui-search .w2ui-toolbar-search').attr ({
                         style: 'width: 160px !important',
                     })
 

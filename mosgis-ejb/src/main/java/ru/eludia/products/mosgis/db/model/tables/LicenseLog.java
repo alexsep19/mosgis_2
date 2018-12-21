@@ -9,7 +9,6 @@ import static ru.eludia.base.model.Type.INTEGER;
 import static ru.eludia.base.model.Type.STRING;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
-import ru.eludia.products.mosgis.db.model.LogTable;
 import ru.eludia.products.mosgis.db.model.voc.VocLicenseStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 

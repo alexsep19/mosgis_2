@@ -139,15 +139,33 @@ public class LicenseImpl extends BaseCRUD<License> implements LicenseLocal {
     });}
 
     @Override
-    public JsonObject doReload (String id, User user) {return doAction ((db) -> {
-        
-        db.update (getTable (), HASH (
-            "uuid",           id,
-            "id_ctr_status",  VocGisStatus.i.PENDING_RQ_RELOAD.getId ()
-        ));
-        
-        logAction (db, user, id, VocAction.i.RELOAD);
-        
-    });}    
+    public JsonObject select(JsonObject p) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public JsonObject doImport(JsonObject p, User user) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public JsonObject getMgmtNsi58(String id) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public JsonObject getHours(String id) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public JsonObject doPatch(String id, JsonObject p, User user) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public JsonObject doPatchHours(String id, JsonObject p) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }
