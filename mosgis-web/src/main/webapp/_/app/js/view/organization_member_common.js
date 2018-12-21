@@ -51,6 +51,12 @@ define ([], function () {
         })
     }
 
+    function is_parent_gsk(data) {
+        return data.vc_orgs_nsi_20
+            .filter(function (i) { return i.code == 22 }) // ЖСК
+            .length > 0
+    }
+
     return function (data, view) {
 
         $_F5 = function (data) {
@@ -64,6 +70,7 @@ define ([], function () {
             f.record = r
 
             $('div[data-block-name=organization_member_common] input').prop ({disabled: data.__read_only})
+            $('input.edit-gsk:not(:disabled)').prop('disabled', !is_parent_gsk (data))
 
             if (!data.__read_only) {
                 $_DO.onchange_participant(r.participant)
@@ -96,11 +103,12 @@ define ([], function () {
 
             panels: [
 
-                {type: 'top', size: 280},
+                {type: 'top', size: 308},
                 {type: 'main', size: 350,
                     tabs: {
                         tabs:    [
                             {id: 'organization_member_common_log', caption: 'История изменений'},
+                            {id: 'organization_member_property_documents', caption: 'Информация о собственности'},
                         ].filter (not_off),
                         onClick: $_DO.choose_tab_organization_member_common
                     }
@@ -141,6 +149,9 @@ define ([], function () {
                 {name: 'fax', type: 'text'},
                 {name: 'mail', type: 'text'},
 
+                {name: 'entrance_fee', type: 'float', options: {min: 0, max: 1000000000}},
+                {name: 'contribution_share', type: 'float', options: {min: 0, max: 1000000000}},
+
                 {name: 'dt_from', type: 'date'},
                 {name: 'files', type: 'file', options: {
                         max: 1,
@@ -148,7 +159,7 @@ define ([], function () {
                         items: data.files
                  }},
                 {name: 'file_from', type: 'text'},
-                {name: 'dt_to', type: 'date'},
+                {name: 'dt_to', type: 'date'}
             ],
 
             focus: -1,

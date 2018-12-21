@@ -26,7 +26,7 @@ public class PropertyDocument extends EnTable {
         NO                        (STRING,        null,           "Номер документа"),
         DT                        (DATE,          null,           "Дата документа"),
         ISSUER                    (STRING,        null,           "Кем выдан документ"),
-        DT_TO                     (DATE,          null,           "Дата прекращения")        
+        DT_TO                     (DATE,          null,           "Дата прекращения")
         ;
         
         @Override
@@ -58,6 +58,8 @@ public class PropertyDocument extends EnTable {
         cols   (c.class);
         
         key    ("uuid_org", c.UUID_ORG);                
+        key    ("uuid_org_owner", c.UUID_ORG_OWNER);
+        key    ("uuid_person_owner", c.UUID_PERSON_OWNER);
 
     }
                 
