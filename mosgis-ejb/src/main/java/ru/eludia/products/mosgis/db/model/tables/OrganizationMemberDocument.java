@@ -5,6 +5,7 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.Type.BOOLEAN;
 import static ru.eludia.base.model.Type.DATE;
+import static ru.eludia.base.model.Type.NUMERIC;
 import static ru.eludia.base.model.Type.STRING;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
@@ -40,7 +41,10 @@ public class OrganizationMemberDocument extends EnTable {
         DT_FROM                   (DATE, null, "Дата принятия в члены товарищества, кооператива"),
         DT_TO                     (DATE, null, "Дата исключения из членов товарищества, кооператива"),
 
-        ID_LOG                    (OrganizationMemberDocumentLog.class, "Последнее событие редактирования"),
+        ENTRANCE_FEE              (NUMERIC, 12, 2, null, "Размер вступительных взносов"),
+        CONTRIBUTION_SHARE        (NUMERIC, 12, 2, null, "Размер паевых взносов"),
+
+        ID_LOG                    (OrganizationMemberDocumentLog.class, "Последнее событие редактирования")
         ;
 
         @Override

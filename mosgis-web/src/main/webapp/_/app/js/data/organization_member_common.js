@@ -20,7 +20,9 @@ define ([], function () {
 
     $_DO.edit_organization_member_common = function (e) {
 
-        var data = {item: w2ui [form_name].record}
+        var data = clone($('body').data('data'))
+
+        data.item = w2ui [form_name].record
 
         data.item.participant = data.item.participant.id
 
