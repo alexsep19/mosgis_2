@@ -48,12 +48,17 @@ define ([], function () {
         var grid = w2ui ['public_property_contract_agreement_payments_grid']
         var id = grid.getSelection () [0]
         var r = grid.get (id)
+        
+        function edit () {
+            $_SESSION.set ('record', r)        
+            return use.block ('agreement_payment_popup')
+        }
        
         switch (r.id_ap_status) {        
         
             case 10:
-                $_SESSION.set ('record', grid.get (id))        
-                return use.block ('agreement_payment_popup')
+            case 11:
+                return edit ()
             case 40:
                 if (!confirm ('Вернуть на редактирование информацию об оплате с ' + dt_dmy (r.datefrom) + ' по ' + dt_dmy (r.dateto) + '?')) return
             case 14:
@@ -61,6 +66,7 @@ define ([], function () {
                 query ({type: 'agreement_payments', id: id, action: 'alter'}, {}, function () {
                     grid.unlock ()
                     grid.reload (grid.refresh)
+                    edit ()
                 })
 
         }

@@ -13,6 +13,7 @@ define ([], function () {
 
         switch (id_status) {        
             case 10:
+            case 11:
                 t.enable ('approve')
                 break
             default:
@@ -30,6 +31,7 @@ define ([], function () {
         
         switch (id_status) {        
             case 10:
+            case 11:
             case 14:
             case 40:
                 t.enable ('edit')
