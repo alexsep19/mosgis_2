@@ -67,6 +67,47 @@ body {
             font-size: 20pt;
             margin: 10px 20px;
         }            
+        
+        & > table {
+            
+            tr.nav {
+                height: 30px;
+                background-color: rgb(51, 51, 51);
+                color:#ccc;
+                font-family:HelveticaNeue, Helvetica, Arial, sans-serif;
+                font-size:13px;
+                white-space:nowrap;
+
+                td:first-child {
+                    color:#f5454b;
+                    text-transform: uppercase;
+                    font-weight: bold;
+                    font-size: 0.85em;
+                    border-left: none;
+                }
+
+                td {
+                    padding-left: 15px;
+                    border-left: solid 1px #ccc;
+                }
+
+                .clickable:hover {
+                    text-decoration: underline;
+                }
+
+                td:last-child {
+                    width: 70px;
+                }
+
+                td:last-child:before {
+                    content:'\e873';
+                    font-family:fontello;
+                    padding-right:2px;
+                }
+
+            }
+            
+        }
 
 }
 
@@ -193,4 +234,3 @@ table.sync {
 	}
 
 }
-
