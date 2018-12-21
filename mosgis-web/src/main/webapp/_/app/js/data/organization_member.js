@@ -33,7 +33,7 @@ define ([], function () {
 
             it._can = {}
 
-            if (($_USER.role.admin || (data.cach && data.cach.is_own)) && !it.is_deleted) {
+            if (($_USER.role.admin || $_USER.uuid_org == it.uuid_org) && !it.is_deleted) {
                 it._can.edit   = 1
                 it._can.delete = it._can.update = it._can.cancel = it._can.edit
             }

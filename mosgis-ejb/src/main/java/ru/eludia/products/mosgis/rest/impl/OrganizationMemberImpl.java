@@ -121,6 +121,7 @@ public class OrganizationMemberImpl extends BaseCRUD<OrganizationMemberDocument>
 
         final JsonObject item = db.getJsonObject (m
             .get (OrganizationMemberDocument.class, id, "AS root", "*")
+            .toOne(VocOrganization.class, "AS org_parent", "label", "id_type").on("uuid_org")
             .toMaybeOne (VocOrganization.class, "AS org_auth", "label", "id_type").on ("uuid_org_author")
             .toMaybeOne (VocOrganization.class, "AS org", "label", "id_type").on("uuid_org_member")
             .toMaybeOne(VocPerson.class, "AS person", "label", "uuid_org").on("uuid_person_member")
