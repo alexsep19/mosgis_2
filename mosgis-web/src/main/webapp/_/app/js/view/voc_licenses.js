@@ -77,13 +77,13 @@ define ([], function () {
                     }                
 
                     $('#tb_voc_licenses_grid_toolbar_item_w2ui-search .w2ui-search-all').attr ({
-                        style: 'width: 450px !important',
-                        placeholder: 'Введите полный ОГРН[ИП], ИНН или подстроку наименования/ФИО для поиска',
-                        title: 'Указав ИНН или ОГРН, Вы можете добавить через пробел КПП.\n\nДостаточно первых двух цифр, например: 7711122233 77',
+                        style: 'width: 160px !important',
+                        placeholder: 'Все поля',
+                        title: 'Все поля',
                     })
                     
                     $('#tb_voc_licenses_grid_toolbar_item_w2ui-search .w2ui-toolbar-search').attr ({
-                        style: 'width: 450px !important',
+                        style: 'width: 160px !important',
                     })
 
                 })
