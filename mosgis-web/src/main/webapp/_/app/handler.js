@@ -506,8 +506,8 @@ requirejs (['elu/elu', 'elu_w2ui/elu_w2ui'], function (jq, elu, elu_w2ui) {
 
 //    use.block ($_REQUEST.type || 'main')
 
-    if (!$_USER) return use.block ('login') 
-
+    if (!$_USER) return use.block ('login')
+    
     use.block ('page')
 
 });
