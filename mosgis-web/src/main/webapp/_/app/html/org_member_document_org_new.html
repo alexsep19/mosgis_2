@@ -1,0 +1,60 @@
+<span
+    data-popup-width=840
+    data-popup-height=225
+    data-popup-title='Юридическое лицо - член товарищества, кооператива'
+    >
+
+    <style>
+
+        label[data-block-name=org_member_document_org_new] {
+            width: 220px;
+            margin-right: 10px;
+        }
+
+        input[data-block-name=org_member_document_org_new] {
+            width: 550px !important;
+        }
+
+        input.dt[data-block-name=org_member_document_org_new] {
+            width: 70px !important;
+        }
+
+    </style>
+
+    <div class="w2ui-reset w2ui-form" style="height:180px ">
+
+        <div class="w2ui-page page-0">
+
+            <input name=uuid_org type=hidden />
+
+            <div class="w2ui-field">
+                <label>Член товарищества, кооператива</label>
+                <div>
+                    <input name=uuid_org_member type=hidden>
+                    <input name=label_org_member id=label_org_member readonly>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label style="margin-top:2px;">Участие в совете правления,<br/>ревизионной комиссии</label>
+                <div>
+                    <input name=participant>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Дата принятия</label>
+                <div>
+                    <input name=dt_from class=dt autocomplete=off >
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+            <button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+    </div>
+
+</span>
