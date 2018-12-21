@@ -70,7 +70,7 @@ public class AgreementPayment extends EnTable {
                     + "FROM "
                     + " tb_pp_ctr_ap o "
                     + "WHERE o.is_deleted = 0"
-                    + " AND o.id_status NOT IN (" + VocGisStatus.i.ANNUL + ")"
+                    + " AND o.id_ap_status NOT IN (" + VocGisStatus.i.ANNUL + ")"
                     + " AND o.UUID_CTR = :NEW.UUID_CTR "
                     + " AND o.DATETO   >= :NEW.DATEFROM "
                     + " AND o.DATEFROM <= :NEW.DATETO "
