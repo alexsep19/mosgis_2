@@ -1,18 +1,56 @@
 <style>
+
 	tr.nav {
 		height: 30px;
 		background-color: rgb(51, 51, 51);
+		color:#ccc;
+		font-family:HelveticaNeue, Helvetica, Arial, sans-serif;
+		font-size:13px;
+		white-space:nowrap;
 	}
+
+	tr.nav td:first-child {
+		color:#f5454b;
+		text-transform: uppercase;
+		font-weight: bold;
+		font-size: 0.85em;
+		border-left: none;
+	}
+
+	tr.nav td {
+		padding-left: 15px;
+		border-left: solid 1px #ccc;
+	}
+
+	tr.nav td:last-child {
+		width: 70px;
+	}
+
+	tr.nav td:last-child:before {
+		content:'\e873';
+		font-family:fontello;
+		padding-right:2px;
+	}
+
 </style>
 
 <table border=0 cellpadding=0 cellspacing=0 width=100% height=100%>
 	<tr class=nav>
 		<td>
-
+			Модуль взаимодействия АСУ ЕИРЦ с ГИС ЖКХ
+		</td>
+		<td>
+			<span data-text=user_label />
+			<span>
+				(<span>ГБУ "Жилищник Мещанского района"</span>)
+			</span>
+		</td>
+		<td>
+			выйти
 		</td>
 	</tr>
 	<tr>
-		<td id=body>
+		<td id=body colspan=3>
 
 		</td>
 	</tr>
