@@ -124,7 +124,7 @@ public class OrganizationMemberDocument extends EnTable {
                     + " END IF; "
 
                     + " IF :NEW.dt_from IS NULL "
-                    + " AND :NEW.participant <> " + VocOrganizationParticipant.i.NOT_PARTICIPANT.getId() + " THEN "
+                    + " AND :NEW.participant <> " + VocOrganizationParticipant.i.IN_COMMISSION_ALIEN.getId() + " THEN "
                     + "       raise_application_error (-20000, 'Укажите дату принятия в члены товарищества, кооператива.'); "
                     + " END IF; "
                 + " END IF; "
