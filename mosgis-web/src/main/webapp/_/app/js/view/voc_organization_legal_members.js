@@ -32,6 +32,7 @@ define ([], function () {
 
             show: {
                 toolbar: true,
+                toolbarInput: false,
                 toolbarDelete: true,
                 toolbarColumns: false,
                 footer: true

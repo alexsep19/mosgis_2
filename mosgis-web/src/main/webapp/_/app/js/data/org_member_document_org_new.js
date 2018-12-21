@@ -46,7 +46,7 @@ define ([], function () {
 
             w2popup.close ()
 
-            if (data.id) w2confirm ('Документ о праве собственности зарегистрирован. Открыть его страницу в новой вкладке?').yes (function () {openTab ('/organization_member/' + data.id)})
+            if (data.id) w2confirm ('Документ о членстве зарегистрирован. Открыть его страницу в новой вкладке?').yes (function () {openTab ('/organization_member/' + data.id)})
 
             var grid = w2ui ['voc_organization_legal_members_grid']
 
