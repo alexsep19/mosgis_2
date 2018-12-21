@@ -1,5 +1,5 @@
 define ([], function () {
- 
+
     var form_name = 'organization_member_common_form'
 
     $_DO.cancel_organization_member_common = function (e) {
@@ -21,6 +21,8 @@ define ([], function () {
     $_DO.edit_organization_member_common = function (e) {
 
         var data = {item: w2ui [form_name].record}
+
+        data.item.participant = data.item.participant.id
 
         data.__read_only = false
 

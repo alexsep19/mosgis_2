@@ -3,8 +3,7 @@ define ([], function () {
     return function (data, view) {
 
         data._can = {
-            add_branch: $_USER.role.admin,
-            add_alien: $_USER.role.admin
+            create: $_USER.role.admin || $_USER.uuid_org == $_REQUEST.id
         }
 
         var is_popup = 1 == $_SESSION.delete ('voc_organization_legal_members_popup.on')
@@ -20,8 +19,14 @@ define ([], function () {
             toolbar: {
 
                 items: [
-                    {type: 'button', id: 'create_person', caption: 'Физическое лицо', icon: 'w2ui-icon-plus', onClick: $_DO.create_person_voc_organization_legal_members},
-                    {type: 'button', id: 'create_org', caption: 'Юридическое лицо', icon: 'w2ui-icon-plus', onClick: $_DO.create_org_voc_organization_legal_members},
+                    {type: 'button', id: 'create_person', caption: 'Физическое лицо', icon: 'w2ui-icon-plus'
+                        , onClick: $_DO.create_person_voc_organization_legal_members
+                        , off: !data._can.create
+                    },
+                    {type: 'button', id: 'create_org', caption: 'Юридическое лицо', icon: 'w2ui-icon-plus'
+                        , onClick: $_DO.create_org_voc_organization_legal_members
+                        , off: !data._can.create
+                    }
                 ].filter(not_off),
             },
 

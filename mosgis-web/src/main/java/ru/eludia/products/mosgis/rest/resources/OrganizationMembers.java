@@ -68,6 +68,8 @@ public class OrganizationMembers extends EJBResource <OrganizationMemberLocal> {
     @Path("create")
     @Produces (APPLICATION_JSON)
     public JsonObject doCreate (JsonObject p) {
+        final JsonObject item = p.getJsonObject("data");
+        if (!securityContext.isUserInRole("admin")) checkOrg(item);
         return back.doCreate (p, getUser ());
     }
 

@@ -1,11 +1,12 @@
 define ([], function () {
 
     $_DO.update_participant_status = function(it) {
-        var label = it.participant == 35?
-            'Информация о члене ревизионной комиссии, не являющегося членом товарищества, кооператива'
-            : 'Информация о члене товарищества собственников жилья, кооператива'
+
+        var prefix = it.participant == 35?
+            'Информация о члене ревизионной комиссии, не являющегося членом '
+            : 'Информация о члене '
         ;
-        $('#participant_status').text(label)
+        $('#participant_status').text(prefix + it['org_parent.label'])
     }
 
     return function (data, view) {
@@ -18,7 +19,7 @@ define ([], function () {
 
         is_jur = it.uuid_org_member? 1 : 0
 
-        $_DO.update_participant_status (data)
+        $_DO.update_participant_status (data.item)
 
         $('#container').w2relayout ({
 
