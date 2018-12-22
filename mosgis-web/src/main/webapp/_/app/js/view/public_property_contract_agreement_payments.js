@@ -56,7 +56,7 @@ define ([], function () {
             name: grid_name,
 
             show: {
-                toolbar: data.item._can.create_payment,
+                toolbar: 1,
                 footer: 1,
                 toolbarSearch: true,
                 toolbarReload: false,

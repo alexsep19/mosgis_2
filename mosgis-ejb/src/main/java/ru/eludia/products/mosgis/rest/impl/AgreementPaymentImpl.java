@@ -50,7 +50,7 @@ public class AgreementPaymentImpl extends BaseCRUD<AgreementPayment> implements 
 
     private void applyComplexSearch (final ComplexSearch search, Select select) {
         search.filter (select, "");
-        if (!search.getFilters ().containsKey ("is_deleted")) filterOffDeleted (select);
+        if (!search.getFilters ().containsKey ("id_ap_status")) filterOffDeleted (select);
     }
     
     private void applySimpleSearch (final SimpleSearch search, Select select) {
