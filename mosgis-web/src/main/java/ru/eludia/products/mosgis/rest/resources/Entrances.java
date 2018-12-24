@@ -27,7 +27,7 @@ public class Entrances extends EJBResource <EntrancesLocal> {
     private void restoreCheck (String id) {
         
         if (!back.checkRestore(id))
-            throw new ValidationException ("foo", "Указан недопустимый номер подъезда");
+            throw new ValidationException ("foo", "Невозможно восстановить запись");
         
     }
 

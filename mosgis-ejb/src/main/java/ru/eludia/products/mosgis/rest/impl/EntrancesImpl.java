@@ -36,8 +36,8 @@ public class EntrancesImpl extends BasePassport<Entrance> implements EntrancesLo
         
         try (DB db = ModelHolder.getModel ().getDb ()) {
             
-            JsonObject record = db.getJsonObject (ModelHolder.getModel ().get(Entrance.class, id)
-                                                    .where ("is_deleted IS NOT NULL")
+            JsonObject record = db.getJsonObject (ModelHolder.getModel ().get(Entrance.class, id, "uuid")
+                                                    .where ("is_deleted", 0)
                                                     .and   ("is_annuled_in_gis", 1)
             );
             
@@ -195,17 +195,22 @@ public class EntrancesImpl extends BasePassport<Entrance> implements EntrancesLo
     
     @Override
     public JsonObject doRestore (String id, JsonObject p) {return doAction ((db) -> {
-        
-        JsonObject data = p.getJsonObject ("data");
 
         final Table table = getTable ();
 
         Map<String, Object> record = db.getMap(ModelHolder.getModel ()
-                                        .get(table, id));
+                                        .get(table, id, "uuid_house", 
+                                                        "entrancenum",
+                                                        "storeyscount",
+                                                        "creationyear",
+                                                        "fiaschildhouseguid",
+                                                        "informationconfirmed",
+                                                        "gis_modification_date")
+        );
+        
         record.put ("terminationdate", null);
         record.put ("annulmentinfo", null);
         record.put ("code_vc_nsi_330", null);
-        record.remove("uuid");
         
         db.insert (table, record);
         
