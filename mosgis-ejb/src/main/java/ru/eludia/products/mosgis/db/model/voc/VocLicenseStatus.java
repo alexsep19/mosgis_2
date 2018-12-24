@@ -1,5 +1,9 @@
 package ru.eludia.products.mosgis.db.model.voc;
 
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.Col;
@@ -7,8 +11,31 @@ import ru.eludia.base.model.ColEnum;
 
 public class VocLicenseStatus extends Table {
     
+    private static JsonArray jsonArray;
+    
     private static final String TABLE_NAME = "vc_license_status";
 
+    public static final void addTo (JsonObjectBuilder job) {
+        job.add (TABLE_NAME, jsonArray);
+    }
+    
+    static {
+        
+        JsonArrayBuilder builder = Json.createArrayBuilder ();
+        
+        for (VocLicenseStatus.i value: VocLicenseStatus.i.values ()) {
+            
+            builder.add (Json.createObjectBuilder ()
+                .add ("id",    value.id)
+                .add ("label", value.label)
+            );
+            
+        }
+                    
+        jsonArray = builder.build ();
+        
+    }    
+    
     public VocLicenseStatus () {
         super   (TABLE_NAME, "Статусы лицензий");
         cols    (c.class);
@@ -20,7 +47,17 @@ public class VocLicenseStatus extends Table {
         ID         (Type.NUMERIC, 2, "Идентификатор"),
         LABEL      (Type.STRING,     "Наименование"),        
         NAME       (Type.STRING,     "Имя");      
-        @Override public Col getCol () {return col;} private Col col; private c (Type type, Object... p) {col = new Col (this, type, p);}
+        
+        @Override
+        public Col getCol() {
+            return col;
+        }
+        
+        private Col col;
+
+        private c(Type type, Object... p) {
+            col = new Col(this, type, p);
+        }
     }        
     
     public enum i {

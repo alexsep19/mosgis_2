@@ -11,6 +11,7 @@ import static ru.eludia.base.model.Type.STRING;
 import static ru.eludia.base.model.Type.INTEGER;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
+import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 
 public class License extends Table {
 
@@ -22,7 +23,7 @@ public class License extends Table {
         LICENSE_REG_DATE                (DATE,                            "Дата регистрации лицензии"),   
         ID_STATUS                       (VocLicenseStatus.class,  null,   "Статус лицензии с точки зрения mosgis"),
         UUID_ORG_AUTHORITY              (VocOrganization.class,           "Наименование лицензирующего органа"),
-        REGION_FIAS_GUID                (Type.UUID,               null,   "Адрес осуществления лицензируемого вида деятельности (код по ФИАС)"),
+        REGION_FIAS_GUID                (VocBuilding.class,       null,   "Адрес осуществления лицензируемого вида деятельности (код по ФИАС)"),
         LICENSEABLE_TYPE_OF_ACTIVITY    (STRING,            2000,         "Лицензируемый вид деятельности с указанием выполняемых работ, оказываемых услуг, составляющих лицензируемый вид деятельности"),
         ADDITIONAL_INFORMATION          (STRING,            2000, null,   "Дополнительная информация"),
         UUID_ORG                        (VocOrganization.class,           "Лицензиат"), 

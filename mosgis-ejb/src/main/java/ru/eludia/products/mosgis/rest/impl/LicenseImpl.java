@@ -24,6 +24,7 @@ import ru.eludia.products.mosgis.web.base.Search;
 import ru.eludia.products.mosgis.web.base.SimpleSearch;
 import ru.eludia.products.mosgis.db.model.tables.LicenseLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.web.base.ComplexSearch;
 
@@ -100,21 +101,7 @@ public class LicenseImpl extends BaseCRUD<License> implements LicenseLocal {
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();
         
-        final MosGisModel model = ModelHolder.getModel ();
-
-        try (DB db = model.getDb ()) {
-            
-            db.addJsonArrays (jb,
-                model
-                    .select (VocLicenseStatus.class, "id", "label")                    
-                    .orderBy ("id")
-                
-            );
-
-        }
-        catch (Exception ex) {
-            throw new InternalServerErrorException (ex);
-        }
+        VocLicenseStatus.addTo (jb);
 
         return jb.build ();
         
@@ -136,7 +123,10 @@ public class LicenseImpl extends BaseCRUD<License> implements LicenseLocal {
     public JsonObject select(JsonObject p) {
         final Model m = ModelHolder.getModel ();
         
-        Select select = m.select (License.class, "*")
+        Select select = m.select (License.class,"AS root", "*")
+            .toOne (VocOrganization.class, "AS org", VocOrganization.c.LABEL.lc()).on (License.c.UUID_ORG.lc())
+            .toOne (VocOrganization.class, "AS org_authority", VocOrganization.c.LABEL.lc()).on (License.c.UUID_ORG_AUTHORITY.lc())
+            .toMaybeOne(VocBuildingAddress.class, "AS fias",  "label").on ("root.region_fias_guid=fias.houseguid")
             .orderBy (License.c.LICENSE_REG_DATE.lc ())
             .limit (p.getInt ("offset"), p.getInt ("limit"));
         
