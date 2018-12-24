@@ -1,5 +1,8 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -24,6 +27,8 @@ import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.web.base.ComplexSearch;
 
+@Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class LicenseImpl extends BaseCRUD<License> implements LicenseLocal {
 
     @Override
@@ -62,16 +67,10 @@ public class LicenseImpl extends BaseCRUD<License> implements LicenseLocal {
         db.addJsonArrayCnt (job, select);
 
     });}    
-    
-    private void filterOffDeleted (Select select) {
-        select.and ("is_deleted", 0);
-    }
 
     private void applyComplexSearch (final ComplexSearch search, Select select) {
 
         search.filter (select, "");
-        
-        if (!search.getFilters ().containsKey ("is_deleted")) filterOffDeleted (select);
 
     }    
     
@@ -83,15 +82,10 @@ public class LicenseImpl extends BaseCRUD<License> implements LicenseLocal {
         else if (search instanceof ComplexSearch) {
             applyComplexSearch ((ComplexSearch) search, select);
         }
-        else {
-            filterOffDeleted (select);
-        }
 
     }
     
     private void applySimpleSearch (final SimpleSearch search, Select select) {
-
-        filterOffDeleted (select);
 
         final String searchString = search.getSearchString ();
         
@@ -140,7 +134,24 @@ public class LicenseImpl extends BaseCRUD<License> implements LicenseLocal {
 
     @Override
     public JsonObject select(JsonObject p) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        final Model m = ModelHolder.getModel ();
+        
+        Select select = m.select (License.class, "*")
+            .orderBy (License.c.LICENSE_REG_DATE.lc ())
+            .limit (p.getInt ("offset"), p.getInt ("limit"));
+        
+        applySearch (Search.from (p), select);
+        
+        JsonObjectBuilder jb = Json.createObjectBuilder ();
+
+        try (DB db = ModelHolder.getModel ().getDb ()) {
+            db.addJsonArrayCnt (jb, select);
+        }
+        catch (Exception ex) {
+            throw new InternalServerErrorException (ex);
+        }
+        
+        return jb.build ();
     }
 
     @Override
