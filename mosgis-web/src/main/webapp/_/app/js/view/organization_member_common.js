@@ -51,6 +51,26 @@ define ([], function () {
         })
     }
 
+    function tabClick($el, name) {
+
+        if ($el.tabs.find(function (tab) {
+            return !tab.disabled && tab.id === name;
+        }))
+            return $el.click(name);
+
+        var firstTabName;
+
+        for (var i = 0; i <= $el.tabs.length - 1; i++) {
+            if (!$el.tabs[i].disabled) {
+                firstTabName = $el.tabs[i].id;
+                break;
+            }
+        }
+
+        if (firstTabName)
+            $el.click(firstTabName);
+    }
+
     function is_parent_gsk(data) {
         return data.vc_orgs_nsi_20
             .filter(function (i) { return i.code == 22 }) // ЖСК
@@ -108,7 +128,9 @@ define ([], function () {
                     tabs: {
                         tabs:    [
                             {id: 'organization_member_common_log', caption: 'История изменений'},
-                            {id: 'organization_member_property_documents', caption: 'Информация о собственности'},
+                            {id: 'organization_member_property_documents', caption: 'Информация о собственности'
+                                , off : data.item.participant == 35
+                            },
                         ].filter (not_off),
                         onClick: $_DO.choose_tab_organization_member_common
                     }
@@ -117,7 +139,7 @@ define ([], function () {
             ],
 
             onRender: function (e) {
-                this.get ('main').tabs.click (data.active_tab)
+                tabClick (this.get('main').tabs, data.active_tab)
             },
 
         });

@@ -64,8 +64,6 @@ define ([], function () {
 
             url: '/mosgis/_rest/?type=property_documents',
 
-            onChange: $_DO.patch_organization_member_property_documents,
-
             onDblClick: function (e) {
 
                 var c = this.columns [e.column];
