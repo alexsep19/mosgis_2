@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import ru.eludia.base.DB;
@@ -35,7 +36,7 @@ public class WorkingListLog extends LogTable {
             ).on ();
                 
     }
-    
+        
     public static ImportWorkingListRequest toImportWorkingListRequest (Map<String, Object> r) {
         final ImportWorkingListRequest result = DB.to.javaBean (ImportWorkingListRequest.class, r);
         result.setApprovedWorkingListData (toApprovedWorkingListData (r));
@@ -47,6 +48,7 @@ public class WorkingListLog extends LogTable {
         result.setTransportGUID (UUID.randomUUID ().toString ());
         result.setMonthYearFrom (toMonthYearFrom (r, WorkingList.c.DT_FROM));
         result.setMonthYearTo   (toMonthYearTo   (r, WorkingList.c.DT_TO));
+        for (Map<String, Object> i: (List<Map<String, Object>>) r.get ("items")) result.getWorkListItem ().add (WorkingListItem.toDom (i));
         return result;
     }
     
