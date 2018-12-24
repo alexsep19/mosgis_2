@@ -11,6 +11,8 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
+import javax.ws.rs.InternalServerErrorException;
+import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.dialect.ANSI;
 import ru.eludia.base.db.sql.build.QP;
@@ -29,6 +31,51 @@ import ru.eludia.products.mosgis.web.base.Search;
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class EntrancesImpl extends BasePassport<Entrance> implements EntrancesLocal {
 
+    @Override
+    public boolean checkRestore (String id) {
+        
+        try (DB db = ModelHolder.getModel ().getDb ()) {
+            
+            JsonObject record = db.getJsonObject (ModelHolder.getModel ().get(Entrance.class, id)
+                                                    .where ("is_deleted IS NOT NULL")
+                                                    .and   ("is_annuled_in_gis", 1)
+            );
+            
+            return record != null;
+            
+        }
+        catch (Exception ex) {
+            throw new InternalServerErrorException (ex);
+        }
+        
+    }
+    
+    @Override
+    public boolean checkCreate (String uuid, String num) {
+        
+        Select select = ModelHolder.getModel ()
+                .select  (Entrance.class, "uuid AS id")
+                .where   ("uuid_house", uuid)
+                .and     ("entrancenum", num)
+                .and     ("is_deleted", 0)
+                .orderBy ("entrancenum");
+        
+        try (DB db = ModelHolder.getModel ().getDb ()) {
+            
+//            int total = db.getCnt(select);
+//            
+//            if (total > 0) {
+//                
+//            }
+            return true;
+            
+        }
+        catch (Exception ex) {
+            throw new InternalServerErrorException (ex);
+        }
+        
+    }
+    
     @Override
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
 
@@ -153,9 +200,14 @@ public class EntrancesImpl extends BasePassport<Entrance> implements EntrancesLo
 
         final Table table = getTable ();
 
-        Map<String, Object> record = table.HASH (data, "uuid", id, "entranceguid", null);
-
-        db.update (table, record);
+        Map<String, Object> record = db.getMap(ModelHolder.getModel ()
+                                        .get(table, id));
+        record.put ("terminationdate", null);
+        record.put ("annulmentinfo", null);
+        record.put ("code_vc_nsi_330", null);
+        record.remove("uuid");
+        
+        db.insert (table, record);
         
     });}
 
