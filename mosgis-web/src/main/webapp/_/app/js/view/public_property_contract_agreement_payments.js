@@ -23,6 +23,7 @@ define ([], function () {
         switch (id_status) {        
             case 10:
             case 14:
+            case 40:
                 t.enable ('delete')
                 break
             default:
@@ -39,9 +40,8 @@ define ([], function () {
             default:
                 t.disable ('edit')
         }        
-
+        
     })}
-
                 
     return function (data, view) {
     
@@ -66,16 +66,38 @@ define ([], function () {
                 toolbarDelete: false, //data.item._can.create_payment,
                 toolbarEdit: false, //data.item._can.create_payment,
             },            
-            
-            
+
             toolbar: {
-            
+
                 items: !data.item._can.create_payment ? null : [
                     {type: 'button', id: 'edit', caption: 'Изменить', onClick: $_DO.edit_public_property_contract_agreement_payments, disabled: true, icon: 'w2ui-icon-pencil'},
                     {type: 'button', id: 'delete', caption: 'Удалить', onClick: $_DO.delete_public_property_contract_agreement_payments, disabled: true, icon: 'w2ui-icon-cross'},
                     {type: 'button', id: 'approve', caption: 'Разместить', onClick: $_DO.approve_public_property_contract_agreement_payments, disabled: true, off: $_USER.role.admin},
                 ].filter (not_off),
-                
+
+                onRefresh: function (e) {
+
+                    if (e.target != 'delete') return
+
+                    var g = this.owner
+                    var t = g.toolbar
+                    var r = g.get (g.getSelection () [0])
+                    var id_status = r ? r.id_ap_status : -1
+                    var b = e.item
+
+                    if (id_status == 40) {
+                        b.caption = 'Аннулировать'
+                        b.onClick = $_DO.annul_public_property_contract_agreement_payments
+                    }
+                    else {
+                        b.caption = 'Удалить'
+                        b.onClick = $_DO.delete_public_property_contract_agreement_payments
+                    }
+
+                    b.text = b.caption
+
+                }
+
             }, 
 
             textSearch: 'contains',

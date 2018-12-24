@@ -70,23 +70,31 @@ define ([], function () {
                 })
 
         }
-        
+
     }
-    
+
     $_DO.delete_public_property_contract_agreement_payments = function (e) {
-    
+
         var grid = w2ui ['public_property_contract_agreement_payments_grid']
         var id = grid.getSelection () [0]
         var r = grid.get (id)
-        
+
         if (!confirm ('Удалить информацию об оплате с ' + dt_dmy (r.datefrom) + ' по ' + dt_dmy (r.dateto) + '?')) return
-    
-        $('.w2ui-message').remove ()
 
-        e.preventDefault ()
+        query ({type: 'agreement_payments', id: id, action: 'delete'}, {}, reload_page)        
 
-        query ({type: 'agreement_payments', id: id, action: 'delete'}, {}, reload_page)
-        
+    }
+
+    $_DO.annul_public_property_contract_agreement_payments = function (e) {
+
+        var grid = w2ui ['public_property_contract_agreement_payments_grid']
+        var id = grid.getSelection () [0]
+        var r = grid.get (id)
+
+        if (!confirm ('Аннулировать информацию об оплате с ' + dt_dmy (r.datefrom) + ' по ' + dt_dmy (r.dateto) + '?')) return
+
+//        query ({type: 'agreement_payments', id: id, action: 'annul'}, {}, reload_page)
+
     }
 
     return function (done) {
