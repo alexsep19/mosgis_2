@@ -105,9 +105,7 @@ public class OrganizationMembers extends EJBResource <OrganizationMemberLocal> {
     @Path("{id}")
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) {
-        final JsonObject item = back.getItem (id);
-        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
-        return item;
+        return back.getItem (id);
     }
 
     @POST
@@ -115,8 +113,6 @@ public class OrganizationMembers extends EJBResource <OrganizationMemberLocal> {
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
-        final JsonObject item = back.getItem (id);
-        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
         return back.getLog (id, p, getUser ());
     }
 

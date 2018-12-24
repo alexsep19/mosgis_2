@@ -23,7 +23,8 @@ define ([], function () {
 
             add_vocabularies (data, {
                 vc_actions: 1,
-                vc_org_prtcps: 1
+                vc_org_prtcps: 1,
+                vc_prop_doc_types: 1
             })
 
             var it = data.item
