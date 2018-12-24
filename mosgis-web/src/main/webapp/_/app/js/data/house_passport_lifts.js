@@ -38,13 +38,7 @@ define ([], function () {
 
         if (!confirm ('Отменить аннулирование записи?')) return
 
-        query ({type: 'lifts', id: getId (), action: 'restore'}, {data: {        
-
-            terminationdate: null,
-            annulmentinfo: null,
-            code_vc_nsi_330: null,
-
-        }}, reload_page)
+        query ({type: 'lifts', id: getId (), action: 'restore'}, {}, reload_page)
 
     }
     

@@ -8,11 +8,29 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.rest.api.LiftsLocal;
 
 @Path ("lifts")
 public class Lifts extends EJBResource <LiftsLocal> {
 
+    private void createCheck (JsonObject p) {
+        
+        final JsonObject data = p.getJsonObject ("data");
+        final String uuid_house = data.getString ("uuid_house");
+        
+        if (!back.checkCreate(uuid_house, p.getString("factorynum")))
+            throw new ValidationException ("foo", "Указан недопустимый заводской номер лифта");
+        
+    }
+    
+    private void restoreCheck (String id) {
+        
+        if (!back.checkRestore(id))
+            throw new ValidationException ("foo", "Невозможно восстановить запись");
+        
+    }
+    
     @POST
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
@@ -63,6 +81,7 @@ public class Lifts extends EJBResource <LiftsLocal> {
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject doRestore (@PathParam ("id") String id, JsonObject p) {
+        restoreCheck (id);
         return back.doRestore(id, p);
     }
     
