@@ -16,7 +16,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.ws.base.AbstactServiceAsync;
 import ru.gosuslugi.dom.schema.integration.services.ImportWorkingListRequest;
 
-public class WorkingListTestLog extends BaseTest {
+public class WorkingListLogTest extends BaseTest {
     
     private static final UUID uuid = UUID.fromString ("00000000-0000-0000-0000-000000000000");
     
@@ -25,7 +25,7 @@ public class WorkingListTestLog extends BaseTest {
     
     private final Map<String, Object> commonPart;
         
-    public WorkingListTestLog () throws Exception {
+    public WorkingListLogTest () throws Exception {
         
         super ();        
 
@@ -48,7 +48,7 @@ public class WorkingListTestLog extends BaseTest {
     }
     
     @Before
-    @After
+//    @After
     public void clean () throws SQLException {
 
         try (DB db = model.getDb ()) {            
