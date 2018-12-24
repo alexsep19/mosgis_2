@@ -61,7 +61,7 @@ define ([], function () {
 
     }
 
-    return function (done) {
+    return function (done) { 
 
         var data = clone ($('body').data ('data'))
         

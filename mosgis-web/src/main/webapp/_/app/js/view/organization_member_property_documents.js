@@ -17,13 +17,24 @@ define ([], function () {
             postData.data.uuid_person_owner = data.item.uuid_person_member
         }
 
+        data._can = {
+            create_person: data.item.uuid_person_member && ($_USER.role.admin || $_USER.uuid_org == data.item.uuid_org),
+            create_org: data.item.uuid_org_member && ($_USER.role.admin || $_USER.uuid_org == data.item.uuid_org)
+        }
+
         $(w2ui ['organization_member_common_layout'].el('main')).w2regrid({
 
             toolbar: {
 
                 items: [
-                    {type: 'button', id: 'create_person', caption: 'Физическое лицо', icon: 'w2ui-icon-plus', onClick: $_DO.create_person_organization_member_property_documents, off: !data.is_passport_editable},
-                    {type: 'button', id: 'create_org', caption: 'Юридическое лицо', icon: 'w2ui-icon-plus', onClick: $_DO.create_org_organization_member_property_documents, off: !data.is_passport_editable},
+                    {type: 'button', id: 'create_person', caption: 'Физическое лицо', icon: 'w2ui-icon-plus'
+                        , onClick: $_DO.create_person_organization_member_property_documents
+                        , off: !data._can.create_person
+                    },
+                    {type: 'button', id: 'create_org', caption: 'Юридическое лицо', icon: 'w2ui-icon-plus'
+                        , onClick: $_DO.create_org_organization_member_property_documents
+                        , off: !data._can.create_org
+                    },
                 ].filter (not_off),
 
             },

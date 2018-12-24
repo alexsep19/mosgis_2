@@ -26,6 +26,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganizationParticipant;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
+import ru.eludia.products.mosgis.db.model.voc.VocPropertyDocumentType;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.OrganizationMemberLocal;
@@ -134,6 +135,7 @@ public class OrganizationMemberImpl extends BaseCRUD<OrganizationMemberDocument>
                 .and("is_deleted", 0)
                 .limit(0, 1)
             , m.select(VocOrganizationNsi20.class, "code").where("uuid", item.getString("uuid_org"))
+            , m.select(VocPropertyDocumentType.class, "*")
         );
 
         job.add ("item", item);
