@@ -14,6 +14,7 @@ import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.tables.WorkingList;
+import ru.eludia.products.mosgis.db.model.tables.WorkingListItem;
 import ru.eludia.products.mosgis.db.model.tables.WorkingListLog;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -55,13 +56,15 @@ public class ExportWorkingListMDB extends GisExportMDB<WorkingListLog> {
     @Override
     protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
         
-        VocGisStatus.i status = VocGisStatus.i.forId (r.get ("ap." + WorkingList.c.ID_CTR_STATUS.lc ()));
+        VocGisStatus.i status = VocGisStatus.i.forId (r.get ("r." + WorkingList.c.ID_CTR_STATUS.lc ()));
         WorkingList.Action action = WorkingList.Action.forStatus (status);        
 
         if (action == null) {
             logger.warning ("No action is implemented for " + status);
             return;
         }
+        
+        WorkingListItem.addTo (db, r);
                                 
         logger.info ("r=" + DB.to.json (r));
        

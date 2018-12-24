@@ -44,9 +44,9 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingListLocal {
     
-    private static final Logger logger = Logger.getLogger (WorkingListImpl.class.getName ());    
+    private static final Logger logger = Logger.getLogger (WorkingListImpl.class.getName ());
        
-    @Resource (mappedName = "mosgis.inHouseAgreementPaymentsQueue")
+    @Resource (mappedName = "mosgis.inWorkingListsQueue")
     Queue queue;
 
     @Override

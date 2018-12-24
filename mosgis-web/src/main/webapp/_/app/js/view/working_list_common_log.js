@@ -22,7 +22,7 @@ define ([], function () {
             columnGroups : [
                 {span: 3, caption: 'Событие'},
                 {span: 3, caption: 'Значения полей'},
-//                {span: 4, caption: 'Запрос в ГИС ЖКХ'},
+                {span: 3, caption: 'Запрос в ГИС ЖКХ'},
             ], 
             
             columns: [                
@@ -33,17 +33,11 @@ define ([], function () {
                 {field: 'dt_from', caption: 'Начало', size: 20, render: _my},
                 {field: 'dt_to', caption: 'Окончание', size: 20, render: _my},
                 {field: 'id_ctr_status', caption: 'Статус', size: 100, voc: data.vc_gis_status},
-/*                
+
                 {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: 'data-ref=1'},
                 {field: 'soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: 'data-ref=1'},
-                {field: 'soap.id_status', caption: 'Статус',    size: 30, render: function (r, i, c, v) {return (
-                    r.action != 'approve' ? '' : 
-                    r ['soap.ts_rp']      ? 'Обработано' : 
-                    r ['soap.ts']         ? 'Ожидает ответа' : 
-                                            'Ожидает отправки'
-                )}},
                 {field: 'soap.err_text', caption: 'Ошибка',    size: 30},
-*/
+
             ],
             
             url: '/mosgis/_rest/?type=working_lists&part=log&id=' + $_REQUEST.id,            

@@ -29,6 +29,35 @@ define ([], function () {
         
             var it = data.item
             
+            it._can = {cancel: 1}
+
+            if (!it.is_deleted) {
+
+                var cach = data.cach
+
+                if (cach && cach.is_own && cach ['org.uuid'] == $_USER.uuid_org && cach.id_ctr_status_gis == 40) {
+
+                    switch (it.id_ctr_status) {
+                        case 10:
+                        case 11:
+                            it._can.edit = 1
+
+                    }
+
+                    switch (it.id_ctr_status) {                    
+                        case 10:
+                        case 14:
+                            it._can.delete = 1
+
+                    }
+
+                    it._can.update = it._can.edit
+                    it._can.approve = it._can.edit
+
+                }        
+
+            }                    
+            
             it.dt_from = it.dt_from.substr (0, 10)
             it.dt_to   = it.dt_to.substr (0, 10)
         

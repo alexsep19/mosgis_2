@@ -54,6 +54,11 @@ define ([], function () {
         query ({type: 'working_lists', action: 'delete'}, {}, reload_page)
     }
         
+    $_DO.approve_working_list_common = function (e) {
+        if (!confirm ('Разместить эти данные в ГИС ЖКХ?')) return
+        query ({type: 'working_lists', action: 'approve'}, {}, reload_page)
+    }
+
     $_DO.choose_tab_working_list_common = function (e) {
     
         var name = e.tab.id
@@ -75,27 +80,10 @@ define ([], function () {
 
         w2ui ['topmost_layout'].unlock ('main')
         
-        var data = $('body').data ('data')
+        var data = clone ($('body').data ('data'))
         
         var it = data.item
         
-        it._can = {cancel: 1}
-        
-        if (!it.is_deleted) {
-        
-            var cach = data.cach
-
-            if (cach && cach.is_own && cach ['org.uuid'] == $_USER.uuid_org) {
-                it._can.edit = 1
-            }        
-            
-        }        
-
-        it._can.update = it._can.delete = it._can.edit        
-
-        data = clone (data)
-        it = data.item
-
         data.begins = data.periods.map (function (i) {return {
             id: i.id.substr (0, 8) + '01',
             text: i.text
@@ -109,7 +97,7 @@ define ([], function () {
 
         if ($_USER.role.admin) data.item.org_label = data.item ['vc_orgs.label']        
        
-        it.gis_status_label = data.vc_gis_status [it.id_ctr_status_gis]
+        it.gis_status_label = data.vc_gis_status [it.id_ctr_status]
 
         done (data)
         
