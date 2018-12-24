@@ -10,5 +10,6 @@ public interface AgreementPaymentLocal extends CRUDBackend {
 
     JsonObject doApprove   (String id, User user);
     JsonObject doAlter     (String id, JsonObject p, User user);
+    JsonObject doAnnul     (String id, JsonObject p, User user);
         
 }

@@ -3,6 +3,7 @@ package ru.eludia.products.mosgis.db.model.tables;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
+import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -25,6 +26,9 @@ public class AgreementPayment extends EnTable {
         BILL                  (Type.NUMERIC, 10, 2, null,      "Начислено за период"),
         DEBT                  (Type.NUMERIC, 10, 2, null,      "Размер задолженности (-)/переплаты (+) за период"),
         PAID                  (Type.NUMERIC, 10, 2, null,      "Оплачено за период"),
+        
+        REASONOFANNULMENT     (Type.STRING,  1000,  null,       "Причина аннулирования"),
+        IS_ANNULED            (Type.BOOLEAN,        new Virt ("DECODE(\"REASONOFANNULMENT\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0"),
         
         AGREEMENTPAYMENTVERSIONGUID  (Type.UUID, null, "Идентификатор версии сведений о внесении платы в ГИС ЖКХ")
 

@@ -52,5 +52,17 @@ public class AgreementPaymentLog extends GisWsLogTable {
     private static ImportPublicPropertyContractRequest.AddAgreementPayment.DatePeriod to (Map<String, Object> r) {
         return DB.to.javaBean (ImportPublicPropertyContractRequest.AddAgreementPayment.DatePeriod.class, r);
     }
+    
+    public static ImportPublicPropertyContractRequest toImportPublicPropertyContractAnnulRequest (Map<String, Object> r) {
+        final ImportPublicPropertyContractRequest result = new ImportPublicPropertyContractRequest ();
+        result.getAnnulAgreementPayment ().add (toAnnulAgreementPayment (r));
+        return result;
+    }    
+    
+    private static ImportPublicPropertyContractRequest.AnnulAgreementPayment toAnnulAgreementPayment (Map<String, Object> r) {
+        final ImportPublicPropertyContractRequest.AnnulAgreementPayment result = DB.to.javaBean (ImportPublicPropertyContractRequest.AnnulAgreementPayment.class, r);
+        result.setTransportGUID (UUID.randomUUID ().toString ());
+        return result;        
+    }
 
 }

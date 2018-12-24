@@ -45,6 +45,7 @@ public class ExportAgreementPaymentMDB extends GisExportMDB<AgreementPaymentLog>
             
         switch (action) {
             case PLACING:     return wsGisHouseManagementClient.importPublicPropertyContractAgreementPayment (orgPPAGuid, messageGUID, r);
+            case ANNULMENT:   return wsGisHouseManagementClient.importPublicPropertyAnnulContractAgreementPayment (orgPPAGuid, messageGUID, r);
             default: throw new IllegalArgumentException ("No action implemented for " + action);
         }
 

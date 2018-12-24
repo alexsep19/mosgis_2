@@ -56,5 +56,12 @@ public class AgreementPayments extends EJBResource <AgreementPaymentLocal> {
     public JsonObject doAlter (@PathParam ("id") String id, JsonObject p) { 
         return back.doAlter (id, p, getUser ());
     }
+    
+    @POST
+    @Path("{id}/annul") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject doAnnul (@PathParam ("id") String id, JsonObject p) { 
+        return back.doAnnul (id, p, getUser ());
+    }
 
 }

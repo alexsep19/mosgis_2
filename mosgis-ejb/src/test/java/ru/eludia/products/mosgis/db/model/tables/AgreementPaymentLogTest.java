@@ -39,6 +39,7 @@ public class AgreementPaymentLogTest extends BaseTest {
             EnTable.c.IS_DELETED, 0,
             AgreementPayment.c.UUID_CTR, getSomeUuid (PublicPropertyContract.class),
             AgreementPayment.c.AGREEMENTPAYMENTVERSIONGUID, null,
+            AgreementPayment.c.REASONOFANNULMENT, null,
             AgreementPayment.c.ID_LOG, null, 
             AgreementPayment.c.ID_AP_STATUS, 10, 
             AgreementPayment.c.ID_AP_STATUS_GIS, 10, 
@@ -81,19 +82,20 @@ public class AgreementPaymentLogTest extends BaseTest {
     private void checkSample (Map<String, Object> rr) throws SQLException {
         
         Map<String, Object> sample = table.new Sampler (commonPart, rr).nextHASH ();
+        sample.remove (AgreementPayment.c.IS_ANNULED.lc ());
 
         try (DB db = model.getDb ()) {            
             String idLog = createData (db, sample);           
             Map<String, Object> r = db.getMap (logTable.getForExport (idLog));
             checkImport (r);
-/*            
-            if (DB.ok (r.get (PublicPropertyContract.c.IS_ANNULED.lc ()))) {
+
+            if (DB.ok (r.get (AgreementPayment.c.IS_ANNULED.lc ()))) {
                 checkAnnul (r);
             }
             else {
                 checkImport (r);
             }
-*/
+
         }
         
     }    
@@ -101,6 +103,11 @@ public class AgreementPaymentLogTest extends BaseTest {
     private void checkImport (final Map<String, Object> r) throws IllegalStateException {
         dump (r);
         validate (AgreementPaymentLog.toImportPublicPropertyContractRequest (r));
+    }
+    
+    private void checkAnnul (final Map<String, Object> r) throws IllegalStateException {
+        dump (r);
+        validate (AgreementPaymentLog.toImportPublicPropertyContractAnnulRequest (r));
     }
 
     @Test
@@ -116,6 +123,16 @@ public class AgreementPaymentLogTest extends BaseTest {
 
         checkSample (HASH (
             AgreementPayment.c.AGREEMENTPAYMENTVERSIONGUID, UUID.randomUUID ()
+        ));
+
+    }
+    
+    @Test
+    public void testDelete () throws SQLException {
+
+        checkSample (HASH (
+            AgreementPayment.c.AGREEMENTPAYMENTVERSIONGUID, UUID.randomUUID (),
+            AgreementPayment.c.REASONOFANNULMENT, "ÄNNUL"
         ));
 
     }

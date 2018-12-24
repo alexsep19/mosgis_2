@@ -159,4 +159,18 @@ public class AgreementPaymentImpl extends BaseCRUD<AgreementPayment> implements 
         
     });}    
     
+    @Override
+    public JsonObject doAnnul (String id, JsonObject p, User user) {return doAction ((db) -> {
+        
+        db.update (getTable (), getData (p,
+            EnTable.c.UUID, id,
+            AgreementPayment.c.ID_AP_STATUS,     VocGisStatus.i.PENDING_RQ_ANNULMENT.getId (),
+            AgreementPayment.c.REASONOFANNULMENT, p.getJsonObject ("data").getString (AgreementPayment.c.REASONOFANNULMENT.lc ())
+        ));
+        
+        logAction (db, user, id, VocAction.i.ANNUL);
+                        
+    });}
+    
+    
 }
