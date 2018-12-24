@@ -9,8 +9,10 @@ import javax.ejb.TransactionAttributeType;
 import javax.jws.HandlerChain;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
+import ru.eludia.products.mosgis.db.model.tables.WorkingListLog;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ws.base.LoggingOutMessageHandler;
+import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.base.GetStateRequest;
 import ru.gosuslugi.dom.schema.integration.services.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.services_service_async.ServicesServiceAsync;
@@ -40,6 +42,10 @@ public class WsGisServicesClient {
         GetStateRequest getStateRequest = new GetStateRequest ();
         getStateRequest.setMessageGUID (uuid.toString ());
         return getPort (orgPPAGuid, UUID.randomUUID ()).getState (getStateRequest);
+    }
+    
+    public AckRequest.Ack foo (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importWorkingList (WorkingListLog.toImportWorkingListRequest (r)).getAck ();
     }
         
 }

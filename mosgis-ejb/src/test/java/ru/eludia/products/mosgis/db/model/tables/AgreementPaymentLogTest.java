@@ -35,7 +35,8 @@ public class AgreementPaymentLogTest extends BaseTest {
         table    = (AgreementPayment) model.get (AgreementPayment.class);
         logTable = (AgreementPaymentLog) model.get (AgreementPaymentLog.class);        
         
-        this.commonPart = HASH (EnTable.c.UUID, uuid,
+        this.commonPart = HASH (
+            EnTable.c.UUID, uuid,
             EnTable.c.IS_DELETED, 0,
             AgreementPayment.c.UUID_CTR, getSomeUuid (PublicPropertyContract.class),
             AgreementPayment.c.AGREEMENTPAYMENTVERSIONGUID, null,
@@ -87,7 +88,6 @@ public class AgreementPaymentLogTest extends BaseTest {
         try (DB db = model.getDb ()) {            
             String idLog = createData (db, sample);           
             Map<String, Object> r = db.getMap (logTable.getForExport (idLog));
-            checkImport (r);
 
             if (DB.ok (r.get (AgreementPayment.c.IS_ANNULED.lc ()))) {
                 checkAnnul (r);
