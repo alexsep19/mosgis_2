@@ -31,7 +31,7 @@ public class WsGisServicesClient {
 
     private ServicesPortsTypeAsync getPort (UUID orgPPAGuid, UUID messageGUID) {
         ServicesPortsTypeAsync port = service.getDefaultPort ();
-        VocSetting.setPort (port, "WS_GIS_HOUSE_MANAGEMENT");
+        VocSetting.setPort (port, "WS_GIS_SERVICES");
         final Map<String, Object> requestContext = ((BindingProvider)port).getRequestContext ();
         requestContext.put (LoggingOutMessageHandler.FIELD_MESSAGE_GUID, messageGUID);
         requestContext.put (LoggingOutMessageHandler.FIELD_ORG_PPA_GUID, orgPPAGuid);

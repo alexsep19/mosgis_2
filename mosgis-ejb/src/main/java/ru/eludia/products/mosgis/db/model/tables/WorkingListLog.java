@@ -6,12 +6,12 @@ import java.util.UUID;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.LogTable;
+import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.gosuslugi.dom.schema.integration.services.ImportWorkingListRequest;
 import ru.gosuslugi.dom.schema.integration.services.WorkingListBaseType;
 
-public class WorkingListLog extends LogTable {
+public class WorkingListLog extends GisWsLogTable {
 
     public WorkingListLog () {
 

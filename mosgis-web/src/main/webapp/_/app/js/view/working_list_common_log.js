@@ -41,7 +41,7 @@ define ([], function () {
             ],
             
             url: '/mosgis/_rest/?type=working_lists&part=log&id=' + $_REQUEST.id,            
-/*            
+
             onClick: function (e) {
             
                 var c = this.columns [e.column]
@@ -53,7 +53,7 @@ define ([], function () {
                 }
             
             }
-*/
+
         }).refresh ();
 
     }
