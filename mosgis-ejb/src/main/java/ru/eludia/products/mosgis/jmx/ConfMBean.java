@@ -48,14 +48,7 @@ public interface ConfMBean {
     public void   setWsGisNsiCommonConnTimeout (int i);
     public int    getWsGisNsiCommonRespTimeout ();     
     public void   setWsGisNsiCommonRespTimeout (int i);
-/*    
-    public String getWsGisRdUrl ();
-    public void   setWsGisRdUrl (String s);
-    public int    getWsGisRdConnTimeout ();     
-    public void   setWsGisRdConnTimeout (int i);
-    public int    getWsGisRdRespTimeout ();     
-    public void   setWsGisRdRespTimeout (int i);
-*/
+
     public String getWsGisOrgCommonUrl ();
     public void   setWsGisOrgCommonUrl (String s);    
     public int    getWsGisOrgCommonConnTimeout ();     
@@ -92,5 +85,12 @@ public interface ConfMBean {
     
     public int    getTtlCharters ();
     public void   setTtlCharters (int i);
+    
+    public String getWsGisServicesUrl ();
+    public void   setWsGisServicesUrl (String s);    
+    public int    getWsGisServicesConnTimeout ();     
+    public void   setWsGisServicesConnTimeout (int i);
+    public int    getWsGisServicesRespTimeout ();     
+    public void   setWsGisServicesRespTimeout (int i);     
 
 }

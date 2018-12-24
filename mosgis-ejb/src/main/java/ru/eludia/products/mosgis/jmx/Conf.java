@@ -218,37 +218,7 @@ public class Conf implements ConfMBean, ConfLocal {
     public void setPathOktmo (String s) {
         set (VocSetting.i.PATH_OKTMO, s);
     }
-/*
-    @Override
-    public String getWsGisRdUrl () {
-        return get (VocSetting.i.WS_RD_URL);
-    }
 
-    @Override
-    public void setWsGisRdUrl (String s) {
-        set (VocSetting.i.WS_RD_URL, s);
-    }
-
-    @Override
-    public int getWsGisRdConnTimeout () {
-        return getInt (VocSetting.i.WS_RD_TMT_CONN);
-    }
-
-    @Override
-    public void setWsGisRdConnTimeout (int i) {
-        setInt (VocSetting.i.WS_RD_TMT_CONN, i);
-    }
-
-    @Override
-    public int getWsGisRdRespTimeout () {
-        return getInt (VocSetting.i.WS_RD_TMT_RESP);
-    }
-
-    @Override
-    public void setWsGisRdRespTimeout (int i) {
-        setInt (VocSetting.i.WS_RD_TMT_RESP, i);
-    }
-*/    
     @Override
     public String getWsGisOrgCommonUrl () {
         return get (VocSetting.i.WS_GIS_ORG_COMMON_URL);
@@ -446,13 +416,7 @@ public class Conf implements ConfMBean, ConfLocal {
     public void setWsGisUrlRoot(String s)
     {   
         set (VocSetting.i.WS_GIS_URL_ROOT, s);
-        
-        set (VocSetting.i.WS_GIS_BILLS_URL, s + VocSetting.i.WS_GIS_BILLS_URL.getValue().substring(VocSetting.WS_GIS_URL_ROOT_DEFAULT.length()));
-        set (VocSetting.i.WS_GIS_FILES_URL, s + VocSetting.i.WS_GIS_FILES_URL.getValue().substring(VocSetting.WS_GIS_URL_ROOT_DEFAULT.length()));
-        set (VocSetting.i.WS_GIS_HOUSE_MANAGEMENT_URL, s + VocSetting.i.WS_GIS_HOUSE_MANAGEMENT_URL.getValue().substring(VocSetting.WS_GIS_URL_ROOT_DEFAULT.length()));
-        set (VocSetting.i.WS_GIS_NSI_COMMON_URL, s + VocSetting.i.WS_GIS_NSI_COMMON_URL.getValue().substring(VocSetting.WS_GIS_URL_ROOT_DEFAULT.length()));
-        set (VocSetting.i.WS_GIS_NSI_URL, s + VocSetting.i.WS_GIS_NSI_URL.getValue().substring(VocSetting.WS_GIS_URL_ROOT_DEFAULT.length()));
-        set (VocSetting.i.WS_GIS_ORG_COMMON_URL, s + VocSetting.i.WS_GIS_ORG_COMMON_URL.getValue().substring(VocSetting.WS_GIS_URL_ROOT_DEFAULT.length()));
+        for (VocSetting.i i: VocSetting.i.values ()) if (i.isGisEndpointUrl ()) set (i, s + i.toGisEndpointPath ());
     }
     
     @Override
@@ -495,5 +459,36 @@ public class Conf implements ConfMBean, ConfLocal {
     public void setTtlCharters (int i) {
         setInt (VocSetting.i.TTL_CHARTERS, i);
     }    
+        
+    @Override
+    public String getWsGisServicesUrl() {
+       return get (VocSetting.i.WS_GIS_SERVICES_URL);
+    }
+
+    @Override
+    public void setWsGisServicesUrl(String s) {
+        set (VocSetting.i.WS_GIS_SERVICES_URL, s);
+        set (VocSetting.i.WS_GIS_URL_ROOT, "");
+    }
+
+    @Override
+    public int getWsGisServicesConnTimeout() {
+        return getInt (VocSetting.i.WS_GIS_SERVICES_TMT_CONN);
+    }
+
+    @Override
+    public void setWsGisServicesConnTimeout(int i) {
+        setInt (VocSetting.i.WS_GIS_SERVICES_TMT_CONN, i);
+    }
+
+    @Override
+    public int getWsGisServicesRespTimeout() {
+        return getInt (VocSetting.i.WS_GIS_SERVICES_TMT_RESP);
+    }
+
+    @Override
+    public void setWsGisServicesRespTimeout(int i) {
+        setInt (VocSetting.i.WS_GIS_SERVICES_TMT_RESP, i);
+    }
 
 }
