@@ -2,9 +2,11 @@ package ru.eludia.products.mosgis.rest.impl;
 
 import java.util.Map;
 import java.util.logging.Logger;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.jms.Queue;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
@@ -44,6 +46,32 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
     
     private static final Logger logger = Logger.getLogger (WorkingListImpl.class.getName ());    
        
+    @Resource (mappedName = "mosgis.inHouseAgreementPaymentsQueue")
+    Queue queue;
+
+    @Override
+    public Queue getQueue () {
+        return queue;
+    }
+
+    @Override
+    protected void publishMessage (VocAction.i action, String id_log) {
+        
+        switch (action) {
+            case APPROVE:
+            case PROMOTE:
+            case REFRESH:
+            case TERMINATE:
+            case ANNUL:
+            case ROLLOVER:
+            case RELOAD:
+                super.publishMessage (action, id_log);
+            default:
+                return;
+        }
+        
+    }
+
     private void filterOffDeleted (Select select) {
         select.and (EnTable.c.IS_DELETED, Operator.EQ, 0);
     }
@@ -167,6 +195,17 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
             
         }        
         
+    });}
+    
+    @Override
+    public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
+
+        db.update (getTable (), HASH (EnTable.c.UUID,               id,
+            WorkingList.c.ID_CTR_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+        ));
+
+        logAction (db, user, id, VocAction.i.APPROVE);
+
     });}
 
 }

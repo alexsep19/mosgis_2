@@ -5,9 +5,9 @@ import java.util.Map;
 import java.util.UUID;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
-import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.LogTable;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.gosuslugi.dom.schema.integration.services.ImportWorkingListRequest;
 import ru.gosuslugi.dom.schema.integration.services.WorkingListBaseType;
 
@@ -22,7 +22,7 @@ public class WorkingListLog extends LogTable {
         
     }
     
-    Select getForExport (String id) {
+    public Get getForExport (String id) {
         
         return (Get) getModel ()
             .get (this, id, "*")
@@ -30,10 +30,24 @@ public class WorkingListLog extends LogTable {
                 , WorkingList.c.ID_CTR_STATUS.lc ()
                 , WorkingList.c.FIASHOUSEGUID.lc () + " AS fiashouseguid"
             ).on ()
+                
             .toMaybeOne (ContractObject.class, "AS co").on ()
             .toMaybeOne (Contract.class, "AS ctr"
                 , "contractguid AS contractguid"
-            ).on ();
+            ).on ()
+            .toMaybeOne (VocOrganization.class, "AS o1"
+                , "orgppaguid AS orgppaguid_1"
+            ).on ("ctr.uuid_org=o1.uuid")
+                
+            .toMaybeOne (CharterObject.class, "AS co").on ()
+            .toMaybeOne (Charter.class, "AS ch"
+                , "charterguid AS charterguid"
+            ).on ()
+            .toMaybeOne (VocOrganization.class, "AS o2"
+                , "orgppaguid AS orgppaguid_2"
+            ).on ("ch.uuid_org=o1.uuid")
+                
+            ;
                 
     }
         

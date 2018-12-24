@@ -3,11 +3,10 @@ package ru.eludia.products.mosgis.db.model.tables;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
-import static ru.eludia.base.model.Type.DATE;
-import static ru.eludia.base.model.Type.NUMERIC;
 import ru.eludia.base.model.def.Num;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 
@@ -21,10 +20,11 @@ public class WorkingList extends EnTable {
         ID_CTR_STATUS        (VocGisStatus.class,    new Num (VocGisStatus.i.PROJECT.getId ()), "Статус объекта договора с точки зрения mosgis"),
         ID_CTR_STATUS_GIS    (VocGisStatus.class,    new Num (VocGisStatus.i.PROJECT.getId ()), "Статус объекта договора с точки зрения ГИС ЖКХ"),
         ID_LOG               (WorkingListLog.class,  "Последнее событие редактирования"),
-        DT_FROM              (DATE,                  "Период \"с\"  (первое число первого месяца периода)"),
-        DT_TO                (DATE,                  "Период \"по\" (последнее число последнего месяца периода)"),
-        COUNT                (NUMERIC,  4, 0, null,  "Количество"),
-        TOTALCOST            (NUMERIC, 22, 2, null,  "Общая стоимость")
+        DT_FROM              (Type.DATE,                  "Период \"с\"  (первое число первого месяца периода)"),
+        DT_TO                (Type.DATE,                  "Период \"по\" (последнее число последнего месяца периода)"),
+        COUNT                (Type.NUMERIC,  4, 0, null,  "Количество"),
+        TOTALCOST            (Type.NUMERIC, 22, 2, null,  "Общая стоимость"),        
+        WORKLISTGUID         (Type.UUID, null,            "Идентификатор перечня")        
         ;
 
         @Override
@@ -132,4 +132,50 @@ public class WorkingList extends EnTable {
 
     }
     
+    public enum Action {
+        
+        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
+        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT)
+        ;
+        
+        VocGisStatus.i nextStatus;
+        VocGisStatus.i okStatus;
+        VocGisStatus.i failStatus;
+
+        private Action (VocGisStatus.i nextStatus, VocGisStatus.i okStatus, VocGisStatus.i failStatus) {
+            this.nextStatus = nextStatus;
+            this.okStatus = okStatus;
+            this.failStatus = failStatus;
+        }
+
+        public VocGisStatus.i getNextStatus () {
+            return nextStatus;
+        }
+
+        public VocGisStatus.i getFailStatus () {
+            return failStatus;
+        }
+
+        public VocGisStatus.i getOkStatus () {
+            return okStatus;
+        }
+
+        public static Action forStatus (VocGisStatus.i status) {
+            switch (status) {
+                case PENDING_RQ_PLACING:   return PLACING;
+                case PENDING_RQ_ANNULMENT: return ANNULMENT;
+                default: return null;
+            }            
+        }
+
+        public static Action forLogAction (VocAction.i a) {
+            switch (a) {
+                case APPROVE: return PLACING;
+                case ANNUL:   return ANNULMENT;
+                default: return null;
+            }
+        }
+
+    };
+
 }

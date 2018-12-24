@@ -44,7 +44,7 @@ public class WsGisServicesClient {
         return getPort (orgPPAGuid, UUID.randomUUID ()).getState (getStateRequest);
     }
     
-    public AckRequest.Ack foo (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+    public AckRequest.Ack importWorkingList (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
         return getPort (orgPPAGuid, messageGUID).importWorkingList (WorkingListLog.toImportWorkingListRequest (r)).getAck ();
     }
         

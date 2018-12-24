@@ -44,6 +44,7 @@ public class WorkingListLogTest extends BaseTest {
             WorkingList.c.ID_CTR_STATUS_GIS, 10,
             WorkingList.c.UUID_CONTRACT_OBJECT, getSomeUuid (ContractObject.class),
             WorkingList.c.UUID_CHARTER_OBJECT, null,
+            WorkingList.c.WORKLISTGUID, null,
             WorkingList.c.ID_LOG, null
         );        
         
