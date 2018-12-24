@@ -2,6 +2,7 @@ package ru.eludia.products.mosgis.rest.resources;
 
 import ru.eludia.products.mosgis.rest.misc.EJBResource;
 import javax.json.JsonObject;
+import javax.json.JsonString;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -19,7 +20,7 @@ public class Entrances extends EJBResource <EntrancesLocal> {
         final JsonObject data = p.getJsonObject ("data");
         final String uuid_house = data.getString ("uuid_house");
         
-        if (!back.checkCreate(uuid_house, p.getString("entrancenum")))
+        if (!back.checkCreate(uuid_house, p.getJsonArray("nos").getValuesAs (JsonString.class)))
             throw new ValidationException ("foo", "Указан недопустимый номер подъезда");
         
     }
@@ -42,7 +43,8 @@ public class Entrances extends EJBResource <EntrancesLocal> {
     @Path("create") 
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
-    public JsonObject create (JsonObject p) { 
+    public JsonObject create (JsonObject p) {
+        createCheck (p);
         return back.doCreate (p, getUser ()); 
     }
 

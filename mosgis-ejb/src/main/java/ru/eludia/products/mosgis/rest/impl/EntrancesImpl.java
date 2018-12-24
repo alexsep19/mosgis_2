@@ -1,6 +1,7 @@
 package ru.eludia.products.mosgis.rest.impl;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.ejb.Stateless;
@@ -51,28 +52,39 @@ public class EntrancesImpl extends BasePassport<Entrance> implements EntrancesLo
     }
     
     @Override
-    public boolean checkCreate (String uuid, String num) {
+    public boolean checkCreate (String uuid, List<JsonString> nos) {
         
-        Select select = ModelHolder.getModel ()
-                .select  (Entrance.class, "uuid AS id")
-                .where   ("uuid_house", uuid)
-                .and     ("entrancenum", num)
-                .and     ("is_deleted", 0)
-                .orderBy ("entrancenum");
+        boolean noBadNum = true;
         
-        try (DB db = ModelHolder.getModel ().getDb ()) {
+        for (int i = 0; i < nos.size (); i++)
+        {
             
-//            int total = db.getCnt(select);
-//            
-//            if (total > 0) {
-//                
-//            }
-            return true;
+            try (DB db = ModelHolder.getModel ().getDb ()) {
+            
+                Select select = ModelHolder.getModel ()
+                    .select  (Entrance.class, "uuid AS id")
+                    .where   ("uuid_house", uuid)
+                    .and     ("entrancenum", nos.get(i).getString ())
+                    .and     ("is_deleted", 0)
+                    .orderBy ("entrancenum");
+            
+                int total = db.getCnt(select);
+                int annuled = db.getCnt(select.and ("is_annuled", 1));
+                int annuled_in_gis = db.getCnt(select.and ("is_annuled_in_gis", 1));
+                
+                if (total > 0) {
+                    if (annuled == 0 || annuled < total || annuled_in_gis == 0) 
+                        noBadNum = false;
+                }
+                
+            }
+            catch (Exception ex) {
+                throw new InternalServerErrorException (ex);
+            }
             
         }
-        catch (Exception ex) {
-            throw new InternalServerErrorException (ex);
-        }
+        
+        return noBadNum;
         
     }
     
