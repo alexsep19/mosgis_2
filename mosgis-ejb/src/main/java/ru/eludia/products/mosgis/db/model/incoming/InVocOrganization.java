@@ -7,7 +7,6 @@ import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import static ru.eludia.base.model.def.Def.NOW;
-import ru.eludia.products.mosgis.db.model.tables.License;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
 
 public class InVocOrganization extends Table {
