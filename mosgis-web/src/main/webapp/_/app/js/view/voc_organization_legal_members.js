@@ -3,7 +3,8 @@ define ([], function () {
     return function (data, view) {
 
         data._can = {
-            create: $_USER.role.admin || $_USER.uuid_org == $_REQUEST.id
+            create: $_USER.role.admin || $_USER.uuid_org == $_REQUEST.id,
+            delete: $_USER.role.admin || $_USER.uuid_org == $_REQUEST.id,
         }
 
         var is_popup = 1 == $_SESSION.delete ('voc_organization_legal_members_popup.on')
@@ -33,7 +34,7 @@ define ([], function () {
             show: {
                 toolbar: true,
                 toolbarInput: false,
-                toolbarDelete: true,
+                toolbarDelete: data._can.delete,
                 toolbarColumns: false,
                 footer: true
             },
