@@ -4,15 +4,12 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
-import javax.jms.Queue;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
-import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
@@ -33,20 +30,18 @@ import ru.eludia.products.mosgis.db.model.tables.WorkingList.c;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisServicesClient;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
+import ru.gosuslugi.dom.schema.integration.services.ExportWorkingListResultType;
 import ru.gosuslugi.dom.schema.integration.services.GetStateResult;
 
 @MessageDriven(activationConfig = {
- @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outExportWorkingListsQueue")
+ @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outImportWorkingListsQueue")
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class GisPollExportWorkingListMDB  extends GisPollMDB {
+public class GisPollImportWorkingListMDB  extends GisPollMDB {
 
     @EJB
     WsGisServicesClient wsGisServicesClient;
-    
-    @Resource (mappedName = "mosgis.inWorkingListsQueue")
-    Queue inWorkingListsQueue;
 
     @Override
     protected Get get (UUID uuid) {
@@ -91,30 +86,27 @@ public class GisPollExportWorkingListMDB  extends GisPollMDB {
             
             if (errorMessage != null) throw new GisPollException (errorMessage);            
             
-            final List<CommonResultType> commonResult = state.getImportResult ();                        
+            List<ExportWorkingListResultType> exportWorkingListResult = state.getExportWorkingListResult ();
             
-            if (commonResult == null || commonResult.isEmpty ()) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
+            if (exportWorkingListResult == null || exportWorkingListResult.isEmpty ()) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
                                     
-            for (CommonResultType.Error err: commonResult.get (0).getError ()) throw new GisPollException (err);
 
-            final Map<String, Object> h = statusHash (action.getOkStatus ());
 
-            if (action == WorkingList.Action.PLACING) {
-                final String guid = commonResult.get (0).getGUID ();
-                if (DB.ok (guid)) h.put (c.WORKLISTGUID.lc (), guid);
-            }
 
+
+
+
+
+
+
+            final Map<String, Object> h = statusHash (action.getOkStatus ());            
+            
             update (db, uuid, r, h);
 
             db.update (OutSoap.class, HASH (
                 "uuid", getUuid (),
                 "id_status", DONE.getId ()
             ));
-            
-            if (action == WorkingList.Action.PLACING && DB.ok (h.get (c.WORKLISTGUID.lc ()))) {
-                MosGisModel m = ModelHolder.getModel ();
-                uuidPublisher.publish (inWorkingListsQueue, m.createIdLog (db, m.get (WorkingList.class), null, r.get ("r.uuid"), VocAction.i.REFRESH));
-            }
 
         }
         catch (GisPollRetryException ex) {
