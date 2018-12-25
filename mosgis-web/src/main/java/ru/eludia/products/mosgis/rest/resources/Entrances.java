@@ -14,23 +14,6 @@ import ru.eludia.products.mosgis.rest.api.EntrancesLocal;
 
 @Path ("entrances")
 public class Entrances extends EJBResource <EntrancesLocal> {
-    
-    private void createCheck (JsonObject p) {
-        
-        final JsonObject data = p.getJsonObject ("data");
-        final String uuid_house = data.getString ("uuid_house");
-        
-        if (!back.checkCreate(uuid_house, p.getJsonArray("nos").getValuesAs (JsonString.class)))
-            throw new ValidationException ("foo", "Указан недопустимый номер подъезда");
-        
-    }
-    
-    private void restoreCheck (String id) {
-        
-        if (!back.checkRestore(id))
-            throw new ValidationException ("foo", "Невозможно восстановить запись");
-        
-    }
 
     @POST
     @Consumes (APPLICATION_JSON)
@@ -44,7 +27,6 @@ public class Entrances extends EJBResource <EntrancesLocal> {
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject create (JsonObject p) {
-        createCheck (p);
         return back.doCreate (p, getUser ()); 
     }
 
@@ -74,9 +56,8 @@ public class Entrances extends EJBResource <EntrancesLocal> {
     @Path ("{id}/restore")
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
-    public JsonObject doRestore (@PathParam ("id") String id, JsonObject p) {
-        restoreCheck (id);
-        return back.doRestore(id, p);
+    public JsonObject doRestore (@PathParam ("id") String id) {
+        return back.doRestore(id);
     }
     
 }

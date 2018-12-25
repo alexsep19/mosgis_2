@@ -1,7 +1,6 @@
 package ru.eludia.products.mosgis.rest.impl;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.ejb.Stateless;
@@ -12,8 +11,6 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
-import javax.ws.rs.InternalServerErrorException;
-import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.dialect.ANSI;
 import ru.eludia.base.db.sql.build.QP;
@@ -31,62 +28,6 @@ import ru.eludia.products.mosgis.web.base.Search;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class EntrancesImpl extends BasePassport<Entrance> implements EntrancesLocal {
-
-    @Override
-    public boolean checkRestore (String id) {
-        
-        try (DB db = ModelHolder.getModel ().getDb ()) {
-            
-            JsonObject record = db.getJsonObject (ModelHolder.getModel ().get(Entrance.class, id, "uuid")
-                                                    .where ("is_deleted", 0)
-                                                    .and   ("is_annuled_in_gis", 1)
-            );
-            
-            return record != null;
-            
-        }
-        catch (Exception ex) {
-            throw new InternalServerErrorException (ex);
-        }
-        
-    }
-    
-    @Override
-    public boolean checkCreate (String uuid, List<JsonString> nos) {
-        
-        boolean noBadNum = true;
-        
-        for (int i = 0; i < nos.size (); i++)
-        {
-            
-            try (DB db = ModelHolder.getModel ().getDb ()) {
-            
-                Select select = ModelHolder.getModel ()
-                    .select  (Entrance.class, "uuid AS id")
-                    .where   ("uuid_house", uuid)
-                    .and     ("entrancenum", nos.get(i).getString ())
-                    .and     ("is_deleted", 0)
-                    .orderBy ("entrancenum");
-            
-                int total = db.getCnt(select);
-                int annuled = db.getCnt(select.and ("is_annuled", 1));
-                int annuled_in_gis = db.getCnt(select.and ("is_annuled_in_gis", 1));
-                
-                if (total > 0) {
-                    if (annuled == 0 || annuled < total || annuled_in_gis == 0) 
-                        noBadNum = false;
-                }
-                
-            }
-            catch (Exception ex) {
-                throw new InternalServerErrorException (ex);
-            }
-            
-        }
-        
-        return noBadNum;
-        
-    }
     
     @Override
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
@@ -206,7 +147,7 @@ public class EntrancesImpl extends BasePassport<Entrance> implements EntrancesLo
     });}
     
     @Override
-    public JsonObject doRestore (String id, JsonObject p) {return doAction ((db) -> {
+    public JsonObject doRestore (String id) {return doAction ((db) -> {
 
         final Table table = getTable ();
 
