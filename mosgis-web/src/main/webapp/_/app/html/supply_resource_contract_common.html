@@ -1,0 +1,385 @@
+<span>
+
+    <div>
+
+        <div class="w2ui-page page-1 page-0">
+
+            <style>
+
+                .w2ui-field > label {
+                    width: 330px;
+                    margin-right: 10px;
+                }
+
+                .w2ui-field > label.short {
+                    width: 10px;
+                }
+                .w2ui-field > label.short+div {
+                    margin-left: 10px;
+                }
+
+                .w2ui-field > label.medium {
+                    width: 100px;
+                }
+                .w2ui-field > label.medium+div {
+                    margin-left: 100px;
+                }
+
+
+                .w2ui-field input {
+                    width: 270px !important;
+                }
+
+                .w2ui-field input.dt {
+                    width: 70px !important;
+                }
+
+                .w2ui-field input.nxt {
+                    width: 140px !important;
+                }
+
+                .w2ui-field input.long {
+                    width: 690px !important;
+                }
+
+                .sync b {
+                    color: red;
+                }
+                .w2ui-group-title {
+                    font-weight: bold;
+                }
+                tr span.w2ui-group-title {
+                    line-height: 60px;
+                }
+
+                .w2ui-field div span[data-text] {
+                    line-height: 19px
+                }
+            </style>
+
+            <table border=0 cellpadding=0 cellspacing=0 width=90%>
+
+                <tr>
+
+                    <td colspan=2 valign=top>
+
+                        <div class="w2ui-field">
+                            <label>Исполнитель</label>
+                            <div>
+                                <input name=org.label readonly class=long>
+                            </div>
+                        </div>
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <td class="left-block" width=1 valign=top>
+
+                        <div class="w2ui-field">
+                            <label>№ договора</label>
+                            <div>
+                                <input name=contractnumber maxlength=255>
+                            </div>
+                        </div>
+                    </td>
+
+                    <td valign=top>
+                        <div class="w2ui-field">
+                            <label>Статус:</label>
+                            <div>
+                                <span data-text=status_label maxlength=255 />
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+
+                    <td class="left-block" width=1 valign=top>
+
+                        <div class="w2ui-field">
+                            <label>Дата заключения</label>
+                            <div>
+                                <input name=signingdate placeholder="" class=dt>
+                            </div>
+                        </div>
+
+                    </td>
+
+                    <td valign=top>
+
+                        <div class="w2ui-field">
+                            <label>Дата вступления в силу</label>
+                            <div>
+                                <input name=effectivedate placeholder="" class=dt>
+                            </div>
+                        </div>
+
+                    </td>
+
+                </tr>
+                <tr>
+
+                    <td class="left-block" width=1 valign=top>
+
+                        <div class="w2ui-field">
+                            <label>Основание заключения договора</label>
+                            <div>
+                                <input name=code_vc_nsi_58 >
+                            </div>
+                        </div>
+                    </td>
+
+                    <td valign=top>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td class="left-block" width=1 valign=top>
+
+                        <div class="w2ui-field">
+                            <label>Дата окончания</label>
+                            <div>
+                                <input name=completiondate placeholder="" class=dt>
+                            </div>
+                        </div>
+
+                    </td>
+
+                    <td valign=top>
+
+                        <div class="w2ui-field" title="Автоматически пролонгировать договор на один год при наступлении даты окончания действия">
+                            <label>Автопрологация</label>
+                            <div>
+                                <input name=automaticrolloveroneyear >
+                            </div>
+                        </div>
+
+                    </td>
+
+                </tr>
+                <tr>
+
+                    <td class="left-block" width=1 valign=top>
+
+                        <div class="w2ui-field" title="Договор является публичным и/или отсутствует заключенный на бумажном носителе (в электронной форме) и/или заключен в отношении нежилых помещений в многоквартирных домах?">
+                            <label>Является публичным</label>
+                            <div>
+                                <input name=is_contract >
+                            </div>
+                        </div>
+
+                    </td>
+
+                    <td valign=top>
+
+                        <div class="w2ui-field" title="Оплата предоставленных услуг осуществляется единоразово при отгрузке указанных ресурсов без заведения лицевых счетов для потребителей">
+                            <label>Единоразовая оплата услуг</label>
+                            <div>
+                                <input name=onetimepayment >
+                            </div>
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <td class="left-block" width=1 valign=top>
+
+                        <div class="w2ui-field" title="Наличие в договоре планового объема и режима подачи поставки ресурсов">
+                            <label>Указан плановый объем<br/>и режим подачи поставки ресурсов</label>
+                            <div>
+                                <input name=isplannedvolume >
+                            </div>
+                        </div>
+
+                    </td>
+
+                    <td valign=top>
+
+                        <div class="w2ui-field">
+                            <label>Тип ведения планового объема и режима подачи</label>
+                            <div>
+                                <input name=plannedvolumetype>
+                            </div>
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <td class="left-block" width=1 valign=top>
+
+                        <div class="w2ui-field">
+                            <label>Порядок размещения<br/>начислений за услуги</label>
+                            <div>
+                                <input name=accrualprocedure >
+                            </div>
+                        </div>
+
+                    </td>
+
+                    <td valign=top>
+
+                        <div class="w2ui-field">
+                            <label>Размещает начисления за услуги</label>
+                            <div>
+                                <input name=countingresource>
+                            </div>
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <td class="left-block" width=1 valign=top>
+
+                        <div class="w2ui-field" title="Размещение информации об индивидуальных приборах учета и их показаниях осуществляет ресурсоснабжающая организация">
+                            <label>Размещение информации об ИПУ <br/>и их показаниях производит РСО</label>
+                            <div>
+                                <input name=meteringdeviceinformation >
+                            </div>
+                        </div>
+
+                    </td>
+
+                    <td valign=top>
+
+                        <div class="w2ui-field" title="Показатели качества коммунальных ресурсов и температурный график">
+                            <label>Показатели качества коммунальных ресурсов</label>
+                            <div>
+                                <input name=specqtyinds>
+                            </div>
+                        </div>
+
+                    </td>
+
+                </tr>
+                <tr>
+
+                    <td class="left-block" width=1 valign=top>
+
+                        <div class="w2ui-field" title="Объем поставки ресурса(ов) определяется на основании прибора учета">
+                            <label>Объем поставки ресурсов<br/>определяется на основании ПУ</label>
+                            <div>
+                                <input name=volumedepends >
+                            </div>
+                        </div>
+
+                    </td>
+
+                    <td valign=top>
+
+                    </td>
+
+                </tr>
+
+                <tr id="tr_ddt_header" style="display:none">
+                    <td colspan=2>
+                        <span class="w2ui-group-title">Сведения о сроках</span>
+                    </td>
+                </tr>
+
+                <tr id=tr_ddt_m_start style="display:none">
+                    <td valign=top colspan=2>
+
+                        <div class="w2ui-field">
+                            <label>Ввод показаний ПУ</label>
+                            <div>
+                                <input name=ddt_m_start>
+                                &nbsp;
+                                <input name=ddt_m_start_nxt class=nxt>
+                            </div>
+                        </div>
+
+                    </td>
+                </tr>
+                <tr id=tr_ddt_m_end style="display:none">
+                    <td valign=top colspan=2>
+
+                        <div class="w2ui-field">
+                            <label>...по</label>
+                            <div>
+                                <input name=ddt_m_end>
+                                &nbsp;
+                                <input name=ddt_m_end_nxt class=nxt>
+                            </div>
+                        </div>
+
+                    </td>
+                </tr>
+
+                <tr id=tr_ddt_d_start style="display:none">
+                    <td valign=top colspan=2>
+
+                        <div class="w2ui-field">
+                            <label>Срок выставления платежных документов</label>
+                            <div>
+                                <input name=ddt_d_start>
+                                &nbsp;
+                                <input name=ddt_d_start_nxt class=nxt>
+                            </div>
+                        </div>
+
+                    </td>
+                </tr>
+
+                <tr id=tr_ddt_i_start style="display:none">
+                    <td valign=top colspan=2>
+
+                        <div class="w2ui-field">
+                            <label>Срок внесения платы</label>
+                            <div>
+                                <input name=ddt_i_start>
+                                &nbsp;
+                                <input name=ddt_i_start_nxt class=nxt>
+                            </div>
+                        </div>
+
+                    </td>
+                </tr>
+
+                <tr id=tr_ddt_n_start style="display:none">
+                    <td valign=top colspan=2>
+
+                        <div class="w2ui-field">
+                            <label>Дата уведомления о поступлениях</label>
+                            <div>
+                                <input name=ddt_n_start>
+                                &nbsp;
+                                <input name=ddt_n_start_nxt class=nxt>
+                            </div>
+                        </div>
+
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+
+        <div class="w2ui-buttons">
+            <span>
+
+                <button class=w2ui-btn name=edit   data-on=__read_only>Редактировать</button>
+                <button class=w2ui-btn name=update data-off=__read_only>Сохранить</button>
+                <button class=w2ui-btn name=cancel data-off=__read_only>Отменить</button>
+
+                <button class=w2ui-btn name=delete  data-on=__read_only>Удалить</button>
+                <!--<button class=w2ui-btn name=approve data-on=__read_only>Разместить</button>-->
+                <!--<button class=w2ui-btn name=alter   data-on=__read_only>Изменить</button>-->
+                <!--<button class=w2ui-btn name=annul  data-on=__read_only>Аннулировать</button>-->
+
+            </span>
+        </div>
+
+    </div>
+
+</span>
