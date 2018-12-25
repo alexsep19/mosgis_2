@@ -14,7 +14,9 @@ define ([], function () {
     
     $_DO.delete_house_living_rooms = function (e) {
     
-        if (!e.force) return
+        var grid = w2ui['house_living_rooms_grid']
+
+        if (!confirm ('Удалить запись?')) return
     
         $('.w2ui-message').remove ()
 
@@ -23,7 +25,7 @@ define ([], function () {
         query ({
         
             type:   'living_rooms', 
-            id:     w2ui [e.target].getSelection () [0].recid,
+            id:     grid.getSelection () [0].recid,
             action: 'delete',
             
         }, {}, reload_page)
