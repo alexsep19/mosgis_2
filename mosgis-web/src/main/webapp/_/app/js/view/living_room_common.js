@@ -30,7 +30,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 200},
+                {type: 'top', size: 225},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [],
