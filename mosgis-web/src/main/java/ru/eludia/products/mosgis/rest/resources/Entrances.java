@@ -2,12 +2,14 @@ package ru.eludia.products.mosgis.rest.resources;
 
 import ru.eludia.products.mosgis.rest.misc.EJBResource;
 import javax.json.JsonObject;
+import javax.json.JsonString;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.rest.api.EntrancesLocal;
 
 @Path ("entrances")
@@ -24,7 +26,7 @@ public class Entrances extends EJBResource <EntrancesLocal> {
     @Path("create") 
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
-    public JsonObject create (JsonObject p) { 
+    public JsonObject create (JsonObject p) {
         return back.doCreate (p, getUser ()); 
     }
 
@@ -48,6 +50,14 @@ public class Entrances extends EJBResource <EntrancesLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject doDelete (@PathParam ("id") String id) { 
         return back.doDelete (id, getUser ());
+    }
+    
+    @POST
+    @Path ("{id}/restore")
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject doRestore (@PathParam ("id") String id) {
+        return back.doRestore(id);
     }
     
 }
