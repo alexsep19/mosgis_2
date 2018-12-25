@@ -10,10 +10,29 @@ define ([], function () {
 
         t.disable (b [0])
         t.disable (b [1])
+        t.disable ('editButton')
+        t.disable ('deleteButton')
 
         if (g.getSelection ().length != 1) return
 
-        t.enable (b [g.get (g.getSelection () [0]).is_annuled])
+        var annuled = g.get (g.getSelection () [0]).is_annuled
+        var annuled_in_gis = g.get (g.getSelection () [0]).is_annuled_in_gis
+        var status = g.get (g.getSelection () [0]).id_status
+
+        t.enable (b [annuled])
+
+        if (annuled) {
+            if (!annuled_in_gis) t.disable ('restoreButton')
+            t.disable ('editButton')
+            t.disable ('deleteButton')
+        }
+        else {
+            t.enable ('editButton')
+            t.enable ('deleteButton')
+        }
+
+        if (status == 10) t.disable ('annulButton')
+        else if (status == 20) t.disable ('deleteButton')
 
     })}
 
@@ -35,8 +54,6 @@ define ([], function () {
                 toolbar: data.is_passport_editable,
                 footer: true,
                 toolbarAdd: true,
-                toolbarEdit: true,
-                toolbarDelete: true,
                 toolbarInput: false,
                 toolbarReload: false,
             },     
@@ -62,11 +79,28 @@ define ([], function () {
             toolbar: {
             
                 items: [
+                    {type: 'button', id: 'deleteButton', caption: 'Удалить', onClick: $_DO.delete_house_passport_lifts, icon: 'w2ui-icon-cross', disabled: true},
+                    {type: 'button', id: 'editButton', caption: 'Изменить', onClick: $_DO.edit_house_passport_lifts, icon: 'w2ui-icon-pencil', disabled: true},
                     {type: 'button', id: b [0], caption: 'Аннулировать', onClick: $_DO.annul_house_passport_lifts, disabled: true},
                     {type: 'button', id: b [1], caption: 'Восстановить', onClick: $_DO.restore_house_passport_lifts, disabled: true},
                 ],
                 
             },
+
+            columnGroups : [
+                {master: true},
+                {master: true},
+                {master: true},
+                {master: true},
+                {master: true},
+                {master: true},
+                {master: true},
+                {master: true},
+                {master: true},
+                {master: true},
+                {span: 3, caption: 'Аннулирование'},
+                {master: true},
+            ],
 
             columns: [
                 {field: "uuid_entrance", caption: "Подъ.", tooltip: "№ подъезда", size: 7, render: function (r) {return d.entrances [r.uuid_entrance]}},
@@ -81,7 +115,8 @@ define ([], function () {
                 {field: "f_20151", caption: "Физический износ, лет", size: 20, editable: {type: 'int'}},
                 {field: "f_20124", caption: "Год проведения последнего капитального ремонта", size: 20, editable: {type: 'int', min: house.usedyear, max: (new Date ()).getFullYear (), autoFormat: false}},
                 {field: 'terminationdate', caption: 'Дата аннулирования', render: _dt, size: 20, render: _dt},
-                {field: "annulmentinfo", caption: "Причина аннулирования. Дополнительная информация", size: 20},
+                {field: 'code_vc_nsi_330', caption: 'Причина аннулирования', size: 20, voc: d.vc_nsi_330, hidden: 1},
+                {field: "annulmentinfo", caption: "Причина аннулирования. Дополнительная информация", size: 20, hidden: 1},
                 {field: 'id_status',  caption: 'ГИС ЖКХ',     size: 10, voc: d.vc_house_status},
             ],
 
@@ -92,9 +127,6 @@ define ([], function () {
             onDblClick: null,
             
             onAdd: function () {use.block ('lift_new')},
-            onEdit: $_DO.edit_house_passport_lifts,
-            
-            onDelete: $_DO.delete_house_passport_lifts,
             onChange: $_DO.patch_house_passport_lifts,
 
             onEditField: function (e) {

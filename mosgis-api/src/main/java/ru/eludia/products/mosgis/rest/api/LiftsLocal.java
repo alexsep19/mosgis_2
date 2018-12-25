@@ -8,5 +8,6 @@ import ru.eludia.products.mosgis.rest.api.base.PassportBackend;
 public interface LiftsLocal extends PassportBackend {
     
     JsonObject doAdd    (JsonObject p);
+    public JsonObject doRestore (String id);
 
 }
