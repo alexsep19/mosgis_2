@@ -130,7 +130,7 @@ public class GisPollExportWorkingListMDB  extends GisPollMDB {
         
 logger.info ("h=" + h);
         
-        h.put ("uuid", r.get ("ap.uuid"));
+        h.put ("uuid", r.get ("r.uuid"));
         db.update (WorkingList.class, h);
         
         h.put ("uuid", uuid);

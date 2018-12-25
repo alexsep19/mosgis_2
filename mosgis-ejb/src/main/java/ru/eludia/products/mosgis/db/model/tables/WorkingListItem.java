@@ -1,6 +1,5 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
@@ -94,8 +93,9 @@ public class WorkingListItem extends EnTable {
     public static ImportWorkingListRequest.ApprovedWorkingListData.WorkListItem toDom (Map<String, Object> r) {
         r.put ("index", r.get ("index_"));
         final ImportWorkingListRequest.ApprovedWorkingListData.WorkListItem result = DB.to.javaBean (ImportWorkingListRequest.ApprovedWorkingListData.WorkListItem.class, r);
+        result.setTotalCost (null);
         result.setTransportGUID (UUID.randomUUID ().toString ());
-        result.setWorkItemNSI (NsiTable.toDom (r, "vc_nsi_56"));
+        result.setWorkItemNSI (NsiTable.toDom (r, "vc_nsi_56"));        
         return result;
     }
     
