@@ -52,7 +52,7 @@ public class Entrance extends Table {
                 
             + "BEGIN "
         
-            + "FOR i IN (SELECT entrancenum, is_annuled_in_gis FROM tb_entrances WHERE uuid_house = :NEW.uuid_house AND entrancenum = :NEW.entrancenum AND is_deleted == 0) LOOP "
+            + "FOR i IN (SELECT entrancenum, is_annuled_in_gis FROM tb_entrances WHERE uuid_house = :NEW.uuid_house AND entrancenum = :NEW.entrancenum AND is_deleted = 0) LOOP "
                 + "IF (i.is_annuled_in_gis <> 1) THEN "
                     + "raise_application_error (-20000, 'Аннулирование записи подъезда №' || i.entrancenum || ' не пожтверждено в ГИС. Операция отменена.'); "
                 + "END IF; "

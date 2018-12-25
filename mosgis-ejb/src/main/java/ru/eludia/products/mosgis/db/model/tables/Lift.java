@@ -62,7 +62,7 @@ public class Lift extends Table {
                 
             + "BEGIN "
                    
-            + "FOR i IN (SELECT factorynum, is_annuled_in_gis FROM tb_lifts WHERE uuid_house = :NEW.uuid_house AND factorynum = :NEW.factorynum AND is_deleted == 0) LOOP "
+            + "FOR i IN (SELECT factorynum, is_annuled_in_gis FROM tb_lifts WHERE uuid_house = :NEW.uuid_house AND factorynum = :NEW.factorynum AND is_deleted = 0) LOOP "
                 + "IF (i.is_annuled_in_gis <> 1) THEN "
                     + "raise_application_error (-20000, 'Аннулирование записи лифта с заводским номером ' || i.factorynum || ' не пожтверждено в ГИС. Операция отменена.'); "
                 + "END IF; "
