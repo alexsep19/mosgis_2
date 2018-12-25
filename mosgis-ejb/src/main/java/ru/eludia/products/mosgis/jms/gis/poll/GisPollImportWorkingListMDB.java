@@ -1,6 +1,7 @@
 package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -10,10 +11,13 @@ import javax.ejb.MessageDriven;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
+import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
+import ru.eludia.products.mosgis.db.model.tables.OrganizationWork;
 import ru.eludia.products.mosgis.db.model.tables.WorkingList;
 import ru.eludia.products.mosgis.db.model.tables.WorkingListLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
@@ -27,6 +31,7 @@ import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.gosuslugi.dom.schema.integration.base.CommonResultType;
 import ru.gosuslugi.dom.schema.integration.services_service_async.Fault;
 import ru.eludia.products.mosgis.db.model.tables.WorkingList.c;
+import ru.eludia.products.mosgis.db.model.tables.WorkingListItem;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisServicesClient;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
@@ -89,15 +94,46 @@ public class GisPollImportWorkingListMDB  extends GisPollMDB {
             List<ExportWorkingListResultType> exportWorkingListResult = state.getExportWorkingListResult ();
             
             if (exportWorkingListResult == null || exportWorkingListResult.isEmpty ()) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
-                                    
+            
+            ExportWorkingListResultType result = exportWorkingListResult.get (0);
 
+            if (result == null) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
+            
+            ExportWorkingListResultType.WorkingList workingList = result.getWorkingList ();
+            
+            if (workingList == null) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
+            
+            MosGisModel model = ModelHolder.getModel ();
+            
+            Map<Object, Map<String, Object>> code2uuid = db.getIdx (model
+                .select (WorkingListItem.class, "uuid")
+                .where ("is_deleted", 0)
+                .toOne (OrganizationWork.class, "code_vc_nsi_56 AS code").on ()
+            , "code");
+            
+logger.info ("code2uuid = " + code2uuid);
 
+            List<Map<String, Object>> items = new ArrayList<> ();
 
+            for (ExportWorkingListResultType.WorkingList.WorkListItem i: workingList.getWorkListItem ()) {
+                
+                final String code = i.getWorkItemNSI ().getCode ();
+                
+                Map<String, Object> cg = code2uuid.get (code);
 
+                if (cg == null) {
+                    logger.warning ("Unknown NSI_56 code: " + code);
+                    continue;
+                }
 
-
-
-
+                items.add (HASH (
+                    EnTable.c.UUID,                     cg.get ("uuid"),
+                    WorkingListItem.c.WORKLISTITEMGUID, i.getWorkListItemGUID ()
+                ));
+                
+            }
+            
+            db.update (WorkingListItem.class, items);
 
             final Map<String, Object> h = statusHash (action.getOkStatus ());            
             
