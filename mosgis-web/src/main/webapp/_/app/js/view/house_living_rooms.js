@@ -38,7 +38,8 @@ define ([], function () {
                 
                 {span: 3, caption: 'Непригодность'},
                 
-                {master: true},              
+                {master: true},   
+                {master: true},           
                 
             ],    
             
@@ -77,6 +78,7 @@ define ([], function () {
                 {field: "f_20134", caption: "№ док.", size: 10, hidden: true},
 
                 {field: 'terminationdate', caption: 'Дата аннулирования', size: 20, render: _dt, hidden: true},
+                {field: 'id_status',  caption: 'ГИС ЖКХ',     size: 10, voc: d.vc_house_status},
                 
             ].filter (not_off),
             
