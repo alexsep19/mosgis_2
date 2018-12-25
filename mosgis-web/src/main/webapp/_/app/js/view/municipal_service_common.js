@@ -28,7 +28,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 270},
+                {type: 'top', size: 280},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [

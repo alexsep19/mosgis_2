@@ -1,19 +1,18 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
-import java.util.Map;
-import java.util.UUID;
-import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
+import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
-import ru.gosuslugi.dom.schema.integration.house_management.ImportPublicPropertyContractRequest;
+import ru.eludia.products.mosgis.db.model.voc.VocPublicPropertyContractFileType;
 
 
 public class PublicPropertyContract extends EnTable {
@@ -44,9 +43,14 @@ public class PublicPropertyContract extends EnTable {
         DDT_END              (Type.NUMERIC, 2,     null,       "Окончание периода внесения платы по договору (1..31 — конкретное число; 99 — последнее число)"),
         DDT_END_NXT          (Type.BOOLEAN,        Bool.FALSE, "1, если окончание периода внесения платы по договору в следующем месяце; иначе 0"),
         IS_OTHER             (Type.BOOLEAN,        Bool.FALSE, "1, если период внесеняи платы — \"иной\"; иначе 0"),
-        OTHER                (Type.STRING,         null,       "Иное (период внесения платы)"),
+        OTHER                (Type.STRING,  500,   null,       "Иное (период внесения платы)"),
         
-        ISGRATUITOUSBASIS    (Type.BOOLEAN,        Bool.TRUE, "1, если договор заключен на безвозмездной основе; иначе 0")
+        ISGRATUITOUSBASIS    (Type.BOOLEAN,        Bool.TRUE, "1, если договор заключен на безвозмездной основе; иначе 0"),
+        
+        REASONOFANNULMENT    (Type.STRING,  1000,  null,       "Причина аннулирования"),
+        IS_ANNULED           (Type.BOOLEAN,        new Virt ("DECODE(\"REASONOFANNULMENT\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0"),
+        
+        CONTRACTVERSIONGUID  (Type.UUID, null, "Идентификатор версии ДОГПОИ в ГИС ЖКХ")
 
         ;
 
@@ -79,22 +83,116 @@ public class PublicPropertyContract extends EnTable {
         cols   (c.class);
         
         key    ("uuid_org", c.UUID_ORG);
+        
+        trigger ("AFTER UPDATE", ""
+            + "BEGIN "
+            + " IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS "
+                + " AND :NEW.ID_CTR_STATUS =  " + VocGisStatus.i.ANNUL.getId ()
+            + " THEN "
+                + " UPDATE tb_pp_ctr_ap SET ID_AP_STATUS=:NEW.ID_CTR_STATUS, ID_AP_STATUS_GIS=:NEW.ID_CTR_STATUS WHERE UUID_CTR=:NEW.UUID;"
+            + " END IF; "
+            + "END;"
+        );
+                
+        trigger ("BEFORE UPDATE", 
+                
+            "DECLARE "
+            + " cnt NUMBER;"
+            + " uuid_init RAW(16);"
+            + "BEGIN "
+
+                + "IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS "
+                    + " AND :OLD.ID_CTR_STATUS <> " + VocGisStatus.i.FAILED_PLACING.getId ()
+                    + " AND :NEW.ID_CTR_STATUS =  " + VocGisStatus.i.PROJECT.getId ()
+                + " THEN "
+                    + " :NEW.ID_CTR_STATUS := " + VocGisStatus.i.MUTATING.getId ()
+                + "; END IF; "
+                        
+                + "IF :NEW.is_deleted=0 AND :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING.getId () + " THEN BEGIN "
+                        
+                    + " IF :NEW.ENDDATE<SYSDATE THEN raise_application_error (-20000, 'Для договора указанная дата окончания действия меньше текущей даты. Договоры с истекшим сроком действия не размещаются'); END IF; "
+                        
+                    + " SELECT COUNT(*) INTO cnt FROM vw_ca_ch_objects WHERE FIASHOUSEGUID=:NEW.FIASHOUSEGUID; "
+                    + " IF cnt=0 THEN FOR i IN (SELECT label FROM vc_buildings WHERE houseguid=:NEW.FIASHOUSEGUID) LOOP "
+                        + "raise_application_error (-20000, 'Для адреса дома '||i.label||' не указан действующий договор управления/устав'); "
+                    + "END LOOP; END IF; "                        
+
+                    + " SELECT COUNT(*) INTO cnt FROM tb_pp_ctr_files WHERE id_type=" + VocPublicPropertyContractFileType.i.CONTRACT + " AND id_status=1 AND UUID_CTR=:NEW.uuid; "
+                    + " IF cnt=0 THEN raise_application_error (-20000, 'Файл договора не загружен на сервер. Операция отменена.'); END IF; "
+
+                    + " cnt:=0; "
+                    + " FOR i IN ("
+                        + "SELECT "
+                        + " vp.votingprotocolguid guid "
+                        + " , vp.PROTOCOLNUM no "
+                        + " , TO_CHAR (vp.PROTOCOLDATE, 'YYYY-MM-DD') dt "
+                        + "FROM "
+                        + " tb_pp_ctr_vp o "
+                        + " INNER JOIN tb_voting_protocols vp ON o.UUID_VP=vp.UUID "
+                        + "WHERE o.is_deleted = 0"
+                        + " AND o.UUID_CTR = :NEW.uuid "
+                        + ") LOOP BEGIN "
+                    + " IF i.guid IS NULL THEN raise_application_error (-20000, 'Протокол общего собрания собственников не отправлен в ГИС ЖКХ (№'||i.no||' от '||i.dt||'). Отправьте сначала в ГИС ЖКХ информацию о проведении Общего собрания собственников'); END IF; "
+                    + " cnt:=cnt+1; "
+                    + " END; END LOOP; "                            
+                            
+                    + " IF cnt=0 THEN BEGIN "
+                    + "   SELECT COUNT(*) INTO cnt FROM tb_pp_ctr_files WHERE id_type=" + VocPublicPropertyContractFileType.i.VOTING_PROTO + " AND id_status=1 AND UUID_CTR=:NEW.uuid; "
+                    + "   IF cnt=0 THEN raise_application_error (-20000, 'Не приведён протокол общего собрания собственников. Операция отменена.'); END IF; "
+                    + " END; END IF; "
+                            
+                + "END; END IF; "
+                        
+            + "END;"
+                
+        );
+        
 
     }
-    
-    public static ImportPublicPropertyContractRequest toImportPublicPropertyContractRequest (Map<String, Object> r) {
-        final ImportPublicPropertyContractRequest createImportPublicPropertyContractRequest = new ImportPublicPropertyContractRequest ();
-        final ImportPublicPropertyContractRequest.Contract contract = new ImportPublicPropertyContractRequest.Contract ();
-        final ImportPublicPropertyContractRequest.Contract.PublicPropertyContract publicPropertyContract = toContractPublicPropertyContract (r);
-        contract.setPublicPropertyContract (publicPropertyContract);
-        contract.setTransportGUID (UUID.randomUUID ().toString ());
-        createImportPublicPropertyContractRequest.getContract ().add (contract);
-        return createImportPublicPropertyContractRequest;
-    }
-    
-    private static ImportPublicPropertyContractRequest.Contract.PublicPropertyContract toContractPublicPropertyContract (Map<String, Object> r) {
-        ImportPublicPropertyContractRequest.Contract.PublicPropertyContract result = DB.to.javaBean (ImportPublicPropertyContractRequest.Contract.PublicPropertyContract.class, r);
-        return result;
-    }
-    
+    public enum Action {
+        
+        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
+        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT)
+        ;
+        
+        VocGisStatus.i nextStatus;
+        VocGisStatus.i okStatus;
+        VocGisStatus.i failStatus;
+
+        private Action (VocGisStatus.i nextStatus, VocGisStatus.i okStatus, VocGisStatus.i failStatus) {
+            this.nextStatus = nextStatus;
+            this.okStatus = okStatus;
+            this.failStatus = failStatus;
+        }
+
+        public VocGisStatus.i getNextStatus () {
+            return nextStatus;
+        }
+
+        public VocGisStatus.i getFailStatus () {
+            return failStatus;
+        }
+
+        public VocGisStatus.i getOkStatus () {
+            return okStatus;
+        }
+        
+        public static Action forStatus (VocGisStatus.i status) {
+            switch (status) {
+                case PENDING_RQ_PLACING:   return PLACING;
+                case PENDING_RQ_ANNULMENT: return ANNULMENT;
+                default: return null;
+            }            
+        }
+        
+        public static Action forLogAction (VocAction.i a) {
+            switch (a) {
+                case APPROVE: return PLACING;
+                case ANNUL:   return ANNULMENT;
+                default: return null;
+            }            
+        }
+                        
+    };
+        
 }

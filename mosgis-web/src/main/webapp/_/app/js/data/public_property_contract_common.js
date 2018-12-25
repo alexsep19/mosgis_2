@@ -1,31 +1,7 @@
 define ([], function () {
 
     var form_name = 'public_property_contract_common_form'
-/*    
-    $_DO.download_public_property_contract_common = function (e) {    
-        
-        var box = $('body')
 
-        function label (cur, max) {return String (Math.round (100 * cur / max)) + '%'}
-
-        w2utils.lock (box, label (0, 1))
-
-        download ({
-
-            type:   'contract_docs', 
-            id:     $('body').data ('data').item.last_termination.file.uuid,
-            action: 'download',
-
-        }, {}, {
-
-            onprogress: function (cur, max) {$('.w2ui-lock-msg').html ('<br><br>' + label (cur, max))},
-
-            onload: function () {w2utils.unlock (box)},
-
-        })
-    
-    }       
-*/
     $_DO.cancel_public_property_contract_common = function (e) {
         
         if (!confirm ('Отменить несохранённые правки?')) return
@@ -79,9 +55,11 @@ define ([], function () {
                 
         if (v.isgratuitousbasis == -1) {
             if (!v.other) die ('other', 'Укажите, пожалуйста, режим оплаты')
+            v.is_other = 1
         }
         else {
             v.other = ''
+            v.is_other = 0
         }
                 
         if (v.isgratuitousbasis == 0) {
@@ -121,44 +99,21 @@ define ([], function () {
         if (!confirm ('Удалить эту запись, Вы уверены?')) return        
         query ({type: 'public_property_contracts', action: 'delete'}, {}, reload_page)
     }
-/*    
+    
     $_DO.approve_public_property_contract_common = function (e) {
-        if (!confirm ('Утвердить этот договор, Вы уверены?\n\n(дальнейшая правка станет невозможна)')) return        
+        if (!confirm ('Разместить эти данные в ГИС ЖКХ?')) return
         query ({type: 'public_property_contracts', action: 'approve'}, {}, reload_page)
-    }
+    }    
     
     $_DO.alter_public_property_contract_common = function (e) {
-        if (!confirm ('Открыть этот договор на редактирование, Вы уверены?')) return
-        query ({type: 'public_property_contracts', action: 'alter'}, {}, reload_page)
-    }
-    
-    $_DO.refresh_public_property_contract_common = function (e) {
-        if (!confirm ('Послать в ГИС ЖКХ запрос на обновление статуса этого договора?')) return
-        query ({type: 'public_property_contracts', action: 'refresh'}, {}, reload_page)
-    }
-    
-    $_DO.reload_public_property_contract_common = function (e) {
-        if (!confirm ('Все изменения, не переданные в ГИС ЖКХ, будут потеряны. Вы действительно хотите обновить данные из ГИС ЖКХ?')) return
-        query ({type: 'public_property_contracts', action: 'reload'}, {}, reload_page)
-    }
-
-    $_DO.undelete_public_property_contract_common = function (e) {   
-        if (!confirm ('Восстановить эту запись, Вы уверены?')) return        
-        query ({type: 'public_property_contracts', action: 'undelete'}, {}, reload_page)
-    }
-    
-    $_DO.terminate_public_property_contract_common = function (e) {   
-        use.block ('public_property_contract_terminate_popup')
+        if (!confirm ('Открыть эту карточку на редактирование?')) return
+        query ({type: 'public_property_contracts', action: 'alter'}, {data: {}}, reload_page)
     }
     
     $_DO.annul_public_property_contract_common = function (e) {
         use.block ('public_property_contract_annul_popup')
-    }
-    
-    $_DO.rollover_public_property_contract_common = function (e) {
-        use.block ('public_property_contract_rollover_popup')
-    }
-*/    
+    }    
+
     $_DO.choose_tab_public_property_contract_common = function (e) {
     
         var name = e.tab.id

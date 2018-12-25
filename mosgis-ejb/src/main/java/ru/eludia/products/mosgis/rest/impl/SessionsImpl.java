@@ -13,6 +13,7 @@ import javax.json.JsonObjectBuilder;
 import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.rest.api.SessionsLocal;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTerritory;
@@ -66,7 +67,11 @@ public class SessionsImpl implements SessionsLocal {
         
         try (DB db = ModelHolder.getModel ().getDb ()) {
             
-            Map<String, Object> user = db.getMap (ModelHolder.getModel ().select (VocUser.class, "salt", "sha1", "uuid", "label", "uuid_org").and ("login", login));
+            Map<String, Object> user = db.getMap (ModelHolder.getModel ()
+                .select     (VocUser.class, "salt", "sha1", "uuid", "label", "uuid_org")
+                .toMaybeOne (VocOrganization.class, "label AS label_org").on ()
+                .where ("login", login)
+            );
 
             if (user != null) {
                 
@@ -76,7 +81,8 @@ public class SessionsImpl implements SessionsLocal {
                 if (asIs.equals (toBe)) {
 
                     jb.add ("id", user.get ("uuid").toString ());
-                    jb.add ("label", user.get ("label").toString ());                                                            
+                    jb.add ("label", user.get ("label").toString ());
+                    jb.add ("label_org", DB.to.String (user.get ("label_org")));
                     jb.add ("role", getRoles (user.get ("uuid_org"), jb, db));
 
                     return jb.build ();

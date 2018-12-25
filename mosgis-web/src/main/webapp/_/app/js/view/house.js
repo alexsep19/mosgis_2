@@ -27,7 +27,7 @@ define ([], function () {
         
         $('title').text (data.item.address)        
         
-        fill (view, data, $('body'))
+        fill (view, data, $('#body'))
 
         $('#container').w2relayout ({
         

@@ -16,6 +16,12 @@ public class XmlUtils {
    
     private static final Logger logger = java.util.logging.Logger.getLogger(XmlUtils.class.getName());
     
+    public static String printRubKop (java.math.BigDecimal v) {
+        String s = v.toString ();
+        if (v.scale () == 1) return s + '0';
+        return s;
+    }    
+      
     public static final NsiRef createNsiRef(int regisryNumber, String code) throws SQLException {
         if (StringUtils.isBlank(code)) {
             return null;

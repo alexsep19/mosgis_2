@@ -19,6 +19,7 @@ import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.phys.PhysicalCol;
+import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.CharterLog;
@@ -259,6 +260,7 @@ public class CharterImpl extends BaseCRUD<Charter> implements CharterLocal {
             
             db.update (CharterFile.class, HASH (
                 "uuid",      idFile,
+                AttachTable.c.ATTACHMENTGUID, null,
                 "id_log",    idFileLog
             ));
             

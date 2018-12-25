@@ -18,6 +18,7 @@ import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
+import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.House;
@@ -220,6 +221,7 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
 
             db.update (VotingProtocolFile.class, HASH (
                 "uuid",      idFile,
+                AttachTable.c.ATTACHMENTGUID, null,
                 "id_log",    idFileLog
             ));
 

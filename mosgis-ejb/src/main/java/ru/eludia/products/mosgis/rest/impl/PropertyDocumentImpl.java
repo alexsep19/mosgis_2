@@ -80,18 +80,29 @@ public class PropertyDocumentImpl extends BaseCRUD<PropertyDocument> implements 
         applySearch (Search.from (p), select);
         
         final JsonObject data = p.getJsonObject ("data");
-        
         {
-            final String k = Owner.c.UUID_HOUSE.lc ();        
-            select.and (k, data.getString (k));
-        }
-
-        {
-            final String k = Owner.c.UUID_ORG.lc ();        
+            final String k = Owner.c.UUID_ORG.lc ();
             final String v = data.getString (k, null);
             if (v != null) select.and (k, v);
         }
         
+        {
+            final String k = Owner.c.UUID_ORG_OWNER.lc();
+            final String v = data.getString(k, null);
+            if (v != null) select.and(k, v);
+        }
+
+        {
+            final String k = Owner.c.UUID_PERSON_OWNER.lc();
+            final String v = data.getString (k, null);
+            if (v != null) select.and (k, v);
+        }
+        
+        if (!select.hasFilters()) {
+            final String k = Owner.c.UUID_HOUSE.lc();
+            select.and(k, data.getString(k));
+        }
+
         db.addJsonArrayCnt (job, select);
 
     });}

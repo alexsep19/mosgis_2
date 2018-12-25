@@ -1,17 +1,20 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Map;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.voc.VocPublicPropertyContractFileType;
+import ru.gosuslugi.dom.schema.integration.house_management.PublicPropertyContractType;
 
 public class PublicPropertyContractFile extends AttachTable {
     
     public enum c implements EnColEnum {
 
-        UUID_CTR     (PublicPropertyContract.class,         "Ссылка на договор на пользование общим имуществом"),
+        UUID_CTR     (PublicPropertyContract.class,         "Ссылка на договор на пользования общим имуществом"),
         ID_TYPE      (VocPublicPropertyContractFileType.class, VocPublicPropertyContractFileType.getDefault (), "Тип"),
         PROTOCOLNUM  (Type.STRING, 30,  null,               "Номер протокола"),
         PROTOCOLDATE (Type.DATE,        null,               "Дата составления протокола"),
@@ -43,5 +46,17 @@ public class PublicPropertyContractFile extends AttachTable {
         trigger ("BEFORE UPDATE", "BEGIN " + CHECK_LEN + "END;");
 
     }
-        
+
+    public static PublicPropertyContractType.RentAgrConfirmationDocument.ProtocolMeetingOwners toProtocolMeetingOwners (Map<String, Object> r) {
+        PublicPropertyContractType.RentAgrConfirmationDocument.ProtocolMeetingOwners result = DB.to.javaBean (PublicPropertyContractType.RentAgrConfirmationDocument.ProtocolMeetingOwners.class, r);
+        result.getTrustDocAttachment ().add (AttachTable.toAttachmentType (r));
+        return result;
+    }
+/*
+    public static PublicPropertyContractType.RentAgrConfirmationDocument toRentAgrConfirmationDocument (Map<String, Object> r) {
+        PublicPropertyContractType.RentAgrConfirmationDocument result = new PublicPropertyContractType.RentAgrConfirmationDocument ();
+        result.getProtocolMeetingOwners ().add (toProtocolMeetingOwners (r));
+        return result;
+    }
+*/    
 }

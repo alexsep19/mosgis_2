@@ -27,6 +27,14 @@ public class ModelHolder {
     public static final MosGisModel getModel () {
         return modelReference.get();
     }
+
+    public ModelHolder () {
+    }
+
+    public ModelHolder (DataSource ds) throws SQLException, IOException {
+        this.ds = ds;
+        modelReference.set (new MosGisModel (ds));
+    }        
     
     @PermitAll
     public void updateModel () throws IOException {

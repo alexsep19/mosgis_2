@@ -88,6 +88,7 @@ w2utils.settings = {
         "Type": "Тип",
         "Modified": "Дата изменения",
         "No items found": "Ничего не найдено",
+        "No matches": "Совпадений не найдено",
         "No": "Нет",
         "none": "пусто",
         "not null": "не пусто",
@@ -503,6 +504,10 @@ requirejs (['elu/elu', 'elu_w2ui/elu_w2ui'], function (jq, elu, elu_w2ui) {
 
     setup_request ()
 
-    use.block ($_REQUEST.type || 'main')
+//    use.block ($_REQUEST.type || 'main')
+
+    if (!$_USER) return use.block ('login')
+    
+    use.block ('page')
 
 });

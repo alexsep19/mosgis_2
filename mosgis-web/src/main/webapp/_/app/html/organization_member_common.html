@@ -1,0 +1,208 @@
+<span>
+
+    <div>
+
+        <div class="w2ui-page page-0 page-1">
+
+            <style>
+
+                .w2ui-field > label {
+                    width: 230px;
+                    margin-right: 10px;
+                }
+
+                .w2ui-field > label.short {
+                    width: 10px;
+                }
+
+                .w2ui-field > label.short+div {
+                    margin-left: 10px;
+                }
+
+                .w2ui-field input {
+                    width: 370px !important;
+                }
+
+                .w2ui-field input.dt {
+                    width: 70px !important;
+                }
+
+                .w2ui-field input.long {
+                    width: 600px !important;
+                }
+                .w2ui-field input.checkbox {
+                    width: auto !important
+                }
+                .w2ui-field input[name=participant]{
+                    width: 550px !important;
+                }
+                .w2ui-field input:disabled {
+                    background-color: unset !important;
+                }
+                .w2ui-field span.field_value {
+                    line-height: 28px;
+                }
+            </style>
+
+            <center>
+                <table border=0 cellpadding=0 cellspacing=0 width=80%>
+
+                    <tr>
+                        <td class="left-block" width=1 valign=top>
+                            <div class="w2ui-field">
+                                <label>Участие в совете правления,<br/>ревизионной комиссии:</label>
+                                <div>
+                                    <input name=participant>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td valign=top id=dt_from_period >
+
+                            <div class="w2ui-field">
+                                <label>Период избрания с:</label>
+                                <div>
+                                    <input name=dt_from_participant placeholder="" class=dt  />
+                                    по
+                                    <input name=dt_to_participant placeholder="" class=dt />
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="left-block" width=1 valign=top>
+
+
+                            <div class="w2ui-field">
+                                <label>Избран председателем правления:</label>
+                                <div>
+                                    <input name=is_chairman type=checkbox class=checkbox>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+
+                            <div class="w2ui-field">
+                                <label>Период правления c:</label>
+                                <div>
+                                    <input name=dt_from_chairman placeholder="" class=dt />
+                                    по
+                                    <input name=dt_to_chairman placeholder="" class=dt />
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left-block" width=1 valign=top>
+
+                            <div class="w2ui-field">
+                                <label>Номер телефона:</label>
+                                <div>
+                                    <input name=phone>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+
+                            <div class="w2ui-field">
+                                <label>Факс:</label>
+                                <div>
+                                    <input name=fax>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left-block" width=1 valign=top>
+                            <div class="w2ui-field">
+                                <label>Адрес электронной почты:</label>
+                                <div>
+                                    <input name=mail maxlength=125>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="left-block">
+                            <div class="w2ui-field">
+                                <label>Размер вступительных взносов:</label>
+                                <div>
+                                    <input name=entrance_fee maxlength=9 class="edit-gsk">
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="w2ui-field">
+                                <label>Размер паевых взносов:</label>
+                                <div>
+                                    <input name=contribution_share maxlength=9 class="edit-gsk">
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left-block" width=1 valign=top>
+                            <div class="w2ui-field">
+                                <label>Дата принятия:</label>
+                                <div>
+                                    <input name=dt_from placeholder="" class=dt>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="w2ui-field" id=file_link_div data-on=__read_only>
+                                <label>Заявление о вступлении:</label>
+                                <div class=name id=file_from_link>
+                                    <u><span data-text=file_from.label></span></u>
+                                </div>
+                            </div>
+                            <div class="w2ui-field" id=file_link_div data-off=__read_only>
+                                <label>Заявление о вступлении:</label>
+                                <div>
+                                    <input name=files style="width:428px"  />
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left-block">
+                            <div class="w2ui-field">
+                                <label>Дата исключения:</label>
+                                <div>
+                                    <input name=dt_to placeholder="" class=dt>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="w2ui-field">
+                                <label>Поставщик информации:</label>
+                                <span class="field_value" data-text=org_auth.label />
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                </td>
+
+                </tr>
+
+                </table>
+            </center>
+
+        </div>
+
+        <div class="w2ui-buttons">
+            <span>
+                <progress/>
+                <button class=w2ui-btn name=edit   data-on=__read_only>Редактировать</button>
+                <button class=w2ui-btn name=update data-off=__read_only>Сохранить</button>
+                <button class=w2ui-btn name=cancel data-off=__read_only>Отменить</button>
+                <button class=w2ui-btn name=delete data-on=__read_only>Удалить</button>
+            </span>
+        </div>
+
+    </div>
+
+</span>

@@ -4,7 +4,7 @@ define ([], function () {
         
         $('title').text ($_REQUEST.id)
     
-        fill (view, data, $('body'))
+        fill (view, data, $('#body'))
 
     }    
     

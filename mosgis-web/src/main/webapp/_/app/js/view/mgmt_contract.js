@@ -26,7 +26,7 @@ define ([], function () {
         
         }        
 
-        fill (view, it, $('body'))
+        fill (view, it, $('#body'))
 
         $('#container').w2relayout ({
         

@@ -57,6 +57,11 @@ public class VocPublicPropertyContractFileType extends Table {
             this.label = label;            
         }
         
+        public static i forId (long id) {
+            for (i i: values ()) if (i.id == id) return i;
+            return null;
+        }
+        
         private JsonObject toJsonObject () {
             return Json.createObjectBuilder ()
                 .add ("id",    id)
@@ -68,6 +73,11 @@ public class VocPublicPropertyContractFileType extends Table {
             JsonArrayBuilder builder = Json.createArrayBuilder ();                    
             for (i value: i.values ()) builder.add (value.toJsonObject ());            
             return builder.build ();            
+        }
+
+        @Override
+        public String toString () {
+            return Integer.toString (id);
         }
 
     }
