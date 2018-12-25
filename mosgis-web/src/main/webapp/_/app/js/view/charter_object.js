@@ -4,7 +4,7 @@ define ([], function () {
         
         $('title').text (data.item ['fias.label'])
         
-        fill (view, data.item, $('body'))
+        fill (view, data.item, $('#body'))
 
         $('#container').w2relayout ({
         

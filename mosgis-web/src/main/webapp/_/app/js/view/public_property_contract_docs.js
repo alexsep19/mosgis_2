@@ -1,14 +1,10 @@
 define ([], function () {
     
     var grid_name = 'public_property_contract_docs_grid'
-    
-    function getData () {
-        return $('body').data ('data')
-    }
-            
+                
     return function (data, view) {
 
-//        var permissions = data.item.id_prtcl_status_gis == 10 || data.item.id_prtcl_status_gis == 11
+        var it = data.item
 
         var layout = w2ui ['topmost_layout']
 
@@ -26,9 +22,9 @@ define ([], function () {
                 toolbarReload: false,
                 toolbarColumns: false,
                 toolbarInput: false,
-                toolbarAdd: true,
-                toolbarDelete: true,
-                toolbarEdit: true,
+                toolbarAdd: it._can.edit,
+                toolbarDelete: it._can.edit,
+                toolbarEdit: it._can.edit,
             },            
 
             textSearch: 'contains',

@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
@@ -7,6 +8,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.jms.Queue;
 import javax.json.JsonObject;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Select;
@@ -43,12 +45,12 @@ public class AgreementPaymentImpl extends BaseCRUD<AgreementPayment> implements 
        
     private void filterOffDeleted (Select select) {
         select.and (EnTable.c.IS_DELETED, Operator.EQ, 0);
-        select.and (AgreementPayment.c.ID_STATUS.lc () + " NOT IN", VocGisStatus.i.ANNUL);
+        select.and (AgreementPayment.c.ID_AP_STATUS.lc () + " NOT IN", VocGisStatus.i.ANNUL);
     }
 
     private void applyComplexSearch (final ComplexSearch search, Select select) {
         search.filter (select, "");
-        if (!search.getFilters ().containsKey ("is_deleted")) filterOffDeleted (select);
+        if (!search.getFilters ().containsKey ("id_ap_status")) filterOffDeleted (select);
     }
     
     private void applySimpleSearch (final SimpleSearch search, Select select) {
@@ -80,8 +82,10 @@ public class AgreementPaymentImpl extends BaseCRUD<AgreementPayment> implements 
         
         final Model m = ModelHolder.getModel ();
 
-        Select select = m.select (AgreementPayment.class, "*", "uuid AS id")
-            .orderBy (AgreementPayment.c.DATEFROM.lc () + " DESC")
+        Select select = m.select (AgreementPayment.class, "AS root", "*", "uuid AS id")
+            .orderBy ("root." + AgreementPayment.c.DATEFROM.lc () + " DESC")
+            .toMaybeOne (AgreementPaymentLog.class, "AS cpl").on ()
+            .toMaybeOne (OutSoap.class, "AS soap", "id_status", "is_failed", "ts", "ts_rp", "err_text", "uuid_ack").on ("cpl.uuid_out_soap=soap.uuid")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
         applySearch (Search.from (p), select);
@@ -129,41 +133,44 @@ public class AgreementPaymentImpl extends BaseCRUD<AgreementPayment> implements 
         }
         
     }
-/*    
+    
     @Override
     public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
 
-        db.update (getTable (), HASH (
-            "uuid",           id,
-            "id_ctr_status",  VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+        db.update (getTable (), HASH (EnTable.c.UUID,               id,
+            AgreementPayment.c.ID_AP_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId ()
         ));
-        
+
         logAction (db, user, id, VocAction.i.APPROVE);
 
-        List<UUID> ids = new ArrayList<> ();        
+    });}
+    
+    @Override
+    public JsonObject doAlter (String id, JsonObject p, User user) {return doAction ((db) -> {
+                
+        final Map<String, Object> r = HASH (
+            EnTable.c.UUID,                   id,
+            AgreementPayment.c.ID_AP_STATUS,  VocGisStatus.i.PROJECT.getId ()
+        );
+                
+        db.update (getTable (), r);
         
-        db.forEach (db.getModel ().select (AgreementPayment.class, "uuid_file_0", "uuid_file_1").where ("uuid", id), (rs) -> {
-            Object u = db.getValue (rs, 1);
-            if (u != null) ids.add ((UUID) u);
-            u = db.getValue (rs, 2);
-            if (u != null) ids.add ((UUID) u);
-        });
+        logAction (db, user, id, VocAction.i.ALTER);
         
-        for (UUID idFile: ids) {
-            
-            String idFileLog = db.insertId (AgreementPaymentFileLog.class, HASH (
-                "action", VocAction.i.APPROVE.getName (),
-                "uuid_object", idFile,
-                "uuid_user", user == null ? null : user.getId ()
-            )).toString ();
-            
-            db.update (AgreementPaymentFile.class, HASH (
-                "uuid",      idFile,
-                "id_log",    idFileLog
-            ));
-            
-        }        
-
     });}    
-*/        
+    
+    @Override
+    public JsonObject doAnnul (String id, JsonObject p, User user) {return doAction ((db) -> {
+        
+        db.update (getTable (), getData (p,
+            EnTable.c.UUID, id,
+            AgreementPayment.c.ID_AP_STATUS,     VocGisStatus.i.PENDING_RQ_ANNULMENT.getId (),
+            AgreementPayment.c.REASONOFANNULMENT, p.getJsonObject ("data").getString (AgreementPayment.c.REASONOFANNULMENT.lc ())
+        ));
+        
+        logAction (db, user, id, VocAction.i.ANNUL);
+                        
+    });}
+    
+    
 }

@@ -21,6 +21,15 @@ public class Sessions extends EJBResource <SessionsLocal> {
     private HttpServletRequest request;    
 
     @POST
+    @Path ("delete")
+    @Produces (APPLICATION_JSON)    
+    public JsonObject delete () {
+        HttpSession session = request.getSession (false);
+        if (session != null) session.invalidate ();
+        return Json.createObjectBuilder ().build ();
+    }
+
+    @POST
     @Path ("create")
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)

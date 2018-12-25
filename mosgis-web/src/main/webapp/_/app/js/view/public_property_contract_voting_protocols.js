@@ -4,7 +4,7 @@ define ([], function () {
                 
     return function (data, view) {
 
-//        var permissions = data.item.id_prtcl_status_gis == 10 || data.item.id_prtcl_status_gis == 11
+        var it = data.item
 
         var layout = w2ui ['topmost_layout']
 
@@ -22,8 +22,8 @@ define ([], function () {
                 toolbarReload: false,
                 toolbarColumns: false,
                 toolbarInput: false,
-                toolbarAdd: true,
-                toolbarDelete: true,
+                toolbarAdd: it._can.edit,
+                toolbarDelete: it._can.edit,
             },            
 
             textSearch: 'contains',

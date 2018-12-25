@@ -3,8 +3,10 @@ package ru.eludia.products.mosgis.db.model.tables;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
+import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 
 public class AgreementPayment extends EnTable {
@@ -13,9 +15,8 @@ public class AgreementPayment extends EnTable {
 
         UUID_CTR             (PublicPropertyContract.class, "Ссылка на договор на пользования общим имуществом"),       
         
-        ID_STATUS            (VocGisStatus.class,        VocGisStatus.i.PROJECT.asDef (),     "Статус устава с точки зрения mosgis"),
-        ID_STATUS_GIS        (VocGisStatus.class,        VocGisStatus.i.PROJECT.asDef (),     "Статус устава с точки зрения ГИС ЖКХ"),
-//        ID_CTR_STATE_GIS     (VocGisStatus.class,        VocGisStatus.i.NOT_RUNNING.asDef (), "Состояние устава с точки зрения ГИС ЖКХ"),
+        ID_AP_STATUS          (VocGisStatus.class,        VocGisStatus.i.PROJECT.asDef (),     "Статус с точки зрения mosgis"),
+        ID_AP_STATUS_GIS      (VocGisStatus.class,        VocGisStatus.i.PROJECT.asDef (),     "Статус с точки зрения ГИС ЖКХ"),
 
         ID_LOG                (AgreementPaymentLog.class,  "Последнее событие редактирования"),
         
@@ -24,7 +25,12 @@ public class AgreementPayment extends EnTable {
 
         BILL                  (Type.NUMERIC, 10, 2, null,      "Начислено за период"),
         DEBT                  (Type.NUMERIC, 10, 2, null,      "Размер задолженности (-)/переплаты (+) за период"),
-        PAID                  (Type.NUMERIC, 10, 2, null,      "Оплачено за период")
+        PAID                  (Type.NUMERIC, 10, 2, null,      "Оплачено за период"),
+        
+        REASONOFANNULMENT     (Type.STRING,  1000,  null,       "Причина аннулирования"),
+        IS_ANNULED            (Type.BOOLEAN,        new Virt ("DECODE(\"REASONOFANNULMENT\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0"),
+        
+        AGREEMENTPAYMENTVERSIONGUID  (Type.UUID, null, "Идентификатор версии сведений о внесении платы в ГИС ЖКХ")
 
         ;
 
@@ -51,6 +57,21 @@ public class AgreementPayment extends EnTable {
         super ("tb_pp_ctr_ap", "Плата по договорам на пользование общим имуществом");
         cols   (c.class);        
         key    ("uuid_org", c.UUID_CTR);        
+        
+        trigger ("BEFORE UPDATE", 
+
+            "BEGIN "
+
+                + "IF :NEW.ID_AP_STATUS <> :OLD.ID_AP_STATUS "
+                    + " AND :OLD.ID_AP_STATUS <> " + VocGisStatus.i.FAILED_PLACING.getId ()
+                    + " AND :NEW.ID_AP_STATUS =  " + VocGisStatus.i.PROJECT.getId ()
+                + " THEN "
+                    + " :NEW.ID_AP_STATUS := " + VocGisStatus.i.MUTATING.getId ()
+                + "; END IF; "
+
+            + " END;"
+
+        );
 
         trigger ("BEFORE INSERT OR UPDATE", ""
                 
@@ -67,7 +88,7 @@ public class AgreementPayment extends EnTable {
                     + "FROM "
                     + " tb_pp_ctr_ap o "
                     + "WHERE o.is_deleted = 0"
-                    + " AND o.id_status NOT IN (" + VocGisStatus.i.ANNUL + ")"
+                    + " AND o.id_ap_status NOT IN (" + VocGisStatus.i.ANNUL + ")"
                     + " AND o.UUID_CTR = :NEW.UUID_CTR "
                     + " AND o.DATETO   >= :NEW.DATEFROM "
                     + " AND o.DATEFROM <= :NEW.DATETO "
@@ -86,7 +107,7 @@ public class AgreementPayment extends EnTable {
         + "END;");        
         
     }
-/*    
+
     public enum Action {
         
         PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
@@ -114,7 +135,7 @@ public class AgreementPayment extends EnTable {
         public VocGisStatus.i getOkStatus () {
             return okStatus;
         }
-        
+
         public static Action forStatus (VocGisStatus.i status) {
             switch (status) {
                 case PENDING_RQ_PLACING:   return PLACING;
@@ -122,15 +143,15 @@ public class AgreementPayment extends EnTable {
                 default: return null;
             }            
         }
-        
+
         public static Action forLogAction (VocAction.i a) {
             switch (a) {
                 case APPROVE: return PLACING;
                 case ANNUL:   return ANNULMENT;
                 default: return null;
-            }            
+            }
         }
-                        
+
     };
-*/        
+
 }

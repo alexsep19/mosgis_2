@@ -27,6 +27,7 @@ import ru.gosuslugi.dom.schema.integration.house_management.ImportResult;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContract.c;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 
 @MessageDriven(activationConfig = {
  @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outExportHousePublicPropertyContractsQueue")
@@ -59,6 +60,10 @@ public class GisPollExportPublicPropertyContractMDB  extends GisPollMDB {
         try {
             
             GetStateResult state = getState (orgPPAGuid, r);
+            
+            ErrorMessageType errorMessage = state.getErrorMessage ();
+            
+            if (errorMessage != null) throw new GisPollException (errorMessage);
             
             final List<ImportResult> importResult = state.getImportResult ();
             

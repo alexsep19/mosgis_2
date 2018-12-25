@@ -1,6 +1,18 @@
 @import "nav";
 @import "w2ui";
 
+@font-face {
+    font-family: fontello;
+    font-weight: normal;
+    font-style : normal;
+    src: url("fonts/fontello/fontello.eot");
+    src:
+        url("fonts/fontello/fontello.eot#iefix") format("embedded-opentype"),
+        url("fonts/fontello/fontello.woff") format("woff"),
+        url("fonts/fontello/fontello.ttf") format("truetype"),
+        url("fonts/fontello/fontello.svg#fontello") format("svg");
+}
+
 .invisible {
 	display: none;
 }
@@ -42,6 +54,84 @@ body {
 		margin: 0 0 0 0;
 
 	}
+                
+        & > table {
+            
+            tr.nav {
+                height: 30px;
+                background-color: rgb(51, 51, 51);
+                color:#ccc;
+                font-family:HelveticaNeue, Helvetica, Arial, sans-serif;
+                font-size:13px;
+                white-space:nowrap;
+
+                td:first-child {
+                    color:#f5454b;
+                    text-transform: uppercase;
+                    font-weight: bold;
+                    font-size: 0.85em;
+                    border-left: none;
+                }
+
+                td {
+                    padding-left: 15px;
+                    border-left: solid 1px #ccc;
+                }
+
+                .clickable:hover {
+                    text-decoration: underline;
+                }
+
+                td:last-child {
+                    width: 70px;
+                }
+
+                td:last-child:before {
+                    content:'\e873';
+                    font-family:fontello;
+                    padding-right:2px;
+                }
+
+            }
+            
+        }
+
+}
+
+#body {
+    
+	& > main {
+	
+                height: 100%;
+		flex: 1;	
+		flex-direction: column;
+
+		header {		
+			@h: 40px;
+			height: @h;
+			line-height: @h;
+		}
+
+		article {
+			flex: 1;
+		}
+		
+		margin: 0 0 0 0;
+
+                & > pre {
+                    margin: 0 15px 15px 15px;
+                    font-family: Consolas, Courier;
+                    font-size: 12pt;
+                    line-height: 120%;
+                }
+
+                & > header {
+                    text-align: center;
+                    font-size: 20pt;
+                    margin: 10px 20px;
+                }            
+                
+	}
         
         & > pre {
             margin: 0 15px 15px 15px;
@@ -54,8 +144,8 @@ body {
             text-align: center;
             font-size: 20pt;
             margin: 10px 20px;
-        }            
-
+        }                
+    
 }
 
 span.anchor {
@@ -144,4 +234,3 @@ table.sync {
 	}
 
 }
-

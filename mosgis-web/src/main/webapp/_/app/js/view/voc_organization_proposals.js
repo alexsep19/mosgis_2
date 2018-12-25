@@ -13,7 +13,7 @@ define ([], function () {
 
         $('title').text(data.label)
 
-        fill(view, data, $('body'))
+        fill(view, data, $('#body'))
 
         $('#container').w2regrid ({
 

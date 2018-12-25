@@ -27,32 +27,68 @@ define ([], function () {
         
     }
     
-    $_DO.edit_public_property_contract_agreement_payments = function (e) {    
-    
-        var grid = w2ui [e.target]
-        var id = grid.getSelection () [0]
+    $_DO.approve_public_property_contract_agreement_payments = function (e) {
         
-        $_SESSION.set ('record', grid.get (id))        
-        use.block ('agreement_payment_popup')
+        var grid = w2ui ['public_property_contract_agreement_payments_grid']
+        var id = grid.getSelection () [0]
+        var r = grid.get (id)
+        
+        if (!confirm ('Отправить в ГИС информацию об оплате с ' + dt_dmy (r.datefrom) + ' по ' + dt_dmy (r.dateto) + '?')) return
+        
+        grid.lock ()
+        
+        query ({type: 'agreement_payments', id: id, action: 'approve'}, {}, function () {
+            grid.reload (grid.refresh)
+        })
         
     }
     
+    $_DO.edit_public_property_contract_agreement_payments = function (e) {    
+    
+        var grid = w2ui ['public_property_contract_agreement_payments_grid']
+        var id = grid.getSelection () [0]
+        var r = grid.get (id)
+        
+        function edit () {
+            $_SESSION.set ('record', r)        
+            return use.block ('agreement_payment_popup')
+        }
+       
+        switch (r.id_ap_status) {        
+        
+            case 10:
+            case 11:
+                return edit ()
+            case 40:
+                if (!confirm ('Вернуть на редактирование информацию об оплате с ' + dt_dmy (r.datefrom) + ' по ' + dt_dmy (r.dateto) + '?')) return
+            case 14:
+                grid.lock ()
+                query ({type: 'agreement_payments', id: id, action: 'alter'}, {}, function () {
+                    grid.unlock ()
+                    grid.reload (grid.refresh)
+                    edit ()
+                })
+
+        }
+
+    }
+
     $_DO.delete_public_property_contract_agreement_payments = function (e) {
-    
-        if (!e.force) return
-    
-        $('.w2ui-message').remove ()
 
-        e.preventDefault ()
+        var grid = w2ui ['public_property_contract_agreement_payments_grid']
+        var id = grid.getSelection () [0]
+        var r = grid.get (id)
 
-        query ({
+        if (!confirm ('Удалить информацию об оплате с ' + dt_dmy (r.datefrom) + ' по ' + dt_dmy (r.dateto) + '?')) return
+
+        query ({type: 'agreement_payments', id: id, action: 'delete'}, {}, reload_page)        
+
+    }
+
+    $_DO.annul_public_property_contract_agreement_payments = function (e) {
         
-            type:   'agreement_payments', 
-            id:     w2ui [e.target].getSelection () [0],
-            action: 'delete',
-            
-        }, {}, reload_page)
-        
+        use.block ('agreement_payment_annul_popup')
+
     }
 
     return function (done) {

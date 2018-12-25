@@ -20,6 +20,7 @@ import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.ActualPublicPropertyContract;
@@ -241,8 +242,9 @@ public class PublicPropertyContractImpl extends BaseCRUD<PublicPropertyContract>
             )).toString ();
 
             db.update (PublicPropertyContractFile.class, HASH (
-                "uuid",      idFile,
-                "id_log",    idFileLog
+                "uuid",           idFile,
+                AttachTable.c.ATTACHMENTGUID, null,
+                "id_log",         idFileLog
             ));
 
         }

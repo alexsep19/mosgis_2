@@ -84,6 +84,16 @@ public class PublicPropertyContract extends EnTable {
         
         key    ("uuid_org", c.UUID_ORG);
         
+        trigger ("AFTER UPDATE", ""
+            + "BEGIN "
+            + " IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS "
+                + " AND :NEW.ID_CTR_STATUS =  " + VocGisStatus.i.ANNUL.getId ()
+            + " THEN "
+                + " UPDATE tb_pp_ctr_ap SET ID_AP_STATUS=:NEW.ID_CTR_STATUS, ID_AP_STATUS_GIS=:NEW.ID_CTR_STATUS WHERE UUID_CTR=:NEW.UUID;"
+            + " END IF; "
+            + "END;"
+        );
+                
         trigger ("BEFORE UPDATE", 
                 
             "DECLARE "

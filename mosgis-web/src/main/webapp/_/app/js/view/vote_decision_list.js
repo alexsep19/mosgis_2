@@ -6,7 +6,7 @@ define ([], function () {
 
         data.item.protocoldate = dt_dmy (data.item['protocol.protocoldate'])
 
-        fill (view, data.item, $('body'))
+        fill (view, data.item, $('#body'))
 
         $('#container').w2relayout ({
         

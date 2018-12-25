@@ -1,10 +1,8 @@
 define ([], function () {
     
     return function (data, view) {
-    
-        $('nav').hide ()
-    
-        fill (view, data, $('main'))
+        
+        fill (view, data, $('body') )
 
         $('div.login-inner').w2form ({
         

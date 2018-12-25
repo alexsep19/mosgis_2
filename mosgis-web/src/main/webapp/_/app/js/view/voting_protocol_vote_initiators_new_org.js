@@ -6,19 +6,6 @@ define ([], function () {
 
         var grid = w2ui ['voting_protocol_vote_initiators_grid']
 
-        var ids = []
-        grid.records.forEach ((element, i, arr) => {ids.push(element['uuid_org'])})
-
-        var orgs = []
-        data.vc_orgs.items.forEach ((element, i, arr) => {
-            if (!ids.includes (element['id'])) orgs.push (element)
-        })
-
-        if (orgs.length == 0) { 
-            alert ('Все организации уже являются инициаторами')
-            return false;
-        }
-
         $(view).w2popup('open', {
 
             width  : 500,
@@ -39,7 +26,28 @@ define ([], function () {
                         name: name,
 
                         fields : [
-                            {name: 'uuid_org', type: 'list', options: {items: orgs}},
+                            {name: 'uuid_org', type: 'list', options: 
+                                {
+                                    url: '/mosgis/_rest/?type=voc_organizations&part=list',
+                                    postData: {'protocol_uuid': data.item.uuid, 'searchLogic': 'OR'},
+                                    cacheMax: 10,
+                                    filter: false,
+
+                                    onSearch: function (e) {
+
+                                        this.options.postData['search'] = [{'value': e.search}]
+
+                                    },
+
+                                    onLoad: function (e) {
+
+                                        dia2w2ui (e)
+                                        e.xhr.responseJSON = JSON.parse (e.xhr.responseText)
+                                        e.data = e.xhr.responseJSON
+                                        
+                                    }
+                                }
+                            },
                         ],
 
                     });
