@@ -30,51 +30,6 @@ import ru.eludia.products.mosgis.web.base.Search;
 public class LiftsImpl extends BasePassport<Lift> implements LiftsLocal {
 
     private static final Logger logger = Logger.getLogger (LiftsImpl.class.getName ());
-
-    @Override
-    public boolean checkRestore (String id) {
-        
-        try (DB db = ModelHolder.getModel ().getDb ()) {
-            
-            JsonObject record = db.getJsonObject (ModelHolder.getModel ().get(Lift.class, id, "uuid")
-                                                    .where ("is_deleted", 0)
-                                                    .and   ("is_annuled_in_gis", 1)
-            );
-            
-            return record != null;
-            
-        }
-        catch (Exception ex) {
-            throw new InternalServerErrorException (ex);
-        }
-        
-    }
-    
-    @Override
-    public boolean checkCreate (String uuid, String num) {
-        
-        Select select = ModelHolder.getModel ()
-                .select  (Lift.class, "uuid AS id")
-                .where   ("uuid_house", uuid)
-                .and     ("factorynum", num)
-                .and     ("is_deleted", 0)
-                .orderBy ("factorynum");
-        
-        try (DB db = ModelHolder.getModel ().getDb ()) {
-            
-//            int total = db.getCnt(select);
-//            
-//            if (total > 0) {
-//                
-//            }
-            return true;
-            
-        }
-        catch (Exception ex) {
-            throw new InternalServerErrorException (ex);
-        }
-        
-    }
     
     @Override
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, jb) -> {
@@ -183,7 +138,7 @@ public class LiftsImpl extends BasePassport<Lift> implements LiftsLocal {
     }    
 
     @Override
-    public JsonObject doRestore (String id, JsonObject p) {return doAction ((db) -> {
+    public JsonObject doRestore (String id) {return doAction ((db) -> {
 
         final Table table = getTable ();
 

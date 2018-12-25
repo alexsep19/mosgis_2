@@ -55,11 +55,22 @@ public class Lift extends Table {
         
         fk     ("id_status", VocHouseStatus.class, new Virt("DECODE(\"LIFTGUID\",NULL," + VocHouseStatus.i.MISSING.getId() + "," + VocHouseStatus.i.PUBLISHED.getId() + ")"), "Статус размещения в ГИС ЖКХ");
         
-        trigger ("BEFORE INSERT", 
-            "BEGIN "
-                    + "IF :NEW.uuid_entrance IS NOT NULL THEN"
-                    + "  SELECT uuid_house INTO :NEW.uuid_house FROM tb_entrances WHERE uuid = :NEW.uuid_entrance; "
-                    + "END IF;"
+        trigger ("BEFORE INSERT", ""
+            
+            + "DECLARE "
+                + "PRAGMA AUTONOMOUS_TRANSACTION; "
+                
+            + "BEGIN "
+                   
+            + "FOR i IN (SELECT factorynum, is_annuled_in_gis FROM tb_lifts WHERE uuid_house = :NEW.uuid_house AND factorynum = :NEW.factorynum) LOOP "
+                + "IF (i.is_annuled_in_gis <> 1) THEN "
+                    + "raise_application_error (-20000, 'Аннулирование записи лифта с заводским номером ' || i.factorynum || ' не пожтверждено в ГИС. Операция отменена.'); "
+                + "END IF; "
+            + "END LOOP; "
+                
+            + "IF :NEW.uuid_entrance IS NOT NULL THEN "
+                + "SELECT uuid_house INTO :NEW.uuid_house FROM tb_entrances WHERE uuid = :NEW.uuid_entrance; "
+            + "END IF; "
             + "END;");
         
         trigger ("BEFORE UPDATE", ""
