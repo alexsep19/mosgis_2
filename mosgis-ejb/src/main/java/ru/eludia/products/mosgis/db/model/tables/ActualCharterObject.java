@@ -20,7 +20,7 @@ public class ActualCharterObject extends View {
             + " , o.fiashouseguid"
             + " , o.id_ctr_status_gis"
             + " , c.uuid_org"
-            + " , 1 - o.ismanagedbycontract is_own"
+            + " , DECODE(c.id_ctr_state_gis, " + VocGisStatus.i.RUNNING + ", 1 - o.ismanagedbycontract, 0) is_own"
             + " FROM "       + getName (CharterObject.class) + " o"
             + " INNER JOIN " + getName (Charter.class) + " c ON o.uuid_charter = c.uuid"
             + " WHERE o.is_deleted = 0"

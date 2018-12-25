@@ -20,7 +20,7 @@ public class ActualContractObject extends View {
             + " , o.fiashouseguid"
             + " , o.id_ctr_status_gis"
             + " , c.uuid_org"
-            + " , 1 is_own"
+            + " , DECODE(c.id_ctr_state_gis, " + VocGisStatus.i.RUNNING + ", 1, 0) is_own"
             + " FROM "       + getName (ContractObject.class) + " o"
             + " INNER JOIN " + getName (Contract.class) + " c ON o.uuid_contract = c.uuid"
             + " WHERE o.is_deleted = 0"
