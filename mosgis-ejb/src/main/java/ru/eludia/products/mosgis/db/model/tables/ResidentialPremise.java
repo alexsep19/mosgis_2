@@ -61,6 +61,7 @@ public class ResidentialPremise extends Passport {
             + "IF :NEW.totalarea < :NEW.grossarea THEN raise_application_error (-20000, '#grossarea#: Жилая площадь не может превышать общую.'); END IF; "
                 
             + "IF UPDATING THEN "
+                + "IF :NEW.is_deleted = 1 AND :OLD.is_deleted = 0 AND :OLD.id_status = " + VocHouseStatus.i.PUBLISHED.getId () + " THEN raise_application_error (-20000, 'Запись размещена в ГИС. Операция прервана.'); END IF; "
                 + "IF :NEW.premisesnum IS NULL      AND :OLD.premisesnum IS NOT NULL THEN raise_application_error (-20000, '#premisesnum#: Необходимо указать номер помещения.'); END IF; "
                 + "IF :NEW.code_vc_nsi_30 IS NULL   AND :OLD.code_vc_nsi_30 IS NOT NULL  THEN raise_application_error (-20000, '#code_vc_nsi_30#: Необходимо указать характеристику помещения.'); END IF; "
                 + "IF  NVL (:NEW.totalarea, 0) <= 0 AND :OLD.totalarea > 0  THEN raise_application_error (-20000, '#totalarea#: Необходимо указать размер общей плошади.'); END IF; "

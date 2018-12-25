@@ -69,6 +69,8 @@ public class LivingRoom extends Passport {
 
             + " IF UPDATING THEN "
 
+                + "IF :NEW.is_deleted = 1 AND :OLD.is_deleted = 0 AND :OLD.id_status = " + VocHouseStatus.i.PUBLISHED.getId () + " THEN raise_application_error (-20000, 'Запись размещена в ГИС. Операция прервана.'); END IF; "
+                
                 + "IF :OLD.code_vc_nsi_330 IS NOT NULL AND :NEW.code_vc_nsi_330 IS NULL THEN " // отмена аннулирования — проверка помещения
                 + " FOR i IN (SELECT uuid, premisesnum FROM tb_premises_res WHERE is_deleted=0 AND code_vc_nsi_330 IS NOT NULL AND uuid=:NEW.uuid_premise) LOOP"
                 + "   raise_application_error (-20000, 'В настоящий момент помещение №' || i.premisesnum || ', к которому относится комната №' || :NEW.roomnumber || ', аннулировано. Операция отменена.'); "
