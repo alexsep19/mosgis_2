@@ -73,6 +73,30 @@ public class WorkingList extends EnTable {
             + "END;"
                 
         );
+                
+        trigger ("BEFORE UPDATE", 
+                
+            "DECLARE "
+            + " cnt NUMBER;"
+            + "BEGIN "
+
+                + "IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS "
+                    + " AND :OLD.ID_CTR_STATUS <> " + VocGisStatus.i.FAILED_PLACING.getId ()
+                    + " AND :NEW.ID_CTR_STATUS =  " + VocGisStatus.i.PROJECT.getId ()
+                + " THEN "
+                    + " :NEW.ID_CTR_STATUS := " + VocGisStatus.i.MUTATING.getId ()
+                + "; END IF; "
+
+                + "IF :NEW.is_deleted=0 AND :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING.getId () + " THEN BEGIN "
+                
+                    + " SELECT COUNT(*) INTO cnt FROM tb_work_list_items WHERE is_deleted=0 AND UUID_WORKING_LIST=:NEW.uuid; "
+                    + " IF cnt=0 THEN raise_application_error (-20000, 'Перечень не содержит ни одной работы/услуги. Операция отменена.'); END IF; "
+
+                + "END; END IF; "
+                        
+            + "END;"
+                
+        );
         
         trigger ("BEFORE INSERT OR UPDATE", ""
                 
