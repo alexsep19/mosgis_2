@@ -58,8 +58,7 @@ define ([], function () {
                 
                 {span: 3, caption: 'Непригодность'},
                 
-                {master: true},
-                {master: true},           
+                {master: true},    
             ],    
             
             searches: [            
@@ -95,7 +94,6 @@ define ([], function () {
                 {field: "f_20134", caption: "№ док.", size: 10, hidden: true},
 
                 {field: 'terminationdate', caption: 'Дата аннулирования', render: _dt, size: 20, hidden: true},
-                {field: 'id_status', caption: 'ГИС ЖКХ', size: 10},
             ],
             
             postData: {data: {uuid_premise: $_REQUEST.id}},
