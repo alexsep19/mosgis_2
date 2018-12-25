@@ -107,6 +107,8 @@ define ([], function () {
         data.active_tab = localStorage.getItem ('block_common.active_tab') || 'block_common_living_rooms'
 
         data.__read_only = 1
+
+        data.__allow_annul = !data.item.is_annuled && data.item.id_status == 20
         
         data.item._can = {
             edit: 1,

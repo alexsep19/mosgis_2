@@ -86,6 +86,8 @@ define ([], function () {
         var data = clone ($('body').data ('data'))
 
         data.__read_only = 1
+
+        data.__allow_annul = !data.item.is_annuled && data.item.id_status == 20
         
         data.item._can = {
             edit: 1,

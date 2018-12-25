@@ -87,6 +87,8 @@ define ([], function () {
 
         data.__read_only = 1
 
+        data.__allow_annul = !data.item.is_annuled && data.item.id_status == 20
+
         done (data)
 
     }
