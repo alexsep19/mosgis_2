@@ -23,6 +23,7 @@ define ([], function () {
                             {id: 'public_property_contracts', caption: 'Договоры пользования общим имуществом', off: !($_USER.role.admin || $_USER.is_building_society () || $_USER.has_nsi_20 (1, 7, 8))},
                             {id: 'voc_organizations', caption: 'Организации'},
                             {id: 'voc_users', caption: 'Учётные записи', off: !$_USER.role.admin},
+                            {id: 'licenses', caption: 'Лицензии'},
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_rosters

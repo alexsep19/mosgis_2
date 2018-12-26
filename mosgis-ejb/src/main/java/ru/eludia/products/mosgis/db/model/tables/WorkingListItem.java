@@ -7,7 +7,6 @@ import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
-import static ru.eludia.base.model.Type.NUMERIC;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
@@ -21,12 +20,13 @@ public class WorkingListItem extends EnTable {
         UUID_ORG_WORK        (OrganizationWork.class, "Ссылка на работу/услугу организации"),
         
         ID_LOG               (WorkingListItemLog.class,  "Последнее событие редактирования"),
-        INDEX_               (NUMERIC,  4, 0, null,   "Номер строки в перечне работ и услуг"),
+        INDEX_               (Type.NUMERIC,  4, 0, null,   "Номер строки в перечне работ и услуг"),
         
-        PRICE                (NUMERIC, 14, 4, null,   "Цена"),
-        AMOUNT               (NUMERIC, 14, 3, null,   "Объём"),
-        COUNT                (NUMERIC,  4, 0, null,   "Количество"),
-        TOTALCOST            (NUMERIC, 22, 2, null,   "Общая стоимость"),
+        PRICE                (Type.NUMERIC, 14, 4, null,   "Цена"),
+        AMOUNT               (Type.NUMERIC, 14, 3, null,   "Объём"),
+        COUNT                (Type.NUMERIC,  4, 0, null,   "Количество"),
+        TOTALCOST            (Type.NUMERIC, 22, 2, null,   "Общая стоимость"),
+        WORKLISTITEMGUID     (Type.UUID,           null,   "Идентификатор работы/услуги перечня")
         ;
 
         @Override
@@ -37,7 +37,7 @@ public class WorkingListItem extends EnTable {
 
         @Override
         public boolean isLoggable () {
-            
+
             switch (this) {
                 case ID_LOG:
                 case UUID_WORKING_LIST:
@@ -98,5 +98,5 @@ public class WorkingListItem extends EnTable {
         result.setWorkItemNSI (NsiTable.toDom (r, "vc_nsi_56"));        
         return result;
     }
-    
+
 }

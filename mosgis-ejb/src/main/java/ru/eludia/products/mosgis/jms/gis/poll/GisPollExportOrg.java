@@ -1,18 +1,24 @@
 package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
+import javax.jms.Queue;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
+import ru.eludia.base.db.util.TypeConverter;
+import ru.eludia.products.mosgis.db.model.incoming.InLicenses;
 import ru.eludia.products.mosgis.db.model.incoming.InVocOrganization;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -22,10 +28,12 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTypes;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisOrgClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import ru.eludia.products.mosgis.ws.base.AbstactServiceAsync;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
+import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_common.ExportOrgRegistryResultType;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_common.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_common_service_async.Fault;
@@ -38,8 +46,14 @@ import ru.gosuslugi.dom.schema.integration.organizations_registry_common_service
 public class GisPollExportOrg extends UUIDMDB<OutSoap> {
     
     @EJB
+    public UUIDPublisher uuidPublisher;
+    
+    @EJB
     protected WsGisOrgClient wsGisOrgClient;
 
+    @Resource (mappedName = "mosgis.inExportLicenseQueue")
+    private Queue inExportLicenseQueue;
+    
     @Override
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ()
@@ -153,16 +167,30 @@ public class GisPollExportOrg extends UUIDMDB<OutSoap> {
         
         db.insert (VocOrganizationLog.class, record);
         
+        boolean isUo = false;
+        
+        List<Map<String, Object>> roles = new ArrayList<>();
+        for (NsiRef role : i.getOrganizationRoles()) {
+            if ("1".equals(role.getCode()))
+                isUo = true;
+            
+            roles.add(HASH(
+                "is_deleted", 0,
+                "code", role.getCode()
+            ));
+        }
+        
         db.dupsert (
             VocOrganizationNsi20.class, 
             HASH ("uuid", uuid), 
-            i.getOrganizationRoles ().stream ().map ((t) -> {return HASH (
-                "is_deleted", 0,
-                "code",       t.getCode ()
-            );}).collect (Collectors.toList ()),
+            roles,
             "code"
         );
 
+        if (isUo) {
+            uuidPublisher.publish(inExportLicenseQueue, (UUID) db.insertId(InLicenses.class, DB.HASH("uuid_org", uuid)));
+        }
+        
         return false;
 
     }

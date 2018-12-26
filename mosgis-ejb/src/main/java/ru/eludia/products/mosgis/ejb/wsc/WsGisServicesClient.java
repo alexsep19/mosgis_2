@@ -48,4 +48,8 @@ public class WsGisServicesClient {
         return getPort (orgPPAGuid, messageGUID).importWorkingList (WorkingListLog.toImportWorkingListRequest (r)).getAck ();
     }
         
+    public AckRequest.Ack exportWorkingList (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).exportWorkingList (WorkingListLog.toExportWorkingListRequest (r)).getAck ();
+    }
+    
 }
