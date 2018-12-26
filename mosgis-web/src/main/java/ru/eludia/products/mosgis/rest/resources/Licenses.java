@@ -21,14 +21,6 @@ public class Licenses extends EJBResource <LicenseLocal> {
     }
     
     @POST
-    @Path("import") 
-    @Consumes (APPLICATION_JSON)
-    @Produces (APPLICATION_JSON)
-    public JsonObject doImport (JsonObject p) { 
-        return back.doImport (p, getUser ()); 
-    }
-    
-    @POST
     @Path("vocs") 
     @Produces (APPLICATION_JSON)
     public JsonObject getVocs () { 
@@ -42,39 +34,18 @@ public class Licenses extends EJBResource <LicenseLocal> {
         return back.getItem (id);
     }
     
-//    @POST
-//    @Path("{id}/mgmt_nsi_58") 
-//    @Produces (APPLICATION_JSON)
-//    public JsonObject getMgmtNsi58 (@PathParam ("id") String id) { 
-//        return back.getMgmtNsi58 (id);
-//    }
-
     @POST
-    @Path("{id}/hours")
+    @Path("{id}/documents")
     @Produces(APPLICATION_JSON)
-    public JsonObject getHours(@PathParam("id") String id) {
-        return back.getHours(id);
+    public JsonObject getDocuments(@PathParam("id") String id, JsonObject p) {
+        return back.getDocuments(id, p);
     }
 
     @POST
-    @Path("{id}/patch_hours")
+    @Path("{id}/houses")
     @Produces(APPLICATION_JSON)
-    public JsonObject doPatchHours(@PathParam("id") String id, JsonObject p) {
-        return back.doPatchHours(id, p);
-    }
-
-    @POST
-    @Path("{id}/refresh") 
-    @Produces (APPLICATION_JSON)
-    public JsonObject doRefresh (@PathParam ("id") String id) { 
-        return back.doRefresh (id, getUser ());
-    }
-
-    @POST
-    @Path("{id}/patch")
-    @Produces(APPLICATION_JSON)
-    public JsonObject doPatch(@PathParam("id") String id, JsonObject p) {
-        return back.doPatch(id, p, getUser());
+    public JsonObject getHouses(@PathParam("id") String id, JsonObject p) {
+        return back.getHouses(id, p);
     }
 
     @POST

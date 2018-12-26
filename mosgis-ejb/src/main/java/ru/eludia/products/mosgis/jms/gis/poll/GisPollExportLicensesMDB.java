@@ -149,11 +149,12 @@ public class GisPollExportLicensesMDB  extends GisPollMDB {
 
         db.upsert(License.class, record);
 
+        record.put("uuid", uuidOutSoap);
         record.put("uuid_object",   uuid);
         record.put("uuid_out_soap", uuidOutSoap);
-        record.put("action",        VocAction.i.REFRESH);
+        record.put("action",        VocAction.i.RELOAD);
 
-        db.insert(LicenseLog.class, record);
+        db.upsert(LicenseLog.class, record);
 
         db.dupsert(
                 LicenseHouse.class,

@@ -3,30 +3,26 @@ define ([], function () {
     return function (data, view) {
     
         var it = data.item
-        //todo       
-        it.vc_licenses_types_label = it ['license.label']
-
+        
         $('title').text (it.label)
+        
+        fill (view, it, $('#body'))
 
-        fill (view, it, $('body'))
+        $('#container').w2relayout({
 
-        $('#main_container').w2relayout({
-
-            name: 'licenses_layout',
+            name: 'license_layout',
 
             panels: [
 
-                {type: 'main', size: 300,
+                {type: 'main', size: 400,
 
                     tabs: {
 
                         tabs: [
-//                            {id: 'license_main', caption: 'Юридическое лицо'},
-//                            {id: 'license_info', caption: 'Информация'},
-//                            {id: 'license_hours', caption: 'Режим работы'}
+                            {id: 'license_common',   caption: 'Общие'},
                         ].filter(not_off),
 
-                        onClick: $_DO.choose_top_tab_license
+                        onClick: $_DO.choose_tab_license
 
                     }
 

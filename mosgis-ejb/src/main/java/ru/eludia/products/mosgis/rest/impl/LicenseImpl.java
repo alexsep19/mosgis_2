@@ -7,16 +7,17 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.InternalServerErrorException;
-import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.License;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.LicenseLocal;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.base.DB;
-import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.LicenseAccompanyingDocument;
+import ru.eludia.products.mosgis.db.model.tables.LicenseHouse;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocLicenseStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -25,7 +26,7 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 import ru.eludia.products.mosgis.db.model.tables.LicenseLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
-import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocDocumentStatus;
 import ru.eludia.products.mosgis.web.base.ComplexSearch;
 
 @Stateless
@@ -33,41 +34,34 @@ import ru.eludia.products.mosgis.web.base.ComplexSearch;
 public class LicenseImpl extends BaseCRUD<License> implements LicenseLocal {
 
     @Override
-    public JsonObject getItem (String id) {return fetchData ((db, job) -> {
-        
-        Model m = ModelHolder.getModel ();
-        
-        JsonObject item = db.getJsonObject (m
-            .get (License.class, id, "*")
-            //todo - needed?    
-            .toOne      (VocOrganization.class, "label", "stateregistrationdate").on ("uuid_org")
-            .toMaybeOne (LicenseLog.class                                       ).on ()
-            .toMaybeOne (OutSoap.class,                               "err_text").on ()
-        ); 
+    public JsonObject getItem(String id) {
+        return fetchData((db, job) -> {
 
-        job.add ("item", item);
+            Model m = ModelHolder.getModel();
 
-    });}
-    
-    @Override
-    public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
-        
-        final MosGisModel model = ModelHolder.getModel ();
+            JsonObject item = db.getJsonObject(m
+                    .get(License.class, id, "AS root", "*")
+                    .toOne (VocOrganization.class, "AS org", VocOrganization.c.LABEL.lc(), VocOrganization.c.UUID.lc(), "id_type").on (License.c.UUID_ORG.lc())
+                    .toOne (VocOrganization.class, "AS org_authority", VocOrganization.c.LABEL.lc()).on (License.c.UUID_ORG_AUTHORITY.lc())
+                    .toMaybeOne(VocBuildingAddress.class, "AS fias",  "label").on ("root.region_fias_guid=fias.houseguid")
+                    .toMaybeOne(LicenseLog.class, "AS log").on()
+                    .toMaybeOne(OutSoap.class, "err_text").on("log.uuid_out_soap=out_soap.uuid")
+            );
 
-        Select select = model.select (License.class, "AS root", "*", "uuid AS id")
-            .toOne (VocOrganization.class, "AS org", "label").on ("uuid_org")
-            .toMaybeOne (LicenseLog.class         ).on ()
-            .toMaybeOne (OutSoap.class,           "err_text").on ()
-            .and ("uuid_org", p.getJsonObject ("data").getString ("uuid_org", null))
-            .orderBy ("org.label")
-            .orderBy ("root.docnum")
-            .limit (p.getInt ("offset"), p.getInt ("limit"));
+            job.add("item", item);
+            
+            VocLicenseStatus.addTo(job);
+            VocDocumentStatus.addTo(job);
+            VocAction.addTo(job);
+            
+            db.addJsonArrays (job, 
+                
+                NsiTable.getNsiTable(75).getVocSelect () // Тип документа
 
-        applySearch (Search.from (p), select);
+            );
 
-        db.addJsonArrayCnt (job, select);
-
-    });}    
+        });
+    } 
 
     private void applyComplexSearch (final ComplexSearch search, Select select) {
 
@@ -106,24 +100,12 @@ public class LicenseImpl extends BaseCRUD<License> implements LicenseLocal {
         return jb.build ();
         
     }
-    
-    @Override
-    public JsonObject doRefresh (String id, User user) {return doAction ((db) -> {
-        
-        db.update (getTable (), HASH (
-            "uuid",           id,
-            "id_ctr_status",  VocGisStatus.i.PENDING_RQ_REFRESH.getId ()
-        ));
-        
-        logAction (db, user, id, VocAction.i.REFRESH);
-        
-    });}
 
     @Override
     public JsonObject select(JsonObject p) {
         final Model m = ModelHolder.getModel ();
         
-        Select select = m.select (License.class,"AS root", "*")
+        Select select = m.select (License.class,"AS root", "*", "uuid AS id")
             .toOne (VocOrganization.class, "AS org", VocOrganization.c.LABEL.lc()).on (License.c.UUID_ORG.lc())
             .toOne (VocOrganization.class, "AS org_authority", VocOrganization.c.LABEL.lc()).on (License.c.UUID_ORG_AUTHORITY.lc())
             .toMaybeOne(VocBuildingAddress.class, "AS fias",  "label").on ("root.region_fias_guid=fias.houseguid")
@@ -145,27 +127,54 @@ public class LicenseImpl extends BaseCRUD<License> implements LicenseLocal {
     }
 
     @Override
-    public JsonObject doImport(JsonObject p, User user) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public JsonObject getDocuments(String id, JsonObject p) {
+        
+        final Model m = ModelHolder.getModel ();
+        
+        Select select = m.select (LicenseAccompanyingDocument.class,"AS root", "*")
+            .toOne (VocOrganization.class, "AS org", VocOrganization.c.LABEL.lc()).on (LicenseAccompanyingDocument.c.UUID_ORG_DECISION.lc())
+            .where(LicenseAccompanyingDocument.c.UUID_LICENSE.lc(), id)
+            .orderBy (LicenseAccompanyingDocument.c.NAME.lc ())
+            .limit (p.getInt ("offset"), p.getInt ("limit"));
+        
+        JsonObjectBuilder jb = Json.createObjectBuilder ();
+
+        try (DB db = ModelHolder.getModel ().getDb ()) {
+            db.addJsonArrayCnt (jb, select);
+        }
+        catch (Exception ex) {
+            throw new InternalServerErrorException (ex);
+        }
+        
+        return jb.build ();
     }
 
     @Override
-    public JsonObject getMgmtNsi58(String id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    public JsonObject getHouses(String id, JsonObject p) {
+        
+        final Model m = ModelHolder.getModel ();
+        
+        Select select = m.select (LicenseHouse.class,"AS root", "*")
+            .toOne(VocBuildingAddress.class, "AS fias",  "label").on ("root.fiashouseguid=fias.houseguid")
+            .where(LicenseAccompanyingDocument.c.UUID_LICENSE.lc(), id)
+            .orderBy (LicenseHouse.c.HOUSEADDRESS.lc ())
+            .limit (p.getInt ("offset"), p.getInt ("limit"));
+        
+        JsonObjectBuilder jb = Json.createObjectBuilder ();
 
-    @Override
-    public JsonObject getHours(String id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try (DB db = ModelHolder.getModel ().getDb ()) {
+            db.addJsonArrayCnt (jb, select);
+        }
+        catch (Exception ex) {
+            throw new InternalServerErrorException (ex);
+        }
+        
+        return jb.build ();
+        
     }
-
+    
     @Override
-    public JsonObject doPatch(String id, JsonObject p, User user) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public JsonObject doPatchHours(String id, JsonObject p) {
+    public JsonObject select(JsonObject p, User user) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

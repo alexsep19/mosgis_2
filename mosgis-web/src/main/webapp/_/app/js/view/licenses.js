@@ -20,10 +20,10 @@ define ([], function () {
 //                {field: 'id_type', caption: 'Типы',     type: 'enum', options: {items: data.vc_licenses_types.items}},
             ],
 
-            columns: [                
+            columns: [
+                {field: 'label', caption: 'Наименование',    size: 50},
                 {field: 'id_status', caption: 'Статус',    size: 50, voc: data.vc_license_status},
                 {field: 'org.label', caption: 'Лицензиат',    size: 100},
-                {field: 'org_authority.label', caption: 'Лицензирующий орган',    size: 100},
                 {field: 'licenseable_type_of_activity', caption: 'Лицензируемый вид деятельности',    size: 100},
                 {field: 'fias.label', caption: 'Адрес осуществления лицензируемого вида деятельности',    size: 100},
             ],
@@ -31,7 +31,7 @@ define ([], function () {
             
             onDblClick: function (e) {
 
-            //TODO
+            openTab ('/license/' + e.recid)
 
             }
 
