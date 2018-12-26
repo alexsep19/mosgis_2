@@ -8,11 +8,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.rest.api.LiftsLocal;
 
 @Path ("lifts")
 public class Lifts extends EJBResource <LiftsLocal> {
-
+    
     @POST
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
@@ -58,4 +59,12 @@ public class Lifts extends EJBResource <LiftsLocal> {
         return back.doDelete (id, getUser ());
     }
 
+    @POST
+    @Path ("{id}/restore")
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject doRestore (@PathParam ("id") String id) {
+        return back.doRestore(id);
+    }
+    
 }

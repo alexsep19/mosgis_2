@@ -35,7 +35,7 @@
                 <shortRevisionLength>7</shortRevisionLength>
                 <doCheck>false</doCheck>
                 <doUpdate>false</doUpdate>
-                <format>{0,date,yyyy-MM-dd-HH-mm}-{1}</format>
+                <!-- <format>{0,date,yyyy-MM-dd-HH-mm}-{1}</format> -->
                 <items>
                     <item>timestamp</item>
                     <item>scmVersion</item>

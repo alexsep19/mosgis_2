@@ -4,49 +4,72 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
+import javax.jms.Queue;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
-import ru.eludia.products.mosgis.db.model.tables.AgreementPayment;
-import ru.eludia.products.mosgis.db.model.tables.AgreementPaymentLog;
+import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.tables.Charter;
+import ru.eludia.products.mosgis.db.model.tables.CharterObject;
+import ru.eludia.products.mosgis.db.model.tables.Contract;
+import ru.eludia.products.mosgis.db.model.tables.ContractObject;
+import ru.eludia.products.mosgis.db.model.tables.WorkingList;
+import ru.eludia.products.mosgis.db.model.tables.WorkingListLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
-import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.gosuslugi.dom.schema.integration.base.CommonResultType;
-import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
-import ru.gosuslugi.dom.schema.integration.house_management.ImportResult;
-import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
-import ru.eludia.products.mosgis.db.model.tables.AgreementPayment.c;
-import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContract;
+import ru.gosuslugi.dom.schema.integration.services_service_async.Fault;
+import ru.eludia.products.mosgis.db.model.tables.WorkingList.c;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.ejb.wsc.WsGisServicesClient;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
+import ru.gosuslugi.dom.schema.integration.services.GetStateResult;
 
 @MessageDriven(activationConfig = {
- @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outExportHouseAgreementPaymentsQueue")
+ @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outExportWorkingListsQueue")
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class GisPollExportAgreementPaymentMDB  extends GisPollMDB {
+public class GisPollExportWorkingListMDB  extends GisPollMDB {
 
     @EJB
-    WsGisHouseManagementClient wsGisHouseManagementClient;
+    WsGisServicesClient wsGisServicesClient;
+    
+    @Resource (mappedName = "mosgis.inWorkingListsQueue")
+    Queue inWorkingListsQueue;
 
     @Override
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
-            .toOne (AgreementPaymentLog.class,     "AS log", "uuid", "action").on ("log.uuid_out_soap=root.uuid")
-            .toOne (AgreementPayment.class,        "AS ap", "uuid").on ()
-            .toOne (PublicPropertyContract.class, "AS ctr").on ()
-            .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("ctr.uuid_org=org.uuid")
+                
+            .toOne (WorkingListLog.class,     "AS log", "uuid", "action").on ("log.uuid_out_soap=root.uuid")
+            .toOne (WorkingList.class,        "AS r", "uuid").on ()
+                
+            .toMaybeOne (ContractObject.class, "AS co").on ()
+            .toMaybeOne (Contract.class, "AS ctr"
+                , "contractguid AS contractguid"
+            ).on ()
+            .toMaybeOne (VocOrganization.class, "AS o1"
+                , "orgppaguid AS orgppaguid_1"
+            ).on ("ctr.uuid_org=o1.uuid")
+                
+            .toMaybeOne (CharterObject.class, "AS co").on ()
+            .toMaybeOne (Charter.class, "AS ch"
+                , "charterguid AS charterguid"
+            ).on ()
+            .toMaybeOne (VocOrganization.class, "AS o2"
+                , "orgppaguid AS orgppaguid_2"
+            ).on ("ch.uuid_org=o1.uuid")
         ;
     }
 
@@ -55,9 +78,10 @@ public class GisPollExportAgreementPaymentMDB  extends GisPollMDB {
         
         if (DB.ok (r.get ("is_failed"))) throw new IllegalStateException (r.get ("err_text").toString ());
         
-        UUID orgPPAGuid          = (UUID) r.get ("org.orgppaguid");
+        UUID orgPPAGuid = (UUID) r.get ("orgppaguid_1");
+        if (orgPPAGuid == null) orgPPAGuid = (UUID) r.get ("orgppaguid_2");
         
-        AgreementPayment.Action action = AgreementPayment.Action.forLogAction (VocAction.i.forName (r.get ("log.action").toString ()));
+        WorkingList.Action action = WorkingList.Action.forLogAction (VocAction.i.forName (r.get ("log.action").toString ()));
                 
         try {
             
@@ -67,21 +91,17 @@ public class GisPollExportAgreementPaymentMDB  extends GisPollMDB {
             
             if (errorMessage != null) throw new GisPollException (errorMessage);            
             
-            final List<ImportResult> importResult = state.getImportResult ();
-            
-            if (importResult == null || importResult.isEmpty ()) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
-            
-            final List<ImportResult.CommonResult> commonResult = importResult.get (0).getCommonResult ();
+            final List<CommonResultType> commonResult = state.getImportResult ();                        
             
             if (commonResult == null || commonResult.isEmpty ()) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
-            
+                                    
             for (CommonResultType.Error err: commonResult.get (0).getError ()) throw new GisPollException (err);
 
             final Map<String, Object> h = statusHash (action.getOkStatus ());
 
-            if (action == AgreementPayment.Action.PLACING) {
+            if (action == WorkingList.Action.PLACING) {
                 final String guid = commonResult.get (0).getGUID ();
-                if (DB.ok (guid)) h.put (c.AGREEMENTPAYMENTVERSIONGUID.lc (), guid);
+                if (DB.ok (guid)) h.put (c.WORKLISTGUID.lc (), guid);
             }
 
             update (db, uuid, r, h);
@@ -90,6 +110,11 @@ public class GisPollExportAgreementPaymentMDB  extends GisPollMDB {
                 "uuid", getUuid (),
                 "id_status", DONE.getId ()
             ));
+            
+            if (action == WorkingList.Action.PLACING && DB.ok (h.get (c.WORKLISTGUID.lc ()))) {
+                MosGisModel m = ModelHolder.getModel ();
+                uuidPublisher.publish (inWorkingListsQueue, m.createIdLog (db, m.get (WorkingList.class), null, r.get ("r.uuid"), VocAction.i.REFRESH));
+            }
 
         }
         catch (GisPollRetryException ex) {
@@ -106,8 +131,8 @@ public class GisPollExportAgreementPaymentMDB  extends GisPollMDB {
         
         final byte id = status.getId ();
         
-        return HASH (c.ID_AP_STATUS,     id,
-            c.ID_AP_STATUS_GIS, id
+        return HASH (c.ID_CTR_STATUS,     id,
+            c.ID_CTR_STATUS_GIS, id
         );
         
     }
@@ -116,11 +141,11 @@ public class GisPollExportAgreementPaymentMDB  extends GisPollMDB {
         
 logger.info ("h=" + h);
         
-        h.put ("uuid", r.get ("ap.uuid"));
-        db.update (AgreementPayment.class, h);
+        h.put ("uuid", r.get ("r.uuid"));
+        db.update (WorkingList.class, h);
         
         h.put ("uuid", uuid);
-        db.update (AgreementPaymentLog.class, h);
+        db.update (WorkingListLog.class, h);
         
     }
     
@@ -129,7 +154,7 @@ logger.info ("h=" + h);
         GetStateResult rp;
         
         try {
-            rp = wsGisHouseManagementClient.getState (orgPPAGuid, (UUID) r.get ("uuid_ack"));
+            rp = wsGisServicesClient.getState (orgPPAGuid, (UUID) r.get ("uuid_ack"));
         }
         catch (Fault ex) {
             throw new GisPollException (ex.getFaultInfo ());

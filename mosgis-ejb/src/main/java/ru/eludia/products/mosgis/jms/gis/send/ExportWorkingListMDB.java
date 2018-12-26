@@ -13,39 +13,45 @@ import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Table;
-import ru.eludia.products.mosgis.db.model.tables.AgreementPayment;
-import ru.eludia.products.mosgis.db.model.tables.AgreementPaymentLog;
+import ru.eludia.products.mosgis.db.model.tables.WorkingList;
+import ru.eludia.products.mosgis.db.model.tables.WorkingListItem;
+import ru.eludia.products.mosgis.db.model.tables.WorkingListLog;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
-import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
+import ru.eludia.products.mosgis.ejb.wsc.WsGisServicesClient;
 import ru.eludia.products.mosgis.jms.gis.send.base.GisExportMDB;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
-import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
+import ru.gosuslugi.dom.schema.integration.services_service_async.Fault;
 
 @MessageDriven(activationConfig = {
- @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inHouseAgreementPaymentsQueue")
+ @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inWorkingListsQueue")
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class ExportAgreementPaymentMDB extends GisExportMDB<AgreementPaymentLog> {
+public class ExportWorkingListMDB extends GisExportMDB<WorkingListLog> {
     
     @EJB
-    WsGisHouseManagementClient wsGisHouseManagementClient;
+    WsGisServicesClient wsGisServicesClient;
     
-    @Resource (mappedName = "mosgis.outExportHouseAgreementPaymentsQueue")
-    Queue outExportHouseAgreementPaymentsQueue;
+    @Resource (mappedName = "mosgis.outExportWorkingListsQueue")
+    Queue outExportHouseWorkingListsQueue;
+    
+    @Resource (mappedName = "mosgis.outImportWorkingListsQueue")
+    Queue outImportHouseWorkingListsQueue;
                     
+    @Override
     protected Get get (UUID uuid) {        
-        return ((AgreementPaymentLog) ModelHolder.getModel ().get (AgreementPaymentLog.class)).getForExport (uuid);
+        return ((WorkingListLog) ModelHolder.getModel ().get (WorkingListLog.class)).getForExport (uuid.toString ());
     }
         
-    AckRequest.Ack invoke (DB db, AgreementPayment.Action action, UUID messageGUID,  Map<String, Object> r) throws Fault, SQLException {
+    AckRequest.Ack invoke (DB db, WorkingList.Action action, UUID messageGUID,  Map<String, Object> r) throws Fault, SQLException {
             
-        UUID orgPPAGuid = (UUID) r.get ("org.orgppaguid");
+        UUID orgPPAGuid = (UUID) r.get ("orgppaguid_1");
+        if (orgPPAGuid == null) orgPPAGuid = (UUID) r.get ("orgppaguid_2");
             
         switch (action) {
-            case PLACING:     return wsGisHouseManagementClient.importPublicPropertyContractAgreementPayment (orgPPAGuid, messageGUID, r);
-            case ANNULMENT:   return wsGisHouseManagementClient.importPublicPropertyAnnulContractAgreementPayment (orgPPAGuid, messageGUID, r);
+            case PLACING:     return wsGisServicesClient.importWorkingList (orgPPAGuid, messageGUID, r);
+            case REFRESHING:  return wsGisServicesClient.exportWorkingList (orgPPAGuid, messageGUID, r);
             default: throw new IllegalArgumentException ("No action implemented for " + action);
         }
 
@@ -54,13 +60,15 @@ public class ExportAgreementPaymentMDB extends GisExportMDB<AgreementPaymentLog>
     @Override
     protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
         
-        VocGisStatus.i status = VocGisStatus.i.forId (r.get ("ap." + AgreementPayment.c.ID_AP_STATUS.lc ()));
-        AgreementPayment.Action action = AgreementPayment.Action.forStatus (status);        
+        VocGisStatus.i status = VocGisStatus.i.forId (r.get ("r." + WorkingList.c.ID_CTR_STATUS.lc ()));
+        WorkingList.Action action = WorkingList.Action.forStatus (status);        
 
         if (action == null) {
             logger.warning ("No action is implemented for " + status);
             return;
         }
+        
+        WorkingListItem.addTo (db, r);
                                 
         logger.info ("r=" + DB.to.json (r));
        
@@ -70,7 +78,7 @@ public class ExportAgreementPaymentMDB extends GisExportMDB<AgreementPaymentLog>
             uuidPublisher.publish (getQueue (action), ack.getRequesterMessageGUID ());
         }
         catch (Fault ex) {
-            logger.log (Level.SEVERE, "Can't place agreement payment", ex);
+            logger.log (Level.SEVERE, "Can't place working list", ex);
             fail (db, ex.getFaultInfo (), r, action.getFailStatus ());
             return;
         }
@@ -82,8 +90,15 @@ public class ExportAgreementPaymentMDB extends GisExportMDB<AgreementPaymentLog>
         
     }
     
-    Queue getQueue (AgreementPayment.Action action) {        
-        return outExportHouseAgreementPaymentsQueue;        
+    Queue getQueue (WorkingList.Action action) {
+        
+        switch (action) {
+            case REFRESHING:
+                return outImportHouseWorkingListsQueue;
+            default:
+                return outExportHouseWorkingListsQueue;
+        }
+        
     }
 
     @Override
@@ -93,7 +108,7 @@ public class ExportAgreementPaymentMDB extends GisExportMDB<AgreementPaymentLog>
 
     @Override
     protected Col getStatusCol () {
-        return AgreementPayment.c.ID_AP_STATUS.getCol ();
+        return WorkingList.c.ID_CTR_STATUS.getCol ();
     }
 
     @Override

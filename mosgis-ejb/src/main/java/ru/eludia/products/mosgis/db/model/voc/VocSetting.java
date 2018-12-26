@@ -1,9 +1,11 @@
 package ru.eludia.products.mosgis.db.model.voc;
 
+import java.util.logging.Logger;
 import javax.xml.ws.BindingProvider;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.Table;
+import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.jmx.Conf;
 
 public class VocSetting extends Table {
@@ -92,6 +94,10 @@ public class VocSetting extends Table {
         WS_GIS_HOUSE_MANAGEMENT_TMT_CONN ("ws.gis.house.management.timeout.connection", "Время ожидания подключения к сервису обмена сведениями о жилищном фонде ГИС ЖКХ (HouseManagementServiceAsync), мс", "10000"),
         WS_GIS_HOUSE_MANAGEMENT_TMT_RESP ("ws.gis.house.management.timeout.response", "Время ожидания подключения к сервису обмена сведениями о жилищном фонде ГИС ЖКХ (HouseManagementServiceAsync), мс", "10000"),
         
+        WS_GIS_SERVICES_URL      ("ws.gis.services.url", "Endpoint URL сервиса обмена сведениями об услугах ГИС ЖКХ (ServicesServiceAsync)", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-organization-service/services/OrganizationAsync"),
+        WS_GIS_SERVICES_TMT_CONN ("ws.gis.services.timeout.connection", "Время ожидания подключения к сервису обмена сведениями об услугах ГИС ЖКХ (ServicesServiceAsync), мс", "10000"),
+        WS_GIS_SERVICES_TMT_RESP ("ws.gis.services.timeout.response", "Время ожидания подключения к сервису обмена сведениями об услугах ГИС ЖКХ (ServicesServiceAsync), мс", "10000"),
+
         WS_RD_URL      ("ws.rd.url", "Endpoint URL сервиса ГИС РД (WS)", "http://37.230.149.85:8733/DMWS/"),
         WS_RD_TMT_CONN ("ws.rd.timeout.connection", "Время ожидания подключения к сервису ГИС РД (NsiCommonAsyncService), мс", "1000"),
         WS_RD_TMT_RESP ("ws.rd.timeout.response", "Время ожидания подключения к сервису ГИС РД (NsiCommonAsyncService), мс", "1000"),
@@ -100,10 +106,19 @@ public class VocSetting extends Table {
 
         TTL_CONTRACTS ("ttl.contracts", "Время жизни операции отправки ДУ в ГИС, мин.", "30"),
         TTL_CHARTERS  ("ttl.charters", "Время жизни операции отправки уставов в ГИС, мин.", "30");
-        
+
         String id;
         String label;
         String value;
+            
+        public boolean isGisEndpointUrl () {
+            final String name = name ();
+            return name.endsWith ("_URL") && name.startsWith ("WS_GIS_");
+        }
+        
+        public String toGisEndpointPath () {
+            return value.substring (WS_GIS_URL_ROOT_DEFAULT.length());
+        }
 
         public String getId () {
             return id;
@@ -122,6 +137,7 @@ public class VocSetting extends Table {
             this.value = value;
             this.label = label;
         }
+        
     }
     
 }

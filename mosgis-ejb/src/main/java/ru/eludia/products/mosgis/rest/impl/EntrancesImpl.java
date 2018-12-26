@@ -28,7 +28,7 @@ import ru.eludia.products.mosgis.web.base.Search;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class EntrancesImpl extends BasePassport<Entrance> implements EntrancesLocal {
-
+    
     @Override
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
 
@@ -62,7 +62,16 @@ public class EntrancesImpl extends BasePassport<Entrance> implements EntrancesLo
         JsonArrayBuilder ab = Json.createArrayBuilder ();
         
         Select select = ModelHolder.getModel ()
-            .select (Entrance.class, "uuid AS id", "entrancenum", "storeyscount", "creationyear", "terminationdate", "is_annuled", "id_status")
+            .select (Entrance.class, "uuid AS id", 
+                                     "entrancenum", 
+                                     "storeyscount", 
+                                     "creationyear", 
+                                     "terminationdate", 
+                                     "is_annuled",
+                                     "is_annuled_in_gis",
+                                     "id_status", 
+                                     "code_vc_nsi_330", 
+                                     "annulmentinfo")
             .where ("uuid_house", uuidHouse)
             .and   ("is_deleted",  0)
             .orderBy ("entrancenum");
@@ -135,6 +144,29 @@ public class EntrancesImpl extends BasePassport<Entrance> implements EntrancesLo
 
         db.update (table, record);
 
+    });}
+    
+    @Override
+    public JsonObject doRestore (String id) {return doAction ((db) -> {
+
+        final Table table = getTable ();
+
+        Map<String, Object> record = db.getMap(ModelHolder.getModel ()
+                                        .get(table, id, "uuid_house", 
+                                                        "entrancenum",
+                                                        "storeyscount",
+                                                        "creationyear",
+                                                        "fiaschildhouseguid",
+                                                        "informationconfirmed",
+                                                        "gis_modification_date")
+        );
+        
+        record.put ("terminationdate", null);
+        record.put ("annulmentinfo", null);
+        record.put ("code_vc_nsi_330", null);
+        
+        db.insert (table, record);
+        
     });}
 
 }

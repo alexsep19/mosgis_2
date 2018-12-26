@@ -30,7 +30,7 @@ import ru.eludia.products.mosgis.web.base.Search;
 public class LiftsImpl extends BasePassport<Lift> implements LiftsLocal {
 
     private static final Logger logger = Logger.getLogger (LiftsImpl.class.getName ());
-
+    
     @Override
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, jb) -> {
         
@@ -137,4 +137,28 @@ public class LiftsImpl extends BasePassport<Lift> implements LiftsLocal {
 
     }    
 
+    @Override
+    public JsonObject doRestore (String id) {return doAction ((db) -> {
+
+        final Table table = getTable ();
+
+        Map<String, Object> record = db.getMap(ModelHolder.getModel ()
+                                        .get(table, id, "*")
+        );
+        
+        record.put ("terminationdate", null);
+        record.put ("annulmentinfo", null);
+        record.put ("code_vc_nsi_330", null);
+        
+        record.remove ("uuid");
+        record.remove ("annulmentreason");
+        record.remove ("is_annuled");
+        record.remove ("liftguid");
+        record.remove ("is_annuled_in_gis");
+        record.remove ("id_status");
+        
+        db.insert (table, record);
+        
+    });}
+    
 }

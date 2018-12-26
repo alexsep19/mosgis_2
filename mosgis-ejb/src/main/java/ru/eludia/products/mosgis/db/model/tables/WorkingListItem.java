@@ -1,11 +1,16 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.sql.SQLException;
+import java.util.Map;
+import java.util.UUID;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
-import static ru.eludia.base.model.Type.NUMERIC;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.gosuslugi.dom.schema.integration.services.ImportWorkingListRequest;
 
 public class WorkingListItem extends EnTable {
 
@@ -15,12 +20,13 @@ public class WorkingListItem extends EnTable {
         UUID_ORG_WORK        (OrganizationWork.class, "Ссылка на работу/услугу организации"),
         
         ID_LOG               (WorkingListItemLog.class,  "Последнее событие редактирования"),
-        INDEX_               (NUMERIC,  4, 0, null,   "Номер строки в перечне работ и услуг"),
+        INDEX_               (Type.NUMERIC,  4, 0, null,   "Номер строки в перечне работ и услуг"),
         
-        PRICE                (NUMERIC, 14, 4, null,   "Цена"),
-        AMOUNT               (NUMERIC, 14, 3, null,   "Объём"),
-        COUNT                (NUMERIC,  4, 0, null,   "Количество"),
-        TOTALCOST            (NUMERIC, 22, 2, null,   "Общая стоимость"),
+        PRICE                (Type.NUMERIC, 14, 4, null,   "Цена"),
+        AMOUNT               (Type.NUMERIC, 14, 3, null,   "Объём"),
+        COUNT                (Type.NUMERIC,  4, 0, null,   "Количество"),
+        TOTALCOST            (Type.NUMERIC, 22, 2, null,   "Общая стоимость"),
+        WORKLISTITEMGUID     (Type.UUID,           null,   "Идентификатор работы/услуги перечня")
         ;
 
         @Override
@@ -31,7 +37,7 @@ public class WorkingListItem extends EnTable {
 
         @Override
         public boolean isLoggable () {
-            
+
             switch (this) {
                 case ID_LOG:
                 case UUID_WORKING_LIST:
@@ -69,6 +75,28 @@ public class WorkingListItem extends EnTable {
             + "END;"
         );
         
+    }
+    
+    public static void addTo (DB db, Map<String, Object> r) throws SQLException {
+        
+        NsiTable nsi56 = NsiTable.getNsiTable (56);
+        
+        r.put ("items", db.getList (db.getModel ()
+            .select (WorkingListItem.class, "*")
+            .toOne (OrganizationWork.class, "AS w").on ()
+            .toOne (nsi56, "AS vc_nsi_56", "code", "guid").on ("vc_nsi_56.code=w.code_vc_nsi_56 AND vc_nsi_56.isactual=1")
+            .where (WorkingListItem.c.UUID_WORKING_LIST.lc (), r.get ("uuid_object"))
+        ));
+        
+    }
+    
+    public static ImportWorkingListRequest.ApprovedWorkingListData.WorkListItem toDom (Map<String, Object> r) {
+        r.put ("index", r.get ("index_"));
+        final ImportWorkingListRequest.ApprovedWorkingListData.WorkListItem result = DB.to.javaBean (ImportWorkingListRequest.ApprovedWorkingListData.WorkListItem.class, r);
+        result.setTotalCost (null);
+        result.setTransportGUID (UUID.randomUUID ().toString ());
+        result.setWorkItemNSI (NsiTable.toDom (r, "vc_nsi_56"));        
+        return result;
     }
 
 }
