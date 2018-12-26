@@ -148,7 +148,19 @@ public class WorkingList extends EnTable {
                         + "|| TO_CHAR (i.dt_to, 'DD.MM.YYYY')"
                         + "|| '. Операция отменена.'); "
                     + " END LOOP; "
-                + "END IF; "                                        
+                + "END IF; "           
+                
+                + " UPDATE tb_work_plans SET is_deleted = 1 WHERE uuid_working_list = :NEW.uuid; "
+                
+                + " FOR y IN EXTRACT (year FROM :NEW.dt_from) .. EXTRACT (year FROM :NEW.dt_to) LOOP "
+                + "   MERGE INTO tb_work_plans o " 
+                + "    USING (SELECT y year FROM DUAL) n" 
+                + "    ON (o.year=n.year AND o.uuid_working_list=:NEW.uuid)" 
+                + "    WHEN MATCHED THEN UPDATE SET is_deleted=0" 
+                + "    WHEN NOT MATCHED THEN INSERT (uuid_working_list, year, is_deleted) VALUES (:NEW.uuid, y, 0); "
+                + " END LOOP; "                
+
+                + " COMMIT; "
 
             + "END IF; "                                        
                     

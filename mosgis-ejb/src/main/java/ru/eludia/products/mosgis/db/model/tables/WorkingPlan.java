@@ -37,7 +37,7 @@ public class WorkingPlan extends EnTable {
     }
 
     public WorkingPlan () {
-        super ("tb_work_plans", "Gkf работ и услуг на период");
+        super ("tb_work_plans", "План работ и услуг на период");
         cols   (c.class);
         key    ("uuid_working_list", c.UUID_WORKING_LIST);
     }
