@@ -25,6 +25,10 @@ define ([], function () {
         var layout = w2ui ['topmost_layout']
 
         var $panel = $(layout.el ('main'))
+        
+        var tabs = [{id: 'working_list_common_items', caption: 'Перечень услуг и работ'}]
+        $.each (data.plans, function () {tabs.push ({id: 'working_list_common_plan_' + this.year, caption: 'План ' + this.year})})
+        tabs.push ({id: 'working_list_common_log', caption: 'История изменений'})
 
         $panel.w2relayout ({
         
@@ -35,12 +39,9 @@ define ([], function () {
                 {type: 'top', size: 160},
                 {type: 'main', size: 400, 
                     tabs: {
-                        tabs:    [
-                            {id: 'working_list_common_items', caption: 'Перечень услуг и работ'},
-                            {id: 'working_list_common_log', caption: 'История изменений'},
-                        ],
+                        tabs: tabs,
                         onClick: $_DO.choose_tab_working_list_common
-                    }                
+                    }
                 },
                 
             ],

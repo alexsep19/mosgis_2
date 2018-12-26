@@ -62,16 +62,21 @@ define ([], function () {
     $_DO.choose_tab_working_list_common = function (e) {
     
         var name = e.tab.id
-                
+                        
         var layout = w2ui ['passport_layout']
-            
+
         if (layout) {                
             layout.content ('main', '');
             layout.lock ('main', 'Загрузка...', true);
         }
-            
+
         localStorage.setItem ('working_list_common.active_tab', name)
-            
+
+        if (/^working_list_common_plan_/.test (name)) {
+            $_SESSION.set ('year', name.substr (-4))
+            name = 'working_list_common_plan'
+        }
+
         use.block (name)        
     
     }

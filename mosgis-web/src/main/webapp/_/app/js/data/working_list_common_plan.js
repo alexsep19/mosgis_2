@@ -1,7 +1,7 @@
 define ([], function () {
 
-    $_DO.patch_working_list_common_items = function (e) {
-    
+    $_DO.patch_working_list_common_plan = function (e) {
+/*    
         var grid = this
     
         var col = grid.columns [e.column]
@@ -49,23 +49,8 @@ define ([], function () {
             })                
 
         }, edit_failed (grid, e))
+*/        
     
-    }
-
-    $_DO.delete_working_list_common_items = function (e) {
-    
-        if (!e.force) return
-        
-        var grid = w2ui [e.target]
-        
-        grid.lock ()
-        
-        query ({type: 'working_list_items', id: grid.getSelection () [0], action: 'delete'}, {}, function () {
-        
-            use.block ('working_list_common_items')
-            
-        })
-        
     }
 
     return function (done) {        

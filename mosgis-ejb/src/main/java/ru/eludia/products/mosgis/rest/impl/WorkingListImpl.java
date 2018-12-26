@@ -23,6 +23,7 @@ import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.OrganizationWork;
+import ru.eludia.products.mosgis.db.model.tables.WorkingPlan;
 import ru.eludia.products.mosgis.db.model.tables.WorkingList;
 import ru.eludia.products.mosgis.db.model.tables.WorkingListItem;
 import ru.eludia.products.mosgis.db.model.tables.WorkingListItemLog;
@@ -159,6 +160,12 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
         db.addJsonArrays (job,
 
             NsiTable.getNsiTable (56).getVocSelect (), 
+            
+            m
+                .select  (WorkingPlan.class, "AS plans", WorkingPlan.c.YEAR.lc ())
+                .where   (EnTable.c.IS_DELETED.lc (), 0)
+                .where   (WorkingPlan.c.UUID_WORKING_LIST.lc (), id)
+                .orderBy (WorkingPlan.c.YEAR.lc ()),
 
             m
                 .select     (OrganizationWork.class, "AS org_works", "uuid AS id", "label")
