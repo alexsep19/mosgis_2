@@ -59,13 +59,15 @@ define ([], function () {
 
         if (layout) layout.unlock ('main')
         
-        var data = $('body').data ('data')
+        var data = clone ($('body').data ('data'))
+        
+        data.uuid_plan = $_SESSION.delete ('uuid_plan')
 
         query ({type: 'working_list_items', id: undefined}, {data: {uuid_working_list: $_REQUEST.id}}, function (d) {
         
             data.records = dia2w2uiRecords (d.tb_work_list_items)
         
-            done (clone (data))
+            done (data)
         
         })
                 

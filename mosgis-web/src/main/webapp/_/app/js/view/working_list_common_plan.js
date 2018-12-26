@@ -1,7 +1,7 @@
 define ([], function () {
 
     return function (data, view) {
-    
+darn (data)    
         var is_own = data.item._can.edit
         
         var columns = [
@@ -16,11 +16,13 @@ define ([], function () {
             field: 'cnt_' + (i + 1), 
             caption: w2utils.settings.shortmonths [i].toLowerCase (), 
             size: 10,
+            editable: {type: 'int', min: 1},
         })
             
         $(w2ui ['passport_layout'].el ('main')).w2regrid ({ 
 
             name: 'working_list_common_plan_grid',
+            selectType: 'cell',
 
             show: {
                 toolbar: false,
@@ -32,8 +34,11 @@ define ([], function () {
             records: data.records,
                                     
             onChange: $_DO.patch_working_list_common_plan,
+            onContextMenu: darn,
 
         }).refresh ();
+        
+        $('#tabs_passport_layout_main_tabs_right').text ('Для ввода дат щёлкните правой кнопкой мыши на соответствующей ячейке');
 
     }
 

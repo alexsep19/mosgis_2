@@ -162,7 +162,7 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
             NsiTable.getNsiTable (56).getVocSelect (), 
             
             m
-                .select  (WorkingPlan.class, "AS plans", WorkingPlan.c.YEAR.lc ())
+                .select  (WorkingPlan.class, "AS plans", "*")
                 .where   (EnTable.c.IS_DELETED.lc (), 0)
                 .where   (WorkingPlan.c.UUID_WORKING_LIST.lc (), id)
                 .orderBy (WorkingPlan.c.YEAR.lc ()),
