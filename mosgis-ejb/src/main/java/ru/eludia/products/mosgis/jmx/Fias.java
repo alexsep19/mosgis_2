@@ -160,14 +160,13 @@ public class Fias implements FiasMBean, FiasLocal {
                 FileInputStream fis = new FileInputStream (file);
                 
                 Archive archive = new Archive ();
-
                 List<FileHeader> filesList = archive.readFileHeaders(fis);
                 
                 fis.close ();
                 
                 filesList.forEach (header -> {
                     for (Fias.Names c: Fias.Names.values())
-                        if (header != null && header.getFileNameW ().endsWith (".XML") && header.getFileNameW ().startsWith ("AS_" + c.toString() + "_"))
+                        if (header.getFileNameW ().endsWith (".XML") && header.getFileNameW ().startsWith ("AS_" + c.toString() + "_"))
                                  n2h.put (c, header);
                 });
             }
