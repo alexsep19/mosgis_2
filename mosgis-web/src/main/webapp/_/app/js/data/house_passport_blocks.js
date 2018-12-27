@@ -7,7 +7,9 @@ define ([], function () {
     
     $_DO.delete_house_passport_blocks = function (e) {
     
-        if (!e.force) return
+        var grid = w2ui['house_passport_blocks_grid']
+
+        if (!confirm ('Удалить запись?')) return
     
         $('.w2ui-message').remove ()
 
@@ -16,7 +18,7 @@ define ([], function () {
         query ({
         
             type:   'blocks', 
-            id:     w2ui [e.target].getSelection () [0].recid,
+            id:     grid.getSelection () [0].recid,
             action: 'delete',
             
         }, {}, reload_page)

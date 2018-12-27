@@ -57,10 +57,20 @@ public class LivingRoom extends Passport {
                 
             + "  IF :NEW.uuid_premise IS NOT NULL THEN "
             + "   SELECT uuid_house INTO :NEW.uuid_house FROM tb_premises_res WHERE uuid = :NEW.uuid_premise; "
+                    + "FOR i IN (SELECT roomnumber, is_annuled_in_gis FROM tb_living_rooms WHERE uuid_house = :NEW.uuid_house AND uuid_premise = :NEW.uuid_premise AND roomnumber = :NEW.roomnumber AND is_deleted = 0) LOOP "
+                        + "IF (i.is_annuled_in_gis <> 1) THEN "
+                            + "raise_application_error (-20000, 'Аннулирование записи комнаты с номером ' || i.roomnumber || ' не подтверждено в ГИС. Операция отменена.'); "
+                        + "END IF; "
+                    + "END LOOP; "
             + "  END IF;"
                 
             + "  IF :NEW.uuid_block IS NOT NULL THEN "
             + "   SELECT uuid_house INTO :NEW.uuid_house FROM tb_blocks WHERE uuid = :NEW.uuid_block; "
+                    + "FOR i IN (SELECT roomnumber, is_annuled_in_gis FROM tb_living_rooms WHERE uuid_house = :NEW.uuid_house AND uuid_block = :NEW.uuid_block AND roomnumber = :NEW.roomnumber AND is_deleted = 0) LOOP "
+                        + "IF (i.is_annuled_in_gis <> 1) THEN "
+                            + "raise_application_error (-20000, 'Аннулирование записи комнаты с номером ' || i.roomnumber || ' не подтверждено в ГИС. Операция отменена.'); "
+                        + "END IF; "
+                    + "END LOOP; "
             + "  END IF;"
                 
             + " END IF;"
@@ -69,6 +79,8 @@ public class LivingRoom extends Passport {
 
             + " IF UPDATING THEN "
 
+                + "IF :NEW.is_deleted = 1 AND :OLD.is_deleted = 0 AND :OLD.id_status = " + VocHouseStatus.i.PUBLISHED.getId () + " THEN raise_application_error (-20000, 'Запись размещена в ГИС. Операция прервана.'); END IF; "
+                
                 + "IF :OLD.code_vc_nsi_330 IS NOT NULL AND :NEW.code_vc_nsi_330 IS NULL THEN " // отмена аннулирования — проверка помещения
                 + " FOR i IN (SELECT uuid, premisesnum FROM tb_premises_res WHERE is_deleted=0 AND code_vc_nsi_330 IS NOT NULL AND uuid=:NEW.uuid_premise) LOOP"
                 + "   raise_application_error (-20000, 'В настоящий момент помещение №' || i.premisesnum || ', к которому относится комната №' || :NEW.roomnumber || ', аннулировано. Операция отменена.'); "

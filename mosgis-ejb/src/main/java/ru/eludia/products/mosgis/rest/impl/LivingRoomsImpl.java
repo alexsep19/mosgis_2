@@ -13,6 +13,7 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.HouseFile;
@@ -21,6 +22,7 @@ import ru.eludia.products.mosgis.db.model.tables.LivingRoom;
 import ru.eludia.products.mosgis.db.model.tables.Block;
 import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
+import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.impl.base.BasePassport;
@@ -51,6 +53,8 @@ public class LivingRoomsImpl extends BasePassport<LivingRoom> implements LivingR
             NsiTable.getNsiTable (273).getVocSelect () // Основания признания непригодности
                     
         );
+        
+        VocHouseStatus.addTo(job);
         
         for (MultipleRefTable refTable: table.getRefTables ()) {                
                 
@@ -154,6 +158,30 @@ public class LivingRoomsImpl extends BasePassport<LivingRoom> implements LivingR
         });
 
         job.add (table.getName (), a);
+        
+    });}    
+    
+    @Override
+    public JsonObject doRestore (String id) {return doAction ((db) -> {
+
+        final Table table = getTable ();
+
+        Map<String, Object> record = db.getMap(ModelHolder.getModel ()
+                                        .get(table, id, "*")
+        );
+        
+        record.put ("terminationdate", null);
+        record.put ("annulmentinfo", null);
+        record.put ("code_vc_nsi_330", null);
+        
+        record.remove ("uuid");
+        record.remove ("annulmentreason");
+        record.remove ("is_annuled");
+        record.remove ("livingroomguid");
+        record.remove ("is_annuled_in_gis");
+        record.remove ("id_status");
+        
+        db.insert (table, record);
         
     });}    
 

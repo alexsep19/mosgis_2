@@ -10,15 +10,9 @@ define ([], function () {
         
             type: 'blocks', 
             id: $_REQUEST.id, 
-            action: 'update'
+            action: 'restore'
             
-        }, {data: {
-        
-            terminationdate: null,
-            annulmentinfo: null,
-            code_vc_nsi_330: null,
-        
-        }}, reload_page)        
+        }, {}, reload_page)        
 
     }    
 
@@ -107,14 +101,6 @@ define ([], function () {
         data.active_tab = localStorage.getItem ('block_common.active_tab') || 'block_common_living_rooms'
 
         data.__read_only = 1
-        
-        data.item._can = {
-            edit: 1,
-            update: 1,
-            cancel: 1,
-            annul: 1 - data.item.is_annuled,
-            restore: data.item.is_annuled,
-        }
 
         data.item.cat = data.item.is_nrs ? 'Нежилое помещение' : 'Жилое помещение'
 
