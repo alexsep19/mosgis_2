@@ -33,19 +33,25 @@ public class WorkingPlanItem extends EnTable {
                     return true;
             }
         }
-/*        
-        trigger ("BEFORE UPDATE",
+
+    }
+
+    public WorkingPlanItem () {
+        
+        super  ("tb_work_plan_items", "Строки плана работ и услуг на период");        
+        cols   (c.class);        
+        unique ("uuid_working_plan", 
+            c.UUID_WORKING_PLAN, 
+            c.UUID_WORKING_LIST_ITEM,
+            c.MONTH
+        );
+        
+        trigger ("BEFORE UPDATE", ""
             + "BEGIN "
                 + "IF :NEW.WORKCOUNT = 0 THEN :NEW.IS_DELETED := 0; END IF; "
             + "END;"                
         );
-*/
-    }
-
-    public WorkingPlanItem () {
-        super ("tb_work_plans", "План работ и услуг на период");
-        cols   (c.class);
-        key    ("uuid_working_plan", c.UUID_WORKING_PLAN, c.UUID_WORKING_LIST_ITEM);
+        
     }
 
 }

@@ -3,8 +3,9 @@ define ([], function () {
     $_DO.patch_working_list_common_plan = function (e) {
 
         var data = {
-            month:     e.column - 4, 
-            workcount: parseInt (e.value_new)
+            uuid_working_list_item: e.recid,
+            month:                  e.column - 4, 
+            workcount:              parseInt (e.value_new)
         }
 
         if (data.workcount == parseInt (e.value_previous)) return
