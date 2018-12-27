@@ -1,7 +1,7 @@
 define ([], function () {
 
     return function (data, view) {
-darn (data)    
+
         var is_own = data.item._can.edit
         
         var columns = [

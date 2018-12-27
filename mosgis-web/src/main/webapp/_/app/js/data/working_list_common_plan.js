@@ -47,6 +47,14 @@ define ([], function () {
         query ({type: 'working_plans', id: get_id ()}, {data: {uuid_working_list: $_REQUEST.id}}, function (d) {
         
             data.records = dia2w2uiRecords (d.tb_work_list_items)
+            
+            var idx = {}; $.each (d.tb_work_list_items, function () {idx [this.uuid] = this})                       
+
+            $.each (d.cells, function () {
+
+                idx [this.uuid_working_list_item] ['cnt_' + this.month] = this.workcount
+                        
+            })
         
             done (data)
         

@@ -48,7 +48,7 @@ public class WorkingPlanItem extends EnTable {
         
         trigger ("BEFORE UPDATE", ""
             + "BEGIN "
-                + "IF :NEW.WORKCOUNT = 0 THEN :NEW.IS_DELETED := 0; END IF; "
+                + "IF :NEW.WORKCOUNT = 0 THEN :NEW.IS_DELETED := 1; ELSE :NEW.IS_DELETED := 0; END IF; "
             + "END;"                
         );
         

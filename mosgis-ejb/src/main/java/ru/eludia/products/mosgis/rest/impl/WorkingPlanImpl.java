@@ -86,6 +86,7 @@ public class WorkingPlanImpl extends BaseCRUD<WorkingPlan> implements WorkingPla
             m
                 .select     (WorkingPlanItem.class, "AS cells", "*")
                 .where      (c.UUID_WORKING_PLAN, id)
+                .and        (EnTable.c.IS_DELETED, 0)
 
         );        
         
@@ -100,7 +101,7 @@ public class WorkingPlanImpl extends BaseCRUD<WorkingPlan> implements WorkingPla
             c.UUID_WORKING_PLAN,      id,
             c.UUID_WORKING_LIST_ITEM, data.getString (c.UUID_WORKING_LIST_ITEM.lc ()),
             c.MONTH,                  data.getInt    (c.MONTH.lc ()),
-            c.WORKCOUNT,              data.getInt    (c.WORKCOUNT.lc ())
+            c.WORKCOUNT,              data.getInt    (c.WORKCOUNT.lc (), 0)
         ), 
             c.UUID_WORKING_PLAN.lc (), 
             c.UUID_WORKING_LIST_ITEM.lc (),
