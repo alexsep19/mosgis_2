@@ -9,10 +9,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import ru.eludia.products.mosgis.rest.ValidationException;
-import ru.eludia.products.mosgis.rest.api.WorkingListLocal;
+import ru.eludia.products.mosgis.rest.api.WorkingPlanLocal;
 
 @Path ("working_plans")
-public class WorkingPlans extends EJBResource <WorkingListLocal> {
+public class WorkingPlans extends EJBResource <WorkingPlanLocal> {
 /*    
     private JsonObject getData (String id) {
         return back.getItem (id);

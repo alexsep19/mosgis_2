@@ -60,12 +60,12 @@ public class WorkingPlanImpl extends BaseCRUD<WorkingPlan> implements WorkingPla
     public JsonObject doUpdate (String id, JsonObject p, User user) {return doAction ((db) -> {
         
         JsonObject data = p.getJsonObject ("data");
-        
+
         db.upsert (WorkingPlanItem.class, DB.HASH (
             c.UUID_WORKING_PLAN,      id,
             c.UUID_WORKING_LIST_ITEM, data.getString (c.UUID_WORKING_LIST_ITEM.lc ()),
-            c.MONTH,                  data.getString (c.MONTH.lc ()),
-            c.WORKCOUNT,              data.getString (c.WORKCOUNT.lc ())
+            c.MONTH,                  data.getInt    (c.MONTH.lc ()),
+            c.WORKCOUNT,              data.getInt    (c.WORKCOUNT.lc ())
         ), 
             c.UUID_WORKING_PLAN.lc (), 
             c.UUID_WORKING_LIST_ITEM.lc (),
