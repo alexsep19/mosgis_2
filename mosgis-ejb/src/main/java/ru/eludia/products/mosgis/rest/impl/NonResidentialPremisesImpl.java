@@ -19,6 +19,7 @@ import ru.eludia.products.mosgis.db.model.tables.Passport;
 import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.NonResidentialPremisesLocal;
@@ -47,6 +48,8 @@ public class NonResidentialPremisesImpl extends BasePassport<NonResidentialPremi
             NsiTable.getNsiTable (17).getVocSelect (),
             NsiTable.getNsiTable (330).getVocSelect ()
         );
+        
+        VocHouseStatus.addTo(job);
         
         for (MultipleRefTable refTable: table.getRefTables ()) {                
                 
