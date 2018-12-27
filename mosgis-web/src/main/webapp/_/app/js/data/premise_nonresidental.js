@@ -24,8 +24,9 @@ define ([], function () {
             add_vocabularies (data, {
                 "vc_nsi_17": 1,
                 "vc_nsi_330": 1,
+                "vc_house_status": 1,
             })
-            
+
             var it = data.item
 
             it.label = it.premisesnum
