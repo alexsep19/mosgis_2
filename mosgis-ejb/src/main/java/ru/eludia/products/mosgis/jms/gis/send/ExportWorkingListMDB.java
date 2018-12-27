@@ -35,6 +35,9 @@ public class ExportWorkingListMDB extends GisExportMDB<WorkingListLog> {
     
     @Resource (mappedName = "mosgis.outExportWorkingListsQueue")
     Queue outExportHouseWorkingListsQueue;
+    
+    @Resource (mappedName = "mosgis.outImportWorkingListsQueue")
+    Queue outImportHouseWorkingListsQueue;
                     
     @Override
     protected Get get (UUID uuid) {        
@@ -48,6 +51,7 @@ public class ExportWorkingListMDB extends GisExportMDB<WorkingListLog> {
             
         switch (action) {
             case PLACING:     return wsGisServicesClient.importWorkingList (orgPPAGuid, messageGUID, r);
+            case REFRESHING:  return wsGisServicesClient.exportWorkingList (orgPPAGuid, messageGUID, r);
             default: throw new IllegalArgumentException ("No action implemented for " + action);
         }
 
@@ -86,8 +90,15 @@ public class ExportWorkingListMDB extends GisExportMDB<WorkingListLog> {
         
     }
     
-    Queue getQueue (WorkingList.Action action) {        
-        return outExportHouseWorkingListsQueue;        
+    Queue getQueue (WorkingList.Action action) {
+        
+        switch (action) {
+            case REFRESHING:
+                return outImportHouseWorkingListsQueue;
+            default:
+                return outExportHouseWorkingListsQueue;
+        }
+        
     }
 
     @Override

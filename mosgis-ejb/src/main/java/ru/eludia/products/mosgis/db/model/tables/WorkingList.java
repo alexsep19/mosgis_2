@@ -9,6 +9,7 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
 
 public class WorkingList extends EnTable {
 
@@ -89,6 +90,9 @@ public class WorkingList extends EnTable {
 
                 + "IF :NEW.is_deleted=0 AND :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING.getId () + " THEN BEGIN "
                 
+                    + " SELECT COUNT(*) INTO cnt FROM tb_houses WHERE id_status=" + VocHouseStatus.i.PUBLISHED + " AND fiashouseguid=:NEW.fiashouseguid; "
+                    + " IF cnt=0 THEN raise_application_error (-20000, 'Первоначально необходимо разместить паспорт дома в ГИС ЖКХ'); END IF; "
+
                     + " SELECT COUNT(*) INTO cnt FROM tb_work_list_items WHERE is_deleted=0 AND UUID_WORKING_LIST=:NEW.uuid; "
                     + " IF cnt=0 THEN raise_application_error (-20000, 'Перечень не содержит ни одной работы/услуги. Операция отменена.'); END IF; "
 
@@ -158,7 +162,8 @@ public class WorkingList extends EnTable {
     
     public enum Action {
         
-        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
+        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.PENDING_RQ_REFRESH, VocGisStatus.i.FAILED_PLACING),
+        REFRESHING  (VocGisStatus.i.PENDING_RP_REFRESH,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
         ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT)
         ;
         
@@ -188,6 +193,7 @@ public class WorkingList extends EnTable {
             switch (status) {
                 case PENDING_RQ_PLACING:   return PLACING;
                 case PENDING_RQ_ANNULMENT: return ANNULMENT;
+                case PENDING_RQ_REFRESH:   return REFRESHING;
                 default: return null;
             }            
         }
@@ -196,6 +202,7 @@ public class WorkingList extends EnTable {
             switch (a) {
                 case APPROVE: return PLACING;
                 case ANNUL:   return ANNULMENT;
+                case REFRESH: return REFRESHING;
                 default: return null;
             }
         }

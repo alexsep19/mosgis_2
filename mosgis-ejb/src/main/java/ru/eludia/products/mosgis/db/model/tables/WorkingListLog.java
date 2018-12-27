@@ -8,6 +8,7 @@ import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.gosuslugi.dom.schema.integration.services.ExportWorkingListRequest;
 import ru.gosuslugi.dom.schema.integration.services.ImportWorkingListRequest;
 import ru.gosuslugi.dom.schema.integration.services.WorkingListBaseType;
 
@@ -79,6 +80,12 @@ public class WorkingListLog extends GisWsLogTable {
         final WorkingListBaseType.MonthYearTo result = new WorkingListBaseType.MonthYearTo ();
         result.setYear (Short.parseShort (s.substring (0, 4)));
         result.setMonth (Integer.parseInt (s.substring (5, 7)));
+        return result;
+    }
+    
+    public static ExportWorkingListRequest toExportWorkingListRequest (Map<String, Object> r) {
+        final ExportWorkingListRequest result = new ExportWorkingListRequest ();
+        result.getWorkListGUID ().add (r.get (WorkingList.c.WORKLISTGUID.lc ()).toString ());
         return result;
     }
                 

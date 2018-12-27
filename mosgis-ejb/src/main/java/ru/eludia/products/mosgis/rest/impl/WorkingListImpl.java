@@ -165,6 +165,7 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
                 .toMaybeOne (VocOkei.class, "AS okei", "national").on ()
                 .where      ("uuid_org", item.getString ("ca.uuid_org", item.getString ("ch.uuid_org", "00")))
                 .and        ("id_status", VocAsyncEntityState.i.OK.getId ())
+                .and        ("is_deleted", 0)
                 .orderBy    ("org_works.label")
 
         );

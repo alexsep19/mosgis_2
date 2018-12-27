@@ -205,7 +205,7 @@ public class PublicPropertyContractLog extends GisWsLogTable {
 
         r.put ("refs", db.getList (db.getModel ()
             .select (PublicPropertyContractVotingProtocol.class)
-            .toOne  (VotingProtocol.class, VotingProtocol.c.VOTINGPROTOCOLGUID.lc () + " AS guid").on ()
+            .toOne  (VotingProtocol.class, VotingProtocol.c.VOTINGPROTOCOLGUID.lc () + " AS guid").and (EnTable.c.IS_DELETED.IS_DELETED.lc (), 0).on ()
             .where  (PublicPropertyContractVotingProtocol.c.UUID_CTR.lc (), r.get ("uuid_object"))
             .and    ("is_deleted", 0)
         ));
