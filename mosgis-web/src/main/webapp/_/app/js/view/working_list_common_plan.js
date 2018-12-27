@@ -16,7 +16,7 @@ define ([], function () {
             field: 'cnt_' + (i + 1), 
             caption: w2utils.settings.shortmonths [i].toLowerCase (), 
             size: 10,
-            editable: {type: 'int', min: 1},
+            editable: !is_own ? false : {type: 'int', min: 1},
         })
             
         $(w2ui ['passport_layout'].el ('main')).w2regrid ({ 
@@ -36,14 +36,14 @@ define ([], function () {
                                     
             onChange: $_DO.patch_working_list_common_plan,
             
-            onContextMenu: function (e) {
+            onContextMenu: !is_own ? null : function (e) {
                 $_SESSION.set ('cell', {uuid: data.plan.uuid, uuid_working_list_item: e.recid, year: data.plan.year, month: e.column - 5})
                 use.block ('working_list_common_plan_dates_popup')
             },
 
         }).refresh ();
         
-        $('#tabs_passport_layout_main_tabs_right').text ('Для ввода дат щёлкните правой кнопкой мыши на соответствующей ячейке');
+        if (is_own) $('#tabs_passport_layout_main_tabs_right').text ('Для ввода дат щёлкните правой кнопкой мыши на соответствующей ячейке');
 
     }
 

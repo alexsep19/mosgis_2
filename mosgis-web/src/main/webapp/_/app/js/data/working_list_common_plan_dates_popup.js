@@ -20,8 +20,6 @@ define ([], function () {
 
         var v = {workcount: $list.length, days_bitmask: 0}
 
-        if (!v.workcount) return w2popup.close ()
-
         $list.each (function () {v.days_bitmask |= (1 << (this.textContent - 1))})
 
         var form = w2ui ['working_list_common_plan_dates_popup_form']
@@ -35,12 +33,11 @@ define ([], function () {
         grid.lock ()
         
         query ({type: 'working_plans', id: data.uuid, action: 'update'}, {data: v}, function () {
-            
-            
+                        
             var r = grid.get (data.uuid_working_list_item); 
             
-            r ['cnt_' + (data.month + 1)] = v.workcount
-            r ['days_bitmask_' + (data.month + 1)] = v.days_bitmask.toString (16);
+            r ['cnt_' + v.month] = v.workcount > 0 ? v.workcount : null
+            r ['days_bitmask_' + v.month] = v.days_bitmask.toString (16);
 
             r.cnt = 0
             for (var i = 1; i <= 12; i ++) {
@@ -48,9 +45,9 @@ define ([], function () {
                 if (c > 0) r.cnt += c
             }
 
+            grid.unlock ()
             grid.set (data.uuid_working_list_item, r)
             
-            grid.unlock ()
             w2popup.close ()
             
         })
