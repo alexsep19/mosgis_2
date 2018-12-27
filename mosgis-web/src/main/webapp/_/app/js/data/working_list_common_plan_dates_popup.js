@@ -31,18 +31,26 @@ define ([], function () {
         v.uuid_working_list_item = data.uuid_working_list_item
         v.month = data.month + 1
 
-        w2popup.lock ('')
-
+        var grid = w2ui ['working_list_common_plan_grid']
+        grid.lock ()
+        
         query ({type: 'working_plans', id: data.uuid, action: 'update'}, {data: v}, function () {
             
-            var grid = w2ui ['working_list_common_plan_grid']
             
-            var r = {}; 
+            var r = grid.get (data.uuid_working_list_item); 
+            
             r ['cnt_' + (data.month + 1)] = v.workcount
             r ['days_bitmask_' + (data.month + 1)] = v.days_bitmask.toString (16);
 
+            r.cnt = 0
+            for (var i = 1; i <= 12; i ++) {
+                var c = r ['cnt_' + i]
+                if (c > 0) r.cnt += c
+            }
+
             grid.set (data.uuid_working_list_item, r)
             
+            grid.unlock ()
             w2popup.close ()
             
         })

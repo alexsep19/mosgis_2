@@ -28,8 +28,22 @@ define ([], function () {
             {data: data},
 
             function () {
+
                 grid.unlock ()
                 grid.refresh ()
+
+                var r = grid.get (e.recid)
+                r ['cnt_' + data.month] = data.workcount
+                delete r ['days_bitmask_' + data.month]
+
+                r.cnt = 0
+                for (var i = 1; i <= 12; i ++) {
+                    var c = r ['cnt_' + i]
+                    if (c > 0) r.cnt += c
+                }
+
+                grid.set (e.recid, r)
+
             })
 
         }) 
@@ -50,12 +64,16 @@ define ([], function () {
 
             data.records = dia2w2uiRecords (d.tb_work_list_items)
 
-            var idx = {}; $.each (d.tb_work_list_items, function () {idx [this.uuid] = this})                       
+            var idx = {}; $.each (d.tb_work_list_items, function () {
+                this.cnt = 0
+                idx [this.uuid] = this
+            })
 
             $.each (d.cells, function () {
 
                 var r = idx [this.uuid_working_list_item] 
 
+                r.cnt += this.workcount
                 r ['cnt_' + this.month] = this.workcount
                 r ['days_bitmask_' + this.month] = this.days_bitmask
 
