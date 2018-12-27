@@ -41,27 +41,30 @@ define ([], function () {
         var layout = w2ui ['passport_layout']
 
         if (layout) layout.unlock ('main')
-        
+
         var data = clone ($('body').data ('data'))
-        
+
         query ({type: 'working_plans', id: get_id ()}, {data: {uuid_working_list: $_REQUEST.id}}, function (d) {
-        
+
             data.plan = d.item
-        
+
             data.records = dia2w2uiRecords (d.tb_work_list_items)
-            
+
             var idx = {}; $.each (d.tb_work_list_items, function () {idx [this.uuid] = this})                       
 
             $.each (d.cells, function () {
 
-                idx [this.uuid_working_list_item] ['cnt_' + this.month] = this.workcount
-                        
+                var r = idx [this.uuid_working_list_item] 
+
+                r ['cnt_' + this.month] = this.workcount
+                r ['days_bitmask_' + this.month] = this.days_bitmask
+
             })
-        
+
             done (data)
-        
+
         })
-                
+
     }
 
 })

@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -96,13 +97,18 @@ public class WorkingPlanImpl extends BaseCRUD<WorkingPlan> implements WorkingPla
     public JsonObject doUpdate (String id, JsonObject p, User user) {return doAction ((db) -> {
         
         JsonObject data = p.getJsonObject ("data");
-
-        db.upsert (WorkingPlanItem.class, DB.HASH (
+        
+        final Map<String, Object> r = DB.HASH (
             c.UUID_WORKING_PLAN,      id,
             c.UUID_WORKING_LIST_ITEM, data.getString (c.UUID_WORKING_LIST_ITEM.lc ()),
             c.MONTH,                  data.getInt    (c.MONTH.lc ()),
             c.WORKCOUNT,              data.getInt    (c.WORKCOUNT.lc (), 0)
-        ), 
+        );
+        
+        int m = data.getInt (c.DAYS_BITMASK.lc (), 0);
+        r.put (c.DAYS_BITMASK.lc (), m == 0 ? null : Integer.toHexString (m));
+
+        db.upsert (WorkingPlanItem.class, r, 
             c.UUID_WORKING_PLAN.lc (), 
             c.UUID_WORKING_LIST_ITEM.lc (),
             c.MONTH.lc ()

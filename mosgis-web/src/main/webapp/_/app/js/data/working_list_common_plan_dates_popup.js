@@ -37,7 +37,9 @@ define ([], function () {
             
             var grid = w2ui ['working_list_common_plan_grid']
             
-            var r = {}; r ['cnt_' + (data.month + 1)] = v.workcount
+            var r = {}; 
+            r ['cnt_' + (data.month + 1)] = v.workcount
+            r ['days_bitmask_' + (data.month + 1)] = v.days_bitmask.toString (16);
 
             grid.set (data.uuid_working_list_item, r)
             
@@ -62,6 +64,8 @@ define ([], function () {
         var dt = new Date (data.year, data.month, 1)
         
         dt.setDate (dt.getDate () - (dt.getDay () + 6) % 7)
+        
+        var days = []
 
         for (var i = 0; i < 5; i ++) {
         
@@ -70,18 +74,35 @@ define ([], function () {
             data.rows.push (row)
 
             for (var j = 0; j < 7; j ++) {
-
-                row.cells.push ({
+            
+                var cell = {
                     date:  dt.getDate  (), 
                     class: dt.getMonth () == data.month ? 'local' : 'alien'
-                })
+                }
+
+                row.cells.push (cell)
+                if (cell.class == 'local') days.push (cell)
 
                 dt.setDate (dt.getDate () + 1)
 
             }                            
 
-        }     
+        }
         
+        var m = r ['days_bitmask_' + (data.month + 1)]
+
+        if (m) {
+        
+            m = parseInt (m, 16)
+
+            $.each (days, function () {
+
+                if (m & (1 << (this.date - 1))) this.class += ' on'
+            
+            })
+
+        }
+
         done (data)
 
     }
