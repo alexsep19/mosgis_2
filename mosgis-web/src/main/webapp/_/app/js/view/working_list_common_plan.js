@@ -37,7 +37,7 @@ define ([], function () {
             onChange: $_DO.patch_working_list_common_plan,
             
             onContextMenu: function (e) {
-                $_SESSION.set ('cell', {uuid: e.recid, month: e.column - 4})
+                $_SESSION.set ('cell', {uuid: e.recid, year: data.plan.year, month: e.column - 5})
                 use.block ('working_list_common_plan_dates_popup')
             },
 

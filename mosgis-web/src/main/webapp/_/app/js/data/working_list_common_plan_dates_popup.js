@@ -1,5 +1,11 @@
 define ([], function () {
 
+    $_DO.toggle_working_list_common_plan_dates_popup = function (e) {
+    
+darn (e.target.textContent)
+    
+    }
+
     $_DO.update_working_list_common_plan_dates_popup = function (e) {
 /*
         var f = w2ui ['working_list_common_plan_dates_popup_form']
@@ -14,12 +20,15 @@ define ([], function () {
     }
 
     return function (done) {
-        
+
         var data = $_SESSION.delete ('cell')
-        
+
         var grid = w2ui ['working_list_common_plan_grid']
+
+        var r = grid.get (data.uuid)
         
-darn (data)    
+        data.label = r ['w.label']
+
         done (data)
 
     }

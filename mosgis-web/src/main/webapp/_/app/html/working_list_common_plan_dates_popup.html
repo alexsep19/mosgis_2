@@ -2,23 +2,38 @@
 
 	<style>
 
-        label[data-block-name=working_list_common_plan_dates_popup] {
-        	width: 150px;
-        	margin-right: 10px;
-        }
+		table.cal {
+			border-collapse: collapse;
+			color: #555;
+			text-align: center;
+		}
 
-        textarea[data-block-name=working_list_common_plan_dates_popup] {
-        	width: 350px;
-        	height: 90px;
-        }
+		table.cal th, table.cal td {
+			border: solid #bbb 1px;
+			width:35px;
+			height:30px;
+		}
+
+		table.cal td.alien {
+			color: #ddd;
+		}
 
 	</style>
 
-	<div class="w2ui-reset w2ui-form" style="height:185px ">
+	<div class="w2ui-reset w2ui-form" style="height:265px ">
 
         <div class="w2ui-page page-0">
 
-++++
+			<table class=cal>
+				<tr><th>Пн<th>Вт<th>Ср<th>Чт<th>Пт<th>Сб<th>Вс
+<!--
+				<tr><td>&nbsp;<td>&nbsp;<td>&nbsp;<td>&nbsp;<td>&nbsp;<td>&nbsp;<td>&nbsp;
+				<tr><td>&nbsp;<td>&nbsp;<td>&nbsp;<td>&nbsp;<td>&nbsp;<td>&nbsp;<td>&nbsp;
+				<tr><td>&nbsp;<td>&nbsp;<td>&nbsp;<td>&nbsp;<td>&nbsp;<td>&nbsp;<td>&nbsp;
+				<tr><td>&nbsp;<td>&nbsp;<td>&nbsp;<td>&nbsp;<td>&nbsp;<td>&nbsp;<td>&nbsp;
+				<tr><td>&nbsp;<td>&nbsp;<td>&nbsp;<td>&nbsp;<td>&nbsp;<td>&nbsp;<td>&nbsp;
+-->
+			</table>
 
         </div>
 
