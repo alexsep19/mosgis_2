@@ -21,6 +21,7 @@ import ru.eludia.products.mosgis.db.model.tables.Passport;
 import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.ResidentialPremisesLocal;
@@ -58,6 +59,8 @@ public class ResidentialPremisesImpl extends BasePassport<ResidentialPremise> im
                 .orderBy ("entrancenum")
         
         );
+        
+        VocHouseStatus.addTo(job);
         
         for (MultipleRefTable refTable: table.getRefTables ()) {                
                 

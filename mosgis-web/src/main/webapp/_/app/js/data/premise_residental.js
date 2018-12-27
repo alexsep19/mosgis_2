@@ -23,6 +23,7 @@ define ([], function () {
 
             add_vocabularies (data, {
                 "tb_entrances": 1,
+                "vc_house_status": 1,
                 "vc_nsi_30": 1,
                 "vc_nsi_273": 1,
                 "vc_nsi_330": 1,
