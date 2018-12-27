@@ -18,9 +18,9 @@ define ([], function () {
 
         var $list = $('table.cal td.on')
 
-        var v = {cnt: $list.length, days_bitmask: 0}
+        var v = {workcount: $list.length, days_bitmask: 0}
 
-        if (!v.cnt) return w2popup.close ()
+        if (!v.workcount) return w2popup.close ()
 
         $list.each (function () {v.days_bitmask |= (1 << (this.textContent - 1))})
 
@@ -28,14 +28,23 @@ define ([], function () {
 
         var data = form.record
 
-        var grid = w2ui ['working_list_common_plan_grid']
+        v.uuid_working_list_item = data.uuid_working_list_item
+        v.month = data.month + 1
 
-        var r = {}; r ['cnt_' + (data.month + 1)] = v.cnt
+        w2popup.lock ('')
 
-        grid.set (data.uuid, r)
+        query ({type: 'working_plans', id: data.uuid, action: 'update'}, {data: v}, function () {
+            
+            var grid = w2ui ['working_list_common_plan_grid']
+            
+            var r = {}; r ['cnt_' + (data.month + 1)] = v.workcount
 
-        w2popup.close ()
-
+            grid.set (data.uuid_working_list_item, r)
+            
+            w2popup.close ()
+            
+        })
+        
     }
 
     return function (done) {
@@ -44,7 +53,7 @@ define ([], function () {
 
         var grid = w2ui ['working_list_common_plan_grid']
 
-        var r = grid.get (data.uuid)
+        var r = grid.get (data.uuid_working_list_item)
         
         data.label = r ['w.label']
         
