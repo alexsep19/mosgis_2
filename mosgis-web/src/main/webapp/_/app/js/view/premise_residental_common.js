@@ -10,8 +10,6 @@ define ([], function () {
         $_F5 = function (data) {
         
             data.item.__read_only = data.__read_only
-            data.item.__allow_annul = data.__allow_annul
-            data.item.__allow_edit = data.__allow_edit
             
             var r = clone (data.item)
 

@@ -21,6 +21,7 @@ import ru.eludia.products.mosgis.db.model.tables.LivingRoom;
 import ru.eludia.products.mosgis.db.model.tables.Block;
 import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
+import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.impl.base.BasePassport;
@@ -51,6 +52,8 @@ public class LivingRoomsImpl extends BasePassport<LivingRoom> implements LivingR
             NsiTable.getNsiTable (273).getVocSelect () // Основания признания непригодности
                     
         );
+        
+        VocHouseStatus.addTo(job);
         
         for (MultipleRefTable refTable: table.getRefTables ()) {                
                 

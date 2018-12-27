@@ -2,6 +2,8 @@ define ([], function () {
     
     return function (data, view) {
 
+        data.item.status_label = data.vc_house_status[data.item.id_status]
+
         $('title').text (data.item.label + ', ' + data.item.address)
         
         fill (view, data, $('#body'))
