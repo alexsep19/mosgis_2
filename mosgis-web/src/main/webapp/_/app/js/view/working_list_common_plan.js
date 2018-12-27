@@ -32,9 +32,14 @@ define ([], function () {
             multiSelect: false,           
             columns: columns,            
             records: data.records,
+            reorderColumns: false,
                                     
             onChange: $_DO.patch_working_list_common_plan,
-            onContextMenu: darn,
+            
+            onContextMenu: function (e) {
+                $_SESSION.set ('cell', {uuid: e.recid, month: e.column - 4})
+                use.block ('working_list_common_plan_dates_popup')
+            },
 
         }).refresh ();
         
