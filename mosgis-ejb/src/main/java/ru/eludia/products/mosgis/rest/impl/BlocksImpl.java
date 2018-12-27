@@ -19,6 +19,7 @@ import ru.eludia.products.mosgis.db.model.tables.HouseFile;
 import ru.eludia.products.mosgis.db.model.tables.Passport;
 import ru.eludia.products.mosgis.db.model.tables.Block;
 import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
+import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.BlocksLocal;
@@ -49,6 +50,8 @@ public class BlocksImpl extends BasePassport<Block> implements BlocksLocal {
             NsiTable.getNsiTable (273).getVocSelect () // Основания признания непригодности
                     
         );
+        
+        VocHouseStatus.addTo(job);
         
         for (MultipleRefTable refTable: table.getRefTables ()) {                
                 
