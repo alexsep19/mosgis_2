@@ -1,56 +1,34 @@
 define ([], function () {
 
     $_DO.patch_working_list_common_plan = function (e) {
-/*    
-        var grid = this
-    
-        var col = grid.columns [e.column]
-                
+
         var data = {
-            k: col.field,
-            v: normalizeValue (e.value_new, col.editable.type)
+            month:     e.column - 4, 
+            workcount: parseInt (e.value_new)
         }
-        
-        if (data.v != null) data.v = String (data.v)
 
-        grid.lock ()
-        
-        var tia = {type: 'working_list_items', action: 'update', id: e.recid}
-        
-        var d = {}; d [data.k] = data.v
+        if (data.workcount == parseInt (e.value_previous)) return
+        var grid = w2ui [e.target]
 
-        query (tia, {data: d}, function () {
-        
-            query ({type: 'working_list_items', id: undefined}, {data: {uuid_working_list: $_REQUEST.id}}, function (d) {
-            
-                var totalcost
+        e.done (function () {
 
-                $.each (d.tb_work_list_items, function () {
-                
-                    if (this.uuid == e.recid) totalcost = this.totalcost
-                
-                })
-                
-                $.each (grid.records, function () {            
-                
-                    if (this.uuid == e.recid) {
-                        this [data.k] = data.v
-                        this.totalcost = totalcost
-                    }
-                    
-                    delete this.w2ui
-                    
-                })
+            grid.lock ()
 
-                grid.unlock ()                    
+            query ({
+                type:   'working_plans',
+                id:      $('div[name=passport_layout_main_tabs] div.active').parent ().attr ('id').substr (-36),
+                action: 'update',
+            }, 
 
+            {data: data},
+
+            function () {
+                grid.unlock ()
                 grid.refresh ()
+            })
 
-            })                
+        }) 
 
-        }, edit_failed (grid, e))
-*/        
-    
     }
 
     return function (done) {        
@@ -61,8 +39,6 @@ define ([], function () {
         
         var data = clone ($('body').data ('data'))
         
-        data.uuid_plan = $_SESSION.delete ('uuid_plan')
-
         query ({type: 'working_list_items', id: undefined}, {data: {uuid_working_list: $_REQUEST.id}}, function (d) {
         
             data.records = dia2w2uiRecords (d.tb_work_list_items)

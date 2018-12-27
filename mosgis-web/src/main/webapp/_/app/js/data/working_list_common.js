@@ -73,7 +73,6 @@ define ([], function () {
         localStorage.setItem ('working_list_common.active_tab', name)
 
         if (/^working_list_common_plan_/.test (name)) {
-            $_SESSION.set ('uuid_plan', name.substr (-36))
             name = 'working_list_common_plan'
         }
 
