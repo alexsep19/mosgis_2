@@ -214,6 +214,7 @@ public class WorkingList extends EnTable {
             switch (a) {
                 case APPROVE: return PLACING;
                 case ANNUL:   return ANNULMENT;
+                case REFRESH: return REFRESHING;
                 default: return null;
             }
         }

@@ -147,8 +147,40 @@ public class PublicPropertyContract extends EnTable {
             + "END;"
                 
         );
-        
 
+        trigger ("BEFORE INSERT OR UPDATE", ""
+
+            + "DECLARE" 
+            + " PRAGMA AUTONOMOUS_TRANSACTION; "
+            + "BEGIN "                    
+
+            + "IF :NEW.is_deleted = 0 AND :NEW.is_annuled = 0 THEN "
+
+                + " FOR i IN ("
+                    + "SELECT "
+                    + " b.label address "
+                    + "FROM "
+                    + " tb_pp_ctr o "
+                    + " INNER JOIN vc_buildings b ON o.FIASHOUSEGUID = b.houseguid "
+                    + "WHERE o.is_deleted = 0"
+                    + " AND o.is_annuled = 0"
+                    + " AND o.FIASHOUSEGUID = :NEW.FIASHOUSEGUID "
+                    + " AND o.CONTRACTNUMBER = :NEW.CONTRACTNUMBER "
+                    + " AND o.uuid <> NVL(:NEW.uuid, '00') "
+                    + ") LOOP"
+                + " raise_application_error (-20000, "
+                    + "'Договор с указанным номером (' "
+                    + "|| :NEW.CONTRACTNUMBER"
+                    + "||') по адресу '"
+                    + "|| i.address"
+                    + "|| ' уже существует. Операция отменена.'); "
+                + " END LOOP; "
+
+            + "END IF; "
+            + "END; "
+
+        );                
+                
     }
     public enum Action {
         
