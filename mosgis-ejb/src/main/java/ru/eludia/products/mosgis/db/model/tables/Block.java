@@ -56,6 +56,16 @@ public class Block extends Passport {
                 
             + "IF :NEW.totalarea < :NEW.grossarea THEN raise_application_error (-20000, '#grossarea#: Жилая площадь не может превышать общую.'); END IF; "
                 
+            + "IF INSERTING THEN "
+                
+                + "FOR i IN (SELECT blocknum, is_annuled_in_gis FROM tb_blocks WHERE uuid_house = :NEW.uuid_house AND blocknum = :NEW.blocknum AND is_deleted = 0) LOOP "
+                    + "IF (i.is_annuled_in_gis <> 1) THEN "
+                        + "raise_application_error (-20000, 'Аннулирование записи блока с номером ' || i.blocknum || ' не пожтверждено в ГИС. Операция отменена.'); "
+                    + "END IF; "
+                + "END LOOP; "
+                
+            + "END IF; "
+                
             + "IF UPDATING THEN "
                 + "IF :NEW.is_deleted = 1 AND :OLD.is_deleted = 0 AND :OLD.id_status = " + VocHouseStatus.i.PUBLISHED.getId () + " THEN raise_application_error (-20000, 'Запись размещена в ГИС. Операция прервана.'); END IF; "
                 + "IF :NEW.blocknum IS NULL         AND :OLD.blocknum IS NOT NULL THEN raise_application_error (-20000, '#blocknum#: Необходимо указать номер помещения.'); END IF; "

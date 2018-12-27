@@ -62,6 +62,12 @@ public class LivingRoom extends Passport {
             + "  IF :NEW.uuid_block IS NOT NULL THEN "
             + "   SELECT uuid_house INTO :NEW.uuid_house FROM tb_blocks WHERE uuid = :NEW.uuid_block; "
             + "  END IF;"
+
+            + "FOR i IN (SELECT roomnumber, is_annuled_in_gis FROM tb_living_rooms WHERE uuid_house = :NEW.uuid_house AND uuid_premise = :NEW.uuid_premise AND uuid_block = :NEW.uuid_block AND roomnumber = :NEW.roomnumber AND is_deleted = 0) LOOP "
+                + "IF (i.is_annuled_in_gis <> 1) THEN "
+                    + "raise_application_error (-20000, 'Аннулирование записи комнаты с номером ' || i.roomnumber || ' не пожтверждено в ГИС. Операция отменена.'); "
+                + "END IF; "
+            + "END LOOP; "
                 
             + " END IF;"
 
