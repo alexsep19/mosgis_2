@@ -116,7 +116,7 @@ define ([], function () {
                 {field: "f_20124", caption: "Год проведения последнего капитального ремонта", size: 20, editable: {type: 'int', min: house.usedyear, max: (new Date ()).getFullYear (), autoFormat: false}},
                 {field: 'terminationdate', caption: 'Дата аннулирования', render: _dt, size: 20, render: _dt},
                 {field: 'code_vc_nsi_330', caption: 'Причина аннулирования', size: 20, voc: d.vc_nsi_330, hidden: 1},
-                {field: "annulmentinfo", caption: "Причина аннулирования. Дополнительная информация", size: 20, hidden: 1},
+                {field: "annulmentinfo", caption: "Дополнительно", size: 20, hidden: 1},
                 {field: 'id_status',  caption: 'ГИС ЖКХ',     size: 10, voc: d.vc_house_status},
             ],
 

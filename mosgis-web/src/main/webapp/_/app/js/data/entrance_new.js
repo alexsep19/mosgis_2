@@ -1,8 +1,6 @@
 define ([], function () {
 
     $_DO.update_entrance_new = function (e) {
-            
-        var ex = {}; $.each (w2ui ['house_passport_entrances_grid'].records, function () {ex [this.entrancenum] = 1})
 
         w2ui ['entrance_new_popup_form'].values ()
         
@@ -20,9 +18,7 @@ define ([], function () {
         
         for (no in cnt) {
 
-            if (ex [no]) die ('no', 'Подъезд №' + no + ' уже зарегистрирован для данного дома')
             if (cnt [no] > 1) die ('no', 'Вы указали №' + no + ' более одного раза')
-            
             nos.push (no)
 
         }
