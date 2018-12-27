@@ -4,7 +4,7 @@ define ([], function () {
     
         var name = 'working_list_common_plan_dates_popup_form'
         
-        $(view).w2popup ('open', {
+        $(fill (view, data)).w2popup ('open', {
 
             width  : 280,
             height : 310,
@@ -21,36 +21,8 @@ define ([], function () {
                         name: name,
                         fields : [],
                         
-                        onRefresh: function () {
-                        
-                            var $cal = $('table.cal')                      
-                            
-                            var dt = new Date (data.year, data.month, 1)
-                            dt.setDate (dt.getDate () - (dt.getDay () + 6) % 7)
-
-                            for (var i = 0; i < 5; i ++) {
-
-                                var $tr = $('<tr>').appendTo ($cal)
-
-                                for (var j = 0; j < 7; j ++) {
-
-                                    var $td = $('<td>').appendTo ($tr)
-
-                                    $td.text (dt.getDate ())
-
-                                    if (dt.getMonth () == data.month) {                                    
-                                        clickOn ($td, $_DO.toggle_working_list_common_plan_dates_popup)                                    
-                                    }
-                                    else {
-                                        $td.addClass ('alien')
-                                    }
-                                    
-                                    dt.setDate (dt.getDate () + 1)
-
-                                }                            
-
-                            }                            
-                        
+                        onRefresh: function () {                       
+                            clickOn ($('table.cal td.local'), $_DO.toggle_working_list_common_plan_dates_popup)
                         }
                         
                     });
