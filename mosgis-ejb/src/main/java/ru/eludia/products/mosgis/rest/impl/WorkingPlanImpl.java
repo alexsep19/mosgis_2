@@ -6,9 +6,16 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.json.JsonObject;
 import ru.eludia.base.DB;
+import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.OrganizationWork;
+import ru.eludia.products.mosgis.db.model.tables.WorkingListItem;
 import ru.eludia.products.mosgis.db.model.tables.WorkingPlan;
 import ru.eludia.products.mosgis.db.model.tables.WorkingPlanItem;
 import ru.eludia.products.mosgis.db.model.tables.WorkingPlanItem.c;
+import ru.eludia.products.mosgis.db.model.voc.VocOkei;
+import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.WorkingPlanLocal;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
@@ -47,14 +54,42 @@ public class WorkingPlanImpl extends BaseCRUD<WorkingPlan> implements WorkingPla
 */
 
     @Override
-    public JsonObject select (JsonObject p, User user) {
-        throw new UnsupportedOperationException ("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    public JsonObject select (JsonObject p, User user) {return EMPTY_JSON_OBJECT;}
 
     @Override
-    public JsonObject getItem (String id) {
-        throw new UnsupportedOperationException ("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    public JsonObject getItem (String id) {return fetchData ((db, job) -> {
+        
+        final MosGisModel m = ModelHolder.getModel ();
+        
+        final JsonObject item = db.getJsonObject (m
+            .get (getTable (), id, "AS root", "*")
+        );
+
+        job.add ("item", item);
+        
+        final String f = WorkingListItem.c.UUID_WORKING_LIST.lc ();
+        
+        final NsiTable nsiTable = NsiTable.getNsiTable (56);
+
+        db.addJsonArrays (job,
+                
+            m
+                .select (WorkingListItem.class, "*", EnTable.c.UUID.lc () + " AS id")
+                .where (f, item.getString (f))
+                .where (EnTable.c.IS_DELETED, 0)
+                .toOne (OrganizationWork.class, "AS w", "label").on ()
+                .toMaybeOne (VocOkei.class, "AS ok", "national").on ()
+                .toMaybeOne (nsiTable, nsiTable.getLabelField ().getfName () + " AS vc_nsi_56").on ("(w.code_vc_nsi_56=vc_nsi_56.code AND vc_nsi_56.isactual=1)")
+                .orderBy (WorkingListItem.c.INDEX_)
+                .orderBy ("w.label"),
+            
+            m
+                .select     (WorkingPlanItem.class, "AS cells", "*")
+                .where      (c.UUID_WORKING_PLAN, id)
+
+        );        
+        
+    });}
 
     @Override
     public JsonObject doUpdate (String id, JsonObject p, User user) {return doAction ((db) -> {

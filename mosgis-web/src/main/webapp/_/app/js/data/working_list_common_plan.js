@@ -1,5 +1,9 @@
 define ([], function () {
 
+    function get_id () {
+        return $('div[name=passport_layout_main_tabs] div.active').parent ().attr ('id').substr (-36)
+    }
+
     $_DO.patch_working_list_common_plan = function (e) {
 
         var data = {
@@ -17,7 +21,7 @@ define ([], function () {
 
             query ({
                 type:   'working_plans',
-                id:      $('div[name=passport_layout_main_tabs] div.active').parent ().attr ('id').substr (-36),
+                id:      get_id (),
                 action: 'update',
             }, 
 
@@ -40,7 +44,7 @@ define ([], function () {
         
         var data = clone ($('body').data ('data'))
         
-        query ({type: 'working_list_items', id: undefined}, {data: {uuid_working_list: $_REQUEST.id}}, function (d) {
+        query ({type: 'working_plans', id: get_id ()}, {data: {uuid_working_list: $_REQUEST.id}}, function (d) {
         
             data.records = dia2w2uiRecords (d.tb_work_list_items)
         

@@ -48,10 +48,11 @@ public class WorkingPlans extends EJBResource <WorkingPlanLocal> {
 */
 
     @POST
-    @Consumes (APPLICATION_JSON)
+    @Path("{id}") 
     @Produces (APPLICATION_JSON)
-    public JsonObject select (JsonObject p) { 
-        return back.select (p, getUser ()); 
+    public JsonObject getItem (@PathParam ("id") String id) { 
+        final JsonObject item = back.getItem (id);
+        return item;
     }
 
     @POST
