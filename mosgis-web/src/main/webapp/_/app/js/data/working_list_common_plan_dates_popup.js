@@ -2,21 +2,40 @@ define ([], function () {
 
     $_DO.toggle_working_list_common_plan_dates_popup = function (e) {
     
-darn (e.target.textContent)
-    
+        var $td = $(e.target)
+        
+        $td.toggleClass ('on')
+
     }
 
+    $_DO.clear_working_list_common_plan_dates_popup = function (e) {
+        $('table.cal td.local').removeClass ('on')
+    }
+    
     $_DO.update_working_list_common_plan_dates_popup = function (e) {
-/*
-        var f = w2ui ['working_list_common_plan_dates_popup_form']
 
-        var v = f.values ()
-        
-        if (!v.reasonofannulment) die ('reasonofannulment', 'Укажите, пожалуйста, причину аннулирования')
-        if (v.reasonofannulment.length > 1000) die ('reasonofannulment', 'Максимальная допустимая длина — 1000 символов')
+        var days_bitmask = 0
 
-        query ({type: 'charters', action: 'annul'}, {data: v}, reload_page)
-*/            
+        var $list = $('table.cal td.on')
+
+        var v = {cnt: $list.length, days_bitmask: 0}
+
+        if (!v.cnt) return w2popup.close ()
+
+        $list.each (function () {v.days_bitmask |= (1 << (this.textContent - 1))})
+
+        var form = w2ui ['working_list_common_plan_dates_popup_form']
+
+        var data = form.record
+
+        var grid = w2ui ['working_list_common_plan_grid']
+
+        var r = {}; r ['cnt_' + (data.month + 1)] = v.cnt
+
+        grid.set (data.uuid, r)
+
+        w2popup.close ()
+
     }
 
     return function (done) {
@@ -32,6 +51,7 @@ darn (e.target.textContent)
         data.rows = []
         
         var dt = new Date (data.year, data.month, 1)
+        
         dt.setDate (dt.getDate () - (dt.getDay () + 6) % 7)
 
         for (var i = 0; i < 5; i ++) {
@@ -43,7 +63,7 @@ darn (e.target.textContent)
             for (var j = 0; j < 7; j ++) {
 
                 row.cells.push ({
-                    date: dt.getDate (), 
+                    date:  dt.getDate  (), 
                     class: dt.getMonth () == data.month ? 'local' : 'alien'
                 })
 

@@ -17,17 +17,14 @@ define ([], function () {
 
                     if (w2ui [name]) w2ui [name].destroy ()
 
-                    $('#w2ui-popup .w2ui-form').w2form ({
+                    $('#w2ui-popup .w2ui-form').w2reform ({
                         name: name,
-                        fields : [],
-                        
+                        record: data,
+                        fields : [],                        
                         onRefresh: function () {                       
                             clickOn ($('table.cal td.local'), $_DO.toggle_working_list_common_plan_dates_popup)
-                        }
-                        
+                        }                        
                     });
-
-                    clickOn ($('#w2ui-popup button'), $_DO.update_working_list_common_plan_dates_popup)
 
                 }
 
