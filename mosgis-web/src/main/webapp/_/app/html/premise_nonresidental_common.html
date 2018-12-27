@@ -50,18 +50,22 @@
 
 					</td>
 
-					<td data-on=is_annuled valign=top>
+					<td valign=top>
 
 						<table border=0 cellpadding=0 cellspacing=0 width=50% class=annul>
 							<tr>
+								<td>ГИС ЖКС:</td>
+								<td data-text=status_label></td>
+							</tr>
+							<tr data-on=is_annuled>
 								<td> </td>
 								<th>Запись аннулирована</th>
 							</tr>
-							<tr>
+							<tr data-on=is_annuled>
 								<td>Дата</td>
 								<td data-text=terminationdate data-date></td>
 							</tr>
-							<tr>
+							<tr data-on=is_annuled>
 								<td>Причина</td>
 								<td data-text=annulmentreason_label></td>
 							</tr>
@@ -71,7 +75,6 @@
 							</tr>
 
 						</table>
-
 					</td>
 
         		</tr>
@@ -82,10 +85,10 @@
 
         <div class="w2ui-buttons">
         	<span>
-				<button class=w2ui-btn name=edit   data-on=__allow_edit>Редактировать</button>
+				<button class=w2ui-btn name=edit   data-on=__read_only>Редактировать</button>
 				<button class=w2ui-btn name=update data-off=__read_only>Сохранить</button>
 				<button class=w2ui-btn name=cancel data-off=__read_only>Отменить</button>
-				<button class=w2ui-btn name=annul  data-on=__allow_annul>Аннулировать</button>
+				<button class=w2ui-btn name=annul  data-on=__read_only>Аннулировать</button>
 				<button class=w2ui-btn name=restore data-on=__read_only>Отменить аннулирование</button>
             </span>
         </div>
