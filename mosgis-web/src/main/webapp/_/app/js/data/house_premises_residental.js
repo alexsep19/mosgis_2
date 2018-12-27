@@ -11,8 +11,10 @@ define ([], function () {
     }
     
     $_DO.delete_house_premises_residental = function (e) {
-    
-        if (!e.force) return
+
+        var grid = w2ui['house_premises_residental_grid']
+
+        if (!confirm ('Удалить запись?')) return
     
         $('.w2ui-message').remove ()
 
@@ -21,7 +23,7 @@ define ([], function () {
         query ({
         
             type:   'premises_residental', 
-            id:     w2ui [e.target].getSelection () [0].recid,
+            id:     grid.getSelection () [0].recid,
             action: 'delete',
             
         }, {}, reload_page)

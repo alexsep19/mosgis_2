@@ -79,5 +79,13 @@ public class Blocks extends EJBResource <BlocksLocal> {
     public JsonObject doSetMultiple (@PathParam ("id") String id, JsonObject p) {
         return back.doSetMultiple (id, p);
     }
+    
+    @POST
+    @Path ("{id}/restore")
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject doRestore (@PathParam ("id") String id, JsonObject p) {
+        return back.doRestore (id);
+    }
 
 }

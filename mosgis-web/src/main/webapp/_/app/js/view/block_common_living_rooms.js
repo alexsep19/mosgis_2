@@ -1,5 +1,21 @@
 define ([], function () {
 
+    function recalcToolbar (e) {e.done (function () {
+
+        var g = w2ui ['block_common_living_rooms_grid']
+
+        var t = g.toolbar
+
+        t.disable ('deleteButton')
+
+        if (g.getSelection ().length != 1) return
+
+        var status = g.get (g.getSelection () [0].recid).id_status
+
+        if (status != 20) t.enable ('deleteButton')
+
+    })}
+
     return function (data, view) {
 
         var d = clone ($('body').data ('data'))
@@ -16,11 +32,16 @@ define ([], function () {
 
             multiSelect: false,
 
+            toolbar: {
+                items: [
+                    {type: 'button', id: 'deleteButton', caption: 'Удалить', onClick: $_DO.delete_block_common_living_rooms, icon: 'w2ui-icon-cross', disabled: true},
+                ]
+            },
+
             show: {
                 toolbar: true,
                 footer: true,
                 toolbarAdd: true,
-                toolbarDelete: true,
                 toolbarInput: false,
                 toolbarSearch: true,
                 toolbarReload: false,
@@ -84,8 +105,10 @@ define ([], function () {
             },
             
             onAdd:    $_DO.create_block_common_living_rooms,
-            onDelete: $_DO.delete_block_common_living_rooms,
             onChange: $_DO.patch_block_common_living_rooms,
+
+            onSelect: recalcToolbar,
+            onUnselect: recalcToolbar,
 
             onEditField: function (e) {
 

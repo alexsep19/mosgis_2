@@ -10,15 +10,9 @@ define ([], function () {
         
             type: 'premises_residental', 
             id: $_REQUEST.id, 
-            action: 'update'
+            action: 'restore'
             
-        }, {data: {
-        
-            terminationdate: null,
-            annulmentinfo: null,
-            code_vc_nsi_330: null,
-        
-        }}, reload_page)        
+        }, {}, reload_page)        
 
     }    
 

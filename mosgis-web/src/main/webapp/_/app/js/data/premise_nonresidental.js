@@ -24,8 +24,9 @@ define ([], function () {
             add_vocabularies (data, {
                 "vc_nsi_17": 1,
                 "vc_nsi_330": 1,
+                "vc_house_status": 1,
             })
-            
+
             var it = data.item
 
             it.label = it.premisesnum
@@ -37,10 +38,10 @@ define ([], function () {
             it._can = {}
 
             if (($_USER.role.admin || (data.cach && data.cach.is_own)) && !it.is_deleted) {
-                it._can.edit   = 1
+                it._can.edit   = 1 - it.is_annuled
                 it._can.delete = it._can.update = it._can.cancel = it._can.edit                
-                it._can.annul = 1 - it.is_annuled
-                it._can.restore = it.is_annuled
+                it._can.annul = 1 ? !data.item.is_annuled && data.item.id_status == 20 : 0
+                it._can.restore = it.is_annuled_in_gis
             }
 
             $('body').data ('data', data)
