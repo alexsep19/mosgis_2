@@ -26,7 +26,7 @@ define ([], function () {
             columnGroups : [
                 {span: 3, caption: 'Событие'},
                 {span: 5, caption: 'Значения полей'},
-                {span: 4, caption: 'Запрос в ГИС ЖКХ'},
+                {span: 3, caption: 'Запрос в ГИС ЖКХ'},
             ], 
             
             columns: [                
@@ -39,14 +39,9 @@ define ([], function () {
                 {field: 'id_reason', caption: 'Основание', size: 18, voc: data.vc_charter_object_reasons},
                 {field: 'ismanagedbycontract', caption: 'Обслуживание', size: 18, voc: {0: "без договора", 1: "по договору"}},
                 {field: 'annulmentinfo', caption: 'Аннулирование', size: 18},
+
                 {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: 'data-ref=1'},
                 {field: 'soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: 'data-ref=1'},
-                {field: 'soap.id_status', caption: 'Статус',    size: 30, render: function (r, i, c, v) {return (
-                    r.action != 'approve' ? '' : 
-                    r ['soap.ts_rp']      ? 'Обработано' : 
-                    r ['soap.ts']         ? 'Ожидает ответа' : 
-                                            'Ожидает отправки'
-                )}},
                 {field: 'soap.err_text', caption: 'Ошибка',    size: 30},
 
             ],

@@ -17,7 +17,7 @@ define ([], function () {
             columnGroups : [
                 {span: 3, caption: 'Событие'},
                 {span: 7, caption: 'Значения полей'},
-                {span: 4, caption: 'Запрос в ГИС ЖКХ'},
+                {span: 3, caption: 'Запрос в ГИС ЖКХ'},
             ], 
             
             columns: [                
@@ -35,12 +35,6 @@ define ([], function () {
 
                 {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: 'data-ref=1'},
                 {field: 'soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: 'data-ref=1'},
-                {field: 'soap.id_status', caption: 'Статус',    size: 30, render: function (r, i, c, v) {return (
-                    r.action != 'approve' ? '' : 
-                    r ['soap.ts_rp']      ? 'Обработано' : 
-                    r ['soap.ts']         ? 'Ожидает ответа' : 
-                                            'Ожидает отправки'
-                )}},
                 {field: 'soap.err_text', caption: 'Ошибка',    size: 30},
 
             ],

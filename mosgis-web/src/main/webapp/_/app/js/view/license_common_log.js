@@ -17,7 +17,7 @@ define ([], function () {
             columnGroups : [
                 {span: 4, caption: 'Событие'},
                 //{span: 10, caption: 'Значения полей'},
-                {span: 4, caption: 'Запрос в ГИС ЖКХ'},
+                {span: 3, caption: 'Запрос в ГИС ЖКХ'},
             ], 
             
             columns: [                
@@ -27,12 +27,6 @@ define ([], function () {
                 {field: 'action', caption: 'Действие',    size: 30, voc: data.vc_actions}, 
                 {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: 'data-ref=1'},
                 {field: 'soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: 'data-ref=1'},
-                {field: 'soap.id_status', caption: 'Статус',    size: 30, render: function (r, i, c, v) {
-                        return (
-                    r ['soap.id_status'] == 3 ? 'Обработано' :
-                    r ['soap.ts']     ? 'Ожидает ответа' : 
-                                        'Ожидает отправки'
-                )}},
                 {field: 'soap.err_text', caption: 'Ошибка',    size: 30},
 
             ],
