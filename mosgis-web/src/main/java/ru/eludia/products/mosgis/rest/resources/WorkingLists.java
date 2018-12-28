@@ -117,6 +117,13 @@ public class WorkingLists extends EJBResource <WorkingListLocal> {
     }
     
     @POST
+    @Path("{id}/cancel") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject doCancel (@PathParam ("id") String id) { 
+        return back.doCancel (id, getUser ());
+    }
+
+    @POST
     @Path("{id}/alter") 
     @Produces (APPLICATION_JSON)
     public JsonObject doAlter (@PathParam ("id") String id, JsonObject p) { 

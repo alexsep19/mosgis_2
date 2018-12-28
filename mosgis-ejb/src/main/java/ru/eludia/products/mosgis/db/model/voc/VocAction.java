@@ -48,6 +48,7 @@ public class VocAction extends Table {
         DELETE    ("delete",    "удаление"),
         UNDELETE  ("undelete",  "восстановление"),
         APPROVE   ("approve",   "утверждение"),
+        CANCEL    ("cancel",    "отмена"),
         TERMINATE ("terminate", "расторжение"),
         ALTER     ("alter",     "изменение"),
         ANNUL     ("annul",     "аннулирование"),

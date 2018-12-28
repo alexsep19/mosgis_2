@@ -181,8 +181,9 @@ public class WorkingList extends EnTable {
     public enum Action {
         
         PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.PENDING_RQ_REFRESH, VocGisStatus.i.FAILED_PLACING),
-        REFRESHING  (VocGisStatus.i.PENDING_RP_REFRESH,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
-        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT)
+        REFRESHING  (VocGisStatus.i.PENDING_RP_REFRESH,   VocGisStatus.i.APPROVED,  VocGisStatus.i.FAILED_PLACING),
+        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.ANNUL,     VocGisStatus.i.FAILED_ANNULMENT),
+        CANCEL      (VocGisStatus.i.PENDING_RQ_CANCEL,    VocGisStatus.i.CANCELLED, VocGisStatus.i.FAILED_CANCEL),
         ;
         
         VocGisStatus.i nextStatus;
@@ -212,6 +213,7 @@ public class WorkingList extends EnTable {
                 case PENDING_RQ_PLACING:   return PLACING;
                 case PENDING_RQ_ANNULMENT: return ANNULMENT;
                 case PENDING_RQ_REFRESH:   return REFRESHING;
+                case PENDING_RQ_CANCEL:    return CANCEL;
                 default: return null;
             }            
         }
@@ -221,6 +223,7 @@ public class WorkingList extends EnTable {
                 case APPROVE: return PLACING;
                 case ANNUL:   return ANNULMENT;
                 case REFRESH: return REFRESHING;
+                case CANCEL:  return CANCEL;
                 default: return null;
             }
         }

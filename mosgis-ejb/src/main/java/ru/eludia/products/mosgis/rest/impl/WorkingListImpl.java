@@ -60,12 +60,7 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
         
         switch (action) {
             case APPROVE:
-            case PROMOTE:
-            case REFRESH:
-            case TERMINATE:
-            case ANNUL:
-            case ROLLOVER:
-            case RELOAD:
+            case CANCEL:
                 super.publishMessage (action, id_log);
             default:
                 return;
@@ -213,6 +208,17 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
         ));
 
         logAction (db, user, id, VocAction.i.APPROVE);
+
+    });}
+    
+    @Override
+    public JsonObject doCancel (String id, User user) {return doAction ((db) -> {
+
+        db.update (getTable (), HASH (EnTable.c.UUID,               id,
+            WorkingList.c.ID_CTR_STATUS, VocGisStatus.i.PENDING_RQ_CANCEL.getId ()
+        ));
+
+        logAction (db, user, id, VocAction.i.CANCEL);
 
     });}
     

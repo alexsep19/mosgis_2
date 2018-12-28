@@ -88,5 +88,17 @@ public class WorkingListLog extends GisWsLogTable {
         result.getWorkListGUID ().add (r.get (WorkingList.c.WORKLISTGUID.lc ()).toString ());
         return result;
     }
+    
+    public static ImportWorkingListRequest toCancelImportWorkingListRequest (Map<String, Object> r) {
+        final ImportWorkingListRequest result = DB.to.javaBean (ImportWorkingListRequest.class, r);
+        result.setCancelWorkingList (toCancelWorkingList (r));
+        return result;
+    }    
+
+    private static ImportWorkingListRequest.CancelWorkingList toCancelWorkingList (Map<String, Object> r) {
+        final ImportWorkingListRequest.CancelWorkingList result = DB.to.javaBean (ImportWorkingListRequest.CancelWorkingList.class, r);
+        result.setTransportGUID (UUID.randomUUID ().toString ());
+        return result;
+    }
                 
 }
