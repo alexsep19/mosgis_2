@@ -580,4 +580,16 @@
  </uniform-distributed-queue> 
 
 
+
+  <!-- очередь зависших асинхронных запросов в ГИС -->
+  <uniform-distributed-queue name="stuckGisRequestsQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.stuckGisRequestsQueue</jndi-name>
+    <delivery-params-overrides>
+        <time-to-deliver>2000</time-to-deliver>
+        <redelivery-delay>10000</redelivery-delay>
+    </delivery-params-overrides>
+  </uniform-distributed-queue>
+
+
 </weblogic-jms>

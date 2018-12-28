@@ -1,11 +1,9 @@
 package ru.eludia.products.mosgis.db.model.voc;
 
-import java.util.logging.Logger;
 import javax.xml.ws.BindingProvider;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.Table;
-import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.jmx.Conf;
 
 public class VocSetting extends Table {
@@ -65,6 +63,7 @@ public class VocSetting extends Table {
         WS_GIS_BASIC_LOGIN    ("ws.gis.basic.login", "Login Basic-аутентификации сервисов GIS", ""),
         WS_GIS_BASIC_PASSWORD ("ws.gis.basic.password", "Пароль Basic-аутентификации сервисов GIS", ""),
         WS_GIS_URL_ROOT       ("ws.gis.url.root", "Корневой URL сервисов GIS", ""),
+        WS_GIS_ASYNC_TTL      ("ws.gis.async.ttl", "Время жизни асинхронных операций в ГИС, мин.", "1"),
         
         WS_GIS_FILES_URL      ("ws.gis.files.url", "Endpoint URL файлового REST-сервиса ГИС ЖКХ", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-file-store-service/rest/"),
         WS_GIS_FILES_TMT_CONN ("ws.gis.files.timeout.connection", "Время ожидания подключения к файловому REST-сервису ГИС ЖКХ, мс", "10000"),
@@ -102,10 +101,7 @@ public class VocSetting extends Table {
         WS_RD_TMT_CONN ("ws.rd.timeout.connection", "Время ожидания подключения к сервису ГИС РД (NsiCommonAsyncService), мс", "1000"),
         WS_RD_TMT_RESP ("ws.rd.timeout.response", "Время ожидания подключения к сервису ГИС РД (NsiCommonAsyncService), мс", "1000"),
         
-        GIS_ID_ORGANIZATION ("gis.id.organization", "ГИС-идентификатор организации-отправителя данных", "392cf4d1-3527-4b99-9f60-7c3ecbba11d8"),
-
-        TTL_CONTRACTS ("ttl.contracts", "Время жизни операции отправки ДУ в ГИС, мин.", "30"),
-        TTL_CHARTERS  ("ttl.charters", "Время жизни операции отправки уставов в ГИС, мин.", "30");
+        GIS_ID_ORGANIZATION ("gis.id.organization", "ГИС-идентификатор организации-отправителя данных", "392cf4d1-3527-4b99-9f60-7c3ecbba11d8");
 
         String id;
         String label;

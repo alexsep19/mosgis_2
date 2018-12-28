@@ -86,12 +86,9 @@ public interface ConfMBean {
     
     public String getWsGisBasicPassword ();    
     public void   setWsGisBasicPassword (String s);
-
-    public int    getTtlContracts ();
-    public void   setTtlContracts (int i);
     
-    public int    getTtlCharters ();
-    public void   setTtlCharters (int i);
+    public int    getWsGisAsyncTtl ();
+    public void   setWsGisAsyncTtl (int i);
     
     public String getWsGisServicesUrl ();
     public void   setWsGisServicesUrl (String s);    

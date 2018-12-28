@@ -162,6 +162,18 @@ public class VocGisStatus extends Table {
         public static i forId (Object id) {
             return forId (Integer.parseInt (id.toString ()));
         }
+        
+        public boolean isInProgress () {
+            
+            switch (id % 10) {
+                case 2:
+                case 3:
+                    return true;
+                default:
+                    return false;
+            }
+            
+        }
 
         @Override
         public String toString () {
