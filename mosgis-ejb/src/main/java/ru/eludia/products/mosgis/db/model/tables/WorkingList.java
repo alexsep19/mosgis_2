@@ -154,6 +154,14 @@ public class WorkingList extends EnTable {
                     + " END LOOP; "
                 + "END IF; "           
                 
+            + "END IF; "                                        
+                    
+        + "END;");        
+        
+        trigger ("AFTER INSERT OR UPDATE", ""
+            + "BEGIN "
+            + " IF :NEW.is_deleted = 0 THEN BEGIN "
+                
                 + " UPDATE tb_work_plans SET is_deleted = 1 WHERE uuid_working_list = :NEW.uuid; "
                 
                 + " FOR y IN EXTRACT (year FROM :NEW.dt_from) .. EXTRACT (year FROM :NEW.dt_to) LOOP "
@@ -163,13 +171,11 @@ public class WorkingList extends EnTable {
                 + "    WHEN MATCHED THEN UPDATE SET is_deleted=0" 
                 + "    WHEN NOT MATCHED THEN INSERT (uuid_working_list, year, is_deleted) VALUES (:NEW.uuid, y, 0); "
                 + " END LOOP; "                
-
-                + " COMMIT; "
-
-            + "END IF; "                                        
-                    
-        + "END;");        
-
+                
+            + " END; END IF; "                                        
+            + "END; "                                        
+        );
+        
     }
     
     public enum Action {

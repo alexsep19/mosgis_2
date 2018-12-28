@@ -51,15 +51,18 @@ public class WorkingListLogTest extends BaseTest {
     }
     
     @Before
-//    @After
+    @After
     public void clean () throws SQLException {
 
         try (DB db = model.getDb ()) {            
-
+            
             db.d0 (new QP ("DELETE FROM tb_work_list_items WHERE uuid_working_list = '00000000000000000000000000000000'"));
 
             db.d0 (new QP ("UPDATE tb_work_lists SET id_log = NULL WHERE uuid = '00000000000000000000000000000000'"));
             db.d0 (new QP ("DELETE FROM tb_work_lists__log WHERE uuid_object = '00000000000000000000000000000000'"));
+
+            db.d0 (new QP ("DELETE FROM tb_work_plans WHERE uuid_working_list = '00000000000000000000000000000000'"));
+
             db.d0 (new QP ("DELETE FROM tb_work_lists WHERE uuid = '00000000000000000000000000000000'"));
 
         }
