@@ -55,6 +55,11 @@ define ([], function () {
                             it._can.alter = 1
                     }
 
+                    switch (it.id_ctr_status) {                    
+                        case 40:
+                            it._can.unapprove = 1
+                    }
+
                     it._can.update = it._can.edit
                     it._can.approve = it._can.edit
 
