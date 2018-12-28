@@ -116,4 +116,11 @@ public class WorkingLists extends EJBResource <WorkingListLocal> {
         return back.doApprove (id, getUser ());
     }
     
+    @POST
+    @Path("{id}/alter") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject doAlter (@PathParam ("id") String id, JsonObject p) { 
+        return back.doAlter (id, p, getUser ());
+    }
+
 }

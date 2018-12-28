@@ -114,7 +114,14 @@ public class VocGisStatus extends Table {
         PENDING_RP_ANNULMENT (103,  "_pending_rp_annulment", "ожидание подтверждения аннулирования"),
         FAILED_ANNULMENT     (104,  "_failed_annulment", "ошибка аннулирования"),
         
-        ANNUL                (110, "Annul",           "аннулирован");
+        ANNUL                (110, "Annul",           "аннулирован"),
+                
+        PENDING_RQ_CANCEL    (112,  "_pending_rq_cancel", "ожидание отмены"),
+        PENDING_RP_CANCEL    (113,  "_pending_rp_cancel", "ожидание подтверждения отмены"),
+        FAILED_CANCEL        (114,  "_failed_cancel", "ошибка отмены"),
+        CANCELLED            (120,  "C", "отменён"),
+
+        ;
 
         byte id;
         String name;

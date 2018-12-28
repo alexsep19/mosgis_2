@@ -215,5 +215,19 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
         logAction (db, user, id, VocAction.i.APPROVE);
 
     });}
+    
+    @Override
+    public JsonObject doAlter (String id, JsonObject p, User user) {return doAction ((db) -> {
+                
+        final Map<String, Object> r = HASH (
+            EnTable.c.UUID,               id,
+            WorkingList.c.ID_CTR_STATUS,  VocGisStatus.i.PROJECT.getId ()
+        );
+                
+        db.update (getTable (), r);
+        
+        logAction (db, user, id, VocAction.i.ALTER);
+        
+    });}    
 
 }

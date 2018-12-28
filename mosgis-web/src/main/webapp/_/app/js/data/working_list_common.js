@@ -58,6 +58,11 @@ define ([], function () {
         if (!confirm ('Разместить эти данные в ГИС ЖКХ?')) return
         query ({type: 'working_lists', action: 'approve'}, {}, reload_page)
     }
+    
+    $_DO.alter_working_list_common = function (e) {
+        if (!confirm ('Открыть эту карточку на редактирование?')) return
+        query ({type: 'working_lists', action: 'alter'}, {}, reload_page)
+    }
 
     $_DO.choose_tab_working_list_common = function (e) {
     
