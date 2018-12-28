@@ -38,7 +38,7 @@ public class AgreementPaymentLogTest extends BaseTest {
         this.commonPart = HASH (
             EnTable.c.UUID, uuid,
             EnTable.c.IS_DELETED, 0,
-            AgreementPayment.c.UUID_CTR, getSomeUuid (PublicPropertyContract.class),
+//            AgreementPayment.c.UUID_CTR, getSomeUuid (PublicPropertyContract.class),
             AgreementPayment.c.AGREEMENTPAYMENTVERSIONGUID, null,
             AgreementPayment.c.REASONOFANNULMENT, null,
             AgreementPayment.c.ID_LOG, null, 
@@ -86,6 +86,16 @@ public class AgreementPaymentLogTest extends BaseTest {
         sample.remove (AgreementPayment.c.IS_ANNULED.lc ());
 
         try (DB db = model.getDb ()) {            
+            
+            String uuidCtr = db.getString (model
+                .select (PublicPropertyContract.class, "uuid")
+                .where (PublicPropertyContract.c.CONTRACTVERSIONGUID.lc () + " IS NOT NULL")
+                .where (EnTable.c.IS_DELETED, 0)
+            );
+
+            if (!DB.ok (uuidCtr)) throw new IllegalStateException ("PublicPropertyContract with non empty CONTRACTVERSIONGUID not found");
+            sample.put (AgreementPayment.c.UUID_CTR.lc (), uuidCtr);
+            
             String idLog = createData (db, sample);           
             Map<String, Object> r = db.getMap (logTable.getForExport (idLog));
 
