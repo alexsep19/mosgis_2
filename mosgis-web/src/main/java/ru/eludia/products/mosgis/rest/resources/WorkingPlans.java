@@ -64,5 +64,15 @@ public class WorkingPlans extends EJBResource <WorkingPlanLocal> {
 //        checkOrg (item);
         return back.doUpdate (id, p, getUser ());
     }
+    
+    @POST
+    @Path("{id}/log") 
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
+//        final JsonObject item = back.getItem (id);
+//        if (!securityContext.isUserInRole ("admin")) checkOrg (item);
+        return back.getLog (id, p, getUser ());
+    }
 
 }
