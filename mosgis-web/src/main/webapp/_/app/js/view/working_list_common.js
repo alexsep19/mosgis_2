@@ -28,6 +28,7 @@ define ([], function () {
         
         var tabs = [{id: 'working_list_common_items', caption: 'Перечень услуг и работ'}]
         $.each (data.plans, function () {tabs.push ({id: 'working_list_common_plan_' + this.uuid, caption: 'План ' + this.year})})
+        tabs.push ({id: 'working_list_common_plans', caption: 'План'})
         tabs.push ({id: 'working_list_common_log', caption: 'История изменений'})
 
         $panel.w2relayout ({
