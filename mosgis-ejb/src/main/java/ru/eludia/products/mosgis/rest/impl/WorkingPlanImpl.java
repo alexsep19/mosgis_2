@@ -10,12 +10,21 @@ import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.Charter;
+import ru.eludia.products.mosgis.db.model.tables.CharterObject;
+import ru.eludia.products.mosgis.db.model.tables.Contract;
+import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.OrganizationWork;
+import ru.eludia.products.mosgis.db.model.tables.WorkingList;
 import ru.eludia.products.mosgis.db.model.tables.WorkingListItem;
 import ru.eludia.products.mosgis.db.model.tables.WorkingPlan;
 import ru.eludia.products.mosgis.db.model.tables.WorkingPlanItem;
 import ru.eludia.products.mosgis.db.model.tables.WorkingPlanItem.c;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.WorkingPlanLocal;
@@ -62,11 +71,25 @@ public class WorkingPlanImpl extends BaseCRUD<WorkingPlan> implements WorkingPla
         
         final MosGisModel m = ModelHolder.getModel ();
         
+        final String fhg = WorkingList.c.FIASHOUSEGUID.lc ();
+
         final JsonObject item = db.getJsonObject (m
             .get (getTable (), id, "AS root", "*")
+            .toOne (WorkingList.class, fhg + " AS " + fhg).on ()
+            .toMaybeOne (VocBuilding.class, "AS fias", "label").on ()
+            .toMaybeOne (ContractObject.class, "AS cao", "uuid", "startdate", "enddate").on ()
+            .toMaybeOne (Contract.class, "AS ca", "*").on ()
+            .toMaybeOne (CharterObject.class, "AS cho", "uuid", "startdate", "enddate").on ()
+            .toMaybeOne (Charter.class, "AS ch", "*").on ()
+            .toMaybeOne (VocOrganization.class, "AS chorg", "label").on ("ch.uuid_org=chorg.uuid")                
         );
+        
+        VocBuilding.addCaCh (db, job, item.getString (fhg));
 
         job.add ("item", item);
+        
+        VocGisStatus.addLiteTo (job);
+        VocAction.addTo (job);        
         
         final String f = WorkingListItem.c.UUID_WORKING_LIST.lc ();
         

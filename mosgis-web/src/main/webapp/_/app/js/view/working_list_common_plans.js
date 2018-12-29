@@ -22,7 +22,7 @@ define ([], function () {
             
             records: data.plans,
             
-
+            onDblClick: function (e) {openTab ('/working_plan/' + e.recid)},
 
         }).refresh ();
 

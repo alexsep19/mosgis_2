@@ -149,7 +149,7 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
 
         VocBuilding.addCaCh (db, job, item.getString (WorkingList.c.FIASHOUSEGUID.lc ()));
 
-        VocGisStatus.addTo (job);
+        VocGisStatus.addLiteTo (job);
         VocAction.addTo (job);
 
         db.addJsonArrays (job,
