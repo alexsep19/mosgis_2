@@ -2,7 +2,7 @@ define ([], function () {
 
     return function (data, view) {
 
-        var is_own = data.item._can.edit
+        var is_own = data.item._can.edit_plan
         
         var columns = [
             {field: 'index_', caption: '№', size: 1},
