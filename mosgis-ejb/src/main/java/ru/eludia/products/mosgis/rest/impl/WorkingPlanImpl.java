@@ -75,7 +75,12 @@ public class WorkingPlanImpl extends BaseCRUD<WorkingPlan> implements WorkingPla
 
         final JsonObject item = db.getJsonObject (m
             .get (getTable (), id, "AS root", "*")
-            .toOne (WorkingList.class, fhg + " AS " + fhg).on ()
+            .toOne (WorkingList.class
+                , fhg + " AS " + fhg
+                , WorkingList.c.DT_FROM.lc ()
+                , WorkingList.c.DT_TO.lc ()
+                , WorkingList.c.ID_CTR_STATUS.lc ()
+            ).on ()
             .toMaybeOne (VocBuilding.class, "AS fias", "label").on ()
             .toMaybeOne (ContractObject.class, "AS cao", "uuid", "startdate", "enddate").on ()
             .toMaybeOne (Contract.class, "AS ca", "*").on ()

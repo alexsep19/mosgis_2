@@ -1,6 +1,6 @@
 define ([], function () {
 
-    $_DO.toggle_working_list_common_plan_dates_popup = function (e) {
+    $_DO.toggle_working_plan_common_plan_dates_popup = function (e) {
     
         var $td = $(e.target)
         
@@ -8,11 +8,11 @@ define ([], function () {
 
     }
 
-    $_DO.clear_working_list_common_plan_dates_popup = function (e) {
+    $_DO.clear_working_plan_common_plan_dates_popup = function (e) {
         $('table.cal td.local').removeClass ('on')
     }
     
-    $_DO.update_working_list_common_plan_dates_popup = function (e) {
+    $_DO.update_working_plan_common_plan_dates_popup = function (e) {
 
         var days_bitmask = 0
 
@@ -22,14 +22,14 @@ define ([], function () {
 
         $list.each (function () {v.days_bitmask |= (1 << (this.textContent - 1))})
 
-        var form = w2ui ['working_list_common_plan_dates_popup_form']
+        var form = w2ui ['working_plan_common_plan_dates_popup_form']
 
         var data = form.record
 
         v.uuid_working_list_item = data.uuid_working_list_item
         v.month = data.month + 1
 
-        var grid = w2ui ['working_list_common_plan_grid']
+        var grid = w2ui ['working_plan_common_plan_grid']
         grid.lock ()
         
         query ({type: 'working_plans', id: data.uuid, action: 'update'}, {data: v}, function () {
@@ -58,7 +58,7 @@ define ([], function () {
 
         var data = $_SESSION.delete ('cell')
 
-        var grid = w2ui ['working_list_common_plan_grid']
+        var grid = w2ui ['working_plan_common_plan_grid']
 
         var r = grid.get (data.uuid_working_list_item)
         

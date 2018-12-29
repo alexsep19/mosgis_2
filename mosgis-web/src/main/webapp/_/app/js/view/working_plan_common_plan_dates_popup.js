@@ -2,7 +2,7 @@ define ([], function () {
 
     return function (data, view) {
     
-        var name = 'working_list_common_plan_dates_popup_form'
+        var name = 'working_plan_common_plan_dates_popup_form'
         
         $(fill (view, data)).w2popup ('open', {
 
@@ -22,7 +22,7 @@ define ([], function () {
                         record: data,
                         fields : [],                        
                         onRefresh: function () {                       
-                            clickOn ($('table.cal td.local'), $_DO.toggle_working_list_common_plan_dates_popup)
+                            clickOn ($('table.cal td.local'), $_DO.toggle_working_plan_common_plan_dates_popup)
                         }                        
                     });
 

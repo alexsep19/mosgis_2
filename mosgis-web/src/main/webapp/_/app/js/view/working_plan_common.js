@@ -34,8 +34,8 @@ define ([], function () {
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs: [
-                            {id: 'working_list_common_plan', caption: 'Перечень услуг и работ'},
-                            {id: 'working_plan_common_log', caption: 'История изменений'},
+                            {id: 'working_plan_common_plan', caption: 'Перечень услуг и работ'},
+                            {id: 'working_plan_common_log', caption: 'История синхронизации'},
                         ],
                         onClick: $_DO.choose_tab_working_plan_common
                     }

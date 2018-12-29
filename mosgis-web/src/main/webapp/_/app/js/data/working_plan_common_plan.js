@@ -1,10 +1,6 @@
 define ([], function () {
 
-    function get_id () {
-        return $('div[name=passport_layout_main_tabs] div.active').parent ().attr ('id').substr (-36)
-    }
-
-    $_DO.patch_working_list_common_plan = function (e) {
+    $_DO.patch_working_plan_common_plan = function (e) {
 
         var data = {
             uuid_working_list_item: e.recid,
@@ -19,15 +15,7 @@ define ([], function () {
 
             grid.lock ()
 
-            query ({
-                type:   'working_plans',
-                id:      get_id (),
-                action: 'update',
-            }, 
-
-            {data: data},
-
-            function () {
+            query ({type: 'working_plans', action: 'update'}, {data: data}, function () {
 
                 grid.unlock ()
                 grid.refresh ()
@@ -58,30 +46,24 @@ define ([], function () {
 
         var data = clone ($('body').data ('data'))
 
-        query ({type: 'working_plans', id: get_id ()}, {data: {uuid_working_list: $_REQUEST.id}}, function (d) {
+        data.records = dia2w2uiRecords (data.tb_work_list_items)
 
-            data.plan = d.item
+        var idx = {}; $.each (data.tb_work_list_items, function () {
+            this.cnt = 0
+            idx [this.uuid] = this
+        })
 
-            data.records = dia2w2uiRecords (d.tb_work_list_items)
+        $.each (data.cells, function () {
 
-            var idx = {}; $.each (d.tb_work_list_items, function () {
-                this.cnt = 0
-                idx [this.uuid] = this
-            })
+            var r = idx [this.uuid_working_list_item] 
 
-            $.each (d.cells, function () {
-
-                var r = idx [this.uuid_working_list_item] 
-
-                r.cnt += this.workcount
-                r ['cnt_' + this.month] = this.workcount
-                r ['days_bitmask_' + this.month] = this.days_bitmask
-
-            })
-
-            done (data)
+            r.cnt += this.workcount
+            r ['cnt_' + this.month] = this.workcount
+            r ['days_bitmask_' + this.month] = this.days_bitmask
 
         })
+
+        done (data)
 
     }
 

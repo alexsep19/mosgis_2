@@ -26,12 +26,12 @@ define ([], function () {
             
                 var m = i + 1
             
-                var dt = data.plan.year + '-'
+                var dt = it.year + '-'
                 if (m < 10) dt += '0'
                 dt += m
                 dt += '-01'
-    
-                if (it.dt_from <= dt && dt <= it.dt_to) col.editable = {type: 'int', min: 1}
+
+                if (it ['tb_work_lists.dt_from'].substr (0, 10) <= dt && dt <= it ['tb_work_lists.dt_to']) col.editable = {type: 'int', min: 1}
 
             }
         
@@ -41,7 +41,7 @@ define ([], function () {
             
         $(w2ui ['passport_layout'].el ('main')).w2regrid ({ 
 
-            name: 'working_list_common_plan_grid',
+            name: 'working_plan_common_plan_grid',
             selectType: 'cell',
 
             show: {
@@ -54,12 +54,12 @@ define ([], function () {
             records: data.records,
             reorderColumns: false,
                                     
-            onChange: $_DO.patch_working_list_common_plan,
+            onChange: $_DO.patch_working_plan_common_plan,
             
             onContextMenu: !is_own ? null : function (e) {
                 if (!this.columns [e.column].editable) return
-                $_SESSION.set ('cell', {uuid: data.plan.uuid, uuid_working_list_item: e.recid, year: data.plan.year, month: e.column - 5})
-                use.block ('working_list_common_plan_dates_popup')
+                $_SESSION.set ('cell', {uuid: it.uuid, uuid_working_list_item: e.recid, year: it.year, month: e.column - 5})
+                use.block ('working_plan_common_plan_dates_popup')
             },
 
         }).refresh ();
