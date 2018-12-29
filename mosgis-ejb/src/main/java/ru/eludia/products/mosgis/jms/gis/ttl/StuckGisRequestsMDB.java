@@ -16,6 +16,7 @@ import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.jms.base.TextMDB;
@@ -54,8 +55,16 @@ public class StuckGisRequestsMDB extends TextMDB {
                     
                     Map<String, Object> values = getValues (db, item.uuid, r);
                     
-                    logger.info ("Going on with values=" + values);
+                    db.update (item.entityTable, values);                
+
+                    if (values.containsKey ("uuid_out_soap")) db.update (item.logTable, DB.HASH (
+                        "uuid", r.get ("id_log"),
+                        "id_ctr_status", VocGisStatus.i.FAILED_STATE.getId (),
+                        "uuid_out_soap", values.get ("uuid_out_soap")
+                    ));
                     
+                    m.createIdLog (db, item.entityTable, null, item.uuid, VocAction.i.EXPIRE);
+                                        
                 }
                 else {
                     logger.warning ("This record is not expired, status=" + status.name ());
@@ -122,24 +131,7 @@ public class StuckGisRequestsMDB extends TextMDB {
         }
         
     }
-    
-/*
-    @Override
-    protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws Exception {
-        
-        final Map<String, Object> values = getValues (db, uuid, r);
-        
-        db.update (Contract.class, values);                
-        
-        if (values.containsKey ("uuid_out_soap")) db.update (ContractLog.class, DB.HASH (
-            "uuid", r.get ("id_log"),
-            "id_ctr_status", VocGisStatus.i.FAILED_STATE.getId (),
-            "uuid_out_soap", values.get ("uuid_out_soap")
-        ));
-        
-    }
-*/   
-    
+
     Map<String, Object> getValues (DB db, UUID uuid, Map<String, Object> r) throws SQLException {            
         
         final Map<String, Object> values = HASH (
