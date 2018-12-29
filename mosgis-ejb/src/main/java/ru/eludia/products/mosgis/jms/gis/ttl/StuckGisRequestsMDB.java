@@ -10,10 +10,12 @@ import javax.ejb.MessageDriven;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
 import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.jms.base.TextMDB;
@@ -33,13 +35,13 @@ public class StuckGisRequestsMDB extends TextMDB {
     public void init () {
         m = ModelHolder.getModel ();
     }
-    
-    
 
     @Override
     protected void onTextMessage (TextMessage message) throws SQLException, JMSException {
                 
         try {
+            
+            UUID uuid = getUUID (message.getText ());
             
             Select q = getQuery (message.getText ());
 
@@ -54,7 +56,11 @@ public class StuckGisRequestsMDB extends TextMDB {
                 VocGisStatus.i status = VocGisStatus.i.forId (r.get ("id_status"));
 
                 if (status.isInProgress ()) {
-                    logger.info ("Going on, status=" + status.name ());
+                    
+                    Map<String, Object> values = getValues (db, uuid, r);
+                    
+                    logger.info ("Going on with values=" + values);
+                    
                 }
                 else {
                     logger.warning ("This record is not expired, status=" + status.name ());
@@ -121,5 +127,25 @@ public class StuckGisRequestsMDB extends TextMDB {
         if (t == null) throw new IllegalArgumentException ("Table not found: " + tableName);            
         return t;            
     }
+    
+    Map<String, Object> getValues (DB db, UUID uuid, Map<String, Object> r) throws SQLException {            
+        
+        final Map<String, Object> values = HASH (
+            "uuid", uuid,
+            "id_ctr_status", VocGisStatus.i.FAILED_STATE.getId ()
+        );
+        
+        UUID uuidOutSoap = (UUID) r.get ("uuid_out_soap");
+        
+        if (uuidOutSoap == null) {
+            values.put ("uuid_out_soap", OutSoap.addExpired (db));
+        }
+        else {
+            OutSoap.expire (db, uuidOutSoap);
+        }
+        
+        return values;
+        
+    }    
        
 }
