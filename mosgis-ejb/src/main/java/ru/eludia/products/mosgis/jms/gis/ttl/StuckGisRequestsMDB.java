@@ -16,7 +16,6 @@ import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
-import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.jms.base.TextMDB;
@@ -63,7 +62,7 @@ public class StuckGisRequestsMDB extends TextMDB {
                         "uuid_out_soap", values.get ("uuid_out_soap")
                     ));
                     
-                    m.createIdLog (db, item.entityTable, null, item.uuid, VocAction.i.EXPIRE);
+//                  m.createIdLog (db, item.entityTable, null, item.uuid, VocAction.i.EXPIRE);
                                         
                 }
                 else {

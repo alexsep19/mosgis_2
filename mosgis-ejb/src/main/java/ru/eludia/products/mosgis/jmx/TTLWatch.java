@@ -24,6 +24,7 @@ import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
+import static ru.eludia.products.mosgis.db.model.tables.Lock.i.STUCK_GIS_REQUESTS;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -147,7 +148,7 @@ public class TTLWatch implements TTLWatchMBean {
             
             try {
                 
-                db.getString (new QP ("SELECT id FROM tb_locks WHERE id=? FOR UPDATE NOWAIT", "stuck_contracts"));
+                db.getString (new QP ("SELECT id FROM tb_locks WHERE id=? FOR UPDATE NOWAIT", STUCK_GIS_REQUESTS));
                 
                 checkTables (db);
                                 
