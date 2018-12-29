@@ -57,6 +57,7 @@ define ([], function () {
 
                     switch (it.id_ctr_status) {                    
                         case 40:
+                            it._can.edit_plan = 1
                             it._can.unapprove = 1
                     }
 
