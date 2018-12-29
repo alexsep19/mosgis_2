@@ -290,28 +290,6 @@
         <redelivery-delay>10000</redelivery-delay>
     </delivery-params-overrides>
   </uniform-distributed-queue>
-
-  <!-- очередь зависших договоров -->
-  <uniform-distributed-queue name="stuckContractsQueue">
-    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-    <jndi-name>mosgis.stuckContractsQueue</jndi-name>
-    <delivery-params-overrides>
-        <time-to-deliver>2000</time-to-deliver>
-        <redelivery-delay>10000</redelivery-delay>
-    </delivery-params-overrides>
-  </uniform-distributed-queue>
-  
-    
-      
-        
-          
-            
-              
-                
-                    
-  
-  
-  
   
   <!-- очередь обработки запросов на экспорт уставов -->
   <uniform-distributed-queue name="inHouseChartersQueue">
@@ -368,18 +346,7 @@
         <time-to-deliver>2000</time-to-deliver>
         <redelivery-delay>10000</redelivery-delay>
     </delivery-params-overrides>
-  </uniform-distributed-queue>
-  
-  <!-- очередь зависших уставов -->
-  <uniform-distributed-queue name="stuckChartersQueue">
-    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-    <jndi-name>mosgis.stuckChartersQueue</jndi-name>
-    <delivery-params-overrides>
-        <time-to-deliver>2000</time-to-deliver>
-        <redelivery-delay>10000</redelivery-delay>
-    </delivery-params-overrides>
-  </uniform-distributed-queue>
-                             
+  </uniform-distributed-queue>                               
 
   <!-- очередь обработки запросов на экспорт ОСС -->
   <uniform-distributed-queue name="inHouseVotingProtocolsQueue">
