@@ -14,6 +14,7 @@ import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.jms.base.TextMDB;
 import ru.eludia.products.mosgis.jmx.TTLWatch;
@@ -45,8 +46,20 @@ public class StuckGisRequestsMDB extends TextMDB {
             try (DB db = m.getDb ()) {
 
                 Map<String, Object> r = db.getMap (q);
+                
+                if (r == null) throw new javax.jms.IllegalStateException ("Record not found, bailing out");
+                
+                logger.info ("Fetched record: " + DB.to.json (r));
 
-logger.info ("r=" + DB.to.json (r));
+                VocGisStatus.i status = VocGisStatus.i.forId (r.get ("id_status"));
+
+                if (status.isInProgress ()) {
+                    logger.info ("Going on, status=" + status.name ());
+                }
+                else {
+                    logger.warning ("This record is not expired, status=" + status.name ());
+                    return;
+                }                                
                 
             }
 
