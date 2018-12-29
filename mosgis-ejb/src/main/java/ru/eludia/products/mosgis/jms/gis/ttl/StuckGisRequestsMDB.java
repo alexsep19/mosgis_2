@@ -28,7 +28,6 @@ import ru.eludia.products.mosgis.jmx.TTLWatch;
 })
 public class StuckGisRequestsMDB extends TextMDB {
 
-    private static final int UUID_LEN = 36;
     private MosGisModel m;
     
     @PostConstruct
@@ -41,23 +40,19 @@ public class StuckGisRequestsMDB extends TextMDB {
                 
         try {
             
-            UUID uuid = getUUID (message.getText ());
+            Item item = new Item (message.getText ());
             
-            Select q = getQuery (message.getText ());
-
             try (DB db = m.getDb ()) {
 
-                Map<String, Object> r = db.getMap (q);
-                
-                if (r == null) throw new javax.jms.IllegalStateException ("Record not found, bailing out");
-                
+                Map<String, Object> r = item.getRecord (db);
+                                
                 logger.info ("Fetched record: " + DB.to.json (r));
 
                 VocGisStatus.i status = VocGisStatus.i.forId (r.get ("id_status"));
 
                 if (status.isInProgress ()) {
                     
-                    Map<String, Object> values = getValues (db, uuid, r);
+                    Map<String, Object> values = getValues (db, item.uuid, r);
                     
                     logger.info ("Going on with values=" + values);
                     
@@ -76,27 +71,55 @@ public class StuckGisRequestsMDB extends TextMDB {
         }
 
     }
+    
+    private class Item {
+        
+        private static final int UUID_LEN = 36;
+        
+        UUID uuid;
+        Table entityTable;
+        Table logTable;
+        Col statusCol;
 
-    private Select getQuery (final String s) throws IllegalArgumentException {
+        public Item (String s) throws Exception {
+            
+            uuid          = UUID.fromString (s.substring (0, UUID_LEN));
+            
+            final String tableName = s.substring (UUID_LEN);            
+            entityTable  = m.get (tableName);            
+            if (entityTable == null) throw new IllegalArgumentException ("Table not found: " + tableName);            
+
+            logTable      = m.getLogTable (entityTable);
+            if (logTable  == null) throw new IllegalArgumentException ("logTable not found for " + entityTable.getName ());
+
+            statusCol     = TTLWatch.getStatusCol (entityTable);
+            if (statusCol == null) throw new IllegalArgumentException ("statusCol not found for " + entityTable.getName ());
+            
+        }
         
-        UUID uuid         = getUUID  (s);
-        Table entityTable = getTable (s);
+        private Select getQuery () {
+            
+            return m
+                .select (entityTable, "AS root"
+                    , "uuid"
+                    , "id_log"
+                    , statusCol.getName () + " AS id_status")
+                .toOne  (logTable, "AS log"
+                    , "uuid_out_soap AS uuid_out_soap")
+                .on ("root.id_log=log.uuid")
+                .where ("uuid", uuid);
+            
+        }
         
-        Table logTable    = m.getLogTable (entityTable);
-        if (logTable  == null) throw new IllegalArgumentException ("logTable not found for " + entityTable.getName ());
-        
-        Col statusCol     = TTLWatch.getStatusCol (entityTable);
-        if (statusCol == null) throw new IllegalArgumentException ("statusCol not found for " + entityTable.getName ());
-        
-        return m
-            .select (entityTable, "AS root"
-                , "uuid"
-                , "id_log"
-                , statusCol.getName () + " AS id_status")
-            .toOne  (logTable, "AS log"
-                , "uuid_out_soap AS uuid_out_soap")
-            .on ("root.id_log=log.uuid")
-            .where ("uuid", uuid);
+        Map<String, Object> getRecord (DB db) throws Exception {
+            
+            Map<String, Object> r = db.getMap (getQuery ());
+            
+            if (r == null) throw new javax.jms.IllegalStateException ("Record not found, bailing out");
+            
+            return r;
+            
+        }
         
     }
     
@@ -116,17 +139,6 @@ public class StuckGisRequestsMDB extends TextMDB {
         
     }
 */   
-
-    private UUID getUUID (final String s) {
-        return UUID.fromString (s.substring (0, UUID_LEN));
-    }
-    
-    private Table getTable (final String s) {        
-        final String tableName = s.substring (UUID_LEN);            
-        final Table t = m.get (tableName);            
-        if (t == null) throw new IllegalArgumentException ("Table not found: " + tableName);            
-        return t;            
-    }
     
     Map<String, Object> getValues (DB db, UUID uuid, Map<String, Object> r) throws SQLException {            
         
