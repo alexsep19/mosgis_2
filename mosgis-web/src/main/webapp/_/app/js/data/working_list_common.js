@@ -58,20 +58,34 @@ define ([], function () {
         if (!confirm ('Разместить эти данные в ГИС ЖКХ?')) return
         query ({type: 'working_lists', action: 'approve'}, {}, reload_page)
     }
+    
+    $_DO.unapprove_working_list_common = function (e) {
+        if (!confirm ('Отменить публикацию этих данных в ГИС ЖКХ?')) return
+        query ({type: 'working_lists', action: 'cancel'}, {}, reload_page)
+    }
+    
+    $_DO.alter_working_list_common = function (e) {
+        if (!confirm ('Открыть эту карточку на редактирование?')) return
+        query ({type: 'working_lists', action: 'alter'}, {}, reload_page)
+    }
 
     $_DO.choose_tab_working_list_common = function (e) {
     
         var name = e.tab.id
-                
+                        
         var layout = w2ui ['passport_layout']
-            
+
         if (layout) {                
             layout.content ('main', '');
             layout.lock ('main', 'Загрузка...', true);
         }
-            
+
         localStorage.setItem ('working_list_common.active_tab', name)
-            
+
+        if (/^working_list_common_plan_/.test (name)) {
+            name = 'working_list_common_plan'
+        }
+
         use.block (name)        
     
     }

@@ -43,11 +43,13 @@ public class VocAction extends Table {
     
     public enum i {
         
+        EXPIRE    ("expire",    "проверка на просроченность"),
         CREATE    ("create",    "создание"),
         UPDATE    ("update",    "редактирование"),
         DELETE    ("delete",    "удаление"),
         UNDELETE  ("undelete",  "восстановление"),
         APPROVE   ("approve",   "утверждение"),
+        CANCEL    ("cancel",    "отмена"),
         TERMINATE ("terminate", "расторжение"),
         ALTER     ("alter",     "изменение"),
         ANNUL     ("annul",     "аннулирование"),

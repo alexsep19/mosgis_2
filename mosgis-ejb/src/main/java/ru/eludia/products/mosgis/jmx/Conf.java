@@ -437,29 +437,18 @@ public class Conf implements ConfMBean, ConfLocal {
     @Override
     public void setWsGisBasicPassword (String s) {
         set (VocSetting.i.WS_GIS_BASIC_PASSWORD, s);
-    }
-    
-    
+    }    
+
     @Override
-    public int getTtlContracts () {
-        return getInt (VocSetting.i.TTL_CONTRACTS);
+    public int getWsGisAsyncTtl () {
+        return getInt (VocSetting.i.WS_GIS_ASYNC_TTL);
     }
 
     @Override
-    public void setTtlContracts (int i) {
-        setInt (VocSetting.i.TTL_CONTRACTS, i);
-    }
-    
-    @Override
-    public int getTtlCharters () {
-        return getInt (VocSetting.i.TTL_CHARTERS);
+    public void setWsGisAsyncTtl (int i) {
+        setInt (VocSetting.i.WS_GIS_ASYNC_TTL, i);
     }
 
-    @Override
-    public void setTtlCharters (int i) {
-        setInt (VocSetting.i.TTL_CHARTERS, i);
-    }
-  
     @Override
     public String getWsGisServicesUrl() {
        return get (VocSetting.i.WS_GIS_SERVICES_URL);

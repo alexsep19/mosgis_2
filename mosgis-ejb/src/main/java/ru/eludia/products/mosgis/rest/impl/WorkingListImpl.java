@@ -23,6 +23,7 @@ import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.OrganizationWork;
+import ru.eludia.products.mosgis.db.model.tables.WorkingPlan;
 import ru.eludia.products.mosgis.db.model.tables.WorkingList;
 import ru.eludia.products.mosgis.db.model.tables.WorkingListItem;
 import ru.eludia.products.mosgis.db.model.tables.WorkingListItemLog;
@@ -59,12 +60,7 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
         
         switch (action) {
             case APPROVE:
-            case PROMOTE:
-            case REFRESH:
-            case TERMINATE:
-            case ANNUL:
-            case ROLLOVER:
-            case RELOAD:
+            case CANCEL:
                 super.publishMessage (action, id_log);
             default:
                 return;
@@ -153,12 +149,18 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
 
         VocBuilding.addCaCh (db, job, item.getString (WorkingList.c.FIASHOUSEGUID.lc ()));
 
-        VocGisStatus.addTo (job);
+        VocGisStatus.addLiteTo (job);
         VocAction.addTo (job);
 
         db.addJsonArrays (job,
 
             NsiTable.getNsiTable (56).getVocSelect (), 
+            
+            m
+                .select  (WorkingPlan.class, "AS plans", "*")
+                .where   (EnTable.c.IS_DELETED.lc (), 0)
+                .where   (WorkingPlan.c.UUID_WORKING_LIST.lc (), id)
+                .orderBy (WorkingPlan.c.YEAR.lc ()),
 
             m
                 .select     (OrganizationWork.class, "AS org_works", "uuid AS id", "label")
@@ -208,5 +210,30 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
         logAction (db, user, id, VocAction.i.APPROVE);
 
     });}
+    
+    @Override
+    public JsonObject doCancel (String id, User user) {return doAction ((db) -> {
+
+        db.update (getTable (), HASH (EnTable.c.UUID,               id,
+            WorkingList.c.ID_CTR_STATUS, VocGisStatus.i.PENDING_RQ_CANCEL.getId ()
+        ));
+
+        logAction (db, user, id, VocAction.i.CANCEL);
+
+    });}
+    
+    @Override
+    public JsonObject doAlter (String id, JsonObject p, User user) {return doAction ((db) -> {
+                
+        final Map<String, Object> r = HASH (
+            EnTable.c.UUID,               id,
+            WorkingList.c.ID_CTR_STATUS,  VocGisStatus.i.PROJECT.getId ()
+        );
+                
+        db.update (getTable (), r);
+        
+        logAction (db, user, id, VocAction.i.ALTER);
+        
+    });}    
 
 }

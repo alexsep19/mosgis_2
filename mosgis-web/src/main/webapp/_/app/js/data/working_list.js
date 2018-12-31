@@ -41,14 +41,24 @@ define ([], function () {
                         case 10:
                         case 11:
                             it._can.edit = 1
-
                     }
 
                     switch (it.id_ctr_status) {                    
                         case 10:
                         case 14:
                             it._can.delete = 1
+                    }
+                    
+                    switch (it.id_ctr_status) {                    
+                        case 14:
+                        case 120:
+                            it._can.alter = 1
+                    }
 
+                    switch (it.id_ctr_status) {                    
+                        case 40:
+                            it._can.edit_plan = 1
+                            it._can.unapprove = 1
                     }
 
                     it._can.update = it._can.edit

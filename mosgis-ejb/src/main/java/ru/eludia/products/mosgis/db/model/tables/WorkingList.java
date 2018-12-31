@@ -152,19 +152,38 @@ public class WorkingList extends EnTable {
                         + "|| TO_CHAR (i.dt_to, 'DD.MM.YYYY')"
                         + "|| '. Операция отменена.'); "
                     + " END LOOP; "
-                + "END IF; "                                        
-
+                + "END IF; "           
+                
             + "END IF; "                                        
                     
         + "END;");        
-
+        
+        trigger ("AFTER INSERT OR UPDATE", ""
+            + "BEGIN "
+            + " IF :NEW.is_deleted = 0 THEN BEGIN "
+                
+                + " UPDATE tb_work_plans SET is_deleted = 1 WHERE uuid_working_list = :NEW.uuid; "
+                
+                + " FOR y IN EXTRACT (year FROM :NEW.dt_from) .. EXTRACT (year FROM :NEW.dt_to) LOOP "
+                + "   MERGE INTO tb_work_plans o " 
+                + "    USING (SELECT y year FROM DUAL) n" 
+                + "    ON (o.year=n.year AND o.uuid_working_list=:NEW.uuid)" 
+                + "    WHEN MATCHED THEN UPDATE SET is_deleted=0" 
+                + "    WHEN NOT MATCHED THEN INSERT (uuid_working_list, year, is_deleted) VALUES (:NEW.uuid, y, 0); "
+                + " END LOOP; "                
+                
+            + " END; END IF; "                                        
+            + "END; "                                        
+        );
+        
     }
     
     public enum Action {
         
         PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.PENDING_RQ_REFRESH, VocGisStatus.i.FAILED_PLACING),
-        REFRESHING  (VocGisStatus.i.PENDING_RP_REFRESH,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
-        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT)
+        REFRESHING  (VocGisStatus.i.PENDING_RP_REFRESH,   VocGisStatus.i.APPROVED,  VocGisStatus.i.FAILED_PLACING),
+        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.ANNUL,     VocGisStatus.i.FAILED_ANNULMENT),
+        CANCEL      (VocGisStatus.i.PENDING_RQ_CANCEL,    VocGisStatus.i.CANCELLED, VocGisStatus.i.FAILED_CANCEL),
         ;
         
         VocGisStatus.i nextStatus;
@@ -194,6 +213,7 @@ public class WorkingList extends EnTable {
                 case PENDING_RQ_PLACING:   return PLACING;
                 case PENDING_RQ_ANNULMENT: return ANNULMENT;
                 case PENDING_RQ_REFRESH:   return REFRESHING;
+                case PENDING_RQ_CANCEL:    return CANCEL;
                 default: return null;
             }            
         }
@@ -203,6 +223,7 @@ public class WorkingList extends EnTable {
                 case APPROVE: return PLACING;
                 case ANNUL:   return ANNULMENT;
                 case REFRESH: return REFRESHING;
+                case CANCEL:  return CANCEL;
                 default: return null;
             }
         }

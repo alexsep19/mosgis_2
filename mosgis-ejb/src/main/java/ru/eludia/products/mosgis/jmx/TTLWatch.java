@@ -2,7 +2,8 @@ package ru.eludia.products.mosgis.jmx;
 
 import java.lang.management.ManagementFactory;
 import java.sql.SQLException;
-import java.util.UUID;
+import java.util.Arrays;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -20,8 +21,12 @@ import javax.management.ObjectName;
 import ru.eludia.base.DB;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.build.QP;
-import ru.eludia.products.mosgis.db.model.tables.StuckCharters;
-import ru.eludia.products.mosgis.db.model.tables.StuckContracts;
+import ru.eludia.base.model.Col;
+import ru.eludia.base.model.Ref;
+import ru.eludia.base.model.Table;
+import static ru.eludia.products.mosgis.db.model.tables.Lock.i.STUCK_GIS_REQUESTS;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 
@@ -36,12 +41,9 @@ public class TTLWatch implements TTLWatchMBean {
     
     @EJB
     protected UUIDPublisher UUIDPublisher;
-
-    @Resource (mappedName = "mosgis.stuckContractsQueue")
-    Queue stuckContractsQueue;    
     
-    @Resource (mappedName = "mosgis.stuckChartersQueue")
-    Queue stuckChartersQueue;    
+    @Resource (mappedName = "mosgis.stuckGisRequestsQueue")
+    Queue stuckGisRequestsQueue;        
         
     @PostConstruct
     public void registerInJMX () {
@@ -67,10 +69,76 @@ public class TTLWatch implements TTLWatchMBean {
         }
 
     }
+    
+    static final Object [] progressStatus = Arrays.asList (VocGisStatus.i.values ()).stream ()
+        .filter ((t) -> t.isInProgress ())
+        .map ((t) -> t.getId ())
+        .toArray ();
+        
+    public static Ref getParentCol (Table t) {
+        return (Ref) t.getColumn ("uuid_object");
+    }
+    
+    public static Col getStatusCol (Table t) {
+        
+        Optional<String> getNameStatusGis = t.getColumns ().values ().stream ()
+            .map (c -> c.getName ())
+            .filter (n -> n.endsWith ("_status_gis"))
+            .findFirst ();
+        
+        if (!getNameStatusGis.isPresent ()) return null;
+        
+        String nameStatusGis = getNameStatusGis.get ();
+        
+        return t.getColumn (nameStatusGis.substring (0, nameStatusGis.length () - 4));
+        
+    }
+    
+    void checkTables (DB db) throws Exception {        
+        
+        Model m = db.getModel ();
+        
+        int [] cnt = {1000};
+        
+        for (Table logTable: m.getTables ()) {
+            
+            if (cnt [0] <= 0) break;
 
+            if (!logTable.getName ().endsWith ("__log")) continue;
+
+            if (logTable.getColumn ("uuid_out_soap") == null) continue;
+
+            Ref parentCol = getParentCol (logTable); if (parentCol == null) continue;
+
+            Table entityTable = parentCol.getTargetTable ();
+
+            Col statusCol = getStatusCol (entityTable); if (statusCol == null) continue;
+
+            db.forEach (
+                    
+                m
+                    .select (entityTable, "AS root", "uuid")
+                    .where (statusCol.getName () + " IN", progressStatus)
+                    .toOne  (logTable, "AS log")
+                        .where ("ts <", new java.sql.Timestamp (System.currentTimeMillis () - 1000 * 60 * Conf.getInt (VocSetting.i.WS_GIS_ASYNC_TTL)))
+                        .on ("root.id_log=log.uuid")
+                    .limit (0, cnt [0])
+                                        
+                , (rs) -> {
+                    
+                    if (cnt [0] -- <= 0) return;
+
+                    UUIDPublisher.publish (stuckGisRequestsQueue, DB.to.UUIDFromHex (rs.getString ("uuid")) + entityTable.getName ());
+                    
+            });
+            
+        }
+        
+    }
+    
     @Override
     @Schedule (hour = "*", minute = "*", second = "0", persistent = false)
-    public void checkContracts () {
+    public void checkTables () {
         
         Model m = ModelHolder.getModel ();
         
@@ -80,56 +148,10 @@ public class TTLWatch implements TTLWatchMBean {
             
             try {
                 
-                db.getString (new QP ("SELECT id FROM tb_locks WHERE id=? FOR UPDATE NOWAIT", "stuck_contracts"));
+                db.getString (new QP ("SELECT id FROM tb_locks WHERE id=? FOR UPDATE NOWAIT", STUCK_GIS_REQUESTS));
                 
-                db.forEach (m.select (StuckContracts.class, StuckContracts.c.UUID.lc ()).limit (0, 128), (rs) -> {
-                                        
-                    UUIDPublisher.publish (stuckContractsQueue, DB.to.UUIDFromHex (rs.getString (2)));
-
-                });
-                
-            }
-            catch (SQLException ex) {
-                
-                if (ex.getErrorCode () == 54) {
-                    logger.info ("Can't acquire lock, skip operation");
-                    return;
-                }
-                
-                throw ex;
-                
-            }
-            finally {
-                db.commit ();
-            }
-            
-        }
-        catch (Exception ex) {
-            logger.log (Level.SEVERE, null, ex);
-        }
-        
-    }           
-
-    @Override
-    @Schedule (hour = "*", minute = "*", second = "2", persistent = false)
-    public void checkCharters () {
-        
-        Model m = ModelHolder.getModel ();
-        
-        try (DB db = m.getDb ()) {
-            
-            db.begin ();
-            
-            try {
-                
-                db.getString (new QP ("SELECT id FROM tb_locks WHERE id=? FOR UPDATE NOWAIT", "stuck_charters"));
-                
-                db.forEach (m.select (StuckCharters.class, StuckCharters.c.UUID.lc ()).limit (0, 128), (rs) -> {
-                                        
-                    UUIDPublisher.publish (stuckChartersQueue, DB.to.UUIDFromHex (rs.getString (2)));
-
-                });
-                
+                checkTables (db);
+                                
             }
             catch (SQLException ex) {
                 

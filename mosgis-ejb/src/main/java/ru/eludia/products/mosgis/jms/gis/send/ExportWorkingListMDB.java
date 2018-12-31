@@ -52,6 +52,7 @@ public class ExportWorkingListMDB extends GisExportMDB<WorkingListLog> {
         switch (action) {
             case PLACING:     return wsGisServicesClient.importWorkingList (orgPPAGuid, messageGUID, r);
             case REFRESHING:  return wsGisServicesClient.exportWorkingList (orgPPAGuid, messageGUID, r);
+            case CANCEL:      return wsGisServicesClient.cancelWorkingList (orgPPAGuid, messageGUID, r);
             default: throw new IllegalArgumentException ("No action implemented for " + action);
         }
 

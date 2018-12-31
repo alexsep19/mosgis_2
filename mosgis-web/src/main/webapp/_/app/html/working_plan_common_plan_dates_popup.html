@@ -1,0 +1,47 @@
+<span>
+
+	<style>
+
+		table.cal {
+			border-collapse: collapse;
+			color: #555;
+			text-align: center;
+		}
+
+		table.cal th, table.cal td {
+			border: solid #bbb 1px;
+			width:35px;
+			height:30px;
+		}
+
+		table.cal td.alien {
+			color: #ddd;
+		}
+
+		table.cal td.on {
+			background-color: #ddd;
+		}
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:265px ">
+
+        <div class="w2ui-page page-0">
+
+			<table class=cal>
+				<tr><th>Пн<th>Вт<th>Ср<th>Чт<th>Пт<th>Сб<th>Вс
+				<tr data-list=rows>
+					<td data-list=cells data-text=date data-class=class />
+				</tr>
+			</table>
+
+        </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Применить</button>
+			<button class=w2ui-btn name=clear>Очистить</button>
+        </div>
+
+	</div>
+
+</span>

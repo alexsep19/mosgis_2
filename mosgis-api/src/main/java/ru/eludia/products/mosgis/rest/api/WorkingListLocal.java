@@ -10,7 +10,8 @@ public interface WorkingListLocal extends CRUDBackend {
     
     JsonObject doAddItems (String id, JsonObject p, User user);
     JsonObject doApprove   (String id, User user);
-//    JsonObject doAlter     (String id, JsonObject p, User user);
+    JsonObject doCancel    (String id, User user);
+    JsonObject doAlter     (String id, JsonObject p, User user);
 //    JsonObject doAnnul     (String id, JsonObject p, User user);
         
 }

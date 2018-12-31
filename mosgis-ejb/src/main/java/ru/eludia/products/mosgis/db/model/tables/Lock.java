@@ -17,8 +17,7 @@ public class Lock extends Table {
             
     public enum i {
         
-        STUCK_CONTRACTS ("stuck_contracts"),
-        STUCK_CHARTERS ("stuck_charters");
+        STUCK_GIS_REQUESTS ("stuck_gis_requests");
         
         String id;
 
@@ -29,6 +28,12 @@ public class Lock extends Table {
         private i (String id) {
             this.id = id;
         }
+
+        @Override
+        public String toString () {
+            return id;
+        }                
+        
     }
     
 }
