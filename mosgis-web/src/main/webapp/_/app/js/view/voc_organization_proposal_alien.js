@@ -52,7 +52,7 @@ define ([], function () {
 
         fill (view, it, $('#body'))
 
-        $('body').w2reform({
+        $('#main_container').w2reform({
             name: form_name,
             record: it,
             fields: [
