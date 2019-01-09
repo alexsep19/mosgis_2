@@ -14,6 +14,7 @@ public class WorkingPlan extends EnTable {
         UUID_WORKING_LIST    (WorkingList.class,     "Ссылка на перечень"),
         ID_CTR_STATUS        (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения mosgis"),
         ID_CTR_STATUS_GIS    (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения ГИС ЖКХ"),
+        ID_LOG               (WorkingPlanLog.class,  "Последнее событие редактирования"),
         YEAR                 (Type.NUMERIC, 4,       "Год")
         ;
 
@@ -26,7 +27,7 @@ public class WorkingPlan extends EnTable {
         @Override
         public boolean isLoggable () {
             switch (this) {
-//                case ID_LOG:
+                case ID_LOG:
                 case UUID_WORKING_LIST:
                     return false;
                 default: 
