@@ -28,7 +28,6 @@ import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
-import ru.gosuslugi.dom.schema.integration.base.CommonResultType;
 import ru.gosuslugi.dom.schema.integration.services_service_async.Fault;
 import ru.eludia.products.mosgis.db.model.tables.WorkingList.c;
 import ru.eludia.products.mosgis.db.model.tables.WorkingListItem;
@@ -107,6 +106,7 @@ public class GisPollImportWorkingListMDB  extends GisPollMDB {
             
             Map<Object, Map<String, Object>> code2uuid = db.getIdx (model
                 .select (WorkingListItem.class, "uuid")
+                .where (WorkingListItem.c.UUID_WORKING_LIST, r.get ("r.uuid"))
                 .where ("is_deleted", 0)
                 .toOne (OrganizationWork.class, "code_vc_nsi_56 AS code").on ()
             , "code");
