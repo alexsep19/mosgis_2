@@ -2,11 +2,14 @@ package ru.eludia.products.mosgis.rest.impl;
 
 import java.util.Map;
 import java.util.logging.Logger;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.jms.Queue;
 import javax.json.JsonObject;
 import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
@@ -35,7 +38,7 @@ import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 public class WorkingPlanImpl extends BaseCRUD<WorkingPlan> implements WorkingPlanLocal {
     
     private static final Logger logger = Logger.getLogger (WorkingPlanImpl.class.getName ());
-/*       
+
     @Resource (mappedName = "mosgis.inWorkingPlansQueue")
     Queue queue;
 
@@ -49,19 +52,12 @@ public class WorkingPlanImpl extends BaseCRUD<WorkingPlan> implements WorkingPla
         
         switch (action) {
             case APPROVE:
-            case PROMOTE:
-            case REFRESH:
-            case TERMINATE:
-            case ANNUL:
-            case ROLLOVER:
-            case RELOAD:
                 super.publishMessage (action, id_log);
             default:
                 return;
         }
         
     }
-*/
 
     @Override
     public JsonObject select (JsonObject p, User user) {return EMPTY_JSON_OBJECT;}
@@ -142,6 +138,17 @@ public class WorkingPlanImpl extends BaseCRUD<WorkingPlan> implements WorkingPla
             c.MONTH.lc ()
         );
         
-    });}        
+    });}
+    
+    @Override
+    public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
+
+        db.update (getTable (), HASH (EnTable.c.UUID,               id,
+            WorkingPlan.c.ID_CTR_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+        ));
+
+        logAction (db, user, id, VocAction.i.APPROVE);
+
+    });}
 
 }

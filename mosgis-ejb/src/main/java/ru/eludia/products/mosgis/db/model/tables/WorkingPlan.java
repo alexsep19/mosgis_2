@@ -5,6 +5,7 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 
 public class WorkingPlan extends EnTable {
@@ -43,11 +44,10 @@ public class WorkingPlan extends EnTable {
         key    ("uuid_working_list", c.UUID_WORKING_LIST);
     }
     
-/*    
     public enum Action {
         
         PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
-        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT)
+//        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT)
         ;
         
         VocGisStatus.i nextStatus;
@@ -75,7 +75,7 @@ public class WorkingPlan extends EnTable {
         public static Action forStatus (VocGisStatus.i status) {
             switch (status) {
                 case PENDING_RQ_PLACING:   return PLACING;
-                case PENDING_RQ_ANNULMENT: return ANNULMENT;
+//                case PENDING_RQ_ANNULMENT: return ANNULMENT;
                 default: return null;
             }            
         }
@@ -83,11 +83,11 @@ public class WorkingPlan extends EnTable {
         public static Action forLogAction (VocAction.i a) {
             switch (a) {
                 case APPROVE: return PLACING;
-                case ANNUL:   return ANNULMENT;
+//                case ANNUL:   return ANNULMENT;
                 default: return null;
             }
         }
 
     };
-*/
+
 }
