@@ -35,15 +35,25 @@ define ([], function () {
 
                 var cach = data.cach
 
-                if (cach && cach.is_own && cach ['org.uuid'] == $_USER.uuid_org && cach.id_ctr_status_gis == 40) {
+                if (cach 
+                    && cach.is_own 
+                    && cach ['org.uuid'] == $_USER.uuid_org 
+                    && cach.id_ctr_status_gis == 40
+                    && it ['tb_work_lists.id_ctr_status'] == 40
+                ) {
 
-                    switch (it ['tb_work_lists.id_ctr_status']) {
-                        case 40:
+                    switch (it.id_ctr_status) {
+                        case 10:
+                        case 11:
                             it._can.edit_plan = 1
+                            it._can.approve = 1
                     }
 
-                    it._can.update = it._can.edit
-                    it._can.approve = it._can.edit
+                    switch (it.id_ctr_status) {
+                        case 14:
+                        case 40:
+                            it._can.alter = 1
+                    }
 
                 }        
 

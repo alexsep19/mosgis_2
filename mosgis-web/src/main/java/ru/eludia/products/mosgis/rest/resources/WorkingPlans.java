@@ -81,5 +81,12 @@ public class WorkingPlans extends EJBResource <WorkingPlanLocal> {
     public JsonObject doApprove (@PathParam ("id") String id) { 
         return back.doApprove (id, getUser ());
     }
+    
+    @POST
+    @Path("{id}/alter") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject doAlter (@PathParam ("id") String id) { 
+        return back.doAlter (id, getUser ());
+    }
 
 }
