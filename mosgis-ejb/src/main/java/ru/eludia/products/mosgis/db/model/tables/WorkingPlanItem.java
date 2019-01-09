@@ -1,5 +1,8 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.sql.SQLException;
+import java.util.Map;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
@@ -14,7 +17,7 @@ public class WorkingPlanItem extends EnTable {
         UUID_WORKING_LIST_ITEM (WorkingListItem.class,       "Ссылка на строку перечня"),
         MONTH                  (Type.NUMERIC, 2,             "Месяц"),
         WORKCOUNT              (Type.NUMERIC, 2,             "Количество работ"),
-        DAYS_BITMASK           (Type.BINARY,  4,       null, "Битовая маска чисел месяца (например, 0x4001 — 31-е и 1-е числа)")
+        DAYS_BITMASK           (Type.BINARY,  5,       null, "Битовая маска чисел месяца (например, 0x4001 — 31-е и 1-е числа)")
         ;
 
         @Override
@@ -51,6 +54,19 @@ public class WorkingPlanItem extends EnTable {
                 + "IF :NEW.WORKCOUNT = 0 THEN :NEW.IS_DELETED := 1; ELSE :NEW.IS_DELETED := 0; END IF; "
             + "END;"                
         );
+        
+    }
+    
+    public static void addTo (DB db, Map<String, Object> r) throws SQLException {
+        
+        r.put ("items", db.getList (db.getModel ()
+            .select (WorkingPlanItem.class, "*")               
+            .where (WorkingPlanItem.c.UUID_WORKING_PLAN, r.get ("uuid_object"))
+            .and (EnTable.c.IS_DELETED, 0)
+            .toOne (WorkingListItem.class, "AS li", 
+                WorkingListItem.c.WORKLISTITEMGUID.lc () + " AS worklistitemguid"
+            ).on ()
+        ));
         
     }
 

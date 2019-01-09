@@ -10,6 +10,7 @@ import javax.jws.HandlerChain;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
 import ru.eludia.products.mosgis.db.model.tables.WorkingListLog;
+import ru.eludia.products.mosgis.db.model.tables.WorkingPlanLog;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ws.base.LoggingOutMessageHandler;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
@@ -55,5 +56,9 @@ public class WsGisServicesClient {
     public AckRequest.Ack cancelWorkingList (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
         return getPort (orgPPAGuid, messageGUID).importWorkingList (WorkingListLog.toCancelImportWorkingListRequest (r)).getAck ();
     }
+    
+    public AckRequest.Ack importWorkingPlan (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importWorkingPlan (WorkingPlanLog.toImportWorkingPlanRequest (r)).getAck ();
+    }    
 
 }
