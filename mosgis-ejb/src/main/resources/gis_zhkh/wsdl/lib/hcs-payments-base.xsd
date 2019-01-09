@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by S (H) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:tns="http://dom.gosuslugi.ru/schema/integration/payments-base/" xmlns:organizations-base="http://dom.gosuslugi.ru/schema/integration/organizations-base/" xmlns:individual-registry-base="http://dom.gosuslugi.ru/schema/integration/individual-registry-base/" xmlns:organizations-registry-base="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" xmlns:account-base="http://dom.gosuslugi.ru/schema/integration/account-base/" xmlns:bills-base="http://dom.gosuslugi.ru/schema/integration/bills-base/" xmlns:premises-base="http://dom.gosuslugi.ru/schema/integration/premises-base/" xmlns:ns1="http://dom.gosuslugi.ru/schema/integration/nsi-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/payments-base/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="12.2.1.10">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:tns="http://dom.gosuslugi.ru/schema/integration/payments-base/" xmlns:organizations-base="http://dom.gosuslugi.ru/schema/integration/organizations-base/" xmlns:individual-registry-base="http://dom.gosuslugi.ru/schema/integration/individual-registry-base/" xmlns:organizations-registry-base="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" xmlns:account-base="http://dom.gosuslugi.ru/schema/integration/account-base/" xmlns:bills-base="http://dom.gosuslugi.ru/schema/integration/bills-base/" xmlns:premises-base="http://dom.gosuslugi.ru/schema/integration/premises-base/" xmlns:ns1="http://dom.gosuslugi.ru/schema/integration/nsi-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/payments-base/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="12.2.2.1">
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/base/" schemaLocation="hcs-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/individual-registry-base/" schemaLocation="hcs-individual-registry-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/organizations-base/" schemaLocation="hcs-organizations-base.xsd"/>
@@ -367,7 +367,7 @@
 								</xs:element>
 								<xs:element name="MSType" type="base:GUIDType">
 									<xs:annotation>
-										<xs:documentation>Вид КУ (справочник "Вид коммунальной услуги")</xs:documentation>
+										<xs:documentation>Вид ГКУ (справочник "Главная коммунальная услуга")</xs:documentation>
 									</xs:annotation>
 								</xs:element>
 								<xs:element name="ASType" type="base:GUIDType">
@@ -382,6 +382,11 @@
 - Штрафы
 - Государственные пошлины
 - Судебные издержки.</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="TMSType" type="ns1:nsiRef">
+									<xs:annotation>
+										<xs:documentation>Вид коммунальной услуги. НСИ 3</xs:documentation>
 									</xs:annotation>
 								</xs:element>
 							</xs:choice>
@@ -510,7 +515,7 @@
 								</xs:element>
 								<xs:element name="MSType" type="base:GUIDType">
 									<xs:annotation>
-										<xs:documentation>Вид КУ (справочник "Вид коммунальной услуги")</xs:documentation>
+										<xs:documentation>Вид ГКУ (справочник "Главная коммунальная услуга")</xs:documentation>
 									</xs:annotation>
 								</xs:element>
 								<xs:element name="ASType" type="base:GUIDType">
@@ -525,6 +530,11 @@
 - Штрафы
 - Государственные пошлины
 - Судебные издержки.</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="TMSType" type="ns1:nsiRef">
+									<xs:annotation>
+										<xs:documentation>Вид коммунальной услуги. НСИ 3</xs:documentation>
 									</xs:annotation>
 								</xs:element>
 							</xs:choice>

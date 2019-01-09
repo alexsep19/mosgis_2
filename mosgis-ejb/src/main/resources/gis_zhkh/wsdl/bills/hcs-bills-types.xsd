@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:tns="http://dom.gosuslugi.ru/schema/integration/bills/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:pm="http://dom.gosuslugi.ru/schema/integration/payment/" xmlns:premises-base="http://dom.gosuslugi.ru/schema/integration/premises-base/" xmlns:bills-base="http://dom.gosuslugi.ru/schema/integration/bills-base/" xmlns:account-base="http://dom.gosuslugi.ru/schema/integration/account-base/" xmlns:payments-base="http://dom.gosuslugi.ru/schema/integration/payments-base/" xmlns:nsi-base="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:organizations-base="http://dom.gosuslugi.ru/schema/integration/organizations-base/" xmlns:organizations-registry-base="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/bills/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="12.2.1.10">
+<xs:schema xmlns:tns="http://dom.gosuslugi.ru/schema/integration/bills/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:pm="http://dom.gosuslugi.ru/schema/integration/payment/" xmlns:premises-base="http://dom.gosuslugi.ru/schema/integration/premises-base/" xmlns:bills-base="http://dom.gosuslugi.ru/schema/integration/bills-base/" xmlns:account-base="http://dom.gosuslugi.ru/schema/integration/account-base/" xmlns:payments-base="http://dom.gosuslugi.ru/schema/integration/payments-base/" xmlns:nsi-base="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:organizations-base="http://dom.gosuslugi.ru/schema/integration/organizations-base/" xmlns:organizations-registry-base="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/bills/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="12.2.2.14">
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/base/" schemaLocation="../lib/hcs-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/premises-base/" schemaLocation="../lib/hcs-premises-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/bills-base/" schemaLocation="../lib/hcs-bills-base.xsd"/>
@@ -280,7 +280,7 @@
 															</xs:restriction>
 														</xs:simpleType>
 													</xs:element>
-													<xs:element name="PaymentInformationGuid" type="base:GUIDType">
+													<xs:element name="PaymentInformationGuid" type="base:GUIDType" minOccurs="0">
 														<xs:annotation>
 															<xs:documentation>Идентификатор платежных реквизитов в платежном документе</xs:documentation>
 														</xs:annotation>
@@ -561,7 +561,7 @@
 			<xs:complexContent>
 				<xs:extension base="base:BaseType">
 					<xs:choice>
-						<xs:element name="AcknowledgmentRequestInfo" maxOccurs="1000">
+						<xs:element name="AcknowledgmentRequestInfo" maxOccurs="500">
 							<xs:complexType>
 								<xs:complexContent>
 									<xs:extension base="payments-base:AcknowledgmentRequestInfoType">
@@ -572,7 +572,7 @@
 								</xs:complexContent>
 							</xs:complexType>
 						</xs:element>
-						<xs:element name="AckCancellation" maxOccurs="1000">
+						<xs:element name="AckCancellation" maxOccurs="500">
 							<xs:annotation>
 								<xs:documentation>Отмена квитирования</xs:documentation>
 							</xs:annotation>
@@ -639,7 +639,7 @@
 												<xs:sequence>
 													<xs:element name="Contract" minOccurs="0">
 														<xs:annotation>
-															<xs:documentation>Информация о договоре (заполняется только при создании информации о состоянии расчетов)</xs:documentation>
+															<xs:documentation>Информация о договоре (заполняется при создании информации о состоянии расчетов или необходимости изменения связи с аннулированным ДРСО)</xs:documentation>
 														</xs:annotation>
 														<xs:complexType>
 															<xs:sequence>
@@ -651,9 +651,9 @@
 															</xs:sequence>
 														</xs:complexType>
 													</xs:element>
-													<xs:element name="ReportingPeriod" maxOccurs="unbounded">
+													<xs:element name="ReportingPeriod" minOccurs="0" maxOccurs="unbounded">
 														<xs:annotation>
-															<xs:documentation>Отчетный период</xs:documentation>
+															<xs:documentation>Отчетный период (не обязателен только при изменении связи между информацией о состоянии расчетов и ДРСО)</xs:documentation>
 														</xs:annotation>
 														<xs:complexType>
 															<xs:complexContent>
@@ -1452,7 +1452,7 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
-			<xs:element name="AccountingPeriodTotal">
+			<xs:element name="AccountingPeriodTotal" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Всего начислено за расчетный период (без перерасчетов и льгот), руб.
 Ссылка на пост. 924 – Приложение 2, п. 19.</xs:documentation>
@@ -1513,7 +1513,7 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
-			<xs:element name="TotalPayable">
+			<xs:element name="TotalPayable" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Итого к оплате за расчетный период, руб.
 Ссылка на пост. 924 – Приложение 2, п. 22.</xs:documentation>
@@ -1525,7 +1525,7 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
-			<xs:element name="AccountingPeriodTotal">
+			<xs:element name="AccountingPeriodTotal" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Всего начислено за расчетный период (без перерасчетов и льгот), руб.
 Ссылка на пост. 924 – Приложение 2, п. 19.</xs:documentation>
@@ -1809,6 +1809,39 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
+			<xs:element name="PaymentRecalculation" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Перерасчеты
+Ссылка на пост. 924 – Приложение 2, параграф VI.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="recalculationReason">
+							<xs:annotation>
+								<xs:documentation>Основания перерасчётов</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:minLength value="1"/>
+									<xs:maxLength value="500"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="sum">
+							<xs:annotation>
+								<xs:documentation>Сумма</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:decimal">
+									<xs:fractionDigits value="2"/>
+									<xs:minInclusive value="-9999999999.99"/>
+									<xs:maxInclusive value="9999999999.99"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
 			<xs:element name="PaymentInformationKey" type="base:GUIDType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Ссылка на платежные реквизиты</xs:documentation>
@@ -1947,14 +1980,14 @@
 					<xs:documentation>Год расчетного периода</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="PaymentInformationGuid" type="base:GUIDType" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Идентификатор платежных реквизитов</xs:documentation>
-				</xs:annotation>
-			</xs:element>
 			<xs:element name="orgPPAGUID" type="base:GUIDType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Поставщик услуги. Идентификатор зарегистрированной организации. Обязателен, если тип ЛС "ЛС РЦ" (isRCAccount), запрещен для заполнения для остальных типов лицевых счетов.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PaymentInformationKey" type="base:GUIDType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Идентификатор платежных реквизитов</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
@@ -2029,6 +2062,39 @@
 						<xs:maxLength value="4000"/>
 					</xs:restriction>
 				</xs:simpleType>
+			</xs:element>
+			<xs:element name="PaymentRecalculation" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Перерасчеты
+Ссылка на пост. 924 – Приложение 2, параграф VI.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="recalculationReason">
+							<xs:annotation>
+								<xs:documentation>Основания перерасчётов</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:minLength value="1"/>
+									<xs:maxLength value="500"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="sum">
+							<xs:annotation>
+								<xs:documentation>Сумма</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:decimal">
+									<xs:fractionDigits value="2"/>
+									<xs:minInclusive value="-9999999999.99"/>
+									<xs:maxInclusive value="9999999999.99"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
@@ -2213,7 +2279,7 @@
 								</xs:element>
 								<xs:element name="MunicipalResource" minOccurs="0" maxOccurs="unbounded">
 									<xs:annotation>
-										<xs:documentation>Коммунальный ресурс при содержании общего имущества. НСИ 2 Вид коммунального ресурса. 
+										<xs:documentation>В том числе коммунальные ресурсы, потребляемые при использовании и содержании общего имущества в многоквартирном доме. НСИ 2 Вид коммунального ресурса. 
 ПП РФ от 26 декабря 2016 г. № 1498.
 Если домом управляет 
 • УК
@@ -2231,6 +2297,20 @@
 													<xs:documentation>Код коммунального ресурса при содержании общего имущества. НСИ 2 "Вид коммунального ресурса"
 Ссылка на пост. 924 – Приложение 2, п. 13.</xs:documentation>
 												</xs:annotation>
+											</xs:element>
+											<xs:element name="Unit" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Единица измерения:
+(S)quare meter - Кв. м
+(D)irectory - Из справочника
+Ссылка на пост. 924 – Приложение 2, п. 14.</xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:string">
+														<xs:enumeration value="S"/>
+														<xs:enumeration value="D"/>
+													</xs:restriction>
+												</xs:simpleType>
 											</xs:element>
 											<xs:element name="Consumption" minOccurs="0">
 												<xs:annotation>
@@ -2261,13 +2341,15 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 																			<xs:annotation>
 																				<xs:documentation>Способ определения объемов КУ:
 (N)orm - Норматив
-(M)etering device - Прибор учета</xs:documentation>
+(M)etering device - Прибор учета
+(O)ther - Иное</xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:string">
 																					<xs:length value="1"/>
 																					<xs:enumeration value="N"/>
 																					<xs:enumeration value="M"/>
+																					<xs:enumeration value="O"/>
 																				</xs:restriction>
 																			</xs:simpleType>
 																		</xs:attribute>
@@ -2277,14 +2359,15 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 														</xs:element>
 													</xs:sequence>
 												</xs:complexType>
-												<xs:unique name="consumptionHSExportTypeUnique">
+												<xs:unique name="consumptionMRxportTypeUnique">
 													<xs:selector xpath="*"/>
 													<xs:field xpath="@type"/>
 												</xs:unique>
 											</xs:element>
-											<xs:element name="Rate">
+											<xs:element name="Rate" minOccurs="0">
 												<xs:annotation>
 													<xs:documentation>Тариф.
+Может быть не заполнен, если заполнен блок tns:MunicipalResource/ tns:GeneralMunicipalResource.
 Ссылка на пост. 924 – Приложение 2, п. 17.</xs:documentation>
 												</xs:annotation>
 												<xs:simpleType>
@@ -2311,7 +2394,7 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 													<xs:documentation>Перерасчеты, льготы, субсидии</xs:documentation>
 												</xs:annotation>
 											</xs:element>
-											<xs:element name="MunicipalServiceCommunalConsumptionPayable">
+											<xs:element name="MunicipalServiceCommunalConsumptionPayable" minOccurs="0">
 												<xs:annotation>
 													<xs:documentation>К оплате за коммунальный ресурс потребления при содержании общего имущества, руб. 
 Ссылка на пост. 924 – Приложение 2, п. 19.</xs:documentation>
@@ -2335,11 +2418,51 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 Ссылка на пост. 924 – Приложение 2, п. 26.</xs:documentation>
 															</xs:annotation>
 														</xs:element>
+														<xs:element name="houseOverallNeedsCurrentValue" type="tns:VolumePDType" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>Текущие показания приборов учёта
+коммунальных ресурсов - коллективных (общедомовых).
+Ссылка на пост. 924 – Приложение 2, п. 28.</xs:documentation>
+															</xs:annotation>
+														</xs:element>
 														<xs:element name="houseTotalHouseOverallNeeds" type="tns:VolumePDType" minOccurs="0">
 															<xs:annotation>
 																<xs:documentation>Суммарный объём коммунальных ресурсов в доме - в целях содержания общего имущества.
 Ссылка на пост. 924 – Приложение 2, п. 30.</xs:documentation>
 															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="PaymentRecalculation" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Перерасчеты
+Ссылка на пост. 924 – Приложение 2, параграф VI.</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="recalculationReason">
+															<xs:annotation>
+																<xs:documentation>Основания перерасчётов</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:string">
+																	<xs:minLength value="1"/>
+																	<xs:maxLength value="500"/>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="sum">
+															<xs:annotation>
+																<xs:documentation>Сумма</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:decimal">
+																	<xs:fractionDigits value="2"/>
+																	<xs:minInclusive value="-9999999999.99"/>
+																	<xs:maxInclusive value="9999999999.99"/>
+																</xs:restriction>
+															</xs:simpleType>
 														</xs:element>
 													</xs:sequence>
 												</xs:complexType>
@@ -2365,6 +2488,49 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 													<xs:restriction base="xs:decimal">
 														<xs:totalDigits value="13"/>
 														<xs:fractionDigits value="2"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:element>
+											<xs:element name="orgPPAGUID" type="base:GUIDType" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Поставщик услуги. Идентификатор зарегистрированной организации. Запрещен для заполнения для других типов лицевых счетов, кроме ЛС РЦ. Если для ЛС РЦ не заполнен, то равен значению из ЖУ.</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="GeneralMunicipalResource" type="tns:GeneralMunicipalResourceType" minOccurs="0" maxOccurs="unbounded">
+												<xs:annotation>
+													<xs:documentation>Главные коммунальные ресурсы, потребляемые при использовании и содержании общего имущества в многоквартирном доме</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="PaymentRecalculation" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>Перерасчеты
+Ссылка на пост. 924 – Приложение 2, параграф VI.</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="recalculationReason">
+												<xs:annotation>
+													<xs:documentation>Основания перерасчётов</xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:string">
+														<xs:minLength value="1"/>
+														<xs:maxLength value="500"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:element>
+											<xs:element name="sum">
+												<xs:annotation>
+													<xs:documentation>Сумма</xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:decimal">
+														<xs:fractionDigits value="2"/>
+														<xs:minInclusive value="-9999999999.99"/>
+														<xs:maxInclusive value="9999999999.99"/>
 													</xs:restriction>
 												</xs:simpleType>
 											</xs:element>
@@ -2426,6 +2592,39 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 										<xs:selector xpath="*"/>
 										<xs:field xpath="@type"/>
 									</xs:unique>
+								</xs:element>
+								<xs:element name="PaymentRecalculation" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>Перерасчеты
+Ссылка на пост. 924 – Приложение 2, параграф VI.</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="recalculationReason">
+												<xs:annotation>
+													<xs:documentation>Основания перерасчётов</xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:string">
+														<xs:minLength value="1"/>
+														<xs:maxLength value="500"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:element>
+											<xs:element name="sum">
+												<xs:annotation>
+													<xs:documentation>Сумма</xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:decimal">
+														<xs:fractionDigits value="2"/>
+														<xs:minInclusive value="-9999999999.99"/>
+														<xs:maxInclusive value="9999999999.99"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
 								</xs:element>
 							</xs:sequence>
 						</xs:extension>
@@ -2626,6 +2825,215 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 					</xs:complexContent>
 				</xs:complexType>
 			</xs:element>
+			<xs:element name="GroupMunicipalService">
+				<xs:annotation>
+					<xs:documentation>Вид коммунальной услуги, содержащей главные коммунальные услуги.
+В блоке предоставляется возможность указать группирующие виды коммунальных услуг, с разбивкой на главные коммунальные услуги.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="TypeMunicipalService" type="tns:TypeMunicipalServiceType">
+							<xs:annotation>
+								<xs:documentation>Вид коммунальной услуги </xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="MunicipalService" minOccurs="1" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>Главная коммунальная услуга с объемом потребления</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:complexContent>
+									<xs:extension base="tns:ServicePDImportType">
+										<xs:sequence>
+											<xs:element name="ServiceCharge" type="tns:ServiceChargeImportType" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Перерасчеты, льготы, субсидии</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element ref="tns:PiecemealPayment" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Рассрочка</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="PaymentRecalculation" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Перерасчеты
+Ссылка на пост. 924 – Приложение 2, параграф VI.</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="recalculationReason">
+															<xs:annotation>
+																<xs:documentation>Основания перерасчётов</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:string">
+																	<xs:minLength value="1"/>
+																	<xs:maxLength value="500"/>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="sum">
+															<xs:annotation>
+																<xs:documentation>Сумма</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:decimal">
+																	<xs:fractionDigits value="2"/>
+																	<xs:minInclusive value="-9999999999.99"/>
+																	<xs:maxInclusive value="9999999999.99"/>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element ref="tns:ServiceInformation" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Справочная информация</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Consumption" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Объем услуг - индивидульное потребление и(или) общедомовые нужды.
+Ссылка на пост. 924 – Приложение 2, п. 15 и 16.</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Volume" maxOccurs="2">
+															<xs:annotation>
+																<xs:documentation>Объем услуги</xs:documentation>
+															</xs:annotation>
+															<xs:complexType>
+																<xs:simpleContent>
+																	<xs:extension base="tns:ConsumptionVolumeType">
+																		<xs:attribute name="type">
+																			<xs:annotation>
+																				<xs:documentation>Тип предоставления услуги:
+(I)ndividualConsumption - индивидульное потребление
+house(O)verallNeeds - общедомовые нужды</xs:documentation>
+																			</xs:annotation>
+																			<xs:simpleType>
+																				<xs:restriction base="xs:string">
+																					<xs:enumeration value="I"/>
+																					<xs:enumeration value="O"/>
+																				</xs:restriction>
+																			</xs:simpleType>
+																		</xs:attribute>
+																		<xs:attribute name="determiningMethod">
+																			<xs:annotation>
+																				<xs:documentation>Способ определения объемов КУ:
+(N)orm - Норматив
+(M)etering device - Прибор учета
+(O)ther - Иное</xs:documentation>
+																			</xs:annotation>
+																			<xs:simpleType>
+																				<xs:restriction base="xs:string">
+																					<xs:length value="1"/>
+																					<xs:enumeration value="N"/>
+																					<xs:enumeration value="M"/>
+																					<xs:enumeration value="O"/>
+																				</xs:restriction>
+																			</xs:simpleType>
+																		</xs:attribute>
+																	</xs:extension>
+																</xs:simpleContent>
+															</xs:complexType>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+												<xs:unique name="consumptionMSExport3TypeUnique">
+													<xs:selector xpath="*"/>
+													<xs:field xpath="@type"/>
+												</xs:unique>
+											</xs:element>
+											<xs:element name="MultiplyingFactor" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Повышающий коэффициент</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Ratio">
+															<xs:annotation>
+																<xs:documentation>Размер повышающего коэффициента</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:decimal">
+																	<xs:totalDigits value="5"/>
+																	<xs:fractionDigits value="2"/>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="AmountOfExcessFees" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>Размер превышения платы, рассчитанной с применением повышающего коэффициента над размером платы, рассчитанной без учета повышающего коэффициента (руб)</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:decimal">
+																	<xs:totalDigits value="13"/>
+																	<xs:fractionDigits value="2"/>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="MunicipalServiceIndividualConsumptionPayable" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>К оплате за индивидуальное потребление коммунальной услуги, руб.
+Ссылка на пост. 924 – Приложение 2, п. 23.</xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:decimal">
+														<xs:totalDigits value="13"/>
+														<xs:fractionDigits value="2"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:element>
+											<xs:element name="MunicipalServiceCommunalConsumptionPayable" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>К оплате за общедомовое потребление коммунальной услуги, руб.
+Ссылка на пост. 924 – Приложение 2, п. 23.</xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:decimal">
+														<xs:totalDigits value="13"/>
+														<xs:fractionDigits value="2"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:element>
+											<xs:element name="AmountOfPaymentMunicipalServiceIndividualConsumption" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Размер платы за коммунальные услуги, индивидуальное потребление.
+Ссылка на пост. 924 – Приложение 2, п. 18.</xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:decimal">
+														<xs:totalDigits value="13"/>
+														<xs:fractionDigits value="2"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:element>
+											<xs:element name="AmountOfPaymentMunicipalServiceCommunalConsumption" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Размер платы за коммунальные услуги, общедомовые нужды.
+Ссылка на пост. 924 – Приложение 2, п. 18.</xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:decimal">
+														<xs:totalDigits value="13"/>
+														<xs:fractionDigits value="2"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:element>
+										</xs:sequence>
+									</xs:extension>
+								</xs:complexContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
 		</xs:choice>
 	</xs:complexType>
 	<xs:complexType name="PDServiceChargeExportType">
@@ -2648,7 +3056,7 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 								</xs:element>
 								<xs:element name="MunicipalResource" minOccurs="0" maxOccurs="unbounded">
 									<xs:annotation>
-										<xs:documentation>Коммунальный ресурс при содержании общего имущества. НСИ 2 Вид коммунального ресурса. 
+										<xs:documentation>В том числе коммунальные ресурсы, потребляемые при использовании и содержании общего имущества в многоквартирном доме. НСИ 2 Вид коммунального ресурса. 
 ПП РФ от 26 декабря 2016 г. № 1498.
 Если домом управляет 
 • УК
@@ -2696,13 +3104,15 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 																			<xs:annotation>
 																				<xs:documentation>Способ определения объемов КУ:
 (N)orm - Норматив
-(M)etering device - Прибор учета</xs:documentation>
+(M)etering device - Прибор учета
+(O)ther - Иное</xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:string">
 																					<xs:length value="1"/>
 																					<xs:enumeration value="N"/>
 																					<xs:enumeration value="M"/>
+																					<xs:enumeration value="O"/>
 																				</xs:restriction>
 																			</xs:simpleType>
 																		</xs:attribute>
@@ -2717,7 +3127,7 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 													<xs:field xpath="@type"/>
 												</xs:unique>
 											</xs:element>
-											<xs:element name="Rate">
+											<xs:element name="Rate" minOccurs="0">
 												<xs:annotation>
 													<xs:documentation>Тариф.
 Ссылка на пост. 924 – Приложение 2, п. 17.</xs:documentation>
@@ -2770,11 +3180,51 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 Ссылка на пост. 924 – Приложение 2, п. 26.</xs:documentation>
 															</xs:annotation>
 														</xs:element>
+														<xs:element name="houseOverallNeedsCurrentValue" type="tns:VolumePDType" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>Текущие показания приборов учёта
+коммунальных ресурсов - коллективных (общедомовых).
+Ссылка на пост. 924 – Приложение 2, п. 28.</xs:documentation>
+															</xs:annotation>
+														</xs:element>
 														<xs:element name="houseTotalHouseOverallNeeds" type="tns:VolumePDType" minOccurs="0">
 															<xs:annotation>
 																<xs:documentation>Суммарный объём коммунальных ресурсов в доме - в целях содержания общего имущества.
 Ссылка на пост. 924 – Приложение 2, п. 30.</xs:documentation>
 															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="PaymentRecalculation" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Перерасчеты
+Ссылка на пост. 924 – Приложение 2, параграф VI.</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="recalculationReason">
+															<xs:annotation>
+																<xs:documentation>Основания перерасчётов</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:string">
+																	<xs:minLength value="1"/>
+																	<xs:maxLength value="500"/>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="sum">
+															<xs:annotation>
+																<xs:documentation>Сумма</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:decimal">
+																	<xs:fractionDigits value="2"/>
+																	<xs:minInclusive value="-9999999999.99"/>
+																	<xs:maxInclusive value="9999999999.99"/>
+																</xs:restriction>
+															</xs:simpleType>
 														</xs:element>
 													</xs:sequence>
 												</xs:complexType>
@@ -2800,6 +3250,49 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 													<xs:restriction base="xs:decimal">
 														<xs:totalDigits value="18"/>
 														<xs:fractionDigits value="2"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:element>
+											<xs:element name="orgPPAGUID" type="base:GUIDType" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Поставщик услуги. Идентификатор зарегистрированной организации. Обязателен, если тип ЛС "ЛС РЦ" (isRCAccount), запрещен для заполнения для остальных типов лицевых счетов.</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="GeneralMunicipalResource" type="tns:GeneralMunicipalResourceExportType" minOccurs="0" maxOccurs="unbounded">
+												<xs:annotation>
+													<xs:documentation>Главные коммунальные ресурсы</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="PaymentRecalculation" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>Перерасчеты
+Ссылка на пост. 924 – Приложение 2, параграф VI.</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="recalculationReason">
+												<xs:annotation>
+													<xs:documentation>Основания перерасчётов</xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:string">
+														<xs:minLength value="1"/>
+														<xs:maxLength value="500"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:element>
+											<xs:element name="sum">
+												<xs:annotation>
+													<xs:documentation>Сумма</xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:decimal">
+														<xs:fractionDigits value="2"/>
+														<xs:minInclusive value="-9999999999.99"/>
+														<xs:maxInclusive value="9999999999.99"/>
 													</xs:restriction>
 												</xs:simpleType>
 											</xs:element>
@@ -2861,6 +3354,39 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 										<xs:selector xpath="*"/>
 										<xs:field xpath="@type"/>
 									</xs:unique>
+								</xs:element>
+								<xs:element name="PaymentRecalculation" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>Перерасчеты
+Ссылка на пост. 924 – Приложение 2, параграф VI.</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="recalculationReason">
+												<xs:annotation>
+													<xs:documentation>Основания перерасчётов</xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:string">
+														<xs:minLength value="1"/>
+														<xs:maxLength value="500"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:element>
+											<xs:element name="sum">
+												<xs:annotation>
+													<xs:documentation>Сумма</xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:decimal">
+														<xs:fractionDigits value="2"/>
+														<xs:minInclusive value="-9999999999.99"/>
+														<xs:maxInclusive value="9999999999.99"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
 								</xs:element>
 							</xs:sequence>
 						</xs:extension>
@@ -3132,6 +3658,214 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 					</xs:complexContent>
 				</xs:complexType>
 			</xs:element>
+			<xs:element name="GroupMunicipalService">
+				<xs:annotation>
+					<xs:documentation>Вид коммунальной услуги, содержащей главные коммунальные услуги</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="TypeMunicipalService" type="tns:TypeMunicipalServiceExportType">
+							<xs:annotation>
+								<xs:documentation>Вид коммунальной услуги </xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="MunicipalService" minOccurs="0" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>Главная коммунальная услуга с объемом потребления</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:complexContent>
+									<xs:extension base="tns:ServicePDType">
+										<xs:sequence>
+											<xs:element name="ServiceCharge" type="tns:ServiceChargeImportType" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Перерасчеты, льготы, субсидии</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element ref="tns:PiecemealPayment" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Рассрочка</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="PaymentRecalculation" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Перерасчеты
+Ссылка на пост. 924 – Приложение 2, параграф VI.</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="recalculationReason">
+															<xs:annotation>
+																<xs:documentation>Основания перерасчётов</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:string">
+																	<xs:minLength value="1"/>
+																	<xs:maxLength value="500"/>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="sum">
+															<xs:annotation>
+																<xs:documentation>Сумма</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:decimal">
+																	<xs:fractionDigits value="2"/>
+																	<xs:minInclusive value="-9999999999.99"/>
+																	<xs:maxInclusive value="9999999999.99"/>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element ref="tns:ServiceInformation" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Справочная информация</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Consumption" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Объем услуг - индивидульное потребление и(или) общедомовые нужды.
+Ссылка на пост. 924 – Приложение 2, п. 15 и 16.</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Volume" maxOccurs="2">
+															<xs:annotation>
+																<xs:documentation>Объем услуги</xs:documentation>
+															</xs:annotation>
+															<xs:complexType>
+																<xs:simpleContent>
+																	<xs:extension base="tns:ConsumptionVolumeType">
+																		<xs:attribute name="type">
+																			<xs:annotation>
+																				<xs:documentation>Тип предоставления услуги:
+(I)ndividualConsumption - индивидульное потребление
+house(O)verallNeeds - общедомовые нужды</xs:documentation>
+																			</xs:annotation>
+																			<xs:simpleType>
+																				<xs:restriction base="xs:string">
+																					<xs:enumeration value="I"/>
+																					<xs:enumeration value="O"/>
+																				</xs:restriction>
+																			</xs:simpleType>
+																		</xs:attribute>
+																		<xs:attribute name="determiningMethod">
+																			<xs:annotation>
+																				<xs:documentation>Способ определения объемов КУ:
+(N)orm - Норматив
+(M)etering device - Прибор учета
+(O)ther - Иное</xs:documentation>
+																			</xs:annotation>
+																			<xs:simpleType>
+																				<xs:restriction base="xs:string">
+																					<xs:length value="1"/>
+																					<xs:enumeration value="N"/>
+																					<xs:enumeration value="M"/>
+																					<xs:enumeration value="O"/>
+																				</xs:restriction>
+																			</xs:simpleType>
+																		</xs:attribute>
+																	</xs:extension>
+																</xs:simpleContent>
+															</xs:complexType>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+												<xs:unique name="consumptionMSExport2TypeUnique">
+													<xs:selector xpath="*"/>
+													<xs:field xpath="@type"/>
+												</xs:unique>
+											</xs:element>
+											<xs:element name="MultiplyingFactor" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Повышающий коэффициент</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Ratio">
+															<xs:annotation>
+																<xs:documentation>Размер повышающего коэффициента</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:decimal">
+																	<xs:totalDigits value="5"/>
+																	<xs:fractionDigits value="2"/>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="AmountOfExcessFees" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>Размер превышения платы, рассчитанной с применением повышающего коэффициента над размером платы, рассчитанной без учета повышающего коэффициента (руб)</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:decimal">
+																	<xs:totalDigits value="13"/>
+																	<xs:fractionDigits value="2"/>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="MunicipalServiceIndividualConsumptionPayable" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>К оплате за индивидуальное потребление коммунальной услуги, руб.
+Ссылка на пост. 924 – Приложение 2, п. 23.</xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:decimal">
+														<xs:totalDigits value="13"/>
+														<xs:fractionDigits value="2"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:element>
+											<xs:element name="MunicipalServiceCommunalConsumptionPayable" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>К оплате за общедомовое потребление коммунальной услуги, руб.
+Ссылка на пост. 924 – Приложение 2, п. 23.</xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:decimal">
+														<xs:totalDigits value="13"/>
+														<xs:fractionDigits value="2"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:element>
+											<xs:element name="AmountOfPaymentMunicipalServiceIndividualConsumption" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Размер платы за коммунальные услуги, индивидуальное потребление.
+Ссылка на пост. 924 – Приложение 2, п. 18.</xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:decimal">
+														<xs:totalDigits value="13"/>
+														<xs:fractionDigits value="2"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:element>
+											<xs:element name="AmountOfPaymentMunicipalServiceCommunalConsumption" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Размер платы за коммунальные услуги, общедомовые нужды.
+Ссылка на пост. 924 – Приложение 2, п. 18.</xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:decimal">
+														<xs:totalDigits value="13"/>
+														<xs:fractionDigits value="2"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:element>
+										</xs:sequence>
+									</xs:extension>
+								</xs:complexContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
 		</xs:choice>
 	</xs:complexType>
 	<xs:complexType name="PDServiceDebtType">
@@ -3149,7 +3883,7 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 							<xs:sequence minOccurs="0">
 								<xs:element name="MunicipalResource" minOccurs="0" maxOccurs="unbounded">
 									<xs:annotation>
-										<xs:documentation>Коммунальный ресурс при содержании общего имущества. НСИ 2 Вид коммунального ресурса. 
+										<xs:documentation>В том числе коммунальные ресурсы, потребляемые при использовании и содержании общего имущества в многоквартирном доме. НСИ 2 Вид коммунального ресурса. 
 ПП РФ от 26 декабря 2016 г. № 1498.
 Если домом управляет 
 • УК
@@ -3194,6 +3928,57 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 Ссылка на пост. 924 – Приложение 2, п. 13.</xs:documentation>
 												</xs:annotation>
 											</xs:element>
+											<xs:element name="orgPPAGUID" type="base:GUIDType" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Поставщик услуги. Идентификатор зарегистрированной организации. Обязателен, если тип ЛС "ЛС РЦ" (isRCAccount), запрещен для заполнения для остальных типов лицевых счетов.</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="GeneralMunicipalResource" minOccurs="0" maxOccurs="unbounded">
+												<xs:annotation>
+													<xs:documentation>Главные коммунальные ресурсы</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="ServiceType" type="nsi-base:nsiRef">
+															<xs:annotation>
+																<xs:documentation>Код главного коммунального ресурса (НСИ)
+Ссылка на пост. 924 – Приложение 2, п. 13.</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:choice>
+															<xs:element name="TotalPayable">
+																<xs:annotation>
+																	<xs:documentation>К оплате за расчетный период, руб. При детализации Жилищной услуги по периоду (Month и Year заполнены).
+Ссылка на пост. 924 – Приложение 2, п. 22.</xs:documentation>
+																</xs:annotation>
+																<xs:simpleType>
+																	<xs:restriction base="xs:decimal">
+																		<xs:totalDigits value="18"/>
+																		<xs:fractionDigits value="2"/>
+																	</xs:restriction>
+																</xs:simpleType>
+															</xs:element>
+															<xs:element name="TotalSumDebtPayable">
+																<xs:annotation>
+																	<xs:documentation>Итого к оплате за расчетный период, руб. Для Жилищной услуги Итого к оплате (TotalSumDebtPayable).
+Ссылка на пост. 924 – Приложение 2, п. 22.</xs:documentation>
+																</xs:annotation>
+																<xs:simpleType>
+																	<xs:restriction base="xs:decimal">
+																		<xs:totalDigits value="18"/>
+																		<xs:fractionDigits value="2"/>
+																	</xs:restriction>
+																</xs:simpleType>
+															</xs:element>
+														</xs:choice>
+														<xs:element name="orgPPAGUID" type="base:GUIDType" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>Поставщик услуги. Идентификатор зарегистрированной организации. Обязателен, если тип ЛС "ЛС РЦ" (isRCAccount), запрещен для заполнения для остальных типов лицевых счетов.</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
 										</xs:sequence>
 									</xs:complexType>
 								</xs:element>
@@ -3222,6 +4007,80 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 					</xs:complexContent>
 				</xs:complexType>
 			</xs:element>
+			<xs:element name="GroupMunicipalService">
+				<xs:annotation>
+					<xs:documentation>Вид коммунальной услуги, содержащей главные коммунальные услуги</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="TypeMunicipalService">
+							<xs:annotation>
+								<xs:documentation>Вид коммунальной услуги </xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="ServiceType" type="nsi-base:nsiRef">
+										<xs:annotation>
+											<xs:documentation>Код услуги (жилищной, коммунальной или дополнительной). НСИ 50, 3, 1.
+Ссылка на пост. 924 – Приложение 2, п. 12.</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:choice>
+										<xs:sequence>
+											<xs:element ref="base:Month">
+												<xs:annotation>
+													<xs:documentation>Месяц
+Ссылка на пост. 924 – Приложение 2, п. 6 в).</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element ref="base:Year">
+												<xs:annotation>
+													<xs:documentation>Год
+Ссылка на пост. 924 – Приложение 2, п. 6 в).</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="TotalPayable">
+												<xs:annotation>
+													<xs:documentation>К оплате за расчетный период, руб.
+Ссылка на пост. 924 – Приложение 2, п. 22.</xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:decimal">
+														<xs:totalDigits value="13"/>
+														<xs:fractionDigits value="2"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:element>
+										</xs:sequence>
+										<xs:element name="TotalSumDebtPayable">
+											<xs:annotation>
+												<xs:documentation>Итого к оплате за расчетный период, руб.
+Ссылка на пост. 924 – Приложение 2, п. 22.</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:decimal">
+													<xs:totalDigits value="18"/>
+													<xs:fractionDigits value="2"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+									</xs:choice>
+									<xs:element name="orgPPAGUID" type="base:GUIDType" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Поставщик услуги. Идентификатор зарегистрированной организации. Обязателен, если тип ЛС "ЛС РЦ" (isRCAccount), запрещен для заполнения для остальных типов лицевых счетов.</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="MunicipalService" type="tns:ServiceDebtType" minOccurs="0" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>Главная коммунальная услуга</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
 		</xs:choice>
 	</xs:complexType>
 	<xs:complexType name="PDServiceDebtImportType">
@@ -3239,7 +4098,7 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 							<xs:sequence minOccurs="0">
 								<xs:element name="MunicipalResource" minOccurs="0" maxOccurs="unbounded">
 									<xs:annotation>
-										<xs:documentation>Коммунальный ресурс при содержании общего имущества для Жилищной услуги = Плата за содержание жилого помещения. НСИ 2 Вид коммунального ресурса. 
+										<xs:documentation>В том числе коммунальные ресурсы, потребляемые при использовании и содержании общего имущества в многоквартирном доме. НСИ 2 Вид коммунального ресурса. 
 ПП РФ от 26 декабря 2016 г. № 1498.
 Если домом управляет 
 • УК
@@ -3270,6 +4129,43 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 													</xs:restriction>
 												</xs:simpleType>
 											</xs:element>
+											<xs:element name="orgPPAGUID" type="base:GUIDType" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>Поставщик услуги. Идентификатор зарегистрированной организации. Обязателен, если тип ЛС "ЛС РЦ" (isRCAccount), запрещен для заполнения для остальных типов лицевых счетов.</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="GeneralMunicipalResource" minOccurs="0" maxOccurs="unbounded">
+												<xs:annotation>
+													<xs:documentation>Главные коммунальные ресурсы, потребляемые при использовании и содержании общего имущества в многоквартирном доме</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="ServiceType" type="nsi-base:nsiRef">
+															<xs:annotation>
+																<xs:documentation>Код главного коммунального ресурса (НСИ)
+Ссылка на пост. 924 – Приложение 2, п. 13.</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="TotalPayable">
+															<xs:annotation>
+																<xs:documentation>К оплате за расчетный период, руб.
+Ссылка на пост. 924 – Приложение 2, п. 22.</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:decimal">
+																	<xs:totalDigits value="13"/>
+																	<xs:fractionDigits value="2"/>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="orgPPAGUID" type="base:GUIDType" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>Поставщик услуги. Идентификатор зарегистрированной организации. Обязателен, если тип ЛС "ЛС РЦ" (isRCAccount), запрещен для заполнения для остальных типов лицевых счетов.</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
 										</xs:sequence>
 									</xs:complexType>
 								</xs:element>
@@ -3296,6 +4192,70 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 					<xs:complexContent>
 						<xs:extension base="tns:ServiceDebtImportType"/>
 					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GroupMunicipalService">
+				<xs:annotation>
+					<xs:documentation>Вид коммунальной услуги, содержащей главные коммунальные услуги.
+В блоке предоставляется возможность указать группирующие виды коммунальных услуг, с разбивкой на главные коммунальные услуги.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="TypeMunicipalService">
+							<xs:annotation>
+								<xs:documentation>Вид коммунальной услуги </xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="ServiceType" type="nsi-base:nsiRef">
+										<xs:annotation>
+											<xs:documentation>Код услуги (жилищной, коммунальной или дополнительной). НСИ 50, 3, 1.
+Ссылка на пост. 924 – Приложение 2, п. 12.</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element ref="base:Month">
+										<xs:annotation>
+											<xs:documentation>Месяц
+Ссылка на пост. 924 – Приложение 2, п. 6 в).</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element ref="base:Year">
+										<xs:annotation>
+											<xs:documentation>Год
+Ссылка на пост. 924 – Приложение 2, п. 6 в).</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="TotalPayable">
+										<xs:annotation>
+											<xs:documentation>К оплате за расчетный период, руб.
+Ссылка на пост. 924 – Приложение 2, п. 22.</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:decimal">
+												<xs:totalDigits value="13"/>
+												<xs:fractionDigits value="2"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="orgPPAGUID" type="base:GUIDType" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Поставщик услуги. Идентификатор зарегистрированной организации. Обязателен, если тип ЛС "ЛС РЦ" (isRCAccount), запрещен для заполнения для остальных типов лицевых счетов.</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="MunicipalService" minOccurs="1" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>Главная коммунальная услуга</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:complexContent>
+									<xs:extension base="tns:ServiceDebtImportType"/>
+								</xs:complexContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
 		</xs:choice>
@@ -3691,6 +4651,31 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 					<xs:documentation>Дата последней поступившей оплаты</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="LimitIndex" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Предельный (максимальный) индекс изменения размера платы граждан за коммунальные услуги в муниципальном образовании, %
+Ссылка на пост. 924 – Приложение 2, п. 32</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:fractionDigits value="2"/>
+						<xs:minInclusive value="0"/>
+						<xs:maxExclusive value="1000"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="SubsidiesCompensationSocialSupport" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Субсидии, компенсации и иные меры соц. поддержки граждан, руб.
+Ссылка на пост. 924 – Приложение 2, п. 21</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:fractionDigits value="2"/>
+						<xs:maxExclusive value="100000000"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="PaymentDocumentExportType">
@@ -3776,7 +4761,7 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 								</xs:complexContent>
 							</xs:complexType>
 						</xs:element>
-						<xs:element name="CapitalRepairYearCharge" type="tns:CapitalRepairYearImportType" minOccurs="0">
+						<xs:element name="CapitalRepairYearCharge" type="tns:CapitalRepairYearExportType" minOccurs="0">
 							<xs:annotation>
 								<xs:documentation>Начисление за капитальный ремонт. Указываются начисления за капремонт за 12 месяцев  календарного года.</xs:documentation>
 							</xs:annotation>
@@ -4150,6 +5135,30 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 Ссылка на пост. 924 – Приложение 2, п. 6 в).</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="LimitIndex" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Предельный (максимальный) индекс изменения размера платы граждан за коммунальные услуги в муниципальном образовании, %
+Ссылка на пост. 924 – Приложение 2, п. 32</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="20"/>
+						<xs:fractionDigits value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="SubsidiesCompensationSocialSupport" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Субсидии, компенсации и иные меры соц. поддержки граждан, руб.
+Ссылка на пост. 924 – Приложение 2, п. 21</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:fractionDigits value="2"/>
+						<xs:maxExclusive value="100000000"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
 			<xs:element name="PaymentProviderInformation" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Сведения об исполнителе услуг платежного документа.
@@ -4322,6 +5331,884 @@ house(O)verallNeeds - общедомовые нужды</xs:documentation>
 						<xs:maxLength value="2000"/>
 					</xs:restriction>
 				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TypeMunicipalServiceType">
+		<xs:annotation>
+			<xs:documentation>Вид коммунальной услуги</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ServiceType" type="nsi-base:nsiRef">
+				<xs:annotation>
+					<xs:documentation>Вид коммунальной услуги (НСИ 3)
+Ссылка на пост. 924 – Приложение 2, п. 12.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Consumption" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Объем услуг - индивидульное потребление и(или) общедомовые нужды.
+Ссылка на пост. 924 – Приложение 2, п. 15 и 16.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Volume" maxOccurs="2">
+							<xs:annotation>
+								<xs:documentation>Объем услуги</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="tns:ConsumptionVolumeType">
+										<xs:attribute name="type">
+											<xs:annotation>
+												<xs:documentation>Тип предоставления услуги:
+(I)ndividualConsumption - индивидульное потребление
+house(O)verallNeeds - общедомовые нужды</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:enumeration value="I"/>
+													<xs:enumeration value="O"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:attribute>
+										<xs:attribute name="determiningMethod">
+											<xs:annotation>
+												<xs:documentation>Способ определения объемов КУ:
+(N)orm - Норматив
+(M)etering device - Прибор учета
+(O)ther - Иное</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:length value="1"/>
+													<xs:enumeration value="N"/>
+													<xs:enumeration value="M"/>
+													<xs:enumeration value="O"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:attribute>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+				<xs:unique name="consumptionTMS2ExportTypeUnique">
+					<xs:selector xpath="*"/>
+					<xs:field xpath="@type"/>
+				</xs:unique>
+			</xs:element>
+			<xs:element name="Rate" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Тариф.
+Ссылка на пост. 924 – Приложение 2, п. 17.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:fractionDigits value="6"/>
+						<xs:totalDigits value="14"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="AmountOfPaymentMunicipalServiceIndividualConsumption" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Размер платы за коммунальные услуги, индивидуальное потребление.
+Ссылка на пост. 924 – Приложение 2, п. 18.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="13"/>
+						<xs:fractionDigits value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="AmountOfPaymentMunicipalServiceCommunalConsumption" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Размер платы за коммунальные услуги, общедомовые нужды.
+Ссылка на пост. 924 – Приложение 2, п. 18.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="13"/>
+						<xs:fractionDigits value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="AccountingPeriodTotal" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Всего начислено за расчетный период (без перерасчетов и льгот), руб.
+Ссылка на пост. 924 – Приложение 2, п. 19.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="13"/>
+						<xs:fractionDigits value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="MultiplyingFactor" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Повышающий коэффициент</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Ratio">
+							<xs:annotation>
+								<xs:documentation>Размер повышающего коэффициента</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:decimal">
+									<xs:totalDigits value="5"/>
+									<xs:fractionDigits value="2"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="AmountOfExcessFees" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Размер превышения платы, рассчитанной с применением повышающего коэффициента над размером платы, рассчитанной без учета повышающего коэффициента (руб)</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:decimal">
+									<xs:totalDigits value="13"/>
+									<xs:fractionDigits value="2"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ServiceCharge" type="tns:ServiceChargeImportType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Перерасчеты, льготы, субсидии</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TotalPayable">
+				<xs:annotation>
+					<xs:documentation>Итого к оплате за расчетный период, руб.
+Ссылка на пост. 924 – Приложение 2, п. 22.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="13"/>
+						<xs:fractionDigits value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="MunicipalServiceIndividualConsumptionPayable" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>К оплате за индивидуальное потребление коммунальной услуги, руб.
+Ссылка на пост. 924 – Приложение 2, п. 23.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="13"/>
+						<xs:fractionDigits value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="MunicipalServiceCommunalConsumptionPayable" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>К оплате за общедомовое потребление коммунальной услуги, руб.
+Ссылка на пост. 924 – Приложение 2, п. 23.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="13"/>
+						<xs:fractionDigits value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="CalcExplanation" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Порядок расчетов</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+						<xs:maxLength value="4000"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="orgPPAGUID" type="base:GUIDType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Поставщик услуги. Идентификатор зарегистрированной организации. Обязателен, если тип ЛС "ЛС РЦ" (isRCAccount), запрещен для заполнения для остальных типов лицевых счетов.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element ref="tns:PiecemealPayment" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Рассрочка</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PaymentRecalculation" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Перерасчеты
+Ссылка на пост. 924 – Приложение 2, параграф VI.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="recalculationReason">
+							<xs:annotation>
+								<xs:documentation>Основания перерасчётов</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:minLength value="1"/>
+									<xs:maxLength value="500"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="sum">
+							<xs:annotation>
+								<xs:documentation>Сумма</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:decimal">
+									<xs:fractionDigits value="2"/>
+									<xs:minInclusive value="-9999999999.99"/>
+									<xs:maxInclusive value="9999999999.99"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element ref="tns:ServiceInformation" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Справочная информация</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TypeMunicipalServiceExportType">
+		<xs:annotation>
+			<xs:documentation>Вид коммунальной услуги</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ServiceType" type="nsi-base:nsiRef">
+				<xs:annotation>
+					<xs:documentation>Вид коммунальной услуги (НСИ 3)
+Ссылка на пост. 924 – Приложение 2, п. 12.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Consumption" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Объем услуг - индивидульное потребление и(или) общедомовые нужды.
+Ссылка на пост. 924 – Приложение 2, п. 15 и 16.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Volume" maxOccurs="2">
+							<xs:annotation>
+								<xs:documentation>Объем услуги</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="tns:ConsumptionVolumeType">
+										<xs:attribute name="type">
+											<xs:annotation>
+												<xs:documentation>Тип предоставления услуги:
+(I)ndividualConsumption - индивидульное потребление
+house(O)verallNeeds - общедомовые нужды</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:enumeration value="I"/>
+													<xs:enumeration value="O"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:attribute>
+										<xs:attribute name="determiningMethod">
+											<xs:annotation>
+												<xs:documentation>Способ определения объемов КУ:
+(N)orm - Норматив
+(M)etering device - Прибор учета
+(O)ther - Иное</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:length value="1"/>
+													<xs:enumeration value="N"/>
+													<xs:enumeration value="M"/>
+													<xs:enumeration value="O"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:attribute>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+				<xs:unique name="consumptionTMSExportTypeUnique">
+					<xs:selector xpath="*"/>
+					<xs:field xpath="@type"/>
+				</xs:unique>
+			</xs:element>
+			<xs:element name="Rate" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Тариф.
+Ссылка на пост. 924 – Приложение 2, п. 17.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:fractionDigits value="6"/>
+						<xs:totalDigits value="14"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="AmountOfPaymentMunicipalServiceIndividualConsumption" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Размер платы за коммунальные услуги, индивидуальное потребление.
+Ссылка на пост. 924 – Приложение 2, п. 18.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="13"/>
+						<xs:fractionDigits value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="AmountOfPaymentMunicipalServiceCommunalConsumption" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Размер платы за коммунальные услуги, общедомовые нужды.
+Ссылка на пост. 924 – Приложение 2, п. 18.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="13"/>
+						<xs:fractionDigits value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="AccountingPeriodTotal" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Всего начислено за расчетный период (без перерасчетов и льгот), руб.
+Ссылка на пост. 924 – Приложение 2, п. 19.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="13"/>
+						<xs:fractionDigits value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="MultiplyingFactor" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Повышающий коэффициент</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Ratio">
+							<xs:annotation>
+								<xs:documentation>Размер повышающего коэффициента</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:decimal">
+									<xs:totalDigits value="5"/>
+									<xs:fractionDigits value="2"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="AmountOfExcessFees" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Размер превышения платы, рассчитанной с применением повышающего коэффициента над размером платы, рассчитанной без учета повышающего коэффициента (руб)</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:decimal">
+									<xs:totalDigits value="13"/>
+									<xs:fractionDigits value="2"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ServiceCharge" type="tns:ServiceChargeImportType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Перерасчеты, льготы, субсидии</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TotalPayable" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Итого к оплате за расчетный период, руб.
+Ссылка на пост. 924 – Приложение 2, п. 22.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="13"/>
+						<xs:fractionDigits value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="MunicipalServiceIndividualConsumptionPayable" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>К оплате за индивидуальное потребление коммунальной услуги, руб.
+Ссылка на пост. 924 – Приложение 2, п. 23.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="13"/>
+						<xs:fractionDigits value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="MunicipalServiceCommunalConsumptionPayable" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>К оплате за общедомовое потребление коммунальной услуги, руб.
+Ссылка на пост. 924 – Приложение 2, п. 23.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="13"/>
+						<xs:fractionDigits value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="CalcExplanation" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Порядок расчетов</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+						<xs:maxLength value="4000"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="orgPPAGUID" type="base:GUIDType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Поставщик услуги. Идентификатор зарегистрированной организации. Обязателен, если тип ЛС "ЛС РЦ" (isRCAccount), запрещен для заполнения для остальных типов лицевых счетов.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element ref="tns:PiecemealPayment" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Рассрочка</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PaymentRecalculation" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Перерасчеты
+Ссылка на пост. 924 – Приложение 2, параграф VI.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="recalculationReason">
+							<xs:annotation>
+								<xs:documentation>Основания перерасчётов</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:minLength value="1"/>
+									<xs:maxLength value="500"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="sum">
+							<xs:annotation>
+								<xs:documentation>Сумма</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:decimal">
+									<xs:fractionDigits value="2"/>
+									<xs:minInclusive value="-9999999999.99"/>
+									<xs:maxInclusive value="9999999999.99"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element ref="tns:ServiceInformation" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Справочная информация</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="GeneralMunicipalResourceType">
+		<xs:sequence>
+			<xs:element name="ServiceType" type="nsi-base:nsiRef">
+				<xs:annotation>
+					<xs:documentation>Код главного коммунального ресурса (НСИ)
+Ссылка на пост. 924 – Приложение 2, п. 12.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Consumption" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Объем услуг - индивидульное потребление и(или) общедомовые нужды.
+Ссылка на пост. 924 – Приложение 2, п. 15 и 16.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Volume">
+							<xs:annotation>
+								<xs:documentation>Объем услуги</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="tns:ConsumptionVolumeType">
+										<xs:attribute name="type">
+											<xs:annotation>
+												<xs:documentation>Тип предоставления услуги:
+house(O)verallNeeds - общедомовые нужды</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:enumeration value="O"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:attribute>
+										<xs:attribute name="determiningMethod">
+											<xs:annotation>
+												<xs:documentation>Способ определения объемов КУ:
+(N)orm - Норматив
+(M)etering device - Прибор учета
+(O)ther - Иное</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:length value="1"/>
+													<xs:enumeration value="N"/>
+													<xs:enumeration value="M"/>
+													<xs:enumeration value="O"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:attribute>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+				<xs:unique name="consumptionGMRExportTypeUnique">
+					<xs:selector xpath="*"/>
+					<xs:field xpath="@type"/>
+				</xs:unique>
+			</xs:element>
+			<xs:element name="Rate">
+				<xs:annotation>
+					<xs:documentation>Тариф.
+Ссылка на пост. 924 – Приложение 2, п. 17.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:fractionDigits value="6"/>
+						<xs:totalDigits value="14"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="AmountOfPaymentMunicipalServiceCommunalConsumption" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Размер платы за коммунальные услуги, общедомовые нужды.
+Ссылка на пост. 924 – Приложение 2, п. 18.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="13"/>
+						<xs:fractionDigits value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="AccountingPeriodTotal" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Всего начислено за расчетный период (без перерасчетов и льгот), руб.
+Ссылка на пост. 924 – Приложение 2, п. 19.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="13"/>
+						<xs:fractionDigits value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="ServiceCharge" type="tns:ServiceChargeImportType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Перерасчеты, льготы, субсидии</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="MunicipalServiceCommunalConsumptionPayable" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>К оплате за коммунальный ресурс потребления при содержании общего имущества, руб. 
+Ссылка на пост. 924 – Приложение 2, п. 19.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="13"/>
+						<xs:fractionDigits value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="PaymentRecalculation" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Перерасчеты
+Ссылка на пост. 924 – Приложение 2, параграф VI.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="recalculationReason">
+							<xs:annotation>
+								<xs:documentation>Основания перерасчётов</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:minLength value="1"/>
+									<xs:maxLength value="500"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="sum">
+							<xs:annotation>
+								<xs:documentation>Сумма</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:decimal">
+									<xs:fractionDigits value="2"/>
+									<xs:minInclusive value="-9999999999.99"/>
+									<xs:maxInclusive value="9999999999.99"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="TotalPayable">
+				<xs:annotation>
+					<xs:documentation>Итого к оплате за расчетный период, руб.
+Ссылка на пост. 924 – Приложение 2, п. 22.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="13"/>
+						<xs:fractionDigits value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="ServiceInformation" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Справочная информация</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="houseOverallNeedsNorm" type="tns:VolumePDType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Норматив потребления коммунальных ресурсов - на потребление при содержании общего имущества.
+Ссылка на пост. 924 – Приложение 2, п. 26.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="houseOverallNeedsCurrentValue" type="tns:VolumePDType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Текущие показания приборов учёта
+коммунальных ресурсов - коллективных (общедомовых).
+Ссылка на пост. 924 – Приложение 2, п. 28.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="houseTotalHouseOverallNeeds" type="tns:VolumePDType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Суммарный объём коммунальных ресурсов в доме - в целях содержания общего имущества.
+Ссылка на пост. 924 – Приложение 2, п. 30.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="orgPPAGUID" type="base:GUIDType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Поставщик услуги. Идентификатор зарегистрированной организации. Запрещен для заполнения для других типов лицевых счетов, кроме ЛС РЦ. Если для ЛС РЦ не заполнен, то равен значению из ВКР.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="GeneralMunicipalResourceExportType">
+		<xs:sequence>
+			<xs:element name="ServiceType" type="nsi-base:nsiRef">
+				<xs:annotation>
+					<xs:documentation>Код главного коммунального ресурса (НСИ)
+Ссылка на пост. 924 – Приложение 2, п. 12.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Consumption" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Объем услуг - индивидульное потребление и(или) общедомовые нужды.
+Ссылка на пост. 924 – Приложение 2, п. 15 и 16.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Volume">
+							<xs:annotation>
+								<xs:documentation>Объем услуги</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="tns:ConsumptionVolumeType">
+										<xs:attribute name="type">
+											<xs:annotation>
+												<xs:documentation>Тип предоставления услуги:
+house(O)verallNeeds - общедомовые нужды</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:enumeration value="O"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:attribute>
+										<xs:attribute name="determiningMethod">
+											<xs:annotation>
+												<xs:documentation>Способ определения объемов КУ:
+(N)orm - Норматив
+(M)etering device - Прибор учета
+(O)ther - Иное</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:length value="1"/>
+													<xs:enumeration value="N"/>
+													<xs:enumeration value="M"/>
+													<xs:enumeration value="O"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:attribute>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+				<xs:unique name="consumptionHSExportTypeUnique">
+					<xs:selector xpath="*"/>
+					<xs:field xpath="@type"/>
+				</xs:unique>
+			</xs:element>
+			<xs:element name="Rate">
+				<xs:annotation>
+					<xs:documentation>Тариф.
+Ссылка на пост. 924 – Приложение 2, п. 17.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:fractionDigits value="6"/>
+						<xs:totalDigits value="14"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="AmountOfPaymentMunicipalServiceCommunalConsumption" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Размер платы за коммунальные услуги, общедомовые нужды.
+Ссылка на пост. 924 – Приложение 2, п. 18.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="13"/>
+						<xs:fractionDigits value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="AccountingPeriodTotal" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Всего начислено за расчетный период (без перерасчетов и льгот), руб.
+Ссылка на пост. 924 – Приложение 2, п. 19.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="13"/>
+						<xs:fractionDigits value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="ServiceCharge" type="tns:ServiceChargeImportType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Перерасчеты, льготы, субсидии</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="MunicipalServiceCommunalConsumptionPayable" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>К оплате за коммунальный ресурс потребления при содержании общего имущества, руб. 
+Ссылка на пост. 924 – Приложение 2, п. 19.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="13"/>
+						<xs:fractionDigits value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="ServiceInformation" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Справочная информация</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="houseOverallNeedsNorm" type="tns:VolumePDType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Норматив потребления коммунальных ресурсов - на потребление при содержании общего имущества.
+Ссылка на пост. 924 – Приложение 2, п. 26.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="houseOverallNeedsCurrentValue" type="tns:VolumePDType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Текущие показания приборов учёта
+коммунальных ресурсов - коллективных (общедомовых).
+Ссылка на пост. 924 – Приложение 2, п. 28.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="houseTotalHouseOverallNeeds" type="tns:VolumePDType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Суммарный объём коммунальных ресурсов в доме - в целях содержания общего имущества.
+Ссылка на пост. 924 – Приложение 2, п. 30.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="PaymentRecalculation" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Перерасчеты
+Ссылка на пост. 924 – Приложение 2, параграф VI.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="recalculationReason">
+							<xs:annotation>
+								<xs:documentation>Основания перерасчётов</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:minLength value="1"/>
+									<xs:maxLength value="500"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="sum">
+							<xs:annotation>
+								<xs:documentation>Сумма</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:decimal">
+									<xs:fractionDigits value="2"/>
+									<xs:minInclusive value="-9999999999.99"/>
+									<xs:maxInclusive value="9999999999.99"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="TotalPayable" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Итого к оплате за расчетный период, руб.
+Ссылка на пост. 924 – Приложение 2, п. 22.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="13"/>
+						<xs:fractionDigits value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="orgPPAGUID" type="base:GUIDType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Поставщик услуги. Идентификатор зарегистрированной организации. Обязателен, если тип ЛС "ЛС РЦ" (isRCAccount), запрещен для заполнения для остальных типов лицевых счетов.</xs:documentation>
+				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>

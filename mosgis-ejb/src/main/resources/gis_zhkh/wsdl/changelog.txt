@@ -1,44 +1,337 @@
 ﻿================================================================================================================================
+Изменения в форматах данных от версии 12.2.2.13 до версии 12.2.2.14
+================================================================================================================================
+
+HCS-83820 
+--hcs-capital-repair-types--
+1. В комплексном типе TermForGrantingType изменена аннотация для enumeration value="COINCIDES"
+
+
+HCS-85321
+--hcs-bills-types.xsd--
+1. У следующих элементов изменена аннотация:
+tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:MunicipalResource/tns:orgPPAGUID
+tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:MunicipalResource/tns:GeneralMunicipalResource/tns:orgPPAGUID
+
+================================================================================================================================
+Изменения в форматах данных от версии 12.2.2.12 до версии 12.2.2.13
+================================================================================================================================
+
+HCS-84156
+-- hcs-bills-types.xsd --
+1. В корневом элементе importRSOSettlementsRequest изменена обязательность и аннотация элемента tns:importSettlement/tns:Settlement/tns:ReportingPeriod.
+
+
+HCS-85171
+--hcs-bills-types.xsd--
+1. В комплексном типе exportPaymentDocumentResultType (используется в exportPaymentDocumentData) сделан необязательным элемент //element(*,tns:exportPaymentDocumentResultType)/tns:PaymentDocument/tns:PaymentInformation/tns:PaymentInformationGuid.
+
+
+HCSINT-46595
+--hcs-bills-types.xsd--
+1. В комплексном типе PDServiceDebtImportType (используется в importPaymentDocumentData) сделан обязательным элемент //element(*,tns:PDServiceDebtImportType)/tns:GroupMunicipalService/tns:MunicipalService.
+
+
+HCS-84945
+--hcs-bills-types.xsd--
+1. Изменён тип элемента //element(*,tns:PaymentDocumentExportType)/tns:CapitalRepairYearCharge на tns:CapitalRepairYearExportType (отличается аннотацией элемента tns:PaymentInformationKey; используется в exportPaymentDocumentData).
+
+================================================================================================================================
+Изменения в форматах данных от версии 12.2.2.11 до версии 12.2.2.12
+================================================================================================================================
+
+HCSINT-46536
+--hcs-payment-types.xsd--
+1. В корневом элементе importSupplierNotificationsOfOrderExecutionRequest изменены ограничения для элемента tns:SupplierNotificationOfOrderExecution (значение maxOccurs уменьшено с 1000 до 250)
+2. В корневом элементе importNotificationsOfOrderExecutionCancellationRequest изменены ограничения для элемента tns:NotificationOfOrderExecutionCancellation (значение maxOccurs увеличено с 250 до 500)
+
+
+HCSINT-46391
+--hcs-bills-types.xsd--
+В следующих элементах уточнено ограничение: максимум 8 знаков в целой части и 2 в дробной:
+tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:SubsidiesCompensationSocialSupport
+tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:SubsidiesCompensationSocialSupport
+
+
+HCSINT-46561
+--hcs-bills-types.xsd--
+1. В следующих элементах tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:MunicipalResource и tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:MunicipalResource переупорядочены дочерние элементы (для соответствия версии 12.2.1). Новый порядок элементов приведён ниже:
+1.1 tns:ServiceType,
+1.2 tns:Unit (только import),
+1.3 tns:Consumption,
+1.4 tns:Rate,
+1.5 tns:AccountingPeriodTotal,
+1.6 tns:ServiceCharge,
+1.7 tns:MunicipalServiceCommunalConsumptionPayable,
+1.8 tns:ServiceInformation,
+1.9 tns:PaymentRecalculation,
+1.10 tns:AmountOfPaymentMunicipalServiceCommunalConsumption,
+1.11 tns:TotalPayable,
+1.12 tns:orgPPAGUID,
+1.13 tns:GeneralMunicipalResource;
+2. tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:MunicipalResource. Снята обязательность для элемента tns:TotalPayable.
+
+================================================================================================================================
+Изменения в форматах данных от версии 12.2.2.10 до версии 12.2.2.11
+================================================================================================================================
+
+HCSINT-46392
+--hcs-bills-types.xsd--
+Добавлен необязательный элемент
+tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:MunicipalResource/tns:Unit
+
+
+================================================================================================================================
+Изменения в форматах данных от версии 12.2.2.9 до версии 12.2.2.10
+================================================================================================================================
+
+HCS-84547
+--hcs-bills-base.xsd--
+Изменён простой тип SmallMoneyType - паттерн допускает ввод знака.
+
+--hcs-house-management-types.xsd--
+tns:importPublicPropertyContractRequest/tns:AddAgreementPayment/tns:Debt - изменён паттерн (см. изменения hcs-bills-base.xsd)
+tns:importCharterRequest, tns:exportCAChResult:
+1. //element(*,tns:CharterPaymentsInfoType)/tns:MaintenanceAndRepairsForMembers/tns:MaintenanceAndRepairsForMembersPaymentSize - тип изменён на SmallMoneyPositiveType 
+2. //element(*,tns:CharterPaymentsInfoType)/tns:MaintenanceAndRepairsForNonMembersInfo/tns:MaintenanceAndRepairsForNonMembersPaymentSize - тип изменён на SmallMoneyPositiveType
+
+================================================================================================================================
+Изменения в форматах данных от версии 12.2.2.8 до версии 12.2.2.9
+================================================================================================================================
+
+HCS-83820
+--hcs-capital-repair-types--
+В структуре importDecisionsFormingFundRequest для элемента .//tns:AttachmentGUID введен контроль уникальности
+
+
+HCSINT-46366
+--hcs-bills-types--
+В элементе tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:LimitIndex изменено ограничение: 3 знака в целой части и 2 в дробной
+
+================================================================================================================================
+Изменения в форматах данных от версии 12.2.2.7 до версии 12.2.2.8
+================================================================================================================================
+
+HCSINT-46391
+--hcs-bills-types--
+В следующих элементах уточнено ограничение: максимум 10 знаков в целой части и 2 в дробной:
+tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:SubsidiesCompensationSocialSupport
+tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:SubsidiesCompensationSocialSupport
+
+================================================================================================================================
+Изменения в форматах данных от версии 12.2.2.6 до версии 12.2.2.7
+================================================================================================================================
+
+HCSANALYST-6224
+--hcs-inspection-types--
+Добавлены следующие элементы:
+tns:importExaminationsRequest/tns:ImportExamination/tns:ImportOffence/tns:Offence/tns:IsSubmittedToCourt/tns:CourtName
+tns:importExaminationsRequest/tns:ImportExamination/tns:ImportOffence/tns:Offence/tns:IsSubmittedToCourt/tns:SubmittedDate
+tns:importExaminationsRequest/tns:ImportExamination/tns:ImportOffence/tns:Offence/tns:IsSubmittedToCourt/tns:SubmittedNumber
+tns:importExaminationsRequest/tns:ImportExamination/tns:ImportOffence/tns:AddSubmittedInformation/tns:CourtName
+tns:importExaminationsRequest/tns:ImportExamination/tns:ImportOffence/tns:AddSubmittedInformation/tns:SubmittedDate
+tns:importExaminationsRequest/tns:ImportExamination/tns:ImportOffence/tns:AddSubmittedInformation/tns:SubmittedNumber
+tns:importExaminationsRequest/tns:ImportExamination/tns:ImportOffence/tns:DeleteSubmittedInformation
+tns:exportExaminationsResult/tns:exportExaminationResult/tns:ExportOffence/tns:Offence/tns:IsSubmittedToCourt/tns:CourtName
+tns:exportExaminationsResult/tns:exportExaminationResult/tns:ExportOffence/tns:Offence/tns:IsSubmittedToCourt/tns:SubmittedDate
+tns:exportExaminationsResult/tns:exportExaminationResult/tns:ExportOffence/tns:Offence/tns:IsSubmittedToCourt/tns:SubmittedNumber
+
+
+HCS-84925
+--hcs-house-management-types.xsd--
+В комплексный тип MeteringDeviceToUpdateAfterDevicesValuesType добавлены необязательные элементы tns:MeteringDeviceStamp, tns:MeteringDeviceModel
+
+
+HCS-84547
+--hcs-house-management-types.xsd--
+Тип tns:importPublicPropertyContractRequest/tns:AddAgreementPayment/tns:Debt изменен на SmallMoneyType
+
+
+HCS-84277
+--hcs-house-management-types.xsd--
+Сняты ограничения на элемент //element(*,tns:OGFDataValue)/tns:FloatValue
+
+
+================================================================================================================================
+Изменения в форматах данных от версии 12.2.2.5 до версии 12.2.2.6
+================================================================================================================================
+
+HCSINT-46158
+hcs-bills-types
+Удалены:
+1. tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:GeneralMunicipalResource
+2. tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:ChargeDebt/tns:HousingService/tns:GeneralMunicipalResource
+3. tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:GeneralMunicipalResource
+4. tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:ChargeDebt/tns:HousingService/tns:GeneralMunicipalResource
+
+================================================================================================================================
+Изменения в форматах данных от версии 12.2.2.4 до версии 12.2.2.5
+================================================================================================================================
+
+HCS-84547
+-- hcs-house-management-types.xsd --
+Тип tns:importPublicPropertyContractRequest/tns:AddAgreementPayment/tns:Debt изменен на SmallMoneyType
+
+================================================================================================================================
+Изменения в форматах данных от версии 12.2.2.4 до версии 12.2.2.5
+================================================================================================================================
+
+HCS-84275
+-- hcs-house-management-types.xsd --
+1. В комплексном типе OGFDataValue (используется в корневых элементах importHouseUORequest, importHouseOMSRequest, importHouseESPRequest, exportHouseResult) изменён тип данных для элемента tns:FloatValue (xs:float изменен на xs:decimal с ограничением 20 знаков до десятичной точки и 5 после)
+
+
+HCSANALYST-6259
+-- hcs-payment-types.xsd --
+1. В корневом элементе importNotificationsOfOrderExecutionRequest изменены ограничения для элементов tns:NotificationOfOrderExecutionType и tns:NotificationOfOrderExecution139Type (значение maxOccurs уменьшено с 1000 до 500)
+2. В корневом элементе importNotificationsOfOrderExecutionCancellationRequest изменены ограничения для элемента tns:NotificationOfOrderExecutionCancellation (значение maxOccurs уменьшено с 1000 до 250)
+
+-- hcs-bills-types.xsd --
+1. В корневом элементе importAcknowledgmentRequest изменены ограничения для элементов tns:AcknowledgmentRequestInfo и tns:AckCancellation (значение maxOccurs уменьшено с 1000 до 500)
+
+
+HCS-84050
+-- hcs-bills-types.xsd --
+1. В комплексном типе PaymentDocumentType (используется в корневом элементе importPaymentDocumentRequest) изменены ограничения элемента tns:LimitIndex (totlaDigits="5" и maxInclusive="100")
+
+================================================================================================================================
+Изменения в форматах данных от версии 12.2.2.3 до версии 12.2.2.4
+================================================================================================================================
+
+HCSANALYST-6184
+-- hcs-house-management-types.xsd --
+1. В комплексный тип MeteringDeviceToUpdateAfterDevicesValuesType добавлен необязательный элемент tns:MeteringDeviceNumber
+
+================================================================================================================================
+Изменения в форматах данных от версии 12.2.2.2 до версии 12.2.2.3
+================================================================================================================================
+
+HCS-83749
+-- hcs-house-management-types.xsd --
+1. В комплексном типе ProtocolType изменены аннотации элементов
+1.1. tns:AVoting/tns:AVotingStartDate
+1.2. tns:MeetingAVoting/tns:AVotingStartDate
+
+
+================================================================================================================================
+Изменения в форматах данных от версии 12.2.2.1 до версии 12.2.2.2
+================================================================================================================================
+
+HCSANALYST-6141
+-- hcs-appeals-types.xsd --
+1. В комплексный тип exportAppealResultType добавлен необязательный элемент tns:AppealWithdrawn
+
+
+================================================================================================================================
+Изменения в форматах данных от версии 12.2.1.10 до версии 12.2.2.1
+================================================================================================================================
+
+HCSANALYST-4616
+<!--hcs-bills-types--> 
+1.1) Добавлен элемент tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:LimitIndex - Предельный (максимальный) индекс изменения размера платы граждан за коммунальные услуги в муниципальном образовании, %
+1.2) Добавлен элемент tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:SubsidiesCompensationSocialSupport - Субсидии, компенсации и иные меры соц. поддержки граждан, руб. Ссылка на пост. 924 – Приложение 2, п. 21
+1.3) Дополнена аннотация tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:MunicipalResource - Главная коммунальная услуга с объемом потребления
+1.4) Добавлен новый блок tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:ChargeInfo/tns:GroupMunicipalService - Вид коммунальной услуги, содержащей главные коммунальные услуги. Предоставляет возможность указать группирующие виды коммунальных услуг, с разбивкой на главные коммуанльные услуги
+1.5) Элемент tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:MunicipalResource/tns:Rate сделан необязательным. Может быть не заполнен, если заполнен блок tns:MunicipalResource/ tns:GeneralMunicipalResource
+1.6) Добавлен новый блок tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:MunicipalResource/tns:GeneralMunicipalResource - Главные коммунальные ресурсы
+1.7) Добавлен новый блок tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:MunicipalResource/tns:PaymentRecalculation - Перерасчеты
+1.8) Добавлен новый блок tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:PaymentRecalculation - Перерасчеты
+1.9) Добавлен новый блок tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:ChargeInfo/tns:AdditionalService/tns:PaymentRecalculation - Перерасчеты 
+1.10) Добавлен новый блок tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:MunicipalResource/tns:PaymentRecalculation - Перерасчеты
+1.11) Добавлен новый блок tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:CapitalRepairCharge/tns:PaymentRecalculation - Перерасчеты
+1.12) Добавлен элемент tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:MunicipalResource/tns:ServiceInformation/tns:houseOverallNeedsCurrentValue - Текущие показания приборов учёта коммунальных ресурсов - коллективных (общедомовых).
+1.13) В перечислимый тип атрибута tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:MunicipalResource/tns:Consumption/tns:Volume/@determiningMethod добавлен "O" - Other - Иное
+1.14) Добавлен элемент tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:MunicipalResource/tns:orgPPAGUID - Поставщик услуги. Идентификатор зарегистрированной организации. Обязателен, если тип ЛС "ЛС РЦ" (isRCAccount), запрещен для заполнения для остальных типов лицевых счетов.
+1.15) Добавлен элемент tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:ChargeDebt/tns:HousingService/tns:MunicipalResource/tns:orgPPAGUID -  - Поставщик услуги. Идентификатор зарегистрированной организации. Обязателен, если тип ЛС "ЛС РЦ" (isRCAccount), запрещен для заполнения для остальных типов лицевых счетов.
+1.16) Дополнена аннотация tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:ChargeDebt/tns:HousingService/tns:MunicipalResource
+1.17) Добавлен новый блок tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:ChargeDebt/tns:GroupMunicipalService - Вид коммунальной услуги, содержащей главные коммунальные услуги. В блоке предоставляется возможность указать группирующие виды коммунальных услуг, с разбивкой на главные коммунальные услуги.
+1.18) Добавлен новый блок tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:ChargeDebt/tns:HousingService/tns:MunicipalResource/tns:GeneralMunicipalResource - Главные коммунальные ресурсы
+1.19) Добавлен новый блок tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:MunicipalResource/tns:ServiceInformation - Справочная информация
+2) В комплексных типах tns:ServicePDImportType (используется в importPaymentDocument) и tns:ServicePDType (используется в exportPaymentDocument) элемент tns:AccountingPeriodTotal сделан необязательным
+3.1) Добавлен элемент tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:LimitIndex - Предельный (максимальный) индекс изменения размера платы граждан за коммунальные услуги в муниципальном образовании, %
+3.2) Добавлен элемент tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:SubsidiesCompensationSocialSupport - Субсидии, компенсации и иные меры соц. поддержки граждан, руб. Ссылка на пост. 924 – Приложение 2, п. 21
+3.3) Добавлен новый блок tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:ChargeInfo/tns:GroupMunicipalService (Вид коммунальной услуги, содержащей главные коммунальные услуги) Выгружается информация о коммунальных услугах с группирующими строками
+3.4) Элемент tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:MunicipalResource/tns:Rate (Тариф) сделан необязательным 
+3.5) Добавлен новый блок tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:MunicipalResource/tns:GeneralMunicipalResource - Главные коммунальные ресурсы
+3.6) дополнена аннотация tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:ChargeDebt/tns:HousingService/tns:MunicipalResource - В том числе коммунальные ресурсы, потребляемые при использовании и содержании общего имущества в многоквартирном доме.
+3.7) дополнена аннотация tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:MunicipalResource - В том числе коммунальные ресурсы, потребляемые при использовании и содержании общего имущества в многоквартирном доме.
+3.8) Добавлен новый блок tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:ChargeDebt/tns:HousingService/tns:MunicipalResource/tns:GeneralMunicipalResource - Главные коммунальные ресурсы
+3.9) Добавлен новый блок tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:ChargeDebt/tns:GroupMunicipalService - Вид коммунальной услуги, содержащей главные коммунальные услуги
+3.10) Добавлен элемент tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:MunicipalResource/tns:orgPPAGUID - Поставщик услуги. Идентификатор зарегистрированной организации.
+3.11) Добавлен элемент tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:ChargeDebt/tns:HousingService/tns:MunicipalResource/tns:orgPPAGUID - Поставщик услуги. Идентификатор зарегистрированной организации.
+3.12) Добавлен новый блок tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:ChargeInfo/tns:AdditionalService/tns:PaymentRecalculation - Перерасчеты
+3.13) Добавлен новый блок tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:PaymentRecalculation - Перерасчеты
+3.14) Добавлен новый блок tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:MunicipalResource/tns:PaymentRecalculation - Перерасчеты
+3.15) Добавлен новый блок tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:CapitalRepairCharge/tns:PaymentRecalculation - Перерасчеты
+3.16) Элемент tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:MunicipalResource/tns:Rate сделан необязательным. Может быть не заполнен, если заполнен блок tns:MunicipalResource/ tns:GeneralMunicipalResource
+3.17) Добавлен элемент tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:MunicipalResource/tns:ServiceInformation/tns:houseOverallNeedsCurrentValue - Текущие показания приборов учёта коммунальных ресурсов - коллективных (общедомовых).
+3.18) В перечислимый тип атрибута tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:MunicipalResource/tns:Consumption/tns:Volume/@determiningMethod добавлен "O" - Other - Иное
+3.19) Добавлен новый блок tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:ChargeInfo/tns:HousingService/tns:MunicipalResource/tns:ServiceInformation - Справочная информация
+4) Добавлен новый комплексный тип TypeMunicipalServiceType - Вид коммунальной услуги
+
+
+HCSANALYST-5922
+<!--hcs-payments-base-->
+1. у элемента //element(*,tns:AcknowledgmentRequestInfoType)/tns:PaymentDocumentAck/tns:MSType изменена аннотация - "Вид ГКУ (справочник "Главная коммунальная услуга")". Принцип заполнения без изменений
+2. добавлен элемент //element(*,tns:AcknowledgmentRequestInfoType)/tns:PaymentDocumentAck/tns:TMSType (Вид коммунальной услуги. НСИ 3) используется в importAcknowledgmentRequest - добавлена возможность квитировать по виду коммунальной услуги
+3. у элемента //element(*,tns:AcknowledgmentRequestInfoExportType)/tns:PaymentDocumentAck/tns:MSType изменена аннотация- "Вид ГКУ (справочник "Главная коммунальная услуга")". Принцип заполнения без изменений
+4. добавлен элемент //element(*,tns:AcknowledgmentRequestInfoExportType)/tns:PaymentDocumentAck/tns:TMSType (Вид коммунальной услуги. НСИ 3) используется в exportNotificationsOfOrderExecutionResult и exportNotificationsOfOrderExecutionPaginal - выгружается информация о квитировании по виду коммунальной услуги
+
+
+
+HCSANALYST-6171
+-- bills/hcs-bills-types.xsd --
+1. В корневом элементе importRSOSettlementsRequest изменена аннотация элемента tns:importSettlement/tns:Settlement/tns:Contract.
+
+
+
+HCSANALYST-5796
+--hcs-nsi-service-async.wsdl--
+1. Добавлена асинхронная операция importGeneralNeedsMunicipalResource для импорта данных справочника №337 "Коммунальные ресурсы, потребляемые при использовании и содержании общего имущества в многоквартирном доме" (используется в платежных документах)
+
+--hcs-nsi-types--
+1. Добавлен корневой элемент importGeneralNeedsMunicipalResourceRequest
+2. Добавлен комплексный тип importGeneralNeedsMunicipalResourceType
+3. В корневом элементе importMunicipalServicesRequest изменены аннотации элементов tns:importMunicipalServicesRequest/tns:ImportMainMunicipalService/tns:GeneralNeeds и tns:importMunicipalServicesRequest/tns:ImportMainMunicipalService/tns:SelfProduced (указано, что элементы не используются)
+4. Код нового справочника (337) добавлен в списки реестровых номеров (enumeration) элементов tns:exportDataProviderNsiItemRequest/tns:RegistryNumber и tns:exportDataProviderNsiPagingItemRequest/tns:RegistryNumber
+
+================================================================================================================================
 Изменения в форматах данных от версии 12.2.1.9 до версии 12.2.1.10
 ================================================================================================================================
 
-HCS-82039 "Экспорт лицензий, SOAP - В выгрузку попадают лицензии только в статусе "Действующая"
+HCS-82039
 -- hcs-licenses-types.xsd --
 1. В комплексном типе LicenseType
-1.1 у элемента tns:LicenseStatus ограничения на список допустимых значений типа pattern заменены на enumeration; изменена аннотация
-1.2 расширен список допустимых значений (enumeration) и изменена аннотация элемента tns:AccompanyingDocument/tns:DocumentStatus
+1.1 у элемента tns:LicenseStatus расширен список допустимых значений и ограничения типа pattern заменены на ограничения типа enumeration; изменена аннотация
+1.2 у элемента tns:AccompanyingDocument/tns:DocumentStatus расширен список допустимых значений (enumeration) и изменена аннотация
 2. В комплексном типе AccompanyingDocumentType расширен список допустимых значений (enumeration) и изменена аннотация элемента ns:Document/tns:DocumentStatus 
 
 
-JIRA-0000
--- hcs-nsi-types.xsd --
-1. В корневом элементе importMunicipalServicesRequest изменены аннотации элементов tns:ImportMainMunicipalService/tns:GeneralNeeds и tns:ImportMainMunicipalService/tns:SelfProduced
-
-
-HCS-82734 "Интеграция с ЛС: ВИ_ИЛС_ПД_ИМП_EXCEL: не срабатывает контроль FMT001308 при импорте отрицательного значения в поле "Размер взноса на кв.м, руб."
+HCS-82734
 -- hcs-bills-types.xsd --
 1. В комплексном типе CapitalRepairImportType для элемента tns:Contribution установлено ограничение minInclusive
 2. В комплексном типе CapitalRepairMonthlyImportType для элемента tns:Contribution установлено ограничение minInclusive
 
 
-HCS-82686 "Интеграция ЛС: ВИ_ИЛС_ПД_ЭКСП. EXP001000 при попытке экспортировать платежные документы"
+HCS-82686
 -- hcs-payments-base.xsd --
 1. В комплексном типе PaymentInformationExportType у элемента tns:NumberBudgetaryAccount удалено ограничение типа pattern
 
 ================================================================================================================================
 Изменения в форматах данных от версии 12.2.1.8 до версии 12.2.1.9
 ================================================================================================================================
-HCS-82884 "Интеграция:ВИ_ИО_ДПД_ЭКСП: При экспорте заявок на делегирование прав доступа, не выгружаются все заявки"
+
+HCS-82884
 -– hcs-organizations-registry-common-types.xsd --
 1. В корневой элемент getStateResult добавлен необязательный элемент tns:IsNextPage
 2. В корневых элементах exportDelegatedAccessResult и getStateResult у элемента tns:IsNextPage указан тип boolean
 
-HCS-82916 "ППАК, Интеграция РЛ: ВИ_ИО_ЛИЦ_ЭКСП: EXP001000: Value '1002' has 4 total digits, but the number of total digits has been limited to 2."
+HCS-82916
 -- hcs-licenses-types.xsd –
 1. В комплексном типе HouseType увеличено максимальное кол-во цифр в элементе tns:Contract/tns:Validity/tns:Year
 
 
-HCS-83103 "Интеграция КР: ВИ_КР_ РППД_ИМП: неккоректное срабатывание контроля EXP001000 Исключение валидации полей: Поля [«Номер протокола», «Дата протокола»] не должны быть заполнены"
+HCS-83103
 -- hcs-capital-repair-types.xsd --
 1. В комплексном типе DecisionPDType изменена аннотация элемента tns:Reason/tns:Protocol
 
@@ -46,7 +339,7 @@ HCS-83103 "Интеграция КР: ВИ_КР_ РППД_ИМП: неккоре
 Изменения в форматах данных от версии 12.2.1.7 до версии 12.2.1.8
 ================================================================================================================================
 
-HCS-82767 "Голосование.Несоответствие приказу 74/114 (Дата начала приема решений собственников по вопросам, поставленным на голосование)"
+HCS-82767
 -– hcs-house-management-types.xsd --
 1. В комплексном типе ProtocolType добавлены необязательные элементы tns:AVoting/tns:AVotingStartDate и tns:MeetingAVoting/tns:AVotingStartDate
 2. В комплексном типе ProtocolExportType добавлены необязательные элементы tns:AVoting/tns:AVotingStartDate и tns:MeetingAVoting/tns:AVotingStartDate
@@ -55,23 +348,23 @@ HCS-82767 "Голосование.Несоответствие приказу 74
 Изменения в форматах данных от версии 12.2.1.6 до версии 12.2.1.7
 ================================================================================================================================
 
-HCSANALYST-922 "Интеграция.Голосование: реализовать контроль при отмене изменений с использованием не существующего VotingGuid"
+HCSANALYST-922
 -- hcs-house-management-types --
 1. В корневом элементе importVotingProtocolRequest для элемента tns:Protocol добавлены ограничения уникальности элементов
 tns:VoteInitiators/tns:Org/organizations-registry-base:orgVersionGUID и tns:VoteInitiators/tns:Org/organizations-registry-base:orgRootEntityGUID
 
 
-HCS-81410 "Кап ремонт. SOAP Доработка экспорта решений о выборе СФФКР, добавить идентификатор организации, разместившей решение"
+HCS-81410
 -- hcs-capital-repair-types.xsd --
 1. В комплексный тип exportDecisionType добавлен необязательный элемент tns:DecisionsOrganization
 
 
-HCS-82163 "КР: убрать обязательное поле - "Дата операции" при внесении о совершенных операциях по списанию со счета и зачислению на специальный счет денежных средств"
+HCS-82163
 -- hcs-capital-repair-types.xsd --
 1. В комплексном типе OperationType сделан необязательным элемент tns:Date
 
 
-HCS-82969 "ВИ_ИПУ_ИМП:ERROR: duplicate key value violates unique constraint 'uk_device_accounts_device_version_guid_account_guid' при изменении ПУ"
+HCS-82969
 -- hcs-house-management-types.xsd --
 1. В комплексном типе MeteringDeviceBasicCharacteristicsType для следующих контейнеров добавлены ограничения на возможность дублирования значений в коллекциях элементов tns:AccountGUID:
 1.1 tns:ResidentialPremiseDevice
@@ -82,12 +375,12 @@ HCS-82969 "ВИ_ИПУ_ИМП:ERROR: duplicate key value violates unique constra
 2. В корневом элементе importMeteringDeviceDataRequest для элемента tns:MeteringDevice/tns:DeviceDataToUpdate/tns:UpdateAfterDevicesValues добавлено ограничение на возможность дублирования значений в коллекции элементов tns:AccountGUID
 
 
-HCS-83125 "Интеграция ДРСО: ВИ_ИО_ДР_3: долгая обработка запроса, запрос находится в RequestState "2""
+HCS-83125
 -- hcs-house-management-types.xsd --
 1. В корневой элемент getStateResult добавлен элемент tns:exportBriefSupplyResourceContractResult
 
 
-HCSINT-45445 "Интеграция РАО:ВИ_ИРАО_КР_ДОМ_ЭКСП_SOAP: экспорт аннулированных и снесенных домов"
+HCSINT-45445
 -- hcs-house-management-types.xsd --
 1. В комплексный тип BriefLivingHouseType добавлены необязательные элементы tns:TerminationDate, tns:AnnulmentReason, tns:AnnulmentInfo, tns:DemolishionDate и tns:DemolishionReason
 2. В комплексный тип BriefApartmentHouseType добавлены необязательные элементы tns:TerminationDate, tns:AnnulmentReason, tns:AnnulmentInfo, tns:DemolishionDate и tns:DemolishionReason
@@ -97,12 +390,12 @@ HCSINT-45445 "Интеграция РАО:ВИ_ИРАО_КР_ДОМ_ЭКСП_SOA
 Изменения в форматах данных от версии 12.2.1.5 до версии 12.2.1.6
 ================================================================================================================================
 
-HCSINT-39668 "Интеграция ПФР: ВИ_ИПФР_ПЕР_ИМП: Вопросы по импорту перечней работ и услуг"
+HCSINT-39668
 -- hcs-services-types.xsd --
 1. В комплексном типе WorkingListBaseType сделан необязательным элемент tns:ContractGUID
 
 
-HCSINT-40170 "Интеграция РАО: ВИ_ИРАО_ДОМ_ИМП: Создание дома под ОМС с HouseManagementType"
+HCSINT-40170
 -- hcs-house-management-types.xsd --
 1. В корневой элемент importHouseESPRequest добавлены необязательные элементы:
 tns:ApartmentHouse/tns:ApartmentHouseToCreate/tns:HouseManagementType
@@ -114,12 +407,12 @@ tns:LivingHouse/tns:LivingHouseToCreate/tns:HouseManagementType
 tns:LivingHouse/tns:LivingHouseToUpdate/tns:HouseManagementType
 
 
-HCS-82716 "Интеграция РАО: ВИ_ИРАО_КР_ДОМ_ЭКСП_SOAP: При экспорте дома с незаполненным состоянием EXP001000 One of '{"http://dom.gosuslugi.ru/schema/integration/house-management/":State}' is expected"
+HCS-82716
 -- hcs-house-management-types.xsd --
 1. В комплексном типе BriefBasicCharactericticsType сделан необязательным элемент tns:State
 
 
-HCS-82043 "Интеграция РАО: ВИ_ИРАО_ДОМ_ИМП: при работе с домом под РСО не заполняя ApartmentHouseToUpdate EXP001000 SystemErrorException: Invalid facade response: Response contains importResults with blank transportGuid"
+HCS-82043
 -- hcs-house-management-types.xsd --
 1. В корневом элементе importHouseRSORequest сделаны обязательными указание
 1.1. одного из элементов tns:ApartmentHouse/tns:ApartmentHouseToCreate или tns:ApartmentHouse/tns:ApartmentHouseToUpdate
@@ -130,12 +423,12 @@ HCS-82043 "Интеграция РАО: ВИ_ИРАО_ДОМ_ИМП: при ра
 Изменения в форматах данных от версии 12.2.1.3 до версии 12.2.1.5
 ================================================================================================================================
 
-HCS-81813 "Интеграция Взаиморасчеты: ВИ_ВЗМРСЧ_ЭкспортСостРасч При экспорте информации о состоянии взаиморасчетов от РСО сработал контроль EXP001000"
+HCS-81813
 -- hcs-bills-types.xsd --
 1. В комплексном типе ExportSettlementResultType сделан необязательным элемент tns:ReportingPeriod.
 
 
-HCS-81967 "Интеграция(экспорт сведений о поставщиках данных): ВИ_ИО_ДПД_ЭКСП: Размер файла превышает 10Мб"
+HCS-81967
 -- hcs-organizations-registry-common-types.xsd --
 1. В корневом элементе exportDelegatedAccessRequest изменена аннотация элемента tns:Page
 
@@ -143,7 +436,7 @@ HCS-81967 "Интеграция(экспорт сведений о постав�
 Изменения в форматах данных от версии 12.2.1.2 до версии 12.2.1.3
 ================================================================================================================================
 
-HCSANALYST-6107 "Интеграция. Добавить поле "Тариф применяется для всех объектов жилищного фонда договора?" в importSupplyResourceContractProjectData (SOAP)"
+HCSANALYST-6107
 --hcs-house-management-types--
 1. В комплексный тип SupplyResourceContractProjectType добавлен необязательный элемент tns:RegionalSettings (с комплексной структурой)
 2. В комплексном типе SupplyResourceContractProjectType изменена аннотация элемента tns:Period
@@ -152,7 +445,7 @@ HCSANALYST-6107 "Интеграция. Добавить поле "Тариф п�
 Изменения в форматах данных от версии 12.2.1.1 до версии 12.2.1.2
 ================================================================================================================================
 
-HCSANALYST-4232 "Интеграция.РАО.Экспорт сокращенного состава сущностей для РЦ (SOAP)"
+HCSANALYST-4232
 --hcs-house-management-types--
 1. В корневом элементе exportBriefLivingHouseResult элемент tns:searchResultItem переименован в tns:ResultItem
 2. В корневой элемент getStateResult добавлены элементы tns:exportBriefBasicHouseResult, tns:exportBriefApartmentHouseResult и tns:exportBriefLivingHouseResult
@@ -163,7 +456,7 @@ HCSINT-44793, HCSINT-44794
 1. В комплексном типе MeteringDeviceBasicCharacteristicsType изменены аннотации элементов tns:VerificationInterval и tns:FactorySealDate
 
 
-HCS-79479 "Капремонт.Срок размещения ПД"
+HCS-79479
 --hcs-capital-repair-types--
 1. Добавлен простой тип TermDayType (base="xs:positiveInteger", maxInclusive value="30")
 2. В комплексном типе DecisionPDType для элемента tns:TermDay установлен тип TermDayType
@@ -173,7 +466,7 @@ HCS-79479 "Капремонт.Срок размещения ПД"
 Изменения в форматах данных от версии 12.2.0. до версии 12.2.1.1
 ================================================================================================================================
 
-HCSANALYST-5906 "Интеграция.Платежи. КР на целый год (SOAP)"
+HCSANALYST-5906
 --hcs-bills-types--
 1. Сделаны необязательными элементы tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:CapitalRepairCharge/tns:AccountingPeriodTotal, tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:CapitalRepairCharge/tns:MoneyRecalculation, tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:CapitalRepairCharge/tns:MoneyDiscount, tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:CapitalRepairCharge/tns:AccountingPeriodTotal, tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:CapitalRepairCharge/tns:MoneyRecalculation, tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:CapitalRepairCharge/tns:MoneyDiscount 
 2. Добавлен элемент tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:CapitalRepairYearCharge
@@ -181,7 +474,7 @@ HCSANALYST-5906 "Интеграция.Платежи. КР на целый го�
 4. Добавлен элемент tns:importAcknowledgmentRequest/tns:AcknowledgmentRequestInfo/payments-base:PaymentDocumentAck/payments-base:CapitalRepairYearAckPeriod
 
 
-HCSANALYST-4232 "Интеграция.РАО.Экспорт сокращенного состава сущностей для РЦ (SOAP)"
+HCSANALYST-4232
 <!--hcs-house-management-service-async.wsdl-->
 <!--hcs-housemanagement-types-->
 1. Добавлены операции: exportBriefBasicHouse, exportBriefLivingHouse, exportBriefApartmentHouse
@@ -190,12 +483,12 @@ HCSANALYST-4232 "Интеграция.РАО.Экспорт сокращенно
 Изменения в форматах данных от версии 12.2.0.16 до версии 12.2.0.17
 ================================================================================================================================
 
-HCS-81900 "SOAP. exportVotingProtocolRequest. XmlValidationException. The content of element 'ns13:DecisionList' is not complete"
+HCS-81900
 --hcs-house-management-types.xsd--
 1. В комплексном типе ProtocolExportType сделаны необязательными элементы //element(*,tns:ProtocolExportType)/tns:EVoting/tns:Discipline и //element(*,tns:ProtocolExportType)/tns:DecisionList/tns:votingResume
 
 
-HCS-81682 "Интеграция Платежи: ВИ_ОПЛАТА_ПД_ЭКСП: ЛИ: Для ПД с N Получателями - не выгружается PaymentInformationGuid и Reminder по получателю платежа"
+HCS-81682
 --hcs-payments-base.xsd--
 1. В комплексный тип PaymentInformationExportType добавлен необязательный элемент tns:IsCapitalRepair
 2. Удален избыточный комплексный тип PaymentInformationExportPDType
@@ -208,7 +501,7 @@ HCS-81682 "Интеграция Платежи: ВИ_ОПЛАТА_ПД_ЭКСП:
 2. В комплексный тип exportPaymentDocumentResultType добавлен элемент //element(*,tns:exportPaymentDocumentResultType)/tns:PaymentDocument/tns:PaymentInformation/tns:PaymentInformationGuid
 
 
-HCS-79479 "Капремонт.Срок размещения ПД"
+HCS-79479
 --hcs-capital-repair-types--
 1. Добавлен простой тип TermDayType (base="xs:positiveInteger", maxInclusive value="30")
 2. Для элемента //element(*,tns:DecisionPDType)/tns:TermDay установлен тип TermDayType
@@ -217,18 +510,18 @@ HCS-79479 "Капремонт.Срок размещения ПД"
 Изменения в форматах данных от версии 12.2.0.15 до версии 12.2.0.16
 ================================================================================================================================
 
-HCS-81086 "Интеграция Платежи: ВИ_ОПЛАТА_ПД_ЭКСП: ЛИ: EXP001000 Внутренняя ошибка при экспорте сведений о ЛС"
+HCS-81086
 --hcs-payments-types.xsd--
 1. Добавлен корневой элемент Service
 2. Элементы tns:getStateResult/tns:exportPaymentDocumentDetailsResult/tns:Service и tns:exportPaymentDocumentDetailsResult/tns:Service сделаны ссылкой на корневой элемент Service; их структура не изменилась.
 
 
-HDWORK-83313 "В разделе "Капитальный ремонт"-реестр счетов добавить операции списания денежных средств"
+HDWORK-83313
 --hcs-capital-repair-types--
 1. В комплексном типе OperationType изменена аннотация к элементу tns:PaymentPurpose
 
 
-HCS-79210 "Лицензирование Excel: При импорте лицензии и указании в поле адреса дубликата дома не возникает контроль"
+HCS-79210
 --hcs-licenses-types.xsd--
 1. В комплексном типе LicenseType изменена аннотация к элементу RegionFIASGuid
 
@@ -236,23 +529,23 @@ HCS-79210 "Лицензирование Excel: При импорте лицен�
 Изменения в форматах данных от версии 12.2.0.14 до версии 12.2.0.15
 ================================================================================================================================
 
-HCS-81057 "ППАК: Интеграция ЛС: ВИ_ИЛС_ПД_ЭКСП.: при экспорте ПД возникает ошибка EXP001000"
+HCS-81057
 --hcs-bills-types--
 1. Изменена маска (pattern) у следующих элементов (теперь для них допускается указание отрицательных значений)
 tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:CapitalRepairCharge/tns:AccountingPeriodTotal и tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:CapitalRepairCharge/tns:AccountingPeriodTotal
 
 
-HCS-81086 "Интеграция Платежи: ВИ_ОПЛАТА_ПД_ЭКСП: ЛИ: EXP001000 Внутренняя ошибка при экспорте сведений о ЛС"
+HCS-81086
 --hcs-payments-types.xsd--
 1. Добавлен необязательный элемент tns:getStateResult/tns:exportPaymentDocumentDetailsResult/tns:Service
 
 
-HCS-81480 "Интеграция Обращения: ВИ_РО_ОБР_ЭКСП: XmlValidationException при экспорте перенаправленного сообщения"
+HCS-81480
 --hcs-appeals-types.xsd--
 1. В комплексном типе exportAppealResultType сделан необязательным элемент //element(*,tns:exportAppealResultType)/tns:AppealHistory/tns:Redirected/tns:AnswererGUID
 
 
-HCS-81548 "Интеграция Обращения: ВИ_РО_ОБР_ЭКСП: XmlValidationException при экспорте"
+HCS-81548
 --hcs-appeals-types.xsd--
 1. В комплексном типе ApplicantType снято ограничение на длину значения (maxLength) для элемента //element(*,tns:ApplicantType)/tns:PhoneNumber
 
@@ -260,8 +553,7 @@ HCS-81548 "Интеграция Обращения: ВИ_РО_ОБР_ЭКСП: X
 Изменения в форматах данных от версии 12.2.0.13 до версии 12.2.0.14
 ================================================================================================================================
 
-HCSANALYST-5906 "Интеграция.Платежи. КР на целый год (SOAP)" - Откат изменений
-
+HCSANALYST-5906
 --hcs-bills-types.xsd--
 1. Удалены элементы tns:importPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:CapitalRepairYearCharge, tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:CapitalRepairYearCharge, tns:importAcknowledgmentRequest/tns:AcknowledgmentRequestInfo/payments-base:PaymentDocumentAck/payments-base:CapitalRepairYearAckPeriod, tns:exportNotificationsOfOrderExecutionPaginalResult/tns:exportNotificationsOfOrderExecutionResult/tns:NotificationOfOrderExecutionWithStatus/tns:AcknowledgmentRequestsList/tns:AcknowledgmentRequest/payments-base:PaymentDocumentAck/payments-base:CapitalRepairYearAckPeriod
 2. Сделаны обязательными элементы tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:CapitalRepairCharge/tns:AccountingPeriodTotal, tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:CapitalRepairCharge/tns:MoneyRecalculation, tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:CapitalRepairCharge/tns:AccountingPeriodTotal
@@ -271,8 +563,7 @@ HCSANALYST-5906 "Интеграция.Платежи. КР на целый го�
  //element(*,tns:AcknowledgmentRequestInfoExportType)/tns:PaymentDocumentAck/tns:CapitalRepairYearAckPeriod
 
 
-HCSANALYST-4232 "Интеграция.РАО.Экспорт сокращенного состава сущностей для РЦ (SOAP)" - Откат изменений
-
+HCSANALYST-4232
 --hcs-house-management-service-async--
 1. Удалены операции exportBriefBasicHouse, exportBriefLivingHouse и exportBriefApartmentHouse вместе с соответствующими сообщениями
 
@@ -283,14 +574,14 @@ HCSANALYST-4232 "Интеграция.РАО.Экспорт сокращенно
 Изменения в форматах данных от версии 12.2.0.12 до версии 12.2.0.13
 ================================================================================================================================
 
-HCS-79479 "Капремонт.Срок размещения ПД"
+HCS-79479
 --hcs-capital-repair-types--
 1. Добавлены простые типы tns:TermForGrantingType, tns:TermQualificationType, String100Type
 2. В комплексный тип DecisionPDType добавлены необязательные элементы tns:TermForGranting, tns:TermDay и tns:TermQualification
 3. В корневых элементах exportDecisionsOrderOfProvidingPDRequest и exportDecisionsOrderOfProvidingPDResult удалено фиксированное значение у атрибута base:version
 
 
-HCS-80618 "Интеграция. ДУ. Привязка протокола в сведениях о размере платы (SOAP)"
+HCS-80618
 <!-hcs-appeals-types.xsd->
 1. В AppealStatusType добавлен enumeration value="InWork"
 2. Для tns:getStateResult/tns:ExportAppealResult задан тип exportAppealResultType
@@ -298,12 +589,12 @@ HCS-80618 "Интеграция. ДУ. Привязка протокола в с
 4. Удален exportAppealResult
 
 
-HCSANALYST-3045 "Интеграция. Обращения граждан (SOAP для поставщиков), интеграция с Жилинспектором"
+HCSANALYST-3045
 --hcs-appeals-types.xsd--
 1. Полностью изменен элемент importAnswerRequest.
 
 
-HCSANALYST-5906 "Интеграция.Платежи. КР на целый год (SOAP)"
+HCSANALYST-5906
 --hcs-bills-types.xsd--
 1. tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:CapitalRepairCharge/tns:AccountingPeriodTotal,tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:CapitalRepairCharge/tns:MoneyRecalculation, tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:CapitalRepairCharge/tns:MoneyDiscount,tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:CapitalRepairCharge/tns:AccountingPeriodTotal,tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:CapitalRepairCharge/tns:MoneyRecalculation,tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:CapitalRepairCharge/tns:MoneyDiscountсделаны необязательными 
 2. добавлен элемент tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:CapitalRepairYearCharge для импортаначислений за КР на год
@@ -330,7 +621,7 @@ HCS-80618
 Изменения в форматах данных от версии 12.2.0.9 до версии 12.2.0.10
 ================================================================================================================================
 
-HCSANALYST-6108 "Интеграция. ДУ. Привязка протокола в сведениях о размере платы (SOAP)"
+HCSANALYST-6108
 <!--hcs-house-management-types-->
 Добавлены tns:importContractRequest/tns:Contract/tns:PlaceContractPaymentsInfo/tns:VotingProtocolGUID и tns:exportCAChResult/tns:exportCACh/tns:Contract/tns:ContractPaymentsInfo/tns:VotingProtocolGUID и choice для выбора VotingProtocolGUID или Protocol. Добавлено пояснение по автоматической привязке протокола к размеру платы.
 
@@ -343,7 +634,7 @@ HCS-80870
 Изменения в форматах данных от версии 12.2.0.8 до версии 12.2.0.9
 ================================================================================================================================
 
-HCS-80618 "Интеграция обращения: ВИ_РО_ОБР_ЭКСП: EXP001000 при экспорте обращений"
+HCS-80618
 <!--hcs-appeals-types.xsd-->
 1. В простом типе AppealStatusType добавлено новое значение (enumeration value="InWork") и изменена аннотация
 2. У элемента tns:getStateResult/tns:ImportResult указан тип base:CommonResultType
@@ -351,18 +642,18 @@ HCS-80618 "Интеграция обращения: ВИ_РО_ОБР_ЭКСП: E
 4. В комплексном типе exportAppealResultType изменена аннотация элемента tns:AppealStatus
 
 
-HCS-79822 "Инспектирование.SOAP-Экспорт по номеру проверки"
+HCS-79822
 <!--hcs-inspection-types.xsd-->
 1. В корневой элемент exportExaminationsRequest добавлены необязательные элементы tns:ExaminationGuid и tns:RegistryNumber.
 ================================================================================================================================
 Изменения в форматах данных от версии 12.2.0.6 до версии 12.2.0.8
 ================================================================================================================================
 
-HDWORK-82588 "Импорт решений/информации о порядке представления платежных док (importDecisionsOrderOfProvidingPD)"
+HDWORK-82588
 <!--hcs-capital-repair-service-async.wsdl-->
 1. output для метода importDecisionsOrderOfProvidingPD изменен на tns:importDecisionsOrderOfProvidingPDResult.
 
-HCSANALYST-3045 "Обращения граждан (SOAP для поставщиков), интеграция с Жилинспектором"
+HCSANALYST-3045
 <!--hcs-appeals-types.xsd-->
 1. Для элемента tns:getStateResult/tns:ImportResult задан maxOccurs="unbounded"
 
@@ -370,14 +661,13 @@ HCSANALYST-3045 "Обращения граждан (SOAP для поставщи
 Изменения в форматах данных от версии 12.2.0.5 до версии 12.2.0.6
 ================================================================================================================================
 
-HCS-79872 "Интеграция ПФР: ВИ_ИПФР_ВЫП_ЭКСП: EXP001000 при экспорте фиксации с максимальными значениями"
+HCS-79872
 <!--hcs-services-types-->
 1. Удален неиспользуемый комплексный тип WorkingListItemExportType
 2. Тип элемента //element(*,tns:CompletedWorkExportType)/tns:Amount изменён на tns:WorkAmountType
 
 
-HCSANALYST-3630 "Требуется указывать более одного набора платежных реквизитов"
-HCSANALYST-5896 "Интеграция.Платежи.SOAP. Требуется указывать более одного набора платежных реквизитов"
+HCSANALYST-3630, HCSANALYST-5896
 <!--hcs-payment-types-->
 1. Добавлена множественность tns:exportPaymentDocumentDetailsResult/tns:Service
 
@@ -387,12 +677,11 @@ JIRA-0000
 1. totalDigits увеличен до 17 у //element(*,tns:CapitalRepairImportType)/tns:Contribution, //element(*,tns:CapitalRepairImportType)/tns:AccountingPeriodTotal, //element(*,tns:CapitalRepairImportType)/tns:MoneyRecalculation, //element(*,tns:CapitalRepairImportType)/tns:MoneyDiscount, //element(*,tns:CapitalRepairImportType)/tns:TotalPayable
 2. maxLength = 2000 у //element(*,tns:CapitalRepairImportType)/tns:CalcExplanation 
 
-JIRA-0000
 <!--hcs-house-management-types-->
 Cнята обязательность tns:exportCAChResult/tns:exportCACh/tns:Contract/tns:Terminate/tns:ReasonRef 
 
 
-HCSANALYST-3045 "Обращения граждан (SOAP для поставщиков), интеграция с Жилинспектором"
+HCSANALYST-3045
 <!--hcs-appeals-types.xsd-->
 1) удален элемент StatusOfAppeal.Redirected
 2) для элементов из StatusOfAppeal указан тип boolean
@@ -403,7 +692,7 @@ HCSANALYST-3045 "Обращения граждан (SOAP для поставщи
 Изменения в форматах данных от версии 12.2.0.4 до версии 12.2.0.5
 ================================================================================================================================
 
-HCSANALYST-3045 "Обращения граждан (SOAP для поставщиков), интеграция с Жилинспектором"
+HCSANALYST-3045
 Добавлен новый сервис Управления обращениями граждан (папка appeals)
 <!--hcs-appeals-types.xsd-->
 <!--hcs-appeals-service.wsdl-->
@@ -412,17 +701,18 @@ HCSANALYST-3045 "Обращения граждан (SOAP для поставщи
 2. importAnswer - импорт ответов на обращения
 
 
-HCS-77591 "ВИ_ИПФР_ВЫП_ЭКСП: EXP001000 java.lang.NullPointerException при экспорте фиксации работ с внеплановой работой"
+HCS-77591
 <!--hcs-services-types-->
 1. В типе CompletedWorkExportType элемент MonthlyWork стал необязательным.
 2. Базовый тип для tns:exportCompletedWorksResult/tns:exportCompletedWorksResult/tns:UnplannedWork изменён на CompletedWorkExportType.
 
-HCS-79829 "ВИ_ИРАО_ДОМ_ЭКСП: OverhaulFormingKind Изменение аннотации в XSD"
+
+HCS-79829
 <!--hcs-housemanagement-types-->
 1. Изменена аннотация элемента //element(*,tns:ApartmentHouseExportType)/tns:OverhaulFormingKind по факту реализации - возвращается значение "Вид счета\Способ формирования фонда" (НСИ 62)
 
 
-HCSANALYST-6080 "Интеграция.ДУ.Реализация возможности указания признака «Разрешить передачу гражданам текущих показаний по индивидуальным приборам учета в любой день месяца» (SOAP)"
+HCSANALYST-6080
 <!--hcs-housemanagement-types-->
 1. Добавлены необязательные элементы tns:importContractRequest/tns:Contract/tns:EditContract/tns:IndicationsAnyDay, tns:importCharterRequest/tns:PlacingCharter/tns:IndicationsAnyDay, tns:importCharterRequest/tns:EditCharter/tns:IndicationsAnyDay, tns:exportCAChResult/tns:exportCACh/tns:Contract/tns:IndicationsAnyDay, tns:exportCAChResult/tns:exportCACh/tns:Charter/tns:IndicationsAnyDay
 
@@ -430,7 +720,7 @@ HCSANALYST-6080 "Интеграция.ДУ.Реализация возможно
 Изменения в форматах данных от версии 12.2.0.3 до версии 12.2.0.4
 ================================================================================================================================
 
-HCSINT-44085 "Интеграция ПФР: ВИ_ИПФР_ВЫП_ИМП: размерность полей "Кол-во по плану" и "Кол-во факт""
+HCSINT-44085
 --hcs-services-types--
 1. Добавлен комплексный тип MonthlyWorkType для запланированной или выполненной работы за месяц. Все элементы MonthlyWork приведены к данному типу.
 2. Добавлен простой тип WorkAmountType для объема работ с ограничением в 14 знаков, включая 3 после запятой (в соответстви с UI). Вcе элементы, которые содержат объем работ, приведены к данному типу.
@@ -443,16 +733,16 @@ HCSINT-44085 "Интеграция ПФР: ВИ_ИПФР_ВЫП_ИМП: разм
 Изменения в форматах данных от версии 12.2.0.2 до версии 12.2.0.3
 ================================================================================================================================
 
-HCS-75076 "Увеличить максимальное значение поля "Месяц и год окончания выполнения работ"
+HCS-75076
 --hcs-capital-repair-types--
 1. Для элемента tns:importRegionalProgramRequest/tns:importRegionalProgram/tns:LoadRegionalProgram/tns:EndYear (Год окончания региональной программы капитального ремонта) установлен тип xs:gYear
 2. Удален простой тип YearUpTo2060Type
 
-HCS-77620 "Экспорт решений о СФФКР, SOAP - EXP001000 AlreadyDeletedException при попытке выгрузить сведения по решению, в котором нет сведений о протоколе из реестра Голосования"
+HCS-77620
 --hcs-capital-repair-types--
 1. Введен элемент //element(*,tns:ProtocolType)/tns:DocumentIsNotAvailable
 
-HCS-78570 "Добавить поле "Тариф применяется для всех объектов жилищного фонда договора?"
+HCS-78570
 <!--hcs-housemanagement-types-->
 1. Добавлен элемент tns:importSupplyResourceContractRequest/tns:Contract/tns:SupplyResourceContract/tns:Tariff/tns:ForAllAddressObjects
 
@@ -460,13 +750,13 @@ HCS-78570 "Добавить поле "Тариф применяется для �
 Изменения в форматах данных от версии 12.2.0.1 до версии 12.2.0.2
 ================================================================================================================================
 
-HCSANALYST-3630 "Требуется указывать более одного набора платежных реквизитов"
-HCSANALYST-5896 "Интеграция.Платежи.SOAP. Требуется указывать более одного набора платежных реквизитов"
+HCSANALYST-3630, HCSANALYST-5896
 <!--hcs-payment-types-->
 1. Добавлен tns:importNotificationsOfOrderExecutionRequest/tns:NotificationOfOrderExecution139Type/base:TransportGUID
 2. //element(*,tns:NotificationOfOrderExecution139Type)/tns:OrderInfo/tns:PaymentInformationGUID сделан общим
 
-HCSANALYST-5872 "ПД на КР на целый год"
+
+HCSANALYST-5872
 <!--hcs-bills-types-->
 <!--hcs-payments-base-->
 1) добавлена множественность tns:importPaymentDocumentRequest/tns:PaymentDocument/tns:CapitalRepairCharge
@@ -481,8 +771,8 @@ HCSANALYST-5872 "ПД на КР на целый год"
 ================================================================================================================================
 Изменения в форматах данных от версии 11.14.0.13 до версии 12.2.0.1
 ================================================================================================================================
-HCSANALYST-3630 "Требуется указывать более одного набора платежных реквизитов"
-HCSANALYST-5896 "Интеграция.Платежи.SOAP. Требуется указывать более одного набора платежных реквизитов"
+
+HCSANALYST-3630, HCSANALYST-5896
 <!--lib/hcs-payments-base-->
 <!--lib/hcs-individual-registry-base-->
 <!--hcs-bills-types-->
@@ -548,7 +838,7 @@ exportNotificationsOfOrderExecutionPaginal)
 6.1) Удален элемент tns:exportPaymentDocumentDetailsResult/tns:Charge/tns:PaymentDocument/base:ErrorMessage, так как он не использовался
 
 
-HCSANALYST-5889 "Учесть добавление в платежные реквизиты значений КБК и ОКТМО"
+HCSANALYST-5889
 <!--hcs-bills-types-->
 <!--hcs-payment-types-->
 <!--lib/hcs-payments-base-->
@@ -574,13 +864,15 @@ HCSANALYST-5889 "Учесть добавление в платежные рек�
 16) удалена версия в tns:exportPaymentDocumentDetailsRequest/@base:version и tns:exportPaymentDocumentDetailsResult/@base:version
 17) удалена версия в tns:exportPaymentDocumentRequest/@base:version и tns:exportPaymentDocumentResult/@base:version
 
-<!--hcs-housemanagement-types-->
-HCSANALYST-5482 "SOAP ДРСО: реализация возможности указания признака «Разрешить передачу гражданам текущих показаний по индивидуальным приборам учета в любой день месяца»"
 
+HCSANALYST-5482
+<!--hcs-housemanagement-types-->
 В importSupplyResourceContractRequest, importSupplyResourceContractProjectRequest, exportSupplyResourceContractResult добавлен необязательный элемент IndicationsAnyDay
 Изменено описание элемента Period
 
-HCSANALYST-5890 "2.2.3.2.3. РАО. Операция по сносу дома"
+
+HCSANALYST-5890
+<!--hcs-housemanagement-types-->
 1. Добавлена операция сноса дома "demolishHouse"
 2. В следующие типы данных добавлен необязательный элемент "LifeCycleStage"
 	2.1 HouseBasicUOType
@@ -591,7 +883,9 @@ HCSANALYST-5890 "2.2.3.2.3. РАО. Операция по сносу дома"
 	2.6 ApartmentHouseESPType
 	2.7 LivingHouseOMSType
 
-HCSINT-43674 "РАО. Интеграция. Реализовать доработку по сносу дома"
+
+HCSINT-43674
+<!--hcs-housemanagement-types-->
 1. tns:exportHouseRequest/@base:version - убрано fixed значение
 2. tns:exportHouseResult/@base:version - убрано fixed значение
 3. HouseBasicExportType - добавлены необязательные элементы:
@@ -599,109 +893,19 @@ HCSINT-43674 "РАО. Интеграция. Реализовать дорабо�
 	3.2 DemolishionDate
 	3.3 DemolishionReason
 
+
+HCS-69233
 <!--hcs-housemanagement-types, hcs-house-management-service-async.wsdl-->
-HCS-69233 "2.2.2.6.5/2.2.2.6.6. Интеграция.РАО.Экспорт сокращенного состава сущностей для РЦ (SOAP)"
 1. Добавлен запрос exportBriefBasicHouse - Экспорт краткой базовой информации о домах
 2. Добавлен запрос exportBriefLivingHouse - Экспорт краткой информации о жилых домах
 3. Добавлен запрос exportBriefApartmentHouse - Экспорт краткой информации о многоквартирных домах
 
+
+HCSANALYST-5513
 <!--hcs-services-types-->
-HCSANALYST-5513 "Интеграция.Планирование.Учесть изменение периода (SOAP)"
 Количество символов в типе данных WorkCountType (количество работ/услуг) увеличено до 4, исправлена опечатка в описании типа
 
+
 HCS-76095
+<!--hcs-services-types-->
 Добавлен тип данных MonthlyWorkCountType (количество работ/услуг за месяц) - неотрицательное целое число до 3 знаков. Используется для количества в типе данных CompletedWorkType.
-
-================================================================================================================================
-Изменения в форматах данных от версии 11.14.0.12 до версии 11.14.0.13
-================================================================================================================================
-<!--hcs-housemanagement-types-->
-HCS-78683
-для операции exportBriefSocialHireContract добавлен блок с результатами выполнения tns:getStateResult/tns:exportBriefSocialHireContract
-
-================================================================================================================================
-Изменения в форматах данных от версии 11.14.0.11 до версии 11.14.0.12
-================================================================================================================================
-<!--hcs-bills-service.wsdl-->
-<!--hcs-bills-service-async.wsdl-->
-Возвращен номер версии 11.11.0.14 для hcs-bills-service.wsdl и hcs-bills-service-async.wsdl
-
-================================================================================================================================
-Изменения в форматах данных от версии 11.14.0.10 до версии 11.14.0.11
-================================================================================================================================
-<!--hcs-tariff-types-->
-HCS-77914
-Для элементов //element(*,tns:TariffCommonType)/tns:DateTo (дата окончания действия тарифа) удалено значение default="3000-01-01"
-
-<!--hcs-tariff-types-->
-<!--hcs-tariff-service.wsdl-->
-<!--hcs-tariff-service-async.wsdl-->
-HCSINT-43321
-Аннотация к элементу //element(*,tns:exportDifferentiationType)/tns:IsPlural представлена в редакции: "true - справочником предусмотрено несколько значений; false - справочником предусмотрено одно значение (при формировании запросов на импорт сведений о тарифах, для критериев перечислимого типа предоставляется возможность указать несколько значений)."
-Поправлена аннотация к importSocialNormsRequest, importSocialNorms
-
-<!--hcs-bills-types-->
-HCS-77855
-Элемент tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:CapitalRepairCharge/tns:MoneyDiscount сделан необязательным
-
-<!--hcs-bills-types-->
-HCS-78367
-Элемент tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:Insurance/tns:InsuranceProductGUID сделан необязательным
-================================================================================================================================
-Изменения в форматах данных от версии 11.14.0.9 до версии 11.14.0.10
-================================================================================================================================
-<!--hcs-bills-types-->
-HCS-77855
-Элемент tns:exportPaymentDocumentResult/tns:PaymentDocument/tns:PaymentDocument/tns:CapitalRepairCharge/tns:MoneyRecalculation сделан необязательным
-
-<!--hcs-housemanagement-types-->
-HCS-78332
-Элемент tns:exportBriefSupplyResourceContractResult/tns:Contract/tns:ContractSubject/tns:EndSupplyDate сделан необязательным
-================================================================================================================================
-Изменения в форматах данных от версии 11.14.0.8 до версии 11.14.0.9
-================================================================================================================================
-<!--hcs-tariff-types-->
-HCS-77914
-Для элементов //element(*,tns:ResidentialPremisesUsageType)/tns:DateTo (дата окончания действия тарифа) установлено значение default="3000-01-01"
-HCSINT-43274
-Для дат начала о окончания действия тарифа установлен тип
-<xs:simpleType name="Date1900-3000Type">
-	<xs:annotation>
-		<xs:documentation>Дата в диапазоне от 01.01.1901 до 01.01.3000</xs:documentation>
-	</xs:annotation>
-	<xs:restriction base="xs:date">
-		<xs:minInclusive value="1901-01-01"/>
-		<xs:maxInclusive value="3000-01-01"/>
-	</xs:restriction>
-</xs:simpleType>
-HCSINT-43269
-Для строковых типов установлено ограничение <xs:pattern value="(\s*\S+\s*)+"/> (строка, содержащая по крайней мере один символ, отличный от пробельного)
-HCS-77977
-Изменены ограничения
-<xs:simpleType name="ValueRealType">
-	<xs:annotation>
-		<xs:documentation>Критерий дифференциации типа вещественное число</xs:documentation>
-	</xs:annotation>
-	<xs:restriction base="xs:decimal">
-		<xs:totalDigits value="13"/>
-		<xs:fractionDigits value="3"/>
-		<xs:minInclusive value="0"/>
-		<xs:maxInclusive value="9999999999.999"/>
-	</xs:restriction>
-</xs:simpleType>
-
-================================================================================================================================
-Изменения в форматах данных от версии 11.14.0.7 до версии 11.14.0.8
-================================================================================================================================
-HCS-78078
-<!--hcs-housemanagement-types-->
-Элемент tns:exportBriefSocialHireContractResult/tns:Contract/tns:ContractState сделан необязательным, дополнена аннотация для данного элемента
-
-<!--hcs-house-management-types-->
-<!--hcs-device-metering-types-->
-1. В корневом элементе exportMeteringDeviceHistoryRequest
-1.1. сделан необязательным элемент tns:FIASHouseGuid
-1.2. добавлен необязательный элемент tns:PagedOutput
-1.3. изменены аннотации элементов tns:inputDateFrom, tns:inputDateTo, tns:MeteringDeviceType и tns:MunicipalResource
-2. В корневой элемент exportMeteringDeviceHistoryResult добавлен необязательный элемент tns:PagedOutput
-3. В комплексный тип exportMeteringDeviceHistoryResultType добавлены необязательные элементы tns:HCSHouseGUID и tns:FIASHouseGuid

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:nsi-base="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:tns="http://dom.gosuslugi.ru/schema/integration/nsi/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/nsi/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="12.2.1.10">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:nsi-base="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:tns="http://dom.gosuslugi.ru/schema/integration/nsi/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/nsi/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="12.2.2.1">
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/base/" schemaLocation="../lib/hcs-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/nsi-base/" schemaLocation="../lib/hcs-nsi-base.xsd"/>
 	<xs:element name="exportNsiItemResult">
@@ -148,12 +148,12 @@
 									</xs:element>
 									<xs:element name="GeneralNeeds" type="xs:boolean" fixed="true" minOccurs="0">
 										<xs:annotation>
-											<xs:documentation>Признак "Услуга предоставляется на общедомовые нужды"</xs:documentation>
+											<xs:documentation>(не используется) Признак "Услуга предоставляется на общедомовые нужды"</xs:documentation>
 										</xs:annotation>
 									</xs:element>
 									<xs:element name="SelfProduced" type="xs:boolean" minOccurs="0">
 										<xs:annotation>
-											<xs:documentation>Признак "Самостоятельное производство коммунальной услуги"</xs:documentation>
+											<xs:documentation>(не используется) Признак "Самостоятельное производство коммунальной услуги"</xs:documentation>
 										</xs:annotation>
 									</xs:element>
 									<xs:element name="MainMunicipalServiceName" type="base:String100Type">
@@ -242,6 +242,145 @@
 			<xs:field xpath="."/>
 		</xs:key>
 	</xs:element>
+	<!--Импортировать данные справочника 337 "Коммунальные ресурсы, потребляемые при использовании и содержании общего имущества в многоквартирном доме"-->
+	<xs:element name="importGeneralNeedsMunicipalResourceRequest">
+		<xs:annotation>
+			<xs:documentation>Запрос на импорт данных справочника 337 "Коммунальные ресурсы, потребляемые при использовании и содержании общего имущества в многоквартирном доме".</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="base:BaseType">
+					<xs:choice>
+						<xs:sequence>
+							<xs:element name="TopLevelMunicipalResource" minOccurs="0" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Для записей 2-го уровня иерархии сссылка на родитльскую запись. Поскольку записи 1-го уровня иерархии добавляются всем поставщикам и их неввозможно изменить/удалить, ссылка ннх представлена реестровым номером записи из справочника "Вид коммунального ресурса" (см описание ParentCode). В ответе на запрос вместе с указанным TransportGuid возвращается GUID записи.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="ParentCode">
+											<xs:annotation>
+												<xs:documentation>Код родительской записи верхнего уровня. Может быть:
+1 - Холодная вода
+2 - Горячая вода
+3 - Электрическая энергия
+8 - Сточные воды</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:byte">
+													<xs:enumeration value="1"/>
+													<xs:enumeration value="2"/>
+													<xs:enumeration value="3"/>
+													<xs:enumeration value="8"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element ref="base:TransportGUID"/>
+										<xs:element name="ImportGeneralMunicipalResource" minOccurs="0" maxOccurs="1000">
+											<xs:annotation>
+												<xs:documentation>Создание/изменение главного коммунального ресурса (ветки)</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:complexContent>
+													<xs:extension base="tns:importGeneralNeedsMunicipalResourceType"/>
+												</xs:complexContent>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="RecoverGeneralMunicipalResource" minOccurs="0" maxOccurs="1000">
+								<xs:annotation>
+									<xs:documentation>Восстановление главного коммунального ресурса (ветки).</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="base:TransportGUID"/>
+										<xs:element name="ElementGuid" type="base:GUIDType">
+											<xs:annotation>
+												<xs:documentation>Идентификатор ранее существовавшего  элемента справочника.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="DeleteGeneralMunicipalResource" minOccurs="0" maxOccurs="1000">
+								<xs:annotation>
+									<xs:documentation>Удаление  главного коммунального ресурса (ветки).</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="base:TransportGUID"/>
+										<xs:element name="ElementGuid" type="base:GUIDType">
+											<xs:annotation>
+												<xs:documentation>Идентификатор существующего элемента справочника.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:choice>
+					<xs:attribute ref="base:version" use="required" fixed="12.2.2.1"/>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+		<xs:key name="importGeneralNeedsMunicipalResourceRequest_TransportGUIDKey">
+			<xs:selector xpath=".//base:TransportGUID"/>
+			<xs:field xpath="."/>
+		</xs:key>
+		<xs:key name="importGeneralNeedsMunicipalResourceRequest_ElementGuidKey">
+			<xs:selector xpath=".//tns:ElementGuid"/>
+			<xs:field xpath="."/>
+		</xs:key>
+	</xs:element>
+	<xs:complexType name="importGeneralNeedsMunicipalResourceType">
+		<xs:annotation>
+			<xs:documentation>Тип позиции справочника 337 "Коммунальные ресурсы, потребляемые при использовании и содержании общего имущества в многоквартирном доме".</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element ref="base:TransportGUID"/>
+			<xs:element name="ElementGuid" type="base:GUIDType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Идентификатор существующего элемента справочника 2-го уровня иерархии и ниже</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GeneralMunicipalResourceName" type="base:String255Type">
+				<xs:annotation>
+					<xs:documentation>Наименование главного коммунального ресурса.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="MunicipalResourceRef" type="nsi-base:nsiRef">
+				<xs:annotation>
+					<xs:documentation>Вид коммунального ресурса (НСИ №2 "Вид коммунального ресурса").</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element ref="base:OKEI">
+				<xs:annotation>
+					<xs:documentation>(не используется)
+Единница измерения из справочника ОКЕИ.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:choice>
+				<xs:element name="SortOrder">
+					<xs:annotation>
+						<xs:documentation>Порядок сортировки.</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="3"/>
+							<xs:minLength value="1"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="SortOrderNotDefined" type="xs:boolean" fixed="true">
+					<xs:annotation>
+						<xs:documentation>Порядок сортировки не задан</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
 	<!--Импортировать данные справочника 59 "Работы и услуги организации"-->
 	<xs:element name="importOrganizationWorksRequest">
 		<xs:annotation>
@@ -620,7 +759,7 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<!--Экспортировать данные справочников поставщика информации  (1,51,59,219,272,302)-->
+	<!--Экспортировать данные справочников поставщика информации  (1,51,59,219,272,302,337)-->
 	<xs:element name="exportDataProviderNsiItemRequest">
 		<xs:annotation>
 			<xs:documentation>Запрос на получение данных справочника поставщика</xs:documentation>
@@ -641,6 +780,7 @@
 									<xs:enumeration value="219"/>
 									<xs:enumeration value="272"/>
 									<xs:enumeration value="302"/>
+									<xs:enumeration value="337"/>
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:element>
@@ -675,6 +815,7 @@
 									<xs:enumeration value="59"/>
 									<xs:enumeration value="219"/>
 									<xs:enumeration value="302"/>
+									<xs:enumeration value="337"/>
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:element>

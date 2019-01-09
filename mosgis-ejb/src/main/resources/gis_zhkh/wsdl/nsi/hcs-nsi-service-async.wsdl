@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://dom.gosuslugi.ru/schema/integration/nsi-service-async/" xmlns:nsi="http://dom.gosuslugi.ru/schema/integration/nsi/" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:ns="http://www.w3.org/2000/09/xmldsig#" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="http://dom.gosuslugi.ru/schema/integration/nsi-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/nsi-service-async/">
 	<wsdl:types>
-		<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified" attributeFormDefault="unqualified" version="11.5.0.2">
+		<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified" attributeFormDefault="unqualified" version="12.2.2.1">
 			<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/base/" schemaLocation="../lib/hcs-base.xsd"/>
 			<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/nsi/" schemaLocation="hcs-nsi-types.xsd"/>
 		</xs:schema>
@@ -69,6 +69,12 @@
 	<wsdl:message name="importBaseDecisionMSPResult">
 		<wsdl:part name="importBaseDecisionMSPResult" element="base:AckRequest"/>
 	</wsdl:message>
+	<wsdl:message name="importGeneralNeedsMunicipalResourceRequest">
+		<wsdl:part name="importGeneralNeedsMunicipalResourceRequest" element="nsi:importGeneralNeedsMunicipalResourceRequest"/>
+	</wsdl:message>
+	<wsdl:message name="importGeneralNeedsMunicipalResourceResult">
+		<wsdl:part name="importGeneralNeedsMunicipalResourceResult" element="base:AckRequest"/>
+	</wsdl:message>
 	<wsdl:portType name="NsiPortsTypeAsync">
 		<wsdl:operation name="importAdditionalServices">
 			<wsdl:documentation>ВИ_НСИ_ИДС_1. Импортировать данные справочника 1 "Дополнительные услуги".</wsdl:documentation>
@@ -121,6 +127,12 @@
 			<wsdl:documentation>ВИ_НСИ_ИДС_302. Импортировать данные справочника 302 "Основание принятия решения о мерах социальной поддержки гражданина"</wsdl:documentation>
 			<wsdl:input message="tns:importBaseDecisionMSPRequest"/>
 			<wsdl:output message="tns:importBaseDecisionMSPResult"/>
+			<wsdl:fault name="InvalidRequest" message="tns:Fault"/>
+		</wsdl:operation>
+		<wsdl:operation name="importGeneralNeedsMunicipalResource">
+			<wsdl:documentation>Импортировать данные справочника 337 "Коммунальные ресурсы, потребляемые при использовании и содержании общего имущества в многоквартирном доме"</wsdl:documentation>
+			<wsdl:input message="tns:importGeneralNeedsMunicipalResourceRequest"/>
+			<wsdl:output message="tns:importGeneralNeedsMunicipalResourceResult"/>
 			<wsdl:fault name="InvalidRequest" message="tns:Fault"/>
 		</wsdl:operation>
 	</wsdl:portType>
@@ -246,6 +258,20 @@
 		<wsdl:operation name="importBaseDecisionMSP">
 			<wsdl:documentation>ВИ_НСИ_ИДС_302. Импортировать данные справочника 302 "Основание принятия решения о мерах социальной поддержки гражданина"</wsdl:documentation>
 			<soap:operation soapAction="urn:importBaseDecisionMSP"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+				<soap:header message="tns:RequestHeader" part="Header" use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+				<soap:header message="tns:ResultHeader" part="Header" use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="InvalidRequest">
+				<soap:fault name="InvalidRequest" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="importGeneralNeedsMunicipalResource">
+			<soap:operation soapAction="urn:importGeneralNeedsMunicipalResource"/>
 			<wsdl:input>
 				<soap:body use="literal"/>
 				<soap:header message="tns:RequestHeader" part="Header" use="literal"/>

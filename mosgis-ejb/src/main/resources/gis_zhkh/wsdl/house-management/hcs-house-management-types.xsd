@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:tns="http://dom.gosuslugi.ru/schema/integration/house-management/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:premises-base="http://dom.gosuslugi.ru/schema/integration/premises-base/" xmlns:bills-base="http://dom.gosuslugi.ru/schema/integration/bills-base/" xmlns:account-base="http://dom.gosuslugi.ru/schema/integration/account-base/" xmlns:nsi-base="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:organizations-base="http://dom.gosuslugi.ru/schema/integration/organizations-base/" xmlns:organizations-registry-base="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" xmlns:metering-device-base="http://dom.gosuslugi.ru/schema/integration/metering-device-base/" xmlns:individual-registry-base="http://dom.gosuslugi.ru/schema/integration/individual-registry-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/house-management/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="12.2.1.8">
+<xs:schema xmlns:tns="http://dom.gosuslugi.ru/schema/integration/house-management/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:premises-base="http://dom.gosuslugi.ru/schema/integration/premises-base/" xmlns:bills-base="http://dom.gosuslugi.ru/schema/integration/bills-base/" xmlns:account-base="http://dom.gosuslugi.ru/schema/integration/account-base/" xmlns:nsi-base="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:organizations-base="http://dom.gosuslugi.ru/schema/integration/organizations-base/" xmlns:organizations-registry-base="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" xmlns:metering-device-base="http://dom.gosuslugi.ru/schema/integration/metering-device-base/" xmlns:individual-registry-base="http://dom.gosuslugi.ru/schema/integration/individual-registry-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/house-management/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="12.2.2.10">
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/base/" schemaLocation="../lib/hcs-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/premises-base/" schemaLocation="../lib/hcs-premises-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/bills-base/" schemaLocation="../lib/hcs-bills-base.xsd"/>
@@ -13495,7 +13495,7 @@ STATE_(M)UNICIPAL_FUND - Договор найма жилого помещени
 					<xs:documentation>Строка</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="FloatValue" type="xs:float">
+			<xs:element name="FloatValue" type="xs:decimal">
 				<xs:annotation>
 					<xs:documentation>Вещественное </xs:documentation>
 				</xs:annotation>
@@ -15562,7 +15562,7 @@ Annul-Сведения аннулированы
 				</xs:annotation>
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="MaintenanceAndRepairsForMembersPaymentSize" type="bills-base:SmallMoneyType">
+						<xs:element name="MaintenanceAndRepairsForMembersPaymentSize" type="bills-base:SmallMoneyPositiveType">
 							<xs:annotation>
 								<xs:documentation>Размер обязательных платежей и (или) взносов членов товарищества, кооператива</xs:documentation>
 							</xs:annotation>
@@ -15582,7 +15582,7 @@ Annul-Сведения аннулированы
 				</xs:annotation>
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="MaintenanceAndRepairsForNonMembersPaymentSize" type="bills-base:SmallMoneyType">
+						<xs:element name="MaintenanceAndRepairsForNonMembersPaymentSize" type="bills-base:SmallMoneyPositiveType">
 							<xs:annotation>
 								<xs:documentation>Размер платы за содержание и ремонт жилого помещения для собственника помещения в МКД</xs:documentation>
 							</xs:annotation>
@@ -15742,7 +15742,8 @@ Annul-Сведения аннулированы
 						<xs:sequence>
 							<xs:element name="AVotingStartDate" type="xs:date" minOccurs="0">
 								<xs:annotation>
-									<xs:documentation>Дата начала приема решений собственников</xs:documentation>
+									<xs:documentation>Дата начала приема решений собственников.
+Обязательно для заполнения, если заполнен элемент tns:Placing.</xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="AVotingDate" type="xs:date">
@@ -15850,7 +15851,8 @@ Annul-Сведения аннулированы
 							</xs:element>
 							<xs:element name="AVotingStartDate" type="xs:date" minOccurs="0">
 								<xs:annotation>
-									<xs:documentation>Дата начала приема решений собственников</xs:documentation>
+									<xs:documentation>Дата начала приема решений собственников.
+Обязательно для заполнения, если заполнен элемент tns:Placing.</xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="AVotingDate" type="xs:date">
@@ -17340,6 +17342,36 @@ DECISION_IS_(N)OT_MADE - решение не принято</xs:documentation>
 			<xs:documentation>Тип для редактирования ПУ после начала внесения показаний</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
+			<xs:element name="MeteringDeviceNumber" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Заводской (серийный) номер ПУ</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="50"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="MeteringDeviceStamp" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Марка ПУ (обязательно для заполнения при импорте)</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="100"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="MeteringDeviceModel" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Модель ПУ (обязательно для заполнения при импорте)</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="100"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
 			<xs:element name="InstallationDate" type="xs:date" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Дата установки</xs:documentation>
