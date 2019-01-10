@@ -52,7 +52,7 @@ public class StuckGisRequestsMDB extends TextMDB {
 
                 if (status.isInProgress ()) {
                     
-                    Map<String, Object> values = getValues (db, item.uuid, r);
+                    Map<String, Object> values = getValues (db, item, r);
                     
                     db.update (item.entityTable, values);                
 
@@ -131,11 +131,11 @@ public class StuckGisRequestsMDB extends TextMDB {
         
     }
 
-    Map<String, Object> getValues (DB db, UUID uuid, Map<String, Object> r) throws SQLException {            
+    Map<String, Object> getValues (DB db, Item item, Map<String, Object> r) throws SQLException {            
         
         final Map<String, Object> values = HASH (
-            "uuid", uuid,
-            "id_ctr_status", VocGisStatus.i.FAILED_STATE.getId ()
+            "uuid", item.uuid,
+            item.statusCol.getName (), VocGisStatus.i.FAILED_STATE.getId ()
         );
         
         UUID uuidOutSoap = (UUID) r.get ("uuid_out_soap");
