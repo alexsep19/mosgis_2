@@ -39,9 +39,13 @@ public class VocOrganizationProposalLogTest extends BaseTest {
         this.commonPart = HASH (
             EnTable.c.UUID, uuid,
             EnTable.c.IS_DELETED, 0,
+            c.ID_TYPE, VocOrganizationTypes.i.SUBSIDIARY.getId (),
             c.ID_ORG_PR_STATUS, 10,
             c.ID_ORG_PR_STATUS_GIS, 10,            
-            c.UUID_ORG, getSomeUuid (VocOrganization.class),
+            c.PARENT, getSomeUuid (VocOrganization.class),
+            c.REGISTRATIONCOUNTRY, null,
+            c.UUID_ORG, null,
+            c.FIASHOUSEGUID, null,
             c.ID_LOG, null
         );        
         
@@ -73,6 +77,8 @@ public class VocOrganizationProposalLogTest extends BaseTest {
 
                 Map<String, Object> sample = sampler.nextHASH ();
 
+                dump (sample);
+                
                 db.upsert (VocOrganizationProposal.class, sample);
                 
                 String id = model.createIdLog (db, table, null, uuid, VocAction.i.APPROVE);
@@ -82,8 +88,12 @@ public class VocOrganizationProposalLogTest extends BaseTest {
                     VocOrganizationProposal.c.ID_LOG, id
                 ));
                 
-                
+                Map<String, Object> r = db.getMap (logTable.getForExport (id));
 
+                dump (r);
+
+                validate (VocOrganizationProposalLog.toImportSubsidiaryRequest (r));
+                
             }        
 
         }        

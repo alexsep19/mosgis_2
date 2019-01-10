@@ -40,7 +40,7 @@ public class VocOrganizationProposalLog extends GisWsLogTable {
             ).on ()
             .toOne (VocOrganization.class, "AS o"
                 , VocOrganization.c.ORGVERSIONGUID.lc ()
-            ).on ()
+            ).on ("r.parent=o.uuid")
             ;
                 
     }            
