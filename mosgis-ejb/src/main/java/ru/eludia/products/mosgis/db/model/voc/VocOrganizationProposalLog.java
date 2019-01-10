@@ -39,7 +39,7 @@ public class VocOrganizationProposalLog extends GisWsLogTable {
     private static SubsidiaryImportType.CreateSubsidiary toCreateSubsidiary (Map<String, Object> r) {
         final SubsidiaryImportType.CreateSubsidiary result = DB.to.javaBean (SubsidiaryImportType.CreateSubsidiary.class, r);
         result.setSourceName (toSourceName (r));
-        result.setOrgVersionGUID (DB.to.String (r.get ("o.orgversionguid")));
+        result.setOrgVersionGUID (DB.to.String (r.get ("p.orgversionguid")));
         return result;
     }
     
@@ -58,10 +58,12 @@ public class VocOrganizationProposalLog extends GisWsLogTable {
             .toOne (VocOrganizationProposal.class, "AS r"
                 , VocOrganizationProposal.c.ID_ORG_PR_STATUS.lc ()
             ).on ()
-            .toOne (VocOrganization.class, "AS o"
+            .toOne (VocOrganization.class, "AS p"
                 , VocOrganization.c.ORGVERSIONGUID.lc ()
+            ).on ("r.parent=p.uuid")
+            .toOne (VocOrganization.class, "AS o"
                 , VocOrganization.c.ORGPPAGUID.lc ()
-            ).on ("r.parent=o.uuid")
+            ).on ("r.uuid_org_owner=o.uuid")
             ;
                 
     }            

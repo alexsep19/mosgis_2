@@ -45,9 +45,8 @@ public class GisPollExportVocOrganizationProposalMDB  extends GisPollMDB {
             .toOne (VocOrganizationProposalLog.class,     "AS log", "uuid", "action").on ("log.uuid_out_soap=root.uuid")
             .toOne (VocOrganizationProposal.class,        "AS r", "uuid").on ()
             .toOne (VocOrganization.class, "AS o"
-                , VocOrganization.c.ORGVERSIONGUID.lc ()
                 , VocOrganization.c.ORGPPAGUID.lc ()
-            ).on ("r.parent=o.uuid")
+            ).on ("r.uuid_org_owner=o.uuid")
                 
         ;
     }

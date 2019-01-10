@@ -1,6 +1,5 @@
 package ru.eludia.products.mosgis.rest.impl;
 
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -15,13 +14,13 @@ import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
-import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.rest.api.VocOrganizationProposalsLocal;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationProposal;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganizationProposal.c;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTypes;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOksm;
@@ -140,10 +139,11 @@ public class VocOrganizationProposalsImpl extends BaseCRUD<VocOrganizationPropos
     }
 
     @Override
-    public JsonObject select (JsonObject p) {
+    public JsonObject select (JsonObject p, User user) {
 
         Select select = ModelHolder.getModel ().select (VocOrganizationProposal.class, "*", "uuid AS id")
-            .where("is_deleted", 0)
+            .where ("is_deleted", 0)
+            .and (c.UUID_ORG_OWNER, user.getUuidOrg ())
             .orderBy ("accreditationstartdate DESC, stateregistrationdate DESC")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
@@ -204,15 +204,16 @@ public class VocOrganizationProposalsImpl extends BaseCRUD<VocOrganizationPropos
 
         return doAction((db, job) -> {
 
-            JsonObject data = p.getJsonObject("data");
+            JsonObject data = p.getJsonObject ("data");
 
-            Map<String, Object> r = HASH(
-                "id_type", data.getString("id_type"),
-                "fullname", data.getString("fullname"),
-                "shortname", data.getString("shortname"),
-                "inn", data.getString("inn"),
-                "kpp", data.getString("kpp"),
-                "address", data.getString("address", null)
+            Map<String, Object> r = HASH (
+                c.UUID_ORG_OWNER, user.getUuidOrg (),
+                c.ID_TYPE, data.getString("id_type"),
+                c.FULLNAME, data.getString("fullname"),
+                c.SHORTNAME, data.getString("shortname"),
+                c.INN, data.getString("inn"),
+                c.KPP, data.getString("kpp"),
+                c.ADDRESS, data.getString("address", null)
             );
 
             if (data.getString("id_type").equals ("2")) { // Обособленное подразделение
@@ -293,11 +294,6 @@ public class VocOrganizationProposalsImpl extends BaseCRUD<VocOrganizationPropos
             ));
 
         });
-    }
-
-    @Override
-    public JsonObject select (JsonObject p, User user) {
-        throw new UnsupportedOperationException ("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override

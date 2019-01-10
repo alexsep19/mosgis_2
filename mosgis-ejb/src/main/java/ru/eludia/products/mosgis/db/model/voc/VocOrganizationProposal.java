@@ -21,6 +21,7 @@ public class VocOrganizationProposal extends Table {
         ORGVERSIONGUID        (Type.UUID, null, "Идентификатор версии записи в реестре организаций"),
         PARENT                (VocOrganization.class, "Головная организация [обособленного подразделения]"),
         UUID_ORG              (VocOrganization.class, "Юридическое лицо, созданное по заявке, принятое из ГИС ЖКХ"),
+        UUID_ORG_OWNER        (VocOrganization.class, "Организация оператора, создавшего запись"),
         IS_DELETED            (BOOLEAN, FALSE, "1, если запись удалена; иначе 0"),
         FULLNAME              (STRING, null, "Полное наименование"),
         SHORTNAME             (STRING, 500, null, "Краткое наименование"),
