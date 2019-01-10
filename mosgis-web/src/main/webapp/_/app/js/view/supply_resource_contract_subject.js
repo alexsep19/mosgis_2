@@ -4,7 +4,7 @@ define ([], function () {
 
         var it = data.item
 
-        $('title').text ('ДРС №' + it.contractnumber + ' от ' + dt_dmy (it.signingdate))
+        $('title').text ('Коммунальный ресурс по ДРС №' + it['sr_ctr.label'])
 
         if (it ['out_soap.err_text']) {
 
@@ -39,13 +39,10 @@ define ([], function () {
                     tabs: {
 
                         tabs: [
-                            {id: 'supply_resource_contract_common',   caption: 'Общие'},
-                            {id: 'supply_resource_contract_docs',     caption: 'Документы'},
-                            {id: 'supply_resource_contract_subjects',    caption: 'Предмет договора'},
-                            {id: 'supply_resource_contract_common_log', caption: 'История изменений'},
+                            {id: 'supply_resource_contract_subject_common',   caption: 'Общие'},
                         ].filter (not_off),
 
-                        onClick: $_DO.choose_tab_supply_resource_contract
+                        onClick: $_DO.choose_tab_supply_resource_contract_subject
 
                     }
 
@@ -54,19 +51,24 @@ define ([], function () {
             ],
 
             onRender: function (e) {
-                clickActiveTab (this.get ('main').tabs, 'supply_resource_contract.active_tab')
+                clickActiveTab (this.get ('main').tabs, 'supply_resource_contract_subject.active_tab')
             },
 
         });
 
-        if (it.uuid_org_customer) {
-            clickOn ($('#lnk_customer'), function () {openTab ('/voc_organization_legal/' + it.uuid_org_customer)})
-        }
-        else {
-            clickOn ($('#lnk_customer'), function () {openTab ('/vc_person/' + it.uuid_person_customer)})
+        if (it['sr_ctr.uuid']) {
+            clickOn ($('#lnk_sr_ctr'), function () {openTab ('/supply_resource_contract/' + it['sr_ctr.uuid'])})
         }
 
-        clickOn ($('#lnk_org'), function () {openTab ('/voc_organization_legal/' + it.uuid_org)})
+        if (it['sr_ctr.uuid_org_customer']) {
+            clickOn($('#lnk_customer'), function () {
+                openTab('/voc_organization_legal/' + it['sr_ctr.uuid_org_customer'])
+            })
+        } else {
+            clickOn($('#lnk_customer'), function () {
+                openTab('/vc_person/' + it['sr_ctr.uuid_person_customer'])
+            })
+        }
 
     }
 
