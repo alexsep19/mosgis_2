@@ -10,6 +10,8 @@ import ru.gosuslugi.dom.schema.integration.organizations_registry.ImportSubsidia
 import ru.gosuslugi.dom.schema.integration.organizations_registry.SubsidiaryImportType;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_base.SubsidiaryType;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationProposal.c;
+import ru.gosuslugi.dom.schema.integration.organizations_registry.ImportForeignBranchRequest;
+import ru.gosuslugi.dom.schema.integration.organizations_registry_base.ForeignBranchType;
 
 public class VocOrganizationProposalLog extends GisWsLogTable {
 
@@ -28,7 +30,7 @@ public class VocOrganizationProposalLog extends GisWsLogTable {
         result.getSubsidiary ().add (toImportSubsidiaryRequestSubsidiary (r));
         return result;
     }
-    
+        
     private static ImportSubsidiaryRequest.Subsidiary toImportSubsidiaryRequestSubsidiary (Map<String, Object> r) {
         final ImportSubsidiaryRequest.Subsidiary result = DB.to.javaBean (ImportSubsidiaryRequest.Subsidiary.class, r);
         result.setTransportGUID (UUID.randomUUID ().toString ());
@@ -50,11 +52,31 @@ public class VocOrganizationProposalLog extends GisWsLogTable {
         return result;
     }
     
+    public static ImportForeignBranchRequest toImportForeignBranchRequest (Map<String, Object> r) {
+        final ImportForeignBranchRequest result = new ImportForeignBranchRequest ();
+        result.getForeignBranch ().add (toForeignBranch (r));
+        return result;
+    }    
+    
+    private static ImportForeignBranchRequest.ForeignBranch toForeignBranch (Map<String, Object> r) {
+        ImportForeignBranchRequest.ForeignBranch result = DB.to.javaBean (ImportForeignBranchRequest.ForeignBranch.class, r);
+        result.setTransportGUID (UUID.randomUUID ().toString ());
+        result.setCreateForeignBranch (toForeignBranchType (r));
+        return result;
+    }
+    
+    private static ForeignBranchType toForeignBranchType (Map<String, Object> r) {
+        final ForeignBranchType result = DB.to.javaBean (ForeignBranchType.class, r);
+        result.setRegistrationCountry ((String) r.get ("oksm.alfa2"));
+        return result;
+    }
+    
     public Get getForExport (String id) {
 
         return (Get) getModel ()
                 
             .get (this, id, "*")
+            .toMaybeOne (VocOksm.class, "AS oksm", "alfa2").on ()
             .toOne (VocOrganizationProposal.class, "AS r"
                 , VocOrganizationProposal.c.ID_ORG_PR_STATUS.lc ()
             ).on ()

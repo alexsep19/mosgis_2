@@ -75,7 +75,6 @@ public class VocOrganizationProposal extends Table {
                 case UUID:
                 case ID_LOG:
                 case ID_TYPE:
-                case FIASHOUSEGUID:
                     return false;
                 default:
                     return true;
