@@ -80,6 +80,11 @@ define ([], function () {
         query({type: 'voc_organization_proposals', action: 'delete'}, {}, reload_page)
     }
 
+    $_DO.approve_voc_organization_proposal_alien = function (e) {
+        if (!confirm ('Разместить эти данные в ГИС ЖКХ?')) return
+        query ({type: 'voc_organization_proposals', action: 'approve'}, {}, reload_page)
+    }
+
     $_DO.choose_tab_voc_organization_proposal_alien = function (e) {
 
         var name = e.tab.id
@@ -101,6 +106,27 @@ define ([], function () {
         query ({type: 'voc_organization_proposals'}, {}, function (data) {
 
             $('body').data ('data', data)
+            
+            var it = data.item
+
+            it._can = {cancel: 1}
+            
+            if (!it.is_deleted && $_USER.uuid_org == it.uuid_org_owner) {
+            
+                switch (it.id_org_pr_status) {
+                    case 10:
+                        it._can.edit = 1
+                        it._can.approve = 1
+                }
+
+                it._can.update = it._can.delete = it._can.edit
+            
+                switch (it.id_org_pr_status) {
+                    case 14:
+                        it._can.delete = 1
+                }
+
+            }
 
             done(data)
 

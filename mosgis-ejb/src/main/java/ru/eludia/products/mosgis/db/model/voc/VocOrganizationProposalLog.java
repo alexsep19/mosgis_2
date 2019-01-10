@@ -79,8 +79,9 @@ public class VocOrganizationProposalLog extends GisWsLogTable {
             .toMaybeOne (VocOksm.class, "AS oksm", "alfa2").on ()
             .toOne (VocOrganizationProposal.class, "AS r"
                 , VocOrganizationProposal.c.ID_ORG_PR_STATUS.lc ()
+                , VocOrganizationProposal.c.ID_TYPE.lc ()
             ).on ()
-            .toOne (VocOrganization.class, "AS p"
+            .toMaybeOne (VocOrganization.class, "AS p"
                 , VocOrganization.c.ORGVERSIONGUID.lc ()
             ).on ("r.parent=p.uuid")
             .toOne (VocOrganization.class, "AS o"

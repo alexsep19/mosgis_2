@@ -47,7 +47,7 @@ public class ExportVocOrganizationProposalMDB extends GisExportMDB<VocOrganizati
             
         switch (action) {
             
-            case PLACING: switch (VocOrganizationTypes.i.forId (r.get (VocOrganizationProposal.c.ID_TYPE))) {
+            case PLACING: switch (VocOrganizationTypes.i.forId (r.get ("r.id_type"))) {
                 case SUBSIDIARY:     return wsGisOrgClient.importSubsidiary (orgPPAGuid, messageGUID, r);
                 case FOREIGN_BRANCH: return wsGisOrgClient.importForeignBranch (orgPPAGuid, messageGUID, r);
                 default: throw new IllegalArgumentException ("Neither a Subsidiary nor a ForeignBranch: " + r);
