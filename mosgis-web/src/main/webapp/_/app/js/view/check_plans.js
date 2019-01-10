@@ -10,15 +10,6 @@ define ([], function () {
                 toolbar: true,
                 footer: true,
             },
-            
-            //searches: [
-            //    {field: 'is_condo',            caption: 'Тип',           type: 'list', options: {items: [
-            //        {id: "1", text: 'МКД'},
-            //        {id: "0", text: 'ЖД'},
-            //    ]}},
-            //    {field: 'address_uc',           caption: 'Адрес',         type: 'text'},
-            //    {field: 'fiashouseguid',           caption: 'GUID ФИАС',         type: 'text', operators: ['null', 'not null', 'is'], operator: 'is'},
-            //],
 
             columns: [
                 {field: 'year', caption: 'Год', size: 5},
@@ -31,10 +22,10 @@ define ([], function () {
                 }}
             ],
 
-            //url: '/mosgis/_rest/?type=check_plans',
+            url: '/mosgis/_rest/?type=check_plans',
             
             onDblClick: function (e) {
-                //openTab ('/check_plan/' + e.recid)
+                openTab ('/check_plan/' + e.recid)
             }
 
         }).refresh ();
