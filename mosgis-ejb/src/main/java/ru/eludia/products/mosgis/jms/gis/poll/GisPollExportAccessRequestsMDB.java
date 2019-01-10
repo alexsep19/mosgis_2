@@ -20,7 +20,7 @@ import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_common.GetStateResult;
-import ru.eludia.products.mosgis.ejb.wsc.WsGisOrgClient;
+import ru.eludia.products.mosgis.ejb.wsc.WsGisOrgCommonClient;
 import ru.eludia.products.mosgis.jmx.DelegationLocal;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_common.ExportDelegatedAccessType;
@@ -34,7 +34,7 @@ import ru.gosuslugi.dom.schema.integration.organizations_registry_common_service
 public class GisPollExportAccessRequestsMDB  extends GisPollMDB {
 
     @EJB
-    protected WsGisOrgClient wsGisOrgClient;
+    protected WsGisOrgCommonClient wsGisOrgClient;
     
     @EJB    
     DelegationLocal delegation;

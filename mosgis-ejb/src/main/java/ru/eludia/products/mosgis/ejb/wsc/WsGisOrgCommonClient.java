@@ -22,7 +22,7 @@ import ru.gosuslugi.dom.schema.integration.organizations_registry_common_service
 
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-public class WsGisOrgClient {
+public class WsGisOrgCommonClient {
 
     private static final ObjectFactory of = new ObjectFactory ();
     

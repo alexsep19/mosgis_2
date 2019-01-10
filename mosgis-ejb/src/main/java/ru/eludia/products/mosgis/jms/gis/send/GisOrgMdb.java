@@ -15,7 +15,7 @@ import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.incoming.InVocOrganization;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
-import ru.eludia.products.mosgis.ejb.wsc.WsGisOrgClient;
+import ru.eludia.products.mosgis.ejb.wsc.WsGisOrgCommonClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_common_service_async.Fault;
@@ -34,7 +34,7 @@ public class GisOrgMdb extends UUIDMDB<InVocOrganization> {
     protected UUIDPublisher UUIDPublisher;
 
     @EJB
-    protected WsGisOrgClient wsGisOrgClient;
+    protected WsGisOrgCommonClient wsGisOrgClient;
     
     @Resource (mappedName = "mosgis.outExportOrgQueue")
     Queue outExportOrgQueue;    

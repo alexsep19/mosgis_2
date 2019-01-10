@@ -16,7 +16,7 @@ import ru.eludia.products.mosgis.db.model.incoming.InAccessRequests;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
-import ru.eludia.products.mosgis.ejb.wsc.WsGisOrgClient;
+import ru.eludia.products.mosgis.ejb.wsc.WsGisOrgCommonClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_common_service_async.Fault;
@@ -35,7 +35,7 @@ public class ExportAccessRequestsMdb extends UUIDMDB<InAccessRequests> {
     protected UUIDPublisher UUIDPublisher;
 
     @EJB
-    protected WsGisOrgClient wsGisOrgClient;
+    protected WsGisOrgCommonClient wsGisOrgClient;
     
     @Resource (mappedName = "mosgis.outExportAccessRequestQueue")
     Queue outExportQueue;    

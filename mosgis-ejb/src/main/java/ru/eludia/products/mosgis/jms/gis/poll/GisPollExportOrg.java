@@ -29,7 +29,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTypes;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
-import ru.eludia.products.mosgis.ejb.wsc.WsGisOrgClient;
+import ru.eludia.products.mosgis.ejb.wsc.WsGisOrgCommonClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import ru.eludia.products.mosgis.ws.base.AbstactServiceAsync;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
@@ -49,7 +49,7 @@ public class GisPollExportOrg extends UUIDMDB<OutSoap> {
     public UUIDPublisher uuidPublisher;
     
     @EJB
-    protected WsGisOrgClient wsGisOrgClient;
+    protected WsGisOrgCommonClient wsGisOrgClient;
 
     @Resource (mappedName = "mosgis.inExportLicenseQueue")
     private Queue inExportLicenseQueue;
