@@ -16,7 +16,9 @@ public class CheckPlan extends EnTable {
         SHOULDNOTBEREGISTERED       (Type.BOOLEAN, "Не должен быть зарегестрирован в ЕРП"),
         
         SHOULDBEREGISTERED          (Type.BOOLEAN, new Virt ("DECODE(\"SHOULDNOTBEREGISTERED\",1,0,1)"), "Должен быть зарегестрирован в ЕРП"),
-        URIREGISTRATIONPLANNUMBER   (Type.NUMERIC, 12, null, "Регистрационный номер плана в ЕРП")
+        URIREGISTRATIONPLANNUMBER   (Type.NUMERIC, 12, null, "Регистрационный номер плана в ЕРП"),
+        
+        ID_LOG                      (CheckPlanLog.class, "Последнее событие редактирования")
         
         ;
         
@@ -29,7 +31,9 @@ public class CheckPlan extends EnTable {
         @Override
         public boolean isLoggable () {
             switch (this) {
-                default: 
+                case ID_LOG:
+                    return false;
+                default:
                     return true;
             }
         }

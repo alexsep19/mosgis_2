@@ -7,12 +7,21 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.rest.api.CheckPlansLocal;
 import ru.eludia.products.mosgis.rest.misc.EJBResource;
 
 @Path("check_plans")
 public class CheckPlans extends EJBResource <CheckPlansLocal> {
 
+    private void checkGet () {
+        
+        if (!securityContext.isUserInRole("nsi_20_4") &&
+            !securityContext.isUserInRole("admin"))
+            throw new ValidationException ("foo", "Доступ запрещён");
+        
+    }
+    
     @POST
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
@@ -32,6 +41,14 @@ public class CheckPlans extends EJBResource <CheckPlansLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject doDelete (@PathParam ("id") String id) {
         return back.doDelete (id, getUser ());
+    }
+    
+    @POST
+    @Path("{id}") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject getItem (@PathParam ("id") String id) {
+        checkGet ();
+        return back.getItem (id);
     }
     
 }

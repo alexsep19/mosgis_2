@@ -57,7 +57,7 @@ public class CheckPlansImpl extends BaseCRUD<CheckPlan> implements CheckPlansLoc
     }
     
     @Override
-    public JsonObject select(JsonObject p, User user) {return fetchData ((db, job) -> {
+    public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
         
         Select select = ModelHolder.getModel ().select(getTable (), "AS root", "*", "uuid AS id");
         
@@ -68,8 +68,12 @@ public class CheckPlansImpl extends BaseCRUD<CheckPlan> implements CheckPlansLoc
     });}
 
     @Override
-    public JsonObject getItem(String id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    public JsonObject getItem (String id) {return fetchData ((db, job) -> {
+        
+        JsonObject item = db.getJsonObject(ModelHolder.getModel ().get (CheckPlan.class, id, "AS root", "*"));
+        
+        job.add ("item", item);
+        
+    });}
 
 }
