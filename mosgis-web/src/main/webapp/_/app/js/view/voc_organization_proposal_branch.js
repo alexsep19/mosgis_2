@@ -33,13 +33,6 @@ define ([], function () {
 
         var it = data.item
 
-        it._can = {
-            edit: $_USER.role.admin,
-            delete: $_USER.role.admin,
-            update: $_USER.role.admin,
-            cancel: $_USER.role.admin
-        }
-
         data.__read_only = true
 
         $('title').text (it.label)

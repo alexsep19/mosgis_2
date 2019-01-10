@@ -33,6 +33,11 @@ define ([], function () {
         $_F5(data)
 
     }
+    
+    $_DO.approve_voc_organization_proposal_branch = function (e) {
+        if (!confirm ('Разместить эти данные в ГИС ЖКХ?')) return
+        query ({type: 'voc_organization_proposals', action: 'approve'}, {}, reload_page)
+    }
 
     $_DO.update_voc_organization_proposal_branch = function (e) {
 
@@ -87,7 +92,23 @@ define ([], function () {
     return function (done) {
 
         query ({type: 'voc_organization_proposals'}, {}, function (data) {
+        
+            var it = data.item
 
+            it._can = {cancel: 1}
+            
+            if ($_USER.role.admin) {
+            
+                switch (it.id_org_pr_status) {
+                    case 10:
+                        it._can.edit = 1
+                        it._can.approve = 1
+                }
+            
+            }
+                        
+            it._can.update = it._can.delete = it._can.edit
+                        
             $('body').data ('data', data)
 
             done(data)

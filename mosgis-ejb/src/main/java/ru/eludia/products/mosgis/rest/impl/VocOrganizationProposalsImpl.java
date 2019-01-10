@@ -296,27 +296,6 @@ public class VocOrganizationProposalsImpl extends BaseCRUD<VocOrganizationPropos
     }
 
     @Override
-    protected void logAction (DB db, User user, Object id, VocAction.i action) throws SQLException {
-
-        Table logTable = ModelHolder.getModel ().getLogTable (getTable ());
-
-        if (logTable == null) return;
-
-        String id_log = db.insertId (logTable, HASH (
-            "action", action,
-            "uuid_object", id,
-            "uuid_user", user == null ? null : user.getId ()
-        )).toString ();
-
-        db.update (getTable (), HASH (
-            "uuid", id,
-            "id_log",    id_log
-        ));
-
-//      publishMessage(action, id_log);
-    }
-
-    @Override
     public JsonObject select (JsonObject p, User user) {
         throw new UnsupportedOperationException ("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
