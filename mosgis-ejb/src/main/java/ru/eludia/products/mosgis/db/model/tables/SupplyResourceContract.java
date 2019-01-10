@@ -1,0 +1,130 @@
+package ru.eludia.products.mosgis.db.model.tables;
+
+import ru.eludia.base.model.Col;
+import ru.eludia.base.model.Ref;
+import ru.eludia.base.model.Type;
+import ru.eludia.products.mosgis.db.model.EnColEnum;
+import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocPerson;
+import ru.eludia.products.mosgis.db.model.voc.VocGisContractDimension;
+import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustomerType;
+
+
+public class SupplyResourceContract extends EnTable {
+
+    public enum c implements EnColEnum {
+
+        UUID_ORG             (VocOrganization.class,     "Организация-исполнитель"),
+        UUID_ORG_CUSTOMER    (VocOrganization.class,     "Организация-заказчик"),
+        UUID_PERSON_CUSTOMER (VocPerson.class,           "Физлицо-заказчик"),
+        ID_CUSTOMER_TYPE     (VocGisSupplyResourceContractCustomerType.class, "Тип заказчика"),
+
+        ID_CTR_STATUS        (VocGisStatus.class,        VocGisStatus.i.PROJECT.asDef (),     "Статус договора с точки зрения mosgis"),
+        ID_CTR_STATUS_GIS    (VocGisStatus.class,        VocGisStatus.i.PROJECT.asDef (),     "Статус договора с точки зрения ГИС ЖКХ"),
+        ID_CTR_STATE_GIS     (VocGisStatus.class,        VocGisStatus.i.NOT_RUNNING.asDef (), "Состояние договора с точки зрения ГИС ЖКХ"),
+
+        ID_LOG               (SupplyResourceContractLog.class,  "Последнее событие редактирования"),
+
+        CONTRACTNUMBER       (Type.STRING, 255, "Номер договора"),
+        SIGNINGDATE          (Type.DATE, "Дата заключения"),
+        EFFECTIVEDATE        (Type.DATE, "Дата вступления в силу"),
+        COMPLETIONDATE       (Type.DATE, null, "Дата окончания действия"),
+        AUTOMATICROLLOVERONEYEAR(Type.BOOLEAN, null, "1, если автопролонгация на год; иначе 0"),
+
+        CODE_VC_NSI_58       (Type.STRING, 20, "Основание заключения договора (НСИ 58)"),
+        IS_CONTRACT          (Type.BOOLEAN,    null, "1, если является публичным; иначе 0"),
+
+        ONETIMEPAYMENT       (Type.BOOLEAN, null, "1, если единоразовая оплата услуг; иначе 0"),
+        COUNTINGRESOURCE     (Type.BOOLEAN, null, "1, если РСО размещает информацию о начислениях за коммунальные услуги; 0 - размещает Исполнитель коммунальных услуг."),
+        ISPLANNEDVOLUME      (Type.BOOLEAN, null, "1, если в договоре есть плановый объем и режим подачи поставки ресурсов; иначе 0"),
+
+        PLANNEDVOLUMETYPE    (VocGisContractDimension.class
+                , VocGisContractDimension.i.BY_CONTRACT.asDef()
+                , "Тип ведения планового объема и режима подачи в разрезе"
+        ),
+        ACCRUALPROCEDURE     (VocGisContractDimension.class
+                , VocGisContractDimension.i.BY_CONTRACT.asDef()
+                , "Порядок размещения информации о начислениях за коммунальные услуги в разрезе"
+        ),
+        SPECQTYINDS          (VocGisContractDimension.class
+                , VocGisContractDimension.i.BY_CONTRACT.asDef()
+                , "Показатели качества коммунальных ресурсов и температурный график указываются в разрезе"
+        ),
+        VOLUMEDEPENDS        (Type.BOOLEAN, null, "1, если Объем поставки ресурса(ов) определяется на основании прибора учета; иначе 0"),
+
+        METERINGDEVICEINFORMATION(Type.BOOLEAN, null, "1, если РСО размещает информацию об индивидуальных приборах учета и их показаниях; иначе 0"),
+
+
+        DDT_M_START          (Type.NUMERIC, 2, null, "Начало периода ввода показаний ПУ (1..31 — конкретное число, 99 — последнее число)"),
+        DDT_M_START_NXT      (Type.BOOLEAN,    null, "1, если начало периода ввода показаний ПУ в следующем месяце; иначе 0"),
+        DDT_M_END            (Type.NUMERIC, 2, null, "Окончание периода ввода показаний ПУ (1..31 — конкретное число; 99 — последнее число)"),
+        DDT_M_END_NXT        (Type.BOOLEAN,    null, "1, если окончание периода ввода показаний ПУ в следующем месяце; иначе 0"),
+
+        DDT_D_START          (Type.NUMERIC, 2, null, "Срок представления (выставления) платежных документов для внесения платы за жилое помещение и (или) коммунальные услуги (1..30 — конкретное число; 99 — последнее число)"),
+        DDT_D_START_NXT      (Type.BOOLEAN,    null, "1, если срок представления (выставления) платежных документов для внесения платы за жилое помещение и (или) коммунальные услуги в следующем месяце; иначе 0"),
+
+        DDT_I_START          (Type.NUMERIC, 2, null, "Срок внесения платы за жилое помещение и (или) коммунальные услуги (1..30 — конкретное число; 99 — последнее число)"),
+        DDT_I_START_NXT      (Type.BOOLEAN,    null, "1, если срок внесения платы за жилое помещение и (или) коммунальные услуги в следующем месяце; иначе 0"),
+
+        DDT_N_START          (Type.NUMERIC, 2, null, "Срок предоставления информации о поступивших платежах, не позднее (1..30 — конкретное число; 99 — последнее число)"),
+        DDT_N_START_NXT      (Type.BOOLEAN,    null, "1, если срок предоставления информации о поступивших платежах в следующем месяце; иначе 0"),
+        ;
+
+        @Override
+        public Col getCol () {return col;}
+        private Col col;
+        private c (Type type, Object... p) {col = new Col (this, type, p);}
+        private c (Class c,   Object... p) {col = new Ref (this, c, p);}
+
+        @Override
+        public boolean isLoggable () {
+            switch (this) {
+                case ID_LOG:
+                case UUID_ORG:
+                case UUID_ORG_CUSTOMER:
+                case UUID_PERSON_CUSTOMER:
+                    return false;
+                default:
+                    return true;
+            }
+        }
+
+    }
+
+    public SupplyResourceContract () {
+
+        super ("tb_sr_ctr", "Договор ресурсоснабжения");
+
+        cols   (c.class);
+
+        key    ("uuid_org", c.UUID_ORG);
+
+        trigger("BEFORE INSERT OR UPDATE", ""
+//                + "DECLARE"
+//                + " PRAGMA AUTONOMOUS_TRANSACTION; "
+                + "BEGIN "
+
+                + " IF :NEW.is_deleted = 0 THEN "
+                    + " IF :NEW.completiondate IS NULL AND :NEW.automaticrolloveroneyear = 1 THEN "
+                    + "   raise_application_error (-20000, 'Укажите дату окончания или Автопролонгация нет. Операция отменена.'); "
+                    + " END IF; "
+
+                    + " IF :NEW.DDT_D_START > :NEW.DDT_I_START AND :NEW.DDT_D_START_NXT = :NEW.DDT_I_START_NXT"
+                    + "   OR :NEW.DDT_D_START_NXT > :NEW.DDT_I_START_NXT "
+                    + " THEN "
+                    + "   raise_application_error (-20000, 'Срок выставления платежных документов не может превышать срок внесения платы. Операция отменена.'); "
+                    + " END IF; "
+
+                    + " IF :NEW.DDT_M_START > :NEW.DDT_M_END AND :NEW.DDT_M_START_NXT = :NEW.DDT_M_END_NXT"
+                    + "   OR :NEW.DDT_M_START_NXT > :NEW.DDT_M_END_NXT "
+                    + " THEN "
+                    + "   raise_application_error (-20000, 'Начало ввода показаний ПУ не может превышать окончание ввода показаний ПУ. Операция отменена.'); "
+                    + " END IF; "
+
+                + " END IF; "
+        + "END;");
+    }
+
+}

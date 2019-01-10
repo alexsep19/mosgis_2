@@ -1,0 +1,109 @@
+<span
+    data-popup-width=640
+    data-popup-height=390
+    data-popup-title='Новый договор ресурсоснабжения'
+    >
+
+    <style>
+
+        label[data-block-name=supply_resource_contract_new] {
+            width: 190px;
+            margin-right: 10px;
+        }
+
+        input[data-block-name=supply_resource_contract_new] {
+            width: 370px !important;
+        }
+
+        input.dt[data-block-name=supply_resource_contract_new] {
+            width: 70px !important;
+        }
+
+        .w2ui-field input[type=radio] {
+            width: auto !important
+        }
+        .w2ui-field span.radio {
+            padding-right: 5px !important
+        }
+    </style>
+
+    <div class="w2ui-reset w2ui-form" style="height:335px; margin:8px 0 0 0;">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Тип заказчика</label>
+                <div>
+                    <input name=id_customer_type>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Заказчик</label>
+                <div>
+                    <span data-list=voc_c_types class="radio">
+                        <input name=id_c_type type=radio data-value=id  />
+                        <span data-text=text class=radio-item />
+                    </span>
+                </div>
+            </div>
+
+            <div class="w2ui-field" id="field_person_customer">
+                <label></label>
+                <div>
+                    <input name=uuid_person_customer>
+                </div>
+            </div>
+
+            <div class="w2ui-field" id="field_org_customer">
+                <label></label>
+                <div>
+                    <input name=label_org_customer />
+                    <input name=uuid_org_customer type="hidden" />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Номер</label>
+                <div>
+                    <input name=contractnumber maxlength=255>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Дата заключения</label>
+                <div>
+                    <input name=signingdate placeholder="" class=dt>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Основание заключения</label>
+                <div>
+                    <input name=code_vc_nsi_58 />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Дата вступления в силу</label>
+                <div>
+                    <input name=effectivedate placeholder="" class=dt>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Дата окончания </label>
+                <div>
+                    <input name=completiondate placeholder="" class=dt>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+            <button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+    </div>
+
+</span>
