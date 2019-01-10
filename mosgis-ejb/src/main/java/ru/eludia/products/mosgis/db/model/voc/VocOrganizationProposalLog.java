@@ -1,9 +1,9 @@
 package ru.eludia.products.mosgis.db.model.voc;
 
 import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.LogTable;
+import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 
-public class VocOrganizationProposalLog extends LogTable {
+public class VocOrganizationProposalLog extends GisWsLogTable {
 
     public VocOrganizationProposalLog () {
 
