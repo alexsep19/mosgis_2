@@ -24,7 +24,7 @@ public class VocOrganizationProposal extends Table {
         UUID_ORG              (VocOrganization.class, "Юридическое лицо, созданное по заявке, принятое из ГИС ЖКХ"),
         IS_DELETED            (BOOLEAN, FALSE, "1, если запись удалена; иначе 0"),
         FULLNAME              (STRING, null, "Полное наименование"),
-        SHORTNAME             (STRING, null, "Краткое наименование"),
+        SHORTNAME             (STRING, 500, null, "Краткое наименование"),
 
         ADDRESS               (STRING, null, "Адрес регистрации"),
         FIASHOUSEGUID         (VocBuildingAddress.class, "Адрес регистрации ФИАС"),
