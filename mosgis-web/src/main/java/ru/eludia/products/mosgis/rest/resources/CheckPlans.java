@@ -19,4 +19,11 @@ public class CheckPlans extends EJBResource <CheckPlansLocal> {
         return back.select (p, getUser ()); 
     }
     
+    @POST
+    @Path("create") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject doCreate (JsonObject p) {
+        return back.doCreate (p, getUser ());
+    }
+    
 }

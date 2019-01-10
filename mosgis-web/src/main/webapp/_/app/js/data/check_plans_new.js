@@ -1,6 +1,6 @@
 define ([], function () {
 
-    $_DO.update_check_plan_new = function (e) {
+    $_DO.update_check_plans_new = function (e) {
 
         var form = w2ui ['check_plan_form']
 
@@ -10,6 +10,7 @@ define ([], function () {
         if (!v.hasOwnProperty ('shouldberegistered')) die ('shouldberegistered', 'Пожалуйста, укажите, должен ли план быть зарегистрированным в ЕРП')
         if (v.shouldberegistered && !v.uriregistrationplannumber) die ('uriregistrationplannumber', 'Пожалуйста, укажите регистрационный номер плана')
 
+        v.sign = 0
         v.shouldnotberegistered = 1 - v.shouldberegistered
         delete v.shouldberegistered
         
