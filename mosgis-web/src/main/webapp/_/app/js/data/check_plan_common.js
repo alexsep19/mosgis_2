@@ -35,7 +35,11 @@ define ([], function () {
 
         var v = f.values ()
 
+        var re = /^\d{1,12}$/
+
         if (v.shouldberegistered && v.uriregistrationplannumber == null) die ('uriregistrationplannumber', 'Пожалуйста, укажите регистрационный номер')
+
+        if (!re.test (v.uriregistrationplannumber)) die ('uriregistrationplannumber', 'Указан неверный регистрационный номер')
 
         v.shouldnotberegistered = 1 - v.shouldberegistered
         delete v.shouldberegistered
