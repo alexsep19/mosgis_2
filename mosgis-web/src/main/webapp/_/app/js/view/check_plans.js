@@ -42,7 +42,7 @@ define ([], function () {
             columns: [
                 {field: 'year', caption: 'Год', size: 5},
                 {field: 'uriregistrationplannumber', caption: 'Регистрационный номер плана в ЕРП', size: 10},
-                {field: 'shouldnotberegistered', caption: 'Не должен быть зарегестрирован в ЕРП', size: 10, render: function (r) {
+                {field: 'shouldberegistered', caption: 'Должен быть зарегистрирован в ЕРП', size: 10, render: function (r) {
                     return r.shouldnotberegistered ? 'Да' : 'Нет'
                 }},
                 {field: 'sign', caption: 'Подписан', size: 10, render: function (r) {
