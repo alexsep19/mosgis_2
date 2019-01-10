@@ -40,7 +40,7 @@ define ([], function () {
 
                         tabs: [
                             {id: 'supply_resource_contract_common',   caption: 'Общие'},
-//                            {id: 'supply_resource_contract_docs',     caption: 'Сведения о сроках'},
+                            {id: 'supply_resource_contract_docs',     caption: 'Документы'},
                             {id: 'supply_resource_contract_common_log', caption: 'История изменений'},
                         ].filter (not_off),
 
