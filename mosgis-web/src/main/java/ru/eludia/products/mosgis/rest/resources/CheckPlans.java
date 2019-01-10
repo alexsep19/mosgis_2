@@ -51,4 +51,13 @@ public class CheckPlans extends EJBResource <CheckPlansLocal> {
         return back.getItem (id);
     }
     
+    @POST
+    @Path("{id}/log") 
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
+        checkGet ();
+        return back.getLog (id, p, getUser ());
+    }
+    
 }
