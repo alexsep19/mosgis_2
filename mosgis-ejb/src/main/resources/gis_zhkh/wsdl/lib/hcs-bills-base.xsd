@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:tns="http://dom.gosuslugi.ru/schema/integration/bills-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/bills-base/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="10.0.1.1">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:tns="http://dom.gosuslugi.ru/schema/integration/bills-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/bills-base/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="12.2.2.10">
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/base/" schemaLocation="hcs-base.xsd"/>
 	<!--Начисления-->
 	<xs:simpleType name="MoneyType">
@@ -49,7 +49,7 @@
 		<xs:restriction base="xs:decimal">
 			<xs:totalDigits value="10"/>
 			<xs:fractionDigits value="2"/>
-			<xs:pattern value="\d+(\.\d{2})?"/>
+			<xs:pattern value="[+,-]?\d+(\.\d{2})?"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="MoneyPositiveType">

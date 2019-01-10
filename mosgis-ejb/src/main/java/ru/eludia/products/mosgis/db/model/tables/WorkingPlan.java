@@ -5,7 +5,9 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
 
 public class WorkingPlan extends EnTable {
 
@@ -14,6 +16,7 @@ public class WorkingPlan extends EnTable {
         UUID_WORKING_LIST    (WorkingList.class,     "Ссылка на перечень"),
         ID_CTR_STATUS        (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения mosgis"),
         ID_CTR_STATUS_GIS    (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения ГИС ЖКХ"),
+        ID_LOG               (WorkingPlanLog.class,  "Последнее событие редактирования"),
         YEAR                 (Type.NUMERIC, 4,       "Год")
         ;
 
@@ -26,7 +29,7 @@ public class WorkingPlan extends EnTable {
         @Override
         public boolean isLoggable () {
             switch (this) {
-//                case ID_LOG:
+                case ID_LOG:
                 case UUID_WORKING_LIST:
                     return false;
                 default: 
@@ -40,13 +43,40 @@ public class WorkingPlan extends EnTable {
         super ("tb_work_plans", "План работ и услуг на период");
         cols   (c.class);
         key    ("uuid_working_list", c.UUID_WORKING_LIST);
+        
+        trigger ("BEFORE UPDATE", 
+                
+            "DECLARE "
+            + " cnt NUMBER;"
+            + "BEGIN "
+
+                + "IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS "
+                    + " AND :OLD.ID_CTR_STATUS <> " + VocGisStatus.i.FAILED_PLACING.getId ()
+                    + " AND :NEW.ID_CTR_STATUS =  " + VocGisStatus.i.PROJECT.getId ()
+                + " THEN "
+                    + " :NEW.ID_CTR_STATUS := " + VocGisStatus.i.MUTATING.getId ()
+                + "; END IF; "
+/*
+                + "IF :NEW.is_deleted=0 AND :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING.getId () + " THEN BEGIN "
+                
+                    + " SELECT COUNT(*) INTO cnt FROM tb_houses WHERE id_status=" + VocHouseStatus.i.PUBLISHED + " AND fiashouseguid=:NEW.fiashouseguid; "
+                    + " IF cnt=0 THEN raise_application_error (-20000, 'Первоначально необходимо разместить паспорт дома в ГИС ЖКХ'); END IF; "
+
+                    + " SELECT COUNT(*) INTO cnt FROM tb_work_list_items WHERE is_deleted=0 AND UUID_WORKING_LIST=:NEW.uuid; "
+                    + " IF cnt=0 THEN raise_application_error (-20000, 'Перечень не содержит ни одной работы/услуги. Операция отменена.'); END IF; "
+
+                + "END; END IF; "
+*/                        
+            + "END;"
+                
+        );
+        
     }
     
-/*    
     public enum Action {
         
         PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
-        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT)
+//        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT)
         ;
         
         VocGisStatus.i nextStatus;
@@ -74,7 +104,7 @@ public class WorkingPlan extends EnTable {
         public static Action forStatus (VocGisStatus.i status) {
             switch (status) {
                 case PENDING_RQ_PLACING:   return PLACING;
-                case PENDING_RQ_ANNULMENT: return ANNULMENT;
+//                case PENDING_RQ_ANNULMENT: return ANNULMENT;
                 default: return null;
             }            
         }
@@ -82,11 +112,11 @@ public class WorkingPlan extends EnTable {
         public static Action forLogAction (VocAction.i a) {
             switch (a) {
                 case APPROVE: return PLACING;
-                case ANNUL:   return ANNULMENT;
+//                case ANNUL:   return ANNULMENT;
                 default: return null;
             }
         }
 
     };
-*/
+
 }

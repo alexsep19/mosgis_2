@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:tns="http://dom.gosuslugi.ru/schema/integration/licenses/" xmlns:organizations-base="http://dom.gosuslugi.ru/schema/integration/organizations-base/" xmlns:organizations-registry-base="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" xmlns:individual-registry-base="http://dom.gosuslugi.ru/schema/integration/individual-registry-base/" xmlns:nsi-base="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:premises-base="http://dom.gosuslugi.ru/schema/integration/premises-base/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://www.w3.org/2000/09/xmldsig#" targetNamespace="http://dom.gosuslugi.ru/schema/integration/licenses/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="12.2.1.10">
+<!---->
+<xs:schema xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:tns="http://dom.gosuslugi.ru/schema/integration/licenses/" xmlns:organizations-base="http://dom.gosuslugi.ru/schema/integration/organizations-base/" xmlns:organizations-registry-base="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" xmlns:individual-registry-base="http://dom.gosuslugi.ru/schema/integration/individual-registry-base/" xmlns:nsi-base="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:premises-base="http://dom.gosuslugi.ru/schema/integration/premises-base/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://www.w3.org/2000/09/xmldsig#" targetNamespace="http://dom.gosuslugi.ru/schema/integration/licenses/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="12.2.2.4">
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/base/" schemaLocation="../lib/hcs-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/organizations-base/" schemaLocation="../lib/hcs-organizations-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" schemaLocation="../lib/hcs-organizations-registry-base.xsd"/>
@@ -292,7 +293,7 @@
 										<xs:documentation>Статус документа:    
      A - ACTIVE - Действующий
      C - CANCELED - Отменен
-     P - PROJECT - 
+    P - PROJECT - 
 Проект</xs:documentation>
 									</xs:annotation>
 									<xs:simpleType>
@@ -523,7 +524,7 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="BaseDocument">
+			<xs:element name="BaseDocument" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Реквизиты документа, являющегося основанием для размещения информации</xs:documentation>
 				</xs:annotation>

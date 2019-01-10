@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:tns="http://dom.gosuslugi.ru/schema/integration/payment/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:payments-base="http://dom.gosuslugi.ru/schema/integration/payments-base/" xmlns:organizations-base="http://dom.gosuslugi.ru/schema/integration/organizations-base/" xmlns:bills-base="http://dom.gosuslugi.ru/schema/integration/bills-base/" xmlns:account-base="http://dom.gosuslugi.ru/schema/integration/account-base/" xmlns:individual-registry-base="http://dom.gosuslugi.ru/schema/integration/individual-registry-base/" xmlns:premises-base="http://dom.gosuslugi.ru/schema/integration/premises-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/payment/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="12.2.0.15">
+<xs:schema xmlns:tns="http://dom.gosuslugi.ru/schema/integration/payment/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:payments-base="http://dom.gosuslugi.ru/schema/integration/payments-base/" xmlns:organizations-base="http://dom.gosuslugi.ru/schema/integration/organizations-base/" xmlns:bills-base="http://dom.gosuslugi.ru/schema/integration/bills-base/" xmlns:account-base="http://dom.gosuslugi.ru/schema/integration/account-base/" xmlns:individual-registry-base="http://dom.gosuslugi.ru/schema/integration/individual-registry-base/" xmlns:premises-base="http://dom.gosuslugi.ru/schema/integration/premises-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/payment/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="12.2.2.12">
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/base/" schemaLocation="../lib/hcs-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/premises-base/" schemaLocation="../lib/hcs-premises-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/bills-base/" schemaLocation="../lib/hcs-bills-base.xsd"/>
@@ -16,7 +16,7 @@
 			<xs:complexContent>
 				<xs:extension base="base:BaseType">
 					<xs:choice>
-						<xs:element name="NotificationOfOrderExecutionType" maxOccurs="1000">
+						<xs:element name="NotificationOfOrderExecutionType" maxOccurs="500">
 							<xs:annotation>
 								<xs:documentation>Извещения о принятии к исполнению распоряжений</xs:documentation>
 							</xs:annotation>
@@ -30,7 +30,7 @@
 								</xs:complexContent>
 							</xs:complexType>
 						</xs:element>
-						<xs:element name="NotificationOfOrderExecution139Type" maxOccurs="1000">
+						<xs:element name="NotificationOfOrderExecution139Type" maxOccurs="500">
 							<xs:annotation>
 								<xs:documentation>Извещения о принятии к исполнению распоряжений (указание реквизитов платежа по п.139 приказа №589/944 от 28.12.2015)</xs:documentation>
 							</xs:annotation>
@@ -67,7 +67,7 @@
 			<xs:complexContent>
 				<xs:extension base="base:BaseType">
 					<xs:sequence>
-						<xs:element name="NotificationOfOrderExecutionCancellation" type="payments-base:NotificationOfOrderExecutionCancellationType" maxOccurs="1000"/>
+						<xs:element name="NotificationOfOrderExecutionCancellation" type="payments-base:NotificationOfOrderExecutionCancellationType" maxOccurs="500"/>
 					</xs:sequence>
 					<xs:attribute ref="base:version" use="required" fixed="10.0.1.1"/>
 				</xs:extension>
@@ -247,7 +247,7 @@
 			<xs:complexContent>
 				<xs:extension base="base:BaseType">
 					<xs:sequence>
-						<xs:element name="SupplierNotificationOfOrderExecution" maxOccurs="1000">
+						<xs:element name="SupplierNotificationOfOrderExecution" maxOccurs="250">
 							<xs:annotation>
 								<xs:documentation>Извещение о принятии к исполнению распоряжения, размещаемое исполнителем</xs:documentation>
 							</xs:annotation>

@@ -577,7 +577,7 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
                     ogfDataValue.setBooleanValue(TypeConverter.Boolean(value));
                     break;
                 case FLOAT:
-                    ogfDataValue.setFloatValue(((BigDecimal) value).floatValue());
+                    ogfDataValue.setFloatValue((BigDecimal) value);
                     break;
                 case DATA:
                     //TODO реализовать

@@ -1,18 +1,16 @@
 define ([], function () {
 
     var form_name = 'working_plan_common_form'    
-/*        
+    
     $_DO.approve_working_plan_common = function (e) {
         if (!confirm ('Разместить эти данные в ГИС ЖКХ?')) return
-        query ({type: 'working_lists', action: 'approve'}, {}, reload_page)
+        query ({type: 'working_plans', action: 'approve'}, {}, reload_page)
     }
     
-    $_DO.unapprove_working_plan_common = function (e) {
-        if (!confirm ('Отменить публикацию этих данных в ГИС ЖКХ?')) return
-        query ({type: 'working_lists', action: 'cancel'}, {}, reload_page)
+    $_DO.alter_working_plan_common = function (e) {
+        if (!confirm ('Открыть эту карточку на редактирование?')) return
+        query ({type: 'working_plans', action: 'alter'}, {}, reload_page)
     }
-*/    
-    
 
     $_DO.choose_tab_working_plan_common = function (e) {
     
@@ -43,7 +41,7 @@ define ([], function () {
 
         var it = data.item
         
-        data.active_tab = localStorage.getItem ('working_plan_common.active_tab') || 'working_plan_common_items'
+        data.active_tab = localStorage.getItem ('working_plan_common.active_tab') || 'working_plan_common_plan'
 
         data.__read_only = 1
        

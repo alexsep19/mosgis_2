@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:tns="http://dom.gosuslugi.ru/schema/integration/inspection/" xmlns:organizations-registry-base="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" xmlns:nsi-base="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:premises-base="http://dom.gosuslugi.ru/schema/integration/premises-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/inspection/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="12.2.0.9">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://dom.gosuslugi.ru/schema/integration/base/" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:tns="http://dom.gosuslugi.ru/schema/integration/inspection/" xmlns:organizations-registry-base="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" xmlns:nsi-base="http://dom.gosuslugi.ru/schema/integration/nsi-base/" xmlns:premises-base="http://dom.gosuslugi.ru/schema/integration/premises-base/" targetNamespace="http://dom.gosuslugi.ru/schema/integration/inspection/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="12.2.2.7">
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/base/" schemaLocation="../lib/hcs-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/organizations-registry-base/" schemaLocation="../lib/hcs-organizations-registry-base.xsd"/>
 	<xs:import namespace="http://dom.gosuslugi.ru/schema/integration/nsi-base/" schemaLocation="../lib/hcs-nsi-base.xsd"/>
@@ -1481,6 +1481,37 @@
 					<xs:documentation>Сведения об исполнении True - исполнено, False - не исполнено</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="IsSubmittedToCourt" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Материалы по делу об административном правонарушении переданы в суд
+</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="CourtName" type="tns:String255Type">
+							<xs:annotation>
+								<xs:documentation>Наименование суда</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="SubmittedDate" type="tns:LimitedDateType">
+							<xs:annotation>
+								<xs:documentation>Дата
+*В случае передачи материалов по делу об административном правонарушении в канцелярию суда - дата регистрации.
+*В случае направления материалов почтовым отправлением - дата отправки.
+*В случае направления материалов с сопроводительным письмом - дата данного письма.  </xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="SubmittedNumber" type="tns:String255Type">
+							<xs:annotation>
+								<xs:documentation>Номер
+*В случае передачи материалов по делу об административном правонарушении в канцелярию суда - присвоенный входящий номер.
+*В случае направления материалов почтовым отправлением - номер отправления либо реестровый номер отправителя.
+*В случае направления материалов с сопроводительным письмом - исходящий номер данного письма.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
 			<xs:element name="ActualFulfiledOffenceDate" type="tns:LimitedDateType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Фактическая дата исполнения</xs:documentation>
@@ -1518,6 +1549,36 @@
 					<xs:documentation>Сведения об исполнении True - исполнено, False - не исполнено</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="IsSubmittedToCourt" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Материалы по делу об административном правонарушении переданы в суд</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="CourtName" type="tns:String255Type">
+							<xs:annotation>
+								<xs:documentation>Наименование суда</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="SubmittedDate" type="tns:LimitedDateType">
+							<xs:annotation>
+								<xs:documentation>Дата
+*В случае передачи материалов по делу об административном правонарушении в канцелярию суда - дата регистрации.
+*В случае направления материалов почтовым отправлением - дата отправки.
+*В случае направления материалов с сопроводительным письмом - дата данного письма. </xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="SubmittedNumber" type="tns:String255Type">
+							<xs:annotation>
+								<xs:documentation>Номер
+*В случае передачи материалов по делу об административном правонарушении в канцелярию суда - присвоенный входящий номер.
+*В случае направления материалов почтовым отправлением - номер отправления либо реестровый номер отправителя.
+*В случае направления материалов с сопроводительным письмом - исходящий номер данного письма.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
 			<xs:element name="ActualFulfiledOffenceDate" type="xs:date" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Фактическая дата исполнения</xs:documentation>
@@ -1526,6 +1587,34 @@
 			<xs:element name="Attachment" type="base:AttachmentType" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>Вложение.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AddSubmittedInformationType">
+		<xs:annotation>
+			<xs:documentation>Протокол. Добавить сведения о передаче материалов по делу об административном правонарушении в суд.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CourtName" type="tns:String255Type">
+				<xs:annotation>
+					<xs:documentation>Наименование суда</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SubmittedDate" type="tns:LimitedDateType">
+				<xs:annotation>
+					<xs:documentation>Дата
+*В случае передачи материалов по делу об административном правонарушении в канцелярию суда - дата регистрации.
+*В случае направления материалов почтовым отправлением - дата отправки.
+*В случае направления материалов с сопроводительным письмом - дата данного письма. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SubmittedNumber" type="tns:String255Type">
+				<xs:annotation>
+					<xs:documentation>Номер
+*В случае передачи материалов по делу об административном правонарушении в канцелярию суда - присвоенный входящий номер.
+*В случае направления материалов почтовым отправлением - номер отправления либо реестровый номер отправителя.
+*В случае направления материалов с сопроводительным письмом - исходящий номер данного письма.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
@@ -2974,7 +3063,9 @@ Active - Действующая</xs:documentation>
 															<xs:element ref="base:TransportGUID"/>
 															<xs:element name="OffenceGuid" type="base:GUIDType" minOccurs="0">
 																<xs:annotation>
-																	<xs:documentation>Идентификатор протокола в ГИС ЖКХ. Заполняется только при отмене или исполнении протокола</xs:documentation>
+																	<xs:documentation>Идентификатор протокола в ГИС ЖКХ. Заполняется:
+*при отмене/исполнении протокола; 
+*при добавлении/ изменении/ удаления сведений о передаче материалов по делу об административном правонарушении в суд.</xs:documentation>
 																</xs:annotation>
 															</xs:element>
 														</xs:sequence>
@@ -2982,6 +3073,16 @@ Active - Действующая</xs:documentation>
 															<xs:element name="Offence" type="tns:OffenceType">
 																<xs:annotation>
 																	<xs:documentation>Создание протокола</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="AddSubmittedInformation" type="tns:AddSubmittedInformationType">
+																<xs:annotation>
+																	<xs:documentation>Протокол. Добавить сведения о передаче материалов по делу об административном правонарушении в суд.</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="DeleteSubmittedInformation" type="xs:boolean" fixed="true">
+																<xs:annotation>
+																	<xs:documentation>Протокол. Удалить сведения о передаче материалов по делу об административном правонарушении в суд.</xs:documentation>
 																</xs:annotation>
 															</xs:element>
 															<xs:element name="CancelOffence" type="tns:CancelledInfoWithAttachmentsType">

@@ -1,26 +1,25 @@
 package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
+import javax.jms.Queue;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
-import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
-import ru.eludia.products.mosgis.db.model.tables.OrganizationWork;
-import ru.eludia.products.mosgis.db.model.tables.WorkingList;
-import ru.eludia.products.mosgis.db.model.tables.WorkingListLog;
+import ru.eludia.products.mosgis.db.model.tables.WorkingPlan;
+import ru.eludia.products.mosgis.db.model.tables.WorkingPlanLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.tables.WorkingList;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -28,31 +27,34 @@ import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
+import ru.gosuslugi.dom.schema.integration.base.CommonResultType;
 import ru.gosuslugi.dom.schema.integration.services_service_async.Fault;
-import ru.eludia.products.mosgis.db.model.tables.WorkingList.c;
-import ru.eludia.products.mosgis.db.model.tables.WorkingListItem;
+import ru.eludia.products.mosgis.db.model.tables.WorkingPlan.c;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisServicesClient;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
-import ru.gosuslugi.dom.schema.integration.services.ExportWorkingListResultType;
 import ru.gosuslugi.dom.schema.integration.services.GetStateResult;
 
 @MessageDriven(activationConfig = {
- @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outImportWorkingListsQueue")
+ @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outExportWorkingPlansQueue")
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class GisPollImportWorkingListMDB  extends GisPollMDB {
+public class GisPollExportWorkingPlanMDB  extends GisPollMDB {
 
     @EJB
     WsGisServicesClient wsGisServicesClient;
+    
+    @Resource (mappedName = "mosgis.inWorkingPlansQueue")
+    Queue inWorkingPlansQueue;
 
     @Override
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
                 
-            .toOne (WorkingListLog.class,     "AS log", "uuid", "action").on ("log.uuid_out_soap=root.uuid")
-            .toOne (WorkingList.class,        "AS r", "uuid").on ()
+            .toOne (WorkingPlanLog.class,     "AS log", "uuid", "action").on ("log.uuid_out_soap=root.uuid")
+            .toOne (WorkingPlan.class,        "AS r", "uuid").on ()
+            .toOne (WorkingList.class,        "AS l").on ()
                 
             .toMaybeOne (ContractObject.class, "AS co").on ()
             .toMaybeOne (Contract.class, "AS ctr"
@@ -80,7 +82,7 @@ public class GisPollImportWorkingListMDB  extends GisPollMDB {
         UUID orgPPAGuid = (UUID) r.get ("orgppaguid_1");
         if (orgPPAGuid == null) orgPPAGuid = (UUID) r.get ("orgppaguid_2");
         
-        WorkingList.Action action = WorkingList.Action.forLogAction (VocAction.i.forName (r.get ("log.action").toString ()));
+        WorkingPlan.Action action = WorkingPlan.Action.forLogAction (VocAction.i.forName (r.get ("log.action").toString ()));
                 
         try {
             
@@ -90,60 +92,32 @@ public class GisPollImportWorkingListMDB  extends GisPollMDB {
             
             if (errorMessage != null) throw new GisPollException (errorMessage);            
             
-            List<ExportWorkingListResultType> exportWorkingListResult = state.getExportWorkingListResult ();
+            final List<CommonResultType> commonResult = state.getImportResult ();                        
             
-            if (exportWorkingListResult == null || exportWorkingListResult.isEmpty ()) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
-            
-            ExportWorkingListResultType result = exportWorkingListResult.get (0);
+            if (commonResult == null || commonResult.isEmpty ()) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
+                                    
+            for (CommonResultType.Error err: commonResult.get (0).getError ()) throw new GisPollException (err);
 
-            if (result == null) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
-            
-            ExportWorkingListResultType.WorkingList workingList = result.getWorkingList ();
-            
-            if (workingList == null) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
-            
-            MosGisModel model = ModelHolder.getModel ();
-            
-            Map<Object, Map<String, Object>> code2uuid = db.getIdx (model
-                .select (WorkingListItem.class, "uuid")
-                .where (WorkingListItem.c.UUID_WORKING_LIST, r.get ("r.uuid"))
-                .where ("is_deleted", 0)
-                .toOne (OrganizationWork.class, "code_vc_nsi_56 AS code").on ()
-            , "code");
-            
-logger.info ("code2uuid = " + code2uuid);
+            final Map<String, Object> h = statusHash (action.getOkStatus ());
 
-            List<Map<String, Object>> items = new ArrayList<> ();
-
-            for (ExportWorkingListResultType.WorkingList.WorkListItem i: workingList.getWorkListItem ()) {
-                
-                final String code = i.getWorkItemNSI ().getCode ();
-                
-                Map<String, Object> cg = code2uuid.get (code);
-
-                if (cg == null) {
-                    logger.warning ("Unknown NSI_56 code: " + code);
-                    continue;
-                }
-
-                items.add (HASH (
-                    EnTable.c.UUID,                     cg.get ("uuid"),
-                    WorkingListItem.c.WORKLISTITEMGUID, i.getWorkListItemGUID ()
-                ));
-                
+/*            
+            if (action == WorkingPlan.Action.PLACING) {
+                final String guid = commonResult.get (0).getGUID ();
+                if (DB.ok (guid)) h.put (c.WORKLISTGUID.lc (), guid);
             }
-            
-            db.update (WorkingListItem.class, items);
-
-            final Map<String, Object> h = statusHash (action.getOkStatus ());            
-            
+*/
             update (db, uuid, r, h);
 
             db.update (OutSoap.class, HASH (
                 "uuid", getUuid (),
                 "id_status", DONE.getId ()
             ));
-
+/*            
+            if (action == WorkingPlan.Action.PLACING && DB.ok (h.get (c.WORKLISTGUID.lc ()))) {
+                MosGisModel m = ModelHolder.getModel ();
+                uuidPublisher.publish (inWorkingPlansQueue, m.createIdLog (db, m.get (WorkingPlan.class), null, r.get ("r.uuid"), VocAction.i.REFRESH));
+            }
+*/
         }
         catch (GisPollRetryException ex) {
             return;
@@ -170,10 +144,10 @@ logger.info ("code2uuid = " + code2uuid);
 logger.info ("h=" + h);
         
         h.put ("uuid", r.get ("r.uuid"));
-        db.update (WorkingList.class, h);
+        db.update (WorkingPlan.class, h);
         
         h.put ("uuid", uuid);
-        db.update (WorkingListLog.class, h);
+        db.update (WorkingPlanLog.class, h);
         
     }
     
