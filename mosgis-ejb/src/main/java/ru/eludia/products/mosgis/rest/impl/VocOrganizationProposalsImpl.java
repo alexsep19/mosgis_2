@@ -14,6 +14,7 @@ import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.rest.api.VocOrganizationProposalsLocal;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -297,5 +298,16 @@ public class VocOrganizationProposalsImpl extends BaseCRUD<VocOrganizationPropos
     public JsonObject select (JsonObject p, User user) {
         throw new UnsupportedOperationException ("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
+
+        db.update (getTable (), HASH (EnTable.c.UUID, id,
+            VocOrganizationProposal.c.ID_ORG_PR_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+        ));
+
+        logAction (db, user, id, VocAction.i.APPROVE);
+
+    });}
 
 }
