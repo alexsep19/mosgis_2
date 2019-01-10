@@ -27,7 +27,8 @@ define ([], function () {
                     vc_actions: 1,
                     vc_gis_status: 1,
                     vc_gis_ctr_dims: 1,
-                    vc_nsi_58: 1
+                    vc_nsi_58: 1,
+                    vc_sr_ctr_file_types: 1
                 })
 
                 var it = data.item

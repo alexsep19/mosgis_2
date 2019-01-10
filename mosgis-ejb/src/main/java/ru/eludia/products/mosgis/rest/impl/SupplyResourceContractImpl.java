@@ -24,6 +24,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocUserOktmo;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractDimension;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
+import ru.eludia.products.mosgis.db.model.voc.VocSupplyResourceContractFileType;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.SupplyResourceContractLocal;
@@ -112,6 +113,7 @@ public class SupplyResourceContractImpl extends BaseCRUD<SupplyResourceContract>
         VocGisStatus.addLiteTo (job);
         VocAction.addTo (job);
         VocGisContractDimension.addTo(job);
+        VocSupplyResourceContractFileType.addTo(job);
         db.addJsonArrays(job,
                 NsiTable.getNsiTable(58).getVocSelect().where(IS_RS_CTR_NSI_58, 1)
         );
