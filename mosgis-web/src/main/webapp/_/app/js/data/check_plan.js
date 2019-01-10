@@ -29,12 +29,12 @@ define ([], function () {
 
                 data.active_tab = localStorage.getItem ('check_plan.active_tab') || 'check_plan_common'
 
-                data.item._can = {
+                //data.item._can = {
 
-                    edit: 1 - data.item.sign,
-                    delete: 1 - data.item.sign,
+                //    edit: 1 - data.item.sign,
+                //    delete: 1 - data.item.sign,
 
-                }
+                //}
                                                     
                 $('body').data ('data', data)
 

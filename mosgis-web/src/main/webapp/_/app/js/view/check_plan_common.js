@@ -16,6 +16,8 @@ define ([], function () {
             
             $('div[data-block-name=check_plan_common] input').prop ({disabled: data.__read_only})
 
+            if (!f.record.shouldberegistered) $('#uriregistrationplannumber').prop ('disabled', true)
+
             f.refresh ()
 
         }

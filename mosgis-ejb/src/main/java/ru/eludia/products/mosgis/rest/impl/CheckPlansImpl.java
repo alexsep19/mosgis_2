@@ -1,27 +1,15 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.util.Map;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
-import javax.ws.rs.InternalServerErrorException;
-import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Select;
-import ru.eludia.products.mosgis.db.model.MosGisModel;
-import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.CheckPlan;
-import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
-import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
-import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
-import ru.eludia.products.mosgis.db.model.voc.VocContractPaymentType;
-import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType;
-import static ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType.i.OWNERS;
-import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerTypeNsi58;
-import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
-import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.CheckPlansLocal;
@@ -71,6 +59,20 @@ public class CheckPlansImpl extends BaseCRUD<CheckPlan> implements CheckPlansLoc
         }
 
     }
+    
+    @Override
+    public JsonObject doUpdate (String id, JsonObject p, User user) {return doAction ((db) -> {
+        
+        Map <String, Object> data = getData (p, "uuid", id);
+        
+        if ("1".equals (data.get ("shouldnotberegistered").toString ())) 
+            data.put ("uriregistrationplannumber", null);
+        
+        db.update (getTable (), data);
+        
+        logAction (db, user, id, VocAction.i.UPDATE);
+                        
+    });}
     
     @Override
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
