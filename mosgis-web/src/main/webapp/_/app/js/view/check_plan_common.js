@@ -4,6 +4,16 @@ define ([], function () {
     
     return function (data, view) {
         
+        function recalc () {
+
+            $('#uriregistrationplannumber').prop ('disabled', true)
+
+            var r = w2ui [form_name].record
+
+            if (r.shouldberegistered.id && !r.__read_only) $('#uriregistrationplannumber').prop ('disabled', false)
+
+        }
+
         $_F5 = function (data) {
         
             data.item.__read_only = data.__read_only
@@ -16,7 +26,7 @@ define ([], function () {
             
             $('div[data-block-name=check_plan_common] input').prop ({disabled: data.__read_only})
 
-            if (!f.record.shouldberegistered) $('#uriregistrationplannumber').prop ('disabled', true)
+            recalc ()
 
             f.refresh ()
 
@@ -71,6 +81,13 @@ define ([], function () {
                     {id: 1, text: 'Подписан'},
                 ]}},
             ],
+
+            onChange: function (e) {
+                if (e.target == 'shouldberegistered')
+                    e.done (recalc)
+            },
+
+            onRender: function (e) { e.done (setTimeout (recalc, 100)) },
 
             focus: -1,
             
