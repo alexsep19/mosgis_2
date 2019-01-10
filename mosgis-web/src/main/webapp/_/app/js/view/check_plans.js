@@ -1,13 +1,14 @@
 define ([], function () {
 
     return function (data, view) {
-        
+
         $(w2ui ['supervision_layout'].el ('main')).w2regrid ({ 
 
             name: 'check_plans_grid',
 
             show: {
                 toolbar: true,
+                toolbarAdd: true,
                 footer: true,
             },
 
@@ -24,6 +25,8 @@ define ([], function () {
 
             url: '/mosgis/_rest/?type=check_plans',
             
+            onAdd: $_DO.create_check_plans,
+
             onDblClick: function (e) {
                 openTab ('/check_plan/' + e.recid)
             }

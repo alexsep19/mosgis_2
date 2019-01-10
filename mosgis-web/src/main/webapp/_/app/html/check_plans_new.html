@@ -1,0 +1,52 @@
+<span
+	data-popup-width=630
+	data-popup-height=215
+	data-popup-title='План проверки'
+>
+
+	<style>
+
+        label[data-block-name=check_plans_new] {
+        	width: 250px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=check_plans_new] {
+        	width: 320px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:170px ">
+
+        <div class="w2ui-page page-0" style="height:170px;">
+
+
+            <div class="w2ui-field">
+                <label>Год</label>
+                <div>
+                	<input name=year pattern="[0-9]{4}">
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Должен ли быть зарегестрирован в ЕРП</label>
+                <div>
+                	<input name=shouldberegistered>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Регистрационный номер</label>
+                <div>
+                	<input name=uriregistrationplannumber>
+                </div>
+            </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>
