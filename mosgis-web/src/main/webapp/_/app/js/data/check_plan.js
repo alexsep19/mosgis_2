@@ -33,6 +33,8 @@ define ([], function () {
 
                     edit: 1 - data.item.sign,
                     delete: 1 - data.item.sign,
+                    update: 1 - data.item.sign,
+                    cancel: 1 - data.item.sign,
 
                 }
                                                     
