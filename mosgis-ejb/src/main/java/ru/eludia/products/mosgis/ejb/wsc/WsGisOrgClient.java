@@ -8,8 +8,10 @@ import javax.ejb.TransactionAttributeType;
 import javax.jws.HandlerChain;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganizationProposalLog;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ws.base.LoggingOutMessageHandler;
+import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.base.GetStateRequest;
 import ru.gosuslugi.dom.schema.integration.organizations_registry.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_service_async.Fault;
@@ -37,6 +39,19 @@ public class WsGisOrgClient {
         GetStateRequest getStateRequest = new GetStateRequest ();
         getStateRequest.setMessageGUID (uuid.toString ());
         return getPort (orgPPAGuid, UUID.randomUUID ()).getState (getStateRequest);
+    }
+    
+    public AckRequest.Ack importSubsidiary (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importSubsidiary (VocOrganizationProposalLog.toImportSubsidiaryRequest (r)).getAck ();
+    }
+    
+    
+    
+/*
+    public AckRequest.Ack importWorkingPlan (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importWorkingPlan (WorkingPlanLog.toImportWorkingPlanRequest (r)).getAck ();
     }    
+    
+    */    
    
 }

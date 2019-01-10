@@ -50,7 +50,8 @@ public class VocOrganizationProposal extends Table {
 
         ID_TYPE              (VocOrganizationTypes.class, null, "Тип организации"),
         ID_LOG               (VocOrganizationProposalLog.class, null, "Последний запрос"),
-        ID_ORG_PR_STATUS     (VocGisStatus.class, new Num(VocGisStatus.i.PROJECT.getId()), "Статус заявки");
+        ID_ORG_PR_STATUS     (VocGisStatus.class, VocGisStatus.DEFAULT, "Статус заявки в mosgis"),
+        ID_ORG_PR_STATUS_GIS (VocGisStatus.class, VocGisStatus.DEFAULT, "Статус заявки в ГИС ЖКХ"),
         ;
 
         @Override
