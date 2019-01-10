@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -127,7 +126,9 @@ logger.info ("" + jo);
             record.put (f, ((JsonString) v).getString ());
         });
         
-        db.update (VocOrganization.class, record);        
+        record.put (VocOrganization.c.ORGVERSIONGUID.lc (), orgVersion.getOrgVersionGUID ());
+
+        db.update (VocOrganization.class, record);
         
         record.put ("uuid", logUuid);        
 

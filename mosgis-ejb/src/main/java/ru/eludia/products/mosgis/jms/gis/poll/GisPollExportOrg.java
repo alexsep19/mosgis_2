@@ -130,14 +130,14 @@ public class GisPollExportOrg extends UUIDMDB<OutSoap> {
         if (orgVersion.getEntrp () != null) o = orgVersion.getEntrp ();
         if (orgVersion.getSubsidiary () != null) o = orgVersion.getSubsidiary ();
         if (orgVersion.getForeignBranch () != null) o = orgVersion.getForeignBranch ();
-        
+                
         if (o == null) {
             logger.warning ("Cannot import org: " + AbstactServiceAsync.toJSON (rp));
             return true;        
         }
-                
+
         JsonObject jo = DB.to.JsonObject (AbstactServiceAsync.toJSON (o));
-                
+
         final String uuid = i.getOrgRootEntityGUID ();
         
         Map<String, Object> record = DB.HASH (
@@ -157,6 +157,8 @@ public class GisPollExportOrg extends UUIDMDB<OutSoap> {
             record.put (f, ((JsonString) v).getString ());
             
         });
+        
+        record.put (VocOrganization.c.ORGVERSIONGUID.lc (), orgVersion.getOrgVersionGUID ());
                 
         db.upsert (VocOrganization.class, record);
         

@@ -22,7 +22,8 @@ public class VocOrganization extends Table {
 
     public enum c implements EnColEnum {
 
-        ORGPPAGUID     (Type.UUID,   null,           "Идентификатор зарегистрированной организации"),
+        ORGPPAGUID     (Type.UUID,   null,           "Идентификатор зарегистрированной организации"),        
+        ORGVERSIONGUID (Type.UUID,   null,           "Идентификатор версии записи в реестре организаций"),
 
         SHORTNAME      (STRING, 500, null,           "Сокращённое наименование"),
         FULLNAME       (STRING,      null,           "Полное наименование"),
