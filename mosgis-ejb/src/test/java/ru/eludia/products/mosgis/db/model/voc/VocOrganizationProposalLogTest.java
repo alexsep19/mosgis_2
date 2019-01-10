@@ -114,7 +114,7 @@ public class VocOrganizationProposalLogTest extends BaseTest {
         Map<String, Object> commonPart = HASH (
             EnTable.c.UUID, uuid,
             EnTable.c.IS_DELETED, 0,
-            c.ID_TYPE, VocOrganizationTypes.i.SUBSIDIARY.getId (),
+            c.ID_TYPE, VocOrganizationTypes.i.FOREIGN_BRANCH.getId (),
             c.ID_ORG_PR_STATUS, 10,
             c.ID_ORG_PR_STATUS_GIS, 10,            
             c.UUID_ORG_OWNER, getSomeUuid (VocOrganization.class),

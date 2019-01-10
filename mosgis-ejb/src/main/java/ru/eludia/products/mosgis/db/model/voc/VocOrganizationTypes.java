@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.db.model.voc;
 
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.Table;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_base.EntpsType;
@@ -43,6 +44,14 @@ public class VocOrganizationTypes extends Table {
             this.label = label;
         }
         
+        public static i forId (Object o) {
+            Long iiiiid = DB.to.Long (o);
+            if (iiiiid == null) return null;
+            byte id = iiiiid.byteValue ();
+            for (i i: values ()) if (i.id == id) return i;
+            return null;
+        }
+
         public static i valueOf (Object o) {
             if (o instanceof EntpsType) return ENTPS;
             if (o instanceof LegalType) return LEGAL;

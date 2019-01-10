@@ -16,6 +16,7 @@ import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationProposal;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationProposalLog;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTypes;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisOrgClient;
 import ru.eludia.products.mosgis.jms.gis.send.base.GisExportMDB;
@@ -45,8 +46,15 @@ public class ExportVocOrganizationProposalMDB extends GisExportMDB<VocOrganizati
         UUID orgPPAGuid = (UUID) r.get ("o.orgppaguid");
             
         switch (action) {
-            case PLACING:     return wsGisOrgClient.importSubsidiary (orgPPAGuid, messageGUID, r);
+            
+            case PLACING: switch (VocOrganizationTypes.i.forId (r.get (VocOrganizationProposal.c.ID_TYPE))) {
+                case SUBSIDIARY:     return wsGisOrgClient.importSubsidiary (orgPPAGuid, messageGUID, r);
+                case FOREIGN_BRANCH: return wsGisOrgClient.importForeignBranch (orgPPAGuid, messageGUID, r);
+                default: throw new IllegalArgumentException ("Neither a Subsidiary nor a ForeignBranch: " + r);
+            }
+            
             default: throw new IllegalArgumentException ("No action implemented for " + action);
+            
         }
 
     }
