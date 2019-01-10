@@ -30,8 +30,6 @@ define ([], function () {
 
         }).refresh ();
 
-        //$('#grid_check_plans_grid_search_all').focus ()
-
     }
 
 })
