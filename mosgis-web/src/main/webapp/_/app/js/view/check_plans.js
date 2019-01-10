@@ -9,8 +9,14 @@ define ([], function () {
             show: {
                 toolbar: true,
                 toolbarAdd: true,
+                toolbarDelete: true,
+                toolbarInput: false,
                 footer: true,
             },
+
+            searches: [
+                {field: 'uriregistrationplannumber', caption: 'Регистрационный номер', type: 'text'},
+            ],
 
             columns: [
                 {field: 'year', caption: 'Год', size: 5},
@@ -26,6 +32,7 @@ define ([], function () {
             url: '/mosgis/_rest/?type=check_plans',
             
             onAdd: $_DO.create_check_plans,
+            onDelete: $_DO.delete_check_plans,
 
             onDblClick: function (e) {
                 openTab ('/check_plan/' + e.recid)

@@ -18,7 +18,8 @@ public class CheckPlansImpl extends BaseCRUD<CheckPlan> implements CheckPlansLoc
     @Override
     public JsonObject select(JsonObject p, User user) {return fetchData ((db, job) -> {
         
-        Select select = ModelHolder.getModel ().select(getTable (), "AS root", "*", "uuid AS id");
+        Select select = ModelHolder.getModel ().select(getTable (), "AS root", "*", "uuid AS id")
+                .where ("is_deleted", 0);
         
         db.addJsonArrayCnt (job, select);
         
