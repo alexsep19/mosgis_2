@@ -85,9 +85,13 @@ public class VocSetting extends Table {
         WS_GIS_NSI_COMMON_TMT_CONN ("ws.gis.nsi.common.timeout.connection", "Время ожидания подключения к сервису НСИ ГИС ЖКХ (NsiCommonAsyncService), мс", "10000"),
         WS_GIS_NSI_COMMON_TMT_RESP ("ws.gis.nsi.common.timeout.response", "Время ожидания подключения к сервису НСИ ГИС ЖКХ (NsiCommonAsyncService), мс", "10000"),
 
-        WS_GIS_ORG_COMMON_URL      ("ws.gis.org.common.url", "Endpoint URL сервиса реестра юрлиц ГИС ЖКХ (NsiCommonAsyncService)", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-org-registry-common-service/services/OrgRegistryCommonAsync"),
-        WS_GIS_ORG_COMMON_TMT_CONN ("ws.gis.org.common.timeout.connection", "Время ожидания подключения к сервису реестра юрлиц ГИС ЖКХ (NsiCommonAsyncService), мс", "10000"),
-        WS_GIS_ORG_COMMON_TMT_RESP ("ws.gis.org.common.timeout.response", "Время ожидания подключения к сервису реестра юрлиц ГИС ЖКХ (NsiCommonAsyncService), мс", "10000"),
+        WS_GIS_ORG_COMMON_URL      ("ws.gis.org.common.url", "Endpoint URL сервиса реестра юрлиц ГИС ЖКХ (OrgRegistryCommonAsyncService)", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-org-registry-common-service/services/OrgRegistryCommonAsync"),
+        WS_GIS_ORG_COMMON_TMT_CONN ("ws.gis.org.common.timeout.connection", "Время ожидания подключения к сервису реестра юрлиц ГИС ЖКХ (OrgRegistryCommonAsyncService), мс", "10000"),
+        WS_GIS_ORG_COMMON_TMT_RESP ("ws.gis.org.common.timeout.response", "Время ожидания подключения к сервису реестра юрлиц ГИС ЖКХ (OrgRegistryCommonAsyncService), мс", "10000"),
+
+        WS_GIS_ORG_URL      ("ws.gis.org.url", "Endpoint URL сервиса импорта подразделений юрлиц ГИС ЖКХ (OrgRegistryAsync)", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-org-registry-service/services/OrgRegistryAsync"),
+        WS_GIS_ORG_TMT_CONN ("ws.gis.org.timeout.connection", "Время ожидания подключения к сервису импорта подразделений юрлиц ГИС ЖКХ (OrgRegistryAsync), мс", "10000"),
+        WS_GIS_ORG_TMT_RESP ("ws.gis.org.timeout.response", "Время ожидания подключения к сервису импорта подразделений юрлиц ГИС ЖКХ (OrgRegistryAsync), мс", "10000"),
         
         WS_GIS_HOUSE_MANAGEMENT_URL      ("ws.gis.house.management.url", "Endpoint URL сервиса обмена сведениями о жилищном фонде ГИС ЖКХ (HouseManagementServiceAsync)", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-home-management-service/services/HomeManagementAsync"),
         WS_GIS_HOUSE_MANAGEMENT_TMT_CONN ("ws.gis.house.management.timeout.connection", "Время ожидания подключения к сервису обмена сведениями о жилищном фонде ГИС ЖКХ (HouseManagementServiceAsync), мс", "10000"),

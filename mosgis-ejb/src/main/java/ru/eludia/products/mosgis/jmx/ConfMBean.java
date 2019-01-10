@@ -63,6 +63,13 @@ public interface ConfMBean {
     public int    getWsGisOrgCommonRespTimeout ();     
     public void   setWsGisOrgCommonRespTimeout (int i);    
 
+    public String getWsGisOrgUrl ();
+    public void   setWsGisOrgUrl (String s);    
+    public int    getWsGisOrgConnTimeout ();     
+    public void   setWsGisOrgConnTimeout (int i);
+    public int    getWsGisOrgRespTimeout ();     
+    public void   setWsGisOrgRespTimeout (int i);    
+
     public String getUserAdminLogin ();
     public void   setUserAdminLogin (String s);
     public String getUserAdminPassword ();
