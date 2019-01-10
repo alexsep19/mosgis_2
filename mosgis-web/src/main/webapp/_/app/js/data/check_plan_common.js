@@ -35,6 +35,8 @@ define ([], function () {
 
         var v = f.values ()
 
+        if (v.shouldberegistered && v.uriregistrationplannumber == null) die ('uriregistrationplannumber', 'Пожалуйста, укажите регистрационный номер')
+
         v.shouldnotberegistered = 1 - v.shouldberegistered
         delete v.shouldberegistered
 
