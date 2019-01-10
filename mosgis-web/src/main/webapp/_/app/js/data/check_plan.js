@@ -19,20 +19,28 @@ define ([], function () {
 
     return function (done) { 
 
-        query ({type: 'check_plans'}, {}, function (data) {
+        query ({type: 'check_plans', part: 'vocs', id: undefined}, {}, function (data) {
             
-            data.active_tab = localStorage.getItem ('check_plan.active_tab') || 'check_plan_common'
+            query ({type: 'check_plans'}, {}, function (d) {
 
-            data.item._can = {
+                add_vocabularies (data, data)
 
-                edit: 1 - data.item.sign,
-                delete: 1 - data.item.sign,
+                data.item = d.item
 
-            }
-                                                
-            $('body').data ('data', data)
+                data.active_tab = localStorage.getItem ('check_plan.active_tab') || 'check_plan_common'
 
-            done (data)
+                data.item._can = {
+
+                    edit: 1 - data.item.sign,
+                    delete: 1 - data.item.sign,
+
+                }
+                                                    
+                $('body').data ('data', data)
+
+                done (data)
+
+            })
             
         })
     }

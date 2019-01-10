@@ -64,6 +64,14 @@ public class CheckPlans extends EJBResource <CheckPlansLocal> {
     }
     
     @POST
+    @Path ("vocs")
+    @Produces (APPLICATION_JSON)
+    public JsonObject getVocs () { 
+        check ();
+        return back.getVocs (); 
+    }
+    
+    @POST
     @Path("{id}/update") 
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
