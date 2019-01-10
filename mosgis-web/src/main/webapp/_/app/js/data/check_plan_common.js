@@ -35,6 +35,9 @@ define ([], function () {
 
         var v = f.values ()
 
+        v.shouldnotberegistered = 1 - v.shouldberegistered
+        delete v.shouldberegistered
+
         query ({type: 'check_plans', action: 'update'}, {data: v}, reload_page)
 
     } 

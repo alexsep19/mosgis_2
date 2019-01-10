@@ -14,7 +14,7 @@ import ru.eludia.products.mosgis.rest.misc.EJBResource;
 @Path("check_plans")
 public class CheckPlans extends EJBResource <CheckPlansLocal> {
 
-    private void checkGet () {
+    private void check () {
         
         if (!securityContext.isUserInRole("nsi_20_4") &&
             !securityContext.isUserInRole("admin"))
@@ -26,6 +26,7 @@ public class CheckPlans extends EJBResource <CheckPlansLocal> {
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject select (JsonObject p) { 
+        check ();
         return back.select (p, getUser ()); 
     }
     
@@ -33,6 +34,7 @@ public class CheckPlans extends EJBResource <CheckPlansLocal> {
     @Path("create") 
     @Produces (APPLICATION_JSON)
     public JsonObject doCreate (JsonObject p) {
+        check ();
         return back.doCreate (p, getUser ());
     }
     
@@ -40,6 +42,7 @@ public class CheckPlans extends EJBResource <CheckPlansLocal> {
     @Path("{id}/delete") 
     @Produces (APPLICATION_JSON)
     public JsonObject doDelete (@PathParam ("id") String id) {
+        check ();
         return back.doDelete (id, getUser ());
     }
     
@@ -47,7 +50,7 @@ public class CheckPlans extends EJBResource <CheckPlansLocal> {
     @Path("{id}") 
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) {
-        checkGet ();
+        check ();
         return back.getItem (id);
     }
     
@@ -56,8 +59,17 @@ public class CheckPlans extends EJBResource <CheckPlansLocal> {
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
-        checkGet ();
+        check ();
         return back.getLog (id, p, getUser ());
+    }
+    
+    @POST
+    @Path("{id}/update") 
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject doUpdate (@PathParam ("id") String id, JsonObject p) {
+        check ();
+        return back.doUpdate (id, p, getUser ());
     }
     
 }

@@ -1,5 +1,21 @@
 define ([], function () {
 
+    function recalcToolbar (e) {e.done (function () {
+
+        var g = w2ui ['check_plans_grid']
+
+        var t = g.toolbar
+
+        t.disable ('deleteButton')
+
+        if (g.getSelection ().length != 1) return
+
+        var status = g.get (g.getSelection () [0]).sign
+
+        if (!status) t.enable ('deleteButton')
+
+    })}
+
     return function (data, view) {
 
         $(w2ui ['supervision_layout'].el ('main')).w2regrid ({ 
@@ -9,9 +25,14 @@ define ([], function () {
             show: {
                 toolbar: true,
                 toolbarAdd: true,
-                toolbarDelete: true,
                 toolbarInput: false,
                 footer: true,
+            },
+
+            toolbar: {
+                items: [
+                    {type: 'button', id: 'deleteButton', caption: 'Удалить', onClick: $_DO.delete_check_plans, icon: 'w2ui-icon-cross', disabled: true},
+                ]
             },
 
             searches: [
@@ -32,7 +53,9 @@ define ([], function () {
             url: '/mosgis/_rest/?type=check_plans',
             
             onAdd: $_DO.create_check_plans,
-            onDelete: $_DO.delete_check_plans,
+
+            onSelect: recalcToolbar,
+            onUnselect: recalcToolbar,
 
             onDblClick: function (e) {
                 openTab ('/check_plan/' + e.recid)

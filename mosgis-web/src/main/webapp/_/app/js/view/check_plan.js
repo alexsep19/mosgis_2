@@ -1,8 +1,6 @@
 define ([], function () {
 
-    return function (data, view) {
-        
-        //$('title').text (data.item.address)        
+    return function (data, view) {   
         
         fill (view, data, $('#body'))
 

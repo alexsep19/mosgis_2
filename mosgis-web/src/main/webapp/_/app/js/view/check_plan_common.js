@@ -65,7 +65,7 @@ define ([], function () {
                 ]}},
                 {name: 'uriregistrationplannumber', type: 'text'},
                 {name: 'sign', type: 'list', options: {items: [
-                    {id: 0, text: 'Не подписан'},
+                    {id: 0, text: 'Проект'},
                     {id: 1, text: 'Подписан'},
                 ]}},
             ],
