@@ -11,6 +11,7 @@ define ([], function () {
             name: 'voc_organizations_grid' + (is_popup ? '_popup' : ''),
 
             show: {
+                toolbarAdd: !$_USER.role.admin,
                 toolbar: true,
                 footer: true
             },
@@ -47,22 +48,10 @@ define ([], function () {
                 }
             },
 
-            toolbar: {
-                items : [
-                    {
-                        type: 'button',
-                        id: 'add',
-                        caption : 'Добавить',
-                        off: !$_USER.role.admin
-                    }
-                ].filter(not_off),
-                onClick: function(target, e) {
-                    if (target == 'add') {
-                        openTab('/voc_organization_proposals', '_blank')
-                    }
-                }
+            onAdd: function (e) {
+                openTab ('/voc_organization_proposals')
             },
-
+            
             onDblClick: function (e) {
 
                 var r = this.get (e.recid)

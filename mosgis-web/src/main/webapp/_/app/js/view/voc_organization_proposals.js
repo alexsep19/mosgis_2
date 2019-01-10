@@ -3,10 +3,11 @@ define ([], function () {
     return function (data, view) {
 
         data._can = {
-            add_branch: $_USER.role.admin,
-            add_alien: $_USER.role.admin
+            add_branch: !$_USER.role.admin,
         }
-
+        
+        data._can.add_alien = data._can.add_branch
+        
         var is_popup = 1 == $_SESSION.delete ('voc_organization_proposals_popup.on')
 
         data.label = 'Создание обособленных подразделений и ФПИЮЛ'
