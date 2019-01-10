@@ -1,6 +1,5 @@
 package ru.eludia.products.mosgis.db.model.voc;
 
-import ru.eludia.products.mosgis.db.model.voc.VocOksm;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
@@ -11,7 +10,6 @@ import static ru.eludia.base.model.Type.NUMERIC;
 import static ru.eludia.base.model.Type.STRING;
 import static ru.eludia.base.model.def.Bool.FALSE;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
-import ru.eludia.base.model.def.Num;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 
@@ -19,7 +17,8 @@ public class VocOrganizationProposal extends Table {
 
     public enum c implements EnColEnum {
 
-        UUID                  (Type.UUID, NEW_UUID, "Ключ"),
+        UUID                  (Type.UUID, NEW_UUID, "Ключ"),        
+        ORGVERSIONGUID        (Type.UUID, null, "Идентификатор версии записи в реестре организаций"),
         PARENT                (VocOrganization.class, "Головная организация [обособленного подразделения]"),
         UUID_ORG              (VocOrganization.class, "Юридическое лицо, созданное по заявке, принятое из ГИС ЖКХ"),
         IS_DELETED            (BOOLEAN, FALSE, "1, если запись удалена; иначе 0"),
@@ -95,4 +94,48 @@ public class VocOrganizationProposal extends Table {
         key    ("uuid_org", "uuid_org");
         key    ("label_uc", "label_uc");
     }
+    
+    public enum Action {
+        
+        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
+        ;
+        
+        VocGisStatus.i nextStatus;
+        VocGisStatus.i okStatus;
+        VocGisStatus.i failStatus;
+
+        private Action (VocGisStatus.i nextStatus, VocGisStatus.i okStatus, VocGisStatus.i failStatus) {
+            this.nextStatus = nextStatus;
+            this.okStatus = okStatus;
+            this.failStatus = failStatus;
+        }
+
+        public VocGisStatus.i getNextStatus () {
+            return nextStatus;
+        }
+
+        public VocGisStatus.i getFailStatus () {
+            return failStatus;
+        }
+
+        public VocGisStatus.i getOkStatus () {
+            return okStatus;
+        }
+
+        public static Action forStatus (VocGisStatus.i status) {
+            switch (status) {
+                case PENDING_RQ_PLACING:   return PLACING;
+                default: return null;
+            }            
+        }
+
+        public static Action forLogAction (VocAction.i a) {
+            switch (a) {
+                case APPROVE: return PLACING;
+                default: return null;
+            }
+        }
+
+    };
+    
 }

@@ -5,7 +5,9 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
+import javax.jms.Queue;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -33,6 +35,26 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 @Stateless
 public class VocOrganizationProposalsImpl extends BaseCRUD<VocOrganizationProposal> implements VocOrganizationProposalsLocal {
 
+    @Resource (mappedName = "mosgis.inVocOrganizationProposalsQueue")
+    Queue queue;
+
+    @Override
+    public Queue getQueue () {
+        return queue;
+    }
+    
+    @Override
+    protected void publishMessage (VocAction.i action, String id_log) {
+        
+        switch (action) {
+            case APPROVE:
+                super.publishMessage (action, id_log);
+            default:
+                return;
+        }
+        
+    }
+    
     private static final Logger logger = Logger.getLogger (VocOrganizationProposalsImpl.class.getName ());
 
     private final static String DEFAULT_SEARCH = "label_uc LIKE %?%";

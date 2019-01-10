@@ -579,4 +579,24 @@
    </delivery-params-overrides>
  </uniform-distributed-queue> 
 
+ <!-- очередь обработки запросов на экспорт обособленных подразделений -->
+ <uniform-distributed-queue name="inVocOrganizationProposalsQueue">
+   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+   <jndi-name>mosgis.inVocOrganizationProposalsQueue</jndi-name>
+   <delivery-params-overrides>
+       <time-to-deliver>2000</time-to-deliver>
+       <redelivery-delay>10000</redelivery-delay>
+   </delivery-params-overrides>
+ </uniform-distributed-queue>
+ 
+ <!-- очередь опроса статуса исходящих запросов на экспорт обособленных подразделений -->
+ <uniform-distributed-queue name="outExportVocOrganizationProposalsQueue">
+   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>    
+   <jndi-name>mosgis.outExportVocOrganizationProposalsQueue</jndi-name>
+   <delivery-params-overrides>
+       <time-to-deliver>2000</time-to-deliver>
+       <redelivery-delay>10000</redelivery-delay>
+   </delivery-params-overrides>
+ </uniform-distributed-queue> 
+
 </weblogic-jms>

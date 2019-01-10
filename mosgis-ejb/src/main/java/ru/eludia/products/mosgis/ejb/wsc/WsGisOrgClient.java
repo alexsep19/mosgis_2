@@ -44,14 +44,5 @@ public class WsGisOrgClient {
     public AckRequest.Ack importSubsidiary (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
         return getPort (orgPPAGuid, messageGUID).importSubsidiary (VocOrganizationProposalLog.toImportSubsidiaryRequest (r)).getAck ();
     }
-    
-    
-    
-/*
-    public AckRequest.Ack importWorkingPlan (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
-        return getPort (orgPPAGuid, messageGUID).importWorkingPlan (WorkingPlanLog.toImportWorkingPlanRequest (r)).getAck ();
-    }    
-    
-    */    
    
 }
