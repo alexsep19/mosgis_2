@@ -42,6 +42,8 @@ public class PlannedExamination extends EnTable {
         COOPERATIONWITH                 (Type.STRING, 2048, null, "Орган государственного надзора (контроля) и/или орган муниципального контроля, с которым проверка проводится совместно"),
         PROSECUTORAGREEMENTINFORMATION  (Type.STRING, 2000, null, "Информация о согласовании проведения проверки с органами прокуратуры"),
         
+        SUBJECT_LABEL                   (Type.STRING, "Наименование субъекта проверки"),
+        
         ID_LOG                          (PlannedExaminationLog.class, "Последнее событие редактирования")
 
         ;
@@ -70,6 +72,15 @@ public class PlannedExamination extends EnTable {
         super ("tb_planned_examinations", "Проверки");
         
         cols (c.class);
+        
+        trigger ("BEFORE INSERT OR UPDATE", 
+                "BEGIN "
+                    + "SELECT org.label "
+                    + "INTO :NEW.subject_label "
+                    + "FROM vc_orgs org "
+                    + "WHERE org.orgrootentityguid = :OLD.subject_uuid; "
+                + "END;"
+        );
         
     }
     
