@@ -10,8 +10,12 @@ define ([], function () {
         if (!v.year) die ('year', 'Пожалуйста, укажите год')
         if (v.year < 1992 || v.year > 2030) die ('year', 'Пожалуйста, укажите корректное значение года (1992 - 2030)')
         if (!v.hasOwnProperty ('shouldberegistered')) die ('shouldberegistered', 'Пожалуйста, укажите, должен ли план быть зарегистрированным в ЕРП')
-        if (v.shouldberegistered && !v.uriregistrationplannumber) die ('uriregistrationplannumber', 'Пожалуйста, укажите регистрационный номер плана')
-        if (!re.test (v.uriregistrationplannumber)) die ('uriregistrationplannumber', 'Указан неверный регистрационный номер')
+        if (v.shouldberegistered) {
+
+            if (v.uriregistrationplannumber == null) die ('uriregistrationplannumber', 'Пожалуйста, укажите регистрационный номер')
+            if (!re.test (v.uriregistrationplannumber)) die ('uriregistrationplannumber', 'Указан неверный регистрационный номер')
+
+        }
 
         v.sign = 0
         v.shouldnotberegistered = 1 - v.shouldberegistered
