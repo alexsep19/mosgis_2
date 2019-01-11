@@ -86,7 +86,11 @@ define ([], function () {
         data.active_tab = localStorage.getItem ('sender_common.active_tab') || 'sender_common_log'
 
         data.__read_only = 1
-
+        
+        add_vocabularies (data, {vc_actions: 1})
+        
+        $('body').data ('data', data)
+        
         var it = data.item
 
         it._can = {cancel: 1}

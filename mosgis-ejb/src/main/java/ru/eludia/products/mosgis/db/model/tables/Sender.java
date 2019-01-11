@@ -11,7 +11,6 @@ public class Sender extends EnTable {
     
     public enum c implements EnColEnum {
 
-        UUID_WORKING_LIST    (WorkingList.class,  "Ссылка на перечень"),
         ID_LOG               (SenderLog.class,    "Последнее событие редактирования"),
         LABEL_FULL           (Type.STRING, null,  "Наименование системы"),
         LABEL                (Type.STRING,        "Сокращенное наименование"),
@@ -43,6 +42,7 @@ public class Sender extends EnTable {
     public Sender () {        
         super ("tb_senders", "Поставщики данных");                
         cols   (c.class);        
+        unique ("login", "login");
     }
     
 }

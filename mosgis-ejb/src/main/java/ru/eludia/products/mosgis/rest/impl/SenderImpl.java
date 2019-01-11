@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.sql.SQLException;
 import java.util.UUID;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -14,6 +15,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
+import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.rest.api.SenderLocal;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 
@@ -81,6 +83,8 @@ public class SenderImpl extends BaseCRUD<Sender> implements SenderLocal {
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
             .get (getTable (), id, "*")
         ));
+        
+        VocAction.addTo (job);
 
     });}
     
@@ -126,5 +130,42 @@ public class SenderImpl extends BaseCRUD<Sender> implements SenderLocal {
         logAction (db, user, id, VocAction.i.UNLOCK);
         
     });}
+    
+    @Override
+    public JsonObject doDelete (String id, User user) {return doAction ((db) -> {
+        
+        db.update (getTable (), HASH (
+            EnTable.c.UUID,       id,
+            EnTable.c.IS_DELETED,  1,
+            c.LOGIN,              ""
+        ));
+        
+        logAction (db, user, id, VocAction.i.DELETE);
+                
+    });}
+    
+    @Override
+    public JsonObject doUpdate (String id, JsonObject p, User user) {return doAction ((db) -> {
+        
+        try {
+            db.update (getTable (), getData (p,
+                "uuid", id
+            ));
+        }
+        catch (SQLException ex) {
+            
+            if (ex.getErrorCode () == 1) {
+                throw new ValidationException ("login", "Этот login занят");
+            }
+            else {
+                throw ex;
+            }
+            
+        }        
+        
+        logAction (db, user, id, VocAction.i.UPDATE);
+                        
+    });}
+    
     
 }

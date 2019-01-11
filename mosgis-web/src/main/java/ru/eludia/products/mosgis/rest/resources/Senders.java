@@ -72,5 +72,13 @@ public class Senders extends EJBResource <SenderLocal> {
     public JsonObject doUnlock (@PathParam ("id") String id) { 
         return back.doUnlock (id, getUser ());
     }
+    
+    @POST
+    @Path("{id}/log") 
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
+        return back.getLog (id, p, getUser ());
+    }
 
 }
