@@ -100,7 +100,7 @@ public class SenderImpl extends BaseCRUD<Sender> implements SenderLocal {
     });}
 
     @Override
-    public JsonObject doLock (String id, String password, User user) {return doAction ((db) -> {
+    public JsonObject doLock (String id, User user) {return doAction ((db) -> {
         
         UUID salt = UUID.randomUUID ();
         
@@ -114,7 +114,7 @@ public class SenderImpl extends BaseCRUD<Sender> implements SenderLocal {
     });}
     
     @Override
-    public JsonObject doUnlock (String id, String password, User user) {return doAction ((db) -> {
+    public JsonObject doUnlock (String id, User user) {return doAction ((db) -> {
         
         UUID salt = UUID.randomUUID ();
         
