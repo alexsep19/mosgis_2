@@ -2,7 +2,7 @@ define ([], function () {
 
     function recalcToolbar (e) {e.done (function () {
 
-        var g = w2ui ['check_plans_grid']
+        var g = w2ui ['check_plan_examinations_grid']
 
         var t = g.toolbar
 
@@ -38,23 +38,19 @@ define ([], function () {
             columns: [
                 {field: 'numberinplan', caption: 'Номер', size: 5},
                 {field: 'code_vc_nsi_71', caption: 'Форма проведения проверки', size: 10},
-                {field: 'shouldberegistered', caption: 'Должен быть зарегистрирован в ЕРП', size: 10, render: function (r) {
-                    return r.shouldnotberegistered ? 'Да' : 'Нет'
-                }},
-                {field: 'sign', caption: 'Подписан', size: 10, render: function (r) {
-                    return r.sign ? 'Да' : 'Нет'
-                }}
+                {field: 'subject_label', caption: 'Субъект проверки', size: 15},
+                {field: 'objective', caption: 'Цель проведения проверки', size: 30},
             ],
 
-            url: '/mosgis/_rest/?type=check_plans',
+            url: '/mosgis/_rest/?type=planned_examinations',
             
-            onAdd: $_DO.create_check_plans,
+            onAdd: $_DO.create_check_plan_examination,
 
             onSelect: recalcToolbar,
             onUnselect: recalcToolbar,
 
             onDblClick: function (e) {
-                openTab ('/check_plan/' + e.recid)
+                openTab ('/planned_examination/' + e.recid)
             }
 
         }).refresh ();
