@@ -51,7 +51,7 @@ define ([], function () {
 
     } 
     
-    $_DO.delete_charter_object_common = function (e) {   
+    $_DO.delete_check_plan_common = function (e) {   
         if (!confirm ('Удалить эту запись, Вы уверены?')) return        
         query ({type: 'check_plans', action: 'delete'}, {}, reload_page)
     }
