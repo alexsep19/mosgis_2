@@ -47,6 +47,7 @@ define ([], function () {
                     tabs: {
                         tabs:    [
                             {id: 'check_plan_common_log', caption: 'История изменений'},
+                            {id: 'check_plan_examinations', caption: 'Проверки'},
                         ].filter (not_off),
                         onClick: $_DO.choose_tab_check_plan_common
                     }                

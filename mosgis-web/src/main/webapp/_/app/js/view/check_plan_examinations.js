@@ -18,7 +18,7 @@ define ([], function () {
 
     return function (data, view) {
 
-        $(w2ui ['topmost_layout'].el ('main')).w2regrid ({ 
+        $(w2ui ['passport_layout'].el ('main')).w2regrid ({ 
 
             name: 'check_plan_examinations_grid',
 
