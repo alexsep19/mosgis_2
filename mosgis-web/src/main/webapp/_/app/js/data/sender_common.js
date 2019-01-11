@@ -45,6 +45,14 @@ define ([], function () {
 
     }
     
+    $_DO.set_password_sender_common = function (e) {
+
+        $_SESSION.set ('record', w2ui ['sender_common_form'].record)
+
+        use.block ('sender_password')
+
+    }    
+    
     $_DO.delete_sender_common = function (e) {   
         if (!confirm ('Удалить эту запись, Вы уверены?')) return        
         query ({type: 'senders', action: 'delete'}, {}, reload_page)
