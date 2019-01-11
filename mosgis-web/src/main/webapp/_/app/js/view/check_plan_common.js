@@ -42,7 +42,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 200},
+                {type: 'top', size: 153},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
@@ -76,10 +76,6 @@ define ([], function () {
                     {id: 1, text: 'Да'},
                 ]}},
                 {name: 'uriregistrationplannumber', type: 'text'},
-                {name: 'sign', type: 'list', options: {items: [
-                    {id: 0, text: 'Проект'},
-                    {id: 1, text: 'Подписан'},
-                ]}},
             ],
 
             onChange: function (e) {

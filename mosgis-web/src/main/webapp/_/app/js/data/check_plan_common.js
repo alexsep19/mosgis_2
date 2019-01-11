@@ -1,5 +1,7 @@
 define ([], function () {
 
+    var plan_status = ['Проект', 'Подписан']
+
     var form_name = 'check_plan_common_form'    
 
     $_DO.cancel_check_plan_common = function (e) {
@@ -73,11 +75,13 @@ define ([], function () {
     
     }
     
-    return function (done) {        
+    return function (done) {
 
         w2ui ['topmost_layout'].unlock ('main')
         
         var data = clone ($('body').data ('data'))
+
+        data.item.status_label = plan_status[data.item.sign]
 
         data.active_tab = localStorage.getItem ('check_plan_common.active_tab') || 'check_plan_common_log'
 
