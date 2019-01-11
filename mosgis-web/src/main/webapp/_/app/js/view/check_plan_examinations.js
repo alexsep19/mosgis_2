@@ -18,9 +18,9 @@ define ([], function () {
 
     return function (data, view) {
 
-        $(w2ui ['supervision_layout'].el ('main')).w2regrid ({
+        $(w2ui ['topmost_layout'].el ('main')).w2regrid ({ 
 
-            name: 'check_plans_grid',
+            name: 'check_plan_examinations_grid',
 
             show: {
                 toolbar: true,
@@ -31,19 +31,15 @@ define ([], function () {
 
             toolbar: {
                 items: [
-                    {type: 'button', id: 'deleteButton', caption: 'Удалить', onClick: $_DO.delete_check_plans, icon: 'w2ui-icon-cross', disabled: true},
+                    {type: 'button', id: 'deleteButton', caption: 'Удалить', onClick: $_DO.delete_check_plan_examinations, icon: 'w2ui-icon-cross', disabled: true},
                 ]
             },
 
-            searches: [
-                {field: 'uriregistrationplannumber', caption: 'Регистрационный номер', type: 'text', operator: 'is', operators: ['is']},
-            ],
-
             columns: [
-                {field: 'year', caption: 'Год', size: 5},
-                {field: 'uriregistrationplannumber', caption: 'Регистрационный номер плана в ЕРП', size: 10},
+                {field: 'numberinplan', caption: 'Номер', size: 5},
+                {field: 'code_vc_nsi_71', caption: 'Форма проведения проверки', size: 10},
                 {field: 'shouldberegistered', caption: 'Должен быть зарегистрирован в ЕРП', size: 10, render: function (r) {
-                    return r.shouldberegistered ? 'Да' : 'Нет'
+                    return r.shouldnotberegistered ? 'Да' : 'Нет'
                 }},
                 {field: 'sign', caption: 'Подписан', size: 10, render: function (r) {
                     return r.sign ? 'Да' : 'Нет'

@@ -16,7 +16,7 @@ define ([], function () {
 
                         tabs: [
                             {id: 'check_plan_common', caption: 'Общие'},
-                            {id: 'check_plan_checks', caption: 'Проверки'},
+                            {id: 'check_plan_examinations', caption: 'Проверки'},
                         ],
 
                         onClick: $_DO.choose_tab_check_plan
