@@ -9,8 +9,6 @@ define ([], function () {
 
 	$_DO.delete_check_plans = function (e) {
 
-		if (!e.force) return
-
 		var grid = w2ui ['check_plans_grid']
     
     	var id = grid.getSelection () [0]
