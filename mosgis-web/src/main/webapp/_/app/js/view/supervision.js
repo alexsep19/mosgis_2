@@ -2,7 +2,7 @@ define ([], function () {
 
     return function (data, view) {
 
-        $(w2ui ['rosters_layout'].el ('main')).w2relayout ({
+        $(w2ui ['topmost_layout'].el ('main')).w2relayout ({
         
             name: 'supervision_layout',
             
