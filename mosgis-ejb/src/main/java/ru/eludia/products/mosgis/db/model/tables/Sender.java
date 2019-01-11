@@ -17,7 +17,9 @@ public class Sender extends EnTable {
         LABEL                (Type.STRING,        "Сокращенное наименование"),
         CONTACT              (Type.STRING, null,  "Ответственный за интеграцию"),
         LOGIN                (Type.STRING, null,  "Логин"),
-        IS_LOCKED            (Type.BOOLEAN, FALSE,  "1, если запись заблокирована; иначе 0")
+        IS_LOCKED            (Type.BOOLEAN, FALSE,  "1, если запись заблокирована; иначе 0"),        
+        SALT                 (Type.UUID, null,        "Соль для пароля"),
+        SHA1                 (Type.BINARY, 20, null,  "SHA1 от пароля с учётом salt"),
         ;
 
         @Override
