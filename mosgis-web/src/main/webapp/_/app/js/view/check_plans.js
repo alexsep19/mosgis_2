@@ -18,7 +18,7 @@ define ([], function () {
 
     return function (data, view) {
 
-        $(w2ui ['supervision_layout'].el ('main')).w2regrid ({ 
+        $(w2ui ['supervision_layout'].el ('main')).w2regrid ({
 
             name: 'check_plans_grid',
 
@@ -36,7 +36,7 @@ define ([], function () {
             },
 
             searches: [
-                {field: 'uriregistrationplannumber', caption: 'Регистрационный номер', type: 'text'},
+                {field: 'uriregistrationplannumber', caption: 'Регистрационный номер', type: 'text', operator: 'is', operators: ['is']},
             ],
 
             columns: [
