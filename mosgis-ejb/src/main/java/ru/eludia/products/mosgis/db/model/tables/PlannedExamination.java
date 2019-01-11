@@ -40,7 +40,9 @@ public class PlannedExamination extends EnTable {
         WORKHOURS                       (Type.NUMERIC, 25, 4, null, "Срок проведения проверки (рабочих часов)"),
         CODE_VC_NSI_71                  (Type.STRING, 20, "Форма проведения проверки (НСИ 71)"), // ExaminationForm
         COOPERATIONWITH                 (Type.STRING, 2048, null, "Орган государственного надзора (контроля) и/или орган муниципального контроля, с которым проверка проводится совместно"),
-        PROSECUTORAGREEMENTINFORMATION  (Type.STRING, 2000, null, "Информация о согласовании проведения проверки с органами прокуратуры")
+        PROSECUTORAGREEMENTINFORMATION  (Type.STRING, 2000, null, "Информация о согласовании проведения проверки с органами прокуратуры"),
+        
+        ID_LOG                          (PlannedExaminationLog.class, "Последнее событие редактирования")
 
         ;
         
@@ -53,8 +55,9 @@ public class PlannedExamination extends EnTable {
         @Override
         public boolean isLoggable () {
             switch (this) {
-                //case ID_LOG:
-                    //return false;
+                case CHECK_PLAN_UUID:
+                case ID_LOG:
+                    return false;
                 default:
                     return true;
             }
