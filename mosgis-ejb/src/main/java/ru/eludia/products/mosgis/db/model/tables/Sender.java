@@ -11,13 +11,13 @@ public class Sender extends EnTable {
     
     public enum c implements EnColEnum {
 
-        UUID_WORKING_LIST    (WorkingList.class,     "Ссылка на перечень"),
-//        ID_LOG               (SenderLog.class,  "Последнее событие редактирования"),
+        UUID_WORKING_LIST    (WorkingList.class,  "Ссылка на перечень"),
+        ID_LOG               (SenderLog.class,    "Последнее событие редактирования"),
         LABEL_FULL           (Type.STRING, null,  "Наименование системы"),
         LABEL                (Type.STRING,        "Сокращенное наименование"),
         CONTACT              (Type.STRING, null,  "Ответственный за интеграцию"),
         LOGIN                (Type.STRING, null,  "Логин"),
-        IS_LOCKED            (Type.BOOLEAN,      FALSE,  "1, если запись заблокирована; иначе 0")
+        IS_LOCKED            (Type.BOOLEAN, FALSE,  "1, если запись заблокирована; иначе 0")
         ;
 
         @Override
@@ -29,8 +29,8 @@ public class Sender extends EnTable {
         @Override
         public boolean isLoggable () {
             switch (this) {
-//                case ID_LOG:
-//                    return false;
+                case ID_LOG:
+                    return false;
                 default: 
                     return true;
             }
