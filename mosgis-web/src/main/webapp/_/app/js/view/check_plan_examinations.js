@@ -42,6 +42,8 @@ define ([], function () {
                 {field: 'objective', caption: 'Цель проведения проверки', size: 30},
             ],
 
+            postData: {data: {'plan_uuid': $_REQUEST.id}},
+
             url: '/mosgis/_rest/?type=planned_examinations',
             
             onAdd: $_DO.create_check_plan_examination,
