@@ -174,7 +174,7 @@
 		<wsdl:part name="exportRolloverStatusCAChRequest" element="hm:exportRolloverStatusCAChRequest"/>
 	</wsdl:message>
 	<wsdl:message name="exportRolloverStatusCAChResult">
-		<wsdl:part name="exportRolloverStatusCAChResult" element="hm:exportRolloverStatusCAChResult"/>
+		<wsdl:part name="tns:exportRolloverStatusCAChResult" element="hm:exportRolloverStatusCAChResult"/>
 	</wsdl:message>
 	<wsdl:message name="exportBriefSupplyResourceContractRequest">
 		<wsdl:part name="exportBriefSupplyResourceContractRequest" element="hm:exportBriefSupplyResourceContractRequest"/>
