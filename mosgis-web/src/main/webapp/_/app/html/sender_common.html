@@ -1,0 +1,67 @@
+<span>
+
+    <div>
+
+        <div class="w2ui-page page-0 page-1">
+
+        	<style>
+
+        		.w2ui-field > label {
+        			width: 300px;
+        			margin-right: 10px;
+        		}
+
+        		.w2ui-field input {
+        			width: 230px !important;
+        		}
+
+        	</style>
+
+			<div class="w2ui-field">
+				<label>Сокращенное наименование:</label>
+				<div>
+					<input name=label maxlength=100>
+				</div>
+			</div>
+
+			<div class="w2ui-field">
+				<label>Полное наименование:</label>
+				<div>
+					<input name=label_full maxlength=100>
+				</div>
+			</div>
+
+			<div class="w2ui-field">
+				<label>Ответственный за интеграцию:</label>
+				<div>
+					<input name=contact maxlength=100>
+				</div>
+			</div>
+
+			<div class="w2ui-field">
+				<label>Логин:</label>
+				<div>
+					<input name=login maxlength=100>
+				</div>
+			</div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+        	<span>
+				<button class=w2ui-btn name=edit   data-on=__read_only>Редактировать</button>
+				<button class=w2ui-btn name=update data-off=__read_only>Сохранить</button>
+				<button class=w2ui-btn name=cancel data-off=__read_only>Отменить</button>
+
+				<button class=w2ui-btn name=set_password data-on=__read_only>Установить пароль</button>
+
+				<button class=w2ui-btn name=lock  data-on=__read_only>Блокировать</button>
+				<button class=w2ui-btn name=unlock  data-on=__read_only>Разблокировать</button>
+
+				<button class=w2ui-btn name=delete  data-on=__read_only>Удалить</button>
+            </span>
+        </div>
+
+    </div>
+
+</span>
