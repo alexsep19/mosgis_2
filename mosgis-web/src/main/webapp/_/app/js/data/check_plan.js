@@ -29,13 +29,12 @@ define ([], function () {
 
                 data.active_tab = localStorage.getItem ('check_plan.active_tab') || 'check_plan_common'
 
+                var perms = 1 - data.item.sign && !data.item.is_deleted
                 data.item._can = {
-
-                    edit: 1 - data.item.sign,
-                    delete: 1 - data.item.sign,
-                    update: 1 - data.item.sign,
-                    cancel: 1 - data.item.sign,
-
+                    edit: perms,
+                    delete: perms,
+                    update: perms,
+                    cancel: perms,
                 }
                                                     
                 $('body').data ('data', data)

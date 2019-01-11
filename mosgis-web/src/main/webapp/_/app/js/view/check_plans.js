@@ -18,7 +18,7 @@ define ([], function () {
 
     return function (data, view) {
 
-        $(w2ui ['supervision_layout'].el ('main')).w2regrid ({ 
+        $(w2ui ['supervision_layout'].el ('main')).w2regrid ({
 
             name: 'check_plans_grid',
 
@@ -36,14 +36,14 @@ define ([], function () {
             },
 
             searches: [
-                {field: 'uriregistrationplannumber', caption: 'Регистрационный номер', type: 'text'},
+                {field: 'uriregistrationplannumber', caption: 'Регистрационный номер', type: 'text', operator: 'is', operators: ['is']},
             ],
 
             columns: [
                 {field: 'year', caption: 'Год', size: 5},
                 {field: 'uriregistrationplannumber', caption: 'Регистрационный номер плана в ЕРП', size: 10},
                 {field: 'shouldberegistered', caption: 'Должен быть зарегистрирован в ЕРП', size: 10, render: function (r) {
-                    return r.shouldnotberegistered ? 'Да' : 'Нет'
+                    return r.shouldberegistered ? 'Да' : 'Нет'
                 }},
                 {field: 'sign', caption: 'Подписан', size: 10, render: function (r) {
                     return r.sign ? 'Да' : 'Нет'
