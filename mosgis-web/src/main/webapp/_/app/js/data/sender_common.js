@@ -115,6 +115,7 @@ define ([], function () {
             }
 
             it._can.update = it._can.edit
+            it._can.delete = 1
 
         }
 
