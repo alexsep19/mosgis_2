@@ -36,7 +36,7 @@ define ([], function () {
             },
 
             searches: [
-                {field: 'uriregistrationplannumber', caption: 'Регистрационный номер', type: 'text', operator: 'is', operators: ['is']},
+                {field: 'uriregistrationplannumber', caption: 'Регистрационный номер', type: 'int', operator: 'is', operators: ['is']},
             ],
 
             columns: [
