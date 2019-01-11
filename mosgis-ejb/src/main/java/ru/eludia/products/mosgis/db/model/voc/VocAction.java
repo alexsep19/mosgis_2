@@ -43,20 +43,24 @@ public class VocAction extends Table {
     
     public enum i {
         
-        EXPIRE    ("expire",    "проверка на просроченность"),
-        CREATE    ("create",    "создание"),
-        UPDATE    ("update",    "редактирование"),
-        DELETE    ("delete",    "удаление"),
-        UNDELETE  ("undelete",  "восстановление"),
-        APPROVE   ("approve",   "утверждение"),
-        CANCEL    ("cancel",    "отмена"),
-        TERMINATE ("terminate", "расторжение"),
-        ALTER     ("alter",     "изменение"),
-        ANNUL     ("annul",     "аннулирование"),
-        ROLLOVER  ("rollover",  "пролонгирование"),
-        PROMOTE   ("promote",   "утверждение"),
-        RELOAD    ("reload",    "обновление данных"),
-        REFRESH   ("refresh",   "обновление статусов");
+        ALTER        ("alter",         "изменение"),
+        ANNUL        ("annul",         "аннулирование"),
+        APPROVE      ("approve",       "утверждение"),
+        CANCEL       ("cancel",        "отмена"),
+        CREATE       ("create",        "создание"),
+        DELETE       ("delete",        "удаление"),
+        EXPIRE       ("expire",        "проверка на просроченность"),
+        LOCK         ("lock",          "блокировка"),
+        PROMOTE      ("promote",       "утверждение"),
+        REFRESH      ("refresh",       "обновление статусов"),
+        RELOAD       ("reload",        "обновление данных"),
+        ROLLOVER     ("rollover",      "пролонгирование"),
+        SET_PASSWORD ("set_password",  "установка пароля"),
+        TERMINATE    ("terminate",     "расторжение"),
+        UNDELETE     ("undelete",      "восстановление"),
+        UNLOCK       ("unlock",        "разблокировка"),
+        UPDATE       ("update",        "редактирование"),
+        ;
                 
         String name;
         String label;
