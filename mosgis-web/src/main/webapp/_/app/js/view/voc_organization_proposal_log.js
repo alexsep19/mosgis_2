@@ -29,7 +29,7 @@ define([], function () {
             columnGroups: [
                 {span: 2, caption: 'Обновление'},
                 {span: 8, caption: 'Значения полей'},
-                {span: 2, caption: 'Запрос в ГИС ЖКХ'},
+                {span: 3, caption: 'Запрос в ГИС ЖКХ'},
             ],
 
             columns: [
@@ -53,6 +53,8 @@ define([], function () {
 
                 {field: 'soap.ts', caption: 'Отправлено', size: 30, render: _ts, attr: 'data-ref=1'},
                 {field: 'soap.ts_rp', caption: 'Обработано', size: 30, render: _ts, attr: 'data-ref=1'},
+                {field: 'soap.err_text', caption: 'Ошибка',    size: 30},
+                
             ].filter(not_off),
 
             url: '/mosgis/_rest/?type=voc_organization_proposals&part=log&id=' + $_REQUEST.id,

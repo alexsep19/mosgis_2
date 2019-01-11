@@ -306,5 +306,20 @@ public class VocOrganizationProposalsImpl extends BaseCRUD<VocOrganizationPropos
         logAction (db, user, id, VocAction.i.APPROVE);
 
     });}
+    
+    @Override
+    public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
+                
+        final Map<String, Object> r = HASH (
+            EnTable.c.UUID,               id,
+            VocOrganizationProposal.c.ID_ORG_PR_STATUS,  VocGisStatus.i.PROJECT.getId ()
+        );
+                
+        db.update (getTable (), r);
+        
+        logAction (db, user, id, VocAction.i.ALTER);
+        
+    });}    
+    
 
 }

@@ -84,6 +84,11 @@ define ([], function () {
         if (!confirm ('Разместить эти данные в ГИС ЖКХ?')) return
         query ({type: 'voc_organization_proposals', action: 'approve'}, {}, reload_page)
     }
+    
+    $_DO.alter_voc_organization_proposal_alien = function (e) {
+        if (!confirm ('Открыть запись на редактирование?')) return
+        query ({type: 'voc_organization_proposals', action: 'alter'}, {}, reload_page)
+    }
 
     $_DO.choose_tab_voc_organization_proposal_alien = function (e) {
 
@@ -124,6 +129,7 @@ define ([], function () {
                 switch (it.id_org_pr_status) {
                     case 14:
                         it._can.delete = 1
+                        it._can.alter = 1
                 }
 
             }
