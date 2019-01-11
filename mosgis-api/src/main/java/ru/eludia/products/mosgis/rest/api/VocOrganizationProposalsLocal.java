@@ -13,4 +13,6 @@ public interface VocOrganizationProposalsLocal extends CRUDBackend {
     JsonObject doCreate     (JsonObject p, User user);
     JsonObject doDelete     (String id, User user);
     JsonObject doApprove    (String id, User user);
+    JsonObject doAlter      (String id, User user);
+    
 }
