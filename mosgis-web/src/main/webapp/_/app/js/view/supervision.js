@@ -2,7 +2,11 @@ define ([], function () {
 
     return function (data, view) {
 
-        $(w2ui ['topmost_layout'].el ('main')).w2relayout ({
+        var topmost_layout = w2ui ['topmost_layout']
+
+        topmost_layout.unlock ('main')
+
+        $(topmost_layout.el ('main')).w2relayout ({
         
             name: 'supervision_layout',
             
