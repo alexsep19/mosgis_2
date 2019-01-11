@@ -43,7 +43,7 @@ define ([], function () {
                 {field: 'year', caption: 'Год', size: 5},
                 {field: 'uriregistrationplannumber', caption: 'Регистрационный номер плана в ЕРП', size: 10},
                 {field: 'shouldberegistered', caption: 'Должен быть зарегистрирован в ЕРП', size: 10, render: function (r) {
-                    return r.shouldnotberegistered ? 'Да' : 'Нет'
+                    return r.shouldberegistered ? 'Да' : 'Нет'
                 }},
                 {field: 'sign', caption: 'Подписан', size: 10, render: function (r) {
                     return r.sign ? 'Да' : 'Нет'
