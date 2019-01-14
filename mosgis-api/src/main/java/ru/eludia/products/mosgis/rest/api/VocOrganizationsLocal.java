@@ -9,7 +9,7 @@ import ru.eludia.products.mosgis.rest.api.base.CRUDBackend;
 public interface VocOrganizationsLocal extends CRUDBackend {
     
     JsonObject getVocs      ();
-    JsonObject select       (JsonObject p);
+    JsonObject select       (JsonObject p, User user);
     JsonObject list         (JsonObject p);
     JsonObject getItem      (String id);
     JsonObject doImport     (JsonObject p, User user);

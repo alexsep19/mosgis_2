@@ -17,7 +17,7 @@ public class VocOrganizations extends EJBResource <VocOrganizationsLocal> {
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject select (JsonObject p) { 
-        return back.select (p); 
+        return back.select (p, getUser ()); 
     }
     
     @POST

@@ -22,6 +22,10 @@ public class VocOrganization extends Table {
 
     public enum c implements EnColEnum {
 
+        ORGROOTENTITYGUID (Type.UUID, "Первичный ключ организации"),
+
+        UUID_ORG_OWNER (VocOrganization.class, "Организация оператора, создавшего заявку на добавление [обособленного подразделения / ФПИЮЛ]"),
+                
         ORGPPAGUID     (Type.UUID,   null,           "Идентификатор зарегистрированной организации"),        
         ORGVERSIONGUID (Type.UUID,   null,           "Идентификатор версии записи в реестре организаций"),
 

@@ -18,7 +18,7 @@ public class VocOrganizationProposal extends Table {
     public enum c implements EnColEnum {
 
         UUID                  (Type.UUID, NEW_UUID, "Ключ"),        
-        ORGVERSIONGUID        (Type.UUID, null, "Идентификатор версии записи в реестре организаций"),
+//        ORGVERSIONGUID        (Type.UUID, null, "Идентификатор версии записи в реестре организаций"),
         PARENT                (VocOrganization.class, "Головная организация [обособленного подразделения]"),
         UUID_ORG              (VocOrganization.class, "Юридическое лицо, созданное по заявке, принятое из ГИС ЖКХ"),
         UUID_ORG_OWNER        (VocOrganization.class, "Организация оператора, создавшего запись"),
