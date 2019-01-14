@@ -74,7 +74,7 @@ public class Unom implements UnomMBean {
                 File file = path.toFile ();
                 if (file.isDirectory ()) return;
                 String name = file.getName ();
-                if (!name.toUpperCase().endsWith (".csv")) return;
+                if (!name.toUpperCase().endsWith (".CSV")) return;
                 
                 MosGisModel model = ModelHolder.getModel ();
                 

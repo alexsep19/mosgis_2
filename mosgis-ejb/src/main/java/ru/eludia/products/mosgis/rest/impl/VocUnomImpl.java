@@ -32,7 +32,7 @@ public class VocUnomImpl extends Base implements VocUnomLocal {
         Select select = db.getModel ()
             .select  (VocUnom.class, "AS root", "*", "unom AS id")
             .toMaybeOne (VocBuilding.class, "AS b", "label").on ()
-            .toMaybeOne (House.class, "AS h", "uuid", "is_condo").on ("root.fiashouseguid=h.fiashouseguid")
+//            .toMaybeOne (House.class, "AS h", "uuid", "is_condo").on ("root.fiashouseguid=h.fiashouseguid")
             .orderBy ("root.unom")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
         
@@ -45,20 +45,17 @@ public class VocUnomImpl extends Base implements VocUnomLocal {
             String searchString = simpleSearch.getSearchString ();
             
             if (DB.ok (searchString)) {
-
-                long unom = DB.to.Long (searchString);
-
-                if (unom > 0) {
-                    select.and (c.UNOM, unom);
+                
+                try {
+                    select.and (c.UNOM, Long.parseLong (searchString));
                 }
-                else {
-                    try {                
-                        UUID guid = UUID.fromString (searchString);
-                        select.and (c.FIASHOUSEGUID, guid);
-                    } 
-                    catch (Exception ex) {}
+                catch (Exception ex) {}
 
-                }             
+                try {                
+                    UUID guid = UUID.fromString (searchString);
+                    select.and (c.FIASHOUSEGUID, guid);
+                } 
+                catch (Exception ex) {}
 
             }
                         

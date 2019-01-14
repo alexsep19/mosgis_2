@@ -20,7 +20,7 @@ define ([], function () {
                 {field: 'fias', caption: 'ФИАС (исходный)',    size: 36},
                 {field: 'fiashouseguid', caption: 'ФИАС (уточнённый)',    size: 36},
                 {field: 'b.label', caption: 'Адрес',    size: 50},
-                {field: 'h.is_condo', caption: 'МКД/ЖД', size: 10, voc: {1: 'МКД', 0: 'ЖД'}},
+//                {field: 'h.is_condo', caption: 'МКД/ЖД', size: 10, voc: {1: 'МКД', 0: 'ЖД'}},
                 {field: 'kladr', caption: 'КЛАДР',    size: 10},
                 {field: 'kad_n', caption: 'Кадастр',    size: 10},
             ],
@@ -30,9 +30,9 @@ define ([], function () {
             url: '/mosgis/_rest/?type=voc_unom',
                         
             onDblClick: function (e) {
-                var r = this.get (e.recid)
-                var id = r ['h.uuid']
-                if (id) openTab ('/house/' + id)
+//                var r = this.get (e.recid)
+//                var id = r ['h.uuid']
+//                if (id) openTab ('/house/' + id)
             },
 
         }).refresh ();
