@@ -4,8 +4,6 @@ define ([], function () {
 
         var signed = clone ($('body').data ('data')).item.sign
 
-        console.log (signed)
-
         return $_USER.role.nsi_20_4 && !signed
 
     }
