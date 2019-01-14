@@ -23,11 +23,11 @@ define ([], function () {
             
             query ({type: 'planned_examinations'}, {}, function (d) {
 
-                console.log (d.item)
-
                 add_vocabularies (data, data)
 
                 data.item = d.item
+
+                data.item.year = data.item['plan.year']
 
                 data.active_tab = localStorage.getItem ('planned_examination.active_tab') || 'planned_examination_common'
 
