@@ -5,15 +5,20 @@ import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.voc.VocUnom;
 import ru.eludia.products.mosgis.db.model.voc.VocUnom.c;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import ru.eludia.products.mosgis.db.model.voc.VocUnomStatus;
 import ru.eludia.products.mosgis.rest.api.VocUnomLocal;
 import ru.eludia.products.mosgis.rest.impl.base.Base;
+import ru.eludia.products.mosgis.web.base.Search;
+import ru.eludia.products.mosgis.web.base.SimpleSearch;
 
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
@@ -31,28 +36,43 @@ public class VocUnomImpl extends Base implements VocUnomLocal {
             .orderBy ("root.unom")
             .limit (0, 50);
         
-        String search = p.getString ("search", "");
-        
-        if (DB.ok (search)) {
-            
-            long unom = DB.to.Long (search);
-            
-            if (unom > 0) {
-                select.and (c.UNOM, unom);
-            }
-            else {
-                try {                
-                    UUID guid = UUID.fromString (search);
-                    select.and (c.FIASHOUSEGUID, guid);
-                } 
-                catch (Exception ex) {}
+        final Search search = Search.from (p);
 
-            }             
+        if (search != null) {
             
+            SimpleSearch simpleSearch = (SimpleSearch) search;
+            
+            String searchString = simpleSearch.getSearchString ();
+            
+            if (DB.ok (searchString)) {
+
+                long unom = DB.to.Long (searchString);
+
+                if (unom > 0) {
+                    select.and (c.UNOM, unom);
+                }
+                else {
+                    try {                
+                        UUID guid = UUID.fromString (searchString);
+                        select.and (c.FIASHOUSEGUID, guid);
+                    } 
+                    catch (Exception ex) {}
+
+                }             
+
+            }
+                        
         }
-        
-        db.addJsonArrays (job, select);
+                        
+        db.addJsonArrayCnt (job, select);
 
     });}
+
+    @Override
+    public JsonObject getVocs () {
+        JsonObjectBuilder jb = Json.createObjectBuilder ();
+        VocUnomStatus.addTo (jb);
+        return jb.build ();
+   }
 
 }

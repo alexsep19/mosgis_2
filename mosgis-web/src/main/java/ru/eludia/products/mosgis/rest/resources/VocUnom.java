@@ -19,4 +19,11 @@ public class VocUnom extends EJBResource <VocUnomLocal> {
         return back.select (p);
     }
     
+    @POST
+    @Path("vocs") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject getVocs () { 
+        return back.getVocs (); 
+    }        
+
 }

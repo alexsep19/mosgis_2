@@ -6,6 +6,7 @@ import javax.json.JsonObject;
 @Local
 public interface VocUnomLocal {
     
-    JsonObject select (JsonObject p);
+   JsonObject getVocs ();
+   JsonObject select  (JsonObject p);
 
 }

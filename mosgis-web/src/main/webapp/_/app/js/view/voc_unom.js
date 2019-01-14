@@ -15,11 +15,13 @@ define ([], function () {
             },     
 
             columns: [                
-                {field: 'uuid', caption: 'GUID',    size: 36},
-                {field: 'label', caption: 'Сокр. наим.',    size: 20},
-                {field: 'label_full', caption: 'Наименование системы',    size: 50},
-                {field: 'contact', caption: 'Ответственный за интеграцию',    size: 50},
-                {field: 'is_locked', caption: 'Интеграция отключена',  size: 10, voc: {1: 'отключена', 0: 'включена'}},
+                {field: 'unom', caption: 'UNOM',    size: 10},
+                {field: 'fias', caption: 'ФИАС (исходный)',    size: 36},
+                {field: 'fiashouseguid', caption: 'ФИАС (уточнённый)',    size: 36},
+                {field: 'b.label', caption: 'Адрес',    size: 50},
+                {field: 'h.is_condo', caption: 'МКД/ЖД', size: 10, voc: {1: 'МКД', 0: 'ЖД'}},
+                {field: 'kladr', caption: 'КЛАДР',    size: 10},
+                {field: 'kad_n', caption: 'Кадастр',    size: 10},
             ],
             
             postData: {data: {uuid_org: $_REQUEST.id}},
