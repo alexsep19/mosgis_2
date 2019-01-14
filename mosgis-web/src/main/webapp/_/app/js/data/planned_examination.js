@@ -28,6 +28,8 @@ define ([], function () {
                 data.item = d.item
 
                 data.item.year = data.item['plan.year']
+                data.item.sign = data.item['plan.sign']
+                data.item.shouldberegistered = data.item['plan.shouldberegistered']
 
                 data.active_tab = localStorage.getItem ('planned_examination.active_tab') || 'planned_examination_common'
 

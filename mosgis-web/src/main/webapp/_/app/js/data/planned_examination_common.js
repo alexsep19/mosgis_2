@@ -53,7 +53,7 @@ define ([], function () {
 
     } 
     
-    $_DO.delete_check_plan_common = function (e) {   
+    $_DO.delete_planned_examination_common = function (e) {   
         if (!confirm ('Удалить эту запись, Вы уверены?')) return        
         query ({type: 'planned_examinations', action: 'delete'}, {}, reload_page)
     }

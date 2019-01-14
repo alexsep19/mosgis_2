@@ -43,6 +43,7 @@ public class PlannedExamination extends EnTable {
         PROSECUTORAGREEMENTINFORMATION  (Type.STRING, 2000, null, "Информация о согласовании проведения проверки с органами прокуратуры"),
         
         SUBJECT_LABEL                   (Type.STRING, null, "Наименование субъекта проверки"),
+        REGULATOR_LABEL                 (Type.STRING, null, "Наименование регулятора проверки"),
         
         ID_LOG                          (PlannedExaminationLog.class, "Последнее событие редактирования")
 
