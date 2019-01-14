@@ -1,14 +1,17 @@
 define ([], function () {
 
-    //function recalc () {
+    function recalc () {
 
-    //    var $reg_num = $('#uriregistrationplannumber')
-    //    var v = w2ui ['check_plan_form'].values ()
+        var shouldberegistered = clone ($('body').data ('data')).item.shouldberegistered
+        var $reg_num = $('#uriregistrationnumber')
 
-    //    if (!v.shouldberegistered) { $reg_num.prop ('disabled', true) }
-    //    else { $reg_num.prop ('disabled', false) }
+        if (!shouldberegistered) { 
+            $reg_num.prop ('disabled', true)
+            $reg_num.prop ('placeholder', 'План не должен быть зарегистрирован в ЕРП')
+        }
+        else { $reg_num.prop ('disabled', false) }
 
-    //}
+    }
 
     return function (data, view) {
 
@@ -28,8 +31,7 @@ define ([], function () {
                     {name: 'code_vc_nsi_71', type: 'list', options: {items: data.vocs.vc_nsi_71.items}},
                 ],
 
-                //onChange: function (e) { if (e.target == 'shouldberegistered') { e.done (recalc) } },
-                //onRender: function (e) { e.done (setTimeout (recalc, 100)) }
+                onRender: function (e) { e.done (setTimeout (recalc, 100)) }
 
             })
 
