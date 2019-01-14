@@ -25,6 +25,8 @@ define ([], function () {
 
         if (!v.code_vc_nsi_65) die ('code_vc_nsi_65', 'Пожалуйста, укажите вид осуществления контрольной деятельности')
         if (!v.code_vc_nsi_71) die ('code_vc_nsi_71', 'Пожалуйста, укажите форму проведения проверки')
+
+        v.check_plan_uuid = $_REQUEST.id
         
         var tia = {type: 'planned_examinations'}
         tia.id = form.record.id
@@ -32,7 +34,7 @@ define ([], function () {
         
         var done = reload_page
 
-        var grid = w2ui ['planned_examinations_grid']
+        var grid = w2ui ['check_plan_examinations_grid']
 
         query (tia, {data: v}, function (data) {
         
@@ -52,17 +54,7 @@ define ([], function () {
         
         data.record = $_SESSION.delete ('record')
         
-        query ({type: 'planned_examinations', part: 'vocs', id: undefined}, {}, function (d) {
-
-            add_vocabularies (d, d)
-
-            data['vocs'] = d
-
-            $('body').data ('data', data)
-
-            done (data)
-
-        }) 
+        done (data)
 
     }
 

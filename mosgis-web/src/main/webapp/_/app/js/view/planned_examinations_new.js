@@ -34,8 +34,8 @@ define ([], function () {
                     {name: 'numberinplan', type: 'text'},
                     {name: 'uriregistrationnumber', type: 'text'},
                     {name: 'uriregistrationdate', type: 'date'},
-                    {name: 'code_vc_nsi_65', type: 'list', options: {items: data.vocs.vc_nsi_65.items}},
-                    {name: 'code_vc_nsi_71', type: 'list', options: {items: data.vocs.vc_nsi_71.items}},
+                    {name: 'code_vc_nsi_65', type: 'list', options: {items: data.vc_nsi_65.items}},
+                    {name: 'code_vc_nsi_71', type: 'list', options: {items: data.vc_nsi_71.items}},
                 ],
 
                 onRender: function (e) { e.done (setTimeout (recalc, 100)) }

@@ -7,7 +7,11 @@ import javax.ejb.TransactionAttributeType;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.ws.rs.InternalServerErrorException;
+import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.CheckPlan;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -100,6 +104,22 @@ public class CheckPlansImpl extends BaseCRUD<CheckPlan> implements CheckPlansLoc
         JsonObjectBuilder jb = Json.createObjectBuilder ();
         
         VocAction.addTo (jb);
+        
+        final MosGisModel model = ModelHolder.getModel ();
+
+        try (DB db = model.getDb ()) {
+            
+            db.addJsonArrays (jb,
+                    
+                NsiTable.getNsiTable (65).getVocSelect (),
+                NsiTable.getNsiTable (71).getVocSelect ()
+                    
+            );
+
+        }
+        catch (Exception ex) {
+            throw new InternalServerErrorException (ex);
+        }
 
         return jb.build ();
         
