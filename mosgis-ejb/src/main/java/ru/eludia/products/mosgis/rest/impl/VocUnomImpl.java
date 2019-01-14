@@ -25,10 +25,10 @@ public class VocUnomImpl extends Base implements VocUnomLocal {
     public JsonObject select (JsonObject p) {return fetchData ((db, job) -> {
         
         Select select = db.getModel ()
-            .select  (VocUnom.class, "AS root", "unom AS id", "*")
+            .select  (VocUnom.class, "AS root", "*", "unom AS id")
             .toMaybeOne (VocBuilding.class, "AS b", "label").on ()
             .toMaybeOne (House.class, "AS h", "uuid", "is_condo").on ("root.fiashouseguid=h.fiashouseguid")
-            .orderBy ("unom")
+            .orderBy ("root.unom")
             .limit (0, 50);
         
         String search = p.getString ("search", "");

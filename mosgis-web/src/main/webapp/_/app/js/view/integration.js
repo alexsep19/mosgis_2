@@ -19,6 +19,7 @@ define ([], function () {
 
                         tabs: [
                             {id: 'senders', caption: 'Внешние ИС'},
+                            {id: 'voc_unom', caption: 'Соответствие адресов БТИ и ФИАС'},
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_integration
