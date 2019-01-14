@@ -407,48 +407,50 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
         Map<String, Field> m = new HashMap <> ();
         
         Fields (List<NsiElementType> els) {
+            for (NsiElementType el: els) scanElement (el);            
+        }
+
+        private void scanElement (NsiElementType el) {
             
-            for (NsiElementType el: els) {
+            Set <String> seen = new HashSet ();
+            
+            for (NsiElementFieldType fl: el.getNsiElementField ()) {
                 
-                Set <String> seen = new HashSet ();
+                final String name = fl.getName ();
                 
-                for (NsiElementFieldType fl: el.getNsiElementField ()) {
+                Field f;
+                
+                if (m.containsKey (name)) {
+                    f = m.get (name);
+                    if (seen.contains (name)) f.setMul (true);
+                }
+                else {
                     
-                    final String name = fl.getName ();
-                    
-                    Field f;
-                    
-                    if (m.containsKey (name)) {
-                        f = m.get (name);
-                        if (seen.contains (name)) f.setMul (true);
+                    try {
+                        f = new Field (fl);
                     }
-                    else {
-                        
-                        try {
-                            f = new Field (fl);
-                        }
-                        catch (BizarreFieldException ex) {                                   // NPE для NsiRef без RegistryNumber                            
-                            logger.log (Level.WARNING, el.getGUID () + ": " + ex.getMessage ());
-                            continue;
-                        }
-                        
-                        m.put (name, f);
-                        l.add (f);
-                        
-                    }
-                    if (fl instanceof NsiElementNsiRefFieldType) {
-                        NsiElementNsiRefFieldType.NsiRef nsiRef = ((NsiElementNsiRefFieldType) fl).getNsiRef ();
-                        if (nsiRef == null || !nsiRef.getNsiItemRegistryNumber ().toString ().equals (nsiRef.getRef ().getCode ())) f.setNotNsiListRef (true);
+                    catch (BizarreFieldException ex) {                                   // NPE для NsiRef без RegistryNumber
+                        logger.log (Level.WARNING, el.getGUID () + ": " + ex.getMessage ());
+                        continue;
                     }
                     
-                    for (Field i: l) i.checkForListRef ();
-                        
-                    seen.add (name);
+                    m.put (name, f);
+                    l.add (f);
                     
                 }
+                if (fl instanceof NsiElementNsiRefFieldType) {
+                    NsiElementNsiRefFieldType.NsiRef nsiRef = ((NsiElementNsiRefFieldType) fl).getNsiRef ();
+                    if (nsiRef == null || !nsiRef.getNsiItemRegistryNumber ().toString ().equals (nsiRef.getRef ().getCode ())) f.setNotNsiListRef (true);
+                }
+                
+                for (Field i: l) i.checkForListRef ();
+                
+                seen.add (name);
                 
             }
-            
+
+            for (NsiElementType childElement: el.getChildElement ()) scanElement (childElement);
+
         }
 
         JsonArray toJson () {
