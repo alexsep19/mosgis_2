@@ -47,7 +47,17 @@ define ([], function () {
         
         data.record = $_SESSION.delete ('record')
         
-        done (data)
+        query ({type: 'planned_examinations', part: 'vocs', id: undefined}, {}, function (d) {
+
+            add_vocabularies (d, d)
+
+            data['vocs'] = d
+
+            $('body').data ('data', data)
+
+            done (data)
+
+        }) 
 
     }
 

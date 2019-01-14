@@ -3,8 +3,15 @@ package ru.eludia.products.mosgis.rest.impl;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.ws.rs.InternalServerErrorException;
+import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.tables.PlannedExamination;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
@@ -77,9 +84,30 @@ public class PlannedExaminationsImpl extends BaseCRUD<PlannedExamination> implem
 
     @Override
     public JsonObject getVocs() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        JsonObjectBuilder jb = Json.createObjectBuilder ();
+        
+        VocAction.addTo (jb);
+        
+        final MosGisModel model = ModelHolder.getModel ();
+
+        try (DB db = model.getDb ()) {
+            
+            db.addJsonArrays (jb,
+                    
+                NsiTable.getNsiTable (65).getVocSelect (),
+                NsiTable.getNsiTable (68).getVocSelect (),
+                NsiTable.getNsiTable (71).getVocSelect ()
+                    
+            );
+
+        }
+        catch (Exception ex) {
+            throw new InternalServerErrorException (ex);
+        }
+
+        return jb.build ();
+        
     }
 
-    
-    
 }
