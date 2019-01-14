@@ -1,6 +1,42 @@
 define ([], function () {
 
-    //var plan_status = ['Проект', 'Подписан']
+    var form_name = 'planned_examination_common_form'
+
+    $_DO.open_orgs_popup = function (e) {
+    
+        var f = w2ui [form_name]
+        
+        var saved = {
+            data: clone ($('body').data ('data')),
+            record: clone (f.record)
+        }
+        
+        function done () {
+
+            $('body').data ('data', saved.data)
+
+            $_SESSION.set ('record', saved.record)
+
+            use.block ('planned_examination_common')
+
+        }
+    
+        $('body').data ('voc_organizations_popup.callback', function (r) {
+
+            if (!r) return done ()
+
+            console.log (r)
+
+            saved.record.regulator_uuid = r.uuid
+            saved.record.regulator_label = r.label
+            
+            done ()
+
+        })
+
+        use.block ('voc_organizations_popup')
+
+    }
 
     var form_name = 'planned_examination_common_form'    
 

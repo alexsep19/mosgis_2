@@ -102,7 +102,14 @@ define ([], function () {
                 {name: 'prosecutoragreementinformation', type: 'textarea'}
             ],
 
-            //onRender: function (e) { e.done (setTimeout (recalc, 100)) },
+            onRefresh: function (e) {e.done (function () {
+                    // $_SESSION.delete (...)
+                    console.log ($_SESSION.get ('record'))
+                
+                    clickOn ($('#regulator_label'), $_DO.open_orgs_popup)
+                    clickOn ($('#subject_label'), $_DO.open_orgs_popup)
+                
+            })},
 
             focus: -1,
             

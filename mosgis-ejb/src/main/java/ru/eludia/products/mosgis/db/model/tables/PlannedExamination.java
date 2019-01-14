@@ -95,6 +95,17 @@ public class PlannedExamination extends EnTable {
                 + "END; "
         );
         
+        trigger ("BEFORE INSERT OR UPDATE", ""
+                + "BEGIN "
+                    + "IF :NEW.regulator_uuid IS NOT NULL THEN "
+                        + "SELECT org.label "
+                        + "INTO :NEW.regulator_label "
+                        + "FROM vc_orgs org "
+                        + "WHERE org.orgrootentityguid = :NEW.regulator_uuid; "
+                    + "END IF; "
+                + "END;"
+        );
+        
     }
     
 }
