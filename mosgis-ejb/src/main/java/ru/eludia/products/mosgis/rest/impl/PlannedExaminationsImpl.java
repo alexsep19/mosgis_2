@@ -13,6 +13,7 @@ import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.CheckPlan;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.tables.PlannedExamination;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -80,9 +81,15 @@ public class PlannedExaminationsImpl extends BaseCRUD<PlannedExamination> implem
     });}
 
     @Override
-    public JsonObject getItem(String id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    public JsonObject getItem (String id) {return fetchData ((db, job) -> {
+        
+        JsonObject item = db.getJsonObject(ModelHolder.getModel ().get (PlannedExamination.class, id, "AS root", "*")
+                .toOne(CheckPlan.class, "AS plan", "shouldberegistered", "sign").on ()
+        );
+        
+        job.add ("item", item);
+        
+    });}
 
     @Override
     public JsonObject getVocs() {
