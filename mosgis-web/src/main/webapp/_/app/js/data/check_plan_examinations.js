@@ -9,6 +9,8 @@ define ([], function () {
 
 	$_DO.delete_check_plan_examination = function (e) {
 
+        if (!confirm ('Удалить проверку?')) return
+
 		var grid = w2ui ['check_plan_examinations_grid']
     
     	var id = grid.getSelection () [0]
