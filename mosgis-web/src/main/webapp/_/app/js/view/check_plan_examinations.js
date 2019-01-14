@@ -1,5 +1,15 @@
 define ([], function () {
 
+    function perms () {
+
+        var signed = clone ($('body').data ('data')).item.sign
+
+        console.log (signed)
+
+        return $_USER.role.nsi_20_4 && !signed
+
+    }
+
     function recalcToolbar (e) {e.done (function () {
 
         var g = w2ui ['check_plan_examinations_grid']
@@ -24,15 +34,15 @@ define ([], function () {
 
             show: {
                 toolbar: true,
-                toolbarAdd: true,
                 toolbarInput: false,
                 footer: true,
             },
 
             toolbar: {
                 items: [
-                    {type: 'button', id: 'deleteButton', caption: 'Удалить', onClick: $_DO.delete_check_plan_examinations, icon: 'w2ui-icon-cross', disabled: true},
-                ]
+                    {type: 'button', id: 'createButton', caption: 'Добавить', onClick: $_DO.create_check_plan_examination, icon: 'w2ui-icon-plus', off: !perms ()},
+                    {type: 'button', id: 'deleteButton', caption: 'Удалить', onClick: $_DO.delete_check_plan_examination, icon: 'w2ui-icon-cross', disabled: true, off: !perms ()},
+                ].filter (not_off)
             },
 
             columns: [
