@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.util.Map;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -9,6 +10,7 @@ import javax.json.JsonObjectBuilder;
 import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -109,5 +111,22 @@ public class PlannedExaminationsImpl extends BaseCRUD<PlannedExamination> implem
         return jb.build ();
         
     }
+    
+    @Override
+    public JsonObject doCreate (JsonObject p, User user) {return doAction ((db, job) -> {
+
+        final Table table = getTable ();
+
+        Map<String, Object> data = getData (p);
+        
+        data.put (PlannedExamination.c.REGULATOR_UUID.lc (), user.getUuidOrg ());
+
+        Object insertId = db.insertId (table, data);
+        
+        job.add ("id", insertId.toString ());
+        
+        logAction (db, user, insertId, VocAction.i.CREATE);
+
+    });}
 
 }

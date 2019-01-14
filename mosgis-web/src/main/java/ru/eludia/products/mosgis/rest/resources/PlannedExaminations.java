@@ -14,6 +14,13 @@ import ru.eludia.products.mosgis.rest.misc.EJBResource;
 @Path("planned_examinations")
 public class PlannedExaminations extends EJBResource <PlannedExaminationsLocal> {
 
+    private void checkCreate () {
+        
+        if (!securityContext.isUserInRole ("nsi_20_4"))
+            throw new ValidationException ("foo", "Доступ запрещён");
+        
+    }
+    
     private void check () {
         
         if (!securityContext.isUserInRole("nsi_20_4") &&
@@ -34,7 +41,7 @@ public class PlannedExaminations extends EJBResource <PlannedExaminationsLocal> 
     @Path("create") 
     @Produces (APPLICATION_JSON)
     public JsonObject doCreate (JsonObject p) {
-        check ();
+        checkCreate ();
         return back.doCreate (p, getUser ());
     }
     
