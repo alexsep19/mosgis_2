@@ -84,6 +84,16 @@ public class PlannedExamination extends EnTable {
                 + "END;"
         );
         
+        trigger ("BEFORE INSERT", ""
+                + "DECLARE "
+                    + "PRAGMA AUTONOMOUS_TRANSACTION; "
+                + "BEGIN "
+                    + "FOR i IN (SELECT numberinplan FROM tb_planned_examinations WHERE check_plan_uuid = :NEW.check_plan_uuid AND numberinplan = :NEW.numberinplan AND is_deleted = 0) LOOP "
+                        + "raise_application_error (-20000, 'Проверка с №' || i.numberinplan || ' уже существует для этого плана. Операция отменена.'); "
+                    + "END LOOP; "
+                + "END; "
+        );
+        
     }
     
 }
