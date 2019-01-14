@@ -9,7 +9,6 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -111,9 +110,7 @@ public class Unom implements UnomMBean {
                         if (line == null) break;
                         
                         String[] parts = line.split (";");
-                                                
-System.out.println (line);
-                        
+                                                                        
                         Map<String, Object> h = DB.HASH (
                             c.UNOM, parts [0],
                             c.KLADR, parts [1],
@@ -121,7 +118,7 @@ System.out.println (line);
                             c.KAD_N, parts [3]
                         );
                         
-                        db.upsert (VocUnom.class, h, c.UNOM.lc ());
+                        db.upsert (VocUnom.class, h);
                         
                     }
                     

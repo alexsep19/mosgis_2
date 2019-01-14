@@ -3,10 +3,10 @@ package ru.eludia.products.mosgis.db.model.voc;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
+import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
-import ru.eludia.products.mosgis.db.model.EnTable;
 
-public class VocUnom extends EnTable {
+public class VocUnom extends Table {
 
     public enum c implements ColEnum {
         
@@ -40,7 +40,8 @@ public class VocUnom extends EnTable {
 
         cols (c.class);
 
-        key ("unom", "unom");
+        pk (c.UNOM);
+        
         key ("fiashouseguid", "fiashouseguid");
         
         trigger ("BEFORE INSERT OR UPDATE", 

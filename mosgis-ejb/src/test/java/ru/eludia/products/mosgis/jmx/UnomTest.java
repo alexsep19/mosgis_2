@@ -11,7 +11,6 @@ public class UnomTest  extends BaseTest {
     public UnomTest () throws Exception {
     }
 
-    @Ignore
     @Test (expected = Test.None.class)
     public void testImport () throws Exception {
                 
