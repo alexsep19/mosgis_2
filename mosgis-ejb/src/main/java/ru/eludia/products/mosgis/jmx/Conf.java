@@ -230,6 +230,16 @@ public class Conf implements ConfMBean, ConfLocal {
     }
 
     @Override
+    public String getPathUnom () {
+        return get (VocSetting.i.PATH_UNOM);
+    }
+    
+    @Override
+    public void setPathUnom (String s) {
+        set (VocSetting.i.PATH_UNOM, s);
+    }
+
+    @Override
     public String getWsGisOrgCommonUrl () {
         return get (VocSetting.i.WS_GIS_ORG_COMMON_URL);
     }
