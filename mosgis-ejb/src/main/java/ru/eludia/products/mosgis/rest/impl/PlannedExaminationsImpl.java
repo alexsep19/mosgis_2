@@ -84,7 +84,7 @@ public class PlannedExaminationsImpl extends BaseCRUD<PlannedExamination> implem
     public JsonObject getItem (String id) {return fetchData ((db, job) -> {
         
         JsonObject item = db.getJsonObject(ModelHolder.getModel ().get (PlannedExamination.class, id, "AS root", "*")
-                .toOne(CheckPlan.class, "AS plan", "shouldberegistered", "sign").on ()
+                .toOne(CheckPlan.class, "AS plan", "shouldberegistered", "sign", "year").on ()
         );
         
         job.add ("item", item);
