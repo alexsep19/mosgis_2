@@ -38,6 +38,9 @@ public class Conf implements ConfMBean, ConfLocal {
     
     @EJB
     protected UUIDPublisher UUIDPublisher;
+    
+    @EJB
+    protected TTLWatchMBean tTLWatchMBean;
 
     @Resource (mappedName = "mosgis.confTopic")
     Topic confTopic;
@@ -120,9 +123,16 @@ public class Conf implements ConfMBean, ConfLocal {
             db.forEach (ModelHolder.getModel ().select (Setting.class, "id", "value"), rs -> {
            
                 final String id = rs.getString ("id");                
-                final String value = rs.getString ("value");
+                String value = rs.getString ("value");
                 
-                settings.put (id, value == null ? "" : value);
+                if (value == null) value = "";
+                
+                String oldValue = settings.put (id, value);
+                
+                if (VocSetting.i.WS_GIS_ASYNC_TTL.getId ().equals (id) && !value.equals (oldValue)) {
+                    logger.info (VocSetting.i.WS_GIS_ASYNC_TTL + " changed from " + oldValue + " to " + value + ", calling schedule ()");
+                    tTLWatchMBean.schedule ();
+                }
   
                 logger.log (Level.INFO, "Loaded {0}", id);
                 
