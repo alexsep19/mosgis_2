@@ -3,6 +3,7 @@ package ru.eludia.products.mosgis.jmx;
 import java.lang.management.ManagementFactory;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,9 +11,11 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
-import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.ejb.Timeout;
+import javax.ejb.Timer;
+import javax.ejb.TimerService;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.jms.Queue;
@@ -34,6 +37,9 @@ import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 @Singleton
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class TTLWatch implements TTLWatchMBean {
+    
+    @Resource
+    TimerService timerService;    
 
     private ObjectName objectName = null;
     private MBeanServer platformMBeanServer;
@@ -52,6 +58,7 @@ public class TTLWatch implements TTLWatchMBean {
             objectName = new ObjectName ("ru.eludia:Name=MosGis,Type=TTLWatch");
             platformMBeanServer = ManagementFactory.getPlatformMBeanServer ();
             platformMBeanServer.registerMBean (this, objectName);
+//            reschelule ();
         } 
         catch (Exception e) {
             throw new IllegalStateException ("Problem during registration of Monitoring into JMX:" + e);
@@ -114,13 +121,11 @@ public class TTLWatch implements TTLWatchMBean {
 
             Col statusCol = getStatusCol (entityTable); if (statusCol == null) continue;
 
-            db.forEach (
-                    
-                m
+            db.forEach (m
                     .select (entityTable, "AS root", "uuid")
                     .where (statusCol.getName () + " IN", progressStatus)
                     .toOne  (logTable, "AS log")
-                        .where ("ts <", new java.sql.Timestamp (System.currentTimeMillis () - 1000 * 60 * Conf.getInt (VocSetting.i.WS_GIS_ASYNC_TTL)))
+                        .where ("ts <", new java.sql.Timestamp (System.currentTimeMillis () - getPeriodMs ()))
                         .on ("root.id_log=log.uuid")
                     .limit (0, cnt [0])
                                         
@@ -135,9 +140,12 @@ public class TTLWatch implements TTLWatchMBean {
         }
         
     }
+
+    private static long getPeriodMs () {
+        return 1000L * 60 * Conf.getInt (VocSetting.i.WS_GIS_ASYNC_TTL);
+    }
     
-    @Override
-    @Schedule (hour = "*", minute = "*", second = "0", persistent = false)
+    @Timeout
     public void checkTables () {
         
         Model m = ModelHolder.getModel ();
@@ -173,5 +181,27 @@ public class TTLWatch implements TTLWatchMBean {
         }
         
     }           
+
+    @Override
+    public void schedule () {
+        
+        logger.info ("Scheduling...");
+        
+        try {                        
+            
+            final Collection<Timer> allTimers = timerService.getAllTimers ();
+            
+            if (allTimers != null) for (Timer t: allTimers) if (t != null) t.cancel ();
+            
+        }
+        catch (Exception ex) {
+            logger.log (Level.SEVERE, "Cannot cancel timer", ex);
+        }        
+        
+        Timer timer = timerService.createIntervalTimer (0, getPeriodMs (), null);
+        
+        logger.info ("Scheduled: " + timer);
+        
+    }
 
 }

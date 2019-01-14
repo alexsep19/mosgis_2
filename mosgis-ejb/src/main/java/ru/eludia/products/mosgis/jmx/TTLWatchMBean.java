@@ -5,6 +5,6 @@ import javax.ejb.Local;
 @Local
 public interface TTLWatchMBean {
     
-    public void checkTables ();
+    public void schedule ();
 
 }
