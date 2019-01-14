@@ -34,7 +34,7 @@ public class VocUnomImpl extends Base implements VocUnomLocal {
             .toMaybeOne (VocBuilding.class, "AS b", "label").on ()
             .toMaybeOne (House.class, "AS h", "uuid", "is_condo").on ("root.fiashouseguid=h.fiashouseguid")
             .orderBy ("root.unom")
-            .limit (0, 50);
+            .limit (p.getInt ("offset"), p.getInt ("limit"));
         
         final Search search = Search.from (p);
 

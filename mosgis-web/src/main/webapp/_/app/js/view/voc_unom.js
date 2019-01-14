@@ -16,6 +16,7 @@ define ([], function () {
 
             columns: [                
                 {field: 'unom', caption: 'UNOM',    size: 10},
+                {field: 'id_status', caption: 'Статус', size: 10, voc: data.vc_unom_status},
                 {field: 'fias', caption: 'ФИАС (исходный)',    size: 36},
                 {field: 'fiashouseguid', caption: 'ФИАС (уточнённый)',    size: 36},
                 {field: 'b.label', caption: 'Адрес',    size: 50},
