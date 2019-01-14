@@ -25,6 +25,7 @@ import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.db.model.voc.VocUnom;
 import ru.eludia.products.mosgis.db.model.voc.VocUnom.c;
+import ru.eludia.products.mosgis.db.model.voc.VocUnomStatus;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 
 @Startup
@@ -130,7 +131,8 @@ System.out.println (line);
             
         }
         
-logger.info ("importing " + file);
+        db.d0 ("UPDATE vc_unom SET id_status = " + VocUnomStatus.i.DUPLICATED_FIAS + " WHERE fiashouseguid IN (SELECT fiashouseguid FROM vc_unom WHERE fiashouseguid IS NOT NULL GROUP BY fiashouseguid HAVING COUNT(fiashouseguid) > 1)");
+        
     }
     
 }

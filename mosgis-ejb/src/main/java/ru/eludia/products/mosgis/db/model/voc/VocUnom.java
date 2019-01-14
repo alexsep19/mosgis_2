@@ -15,6 +15,7 @@ public class VocUnom extends EnTable {
         FIAS          (Type.STRING,  null,   "Исходный код ФИАС"),
         KAD_N         (Type.STRING,  null,   "Кадастровый номер"),
         FIASHOUSEGUID (VocBuilding.class,    "Код ФИАС, выверенный по справочнику"),
+        ID_STATUS     (VocUnomStatus.class,  "Статус"),
         ;
 
         @Override
@@ -41,6 +42,27 @@ public class VocUnom extends EnTable {
 
         key ("unom", "unom");
         key ("fiashouseguid", "fiashouseguid");
+        
+        trigger ("BEFORE INSERT OR UPDATE", 
+                
+            "BEGIN "
+                    
+                + "IF :NEW.ID_STATUS = " + VocUnomStatus.i.DUPLICATED_FIAS + " THEN RETURN; END IF; "
+                    
+                + "IF :NEW.FIAS IS NULL THEN :NEW.ID_STATUS := " + VocUnomStatus.i.EMPTY_FIAS + "; ELSE BEGIN "
+                        
+                    + "IF NOT REGEXP_LIKE (UPPER(:NEW.FIAS), '^([A-F0-9]{8})-([A-F0-9]{4})-([A-F0-9]{4})-([A-F0-9]{4})-([A-F0-9]{12})$') THEN :NEW.ID_STATUS := " + VocUnomStatus.i.INVALID_FIAS + "; ELSE BEGIN "                            
+                        + "SELECT houseguid INTO :NEW.FIASHOUSEGUID FROM vc_buildings WHERE houseguid = HEXTORAW(REPLACE(UPPER(:NEW.FIAS), '-', ''));"
+                        + ":NEW.ID_STATUS := " + VocUnomStatus.i.OK + "; "        
+                        + "EXCEPTION WHEN NO_DATA_FOUND THEN :NEW.ID_STATUS := " + VocUnomStatus.i.UNKNOWN_FIAS + "; "                            
+                    + "END; END IF;"
+                        
+                + "END; END IF;"
+                    
+            + "END;"
+                
+        );
+        
         
     }
 
