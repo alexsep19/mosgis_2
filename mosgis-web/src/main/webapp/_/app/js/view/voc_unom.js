@@ -29,7 +29,11 @@ define ([], function () {
 
             url: '/mosgis/_rest/?type=voc_unom',
                         
-//            onDblClick: function (e) {openTab ('/voc_unom/' + e.recid)},
+            onDblClick: function (e) {
+                var r = this.get (e.recid)
+                var id = r ['h.uuid']
+                if (id) openTab ('/house/' + id)
+            },
 
         }).refresh ();
 

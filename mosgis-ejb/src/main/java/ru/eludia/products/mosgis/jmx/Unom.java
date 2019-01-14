@@ -23,6 +23,7 @@ import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.db.model.voc.VocUnom;
+import ru.eludia.products.mosgis.db.model.voc.VocUnomBuf;
 import ru.eludia.products.mosgis.db.model.voc.VocUnom.c;
 import ru.eludia.products.mosgis.db.model.voc.VocUnomStatus;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -103,25 +104,29 @@ public class Unom implements UnomMBean {
                     
                     br.readLine ();
                     
-                    while (true) {
+                    try (DB.RecordBuffer b = db.new TableUpsertBuffer (VocUnom.class, 100, VocUnomBuf.class, 1000)) {
+                        
+                        while (true) {
 
-                        String line = br.readLine ();
-                        
-                        if (line == null) break;
-                        
-                        String[] parts = line.split (";");
-                                                                        
-                        Map<String, Object> h = DB.HASH (
-                            c.UNOM, parts [0],
-                            c.KLADR, parts [1],
-                            c.FIAS, parts [2],
-                            c.KAD_N, parts [3]
-                        );
-                        
-                        db.upsert (VocUnom.class, h);
+                            String line = br.readLine ();
+
+                            if (line == null) break;
+
+                            String[] parts = line.split (";");
+
+                            Map<String, Object> h = DB.HASH (
+                                c.UNOM, parts [0],
+                                c.KLADR, parts [1],
+                                c.FIAS, parts [2],
+                                c.KAD_N, parts [3]
+                            );
+
+                            b.add (h);
+
+                        }
                         
                     }
-                    
+                                        
                 }
                 
             }
