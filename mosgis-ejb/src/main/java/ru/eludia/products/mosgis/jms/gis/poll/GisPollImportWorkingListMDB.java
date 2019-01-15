@@ -108,7 +108,7 @@ public class GisPollImportWorkingListMDB  extends GisPollMDB {
                 .select (WorkingListItem.class, "uuid")
                 .where (WorkingListItem.c.UUID_WORKING_LIST, r.get ("r.uuid"))
                 .where ("is_deleted", 0)
-                .toOne (OrganizationWork.class, "code_vc_nsi_56 AS code").on ()
+                .toOne (OrganizationWork.class, "uniquenumber AS code").on ()
             , "code");
             
 logger.info ("code2uuid = " + code2uuid);
