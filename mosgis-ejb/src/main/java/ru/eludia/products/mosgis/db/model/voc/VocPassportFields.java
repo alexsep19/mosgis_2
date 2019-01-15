@@ -56,6 +56,9 @@ public class VocPassportFields extends View {
         col   ("id_dt",      Type.STRING,                                      "Код поля даты (для документов)");        
         col   ("id_no",      Type.STRING,                                      "Код поля номера (для документов)");
         col   ("doc_label",  Type.STRING,                                      "Краткое наименование типа документа");
+        col   ("is_for_uo",  Type.BOOLEAN,                                     "1 для полей, которые разрешено редактировать УО, иначе 0");
+        col   ("is_for_oms", Type.BOOLEAN,                                     "1 для полей, которые разрешено редактировать ОМС, иначе 0");
+        col   ("is_for_esp", Type.BOOLEAN,                                     "1 для полей, которые разрешено редактировать ЕСП, иначе 0");
 
     }
 
@@ -72,7 +75,10 @@ public class VocPassportFields extends View {
             "  , f.f_38ca0af80c note" +
             "  , d.id_dt" +
             "  , d.id_no" +
-            "  , d.label doc_label"
+            "  , d.label doc_label" +
+            "  , r.is_for_uo" +
+            "  , r.is_for_oms" +
+            "  , r.is_for_esp"
         );
         
         for (PassportKind i: PassportKind.values ()) {
@@ -105,6 +111,7 @@ public class VocPassportFields extends View {
             "  LEFT JOIN " + getName (VocRdColType.class) +  " t ON f.f_82f23dfb08 = t.gislabel" +
             "  LEFT JOIN " + getName (VocOkei.class)      +  " u ON f.f_c6e5a29665 = u.code" +
             "  LEFT JOIN " + getName (VocPassportDocFields.class)  + " d ON f.code = d.id" +
+            "  LEFT JOIN " + getName (VocNsi197Roles.class)  + " r ON f.code = r.code" +
             " WHERE " +
             "  f.isactual=1");
         
