@@ -78,18 +78,22 @@ public class SupplyResourceContractImpl extends BaseCRUD<SupplyResourceContract>
         final Model m = ModelHolder.getModel ();
 
         Select select = m.select (ActualSupplyResourceContract.class, "*")
-            .orderBy (SupplyResourceContract.c.SIGNINGDATE.lc ())
+            .orderBy (SupplyResourceContract.c.SIGNINGDATE.lc() + " DESC")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
         applySearch (Search.from (p), select);
 
         JsonObject data = p.getJsonObject ("data");
 
-        String k = SupplyResourceContract.c.UUID_ORG.lc ();
+        String k = SupplyResourceContract.c.UUID_ORG.lc();
         String v = data.getString (k, null);
         if (DB.ok (v)) select.and (k, v);
 
-        if (data.containsKey ("is_oms")) select.and ("oktmo", m.select (VocUserOktmo.class, "oktmo").where ("uuid_user", user.getId ()));
+        String k_c = SupplyResourceContract.c.UUID_ORG_CUSTOMER.lc();
+        String v_c = data.getString(k_c, null);
+        if (DB.ok(v_c)) {
+            select.and(k_c, v_c);
+        }
 
         db.addJsonArrayCnt (job, select);
 

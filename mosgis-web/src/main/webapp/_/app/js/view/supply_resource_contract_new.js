@@ -48,6 +48,38 @@ define ([], function () {
                         var value = r.id_c_type? r.id_c_type : 0
                         toggle_customer(value)
 
+                        if (w2ui[f].record.id_customer_type.id == 5) {
+
+                            var search = [{
+                                field: "code_vc_nsi_20",
+                                operator: "in",
+                                type: "enum",
+                                value: [
+                                    {
+                                        "id": "1",
+                                        "text": "Управляющая организация"
+                                    },
+                                    {
+                                        "id": "19",
+                                        "text": "Товарищество собственников жилья"
+                                    },
+                                    {
+                                        "id": "20",
+                                        "text": "Жилищный кооператив"
+                                    },
+                                    {
+                                        "id": "21",
+                                        "text": "Иной специализированный потребительский кооператив"
+                                    },
+                                    {
+                                        "id": "22",
+                                        "text": "Жилищно-строительный кооператив"
+                                    }
+                                ]
+                            }]
+                            $_SESSION.set('voc_organization_popup.post_data', {search: search, searchLogic: 'AND'})
+                        }
+
                         clickOn($('span.radio input'), function(){ toggle_customer(this.value) })
                         clickOn($('span.radio span.radio-item'), function (e) {
                             $(this).prev('input').click()
