@@ -1,6 +1,11 @@
 define ([], function () {
 
     $_DO.patch_working_plan_common_plan = function (e) {
+    
+        if (e.value_new > 99) {
+            alert ('Макимальное значение — 99')
+            return e.preventDefault ()
+        }
 
         var data = {
             uuid_working_list_item: e.recid,
