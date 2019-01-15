@@ -2,9 +2,15 @@ package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.io.StringReader;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
@@ -14,13 +20,16 @@ import javax.json.JsonReader;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.HouseLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocNsi197Roles;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
@@ -105,15 +114,19 @@ public class GisPollImportHouseMDB  extends GisPollMDB {
             String commonResultErrors = "";
             
             db.begin ();
+                Set<String> accessDeniedOgfDataCodes = new HashSet<>();
                 for (ImportResult.CommonResult commonResult : commonResultList) {
-                    String err = saveObject(db, objectByTransportGuid, commonResult);
+                    String err = saveObject(db, objectByTransportGuid, commonResult, accessDeniedOgfDataCodes);
                     if (StringUtils.isNotBlank(err)) {
                         if (StringUtils.isNotBlank(commonResultErrors)) commonResultErrors += "\n";
                         commonResultErrors += err;
                     }
                 }
-                if (StringUtils.isNotBlank(commonResultErrors))
+                if (StringUtils.isNotBlank(commonResultErrors)) {
+                    if (!accessDeniedOgfDataCodes.isEmpty())
+                        r.put("accessDeniedOgfDataCodes", accessDeniedOgfDataCodes);
                     throw new FU ("0", commonResultErrors, action.getFailStatus());
+                }
                 
                 db.update (House.class, HASH (
                     "uuid", r.get("house.uuid"),
@@ -161,7 +174,7 @@ public class GisPollImportHouseMDB  extends GisPollMDB {
         
     }
     
-    private String saveObject(DB db, JsonObject objectByTransportGuid, ImportResult.CommonResult commonResult) throws SQLException {
+    private String saveObject(DB db, JsonObject objectByTransportGuid, ImportResult.CommonResult commonResult, Set<String> accessDeniedOgfDataCodes) throws SQLException {
         
         JsonObject object = objectByTransportGuid.getJsonObject(commonResult.getTransportGUID());
         if (object == null) return "Из ГИС ЖКХ вернулся неизвестный идентификатор " + commonResult.getTransportGUID();
@@ -173,6 +186,11 @@ public class GisPollImportHouseMDB  extends GisPollMDB {
             for (CommonResultType.Error error : commonResult.getError()) {
                 if (StringUtils.isNotBlank(err)) err += "; ";
                 err += (error.getErrorCode() + " " + error.getDescription());
+                
+                if("INT004129".equals(error.getErrorCode())) {
+                    String nsi197Codes = error.getDescription().split(":")[1];
+                    accessDeniedOgfDataCodes.addAll(Arrays.stream(nsi197Codes.split(",")).map(String::trim).collect(Collectors.toSet()));
+                }
             }
             
             if (object.containsKey("key"))
@@ -235,6 +253,33 @@ public class GisPollImportHouseMDB  extends GisPollMDB {
                 "uuid",          r.get ("house.uuid"),
                 "id_status_gis", status.getId ()
             ));
+            
+            if(r.containsKey("accessDeniedOgfDataCodes")) {
+                
+                String op = r.get("op").toString();
+                
+                for (String code : (HashSet<String>) r.get("accessDeniedOgfDataCodes")) {
+                    
+                    Map <String, Object> nsiRole = new HashMap<>();
+                    nsiRole.put("code", code);
+                    
+                    switch (op) {
+                        case "importHouseUOData":
+                            nsiRole.put("is_for_uo", 0);
+                            break;
+                        case "importHouseOMSData":
+                            nsiRole.put("is_for_oms", 0);
+                            break;
+                        case "importHouseESPData":
+                            nsiRole.put("is_for_esp", 0);
+                            break;
+                        default:
+                            break;
+                    }
+                        
+                    db.update(VocNsi197Roles.class, nsiRole);
+                }
+            }
             
         }
         
