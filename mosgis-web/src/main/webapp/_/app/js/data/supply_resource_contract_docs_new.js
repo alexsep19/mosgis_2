@@ -22,9 +22,7 @@ define ([], function () {
             data: {
                 uuid_sr_ctr: $_REQUEST.id,
                 description: v.description,
-                id_type: v.id_type,
-                protocolnum: v.protocolnum,
-                protocoldate: v.protocoldate
+                id_type: v.id_type
             },
 
             onprogress: show_popup_progress (file.size),
