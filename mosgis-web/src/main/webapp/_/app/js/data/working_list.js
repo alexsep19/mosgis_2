@@ -77,6 +77,7 @@ define ([], function () {
             function dtIncMonth () {dt.setMonth (dt.getMonth () + 1)}
 
             var ms_to = new Date ((it ['cao.enddate'] || it ['cho.enddate']) + 'Z').getTime ()
+            if (!ms_to) ms_to = new Date (2050, 11, 1)
 
             dt.setDate (1)
 
