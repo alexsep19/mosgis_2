@@ -82,7 +82,8 @@ public class WorkingListItem extends EnTable {
         r.put ("items", db.getList (db.getModel ()
             .select (WorkingListItem.class, "*")
             .toOne (OrganizationWork.class, "elementguid AS w.guid", "uniquenumber AS w.code").on ()
-            .where (WorkingListItem.c.UUID_WORKING_LIST.lc (), r.get ("uuid_object"))                
+            .where (WorkingListItem.c.UUID_WORKING_LIST.lc (), r.get ("uuid_object"))              
+            .and (EnTable.c.IS_DELETED, 0)
         ));
 
     }

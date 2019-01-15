@@ -108,7 +108,7 @@ public class WorkingListLogTest extends BaseTest {
         ));
 
         db.insert (itemTable, HASH (
-            EnTable.c.IS_DELETED, 0,
+            EnTable.c.IS_DELETED, 1,
             "id_log", null,
             WorkingListItem.c.INDEX_, 2,
             WorkingListItem.c.AMOUNT, 3,
@@ -154,7 +154,7 @@ public class WorkingListLogTest extends BaseTest {
         validate (WorkingListLog.toCancelImportWorkingListRequest (r));
     }
     
-    @Ignore    
+//    @Ignore    
     @Test
     public void testInsert () throws SQLException {
 
