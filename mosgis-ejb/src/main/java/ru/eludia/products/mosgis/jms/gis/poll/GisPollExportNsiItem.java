@@ -53,6 +53,7 @@ import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementFieldType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementType;
 import ru.gosuslugi.dom.schema.integration.nsi_common.GetStateResult;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
+import ru.eludia.products.mosgis.db.model.voc.VocNsi197Roles;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisNsiCommonClient;
@@ -332,6 +333,19 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
                 }
             
                 db.upsert (table, records);
+                
+                if (registryNumber == 197) {
+                    
+                    List<Map<String, Object>> recordsWithNewParam = new ArrayList<>();
+                    records.forEach(rec -> {
+                        if (!VocNsi197Roles.NOT_FOR_UO_FIELDS.contains(rec.get("code").toString())) return;
+                        rec.put(VocNsi197Roles.c.IS_FOR_UO.lc(), 0);
+                        recordsWithNewParam.add(rec);
+                    });
+                    
+                    db.upsert(VocNsi197Roles.class, records);
+                    db.upsert(VocNsi197Roles.class, recordsWithNewParam);
+                }
 
                 db.update (OutSoap.class, HASH (
                     "uuid", uuid,

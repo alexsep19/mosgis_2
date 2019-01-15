@@ -78,7 +78,7 @@ public class House extends Passport {
         
         boolean isVirgin = refTables.isEmpty ();
 
-            db.forEach (model.select (VocPassportFields.class, "*"), rs -> {
+            db.forEach (model.select (VocPassportFields.class, "id", "label", "id_type", "is_for_condo", "is_for_cottage", "is_multiple"), rs -> {
 
                 if (rs.getInt ("is_for_condo") != 1 && rs.getInt ("is_for_cottage") != 1) return;
                 

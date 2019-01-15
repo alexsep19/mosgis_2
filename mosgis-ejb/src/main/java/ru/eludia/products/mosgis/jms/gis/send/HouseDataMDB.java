@@ -214,11 +214,34 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
                 .where("orgppaguid", orgPPAGuid),
                 (rs) -> {
                     Map<String, Object> role = db.HASH(rs);
-                    
-                    orgRoles.add(OrgRoles.getByNsiCode((String) role.get("roles.code")));
+                    OrgRoles orgRole = OrgRoles.getByNsiCode((String) role.get("roles.code"));
+                    if (orgRole != null)
+                        orgRoles.add(orgRole);
                 });
         
-        Map <Object, Map <String, Object>> passportFields = db.getIdx(model.select (VocPassportFields.class, "*"));
+        if (orgRoles.isEmpty())
+            throw new IllegalArgumentException ("Method is available only to organizations with roles UO, RSO, OMS, ESP");       
+        
+        OrgRoles orgRole = null;
+        
+        String passportFieldForColumn = "";
+        
+        if (orgRoles.contains(OrgRoles.UO)) {
+            orgRole = OrgRoles.UO;
+            passportFieldForColumn = "is_for_uo";
+        } else if (orgRoles.contains(OrgRoles.OMS)) {
+            orgRole = OrgRoles.OMS;
+            passportFieldForColumn = "is_for_oms";
+        } else if (orgRoles.contains(OrgRoles.ESP)) {
+            orgRole = OrgRoles.ESP;
+            passportFieldForColumn = "is_for_esp";
+        } else if (orgRoles.contains(OrgRoles.RSO)) {
+            orgRole = OrgRoles.RSO;
+        }
+        
+        Map <Object, Map <String, Object>> passportFields = new HashMap<>();
+        if (StringUtils.isNotBlank(passportFieldForColumn))
+            passportFields = db.getIdx(model.select (VocPassportFields.class, "*").where(passportFieldForColumn, 1));
         
         boolean isCondo = TypeConverter.Boolean(r.get("is_condo"));
         boolean hasBlocks =  TypeConverter.Boolean(r.get("hasblocks"));
@@ -255,11 +278,18 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
         String objectByTransportGuidStr = objectByTransportGuid.build().toString();
         r.put("object_by_transport_guid", objectByTransportGuidStr);
         
-        if (orgRoles.contains(OrgRoles.UO)) return wsGisHouseManagementClient.importHouseUOData(orgPPAGuid, messageGUID, r);
-        else if (orgRoles.contains(OrgRoles.OMS)) return wsGisHouseManagementClient.importHouseOMSData(orgPPAGuid, messageGUID, r);
-        else if (orgRoles.contains(OrgRoles.ESP)) return wsGisHouseManagementClient.importHouseESPData(orgPPAGuid, messageGUID, r);
-        else if (orgRoles.contains(OrgRoles.RSO)) return wsGisHouseManagementClient.importHouseRSOData(orgPPAGuid, messageGUID, r);
-        else throw new IllegalArgumentException ("Method is available only to organizations with roles UO, RSO, OMS, ESP");
+        switch (orgRole) {
+            case UO:
+                return wsGisHouseManagementClient.importHouseUOData(orgPPAGuid, messageGUID, r);
+            case OMS:
+                return wsGisHouseManagementClient.importHouseOMSData(orgPPAGuid, messageGUID, r);
+            case ESP:
+                return wsGisHouseManagementClient.importHouseESPData(orgPPAGuid, messageGUID, r);
+            case RSO:
+                return wsGisHouseManagementClient.importHouseRSOData(orgPPAGuid, messageGUID, r);
+            default:
+                throw new IllegalArgumentException ("Method is available only to organizations with roles UO, RSO, OMS, ESP");
+        }
     }
     
     private boolean checkCadastralNumber(String cadastralNumber) {
@@ -540,6 +570,8 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
     }
     
     private void addOGFData (Map<String, Object> r, Map <Object, Map <String, Object>> passportFields, Boolean isCondo) {
+        if (passportFields.isEmpty())
+           return;
         
         List<OGFData> ogfDataList = new ArrayList<>();
         
