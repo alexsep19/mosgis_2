@@ -7,6 +7,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.jms.Queue;
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
@@ -27,6 +28,7 @@ import ru.eludia.products.mosgis.db.model.tables.WorkingPlan;
 import ru.eludia.products.mosgis.db.model.tables.WorkingList;
 import ru.eludia.products.mosgis.db.model.tables.WorkingListItem;
 import ru.eludia.products.mosgis.db.model.tables.WorkingListItemLog;
+import ru.eludia.products.mosgis.db.model.tables.WorkingPlanItem;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
@@ -155,13 +157,7 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
         db.addJsonArrays (job,
 
             NsiTable.getNsiTable (56).getVocSelect (), 
-            
-            m
-                .select  (WorkingPlan.class, "AS plans", "*")
-                .where   (EnTable.c.IS_DELETED.lc (), 0)
-                .where   (WorkingPlan.c.UUID_WORKING_LIST.lc (), id)
-                .orderBy (WorkingPlan.c.YEAR.lc ()),
-
+                        
             m
                 .select     (OrganizationWork.class, "AS org_works", "uuid AS id", "label")
                 .toMaybeOne (VocOkei.class, "AS okei", "national").on ()
@@ -169,6 +165,28 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
                 .and        ("id_status", VocAsyncEntityState.i.OK.getId ())
                 .and        ("is_deleted", 0)
                 .orderBy    ("org_works.label")
+
+        );
+        
+        JsonArray plans = db.getJsonArray (m
+            .select  (WorkingPlan.class, "AS plans", "*")
+            .where   (EnTable.c.IS_DELETED.lc (), 0)
+            .where   (WorkingPlan.c.UUID_WORKING_LIST.lc (), id)
+            .orderBy (WorkingPlan.c.YEAR.lc ())
+        );
+        
+        job.add ("plans", plans);
+        
+        db.addJsonArrays (job, m
+                
+            .select  (WorkingPlanItem.class, "AS plan_items", "*")
+            .where   (EnTable.c.IS_DELETED.lc (), 0)
+            .where   (WorkingPlanItem.c.UUID_WORKING_PLAN.lc (), 
+                plans
+                    .stream ()
+                    .map ((i) -> ((JsonObject) i).getString ("uuid"))
+                    .toArray ()
+            )
 
         );
 
