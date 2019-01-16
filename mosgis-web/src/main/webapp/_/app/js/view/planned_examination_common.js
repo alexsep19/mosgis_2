@@ -51,25 +51,12 @@ define ([], function () {
             name: 'passport_layout',
 
             panels: [
-
-                {type: 'top', size: 640},
-                {type: 'main', size: 200,
-                    tabs: {
-                        tabs:    [
-                        ],
-                        //onClick: $_DO.choose_tab_planned_examination_common
-                    }
-                },
-
-            ],
-
-            onRender: function (e) {
-                this.get ('main').tabs.click (data.active_tab)
-            },
+                {type: 'main', size: 640}
+            ]
 
         });
 
-        var $panel = $(w2ui ['passport_layout'].el ('top'))
+        var $panel = $(w2ui ['passport_layout'].el ('main'))
 
         fill (view, data.item, $panel) 
                 
