@@ -24,11 +24,11 @@ import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.OrganizationWork;
+import ru.eludia.products.mosgis.db.model.tables.ReportingPeriod;
 import ru.eludia.products.mosgis.db.model.tables.WorkingPlan;
 import ru.eludia.products.mosgis.db.model.tables.WorkingList;
 import ru.eludia.products.mosgis.db.model.tables.WorkingListItem;
 import ru.eludia.products.mosgis.db.model.tables.WorkingListItemLog;
-import ru.eludia.products.mosgis.db.model.tables.WorkingPlanItem;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
@@ -179,9 +179,9 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
         
         db.addJsonArrays (job, m
                 
-            .select  (WorkingPlanItem.class, "AS plan_items", "*")
+            .select  (ReportingPeriod.class, "*")
             .where   (EnTable.c.IS_DELETED.lc (), 0)
-            .where   (WorkingPlanItem.c.UUID_WORKING_PLAN.lc (), 
+            .where   (ReportingPeriod.c.UUID_WORKING_PLAN.lc (), 
                 plans
                     .stream ()
                     .map ((i) -> ((JsonObject) i).getString ("uuid"))

@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -19,6 +20,7 @@ import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.WorkingPlan;
 import ru.eludia.products.mosgis.db.model.tables.WorkingPlanLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.tables.ReportingPeriod;
 import ru.eludia.products.mosgis.db.model.tables.WorkingList;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -27,12 +29,13 @@ import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
-import ru.gosuslugi.dom.schema.integration.base.CommonResultType;
 import ru.gosuslugi.dom.schema.integration.services_service_async.Fault;
 import ru.eludia.products.mosgis.db.model.tables.WorkingPlan.c;
+import ru.eludia.products.mosgis.db.model.tables.WorkingPlanItem;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisServicesClient;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
+import ru.gosuslugi.dom.schema.integration.services.ExportWorkingPlanResultType;
 import ru.gosuslugi.dom.schema.integration.services.GetStateResult;
 
 @MessageDriven(activationConfig = {
@@ -92,32 +95,49 @@ public class GisPollExportWorkingPlanMDB  extends GisPollMDB {
             
             if (errorMessage != null) throw new GisPollException (errorMessage);            
             
-            final List<CommonResultType> commonResult = state.getImportResult ();                        
+            List<ExportWorkingPlanResultType> exportWorkingPlanResult = state.getExportWorkingPlanResult ();            
+                        
+            if (exportWorkingPlanResult == null || exportWorkingPlanResult.isEmpty ()) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
             
-            if (commonResult == null || commonResult.isEmpty ()) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
-                                    
-            for (CommonResultType.Error err: commonResult.get (0).getError ()) throw new GisPollException (err);
-
-            final Map<String, Object> h = statusHash (action.getOkStatus ());
-
-/*            
+            ExportWorkingPlanResultType plan = exportWorkingPlanResult.get (0);
+            
+            if (plan == null) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
+            
+            ExportWorkingPlanResultType.WorkingPlan workingPlan = plan.getWorkingPlan ();
+            
+            if (workingPlan == null) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
+            
             if (action == WorkingPlan.Action.PLACING) {
-                final String guid = commonResult.get (0).getGUID ();
-                if (DB.ok (guid)) h.put (c.WORKLISTGUID.lc (), guid);
+                
+                db.update (WorkingPlanItem.class, HASH (
+                    WorkingPlanItem.c.UUID_WORKING_PLAN, r.get ("r.uuid"),
+                    WorkingPlanItem.c.UUID_REPORTING_PERIOD, null
+                ), WorkingPlanItem.c.UUID_WORKING_PLAN.lc ());
+                
+                db.dupsert (ReportingPeriod.class, 
+                        
+                    HASH (
+                        ReportingPeriod.c.UUID_WORKING_PLAN, r.get ("r.uuid")
+                    ),
+                        
+                    workingPlan.getReportingPeriod ().stream ().map ((t) -> HASH (
+                        ReportingPeriod.c.MONTH, t.getMonthYear ().getMonth (),
+                        ReportingPeriod.c.REPORTINGPERIODGUID, t.getReportingPeriodGuid ()
+                    )).collect (Collectors.toList ()),
+                    
+                    ReportingPeriod.c.MONTH.lc ()
+                        
+                );                
+
             }
-*/
-            update (db, uuid, r, h);
+
+            update (db, uuid, r, statusHash (action.getOkStatus ()));
 
             db.update (OutSoap.class, HASH (
                 "uuid", getUuid (),
                 "id_status", DONE.getId ()
             ));
-/*            
-            if (action == WorkingPlan.Action.PLACING && DB.ok (h.get (c.WORKLISTGUID.lc ()))) {
-                MosGisModel m = ModelHolder.getModel ();
-                uuidPublisher.publish (inWorkingPlansQueue, m.createIdLog (db, m.get (WorkingPlan.class), null, r.get ("r.uuid"), VocAction.i.REFRESH));
-            }
-*/
+
         }
         catch (GisPollRetryException ex) {
             return;
