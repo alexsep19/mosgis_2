@@ -51,7 +51,7 @@ define ([], function () {
             name: 'passport_layout',
 
             panels: [
-                {type: 'main', size: 640}
+                {type: 'main'}
             ]
 
         });
@@ -68,8 +68,8 @@ define ([], function () {
             
             fields : [
                 {name: 'numberinplan', type: 'text'},
-                {name: 'uriregistrationplannumber', type: 'text'},
-                {name: 'uriregistrationplandate', type: 'date'},
+                {name: 'uriregistrationnumber', type: 'text'},
+                {name: 'uriregistrationdate', type: 'date'},
                 {name: 'code_vc_nsi_65', type: 'list', options: {items: data.vc_nsi_65.items}},
                 {name: 'code_vc_nsi_71', type: 'list', options: {items: data.vc_nsi_71.items}},
 

@@ -20,7 +20,7 @@ define ([], function () {
             if (!test_reg_num.test (v.uriregistrationnumber)) die ('uriregistrationnumber', 'Указан неверный регистрационный номер')
 
             if (v.uriregistrationdate == null) die ('uriregistrationdate', 'Пожалуйста, укажите дату регистрации')
-            if (v.uriregistrationdate < date_min || v.uriregistrationdate > date_max) die ('uriregistrationdate', 'Указана неверная дата регистрации')
+            if (Date.parse (v.uriregistrationdate) < date_min || Date.parse (v.uriregistrationdate) > date_max) die ('uriregistrationdate', 'Указана неверная дата регистрации')
         }
 
         if (!v.code_vc_nsi_65) die ('code_vc_nsi_65', 'Пожалуйста, укажите вид осуществления контрольной деятельности')

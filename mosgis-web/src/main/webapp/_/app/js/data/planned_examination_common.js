@@ -110,21 +110,57 @@ define ([], function () {
     
         if (!confirm ('Сохранить изменения?')) return
         
+        var data = clone ($('body').data ('data'))
+
         var f = w2ui [form_name]
 
         var v = f.values ()
 
-        var re = /^\d{1,12}$/
+        var regexp_number = /^\d{1,3}$/
+        var regexp_reg_number = /^\d{14}$/
+        var year_min = 1992
+        var year_max = 2030
+        var date_min = new Date (year_min, 1, 1)
+        var date_max = new Date (year_max, 12, 31)
+        var regexp_func_reg_number = /^\d{1,36}$/
+        var regexp_month = /^\d{1,2}$/
+        var regexp_year = /^\d{4}$/
+        var regexp_double = /^(0|[1-9][0-9]*)([.][0-9][1-9]+)?$/
 
-        if (v.shouldberegistered) {
+        if (!v.numberinplan) die ('numberinplan', 'Пожалуйста, укажите номер проверки')
+        if (!regexp_number.test (v.numberinplan)) die ('numberinplan', 'Указан неверный номер проверки')
 
-            if (v.uriregistrationplannumber == null) die ('uriregistrationplannumber', 'Пожалуйста, укажите регистрационный номер')
-            if (!re.test (v.uriregistrationplannumber)) die ('uriregistrationplannumber', 'Указан неверный регистрационный номер')
+        if (data.item.shouldberegistered) {
+
+            if (v.uriregistrationnumber == null) die ('uriregistrationnumber', 'Пожалуйста, укажите регистрационный номер')
+            if (!regexp_reg_number.test (v.uriregistrationnumber)) die ('uriregistrationnumber', 'Указан неверный регистрационный номер')
+
+            if (v.uriregistrationdate == null) die ('uriregistrationdate', 'Пожалуйста, укажите дату регистрации')
+            if (Date.parse (v.uriregistrationdate) < date_min || Date.parse (v.uriregistrationdate) > date_max) die ('uriregistrationdate', 'Указана неверная дата регистрации')
 
         }
 
-        v.shouldnotberegistered = 1 - v.shouldberegistered
-        delete v.shouldberegistered
+        if (v.functionregistrynumber && !regexp_func_reg_number.test (v.functionregistrynumber)) die ('functionregistrynumber', 'Указан неверный реестровый номер функции органа жилищного надзора')
+        if (v.lastexaminationenddate && (Date.parse (v.lastexaminationenddate) < date_min || Date_parse (v.lastexaminationenddate) > date_max)) die ('lastexaminationenddate', 'Указана неверная дата окончания последней проверки')
+
+        if (v.monthfrom) {
+
+            if (!regexp_month.test (v.monthfrom) || v.monthfrom > 12) die ('monthfrom', 'Указан неверный месяц начала проверки')
+            if (!v.yearfrom) die ('yearfrom', 'Пожалуйста, укажите год начала проверки')
+
+        }
+
+        if (v.yearfrom) {
+
+            console.log (regexp_year.test (v.yearfrom))
+
+            if (!regexp_year.test (v.yearfrom) || v.yearfrom < year_min || v.yearfrom > year_max) die ('yearfrom', 'Указан неверный год начала проверки')
+            if (!v.monthfrom) die ('monthfrom', 'Пожалуйста, укажите месяц начала проверки')
+
+        }
+
+        if (v.workdays && !regexp_double.test (v.workdays)) die ('workdays', 'Указано неверное значение количества рабочих дней')
+        if (v.workhours && !regexp_double.test (v.workhours)) die ('workhours', 'Указано неверное значение количества рабочих часов')
 
         query ({type: 'planned_examinations', action: 'update'}, {data: v}, reload_page)
 
