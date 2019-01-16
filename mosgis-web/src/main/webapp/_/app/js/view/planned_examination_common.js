@@ -11,8 +11,6 @@ define ([], function () {
 
             var r = w2ui [form_name].record
 
-            console.log (r)
-
             if (!r.shouldberegistered) {
 
                 $('#uriregistrationnumber').prop ('placeholder', 'Проверка не должна быть зарегистрирована в ЕРП')
@@ -37,6 +35,9 @@ define ([], function () {
             f.record = r
             
             $('div[data-block-name=planned_examination_common] input, textarea').prop ({disabled: data.__read_only})
+
+            $('#regulator_label').prop ({disabled: false, readonly: data.__read_only})
+            $('#subject_label').prop ({disabled: false, readonly: data.__read_only})
 
             f.refresh ()
 
@@ -101,8 +102,15 @@ define ([], function () {
 
             onRefresh: function (e) {e.done (function () {             
 
-                    clickOn ($('#regulator_label'), $_DO.open_regulator_orgs_popup)
-                    clickOn ($('#subject_label'), $_DO.open_subject_orgs_popup)
+                    var $regulator_label = $('#regulator_label')
+                    var $subject_label = $('#subject_label')
+
+                    if (!$regulator_label.prop ('readonly')) clickOn ($regulator_label, $_DO.open_regulator_orgs_popup)
+                    else clickOn ($regulator_label, $_DO.open_regulator_tab)
+
+                    if (!$subject_label.prop ('readonly')) clickOn ($subject_label, $_DO.open_subject_orgs_popup)
+                    else clickOn ($subject_label, $_DO.open_subject_tab)
+                    
                     recalc ()
                 
             })},

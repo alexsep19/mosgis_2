@@ -2,6 +2,22 @@ define ([], function () {
 
     var form_name = 'planned_examination_common_form'
 
+    $_DO.open_regulator_tab = function (e) {
+
+        var r = w2ui[form_name].record
+
+        if (r.regulator_uuid) openTab ('/voc_organization_legal/' + r.regulator_uuid)
+
+    }
+
+    $_DO.open_subject_tab = function (e) {
+
+        var r = w2ui[form_name].record
+
+        if (r.subject_uuid) openTab ('/voc_organization_legal/' + r.subject_uuid)
+
+    }
+
     $_DO.open_regulator_orgs_popup = function (e) {
     
         var f = w2ui [form_name]
