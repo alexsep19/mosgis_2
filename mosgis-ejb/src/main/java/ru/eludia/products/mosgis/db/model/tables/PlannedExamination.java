@@ -26,6 +26,7 @@ public class PlannedExamination extends EnTable {
         // --- Subject ---
         SUBJECT_UUID                    (VocOrganization.class, "Субъект проверки"),
         ACTUALACTIVITYPLACE             (Type.STRING, 4000, null, "Место фактического осуществления деятельности субъекта проверки"),
+        SMALLBUSINESS                   (Type.BOOLEAN, null, "Субъект малого предпринимательства"),
         
         CODE_VC_NSI_65                  (Type.STRING, 20, "Вид осуществления контрольной деятельности (НСИ 65)"), // OversightActivitiesRef
         

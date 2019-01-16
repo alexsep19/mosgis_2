@@ -47,7 +47,7 @@ define ([], function () {
                     tabs: {
                         tabs:    [
                         ],
-                        onClick: $_DO.choose_tab_planned_examination_common
+                        //onClick: $_DO.choose_tab_planned_examination_common
                     }
                 },
 
@@ -102,12 +102,10 @@ define ([], function () {
                 {name: 'prosecutoragreementinformation', type: 'textarea'}
             ],
 
-            onRefresh: function (e) {e.done (function () {
-                    // $_SESSION.delete (...)
-                    console.log ($_SESSION.get ('record'))
-                
-                    clickOn ($('#regulator_label'), $_DO.open_orgs_popup)
-                    clickOn ($('#subject_label'), $_DO.open_orgs_popup)
+            onRefresh: function (e) {e.done (function () {             
+
+                    clickOn ($('#regulator_label'), $_DO.open_regulator_orgs_popup)
+                    clickOn ($('#subject_label'), $_DO.open_subject_orgs_popup)
                 
             })},
 
