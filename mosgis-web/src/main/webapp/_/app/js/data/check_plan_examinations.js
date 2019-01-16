@@ -1,22 +1,22 @@
 define ([], function () {
 
-	$_DO.create_check_plans = function () {
+	$_DO.create_check_plan_examination = function () {
 
 		$_SESSION.set ('record', {})
-		use.block ('check_plans_new')		
+		use.block ('planned_examinations_new')		
 
 	}
 
-	$_DO.delete_check_plans = function (e) {
+	$_DO.delete_check_plan_examination = function (e) {
 
-        if (!confirm ('Удалить план?')) return
+        if (!confirm ('Удалить проверку?')) return
 
-		var grid = w2ui ['check_plans_grid']
+		var grid = w2ui ['check_plan_examinations_grid']
     
     	var id = grid.getSelection () [0]
 
         var tia = {
-            type:   'check_plans', 
+            type:   'planned_examinations', 
             id:     id,
             action: 'delete'
         }
@@ -31,11 +31,11 @@ define ([], function () {
 
     return function (done) {        
         
-        var layout = w2ui ['supervision_layout']
+        var layout = w2ui ['passport_layout']
             
         if (layout) layout.unlock ('main')
         
-        done ({})
+        done (clone ($('body').data ('data')))
         
     }
     

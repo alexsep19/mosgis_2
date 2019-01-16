@@ -1,0 +1,66 @@
+<span
+	data-popup-width=670
+	data-popup-height=280
+	data-popup-title='Проверка'
+>
+
+	<style>
+
+        label[data-block-name=planned_examinations_new] {
+        	width: 280px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=planned_examinations_new] {
+        	width: 320px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:238px ">
+
+        <div class="w2ui-page page-0" style="height:230px;">
+
+
+            <div class="w2ui-field">
+                <label>Номер в плане: </label>
+                <div>
+                	<input name=numberinplan maxlength=3>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Номер в ЕРП: </label>
+                <div>
+                    <input name=uriregistrationnumber maxlength=14>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Дата регистрации в ЕРП: </label>
+                <div>
+                    <input name=uriregistrationdate placeholder="">
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Вид осуществления контрольной деятельности: </label>
+                <div>
+                	<input name=code_vc_nsi_65>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Форма проведения проверки: </label>
+                <div>
+                	<input name=code_vc_nsi_71>
+                </div>
+            </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>

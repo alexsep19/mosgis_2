@@ -10,13 +10,15 @@ import javax.json.JsonObjectBuilder;
 import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.CheckPlan;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.tables.PlannedExamination;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
-import ru.eludia.products.mosgis.rest.api.CheckPlansLocal;
+import ru.eludia.products.mosgis.rest.api.PlannedExaminationsLocal;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 import ru.eludia.products.mosgis.web.base.ComplexSearch;
 import ru.eludia.products.mosgis.web.base.Search;
@@ -24,7 +26,7 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-public class CheckPlansImpl extends BaseCRUD<CheckPlan> implements CheckPlansLocal {
+public class PlannedExaminationsImpl extends BaseCRUD<PlannedExamination> implements PlannedExaminationsLocal {
 
     private void filterOffDeleted (Select select) {
         select.and ("is_deleted", 0);
@@ -46,7 +48,7 @@ public class CheckPlansImpl extends BaseCRUD<CheckPlan> implements CheckPlansLoc
         
         if (searchString == null || searchString.isEmpty ()) return;
 
-        select.and ("uriregistrationplannumber LIKE %?%", searchString);
+        select.and ("subject_label LIKE %?%", searchString);
         
     }
     
@@ -65,26 +67,15 @@ public class CheckPlansImpl extends BaseCRUD<CheckPlan> implements CheckPlansLoc
     }
     
     @Override
-    public JsonObject doUpdate (String id, JsonObject p, User user) {return doAction ((db) -> {
+    public JsonObject select(JsonObject p, User user) {return fetchData ((db, job) -> {
         
-        Map <String, Object> data = getData (p, "uuid", id);
-        
-        if ("1".equals (data.get ("shouldnotberegistered").toString ())) 
-            data.put ("uriregistrationplannumber", null);
-        
-        db.update (getTable (), data);
-        
-        logAction (db, user, id, VocAction.i.UPDATE);
-                        
-    });}
-    
-    @Override
-    public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
-        
-        Select select = ModelHolder.getModel ().select(getTable (), "AS root", "*", "uuid AS id");
+        Select select = ModelHolder.getModel ().select(getTable (), "AS root", "*", "uuid AS id")
+                .where ("check_plan_uuid", p.getJsonObject("data").getString("plan_uuid"))
+                .orderBy ("root.numberinplan")
+                .limit (p.getInt ("offset"), p.getInt ("limit"));
         
         applySearch (Search.from (p), select);
-        
+
         db.addJsonArrayCnt (job, select);
         
     });}
@@ -92,14 +83,16 @@ public class CheckPlansImpl extends BaseCRUD<CheckPlan> implements CheckPlansLoc
     @Override
     public JsonObject getItem (String id) {return fetchData ((db, job) -> {
         
-        JsonObject item = db.getJsonObject(ModelHolder.getModel ().get (CheckPlan.class, id, "AS root", "*"));
+        JsonObject item = db.getJsonObject(ModelHolder.getModel ().get (PlannedExamination.class, id, "AS root", "*")
+                .toOne(CheckPlan.class, "AS plan", "shouldberegistered", "sign", "year").on ()
+        );
         
         job.add ("item", item);
         
     });}
-    
+
     @Override
-    public JsonObject getVocs () {
+    public JsonObject getVocs() {
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();
         
@@ -112,6 +105,7 @@ public class CheckPlansImpl extends BaseCRUD<CheckPlan> implements CheckPlansLoc
             db.addJsonArrays (jb,
                     
                 NsiTable.getNsiTable (65).getVocSelect (),
+                NsiTable.getNsiTable (68).getVocSelect (),
                 NsiTable.getNsiTable (71).getVocSelect ()
                     
             );
@@ -124,5 +118,22 @@ public class CheckPlansImpl extends BaseCRUD<CheckPlan> implements CheckPlansLoc
         return jb.build ();
         
     }
+    
+    @Override
+    public JsonObject doCreate (JsonObject p, User user) {return doAction ((db, job) -> {
+
+        final Table table = getTable ();
+
+        Map<String, Object> data = getData (p);
+        
+        data.put (PlannedExamination.c.REGULATOR_UUID.lc (), user.getUuidOrg ());
+
+        Object insertId = db.insertId (table, data);
+        
+        job.add ("id", insertId.toString ());
+        
+        logAction (db, user, insertId, VocAction.i.CREATE);
+
+    });}
 
 }
