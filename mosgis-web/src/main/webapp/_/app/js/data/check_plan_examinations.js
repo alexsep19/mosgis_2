@@ -35,7 +35,7 @@ define ([], function () {
             
         if (layout) layout.unlock ('main')
         
-        done ({})
+        done (clone ($('body').data ('data')))
         
     }
     

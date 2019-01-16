@@ -45,7 +45,7 @@ define ([], function () {
 
             columns: [
                 {field: 'numberinplan', caption: 'Номер', size: 5},
-                {field: 'code_vc_nsi_71', caption: 'Форма проведения проверки', size: 10},
+                {field: 'code_vc_nsi_71', caption: 'Форма проведения проверки', size: 10, voc: data.vc_nsi_71},
                 {field: 'subject_label', caption: 'Субъект проверки', size: 15},
                 {field: 'objective', caption: 'Цель проведения проверки', size: 30},
             ],
