@@ -75,10 +75,17 @@ define ([], function () {
                 {type: 'main', size: 200,
                     tabs: {
                         tabs: [
-//                            {id: 'supply_resource_contract_subject_quality', caption: 'Показатели качества коммунальных ресурсов'},
-//                            {id: 'supply_resource_contract_subject_other', caption: 'Иные показатели качества коммунальных ресурсов'},
+                            {
+                                id: 'supply_resource_contract_subject_quality_levels',
+                                caption: 'Показатели качества коммунальных ресурсов',
+                                off: data.item['sr_ctr.specqtyinds'] != 10
+                            },
+//                            {
+//                                id: 'supply_resource_contract_subject_other_quality_levels',
+//                                caption: 'Иные показатели качества коммунальных ресурсов'
+//                            },
                             {id: 'supply_resource_contract_subject_common_log', caption: 'История изменений'},
-                        ],
+                        ].filter(not_off),
                         onClick: $_DO.choose_tab_supply_resource_contract_subject_common
                     }
                 },
@@ -86,7 +93,8 @@ define ([], function () {
             ],
 
             onRender: function (e) {
-                this.get ('main').tabs.click (data.active_tab)
+                var tabs = this.get('main').tabs
+                tabs.click (tabs.get(data.active_tab)? data.active_tab : 'supply_resource_contract_subject_common_log')
             },
 
         });
