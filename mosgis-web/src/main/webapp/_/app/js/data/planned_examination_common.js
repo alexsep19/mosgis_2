@@ -78,7 +78,7 @@ define ([], function () {
 
         use.block ('voc_organizations_popup')
 
-    }       
+    }
 
     $_DO.cancel_planned_examination_common = function (e) {
         
@@ -88,6 +88,7 @@ define ([], function () {
         
         query ({type: 'planned_examinations'}, {}, function (data) {
             data.__read_only = true
+            data.item.shouldberegistered = data.item['plan.shouldberegistered']
             $_F5 (data)
         })
 

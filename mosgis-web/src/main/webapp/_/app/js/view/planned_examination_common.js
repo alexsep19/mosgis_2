@@ -7,10 +7,20 @@ define ([], function () {
         function recalc () {
 
             $('#uriregistrationplannumber').prop ('disabled', true)
+            $('#uriregistrationplandate').prop ('disabled', true)
 
             var r = w2ui [form_name].record
 
-            if (r.shouldberegistered.id && !r.__read_only) $('#uriregistrationplannumber').prop ('disabled', false)
+            if (!r.shouldberegistered) {
+
+                $('#uriregistrationplannumber').prop ('placeholder', 'Проверка не должна быть зарегистрирована в ЕРП')
+                $('#uriregistrationplandate').prop ('placeholder', 'Проверка не должна быть зарегистрирована в ЕРП')
+
+            }
+            else if (!r.__read_only) {
+                $('#uriregistrationplannumber').prop ('disabled', false)
+                $('#uriregistrationplandate').prop ('disabled', false)
+            }
 
         }
 
@@ -106,6 +116,7 @@ define ([], function () {
 
                     clickOn ($('#regulator_label'), $_DO.open_regulator_orgs_popup)
                     clickOn ($('#subject_label'), $_DO.open_subject_orgs_popup)
+                    recalc ()
                 
             })},
 
