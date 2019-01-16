@@ -1,6 +1,7 @@
 package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -11,15 +12,18 @@ import javax.ejb.MessageDriven;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
+import ru.eludia.products.mosgis.db.model.tables.OrganizationWork;
 import ru.eludia.products.mosgis.db.model.tables.WorkingPlan;
 import ru.eludia.products.mosgis.db.model.tables.WorkingPlanLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.ReportingPeriod;
 import ru.eludia.products.mosgis.db.model.tables.WorkingList;
+import ru.eludia.products.mosgis.db.model.tables.WorkingListItem;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -102,12 +106,46 @@ public class GisPollImportWorkingPlanMDB  extends GisPollMDB {
             ExportWorkingPlanResultType.WorkingPlan workingPlan = result.getWorkingPlan ();
             
             if (workingPlan == null) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
-            
-            db.update (WorkingPlanItem.class, HASH (
-                WorkingPlanItem.c.UUID_WORKING_PLAN, r.get ("r.uuid"),
-                WorkingPlanItem.c.UUID_REPORTING_PERIOD, null
-            ), WorkingPlanItem.c.UUID_WORKING_PLAN.lc ());
 
+            Map<Object, Map<String, Object>> code_month2wpi = new HashMap<> ();
+            
+            db.forEach (db.getModel ()
+                .select (WorkingPlanItem.class, EnTable.c.UUID.lc (), WorkingPlanItem.c.MONTH.lc ())
+                .where (WorkingPlanItem.c.UUID_WORKING_PLAN, r.get ("r.uuid"))
+                .toOne (WorkingListItem.class).on ()
+                .toOne (OrganizationWork.class, "uniquenumber AS code").on (),
+                (rs) -> {
+                    final String k = rs.getString ("code") + '_' + rs.getString ("month");
+                    final Map<String, Object> wpi = db.HASH (rs);
+                    wpi.remove ("code");
+                    wpi.put (WorkingPlanItem.c.UUID_REPORTING_PERIOD.lc (), null);
+                    code_month2wpi.put (k, wpi);
+                }
+            );
+            
+logger.info ("code2wpi = " + code_month2wpi);
+
+            for (ExportWorkingPlanResultType.WorkingPlan.ReportingPeriod p: workingPlan.getReportingPeriod ()) {
+                
+                for (ExportWorkingPlanResultType.WorkingPlan.ReportingPeriod.WorkPlanItem i: p.getWorkPlanItem ()) {
+                    
+                    final String k = i.getWorkGUID ().getCode () + '_' + p.getMonthYear ().getMonth ();                    
+                    final Map<String, Object> wpi = code_month2wpi.get (k);
+                    if (wpi == null) {
+                        logger.warning ("WorkingPlanItem not found for " + k);
+                        continue;
+                    }
+                    wpi.put (WorkingPlanItem.c.WORKPLANITEMGUID.lc (), i.getWorkPlanItemGUID ());
+                    wpi.put (WorkingPlanItem.c.UUID_REPORTING_PERIOD.lc (), null);
+                    
+                }
+                                
+            }
+            
+            db.update (WorkingPlanItem.class, code_month2wpi.values ().stream ().collect (Collectors.toList ()));
+            
+logger.info ("code2wpi = " + code_month2wpi);
+            
             db.dupsert (ReportingPeriod.class, 
 
                 HASH (
@@ -121,7 +159,7 @@ public class GisPollImportWorkingPlanMDB  extends GisPollMDB {
 
                 ReportingPeriod.c.MONTH.lc ()
 
-            );                
+            );            
             
             final Map<String, Object> h = statusHash (action.getOkStatus ());            
             
