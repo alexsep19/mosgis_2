@@ -32,13 +32,13 @@ public class ExportWorkingPlanMDB extends GisExportMDB<WorkingPlanLog> {
     
     @EJB
     WsGisServicesClient wsGisServicesClient;
-    
+
     @Resource (mappedName = "mosgis.outExportWorkingPlansQueue")
     Queue outExportHouseWorkingPlansQueue;
 
-//    @Resource (mappedName = "mosgis.outImportWorkingPlansQueue")
-//    Queue outImportHouseWorkingPlansQueue;
-                    
+    @Resource (mappedName = "mosgis.outImportWorkingPlansQueue")
+    Queue outImportHouseWorkingPlansQueue;
+
     @Override
     protected Get get (UUID uuid) {        
         return ((WorkingPlanLog) ModelHolder.getModel ().get (WorkingPlanLog.class)).getForExport (uuid.toString ());
@@ -93,12 +93,12 @@ public class ExportWorkingPlanMDB extends GisExportMDB<WorkingPlanLog> {
     
     Queue getQueue (WorkingPlan.Action action) {
         
-//        switch (action) {
-//            case REFRESHING:
-//                return outImportHouseWorkingPlansQueue;
-//            default:
+        switch (action) {
+            case REFRESHING:
+                return outImportHouseWorkingPlansQueue;
+            default:
                 return outExportHouseWorkingPlansQueue;
-//        }
+        }
         
     }
 
