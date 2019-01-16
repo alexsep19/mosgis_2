@@ -114,7 +114,7 @@ public class ResidentialPremise extends Passport {
 
         boolean isVirgin = refTables.isEmpty ();
         
-            db.forEach (model.select (VocPassportFields.class, "*").where ("is_for_premise_res", 1).and ("id_type IS NOT NULL"), rs -> {
+            db.forEach (model.select (VocPassportFields.class, "id", "label", "id_type", "is_multiple").where ("is_for_premise_res", 1).and ("id_type IS NOT NULL"), rs -> {
 
                 if (rs.getInt ("is_multiple") == 1) {
                     

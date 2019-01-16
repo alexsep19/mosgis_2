@@ -78,24 +78,22 @@ public class WorkingListItem extends EnTable {
     }
     
     public static void addTo (DB db, Map<String, Object> r) throws SQLException {
-        
-        NsiTable nsi56 = NsiTable.getNsiTable (56);
-        
+
         r.put ("items", db.getList (db.getModel ()
             .select (WorkingListItem.class, "*")
-            .toOne (OrganizationWork.class, "AS w").on ()
-            .toOne (nsi56, "AS vc_nsi_56", "code", "guid").on ("vc_nsi_56.code=w.code_vc_nsi_56 AND vc_nsi_56.isactual=1")
-            .where (WorkingListItem.c.UUID_WORKING_LIST.lc (), r.get ("uuid_object"))
+            .toOne (OrganizationWork.class, "elementguid AS w.guid", "uniquenumber AS w.code").on ()
+            .where (WorkingListItem.c.UUID_WORKING_LIST.lc (), r.get ("uuid_object"))              
+            .and (EnTable.c.IS_DELETED, 0)
         ));
-        
+
     }
-    
+
     public static ImportWorkingListRequest.ApprovedWorkingListData.WorkListItem toDom (Map<String, Object> r) {
         r.put ("index", r.get ("index_"));
         final ImportWorkingListRequest.ApprovedWorkingListData.WorkListItem result = DB.to.javaBean (ImportWorkingListRequest.ApprovedWorkingListData.WorkListItem.class, r);
         result.setTotalCost (null);
         result.setTransportGUID (UUID.randomUUID ().toString ());
-        result.setWorkItemNSI (NsiTable.toDom (r, "vc_nsi_56"));        
+        result.setWorkItemNSI (NsiTable.toDom (r, "w"));        
         return result;
     }
 

@@ -73,21 +73,25 @@ define ([], function () {
 
         data.record = $_SESSION.delete('record')
 
+        data.record.voc_c_types = [
+            {id: 1, text: 'Юрлицо',  off: [6].indexOf(data.record.id_customer_type) != -1 },
+            {id: 2, text: 'Физлицо', off: [3, 5, 6].indexOf(data.record.id_customer_type) != -1 },
+            {id: 0, text: 'Отсутствует', off: [5].indexOf(data.record.id_customer_type) != -1}
+        ].filter(not_off)
+
+        if (typeof data.record.id_c_type == 'undefined') {
+            data.record.id_c_type = data.record.voc_c_types [0].id
+        }
+
+
         if (data.record.id_customer_type.hasOwnProperty('id')) {
             data.record.id_customer_type = data.record.id_customer_type.id
         }
-
-        data.record.id_c_type = data.record.id_c_type || 0
 
         if (data.record.id_c_type.hasOwnProperty('id')) {
             data.record.id_c_type = data.record.id_c_type.id
         }
 
-        data.record.voc_c_types = [
-            {id: 1, text: 'Юрлицо',  off: [5, 6].indexOf(data.record.id_customer_type) != -1 },
-            {id: 2, text: 'Физлицо', off: [3, 5, 6].indexOf(data.record.id_customer_type) != -1 },
-            {id: 0, text: 'Отсутствует'}
-        ].filter(not_off)
 
         query ({type: 'vc_persons', id: undefined}, {limit:100000, offset:0}, function (d) {
 

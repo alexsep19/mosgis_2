@@ -5,7 +5,10 @@ define ([], function () {
     var is_owner = $_USER.role.nsi_20_2
 
     var postData = {}
-    if (is_owner) postData.uuid_org = $_USER.uuid_org
+    if (is_owner)
+        postData.uuid_org = $_USER.uuid_org
+    if ($_USER.has_nsi_20(1, 19, 20, 21, 22))
+        postData.uuid_org_customer = $_USER.uuid_org
 
     return function (data, view) {
 
@@ -70,13 +73,11 @@ define ([], function () {
                 })}},
 //                {field: '???', caption: 'Вид коммунальной услуги', size: 10, voc: data.???},
 //                {field: '???', caption: 'Вид коммунального ресурса', size: 10, voc: data.???},
-//                {field: '???', caption: 'Вид договора', size: 10, voc: data.???},
-                {field: 'is_customer_org', caption: 'Тип заказчика', type: 'list', options: {items: [
-                    {id: "0", text: "Физическое лицо"},
-                    {id: "1", text: "Юридическое лицо"},
-                ]}},
-                {field: 'customer_label_uc', caption: 'Заказчик',  type: 'text'},
+                {field: 'id_customer_type', caption: 'Тип заказчика', type: 'enum', options: {
+                        items: data.vc_gis_sr_customer_type.items
+                }},
                 {field: 'org_label_uc', caption: 'Исполнитель',  type: 'text', off: is_owner},
+                {field: 'customer_label_uc', caption: 'Заказчик', type: 'text'},
                 {field: 'is_deleted', caption: 'Статус записи', type: 'enum', options: {items: [
                     {id: "0", text: "Актуальные"},
                     {id: "1", text: "Удалённые"},
@@ -105,11 +106,7 @@ define ([], function () {
                 {field: 'signingdate', caption: 'Дата заключения', size: 11, render: _dt},
                 {field: 'completiondate', caption: 'Дата окончания', size: 11, render: _dt},
                 {field: 'id_ctr_status', caption: 'Статус', size: 10, voc: data.vc_gis_status},
-//                {field: '???', caption: 'Вид коммунальной услуги', size: 10, voc: data.???},
-//                {field: '???', caption: 'Вид коммунального ресурса', size: 10, voc: data.???},
-//                {field: '???', caption: 'Вид договора', size: 10, voc: data.???},
-//                {field: 'address', caption: 'Адрес', size: 100},
-                {field: 'is_customer_org', caption: 'Тип заказчика', size: 10, voc: {0: 'физ. лицо', 1: 'юр. лицо'}},
+                {field: 'id_customer_type', caption: 'Тип заказчика', size: 30, voc: data.vc_gis_sr_customer_type},
                 {field: 'org_label', caption: 'Исполнитель', size: 100, off: is_owner},
                 {field: 'customer_label', caption: 'Заказчик', size: 100},
 

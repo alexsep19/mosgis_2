@@ -10,6 +10,9 @@ public interface ConfMBean {
     
     public String getPathOktmo ();
     public void setPathOktmo (String s);
+    
+    public String getPathUnom ();
+    public void setPathUnom (String s);
 
     public String getPathOksm();
     public void setPathOksm(String s);

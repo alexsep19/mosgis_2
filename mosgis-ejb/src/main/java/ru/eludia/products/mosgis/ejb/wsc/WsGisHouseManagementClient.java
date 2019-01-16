@@ -75,6 +75,8 @@ import ru.gosuslugi.dom.schema.integration.house_management_service_async.HouseM
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class WsGisHouseManagementClient {
 
+    private static final String EXPORT_HOUSE_DATA_METHOD_VERSION = "12.2.0.1";
+    
     private static final ObjectFactory of = new ObjectFactory ();
     private static final Logger logger = Logger.getLogger (WsGisHouseManagementClient.class.getName ());
 
@@ -109,6 +111,8 @@ public class WsGisHouseManagementClient {
         
         ExportHouseRequest request = of.createExportHouseRequest();
         request.setFIASHouseGuid(fiasHouseGuid.toString());
+        
+        request.setVersion(EXPORT_HOUSE_DATA_METHOD_VERSION);
         
         return getPort (orgPPAGuid, messageGUID).exportHouseData(request).getAck();
         

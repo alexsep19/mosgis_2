@@ -53,6 +53,7 @@ import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementFieldType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementType;
 import ru.gosuslugi.dom.schema.integration.nsi_common.GetStateResult;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
+import ru.eludia.products.mosgis.db.model.voc.VocNsi197Roles;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisNsiCommonClient;
@@ -332,6 +333,19 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
                 }
             
                 db.upsert (table, records);
+                
+                if (registryNumber == 197) {
+                    
+                    List<Map<String, Object>> recordsWithNewParam = new ArrayList<>();
+                    records.forEach(rec -> {
+                        if (!VocNsi197Roles.NOT_FOR_UO_FIELDS.contains(rec.get("code").toString())) return;
+                        rec.put(VocNsi197Roles.c.IS_FOR_UO.lc(), 0);
+                        recordsWithNewParam.add(rec);
+                    });
+                    
+                    db.upsert(VocNsi197Roles.class, records);
+                    db.upsert(VocNsi197Roles.class, recordsWithNewParam);
+                }
 
                 db.update (OutSoap.class, HASH (
                     "uuid", uuid,
@@ -407,48 +421,50 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
         Map<String, Field> m = new HashMap <> ();
         
         Fields (List<NsiElementType> els) {
+            for (NsiElementType el: els) scanElement (el);            
+        }
+
+        private void scanElement (NsiElementType el) {
             
-            for (NsiElementType el: els) {
+            Set <String> seen = new HashSet ();
+            
+            for (NsiElementFieldType fl: el.getNsiElementField ()) {
                 
-                Set <String> seen = new HashSet ();
+                final String name = fl.getName ();
                 
-                for (NsiElementFieldType fl: el.getNsiElementField ()) {
+                Field f;
+                
+                if (m.containsKey (name)) {
+                    f = m.get (name);
+                    if (seen.contains (name)) f.setMul (true);
+                }
+                else {
                     
-                    final String name = fl.getName ();
-                    
-                    Field f;
-                    
-                    if (m.containsKey (name)) {
-                        f = m.get (name);
-                        if (seen.contains (name)) f.setMul (true);
+                    try {
+                        f = new Field (fl);
                     }
-                    else {
-                        
-                        try {
-                            f = new Field (fl);
-                        }
-                        catch (BizarreFieldException ex) {                                   // NPE для NsiRef без RegistryNumber                            
-                            logger.log (Level.WARNING, el.getGUID () + ": " + ex.getMessage ());
-                            continue;
-                        }
-                        
-                        m.put (name, f);
-                        l.add (f);
-                        
-                    }
-                    if (fl instanceof NsiElementNsiRefFieldType) {
-                        NsiElementNsiRefFieldType.NsiRef nsiRef = ((NsiElementNsiRefFieldType) fl).getNsiRef ();
-                        if (nsiRef == null || !nsiRef.getNsiItemRegistryNumber ().toString ().equals (nsiRef.getRef ().getCode ())) f.setNotNsiListRef (true);
+                    catch (BizarreFieldException ex) {                                   // NPE для NsiRef без RegistryNumber
+                        logger.log (Level.WARNING, el.getGUID () + ": " + ex.getMessage ());
+                        continue;
                     }
                     
-                    for (Field i: l) i.checkForListRef ();
-                        
-                    seen.add (name);
+                    m.put (name, f);
+                    l.add (f);
                     
                 }
+                if (fl instanceof NsiElementNsiRefFieldType) {
+                    NsiElementNsiRefFieldType.NsiRef nsiRef = ((NsiElementNsiRefFieldType) fl).getNsiRef ();
+                    if (nsiRef == null || !nsiRef.getNsiItemRegistryNumber ().toString ().equals (nsiRef.getRef ().getCode ())) f.setNotNsiListRef (true);
+                }
+                
+                for (Field i: l) i.checkForListRef ();
+                
+                seen.add (name);
                 
             }
-            
+
+            for (NsiElementType childElement: el.getChildElement ()) scanElement (childElement);
+
         }
 
         JsonArray toJson () {

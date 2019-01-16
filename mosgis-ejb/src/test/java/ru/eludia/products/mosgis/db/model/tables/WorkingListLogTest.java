@@ -1,11 +1,13 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.xml.bind.JAXBContext;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
@@ -86,6 +88,13 @@ public class WorkingListLogTest extends BaseTest {
     }
     
     private void createItem (final DB db) throws SQLException {
+        
+        List<Map<String, Object>> works = db.getList (db.getModel ()
+            .select (OrganizationWork.class, "uuid")
+            .where ("elementguid IS NOT NULL")
+            .where ("uniquenumber IS NOT NULL")
+            .limit (0, 2)
+        );
 
         db.insert (itemTable, HASH (
             EnTable.c.IS_DELETED, 0,
@@ -94,7 +103,18 @@ public class WorkingListLogTest extends BaseTest {
             WorkingListItem.c.AMOUNT, 2,
             WorkingListItem.c.COUNT, 1,
             WorkingListItem.c.PRICE, 1,
-            WorkingListItem.c.UUID_ORG_WORK, getSomeUuid (OrganizationWork.class),
+            WorkingListItem.c.UUID_ORG_WORK, works.get (0).get ("uuid"),
+            WorkingListItem.c.UUID_WORKING_LIST, uuid
+        ));
+
+        db.insert (itemTable, HASH (
+            EnTable.c.IS_DELETED, 1,
+            "id_log", null,
+            WorkingListItem.c.INDEX_, 2,
+            WorkingListItem.c.AMOUNT, 3,
+            WorkingListItem.c.COUNT, 100,
+            WorkingListItem.c.PRICE, 20,
+            WorkingListItem.c.UUID_ORG_WORK, works.get (1).get ("uuid"),
             WorkingListItem.c.UUID_WORKING_LIST, uuid
         ));
 
@@ -134,6 +154,7 @@ public class WorkingListLogTest extends BaseTest {
         validate (WorkingListLog.toCancelImportWorkingListRequest (r));
     }
     
+//    @Ignore    
     @Test
     public void testInsert () throws SQLException {
 
@@ -142,6 +163,7 @@ public class WorkingListLogTest extends BaseTest {
 
     }
     
+    @Ignore    
     @Test
     public void testCancel () throws SQLException {
 

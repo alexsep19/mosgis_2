@@ -78,7 +78,15 @@ public class GisPollExportVocOrganizationProposalMDB  extends GisPollMDB {
 
             final Map<String, Object> h = statusHash (action.getOkStatus ());
             
-            h.put (VocOrganizationProposal.c.ORGVERSIONGUID.lc (), first.getGUID ());
+            UUID orgRootEntityGuid = UUID.fromString (first.getGUID ());
+            
+            Map<String, Object> org = db.getMap (VocOrganizationProposal.class, r.get ("r.uuid"));
+            org.remove ("uuid");
+            org.put (VocOrganization.c.ORGROOTENTITYGUID.lc (), orgRootEntityGuid);
+            
+            db.insert (VocOrganization.class, org);
+            
+            h.put (VocOrganizationProposal.c.UUID_ORG.lc (), orgRootEntityGuid);
 
             update (db, uuid, r, h);
 

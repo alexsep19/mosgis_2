@@ -18,6 +18,7 @@ import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
+import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Predicate;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
@@ -148,12 +149,18 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
     }
    
     @Override
-    public JsonObject select (JsonObject p) {
+    public JsonObject select (JsonObject p, User user) {
         
         Select select = ModelHolder.getModel ().select (VocOrganization.class, "*", "uuid AS id")
-            .where("id_type", p.getString("id_type", null))
+            .where ("id_type", p.getString ("id_type", null))
             .orderBy ("label")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
+        
+        String uuidOrg = user.getUuidOrg ();
+        if (!DB.ok (uuidOrg)) uuidOrg = "00000000-0000-0000-0000-000000000000";        
+        select.and ("uuid_org_owner...", uuidOrg);
+//        Object [] o = {uuidOrg};
+//        select.and (VocOrganization.c.UUID_ORG_OWNER.lc (), new Predicate (Operator.EQ, false, true, o));
 
         applySearch (Search.from (p), select);
 
@@ -389,10 +396,5 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
             publishMessage(action, id_log);
         }
     }    
-
-    @Override
-    public JsonObject select (JsonObject p, User user) {
-        throw new UnsupportedOperationException ("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
 }

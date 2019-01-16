@@ -38,11 +38,6 @@ define ([], function () {
                                     $('#label').trigger ('change')
                                 }
                             }
-
-                            if (e.target == "id_type") {
-                                $('#proto').css ({visibility: e.value_new.id == 3 ? 'visible' : 'hidden'})
-                            }
-
                         },
 
                     });

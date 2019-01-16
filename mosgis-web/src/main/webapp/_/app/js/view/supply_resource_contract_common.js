@@ -16,7 +16,8 @@ define ([], function () {
             '#tr_ddt_m_end'   : v.volumedepends == 1 || v.meteringdeviceinformation == 1,
             '#tr_ddt_d_start' : !onetimepayment && (!is_customer_executor || v.meteringdeviceinformation >= 0),
             '#tr_ddt_i_start' : !onetimepayment && !is_customer_executor && v.is_contract != 1,
-            '#tr_ddt_n_start' : is_customer_executor && v.countingresource == 1 && v.is_contract != 1
+            '#tr_ddt_n_start' : is_customer_executor && v.countingresource == 1 && v.is_contract != 1,
+            '#tr_accrualprocedure': is_customer_executor
         }
 
         var hidden = 0
@@ -36,9 +37,10 @@ define ([], function () {
             'input[name=plannedvolumetype]': v.isplannedvolume == 1,
             'input[name=onetimepayment]' : !is_customer_executor,
             'input[name=volumedepends]': !is_customer_executor && !onetimepayment,
+
             'input[name=accrualprocedure]': is_customer_executor,
-            'input[name=countingresource]': v.accrualprocedure == 10,
-            'input[name=meteringdeviceinformation]': v.countingresource == 1
+            'input[name=countingresource]': is_customer_executor && v.accrualprocedure == 10,
+            'input[name=meteringdeviceinformation]': is_customer_executor && v.countingresource == 1
         }
 
         for (var s in is_active_input) {

@@ -16,9 +16,14 @@ import ru.eludia.products.mosgis.rest.api.SupplyResourceContractLocal;
 public class SupplyResourceContracts extends EJBResource <SupplyResourceContractLocal> {
 
     private boolean isGlobalUser () {
-        if (securityContext.isUserInRole ("admin")) return true;
-        if (securityContext.isUserInRole ("nsi_20_7")) return true;
-        if (securityContext.isUserInRole ("nsi_20_8")) return true;
+
+        if (securityContext.isUserInRole ("admin")
+            || securityContext.isUserInRole("nsi_20_4")
+            || securityContext.isUserInRole("nsi_20_7")
+            || securityContext.isUserInRole("nsi_20_8")
+        ) {
+            return true;
+        }
         return false;
     }
 
@@ -61,8 +66,18 @@ public class SupplyResourceContracts extends EJBResource <SupplyResourceContract
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject select (JsonObject p) {
+
         final JsonObject data = p.getJsonObject ("data");
-        if (!isGlobalUser () && !getUserOrg ().equals (data.getString ("uuid_org"))) throw new ValidationException ("foo", "Доступ запрещён");
+
+        String userOrg = getUserOrg();
+
+        if (!isGlobalUser ()
+            && !userOrg.equals (data.getString ("uuid_org", null))
+            && !userOrg.equals(data.getString("uuid_org_customer", null))
+        ) {
+            throw new ValidationException ("foo", "Доступ запрещён");
+        }
+
         return back.select (p, getUser ());
     }
 

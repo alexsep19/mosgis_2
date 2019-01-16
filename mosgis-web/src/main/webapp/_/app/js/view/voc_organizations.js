@@ -45,13 +45,29 @@ define ([], function () {
                     if (id_type) {
                         e.postData.id_type = id_type
                     }
+
+
+                    var post_data = this.post_data || $_SESSION.delete('voc_organization_popup.post_data');
+
+                    if (post_data) {
+
+                        if (e.postData.search) {
+                            $.each(e.postData.search, function () {
+                                post_data.search.push(this)
+                            })
+                        }
+
+                        $.extend(e.postData, post_data)
+
+                        this.post_data = post_data
+                    }
                 }
             },
 
             onAdd: function (e) {
                 openTab ('/voc_organization_proposals')
             },
-            
+
             onDblClick: function (e) {
 
                 var r = this.get (e.recid)
