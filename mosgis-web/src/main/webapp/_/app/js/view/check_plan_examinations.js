@@ -43,6 +43,11 @@ define ([], function () {
                 ].filter (not_off)
             },
 
+            searches: [
+                {field: 'code_vc_nsi_71', caption: 'Форма проведения проверки', type: 'enum', options: {items: data.vc_nsi_71.items}},
+                {field: 'code_vc_nsi_65', caption: 'Вид осуществления контрольной деятельности', type: 'enum', options: {items: data.vc_nsi_65.items}}
+            ],
+
             columns: [
                 {field: 'numberinplan', caption: 'Номер', size: 5},
                 {field: 'code_vc_nsi_71', caption: 'Форма проведения проверки', size: 10, voc: data.vc_nsi_71},
