@@ -15,6 +15,7 @@ public class WorkingPlanItem extends EnTable {
 
         UUID_WORKING_PLAN      (WorkingPlan.class,           "Ссылка на план"),
         UUID_WORKING_LIST_ITEM (WorkingListItem.class,       "Ссылка на строку перечня"),
+        UUID_REPORTING_PERIOD  (ReportingPeriod.class,       "Ссылка период отчётности"),
         MONTH                  (Type.NUMERIC, 2,             "Месяц"),
         WORKCOUNT              (Type.NUMERIC, 2,             "Количество работ"),
         DAYS_BITMASK           (Type.BINARY,  5,       null, "Битовая маска чисел месяца (например, 0x4001 — 31-е и 1-е числа)")

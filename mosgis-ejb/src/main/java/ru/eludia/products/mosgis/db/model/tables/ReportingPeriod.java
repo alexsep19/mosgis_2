@@ -26,10 +26,26 @@ public class ReportingPeriod extends EnTable {
     public ReportingPeriod () {
         
         super  ("tb_reporting_periods", "Периоды отчётности в планах работ и услуг");
+        
         cols   (c.class);        
+        
         unique ("uuid_working_plan", 
             c.UUID_WORKING_PLAN, 
             c.MONTH
+        );
+        
+        trigger ("AFTER INSERT OR UPDATE", ""
+
+            + "BEGIN "
+
+                + "UPDATE tb_work_plan_items "
+                + " SET uuid_reporting_period = :NEW.uuid "
+                + "WHERE UUID_REPORTING_PERIOD IS NULL"
+                + " AND uuid_working_plan=:NEW.uuid_working_plan "
+                + " AND month=:NEW.month; "
+
+            + "END;"                
+
         );
 
     }
