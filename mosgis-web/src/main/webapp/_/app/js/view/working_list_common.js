@@ -38,6 +38,7 @@ define ([], function () {
                         tabs: [
                             {id: 'working_list_common_items', caption: 'Перечень услуг и работ'},
                             {id: 'working_list_common_plans', caption: 'План'},
+                            {id: 'working_list_common_reporting_periods', caption: 'Выполненные работы и услуги'},
                             {id: 'working_list_common_log', caption: 'История изменений'},
                         ],
                         onClick: $_DO.choose_tab_working_list_common
