@@ -1,0 +1,334 @@
+<span>
+
+    <div>
+
+        <div class="w2ui-page page-1 page-0">
+
+            <style>
+
+                .w2ui-field > label {
+                    width: 410px;
+                    margin-right: 10px;
+                }
+
+                .w2ui-field input {
+                    width: 280px !important;
+                }
+
+                .w2ui-field input.num {
+                    width: 30px !important;
+                }
+
+                .w2ui-field input.month {
+                    width: 25px !important;
+                }
+
+                .w2ui-field input.year {
+                    width: 37px !important;
+                }
+
+                .w2ui-field input.dt {
+                    width: 70px !important;
+                }
+
+                .w2ui-field input.long {
+                    width: 690px !important;
+                }
+
+                .w2ui-group-title {
+                    font-weight: bold;
+                }
+                tr span.w2ui-group-title {
+                    line-height: 60px;
+                }
+
+                .w2ui-field div span[data-text] {
+                    line-height: 19px
+                }
+            </style>
+
+            <table border=0 cellpadding=0 cellspacing=0 width=90%>
+
+                <tr>
+
+                    <td class="left-block" width=1 valign=top>
+
+                        <div class="w2ui-field">
+                            <label>Номер проверки: </label>
+                            <div>
+                                <input name=numberinplan maxlength=3 class="num">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="left-block" width=1 valign=top>
+
+                        <div class="w2ui-field">
+                            <label>Номер в ЕРП: </label>
+                            <div>
+                                <input name=uriregistrationnumber maxlength=14>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="left-block" width=1 valign=top>
+
+                        <div class="w2ui-field">
+                            <label>Дата регистрации в ЕРП: </label>
+                            <div>
+                                <input name=uriregistrationdate placeholder="" class="dt">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="left-block" width=1 valign=top>
+
+                        <div class="w2ui-field">
+                            <label>Вид осуществления контрольной деятельности: </label>
+                            <div>
+                                <input name=code_vc_nsi_65>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="left-block" width=1 valign=top>
+
+                        <div class="w2ui-field">
+                            <label>Форма проведения проверки: </label>
+                            <div>
+                                <input name=code_vc_nsi_71>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr id="regulator_header">
+                    <td colspan=2>
+                        <span class="w2ui-group-title">Информация об органе контроля</span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan=2 valign=top>
+                        <div class="w2ui-field">
+                            <label>Орган жилищного надзора: </label>
+                            <div>
+                                <input name=regulator_uuid type=hidden>
+                                <input name=regulator_label readonly class=long>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="left-block" width=1 valign=top>
+                        <div class="w2ui-field">
+                            <label>Реестровый номер функции органа жилищного надзора: </label>
+                            <div>
+                                <input name=functionregistrynumber maxlength=36>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="left-block" width=1 valign=top>
+                        <div class="w2ui-field">
+                            <label>ФИО и должность лиц, уполномоченных на проведение проверки: </label>
+                            <div>
+                                <textarea name=authorizedpersons class="input-field"/>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="left-block" width=1 valign=top>
+                        <div class="w2ui-field">
+                            <label>ФИО и должность экспертов, привлекаемых к проведению проверки: </label>
+                            <div>
+                                <textarea name=involvedexperts class="input-field"/>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr id="subject_header">
+                    <td colspan=2>
+                        <span class="w2ui-group-title">Субъект проверки</span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan=2 valign=top>
+                        <div class="w2ui-field">
+                            <label>Субъект проверки: </label>
+                            <div>
+                                <input name=subject_uuid type=hidden>
+                                <input name=subject_label readonly class=long>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="left-block" width=1 valign=top>
+                        <div class="w2ui-field">
+                            <label>Место фактического осуществления деятельности: </label>
+                            <div>
+                                <textarea name=actualactivityplace class="input-field"/>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="left-block" width=1 valign=top>
+
+                        <div class="w2ui-field">
+                            <label>Субъект малого предпринимательства: </label>
+                            <div>
+                                <input name=smallbusiness>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr id="description_header">
+                    <td colspan=2>
+                        <span class="w2ui-group-title">Описание проверки</span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="left-block" width=1 valign=top>
+
+                        <div class="w2ui-field">
+                            <label>Основание проведения проверки: </label>
+                            <div>
+                                <input name=code_vc_nsi_68>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="left-block" width=1 valign=top>
+                        <div class="w2ui-field">
+                            <label>Дополнительная информация об основаниях проведения проверки: </label>
+                            <div>
+                                <textarea name=additionalinfoaboutexambase class="input-field"/>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="left-block" width=1 valign=top>
+                        <div class="w2ui-field">
+                            <label>Цель проведения проверки с реквизитами документов основания: </label>
+                            <div>
+                                <textarea name=objective class="input-field"/>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="left-block" width=1 valign=top>
+
+                        <div class="w2ui-field">
+                            <label>Дата окончания последней проверки: </label>
+                            <div>
+                                <input name=lastexaminationenddate placeholder="" class="dt">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="left-block" width=1 valign=top>
+
+                        <div class="w2ui-field">
+                            <label>Дата начала проверки: </label>
+                            <div>
+                                <input name=monthfrom class="month" maxlength=2> .
+                                <input name=yearfrom class="year" maxlength=4>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="left-block" width=1 valign=top>
+
+                        <div class="w2ui-field">
+                            <label>Срок проведения проверки (рабочие дни): </label>
+                            <div>
+                                <input name=workdays class="short">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="left-block" width=1 valign=top>
+
+                        <div class="w2ui-field">
+                            <label>Срок проведения проверки (рабочие часы): </label>
+                            <div>
+                                <input name=workhours class="short">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="left-block" width=1 valign=top>
+
+                        <div class="w2ui-field">
+                            <label>Орган государственного надзора(контроля)<br/>и/или орган муниципального контроля,<br/>с которым проверка проводится совместно: </label>
+                            <div>
+                                <textarea name=cooperationwith class="input-field"/>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="left-block" width=1 valign=top>
+
+                        <div class="w2ui-field">
+                            <label>Информация о согласовании проведения проверки<br/>с органами прокуратуры: </label>
+                            <div>
+                                <textarea name=prosecutoragreementinformation class="input-field"/>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+
+        </div>
+
+        <div class="w2ui-buttons">
+            <span>
+
+                <button class=w2ui-btn name=edit   data-on=__read_only>Редактировать</button>
+                <button class=w2ui-btn name=update data-off=__read_only>Сохранить</button>
+                <button class=w2ui-btn name=cancel data-off=__read_only>Отменить</button>
+                <button class=w2ui-btn name=delete  data-on=__read_only>Удалить</button>
+
+            </span>
+        </div>
+
+    </div>
+
+</span>

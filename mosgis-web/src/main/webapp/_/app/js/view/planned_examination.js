@@ -10,15 +10,16 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'main', size: 400,
+                {type: 'main', size: 800,
                 
                     tabs: {
 
                         tabs: [
-                            {id: 'check_plan_common', caption: 'Общие'},
+                            {id: 'planned_examination_common', caption: 'Общие'},
+                            {id: 'planned_examination_common_log', caption: 'История изменений'}
                         ],
 
-                        onClick: $_DO.choose_tab_check_plan
+                        onClick: $_DO.choose_tab_planned_examination
 
                     }                
                 

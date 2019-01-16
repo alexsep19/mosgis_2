@@ -31,7 +31,7 @@ public class SupplyResourceContract extends EnTable {
         SIGNINGDATE          (Type.DATE, "Дата заключения"),
         EFFECTIVEDATE        (Type.DATE, "Дата вступления в силу"),
         COMPLETIONDATE       (Type.DATE, null, "Дата окончания действия"),
-        AUTOMATICROLLOVERONEYEAR(Type.BOOLEAN, null, "1, если автопролонгация на год; иначе 0"),
+        AUTOROLLOVER         (Type.BOOLEAN, null, "1, если автопролонгация на год; иначе 0"),
 
         CODE_VC_NSI_58       (Type.STRING, 20, "Основание заключения договора (НСИ 58)"),
         IS_CONTRACT          (Type.BOOLEAN,    null, "1, если является публичным; иначе 0"),
@@ -54,7 +54,7 @@ public class SupplyResourceContract extends EnTable {
         ),
         VOLUMEDEPENDS        (Type.BOOLEAN, null, "1, если Объем поставки ресурса(ов) определяется на основании прибора учета; иначе 0"),
 
-        METERINGDEVICEINFORMATION(Type.BOOLEAN, null, "1, если РСО размещает информацию об индивидуальных приборах учета и их показаниях; иначе 0"),
+        MDINFO               (Type.BOOLEAN, null, "1, если РСО размещает информацию об индивидуальных приборах учета и их показаниях; иначе 0"),
 
 
         DDT_M_START          (Type.NUMERIC, 2, null, "Начало периода ввода показаний ПУ (1..31 — конкретное число, 99 — последнее число)"),

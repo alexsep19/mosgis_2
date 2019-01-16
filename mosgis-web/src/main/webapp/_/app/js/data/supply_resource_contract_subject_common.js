@@ -48,9 +48,6 @@ define ([], function () {
         if (!v.startsupplydate)
             die('startsupplydate', 'Укажите, пожалуйста, дату начала поставки ресурса')
 
-        if (v.volume && !v.unit)
-            die('unit', 'Укажите, пожалуйста, единицу измерения планового объема')
-
         query ({type: 'supply_resource_contract_subjects', action: 'update'}, {data: v}, reload_page)
 
     }

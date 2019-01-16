@@ -12,9 +12,9 @@ define ([], function () {
         var is_customer_executor = it.id_customer_type == 5 // вторая сторона договора исполнитель КУ
 
         var is_on = {
-            '#tr_ddt_m_start' : v.volumedepends == 1 || v.meteringdeviceinformation == 1,
-            '#tr_ddt_m_end'   : v.volumedepends == 1 || v.meteringdeviceinformation == 1,
-            '#tr_ddt_d_start' : !onetimepayment && (!is_customer_executor || v.meteringdeviceinformation >= 0),
+            '#tr_ddt_m_start' : v.volumedepends == 1 || v.mdinfo == 1,
+            '#tr_ddt_m_end'   : v.volumedepends == 1 || v.mdinfo == 1,
+            '#tr_ddt_d_start' : !onetimepayment && (!is_customer_executor || v.mdinfo >= 0),
             '#tr_ddt_i_start' : !onetimepayment && !is_customer_executor && v.is_contract != 1,
             '#tr_ddt_n_start' : is_customer_executor && v.countingresource == 1 && v.is_contract != 1,
             '#tr_accrualprocedure': is_customer_executor
@@ -40,7 +40,7 @@ define ([], function () {
 
             'input[name=accrualprocedure]': is_customer_executor,
             'input[name=countingresource]': is_customer_executor && v.accrualprocedure == 10,
-            'input[name=meteringdeviceinformation]': is_customer_executor && v.countingresource == 1
+            'input[name=mdinfo]': is_customer_executor && v.countingresource == 1
         }
 
         for (var s in is_active_input) {
@@ -135,7 +135,7 @@ define ([], function () {
                 {name: 'effectivedate', type: 'date'},
 
                 {name: 'completiondate', type: 'date'},
-                {name: 'automaticrolloveroneyear', type: 'list', options: {items: data.voc_bool}},
+                {name: 'autorollover', type: 'list', options: {items: data.voc_bool}},
 
                 {name: 'code_vc_nsi_58', type: 'list', options: {items: data.vc_nsi_58.items}},
 
@@ -148,7 +148,7 @@ define ([], function () {
                 {name: 'accrualprocedure', type: 'list', options: {items: data.vc_gis_ctr_dims.items}},
 
                 {name: 'countingresource', type: 'list', options: {items: data.voc_specifyingqualityindicators}},
-                {name: 'meteringdeviceinformation', type: 'list', options: {items: data.voc_bool}},
+                {name: 'mdinfo', type: 'list', options: {items: data.voc_bool}},
 
                 {name: 'specqtyinds', type: 'list', options: {items: data.vc_gis_ctr_dims.items}},
 
