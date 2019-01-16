@@ -29,7 +29,7 @@ public class SupplyResourceContractSubject extends EnTable {
         STARTSUPPLYDATE       (DATE, "Дата начала поставки ресурса"),
         ENDSUPPLYDATE         (DATE, null, "Дата окончания поставки ресурса"),
 
-        VOLUME                (NUMERIC, 30, 12, Num.ZERO, "Плановый объем"),
+        VOLUME                (NUMERIC, 30, 12, null, "Плановый объем"),
         UNIT                  (VocOkei.class, null, "Единица измерения"),
         FEEDINGMODE           (STRING, 250, null, "Режим подачи"),
 
@@ -114,6 +114,11 @@ public class SupplyResourceContractSubject extends EnTable {
                 + " IF :NEW.volume IS NOT NULL AND :NEW.volume < 0 "
                 + " THEN "
                 + "   raise_application_error (-20000, 'Укажите неотрицательный плановый объем. Операция отменена.'); "
+                + " END IF; "
+
+                + " IF :NEW.volume IS NOT NULL AND :NEW.unit IS NULL "
+                + " THEN "
+                + "   raise_application_error (-20000, 'Укажите, пожалуйста, единицу измерения планового объема. Операция отменена.'); "
                 + " END IF; "
         + "END;");
     }

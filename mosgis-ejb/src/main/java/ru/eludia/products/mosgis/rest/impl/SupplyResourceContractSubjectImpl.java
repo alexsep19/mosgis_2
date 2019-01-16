@@ -91,17 +91,7 @@ public class SupplyResourceContractSubjectImpl extends BaseCRUD<SupplyResourceCo
 
         final JsonObject item = db.getJsonObject (m
             .get (SupplyResourceContractSubject.class, id, "*")
-            .toOne(ActualSupplyResourceContract.class, "AS sr_ctr"
-                    , "uuid"
-                    , "customer_label"
-                    , "customer_type_label"
-                    , "label"
-                    , "isplannedvolume"
-                    , "plannedvolumetype"
-                    , "uuid_person_customer"
-                    , "uuid_org_customer"
-                    , "uuid_org"
-            ).on("uuid_sr_ctr")
+            .toOne(ActualSupplyResourceContract.class, "AS sr_ctr", "*").on("uuid_sr_ctr")
         );
 
         job.add ("item", item);
