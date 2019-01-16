@@ -7,6 +7,7 @@ import java.util.UUID;
 import javax.xml.bind.JAXBContext;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
@@ -16,6 +17,7 @@ import ru.eludia.products.mosgis.db.model.tables.base.BaseTest;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.ws.base.AbstactServiceAsync;
 import ru.gosuslugi.dom.schema.integration.services.ImportWorkingPlanRequest;
+import ru.gosuslugi.dom.schema.integration.services.ExportWorkingPlanRequest;
 import ru.eludia.products.mosgis.db.model.tables.WorkingPlan.c;
 
 public class WorkingPlanLogTest extends BaseTest {
@@ -35,7 +37,7 @@ public class WorkingPlanLogTest extends BaseTest {
         
         super ();        
 
-        jc            = JAXBContext.newInstance (ImportWorkingPlanRequest.class);
+        jc            = JAXBContext.newInstance (ImportWorkingPlanRequest.class, ExportWorkingPlanRequest.class);
         schema        = AbstactServiceAsync.loadSchema ("services/hcs-services-types.xsd");
         
         table         = (WorkingPlan) model.get (WorkingPlan.class);
@@ -132,6 +134,7 @@ public class WorkingPlanLogTest extends BaseTest {
             for (Map<String, Object> i: (List<Map<String, Object>>) r.get ("items")) i.put ("worklistitemguid", UUID.randomUUID ());
 
             checkImport (r);
+            checkExport (r);
 
         }
         
@@ -142,7 +145,13 @@ public class WorkingPlanLogTest extends BaseTest {
         validate (WorkingPlanLog.toImportWorkingPlanRequest (r));
     }
     
-//    @Test
+    private void checkExport (final Map<String, Object> r) throws IllegalStateException {
+        dump (r);
+        validate (WorkingPlanLog.toExportWorkingPlanRequest (r));
+    }
+    
+    @Ignore
+    @Test
     public void testInsert () throws SQLException {
 
         checkSample (HASH (

@@ -9,6 +9,7 @@ import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.gosuslugi.dom.schema.integration.services.ExportWorkingPlanRequest;
 import ru.gosuslugi.dom.schema.integration.services.ImportWorkingPlanRequest;
 import ru.gosuslugi.dom.schema.integration.services.WorkingPlanType;
 
@@ -43,6 +44,17 @@ public class WorkingPlanLog extends GisWsLogTable {
         addDates (result.getWorkDate (), result.getYear (), result.getMonth (), r.get (WorkingPlanItem.c.DAYS_BITMASK.lc ()));
         if (!result.getWorkDate ().isEmpty ()) result.setWorkCount (null);
         result.setTransportGUID (UUID.randomUUID ().toString ());
+        return result;
+    }
+    
+    public static ExportWorkingPlanRequest toExportWorkingPlanRequest (Map<String, Object> r) {
+        final ExportWorkingPlanRequest result = new ExportWorkingPlanRequest ();
+        result.getWork ().add (toExportWorkingPlanRequestWork (r));
+        return result;
+    }    
+    
+    private static ExportWorkingPlanRequest.Work toExportWorkingPlanRequestWork (Map<String, Object> r) {
+        final ExportWorkingPlanRequest.Work result = DB.to.javaBean (ExportWorkingPlanRequest.Work.class, r);
         return result;
     }
     

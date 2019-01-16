@@ -60,5 +60,9 @@ public class WsGisServicesClient {
     public AckRequest.Ack importWorkingPlan (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
         return getPort (orgPPAGuid, messageGUID).importWorkingPlan (WorkingPlanLog.toImportWorkingPlanRequest (r)).getAck ();
     }    
+    
+    public AckRequest.Ack exportWorkingPlan (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).exportWorkingPlan (WorkingPlanLog.toExportWorkingPlanRequest (r)).getAck ();
+    }
 
 }

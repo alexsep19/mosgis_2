@@ -7,7 +7,6 @@ import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
-import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
 
 public class WorkingPlan extends EnTable {
 
