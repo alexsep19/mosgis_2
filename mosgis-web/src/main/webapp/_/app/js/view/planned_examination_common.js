@@ -6,20 +6,22 @@ define ([], function () {
         
         function recalc () {
 
-            $('#uriregistrationplannumber').prop ('disabled', true)
-            $('#uriregistrationplandate').prop ('disabled', true)
+            $('#uriregistrationnumber').prop ('disabled', true)
+            $('#uriregistrationdate').prop ('disabled', true)
 
             var r = w2ui [form_name].record
 
+            console.log (r)
+
             if (!r.shouldberegistered) {
 
-                $('#uriregistrationplannumber').prop ('placeholder', 'Проверка не должна быть зарегистрирована в ЕРП')
-                $('#uriregistrationplandate').prop ('placeholder', 'Проверка не должна быть зарегистрирована в ЕРП')
+                $('#uriregistrationnumber').prop ('placeholder', 'Проверка не должна быть зарегистрирована в ЕРП')
+                $('#uriregistrationdate').prop ('placeholder', 'X')
 
             }
             else if (!r.__read_only) {
-                $('#uriregistrationplannumber').prop ('disabled', false)
-                $('#uriregistrationplandate').prop ('disabled', false)
+                $('#uriregistrationnumber').prop ('disabled', false)
+                $('#uriregistrationdate').prop ('disabled', false)
             }
 
         }
@@ -35,8 +37,6 @@ define ([], function () {
             f.record = r
             
             $('div[data-block-name=planned_examination_common] input, textarea').prop ({disabled: data.__read_only})
-
-            //recalc ()
 
             f.refresh ()
 
