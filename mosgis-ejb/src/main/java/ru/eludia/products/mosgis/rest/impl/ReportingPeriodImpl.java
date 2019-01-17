@@ -4,16 +4,23 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.json.JsonObject;
+import ru.eludia.base.Model;
+import ru.eludia.base.db.sql.build.QP;
+import ru.eludia.base.model.Table;
+import ru.eludia.base.model.phys.PhysicalCol;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.ReportingPeriod;
 import ru.eludia.products.mosgis.db.model.tables.WorkingList;
+import ru.eludia.products.mosgis.db.model.tables.WorkingListItem;
 import ru.eludia.products.mosgis.db.model.tables.WorkingPlan;
+import ru.eludia.products.mosgis.db.model.tables.WorkingPlanItem;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.ReportingPeriodLocal;
 import ru.eludia.products.mosgis.rest.impl.base.Base;
 
@@ -48,6 +55,64 @@ public class ReportingPeriodImpl extends Base<ReportingPeriod> implements Report
         
         VocBuilding.addCaCh (db, job, item.getString (fhg));
 
+    });}
+
+    @Override
+    public JsonObject doFill (String id, User user) {return doAction ((db) -> {
+        
+        Model m = db.getModel ();
+        
+        final Table planTable = m.get (WorkingPlanItem.class);
+        final String listTable = m.get (WorkingListItem.class).getName ();
+        
+        PhysicalCol key = planTable.getColumn (WorkingPlanItem.c.UUID_REPORTING_PERIOD).toPhysical ();
+        
+        QP qp = new QP ("MERGE INTO ");        
+        qp.append (planTable.getName ());
+        qp.append (" n USING (SELECT pi.uuid");
+        
+        qp.append (", pi.");
+        qp.append (WorkingPlanItem.c.WORKCOUNT.lc ());
+        qp.append (" ");
+        qp.append (WorkingPlanItem.c.PLANNEDCOUNT.lc ());
+        
+        qp.append (", li.");
+        qp.append (WorkingListItem.c.AMOUNT.lc ());
+        qp.append (" ");
+        qp.append (WorkingPlanItem.c.AMOUNT.lc ());
+
+        qp.append (", li.");
+        qp.append (WorkingListItem.c.PRICE.lc ());
+        qp.append (" ");
+        qp.append (WorkingPlanItem.c.PRICE.lc ());
+        
+        qp.append (" FROM ");
+        qp.append (planTable.getName ());
+        qp.append (" pi INNER JOIN  ");
+        qp.append (listTable);
+        qp.append (" li ON pi.");
+        qp.append (WorkingPlanItem.c.UUID_WORKING_LIST_ITEM.lc ());
+        qp.append ("=li.uuid WHERE ");
+        qp.add (key, id);
+        qp.append ("=?) o ON (n.uuid=o.uuid) WHEN MATCHED THEN UPDATE SET ");
+        
+        qp.append ("n.");
+        qp.append (WorkingPlanItem.c.PLANNEDCOUNT.lc ());
+        qp.append ("=o.");
+        qp.append (WorkingPlanItem.c.PLANNEDCOUNT.lc ());
+        
+        qp.append (", n.");
+        qp.append (WorkingPlanItem.c.AMOUNT.lc ());
+        qp.append ("=o.");
+        qp.append (WorkingPlanItem.c.AMOUNT.lc ());
+
+        qp.append (", n.");
+        qp.append (WorkingPlanItem.c.PRICE.lc ());
+        qp.append ("=o.");
+        qp.append (WorkingPlanItem.c.PRICE.lc ());
+        
+        db.d0 (qp);
+        
     });}
     
 }

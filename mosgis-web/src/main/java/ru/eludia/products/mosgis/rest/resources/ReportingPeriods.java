@@ -52,5 +52,12 @@ public class ReportingPeriods extends EJBResource <ReportingPeriodLocal> {
         final JsonObject item = back.getItem (id);
         return item;
     }
+    
+    @POST
+    @Path("{id}/fill") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject doFill (@PathParam ("id") String id) { 
+        return back.doFill (id, getUser ());
+    }
 
 }

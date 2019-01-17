@@ -1,5 +1,17 @@
 define ([], function () {
 
+    $_DO.fill_reporting_period_planned_works = function (e) {
+    
+        if (!confirm ('Заполнить отчёт плановыми показателями?')) return
+    
+        var grid = w2ui ['reporting_period_planned_works_grid']
+        
+        grid.lock ()
+
+        query ({type: 'reporting_periods', action: 'fill'}, {}, reload_page)
+    
+    }
+
     $_DO.patch_reporting_period_planned_works = function (e) {
     
         var grid = this

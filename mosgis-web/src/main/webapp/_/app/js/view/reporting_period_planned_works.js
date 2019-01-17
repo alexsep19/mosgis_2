@@ -16,6 +16,14 @@ define ([], function () {
             },     
             
             multiSelect: false,
+            
+            toolbar: {
+            
+                items: [
+                    {type: 'button', id: 'fill', caption: 'Заполнить плановыми показателями', onClick: $_DO.fill_reporting_period_planned_works, off: !is_own},
+                ].filter (not_off),
+                
+            },
 
             columnGroups : [            
                 {span: 3, caption: ' '},
