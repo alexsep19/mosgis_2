@@ -39,7 +39,7 @@ define ([], function () {
                 
                 {field: 'price', caption: 'Цена', size: 10, editable: !is_own ? null : {type: 'float:4', min: 0}},
                 {field: 'amount', caption: 'Объём', size: 10, editable: !is_own ? null : {type: 'float:3', min: 0}},
-                {field: 'plannedcount', caption: 'Количество', size: 10, editable: !is_own ? null : {type: 'int', min: 1}},
+                {field: 'count', caption: 'Количество', size: 10, editable: !is_own ? null : {type: 'int', min: 1}},
                 {field: 'ok.national', caption: 'ед.', size: 5},
                 {field: 'totalcost', caption: 'Стоимость', size: 20},
                 {field: '_', caption: 'Фото', size: 20},

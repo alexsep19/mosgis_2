@@ -74,7 +74,7 @@ public class ReportingPeriodImpl extends Base<ReportingPeriod> implements Report
         qp.append (", pi.");
         qp.append (WorkingPlanItem.c.WORKCOUNT.lc ());
         qp.append (" ");
-        qp.append (WorkingPlanItem.c.PLANNEDCOUNT.lc ());
+        qp.append (WorkingPlanItem.c.COUNT.lc ());
         
         qp.append (", li.");
         qp.append (WorkingListItem.c.AMOUNT.lc ());
@@ -97,9 +97,9 @@ public class ReportingPeriodImpl extends Base<ReportingPeriod> implements Report
         qp.append ("=?) o ON (n.uuid=o.uuid) WHEN MATCHED THEN UPDATE SET ");
         
         qp.append ("n.");
-        qp.append (WorkingPlanItem.c.PLANNEDCOUNT.lc ());
+        qp.append (WorkingPlanItem.c.COUNT.lc ());
         qp.append ("=o.");
-        qp.append (WorkingPlanItem.c.PLANNEDCOUNT.lc ());
+        qp.append (WorkingPlanItem.c.COUNT.lc ());
         
         qp.append (", n.");
         qp.append (WorkingPlanItem.c.AMOUNT.lc ());
