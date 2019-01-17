@@ -19,7 +19,7 @@ define ([], function () {
 
                         tabs: [
                             {id: 'houses', caption: 'Жилой фонд'},
-                            {id: 'mgmt_contracts', caption: 'Договоры управления', off: !($_USER.role.admin || $_USER.is_building_society () || $_USER.has_nsi_20 (1, 4))},
+                            {id: 'mgmt_contracts', caption: 'Договоры управления', off: !($_USER.role.admin || $_USER.is_building_society () || $_USER.has_nsi_20 (1, 4, 7))},
                             {id: 'public_property_contracts', caption: 'Договоры пользования общим имуществом', off: !($_USER.role.admin || $_USER.is_building_society () || $_USER.has_nsi_20 (1, 7, 8))},
                             {id: 'supply_resource_contracts', caption: 'Договоры ресурсоснабжения'
                                 , off: !($_USER.role.admin || $_USER.is_building_society() || $_USER.has_nsi_20(1, 2, 4, 7, 8))

@@ -98,7 +98,7 @@ public class ContractPayments extends EJBResource <ContractPaymentLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) { 
         final JsonObject item = back.getItem (id);
-        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
+        if (!securityContext.isUserInRole ("admin") && !securityContext.isUserInRole ("nsi_20_7")) checkOrg (item.getJsonObject ("item"));
         return item;
     }
     
