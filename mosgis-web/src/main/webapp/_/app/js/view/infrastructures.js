@@ -14,6 +14,7 @@ define ([], function () {
             searches: [
                 {field: 'id_is_status', caption: 'Статус', type: 'enum', options: {items: data.vc_gis_status.items}},
                 {field: 'code_vc_nsi_33', caption: 'Вид объекта', type: 'enum', options: {items: data.vc_nsi_33.items}},
+                {field: 'oktmo', caption: 'ОКТМО', type: 'text'},
                 {field: 'manageroki_label', caption: 'Правообладатель', type: 'text'},
                 {field: 'endmanagmentdate', caption: 'Окончание управления', type: 'date'},
                 {field: 'is_deleted', caption: 'Статус записи', type: 'enum', options: {items: [

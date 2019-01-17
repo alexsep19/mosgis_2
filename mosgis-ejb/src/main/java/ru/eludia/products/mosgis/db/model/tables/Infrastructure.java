@@ -40,6 +40,7 @@ public class Infrastructure extends EnTable {
         CODE_VC_NSI_38          (STRING,  20, null, "Вид электростанции (НСИ 38)"),
         
         OKTMO                   (VocOktmo.class,            "ОКТМО"),
+        OKTMO_CODE              (STRING, 11, "Код ОКТМО"),
         ADRESS                  (STRING,         140, null, "Адрес объекта"),
         COMISSIONINGYEAR        (NUMERIC,        4,         "Год ввода в эксплуатацию"),
         COUNTACCIDENTS          (INTEGER,                   "Число аварий на 100 км сетей"),
@@ -78,6 +79,12 @@ public class Infrastructure extends EnTable {
                         + "INTO :NEW.manageroki_label "
                         + "FROM vc_orgs org "
                         + "WHERE org.orgrootentityguid = :NEW.manageroki; "
+                    + "END IF; "
+                    + "IF :NEW.oktmo IS NOT NULL THEN "
+                        + "SELECT oktmo.code "
+                        + "INTO :NEW.oktmo_code "
+                        + "FROM vc_oktmo oktmo "
+                        + "WHERE oktmo.id = :NEW.oktmo; "
                     + "END IF; "
                 + "END; "
         );
