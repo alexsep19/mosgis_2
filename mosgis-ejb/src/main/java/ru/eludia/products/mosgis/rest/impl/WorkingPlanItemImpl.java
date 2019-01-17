@@ -16,11 +16,11 @@ import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.WorkingPlanItemLocal;
-import ru.eludia.products.mosgis.rest.impl.base.Base;
+import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-public class WorkingPlanItemImpl extends Base<WorkingPlanItem> implements WorkingPlanItemLocal {
+public class WorkingPlanItemImpl extends BaseCRUD<WorkingPlanItem> implements WorkingPlanItemLocal {
     
     private static final Logger logger = Logger.getLogger (WorkingPlanItemImpl.class.getName ());           
     
@@ -46,5 +46,10 @@ public class WorkingPlanItemImpl extends Base<WorkingPlanItem> implements Workin
         db.addJsonArrays (job, select);
 
     });}
+
+    @Override
+    public JsonObject getItem (String id) {
+        throw new UnsupportedOperationException ("Not supported yet.");
+    }
 
 }

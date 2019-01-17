@@ -1,5 +1,5 @@
 define ([], function () {
-/*
+
     $_DO.patch_reporting_period_planned_works = function (e) {
     
         var grid = this
@@ -15,13 +15,13 @@ define ([], function () {
 
         grid.lock ()
         
-        var tia = {type: 'working_list_items', action: 'update', id: e.recid}
+        var tia = {type: 'working_plan_items', action: 'update', id: e.recid}
         
         var d = {}; d [data.k] = data.v
 
         query (tia, {data: d}, function () {
         
-            query ({type: 'working_list_items', id: undefined}, {data: {uuid_working_list: $_REQUEST.id}}, function (d) {
+            query ({type: 'working_plan_items', id: undefined}, {data: {uuid_working_plan: $('body').data ('data').item.uuid_working_plan}}, function (d) {
             
                 var totalcost
 
@@ -51,7 +51,7 @@ define ([], function () {
         }, edit_failed (grid, e))
     
     }
-*/
+
     return function (done) {        
 
         var layout = w2ui ['passport_layout']

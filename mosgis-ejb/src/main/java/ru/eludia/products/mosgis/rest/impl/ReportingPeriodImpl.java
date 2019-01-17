@@ -25,24 +25,28 @@ public class ReportingPeriodImpl extends Base<ReportingPeriod> implements Report
     public JsonObject getItem (String id) {return fetchData ((db, job) -> {
 
         final String fhg = WorkingList.c.FIASHOUSEGUID.lc ();
-
-        job.add ("item", db.getJsonObject (ModelHolder.getModel ()
-            .get (ReportingPeriod.class, id, "*")
-            .toOne (WorkingPlan.class, "AS plan", "*").on ()
-            .toOne (WorkingList.class
-                , fhg + " AS " + fhg
-                , WorkingList.c.DT_FROM.lc ()
-                , WorkingList.c.DT_TO.lc ()
-                , WorkingList.c.ID_CTR_STATUS.lc ()
-            ).on ()
-            .toMaybeOne (VocBuilding.class, "AS fias", "label").on ()
-            .toMaybeOne (ContractObject.class, "AS cao", "uuid", "startdate", "enddate").on ()
-            .toMaybeOne (Contract.class, "AS ca", "*").on ()
-            .toMaybeOne (CharterObject.class, "AS cho", "uuid", "startdate", "enddate").on ()
-            .toMaybeOne (Charter.class, "AS ch", "*").on ()
-            .toMaybeOne (VocOrganization.class, "AS chorg", "label").on ("ch.uuid_org=chorg.uuid")                
+        
+        final JsonObject item = db.getJsonObject (ModelHolder.getModel ()
+                .get (ReportingPeriod.class, id, "*")
+                .toOne (WorkingPlan.class, "AS plan", "*").on ()
+                .toOne (WorkingList.class
+                        , fhg + " AS " + fhg
+                        , WorkingList.c.DT_FROM.lc ()
+                        , WorkingList.c.DT_TO.lc ()
+                        , WorkingList.c.ID_CTR_STATUS.lc ()
+                ).on ()
+                .toMaybeOne (VocBuilding.class, "AS fias", "label").on ()
+                .toMaybeOne (ContractObject.class, "AS cao", "uuid", "startdate", "enddate").on ()
+                .toMaybeOne (Contract.class, "AS ca", "*").on ()
+                .toMaybeOne (CharterObject.class, "AS cho", "uuid", "startdate", "enddate").on ()
+                .toMaybeOne (Charter.class, "AS ch", "*").on ()
+                .toMaybeOne (VocOrganization.class, "AS chorg", "label").on ("ch.uuid_org=chorg.uuid")                
                 
-        ));
+        );
+
+        job.add ("item", item);
+        
+        VocBuilding.addCaCh (db, job, item.getString (fhg));
 
     });}
     

@@ -5,6 +5,7 @@ import javax.json.JsonObject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import ru.eludia.products.mosgis.rest.api.WorkingPlanItemLocal;
@@ -53,4 +54,14 @@ public class WorkingPlanItems extends EJBResource <WorkingPlanItemLocal> {
         return back.select (p, getUser ()); 
     }   
     
+    @POST
+    @Path("{id}/update") 
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject doUpdate (@PathParam ("id") String id, JsonObject p) {
+//        final JsonObject item = getData (id);
+//        checkOrg (item);
+        return back.doUpdate (id, p, getUser ());
+    }
+
 }

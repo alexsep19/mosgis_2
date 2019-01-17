@@ -19,7 +19,12 @@ public class WorkingPlanItem extends EnTable {
         MONTH                  (Type.NUMERIC, 2,             "Месяц"),
         WORKCOUNT              (Type.NUMERIC, 2,             "Количество работ"),
         DAYS_BITMASK           (Type.BINARY,  5,       null, "Битовая маска чисел месяца (например, 0x4001 — 31-е и 1-е числа)"),        
-        WORKPLANITEMGUID       (Type.UUID,  null,            "Идентификатор работы/услуги перечня")        
+        WORKPLANITEMGUID       (Type.UUID,  null,            "Идентификатор работы/услуги перечня"),
+
+        PRICE                  (Type.NUMERIC, 14, 4, null,   "Фактическая цена"),
+        AMOUNT                 (Type.NUMERIC, 14, 3, null,   "Фактический объём"),
+        TOTALCOST              (Type.NUMERIC, 22, 2, null,   "Фактическая стоимость выполненных работ"),
+        
         ;
 
         @Override

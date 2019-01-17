@@ -32,7 +32,28 @@ define ([], function () {
             var it = data.item
             
             it._can = {}               
-                                
+            
+            if (!it.is_deleted) {
+
+                var cach = data.cach
+
+                if (cach 
+                    && cach.is_own 
+                    && cach ['org.uuid'] == $_USER.uuid_org 
+                    && cach.id_ctr_status_gis == 40
+                    && it ['tb_work_lists.id_ctr_status'] == 40
+                ) {
+
+//                    switch (it.id_ctr_status) {
+//                        case 10:
+//                        case 11:
+                            it._can.edit = 1
+//                    }
+
+                }        
+
+            }                                
+
             $('body').data ('data', data)            
 
             done (data)
