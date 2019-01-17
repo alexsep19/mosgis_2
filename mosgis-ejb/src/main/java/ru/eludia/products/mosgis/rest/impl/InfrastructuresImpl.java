@@ -10,17 +10,9 @@ import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
-import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.Infrastructure;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
-import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
-import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
-import ru.eludia.products.mosgis.db.model.voc.VocContractPaymentType;
-import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType;
-import static ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType.i.OWNERS;
-import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerTypeNsi58;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
-import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.InfrastructuresLocal;
@@ -30,6 +22,8 @@ import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements InfrastructuresLocal {
 
+    private final String LABEL_FIELD_NAME_NSI_33 = "f_c8e745bc63";
+    
     @Override
     public JsonObject select(JsonObject p, User user) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -46,7 +40,6 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
         JsonObjectBuilder jb = Json.createObjectBuilder ();
         
         VocAction.addTo (jb);
-        VocContractPaymentType.addTo (jb);
         
         final MosGisModel model = ModelHolder.getModel ();
 
@@ -55,13 +48,17 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
             db.addJsonArrays (jb,
 
                 NsiTable.getNsiTable (3).getVocSelect (),
-                NsiTable.getNsiTable (33).getVocSelect (),
                 NsiTable.getNsiTable (34).getVocSelect (),
                 NsiTable.getNsiTable (35).getVocSelect (),
                 NsiTable.getNsiTable (37).getVocSelect (),
                 NsiTable.getNsiTable (38).getVocSelect (),
                 NsiTable.getNsiTable (39).getVocSelect (),
                 NsiTable.getNsiTable (40).getVocSelect (),
+                
+                model
+                    .select (NsiTable.getNsiTable (33), "code AS id", LABEL_FIELD_NAME_NSI_33 + " AS label")
+                    .where (LABEL_FIELD_NAME_NSI_33 + " IS NOT NULL")
+                    .orderBy ("code"),
 
                 model
                     .select (VocGisStatus.class, "id", "label")
