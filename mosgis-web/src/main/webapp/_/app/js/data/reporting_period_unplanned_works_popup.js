@@ -10,18 +10,34 @@ define ([], function () {
         if (!(v.price > 0)) die ('price', 'Укажите, пожалуйста, цену')
         if (!(v.amount > 0)) die ('amount', 'Укажите, пожалуйста, объём оказанных услуг')
         if (!(v.count > 0)) die ('count', 'Укажите, пожалуйста, количество оказанных услуг')
+        
+        if (v.code_vc_nsi_56 == 3) {
+            if (!v.code_vc_nsi_57) die ('code_vc_nsi_57', 'Укажите, пожалуйста, объект аварии')
+            if (!v.accidentreason) die ('accidentreason', 'Укажите, пожалуйста, причину аварии')
+            if (v.code_vc_nsi_57 > 1 && !v.code_vc_nsi_3)  die ('code_vc_nsi_3', 'Укажите, пожалуйста, вид КУ')
+        }
+        else {
+            v.code_vc_nsi_57 = null
+            v.accidentreason = ""
+        }
+
+        if (v.code_vc_nsi_56 == 5) {
+            if (!v.code_vc_nsi_3)  die ('code_vc_nsi_3', 'Укажите, пожалуйста, вид КУ')
+            if (!v.organizationguid)  die ('organizationguid', 'Укажите, пожалуйста, поставщика коммунального ресурса')
+        }
+        else {
+            v.organizationguid = null
+        }
 
         switch (parseInt (v.code_vc_nsi_56)) {
             case 3:
-                if (!v.code_vc_nsi_57) die ('code_vc_nsi_57', 'Укажите, пожалуйста, объект аварии')
-                if (!v.accidentreason) die ('accidentreason', 'Укажите, пожалуйста, причину аварии')
-                if (v.code_vc_nsi_57 > 1 && !v.code_vc_nsi_3)  die ('code_vc_nsi_3', 'Укажите, пожалуйста, вид КУ')
-                break
             case 5:
-                if (!v.code_vc_nsi_3)  die ('code_vc_nsi_3', 'Укажите, пожалуйста, вид КУ')
-                if (!v.organizationguid)  die ('organizationguid', 'Укажите, пожалуйста, поставщика коммунального ресурса')
                 break
+            default:
+                v.code_vc_nsi_3 = null
         }
+        
+        if (v.comment_ == null) v.comment_ = ""
 
         var tia = {type: 'unplanned_works'}
         tia.id = form.record.id
