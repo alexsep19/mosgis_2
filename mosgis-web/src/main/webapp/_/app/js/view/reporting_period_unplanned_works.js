@@ -40,7 +40,7 @@ define ([], function () {
             url: '/mosgis/_rest/?type=unplanned_works',
 
             onAdd: function () {
-                $_SESSION.set ('record', {})
+                $_SESSION.set ('record', {count: 1})
                 use.block ('reporting_period_unplanned_works_popup')
             },
             
