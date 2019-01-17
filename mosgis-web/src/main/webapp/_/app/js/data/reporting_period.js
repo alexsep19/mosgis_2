@@ -21,13 +21,11 @@ define ([], function () {
     
         query ({type: 'reporting_periods'}, {}, function (data) {        
         
-/*        
             add_vocabularies (data, {
-                vc_gis_status: 1,
-                vc_actions: 1,
+                vc_nsi_57: 1,
+                vc_nsi_3: 1,
                 org_works: 1,
             })
-*/        
             
             var it = data.item
             
