@@ -1,0 +1,82 @@
+<span
+    data-popup-width=530
+    data-popup-height=260
+    data-popup-title='Показатель качества'
+    >
+
+    <style>
+
+        label[data-block-name=supply_resource_contract_subject_quality_levels_popup] {
+            width: 120px;
+            margin-right: 10px;
+        }
+
+        input[data-block-name=supply_resource_contract_subject_quality_levels_popup] {
+            width: 320px !important;
+        }
+        input.number[data-block-name=supply_resource_contract_subject_quality_levels_popup] {
+            width: 100px !important;
+        }
+        input.short[data-block-name=supply_resource_contract_subject_quality_levels_popup] {
+            width: 120px !important;
+        }
+    </style>
+
+    <div class="w2ui-reset w2ui-form" style="height:210px;margin:8px 0 0 0;" >
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field" id="f_code_vc_nsi_276">
+                <label>Наименование</label>
+                <div>
+                    <input name=uuid_sr_ctr_subj type=hidden />
+                    <input name=code_vc_nsi_276 />
+                </div>
+            </div>
+
+            <div class="w2ui-field" id="f_indicatorvalue_from">
+                <label>Значение</label>
+                <div>
+                    от
+                    <input name=indicatorvalue_from class="short" />
+                    до
+                    <input name=indicatorvalue_to class="short" />
+                </div>
+            </div>
+
+            <div class="w2ui-field" id="f_indicatorvalue">
+                <label>Значение</label>
+                <div>
+                    <input name=indicatorvalue class=number />
+                </div>
+            </div>
+
+            <div class="w2ui-field" id="f_indicatorvalue_is">
+                <label>Значение</label>
+                <div>
+                    <input name=indicatorvalue_is class=checkbox />
+                </div>
+            </div>
+
+            <div class="w2ui-field" id="f_indicatorvalue_okei">
+                <label>Единица измерения</label>
+                <div>
+                    <input name=code_vc_okei>
+                </div>
+            </div>
+
+            <div class="w2ui-field" >
+                <label>Дополнительная<br/>информация</label>
+                <div>
+                    <input name=additionalinformation>
+                </div>
+            </div>
+        </div>
+
+        <div class="w2ui-buttons">
+            <button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+    </div>
+
+</span>
