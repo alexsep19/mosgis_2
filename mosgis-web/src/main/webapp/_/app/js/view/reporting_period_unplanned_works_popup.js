@@ -30,9 +30,14 @@ define ([], function () {
                 form.refresh ()
             })
             
-//darn (sh)            
+            var h = 30 * sh
             
-//            darn ($('div[name=reporting_period_unplanned_works_popup_form]').height ())            
+            $('div.page-0[data-block-name=reporting_period_unplanned_works_popup]').height (160 + h)
+            $('#w2ui-popup').height (280 + h)
+            
+            var $f = $('div.w2ui-form[data-block-name=reporting_period_unplanned_works_popup]')            
+            $f.height (235 + h)
+            $('.w2ui-form-box', $f).height (232 + h)
             
         
         }    
