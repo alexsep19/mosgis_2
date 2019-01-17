@@ -23,6 +23,8 @@ public class WorkingPlanItem extends EnTable {
 
         PRICE                  (Type.NUMERIC, 14, 4, null,   "Фактическая цена"),
         AMOUNT                 (Type.NUMERIC, 14, 3, null,   "Фактический объём"),
+        PLANNEDCOUNT           (Type.NUMERIC,  4, 0, null,   "Количество работ по плану"),
+        
         TOTALCOST              (Type.NUMERIC, 22, 2, null,   "Фактическая стоимость выполненных работ"),
         
         ;
@@ -55,11 +57,17 @@ public class WorkingPlanItem extends EnTable {
             c.UUID_WORKING_LIST_ITEM,
             c.MONTH
         );
-        
+                
         trigger ("BEFORE UPDATE", ""
+                
             + "BEGIN "
+
                 + "IF :NEW.WORKCOUNT = 0 THEN :NEW.IS_DELETED := 1; ELSE :NEW.IS_DELETED := 0; END IF; "
+
+                + ":NEW.totalcost := :NEW.price * NVL (:NEW.amount, 1) * NVL (:NEW.plannedcount, 1); "
+
             + "END;"                
+                
         );
         
     }

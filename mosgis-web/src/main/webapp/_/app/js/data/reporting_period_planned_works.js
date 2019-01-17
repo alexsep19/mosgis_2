@@ -25,7 +25,7 @@ define ([], function () {
             
                 var totalcost
 
-                $.each (d.tb_work_list_items, function () {
+                $.each (d.tb_work_plan_items, function () {
                 
                     if (this.uuid == e.recid) totalcost = this.totalcost
                 
