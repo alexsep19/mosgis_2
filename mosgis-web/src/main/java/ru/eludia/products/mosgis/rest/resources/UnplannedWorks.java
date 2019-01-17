@@ -8,10 +8,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import ru.eludia.products.mosgis.rest.api.WorkingPlanItemLocal;
+import ru.eludia.products.mosgis.rest.api.UnplannedWorkLocal;
 
 @Path ("unplanned_works")
-public class UnplannedWorks extends EJBResource <WorkingPlanItemLocal> {
+public class UnplannedWorks extends EJBResource <UnplannedWorkLocal> {
     
 /*    
     private JsonObject getData (String id) {

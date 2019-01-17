@@ -35,8 +35,7 @@ public class UnplannedWorkImpl extends BaseCRUD<UnplannedWork> implements Unplan
 
         Select select = m.select (UnplannedWork.class, "*", EnTable.c.UUID.lc () + " AS id")
             .where (f, p.getJsonObject ("data").getString (f))
-            .where (EnTable.c.IS_DELETED.lc (), 0)                
-            .toOne (WorkingListItem.class, "AS li", "*").on ()
+            .where (EnTable.c.IS_DELETED.lc (), 0)
             .toOne (OrganizationWork.class, "AS w", "label").on ()
             .toMaybeOne (VocOkei.class, "AS ok", "national").on ()
             .toMaybeOne (nsiTable, nsiTable.getLabelField ().getfName () + " AS vc_nsi_56").on ("(w.code_vc_nsi_56=vc_nsi_56.code AND vc_nsi_56.isactual=1)")
