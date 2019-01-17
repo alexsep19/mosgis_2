@@ -27,7 +27,7 @@ define ([], function () {
                             {id: 'voc_organizations', caption: 'Организации'},
                             {id: 'voc_users', caption: 'Учётные записи', off: !$_USER.role.admin},
                             {id: 'licenses', caption: 'Лицензии'},
-                            {id: 'infrastructure', caption: 'Паспорт ОКИ'},
+                            {id: 'infrastructures', caption: 'Паспорт ОКИ', off: !($_USER.role.admin || $_USER.has_nsi_20 (2, 7, 8))},
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_rosters
