@@ -5,6 +5,7 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 
 public class UnplannedWork extends EnTable {
 
@@ -17,8 +18,15 @@ public class UnplannedWork extends EnTable {
         AMOUNT                 (Type.NUMERIC, 14, 3, null,   "Фактический объём"),
         COUNT                  (Type.NUMERIC,  4, 0, null,   "Количество работ по плану"),        
         TOTALCOST              (Type.NUMERIC, 22, 2, null,   "Фактическая стоимость выполненных работ"),
-        COMMENT                (Type.STRING,         null,   "Комментарий"),
-        UUID_ORG_WORK          (OrganizationWork.class, "Ссылка на работу/услугу организации"),
+        COMMENT_               (Type.TEXT,           null,   "Комментарий"),
+        UUID_ORG_WORK          (OrganizationWork.class,      "Ссылка на работу/услугу организации"),
+
+        CODE_VC_NSI_3          (Type.STRING,  20,    null,   "Вид КУ (НСИ 3)"),
+        
+        ORGANIZATIONGUID       (VocOrganization.class,       "Поставщик коммунального ресурса"),
+
+        ACCIDENTREASON         (Type.TEXT,           null,   "Комментарий"),
+        CODE_VC_NSI_57         (Type.STRING,  20,    null,   "Ссылка на объект аварии (НСИ №57)"),
 
         ;
 
@@ -48,11 +56,7 @@ public class UnplannedWork extends EnTable {
         trigger ("BEFORE UPDATE", ""
                 
             + "BEGIN "
-
-                + "IF :NEW.WORKCOUNT = 0 THEN :NEW.IS_DELETED := 1; ELSE :NEW.IS_DELETED := 0; END IF; "
-
                 + ":NEW.totalcost := :NEW.price * NVL (:NEW.amount, 1) * NVL (:NEW.count, 1); "
-
             + "END;"                
                 
         );
