@@ -2,12 +2,12 @@ package ru.eludia.products.mosgis.db.model.tables;
 
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
+import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.Type.STRING;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
-import ru.eludia.products.mosgis.db.model.EnTable;
 
-public class InfrastructureNsi3 extends EnTable {
+public class InfrastructureNsi3 extends Table {
     
     public enum c implements EnColEnum {
         
@@ -31,12 +31,12 @@ public class InfrastructureNsi3 extends EnTable {
     
     public InfrastructureNsi3 () {
         
-        super ("tb_infrastructure_nsi_3", "Виды коммунальных услуг коммунальных инфраструктур");
+        super ("tb_infrastructures_nsi_3", "Виды коммунальных услуг коммунальных инфраструктур");
         
         cols (c.class);
         
-        key ("uuid", c.UUID);
-        key ("code", c.CODE);
+        pk (c.UUID);
+        pk (c.CODE);
         
     }
     
