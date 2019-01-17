@@ -8,6 +8,8 @@ define ([], function () {
         
         query ({type: 'infrastructures', part: 'vocs', id: undefined}, {}, function (data) {
 
+        	console.log (data)
+
             add_vocabularies (data, data)
 
             $('body').data ('data', data)
