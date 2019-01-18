@@ -69,11 +69,9 @@ public class SupplyResourceContracts extends EJBResource <SupplyResourceContract
 
         final JsonObject data = p.getJsonObject ("data");
 
-        String userOrg = getUserOrg();
-
         if (!isGlobalUser ()
-            && !userOrg.equals (data.getString ("uuid_org", null))
-            && !userOrg.equals(data.getString("uuid_org_customer", null))
+            && !getUserOrg().equals (data.getString ("uuid_org", null))
+            && !getUserOrg().equals(data.getString("uuid_org_customer", null))
         ) {
             throw new ValidationException ("foo", "Доступ запрещён");
         }
