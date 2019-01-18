@@ -12,6 +12,7 @@ import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.Infrastructure;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi38;
+import ru.eludia.products.mosgis.db.model.tables.VocNsi40;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -53,9 +54,9 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
                 NsiTable.getNsiTable (35).getVocSelect (),
                 NsiTable.getNsiTable (37).getVocSelect (),
                 NsiTable.getNsiTable (39).getVocSelect (),
-                NsiTable.getNsiTable (40).getVocSelect (),
                 
                 VocNsi38.getVocSelect (),
+                VocNsi40.getVocSelect (),
                 
                 model
                     .select (NsiTable.getNsiTable (33), "code AS id", LABEL_FIELD_NAME_NSI_33 + " AS label")
