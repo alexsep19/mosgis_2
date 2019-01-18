@@ -25,7 +25,7 @@ public class Infrastructure extends EnTable {
         
         CODE_VC_NSI_39          (STRING,  20, "Основание управления (НСИ 39)"),
         INDEFINITEMANAGEMENT    (BOOLEAN,     "Бессрочное управление"),
-        ENDMANAGMENTDATE        (DATE,        "Окончание управления"),
+        ENDMANAGMENTDATE        (DATE,  null, "Окончание управления"),
         
         MANAGEROKI              (VocOrganization.class,       "Правообладатель"),
         MANAGEROKI_LABEL        (STRING,                null, "Нименование правообладателя"),

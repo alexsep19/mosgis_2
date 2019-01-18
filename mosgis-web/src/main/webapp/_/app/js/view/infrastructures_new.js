@@ -13,6 +13,7 @@ define ([], function () {
         if ($_USER.uuid_org && !$manageroki.val ()) {
             $manageroki_label.val ($_USER.label_org)
             $manageroki.val ($_USER.uuid_org)
+            $manageroki.change ()
         }
 
         if (r.indefinetemanagement.id) {

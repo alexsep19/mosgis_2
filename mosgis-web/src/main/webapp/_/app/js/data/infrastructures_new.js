@@ -47,31 +47,25 @@ define ([], function () {
 
     }
 
-    $_DO.update_org_work_popup = function (e) {
+    $_DO.update_infrastructures_new = function (e) {
 
         var form = w2ui [form_name]
 
         var v = form.values ()
+
+        delete v.manageroki_label
         
-        if (!v.workname) die ('workname', 'Укажите, пожалуйста, наименование услуги')
-        if (!v.code_vc_nsi_56) die ('code_vc_nsi_56', 'Укажите, пожалуйста, вид работ')
-        if (!v.stringdimensionunit) die ('stringdimensionunit', 'Укажите, пожалуйста, единицу измерения')
+        if (!v.name) die ('name', 'Укажите, пожалуйста, наименование объекта')
+        if (!v.code_vc_nsi_39) die ('code_vc_nsi_39', 'Укажите, пожалуйста, основание управления')
+        if (!v.hasOwnProperty('indefinetemanagement')) die ('indefinetemanagement', 'Укажите, пожалуйста, признак бессрочности управления')
+        if (!v.indefinetemanagement && !v.endmanagmentdate) die ('endmanagmentdate', 'Укажите, пожалуйста, дату окончания управления')
+        if (!v.code_vc_nsi_33) die ('code_vc_nsi_33', 'Укажите, пожалуйста, вид объекта')
         
-        var vc_okei = $('body').data ('data').vc_okei
-        for (var id in vc_okei) {
-            if (vc_okei [id] != v.stringdimensionunit) continue
-            v.okei = id
-            delete v.stringdimensionunit
-            break
-        }
+        v.code_vc_nsi_3 = w2ui [grid_name].getSelection ()
         
-        if (!v.okei && !confirm ('Вы уверены, что Общероссийский классификатор единиц измерения неприменим для определения объёма данной услуги?')) return $('#stringdimensionunit').val ('').focus ()
-        
-        v.code_vc_nsi_67 = w2ui ['code_vc_nsi_67_grid'].getSelection ()
-        
-        if (!v.code_vc_nsi_67.length) die ('foo', 'Укажите, пожалуйста, по крайней мере одну обязательную работу')
+        if (!v.code_vc_nsi_3.length) die ('foo', 'Укажите, пожалуйста, по крайней мере один вид коммунальной услуги')
                 
-        var tia = {type: 'org_works'}
+        var tia = {type: 'infrastructures'}
         tia.id = form.record.id
         tia.action = tia.id ? 'update' : 'create'
         
