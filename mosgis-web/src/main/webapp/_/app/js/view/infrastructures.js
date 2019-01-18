@@ -1,15 +1,29 @@
 define ([], function () {
 
+    function perms () {
+
+        return $_USER.role.admin || $_USER.has_nsi_20 (2, 8)
+
+    }
+
     return function (data, view) {
         
-        $(w2ui ['rosters_layout'].el ('main')).w2regrid ({ 
+        $(w2ui ['rosters_layout'].el ('main')).w2regrid ({
 
             name: 'infrastructures_grid',             
 
             show: {
                 toolbar: true,
+                toolbarInput: false,
                 footer: true,
-            },     
+            },
+
+            toolbar: {
+                items: [
+                    {type: 'button', id: 'createButton', caption: 'Добавить', onClick: $_DO.create_infrastructure, icon: 'w2ui-icon-plus', off: !perms ()},
+                    {type: 'button', id: 'deleteButton', caption: 'Удалить', onClick: $_DO.delete_infrastructure, icon: 'w2ui-icon-cross', disabled: true, off: !perms ()},
+                ].filter (not_off)
+            },
             
             searches: [
                 {field: 'id_is_status', caption: 'Статус', type: 'enum', options: {items: data.vc_gis_status.items}},
