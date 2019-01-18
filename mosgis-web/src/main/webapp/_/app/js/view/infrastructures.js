@@ -60,7 +60,8 @@ define ([], function () {
                     oktmos = Object.keys($_USER.role).filter ((x) => x.startsWith ('oktmo_')).map ((x) => { return {id: x.substring ('oktmo_'.length)}})
 
                     this.postData = {
-                        search: {field: 'oktmo_code', operator: 'in', value: oktmos}
+                        search: [{field: 'oktmo_code', operator: 'in', value: oktmos}],
+                        searchLogic: 'AND'
                     }
 
                 }
