@@ -64,6 +64,8 @@ define ([], function () {
                     {name: 'uuid_org_work', type: 'list', options: {items: data.org_works.items}},
                 ],
                 
+                focus: 1,
+                
                 onChange: function (e) {
 
                     if (e.target == "uuid_org_work") {

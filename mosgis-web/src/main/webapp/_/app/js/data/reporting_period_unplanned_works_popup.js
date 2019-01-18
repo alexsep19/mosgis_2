@@ -85,8 +85,10 @@ define ([], function () {
             default:
                 v.code_vc_nsi_3 = null
         }
-        
+
         if (v.comment_ == null) v.comment_ = ""
+
+        v.uuid_reporting_period = $_REQUEST.id
 
         var tia = {type: 'unplanned_works'}
         tia.id = form.record.id
@@ -95,7 +97,7 @@ define ([], function () {
         var grid = w2ui ['reporting_period_unplanned_works_grid']
         
         grid.lock ()
-return
+
         query (tia, {data: v}, function () {
         
             grid.unlock ()
