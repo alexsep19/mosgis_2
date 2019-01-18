@@ -1,8 +1,57 @@
 define ([], function () {
 
+    var name = 'reporting_period_unplanned_works_popup_form'
+
+    $_DO.open_orgs_reporting_period_unplanned_works_popup = function (e) {
+    
+        var f = w2ui [name]    
+
+        var saved = {
+            data: clone ($('body').data ('data')),
+            record: clone (f.record)
+        }
+                
+        $('body').data ('voc_organizations_popup.callback', function (r) {
+        
+            function done () {
+
+                $('body').data ('data', saved.data)
+
+                $_SESSION.set ('record', saved.record)
+
+                use.block ('reporting_period_unplanned_works_popup')
+
+            }
+
+            if (!r) return done ()
+            
+            query ({type: 'voc_organizations', id: r.uuid}, {}, function (d) {
+            
+                var nsi_20 = {}
+                
+                $.each (d.vc_orgs_nsi_20, function () {nsi_20 [parseInt (this.code)] = 1})
+                
+                if (!nsi_20 [2]) {
+                    alert ('Указанная организация не зарегистрирована в ГИС ЖКХ как ресурсоснабжающая')
+                }
+                else {
+                    saved.record.organizationguid = r.uuid
+                    saved.record.label_organizationguid = r.label
+                }
+
+                done ()
+
+            })
+                                    
+        })
+        
+        use.block ('voc_organizations_popup')
+
+    }
+
     $_DO.update_reporting_period_unplanned_works_popup = function (e) {
 
-        var form = w2ui ['reporting_period_unplanned_works_popup_form']
+        var form = w2ui [name]
 
         var v = form.values ()
 

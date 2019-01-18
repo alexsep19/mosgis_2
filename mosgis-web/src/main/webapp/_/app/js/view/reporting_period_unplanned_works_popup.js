@@ -53,13 +53,14 @@ define ([], function () {
                 fields : [                                                
                     {name: 'code_vc_nsi_56', type: 'hidden'},
                     {name: 'accidentreason', type: 'text'},
-                    {name: 'amount', type: 'text'},
+                    {name: 'amount', type: 'float', options: {precision: 3}},
                     {name: 'code_vc_nsi_3', type: 'text', type: 'list', options: {items: data.vc_nsi_3.items}},
                     {name: 'code_vc_nsi_57', type: 'text', type: 'list', options: {items: data.vc_nsi_57.items}},
                     {name: 'comment_', type: 'text'},
-                    {name: 'count', type: 'text'},
-                    {name: 'organizationguid', type: 'text'},
-                    {name: 'price', type: 'text'},
+                    {name: 'count', type: 'int'},
+                    {name: 'label_organizationguid', type: 'text'},
+                    {name: 'organizationguid', type: 'hidden'},
+                    {name: 'price', type: 'float', options: {precision: 4}},
                     {name: 'uuid_org_work', type: 'list', options: {items: data.org_works.items}},
                 ],
                 
@@ -69,15 +70,19 @@ define ([], function () {
                         $('#unit').text (e.value_new.unit)
                         this.record.code_vc_nsi_56 = parseInt (e.value_new.code_vc_nsi_56)
                         e.done (recalc)
-                        
-//                        this.refresh ()
                     }
                     else if (e.target == "code_vc_nsi_57") {
                         e.done (recalc)
-//                        this.refresh ()
                     }
 
                 },
+                
+                onRefresh: function (e) {e.done (function () {
+                
+                    clickOn ($('#label_organizationguid'), $_DO.open_orgs_reporting_period_unplanned_works_popup)
+                
+                })}
+                
                                 
             })
             
