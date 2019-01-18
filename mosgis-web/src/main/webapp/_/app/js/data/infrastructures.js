@@ -1,5 +1,11 @@
 define ([], function () {
 
+	$_DO.create_infrastructure = function (e) {
+
+		use.block ('infrastructures_new')
+
+	}
+
     return function (done) {        
         
         var layout = w2ui ['rosters_layout']
