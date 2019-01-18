@@ -1,9 +1,8 @@
 define ([], function () {
 
 	$_DO.create_infrastructure = function (e) {
-
+        $_SESSION.set ('record', {})
 		use.block ('infrastructures_new')
-
 	}
 
     return function (done) {        

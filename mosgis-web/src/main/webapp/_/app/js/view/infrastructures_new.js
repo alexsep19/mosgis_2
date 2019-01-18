@@ -27,7 +27,7 @@ define ([], function () {
 
     return function (data, view) {
 
-        $(fill (view, {})).w2uppop ({}, function () {
+        $(fill (view, data.record)).w2uppop ({}, function () {
 
             $('#w2ui-popup .w2ui-form').w2reform ({
 
@@ -57,9 +57,17 @@ define ([], function () {
                         this.refresh ()
                     })
 
-                }
+                },
+
+                onRefresh: function (e) {e.done (function () {
+                
+                    clickOn ($('#manageroki_label'), $_DO.open_orgs_infrastructure_popup)
+                
+                })}
 
             })
+
+            var is_virgin = 1
 
             $('#type_of_utility_container').w2regrid ({ 
             
@@ -76,7 +84,19 @@ define ([], function () {
                     {field: 'label', caption: 'Наименование', size: 50},
                 ],
                 
-                records: dia2w2uiRecords (data.vc_nsi_3.items)            
+                records: dia2w2uiRecords (data.vc_nsi_3.items),
+
+                onRefresh: function () {
+                
+                    if (!is_virgin) return
+                    
+                    var grid = this
+               
+                    $.each (data.record.codes_nsi_3, function () {grid.select ('' + this)})
+
+                    is_virgin = 0
+                
+                }    
             
             }).refresh ()
 

@@ -1,8 +1,48 @@
 define ([], function () {
 
+    var form_name = 'infrastructure_form'
+    var grid_name = 'code_vc_nsi_3_grid'
+
+    $_DO.open_orgs_infrastructure_popup = function (e) {
+
+        var f = w2ui [form_name]
+        var g = w2ui [grid_name]
+        
+        var saved = {
+            data: clone ($('body').data ('data')),
+            record: clone (f.record)
+        }
+
+        saved.record.codes_nsi_3 = g.getSelection ()
+
+        function done () {
+
+            $('body').data ('data', saved.data)
+
+            $_SESSION.set ('record', saved.record)
+
+            use.block ('infrastructures_new')
+
+        }
+    
+        $('body').data ('voc_organizations_popup.callback', function (r) {
+
+            if (!r) return done ()
+
+            saved.record.manageroki = r.uuid
+            saved.record.manageroki_label = r.label
+
+            done ()
+
+        })
+
+        use.block ('voc_organizations_popup')
+
+    }
+
     $_DO.update_org_work_popup = function (e) {
 
-        var form = w2ui ['infrastructure_form']
+        var form = w2ui [form_name]
 
         var v = form.values ()
         
