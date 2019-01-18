@@ -11,7 +11,7 @@ define ([], function () {
             show: {
                 toolbar: is_own,
                 toolbarReload: false,
-                toolbarInput: false,
+                toolbarInput: true,
                 toolbarAdd: true,
                 toolbarEdit: true,
                 toolbarDelete: true,

@@ -11,14 +11,14 @@ define ([], function () {
             var v = form.values ()
             
             var code_vc_nsi_56 = v.code_vc_nsi_56
-darn (v)
+
             var o = {
                 code_vc_nsi_57: code_vc_nsi_56 == 3,
                 accidentreason: code_vc_nsi_56 == 3,
                 organizationguid: code_vc_nsi_56 == 5,
                 code_vc_nsi_3: code_vc_nsi_56 == 5 || (code_vc_nsi_56 == 3 && v.code_vc_nsi_57 > 1)
             }
-darn (o)
+
             var sh = 0            
             for (id in o) {
                 var h = o [id] ? 1 : 0
