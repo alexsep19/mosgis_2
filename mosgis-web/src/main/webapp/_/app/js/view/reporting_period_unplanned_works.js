@@ -12,6 +12,7 @@ define ([], function () {
                 toolbar: is_own,
                 toolbarReload: false,
                 toolbarInput: true,
+                toolbarSearch: true,
                 toolbarAdd: true,
                 toolbarEdit: true,
                 toolbarDelete: true,
@@ -20,6 +21,10 @@ define ([], function () {
             
             multiSelect: false,
             
+            searches: [            
+                {field: 'uuid_org_work', caption: 'Наименование', type: 'enum', options: {items: data.org_works.items}},
+                {field: 'code_vc_nsi_56', caption: 'Вид работ/услуг', type: 'enum', options: {items: data.vc_nsi_56.items}},
+            ],
             
             columns: [  
             

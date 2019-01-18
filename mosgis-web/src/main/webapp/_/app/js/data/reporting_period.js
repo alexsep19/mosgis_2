@@ -22,6 +22,7 @@ define ([], function () {
         query ({type: 'reporting_periods'}, {}, function (data) {        
         
             add_vocabularies (data, {
+                vc_nsi_56: 1,
                 vc_nsi_57: 1,
                 vc_nsi_3: 1,
                 org_works: 1,

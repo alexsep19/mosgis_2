@@ -63,6 +63,7 @@ public class ReportingPeriodImpl extends Base<ReportingPeriod> implements Report
             NsiTable.getNsiTable (3).getVocSelect (),
             
             NsiTable.getNsiTable (57).getVocSelect (),
+            NsiTable.getNsiTable (56).getVocSelect (),
             
             db.getModel ()
                 .select (OrganizationWork.class, "AS org_works", "uuid AS id", "label", "code_vc_nsi_56")
