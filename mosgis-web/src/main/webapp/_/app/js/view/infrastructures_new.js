@@ -6,8 +6,14 @@ define ([], function () {
 
         var $endmanagmentdate = $('#endmanagmentdate')
         var $manageroki_label = $('#manageroki_label')
+        var $manageroki = $('#manageroki')
 
         var r = w2ui [form_name].record
+
+        if ($_USER.uuid_org && !$manageroki.val ()) {
+            $manageroki_label.val ($_USER.label_org)
+            $manageroki.val ($_USER.uuid_org)
+        }
 
         if (r.indefinetemanagement.id) {
             $endmanagmentdate.prop ('disabled', true)
@@ -18,10 +24,7 @@ define ([], function () {
             $endmanagmentdate.prop ('placeholder', '')
         }
 
-        if ($_USER.role.nsi_20_2) {
-            $manageroki_label.prop ('disabled', true)
-            $manageroki_label.prop ('placeholder', $_USER.label_org)
-        }
+        if ($_USER.role.nsi_20_2) $manageroki_label.prop ('disabled', true)
 
     }
 
