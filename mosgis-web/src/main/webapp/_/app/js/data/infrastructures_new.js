@@ -24,6 +24,13 @@ define ([], function () {
             use.block ('infrastructures_new')
 
         }
+
+        var search_values = [{id: "2"}]
+        if ($_USER.role.admin) search_values.push ({id: "8"})
+
+        $('body').data ('voc_organizations_popup.post_data', {search:[
+            {field: 'code_vc_nsi_20', operator: 'in', value: search_values}
+        ], searchLogic: "AND"})
     
         $('body').data ('voc_organizations_popup.callback', function (r) {
 
