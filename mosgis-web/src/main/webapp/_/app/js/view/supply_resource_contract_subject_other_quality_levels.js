@@ -1,6 +1,6 @@
 define ([], function () {
 
-    var grid_name = 'supply_resource_contract_subject_quality_levels_grid'
+    var grid_name = 'supply_resource_contract_subject_other_quality_levels_grid'
 
     return function (data, view) {
 
@@ -27,35 +27,34 @@ define ([], function () {
             },
 
             textSearch: 'contains',
-
             toolbar: {
+                onClick: function (e) {
+                    if (/^create/.test(e.item.id) && e.subItem) {
+                        $_SESSION.set('record', {id_type: e.subItem.id, uuid_sr_ctr_subj: data.item.uuid})
+                        use.block('supply_resource_contract_subject_other_quality_levels_popup')
+                    }
+                },
                 items: !is_editable ? [] : [
                     {
-                        id: 'create', // HACK: одинаковый порядок кнопок показателях качества и иных показателях качества
-                        type: 'button',
+                        id: 'create',
+                        type: 'menu',
                         text: 'Добавить',
                         icon: 'w2ui-icon-plus',
-                        onClick: function() {
-
-                            var data = clone($('body').data('data'))
-
-                            $_SESSION.set('record', {uuid_sr_ctr_subj: data.item.uuid})
-
-                            use.block('supply_resource_contract_subject_quality_levels_popup')
-                        }
+                        selected: -1,
+                        items: data.vc_gis_sr_ql_types.items
                     }
                 ].filter(not_off),
             },
 
             columns: [
-                {field: 'vc_nsi_276.label', caption: 'Наименование показателя', size: 200},
+                {field: 'label', caption: 'Наименование показателя', size: 200},
                 {field: 'value', caption: 'Установленное значение показателя качества', size: 50, render: function(i){
-                    switch (i['vc_nsi_276.id_type']) {
-                        case '3':
+                    switch (i.id_type) {
+                        case 3:
                             return i.indicatorvalue_is == 1 ? 'cоответствует' : 'не соответствует'
-                        case '2':
+                        case 2:
                             return i.indicatorvalue == null ? '' : w2utils.formatNumber(i.indicatorvalue)
-                        case '1':
+                        case 1:
                             return (i.indicatorvalue_from? ('от ' + w2utils.formatNumber(i.indicatorvalue_from)) : '')
                                 + (i.indicatorvalue_to? (' до ' + w2utils.formatNumber(i.indicatorvalue_to)) : '')
                                 + (i['okei.national'] ? (' ' + i['okei.national']) : '')
@@ -70,11 +69,11 @@ define ([], function () {
                 uuid_sr_ctr: $_REQUEST.id
             }},
 
-            url: '/mosgis/_rest/?type=supply_resource_contract_quality_levels',
+            url: '/mosgis/_rest/?type=supply_resource_contract_other_quality_levels',
 
-            onDblClick: $_DO.edit_supply_resource_contract_subject_quality_levels,
+            onDblClick: $_DO.edit_supply_resource_contract_subject_other_quality_levels,
 
-            onDelete: $_DO.delete_supply_resource_contract_subject_quality_levels
+            onDelete: $_DO.delete_supply_resource_contract_subject_other_quality_levels
         })
 
     }

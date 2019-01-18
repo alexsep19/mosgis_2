@@ -80,10 +80,11 @@ define ([], function () {
                                 caption: 'Показатели качества коммунальных ресурсов',
                                 off: data.item['sr_ctr.specqtyinds'] != 10
                             },
-//                            {
-//                                id: 'supply_resource_contract_subject_other_quality_levels',
-//                                caption: 'Иные показатели качества коммунальных ресурсов'
-//                            },
+                            {
+                                id: 'supply_resource_contract_subject_other_quality_levels',
+                                caption: 'Иные показатели качества коммунальных ресурсов',
+                                off: data.item['sr_ctr.specqtyinds'] != 10
+                            },
                             {id: 'supply_resource_contract_subject_common_log', caption: 'История изменений'},
                         ].filter(not_off),
                         onClick: $_DO.choose_tab_supply_resource_contract_subject_common
