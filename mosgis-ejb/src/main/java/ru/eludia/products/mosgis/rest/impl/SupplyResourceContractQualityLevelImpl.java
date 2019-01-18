@@ -68,7 +68,7 @@ public class SupplyResourceContractQualityLevelImpl extends BaseCRUD<SupplyResou
         final Model m = ModelHolder.getModel ();
 
         Select select = m.select (SupplyResourceContractQualityLevel.class, "*", "uuid AS id")
-            .toOne(VocNsi276.class, "*").on()
+            .toOne(VocNsi276.class, "*").on("tb_sr_ctr_qls.code_vc_nsi_276 = vc_nsi_276.code")
             .toMaybeOne(VocOkei.class, "AS okei", "*").on()
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
