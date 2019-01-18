@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<weblogic-jms xmlns="http://xmlns.oracle.com/weblogic/weblogic-jms" xmlns:sec="http://xmlns.oracle.com/weblogic/security" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wls="http://xmlns.oracle.com/weblogic/security/wls" xsi:schemaLocation="http://xmlns.oracle.com/weblogic/weblogic-jms http://xmlns.oracle.com/weblogic/weblogic-jms/1.1/weblogic-jms.xsd">
+ 
+ <!-- очередь обработки запросов на экспорт перечней работ и услуг -->
+ <uniform-distributed-queue name="inWorkingListsQueue">
+   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+   <jndi-name>mosgis.inWorkingListsQueue</jndi-name>
+   <delivery-params-overrides>
+       <time-to-deliver>2000</time-to-deliver>
+       <redelivery-delay>10000</redelivery-delay>
+   </delivery-params-overrides>
+ </uniform-distributed-queue>
+ 
+ <!-- очередь опроса статуса исходящих запросов на экспорт перечней работ и услуг -->
+ <uniform-distributed-queue name="outExportWorkingListsQueue">
+   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>    
+   <jndi-name>mosgis.outExportWorkingListsQueue</jndi-name>
+   <delivery-params-overrides>
+       <time-to-deliver>2000</time-to-deliver>
+       <redelivery-delay>10000</redelivery-delay>
+   </delivery-params-overrides>
+ </uniform-distributed-queue> 
+ 
+ <!-- очередь опроса статуса исходящих запросов на импорт перечней работ и услуг -->
+ <uniform-distributed-queue name="outImportWorkingListsQueue">
+   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>    
+   <jndi-name>mosgis.outImportWorkingListsQueue</jndi-name>
+   <delivery-params-overrides>
+       <time-to-deliver>2000</time-to-deliver>
+       <redelivery-delay>10000</redelivery-delay>
+   </delivery-params-overrides>
+ </uniform-distributed-queue>
+
+</weblogic-jms>

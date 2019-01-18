@@ -513,93 +513,6 @@
    </delivery-params-overrides>
  </uniform-distributed-queue> 
 
-
-
-
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- <!-- очередь обработки запросов на экспорт перечней работ и услуг -->
- <uniform-distributed-queue name="inWorkingListsQueue">
-   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-   <jndi-name>mosgis.inWorkingListsQueue</jndi-name>
-   <delivery-params-overrides>
-       <time-to-deliver>2000</time-to-deliver>
-       <redelivery-delay>10000</redelivery-delay>
-   </delivery-params-overrides>
- </uniform-distributed-queue>
- 
- <!-- очередь опроса статуса исходящих запросов на экспорт перечней работ и услуг -->
- <uniform-distributed-queue name="outExportWorkingListsQueue">
-   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>    
-   <jndi-name>mosgis.outExportWorkingListsQueue</jndi-name>
-   <delivery-params-overrides>
-       <time-to-deliver>2000</time-to-deliver>
-       <redelivery-delay>10000</redelivery-delay>
-   </delivery-params-overrides>
- </uniform-distributed-queue> 
- 
- <!-- очередь опроса статуса исходящих запросов на импорт перечней работ и услуг -->
- <uniform-distributed-queue name="outImportWorkingListsQueue">
-   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>    
-   <jndi-name>mosgis.outImportWorkingListsQueue</jndi-name>
-   <delivery-params-overrides>
-       <time-to-deliver>2000</time-to-deliver>
-       <redelivery-delay>10000</redelivery-delay>
-   </delivery-params-overrides>
- </uniform-distributed-queue> 
-
-
-
- <!-- очередь обработки запросов на экспорт планов по работам и услугам -->
- <uniform-distributed-queue name="inWorkingPlansQueue">
-   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-   <jndi-name>mosgis.inWorkingPlansQueue</jndi-name>
-   <delivery-params-overrides>
-       <time-to-deliver>2000</time-to-deliver>
-       <redelivery-delay>10000</redelivery-delay>
-   </delivery-params-overrides>
- </uniform-distributed-queue>
- 
- <!-- очередь опроса статуса исходящих запросов на экспорт планов по работам и услугам -->
- <uniform-distributed-queue name="outExportWorkingPlansQueue">
-   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>    
-   <jndi-name>mosgis.outExportWorkingPlansQueue</jndi-name>
-   <delivery-params-overrides>
-       <time-to-deliver>2000</time-to-deliver>
-       <redelivery-delay>10000</redelivery-delay>
-   </delivery-params-overrides>
- </uniform-distributed-queue> 
-
- <!-- очередь опроса статуса исходящих запросов на импорт планов по работам и услугам -->
- <uniform-distributed-queue name="outImportWorkingPlansQueue">
-   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>    
-   <jndi-name>mosgis.outImportWorkingPlansQueue</jndi-name>
-   <delivery-params-overrides>
-       <time-to-deliver>2000</time-to-deliver>
-       <redelivery-delay>10000</redelivery-delay>
-   </delivery-params-overrides>
- </uniform-distributed-queue> 
-
-
-
  <!-- очередь обработки запросов на экспорт обособленных подразделений -->
  <uniform-distributed-queue name="inVocOrganizationProposalsQueue">
    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
@@ -619,13 +532,6 @@
        <redelivery-delay>10000</redelivery-delay>
    </delivery-params-overrides>
  </uniform-distributed-queue> 
-
-
-
-
-
-
-
 
   <!-- очередь зависших асинхронных запросов в ГИС -->
   <uniform-distributed-queue name="stuckGisRequestsQueue">
