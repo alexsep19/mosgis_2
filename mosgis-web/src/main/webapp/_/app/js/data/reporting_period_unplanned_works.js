@@ -1,5 +1,15 @@
 define ([], function () {
 
+    $_DO.create_reporting_period_unplanned_works = function (e) {
+        $_SESSION.set ('record', {count: 1})
+        use.block ('reporting_period_unplanned_works_popup')
+    }
+    
+    $_DO.edit_reporting_period_unplanned_works = function (e) {
+        $_SESSION.set ('record', this.get (e.recid))
+        use.block ('reporting_period_unplanned_works_popup')
+    }
+
     $_DO.delete_reporting_period_unplanned_works = function (e) {
     
         if (!e.force) return

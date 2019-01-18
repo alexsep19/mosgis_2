@@ -13,6 +13,7 @@ define ([], function () {
                 toolbarReload: false,
                 toolbarInput: false,
                 toolbarAdd: true,
+                toolbarEdit: true,
                 toolbarDelete: true,
                 footer: true,
             },     
@@ -39,11 +40,9 @@ define ([], function () {
 
             url: '/mosgis/_rest/?type=unplanned_works',
 
-            onAdd: function () {
-                $_SESSION.set ('record', {count: 1})
-                use.block ('reporting_period_unplanned_works_popup')
-            },
-            
+            onAdd: $_DO.create_reporting_period_unplanned_works,
+            onEdit: $_DO.edit_reporting_period_unplanned_works,            
+            onDblClick: $_DO.edit_reporting_period_unplanned_works,            
             onDelete: $_DO.delete_reporting_period_unplanned_works,
 
         }).refresh ();

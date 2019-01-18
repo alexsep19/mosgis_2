@@ -11,14 +11,14 @@ define ([], function () {
             var v = form.values ()
             
             var code_vc_nsi_56 = v.code_vc_nsi_56
-            
+darn (v)
             var o = {
                 code_vc_nsi_57: code_vc_nsi_56 == 3,
                 accidentreason: code_vc_nsi_56 == 3,
                 organizationguid: code_vc_nsi_56 == 5,
                 code_vc_nsi_3: code_vc_nsi_56 == 5 || (code_vc_nsi_56 == 3 && v.code_vc_nsi_57 > 1)
             }
-
+darn (o)
             var sh = 0            
             for (id in o) {
                 var h = o [id] ? 1 : 0
@@ -64,7 +64,7 @@ define ([], function () {
                     {name: 'uuid_org_work', type: 'list', options: {items: data.org_works.items}},
                 ],
                 
-                focus: 1,
+                focus: -1,
                 
                 onChange: function (e) {
 
@@ -82,9 +82,17 @@ define ([], function () {
                 onRefresh: function (e) {e.done (function () {
                 
                     clickOn ($('#label_organizationguid'), $_DO.open_orgs_reporting_period_unplanned_works_popup)
+                                    
+                })},
                 
-                })}
+                onRender: function (e) {
                 
+                    e.done (function () {
+                        recalc ()
+                        this.refresh ()
+                    })
+                
+                }
                                 
             })
             
