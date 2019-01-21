@@ -57,4 +57,11 @@ public class Infrastructures extends EJBResource<InfrastructuresLocal> {
         return back.getLog (id, p, getUser ());
     }
     
+    @POST
+    @Path("create") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject doCreate (JsonObject p) {
+        return back.doCreate (p, getUser());
+    }
+    
 }

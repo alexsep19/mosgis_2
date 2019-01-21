@@ -1,17 +1,26 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonString;
 import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.Infrastructure;
+import ru.eludia.products.mosgis.db.model.tables.InfrastructureNsi3;
+import ru.eludia.products.mosgis.db.model.tables.OrganizationWorkNsi67;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi38;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi40;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -129,6 +138,32 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
         
     }
     
+    protected void setNsi3 (DB db, Object insertId, JsonObject p) throws SQLException {
+        
+        db.dupsert (
+            InfrastructureNsi3.class,
+            HASH ("uuid", insertId),
+            p.getJsonObject ("data").getJsonArray ("code_vc_nsi_67").stream ().map ((t) -> {return HASH ("code", ((JsonString) t).getString ());}).collect (Collectors.toList ()),
+            "code"
+        );
+        
+    }
     
+    @Override
+    public JsonObject doCreate (JsonObject p, User user) {return doAction ((db, job) -> {
+
+        final Table table = getTable ();
+
+        Map<String, Object> data = getData (p);
+
+        Object insertId = db.insertId (table, data);
+        
+        setNsi3 (db, insertId, p);
+        
+        job.add ("id", insertId.toString ());
+        
+        logAction (db, user, insertId, VocAction.i.CREATE);
+
+    });}
     
 }
