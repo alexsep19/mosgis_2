@@ -71,7 +71,7 @@ define ([], function () {
         
         var done = reload_page
 
-        var grid = w2ui ['infrastructure_grid']
+        var grid = w2ui ['infrastructures_grid']
 
         query (tia, {data: v}, function () {
         
