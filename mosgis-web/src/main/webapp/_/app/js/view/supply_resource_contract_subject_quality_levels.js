@@ -48,7 +48,7 @@ define ([], function () {
             ],
 
             postData: {data: {
-                uuid_sr_ctr: $_REQUEST.id
+                uuid_sr_ctr_subj: $_REQUEST.id
             }},
 
             url: '/mosgis/_rest/?type=supply_resource_contract_quality_levels',
