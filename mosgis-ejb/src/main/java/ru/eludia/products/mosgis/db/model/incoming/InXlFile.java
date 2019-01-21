@@ -47,6 +47,9 @@ public class InXlFile extends EnTable {
         super ("in_xl_files", "Файлы импорта");
 
         cols  (c.class);
+        
+        key ("ts", c.TS);
+        key ("uuid_org_ts", c.UUID_ORG, c.TS);
 
         trigger ("BEFORE INSERT",
             "BEGIN "

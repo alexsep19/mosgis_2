@@ -52,5 +52,12 @@ public class InXlFiles extends EJBResource <InXlFilesLocal> {
         JsonObject item = back.getItem (id);
         return createFileDownloadResponse (id, item.getString ("label"), item.getInt ("len"));
     }
+    
+    @POST
+    @Path ("vocs")
+    @Produces (APPLICATION_JSON)
+    public JsonObject getVocs () { 
+        return back.getVocs (); 
+    }
 
 }

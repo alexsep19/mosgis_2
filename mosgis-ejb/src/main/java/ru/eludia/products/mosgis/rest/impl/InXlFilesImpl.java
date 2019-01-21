@@ -12,7 +12,9 @@ import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.WebApplicationException;
 import ru.eludia.base.DB;
@@ -23,14 +25,14 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.rest.api.InXlFilesLocal;
 import ru.eludia.products.mosgis.db.model.incoming.InXlFile;
 import ru.eludia.products.mosgis.db.model.incoming.InXlFile.c;
-import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
-import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.db.model.voc.VocFileStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocUser;
+import ru.eludia.products.mosgis.db.model.voc.VocXLFileType;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
-import ru.eludia.products.mosgis.web.base.ComplexSearch;
 
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
@@ -134,17 +136,21 @@ public class InXlFilesImpl extends BaseCRUD<InXlFile> implements InXlFilesLocal 
     @Override
     public JsonObject select (JsonObject p, User u) {return fetchData ((db, job) -> {
         
-        ComplexSearch s = new ComplexSearch (p.getJsonArray ("search"));
+//        ComplexSearch s = new ComplexSearch (p.getJsonArray ("search"));
         
-        if (!s.getFilters ().containsKey ("uuid_charter")) throw new IllegalStateException ("uuid_charter filter is not set");
+//        if (!s.getFilters ().containsKey ("uuid_charter")) throw new IllegalStateException ("uuid_charter filter is not set");
                 
         Select select = ModelHolder.getModel ()
-            .select (getTable (), "*", "uuid AS id")
-            .toMaybeOne (CharterObject.class, "AS obj").on ()
-            .toMaybeOne (VocBuildingAddress.class, "AS fias", "label").on ("obj.fiashouseguid=fias.houseguid")
-            .where  ("id_status",  1);
+            .select (getTable (), "AS root", "*", "uuid AS id")
+            .toOne (VocOrganization.class, "AS org", "label").on ()
+            .toOne (VocUser.class, "AS u", "label").on ()
+            .orderBy ("root.ts DESC")
+            .limit (p.getInt ("offset"), p.getInt ("limit"))        
+        ;
         
-        db.addJsonArrays (job, s.filter (select, ""));
+        if (DB.ok (u.getUuidOrg ())) select.and (c.UUID_ORG, u.getUuidOrg ());
+
+        db.addJsonArrayCnt (job, select);
 
     });}
     
@@ -168,6 +174,18 @@ public class InXlFilesImpl extends BaseCRUD<InXlFile> implements InXlFilesLocal 
 
 //        publishMessage (action, id_log);
 
+    }
+
+    @Override
+    public JsonObject getVocs () {
+        
+        JsonObjectBuilder job = Json.createObjectBuilder ();
+        
+        VocFileStatus.addTo (job);
+        VocXLFileType.addTo (job);
+        
+        return job.build ();
+        
     }
 
 }
