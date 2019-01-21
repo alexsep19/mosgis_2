@@ -4,5 +4,5 @@ import javax.ejb.Local;
 import ru.eludia.products.mosgis.rest.api.base.CRUDBackend;
 
 @Local
-public interface WorkingPlanItemLocal extends CRUDBackend {
+public interface UnplannedWorkLocal extends CRUDBackend {
 }

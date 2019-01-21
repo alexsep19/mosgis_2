@@ -72,7 +72,7 @@ define ([], function () {
         
         var data = $('body').data ('data')
 
-        query ({type: 'working_plan_items', id: undefined}, {data: {uuid_working_plan: data.item.uuid_working_plan}}, function (d) {
+        query ({type: 'working_plan_items', id: undefined}, {data: {uuid_reporting_period: $_REQUEST.id}}, function (d) {
 
             $.each (d.tb_work_plan_items, function () {
                 this._plan_cost = this ['li.price'] * this ['li.amount'] * this ['workcount']

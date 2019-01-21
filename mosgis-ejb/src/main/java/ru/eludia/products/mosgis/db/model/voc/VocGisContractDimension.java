@@ -51,7 +51,7 @@ public class VocGisContractDimension extends Table {
 
     public VocGisContractDimension () {
 
-        super (TABLE_NAME, "Статусы процессов утверждения в ГИС ЖКХ (из hcs-house-management-types.xsd + собственные)");
+        super (TABLE_NAME, "Тип указания показателей договора РСО");
 
         pk    ("id",           Type.INTEGER, "Ключ");
         col   ("name",         Type.STRING,  "Идентификатор");

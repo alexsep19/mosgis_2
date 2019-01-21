@@ -29,7 +29,7 @@ public class WorkingPlanItemImpl extends BaseCRUD<WorkingPlanItem> implements Wo
         
         final Model m = ModelHolder.getModel ();
         
-        final String f = WorkingPlanItem.c.UUID_WORKING_PLAN.lc ();
+        final String f = WorkingPlanItem.c.UUID_REPORTING_PERIOD.lc ();
         
         final NsiTable nsiTable = NsiTable.getNsiTable (56);
 

@@ -73,6 +73,8 @@ public class SupplyResourceContractSubject extends EnTable {
         trigger("BEFORE INSERT OR UPDATE", ""
                 + "DECLARE"
                 + " PRAGMA AUTONOMOUS_TRANSACTION; "
+                + " ctr_effectivedate  DATE := NULL; "
+                + " ctr_completiondate DATE := NULL; "
                 + "BEGIN "
 
                 + " IF :NEW.is_deleted = 0 THEN "
@@ -80,6 +82,16 @@ public class SupplyResourceContractSubject extends EnTable {
                     + " IF :NEW.startsupplydate > :NEW.endsupplydate "
                     + " THEN "
                     + "   raise_application_error (-20000, 'Дата начала поствки ресурса не может превышать дату окончания поставки ресурса. Операция отменена.'); "
+                    + " END IF; "
+
+                    + " SELECT effectivedate INTO ctr_effectivedate FROM tb_sr_ctr WHERE uuid = :NEW.uuid_sr_ctr "
+                    + " ; IF :NEW.startsupplydate < ctr_effectivedate THEN "
+                    + "   raise_application_error (-20000, 'Дата начала поставки ресурса должна быть больше или равна дате вступления договора в силу. Операция отменена.'); "
+                    + " END IF; "
+
+                    + " SELECT completiondate INTO ctr_completiondate FROM tb_sr_ctr WHERE uuid = :NEW.uuid_sr_ctr "
+                    + " ; IF :NEW.endsupplydate > ctr_completiondate THEN "
+                    + "   raise_application_error (-20000, 'Дата окончания поставки ресурсов должна быть меньше или равна дате окончания действия договора. Операция отменена.'); "
                     + " END IF; "
 
                     + " FOR i IN ("

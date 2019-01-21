@@ -8,16 +8,19 @@ import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.phys.PhysicalCol;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
+import ru.eludia.products.mosgis.db.model.tables.OrganizationWork;
 import ru.eludia.products.mosgis.db.model.tables.ReportingPeriod;
 import ru.eludia.products.mosgis.db.model.tables.WorkingList;
 import ru.eludia.products.mosgis.db.model.tables.WorkingListItem;
 import ru.eludia.products.mosgis.db.model.tables.WorkingPlan;
 import ru.eludia.products.mosgis.db.model.tables.WorkingPlanItem;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
@@ -54,6 +57,23 @@ public class ReportingPeriodImpl extends Base<ReportingPeriod> implements Report
         job.add ("item", item);
         
         VocBuilding.addCaCh (db, job, item.getString (fhg));
+        
+        db.addJsonArrays (job, 
+
+            NsiTable.getNsiTable (3).getVocSelect (),
+            
+            NsiTable.getNsiTable (57).getVocSelect (),
+            NsiTable.getNsiTable (56).getVocSelect (),
+            
+            db.getModel ()
+                .select (OrganizationWork.class, "AS org_works", "uuid AS id", "label", "code_vc_nsi_56")
+                .toOne (VocOkei.class, "national AS unit").on ()
+                .where  ("uuid_org", item.getString ("ca.uuid_org", item.getString ("ch.uuid_org", "00")))
+                .and    ("is_deleted", 0)
+                .and    ("elementguid IS NOT NULL")
+                .orderBy ("org_works.label")
+
+        );
 
     });}
 

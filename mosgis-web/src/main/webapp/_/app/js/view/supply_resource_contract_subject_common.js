@@ -80,10 +80,11 @@ define ([], function () {
                                 caption: 'Показатели качества коммунальных ресурсов',
                                 off: data.item['sr_ctr.specqtyinds'] != 10
                             },
-//                            {
-//                                id: 'supply_resource_contract_subject_other_quality_levels',
-//                                caption: 'Иные показатели качества коммунальных ресурсов'
-//                            },
+                            {
+                                id: 'supply_resource_contract_subject_other_quality_levels',
+                                caption: 'Иные показатели качества коммунальных ресурсов',
+                                off: data.item['sr_ctr.specqtyinds'] != 10
+                            },
                             {id: 'supply_resource_contract_subject_common_log', caption: 'История изменений'},
                         ].filter(not_off),
                         onClick: $_DO.choose_tab_supply_resource_contract_subject_common
@@ -113,8 +114,14 @@ define ([], function () {
                 {name: 'code_vc_nsi_3', type: 'list', options: {items: data.vc_nsi_3.items}},
                 {name: 'code_vc_nsi_239', type: 'list', options: {items: data.vc_nsi_239.items}},
 
-                {name: 'startsupplydate', type: 'date'},
-                {name: 'endsupplydate', type: 'date'},
+                {name: 'startsupplydate', type: 'date', options:{
+                    start: dt_dmy(data.item ['sr_ctr.effectivedate']),
+                    end  : dt_dmy(data.item ['sr_ctr.completiondate'])
+                }},
+                {name: 'endsupplydate', type: 'date', options: {
+                    start: dt_dmy(data.item ['sr_ctr.effectivedate']),
+                    end  : dt_dmy(data.item ['sr_ctr.completiondate'])
+                }},
 
                 {name: 'volume', type: 'float'},
                 {name: 'unit', type: 'list', options: {items: data.vc_okei.items}},
@@ -132,6 +139,15 @@ define ([], function () {
                     e.done(function(){
                         var r = w2ui[form_name].record
                         delete r.code_vc_nsi_239
+                        delete r.unit
+                        recalc_ms_change()
+                        w2ui[form_name].refresh()
+                    })
+                }
+
+                if (e.target == 'code_vc_nsi_239' && e.value_new.id) {
+                    e.done(function () {
+                        var r = w2ui[form_name].record
                         delete r.unit
                         recalc_ms_change()
                         w2ui[form_name].refresh()

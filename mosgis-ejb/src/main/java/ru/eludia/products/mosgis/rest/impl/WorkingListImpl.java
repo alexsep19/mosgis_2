@@ -164,31 +164,25 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
                 .where      ("uuid_org", item.getString ("ca.uuid_org", item.getString ("ch.uuid_org", "00")))
                 .and        ("id_status", VocAsyncEntityState.i.OK.getId ())
                 .and        ("is_deleted", 0)
-                .orderBy    ("org_works.label")
+                .orderBy    ("org_works.label"),
+            
+            m
+                .select  (WorkingPlan.class, "AS plans", "*")
+                .where   (EnTable.c.IS_DELETED.lc (), 0)
+                .where   (WorkingPlan.c.UUID_WORKING_LIST.lc (), id)
+                .orderBy (WorkingPlan.c.YEAR.lc ()),
+                        
+            m                
+                .select  (ReportingPeriod.class, "*")
+                .where   (EnTable.c.IS_DELETED.lc (), 0)
+                .where   (ReportingPeriod.c.UUID_WORKING_PLAN, 
+                    m
+                        .select (WorkingPlan.class, "uuid")
+                        .where (EnTable.c.IS_DELETED.lc (), 0)
+                        .where (WorkingPlan.c.UUID_WORKING_LIST.lc (), id)
+                )
 
-        );
-        
-        JsonArray plans = db.getJsonArray (m
-            .select  (WorkingPlan.class, "AS plans", "*")
-            .where   (EnTable.c.IS_DELETED.lc (), 0)
-            .where   (WorkingPlan.c.UUID_WORKING_LIST.lc (), id)
-            .orderBy (WorkingPlan.c.YEAR.lc ())
-        );
-        
-        job.add ("plans", plans);
-        
-        db.addJsonArrays (job, m
-                
-            .select  (ReportingPeriod.class, "*")
-            .where   (EnTable.c.IS_DELETED.lc (), 0)
-            .where   (ReportingPeriod.c.UUID_WORKING_PLAN.lc (), 
-                plans
-                    .stream ()
-                    .map ((i) -> ((JsonObject) i).getString ("uuid"))
-                    .toArray ()
-            )
-
-        );
+        );                        
 
     });}
 

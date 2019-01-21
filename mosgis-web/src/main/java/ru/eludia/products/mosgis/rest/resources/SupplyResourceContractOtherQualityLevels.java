@@ -8,10 +8,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import ru.eludia.products.mosgis.rest.api.SupplyResourceContractQualityLevelLocal;
+import ru.eludia.products.mosgis.rest.api.SupplyResourceContractOtherQualityLevelLocal;
 
-@Path ("supply_resource_contract_quality_levels")
-public class SupplyResourceContractQualityLevels extends EJBResource <SupplyResourceContractQualityLevelLocal> {
+@Path ("supply_resource_contract_other_quality_levels")
+public class SupplyResourceContractOtherQualityLevels extends EJBResource <SupplyResourceContractOtherQualityLevelLocal> {
 
     @POST
     @Consumes (APPLICATION_JSON)

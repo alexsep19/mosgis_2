@@ -5,6 +5,7 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.Type.STRING;
 import static ru.eludia.base.model.Type.NUMERIC;
+import static ru.eludia.base.model.Type.INTEGER;
 import static ru.eludia.base.model.Type.BOOLEAN;
 import static ru.eludia.base.model.def.Bool.FALSE;
 import ru.eludia.base.model.def.Virt;
