@@ -21,8 +21,12 @@ define ([], function () {
         })
 
     }
+    
+    $_DO.import_objects_mgmt_contracts = function (e) {
+        use.block ('mgmt_contract_objects_import_popup')
+    }
 
-    $_DO.create_mgmt_contracts = function (e) {       
+    $_DO.create_mgmt_contracts = function (e) {
         $_SESSION.set ('record', {})
         use.block ('mgmt_contract_popup')
     }

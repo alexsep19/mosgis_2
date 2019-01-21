@@ -35,6 +35,23 @@ define ([], function () {
 //                toolbarEdit: $_USER.role.nsi_20_1,
                 footer: true,
             },     
+            
+            toolbar: {
+            
+                items: [
+                
+                    {
+                        type: 'button', 
+                        id: 'import_objects', 
+                        caption: 'Импорт УО...', 
+                        icon: 'w2ui-icon-plus', 
+                        onClick: $_DO.import_objects_mgmt_contracts, 
+                        off: !$_USER.role.nsi_20_1
+                    },
+                    
+                ].filter (not_off),
+                
+            },            
 
             searches: [            
                 
