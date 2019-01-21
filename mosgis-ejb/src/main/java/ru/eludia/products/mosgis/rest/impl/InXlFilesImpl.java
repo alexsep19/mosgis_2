@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Base64;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -98,8 +99,22 @@ public class InXlFilesImpl extends BaseCRUD<InXlFile> implements InXlFilesLocal 
                 EnTable.c.UUID,      uuid,
                 c.ID_STATUS,         VocFileStatus.i.LOADING.getId ()
             ));
+            
+            Map<String, Object> item = db.getMap (getTable (), id);
+            
+            if (DB.eq (
+                item.get (c.ID_STATUS.lc ()), 
+                VocFileStatus.i.LOADED.getId ()
+            )) {
+               
+                db.update (getTable (), HASH (
+                    EnTable.c.UUID,      uuid,
+                    c.ID_STATUS,         VocFileStatus.i.PROCESSING.getId ()
+                ));
+                
+            }
 
-        }                    
+        }
 
     });}
     
