@@ -23,7 +23,7 @@ public class InXlFile extends EnTable {
         LEN            (Type.INTEGER,                               "Размер"),
         BODY           (Type.BLOB,              EMPTY_BLOB,         "Содержимое"),
         TS             (Type.TIMESTAMP,         NOW,                "Дата начала импорта"),
-        ERR            (Type.TEXT,              "",                 "Ошибки"),
+        ERR            (Type.TEXT,              new ru.eludia.base.model.def.String ("	Ошибки импорта "),  "Ошибки"),
         ID_TYPE        (VocXLFileType.class,                        "Тип"),
         ID_STATUS      (VocFileStatus.class, VocFileStatus.DEFAULT, "Статус"),
         ID_LOG         (InXlFileLog.class,                          "Последнее событие редактирования"),
