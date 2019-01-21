@@ -22,7 +22,7 @@ public abstract class AttachTable extends EnTable {
 
         LABEL          (Type.STRING, 1024,                  "Имя файла"),
         MIME           (Type.STRING,                        "Тип содержимого"),
-        LEN            (Type.INTEGER,                       "Тип содержимого"),
+        LEN            (Type.INTEGER,                       "Размер"),
         BODY           (Type.BLOB,              EMPTY_BLOB, "Содержимое"),
         DESCRIPTION    (Type.STRING, 500,             null, "Имя файла"),
         ATTACHMENTGUID (Type.UUID,                    null, "Идентификатор сохраненного вложения"),

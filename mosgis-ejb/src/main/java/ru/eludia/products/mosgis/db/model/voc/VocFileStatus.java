@@ -9,11 +9,14 @@ import javax.json.JsonObjectBuilder;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Table;
+import ru.eludia.base.model.def.Num;
 
 public class VocFileStatus extends Table {
     
     private static final String TABLE_NAME = "vc_file_status";
     
+    public static final Num DEFAULT = new Num (VocFileStatus.i.LOADING.getId ());
+
     public VocFileStatus () {       
         super (TABLE_NAME, "Статусы загружаемых файлов");
         cols  (c.class);        
