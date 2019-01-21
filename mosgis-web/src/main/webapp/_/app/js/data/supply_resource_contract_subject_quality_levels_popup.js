@@ -22,7 +22,12 @@ define ([], function () {
         var tia = {type: 'supply_resource_contract_quality_levels'}
         tia.id = form.record.id
         tia.action = tia.id ? 'update' : 'create'
-        
+
+        if (tia.id < 0) {
+            tia.action = 'create'
+            tia.id = undefined
+        }
+
         var done = reload_page
 
         var grid = w2ui ['supply_resource_contract_subject_quality_levels_grid']
@@ -47,23 +52,7 @@ define ([], function () {
            {type: 'supply_resource_contract_quality_levels', part: 'vocs', id: undefined}
             , {uuid_sr_ctr: data.item.uuid_sr_ctr}, function (d) {
 
-            add_vocabularies(d, {used_vc_nsi_276: 1})
-
-            d.vc_nsi_276 = d.vc_nsi_276.filter(function (i) {
-
-                var i_code_239   = i['vc_nsi_239.code']
-                var subj_code_239 = data.item.code_vc_nsi_239
-
-                return i_code_239 == subj_code_239
-                    && (!(i.id in d.used_vc_nsi_276)
-                        || data.record.id && i.id == data.record.code_vc_nsi_276
-                    )
-            })
-
-            add_vocabularies (d, {
-                vc_nsi_276: 1,
-                vc_okei: 1,
-            })
+            add_vocabularies(d, d)
 
             for (voc in d){data[voc] = d[voc]}
 

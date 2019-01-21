@@ -77,7 +77,7 @@ public class SupplyResourceContractSubject extends EnTable {
                 + " ctr_completiondate DATE := NULL; "
                 + "BEGIN "
 
-                + " IF :NEW.is_deleted = 0 THEN "
+                + " IF :NEW.is_deleted = 0 THEN BEGIN "
 
                     + " IF :NEW.startsupplydate > :NEW.endsupplydate "
                     + " THEN "
@@ -121,17 +121,33 @@ public class SupplyResourceContractSubject extends EnTable {
                         + "|| '. Операция отменена.'); "
                     + " END LOOP; "
 
-                + " END IF; "
+                    + " IF :NEW.volume IS NOT NULL AND :NEW.volume < 0 "
+                    + " THEN "
+                    + "   raise_application_error (-20000, 'Укажите неотрицательный плановый объем. Операция отменена.'); "
+                    + " END IF; "
 
-                + " IF :NEW.volume IS NOT NULL AND :NEW.volume < 0 "
-                + " THEN "
-                + "   raise_application_error (-20000, 'Укажите неотрицательный плановый объем. Операция отменена.'); "
-                + " END IF; "
+                    + " IF :NEW.volume IS NOT NULL AND :NEW.unit IS NULL "
+                    + " THEN "
+                    + "   raise_application_error (-20000, 'Укажите, пожалуйста, единицу измерения планового объема. Операция отменена.'); "
+                    + " END IF; "
 
-                + " IF :NEW.volume IS NOT NULL AND :NEW.unit IS NULL "
-                + " THEN "
-                + "   raise_application_error (-20000, 'Укажите, пожалуйста, единицу измерения планового объема. Операция отменена.'); "
-                + " END IF; "
+                    + " IF UPDATING AND :NEW.code_vc_nsi_239 <> :OLD.code_vc_nsi_239 "
+                    + " THEN BEGIN "
+                    + "   FOR i IN ("
+                    + "   SELECT "
+                    + "    o.label "
+                    + "   FROM "
+                    + "    tb_sr_ctr_other_qls o "
+                    + "   WHERE o.is_deleted = 0 "
+                    + "    AND o.uuid_sr_ctr_subj = :NEW.uuid "
+                    + "   ) LOOP"
+                    + "    raise_application_error (-20000, 'Чтобы поменять коммунальный ресурс удалите иные показатели качества. Операция отменена.'); "
+                    + "   END LOOP; "
+                    + "   UPDATE tb_sr_ctr_qls SET is_deleted = 1 WHERE uuid_sr_ctr_subj = :NEW.uuid; "
+                    + "   COMMIT; "
+                    + " END; END IF; "
+
+                + " END; END IF; " // IF :NEW.is_deleted = 0
         + "END;");
     }
 
