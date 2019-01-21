@@ -20,8 +20,7 @@ define ([], function () {
 
             toolbar: {
                 items: [
-                    {type: 'button', id: 'createButton', caption: 'Добавить', onClick: $_DO.create_infrastructure, icon: 'w2ui-icon-plus', off: !perms ()},
-                    {type: 'button', id: 'deleteButton', caption: 'Удалить', onClick: $_DO.delete_infrastructure, icon: 'w2ui-icon-cross', disabled: true, off: !perms ()},
+                    {type: 'button', id: 'createButton', caption: 'Добавить', onClick: $_DO.create_infrastructure, icon: 'w2ui-icon-plus', off: !perms ()}
                 ].filter (not_off)
             },
             

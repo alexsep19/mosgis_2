@@ -1,7 +1,6 @@
 package ru.eludia.products.mosgis.rest.impl;
 
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.ejb.Stateless;
@@ -20,7 +19,6 @@ import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.Infrastructure;
 import ru.eludia.products.mosgis.db.model.tables.InfrastructureNsi3;
-import ru.eludia.products.mosgis.db.model.tables.OrganizationWorkNsi67;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi38;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi40;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
