@@ -18,7 +18,9 @@ public class VocBuildingAddress extends View {
 
         col   ("label",        Type.STRING, null,                                 "Адрес здания (без индекса)");
         col   ("label_uc",     Type.STRING, null,                                 "АДРЕС ЗДАНИЯ В ВЕРХНЕМ РЕГИСТРЕ (БЕЗ ИНДЕКСА)");
-        
+
+        col   ("is_condo",     Type.BOOLEAN, null,                                "Тип дома (при наличии): 1 для МКД, 0 для ЖД");
+        col   ("uuid_house",   Type.UUID,  null,                                  "Ссылка на паспорт дома (при наличии)");
     }
 
     @Override
@@ -31,8 +33,11 @@ public class VocBuildingAddress extends View {
             "  , b.eststatus" +
             "  , b.label" +
             "  , b.label_uc" +
+            "  , h.is_condo" +
+            "  , h.uuid uuid_house" +
             " FROM " +
-            "  vc_buildings b";
+            "  vc_buildings b" +
+            " LEFT JOIN tb_houses h ON h.fiashouseguid = b.houseguid";
 
     }
 

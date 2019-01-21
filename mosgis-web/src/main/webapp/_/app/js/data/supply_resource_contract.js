@@ -22,7 +22,7 @@ define ([], function () {
             query ({type: 'supply_resource_contracts'}, {}, function (data) {
 
                 data.item.customer_label = data.item['org_customer.label'] || data.item['person_customer.label']
-
+                
                 add_vocabularies (data, {
                     vc_actions: 1,
                     vc_gis_status: 1,

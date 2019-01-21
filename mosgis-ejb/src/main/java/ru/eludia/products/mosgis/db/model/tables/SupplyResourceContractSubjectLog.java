@@ -7,7 +7,7 @@ public class SupplyResourceContractSubjectLog extends LogTable {
 
     public SupplyResourceContractSubjectLog () {
 
-        super ("tb_sr_ctr_subj__log", "История редактирования предмата договора ресурсоснабжения", SupplyResourceContractSubject.class
+        super ("tb_sr_ctr_subj__log", "История редактирования предмета договора ресурсоснабжения", SupplyResourceContractSubject.class
             , EnTable.c.class
             , SupplyResourceContractSubject.c.class
 

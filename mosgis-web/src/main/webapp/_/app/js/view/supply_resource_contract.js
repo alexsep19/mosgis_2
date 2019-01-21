@@ -39,9 +39,10 @@ define ([], function () {
                     tabs: {
 
                         tabs: [
-                            {id: 'supply_resource_contract_common',   caption: 'Общие'},
-                            {id: 'supply_resource_contract_docs',     caption: 'Документы'},
-                            {id: 'supply_resource_contract_subjects',    caption: 'Предмет договора'},
+                            {id: 'supply_resource_contract_common',     caption: 'Общие'},
+                            {id: 'supply_resource_contract_docs',       caption: 'Документы'},
+                            {id: 'supply_resource_contract_subjects',   caption: 'Предмет договора'},
+                            {id: 'supply_resource_contract_objects',    caption: 'Объекты жилищного фонда'},
                             {id: 'supply_resource_contract_common_log', caption: 'История изменений'},
                         ].filter (not_off),
 
