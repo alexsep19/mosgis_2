@@ -143,7 +143,7 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
         db.dupsert (
             InfrastructureNsi3.class,
             HASH ("uuid", insertId),
-            p.getJsonObject ("data").getJsonArray ("code_vc_nsi_67").stream ().map ((t) -> {return HASH ("code", ((JsonString) t).getString ());}).collect (Collectors.toList ()),
+            p.getJsonObject ("data").getJsonArray ("code_vc_nsi_3").stream ().map ((t) -> {return HASH ("code", ((JsonString) t).getString ());}).collect (Collectors.toList ()),
             "code"
         );
         

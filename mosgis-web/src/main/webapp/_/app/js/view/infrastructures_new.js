@@ -16,7 +16,7 @@ define ([], function () {
             $manageroki.change ()
         }
 
-        if (r.indefinetemanagement.id) {
+        if (r.indefinitemanagement.id) {
             $endmanagmentdate.prop ('disabled', true)
             $endmanagmentdate.prop ('placeholder', 'Управление бессрочно')
         }
@@ -44,7 +44,7 @@ define ([], function () {
                     {name: 'manageroki', type: 'hidden'},
                     {name: 'manageroki_label', type: 'text'},
                     {name: 'code_vc_nsi_39', type: 'list', options: {items: data.vc_nsi_39.items}},
-                    {name: 'indefinetemanagement', type: 'list', options: {items: [
+                    {name: 'indefinitemanagement', type: 'list', options: {items: [
                         {id: 0, text: 'Нет'},
                         {id: 1, text: 'Да'}
                     ]}},
@@ -56,7 +56,7 @@ define ([], function () {
 
                 onChange: function (e) {
 
-                    if (e.target == 'indefinetemanagement') e.done (function () { 
+                    if (e.target == 'indefinitemanagement') e.done (function () { 
                         recalc () 
                         this.refresh ()
                     })

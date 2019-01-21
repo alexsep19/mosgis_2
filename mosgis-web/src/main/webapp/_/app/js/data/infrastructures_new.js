@@ -57,8 +57,8 @@ define ([], function () {
         
         if (!v.name) die ('name', 'Укажите, пожалуйста, наименование объекта')
         if (!v.code_vc_nsi_39) die ('code_vc_nsi_39', 'Укажите, пожалуйста, основание управления')
-        if (!v.hasOwnProperty('indefinetemanagement')) die ('indefinetemanagement', 'Укажите, пожалуйста, признак бессрочности управления')
-        if (!v.indefinetemanagement && !v.endmanagmentdate) die ('endmanagmentdate', 'Укажите, пожалуйста, дату окончания управления')
+        if (!v.hasOwnProperty('indefinitemanagement')) die ('indefinitemanagement', 'Укажите, пожалуйста, признак бессрочности управления')
+        if (!v.indefinitemanagement && !v.endmanagmentdate) die ('endmanagmentdate', 'Укажите, пожалуйста, дату окончания управления')
         if (!v.code_vc_nsi_33) die ('code_vc_nsi_33', 'Укажите, пожалуйста, вид объекта')
         
         v.code_vc_nsi_3 = w2ui [grid_name].getSelection ()

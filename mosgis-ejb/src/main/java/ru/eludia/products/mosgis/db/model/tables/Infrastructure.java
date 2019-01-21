@@ -39,14 +39,16 @@ public class Infrastructure extends EnTable {
         CODE_VC_NSI_37          (STRING,  20, null, "Тип электрической подстанции (НСИ 37)"),
         CODE_VC_NSI_38          (STRING,  20, null, "Вид электростанции (НСИ 38)"),
         
-        OKTMO                   (VocOktmo.class,            "ОКТМО"),
-        OKTMO_CODE              (STRING, 11, "Код ОКТМО"),
-        ADRESS                  (STRING,         140, null, "Адрес объекта"),
-        COMISSIONINGYEAR        (NUMERIC,        4,         "Год ввода в эксплуатацию"),
-        COUNTACCIDENTS          (INTEGER,                   "Число аварий на 100 км сетей"),
-        DETERIORATION           (NUMERIC,        3, 1,      "Уровень износа (%)"),
+        OKTMO                   (VocOktmo.class,      "ОКТМО"),
+        OKTMO_CODE              (STRING,  11,   null, "Код ОКТМО"),
+        ADRESS                  (STRING, 140,   null, "Адрес объекта"),
+        COMISSIONINGYEAR        (NUMERIC,  4,   null, "Год ввода в эксплуатацию"),
+        COUNTACCIDENTS          (INTEGER,       null, "Число аварий на 100 км сетей"),
+        DETERIORATION           (NUMERIC, 3, 1, null, "Уровень износа (%)"),
         
-        ADDINFO                 (STRING, 2000, "Дополнительная информация")
+        ADDINFO                 (STRING, 2000, null, "Дополнительная информация"),
+        
+        ID_LOG                  (InfrastructureLog.class, "Последнее событие редактирования")
         
         ;
         
@@ -59,6 +61,8 @@ public class Infrastructure extends EnTable {
         @Override
         public boolean isLoggable () {
             switch (this) {
+                case ID_LOG:
+                    return false;
                 default:
                     return true;
             }
