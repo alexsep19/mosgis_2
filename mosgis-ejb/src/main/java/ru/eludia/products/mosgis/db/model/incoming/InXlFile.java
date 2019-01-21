@@ -16,15 +16,17 @@ public class InXlFile extends EnTable {
 
     public enum c implements EnColEnum {
 
+        UUID_USER      (VocUser.class,                              "Оператор"),
+        UUID_ORG       (VocOrganization.class,                      "Организация"),
         LABEL          (Type.STRING, 1024,                          "Имя файла"),
         MIME           (Type.STRING,                                "Тип содержимого"),
         LEN            (Type.INTEGER,                               "Размер"),
         BODY           (Type.BLOB,              EMPTY_BLOB,         "Содержимое"),
         TS             (Type.TIMESTAMP,         NOW,                "Дата начала импорта"),
+        ERR            (Type.TEXT,              "",                 "Ошибки"),
         ID_TYPE        (VocXLFileType.class,                        "Тип"),
         ID_STATUS      (VocFileStatus.class, VocFileStatus.DEFAULT, "Статус"),
-        UUID_USER      (VocUser.class,                              "Оператор"),
-        UUID_ORG       (VocOrganization.class,                      "Организация"),
+        ID_LOG         (InXlFileLog.class,                          "Последнее событие редактирования"),
         ;
 
         @Override
@@ -35,7 +37,7 @@ public class InXlFile extends EnTable {
 
         @Override
         public boolean isLoggable () {
-            return false;
+            return this == ID_STATUS;
         }
 
     }
