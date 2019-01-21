@@ -1,0 +1,111 @@
+define ([], function () {
+
+    var form_name = 'infrastructure_common_form'
+
+    $_DO.open_orgs_infrastructure_popup = function (e) {
+
+        var f = w2ui [form_name]
+            
+        function done () {
+            f.refresh ()
+        }
+
+        var search_values = [{id: "2"}]
+        if ($_USER.role.admin) search_values.push ({id: "8"})
+
+        $('body').data ('voc_organizations_popup.post_data', {search:[
+            {field: 'code_vc_nsi_20', operator: 'in', value: search_values}
+        ], searchLogic: "AND"})
+    
+        $('body').data ('voc_organizations_popup.callback', function (r) {
+
+            if (!r) return done ()
+
+            f.record.manageroki = r.uuid
+            f.record.manageroki_label = r.label
+
+            done ()
+
+        })
+
+        use.block ('voc_organizations_popup')
+
+    }
+
+    $_DO.cancel_infrastructure_common = function (e) {
+        
+        if (!confirm ('Отменить несохранённые правки?')) return
+
+        var data = w2ui [form_name].record
+        
+        query ({type: 'infrastructures'}, {}, function (data) {
+
+            data.__read_only = true
+
+            $_F5 (data)
+
+        })
+
+    }
+    
+    $_DO.edit_infrastructure_common = function (e) {
+
+        var data = {item: w2ui [form_name].record}
+
+        data.__read_only = false
+        
+        var $form = w2ui [form_name]
+                
+        $_F5 (data)
+
+    }
+
+    $_DO.update_mgmt_contract_common = function (e) {
+    
+        if (!confirm ('Сохранить изменения?')) return
+        
+        var f = w2ui [form_name]
+
+        var v = f.values ()
+        
+        query ({type: 'infrastructures', action: 'update'}, {data: v}, reload_page)
+
+    }
+    
+    $_DO.delete_mgmt_contract_common = function (e) {   
+        if (!confirm ('Удалить эту запись, Вы уверены?')) return        
+        query ({type: 'infrastructures', action: 'delete'}, {}, reload_page)
+    }
+    
+    $_DO.choose_tab_infrastructure_common = function (e) {
+    
+        var name = e.tab.id
+                
+        var layout = w2ui ['passport_layout']
+            
+        if (layout) {                
+            layout.content ('main', '');
+            layout.lock ('main', 'Загрузка...', true);
+        }
+            
+        localStorage.setItem ('infrastructure_common.active_tab', name)
+            
+        use.block (name)        
+    
+    }
+    
+    return function (done) {        
+
+        w2ui ['topmost_layout'].unlock ('main')
+        
+        var data = clone ($('body').data ('data'))
+
+        data.active_tab = localStorage.getItem ('infrastructure_common.active_tab') || 'infrastructure_common_log'
+
+        data.__read_only = 1
+
+        done (data)
+        
+    }
+
+})

@@ -7,12 +7,14 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.json.Json;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
 import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
+import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
@@ -89,9 +91,31 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
     });}
 
     @Override
-    public JsonObject getItem(String id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    public JsonObject getItem (String id) {return fetchData ((DB db, JsonObjectBuilder job) -> {
+
+        final MosGisModel model = ModelHolder.getModel ();
+        
+        final Select get = model.get (getTable (), id, "*");
+        
+        QP qp = db.toQP (get);
+        
+        JsonObjectBuilder [] jobs = new JsonObjectBuilder [1];
+        
+        db.forFirst (qp, (rs) -> {
+            jobs [0] = db.getJsonObjectBuilder (rs);
+        });
+        
+        JsonArrayBuilder a = Json.createArrayBuilder ();
+        
+        db.forEach (model.select (InfrastructureNsi3.class, "code").where ("uuid", id), (rs) -> {
+            a.add (rs.getString (1));
+        });
+
+        jobs [0].add ("codes_nsi_3", a);
+
+        job.add ("item", jobs [0]);
+
+    });}
 
     @Override
     public JsonObject getVocs () {
