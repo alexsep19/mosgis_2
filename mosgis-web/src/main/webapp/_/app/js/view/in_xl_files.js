@@ -18,7 +18,7 @@ define ([], function () {
             columns: [                
                 {field: 'id_type', caption: 'Тип',    size: 25, voc: data.vc_xl_file_types},
                 {field: 'ts', caption: 'Дата начала',    size: 16, render: _ts},
-                {field: 'ts', caption: 'Дата окончания',    size: 16, render: _ts},
+                {field: 'log.ts', caption: 'Дата окончания',    size: 16, render: _ts},
                 
                 {field: 'u.label', caption: 'Пользователь',    size: 20},
                 {field: 'org.label', caption: 'Организация',    size: 20, off: !$_USER.role.admin},

@@ -25,6 +25,7 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.rest.api.InXlFilesLocal;
 import ru.eludia.products.mosgis.db.model.incoming.InXlFile;
 import ru.eludia.products.mosgis.db.model.incoming.InXlFile.c;
+import ru.eludia.products.mosgis.db.model.incoming.InXlFileLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocFileStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -144,6 +145,7 @@ public class InXlFilesImpl extends BaseCRUD<InXlFile> implements InXlFilesLocal 
             .select (getTable (), "AS root", "*", "uuid AS id")
             .toOne (VocOrganization.class, "AS org", "label").on ()
             .toOne (VocUser.class, "AS u", "label").on ()
+            .toOne (InXlFileLog.class, "AS log", "ts").on ()
             .orderBy ("root.ts DESC")
             .limit (p.getInt ("offset"), p.getInt ("limit"))        
         ;
