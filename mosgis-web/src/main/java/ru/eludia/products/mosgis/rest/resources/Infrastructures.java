@@ -74,4 +74,12 @@ public class Infrastructures extends EJBResource<InfrastructuresLocal> {
         return back.doUpdate (id, p, getUser ());
     }
     
+    @POST
+    @Path("{id}/delete") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject doDelete (@PathParam ("id") String id) {
+        check ();
+        return back.doDelete (id, getUser ());
+    }
+    
 }
