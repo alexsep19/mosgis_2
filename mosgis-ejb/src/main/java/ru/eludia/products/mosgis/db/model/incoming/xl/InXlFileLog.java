@@ -1,4 +1,4 @@
-package ru.eludia.products.mosgis.db.model.incoming;
+package ru.eludia.products.mosgis.db.model.incoming.xl;
 
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.LogTable;

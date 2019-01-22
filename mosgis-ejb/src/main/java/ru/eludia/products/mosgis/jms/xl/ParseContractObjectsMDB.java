@@ -8,7 +8,7 @@ import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import ru.eludia.base.DB;
-import ru.eludia.products.mosgis.db.model.incoming.InXlFile;
+import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
