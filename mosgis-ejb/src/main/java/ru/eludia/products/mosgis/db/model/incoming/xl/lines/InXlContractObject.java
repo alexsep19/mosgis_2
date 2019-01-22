@@ -209,17 +209,22 @@ public class InXlContractObject extends EnTable {
             + " SELECT uuid_org INTO :NEW.uuid_org FROM in_xl_files WHERE uuid=:NEW.uuid_xl; "
 
             + " IF :NEW.err IS NOT NULL THEN RETURN; END IF; "
-
+                
             + "BEGIN "
             + " SELECT * INTO ctr FROM tb_contracts WHERE is_deleted=0 AND uuid_org=:NEW.uuid_org AND docnum=:NEW.docnum AND signingdate=:NEW.signingdate; "
             + " EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Не удалось определить договор по номеру и дате подписания');"
             + "END;"
-                
+                               
             + " IF ctr.id_ctr_status > 11 THEN FOR i IN (SELECT label FROM vc_gis_status WHERE id=ctr.id_ctr_status) LOOP raise_application_error (-20000, 'Договор находится в статусе \"' || i.label || '\"; добавление объектов запрещено'); END LOOP; END IF; "
             + " IF :NEW.startdate < ctr.effectivedate THEN raise_application_error (-20000, 'Дата начала выходит за период действия договора'); END IF; "
             + " IF :NEW.enddate > ctr.plandatecomptetion THEN raise_application_error (-20000, 'Дата окончания выходит за период действия договора'); END IF; "
             + " :NEW.uuid_contract := ctr.uuid; "
-                                
+
+            + " IF :NEW.agreementdate IS NOT NULL THEN BEGIN "
+            + "  SELECT uuid INTO :NEW.uuid_contract_agreement FROM tb_contract_files WHERE id_status=1 AND uuid_contract=:NEW.uuid_contract AND agreementnumber=:NEW.agreementnumber AND agreementdate=:NEW.agreementdate; "
+            + "  EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Не удалось определить дополнительное соглашение по номеру и дате');"
+            + " END; END IF; "                                
+
             + "BEGIN "
             + " SELECT fiashouseguid INTO :NEW.fiashouseguid FROM vc_unom WHERE unom=:NEW.unom; "
             + " EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Не удалось однозначно определить GUID ФИАС по UNOM');"
