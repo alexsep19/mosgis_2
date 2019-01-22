@@ -18,34 +18,15 @@ define ([], function () {
 
             show: {
                 footer: 1,
-                toolbar: true,
+                toolbar: false,
                 toolbarColumns: false,
                 toolbarInput: false,
                 toolbarReload: false,
-                toolbarDelete: is_editable,
+                toolbarDelete: false,
                 toolbarAdd: false
             },
 
             textSearch: 'contains',
-
-            toolbar: {
-                items: !is_editable ? [] : [
-                    {
-                        id: 'create', // HACK: одинаковый порядок кнопок показателях качества и иных показателях качества
-                        type: 'button',
-                        text: 'Добавить',
-                        icon: 'w2ui-icon-plus',
-                        onClick: function() {
-
-                            var data = clone($('body').data('data'))
-
-                            $_SESSION.set('record', {uuid_sr_ctr_subj: data.item.uuid})
-
-                            use.block('supply_resource_contract_subject_quality_levels_popup')
-                        }
-                    }
-                ].filter(not_off),
-            },
 
             columns: [
                 {field: 'vc_nsi_276.label', caption: 'Наименование показателя', size: 200},
@@ -67,14 +48,63 @@ define ([], function () {
             ],
 
             postData: {data: {
-                uuid_sr_ctr: $_REQUEST.id
+                uuid_sr_ctr_subj: $_REQUEST.id
             }},
 
             url: '/mosgis/_rest/?type=supply_resource_contract_quality_levels',
 
             onDblClick: $_DO.edit_supply_resource_contract_subject_quality_levels,
 
-            onDelete: $_DO.delete_supply_resource_contract_subject_quality_levels
+            onLoad: function (e) {
+
+                if (e.xhr.status != 200) return $_DO.apologize ({jqXHR: e.xhr})
+
+                var content = JSON.parse (e.xhr.responseText).content
+
+                var data = {
+                    status : "success",
+                    total  : content.cnt
+                }
+
+                delete content.cnt
+                delete content.portion
+
+                var data = $('body').data('data')
+
+                for (key in content) {
+
+                    var rs = content [key]
+
+                    var seen = {}
+
+                    $.each (rs, function () {
+                        seen [this.code_vc_nsi_276] = this
+                    })
+
+                    var k = -1;
+
+                    $.each(data.vc_nsi_276.items, function () {
+                        if(!seen [this.id]) {
+                            rs.push({
+                                id: k--,
+                                uuid_sr_ctr_subj: data.item.uuid,
+                                code_vc_nsi_276: this.id,
+                                vc_nsi_276: this,
+                                'vc_nsi_276.label': this.label
+                            })
+                        }
+                    })
+
+                    rs = rs.sort(function (a, b) {
+                        return a['vc_nsi_276.label'] < b['vc_nsi_276.label'] ? -1
+                            : a['vc_nsi_276.label']  > b['vc_nsi_276.label']  ? 1 : 0
+                    })
+
+                    data.records = dia2w2uiRecords(rs)
+
+                    e.xhr.responseText = JSON.stringify (data)
+                }
+            }
         })
 
     }

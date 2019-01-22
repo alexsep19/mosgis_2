@@ -103,17 +103,5 @@ public class SupplyResourceContractQualityLevelImpl extends BaseCRUD<SupplyResou
         db.addJsonArrays(job,
             m.select(VocOkei.class, "code AS id", "national AS label").orderBy("national")
         );
-
-
-        String uuid_sr_ctr = p.getString("uuid_sr_ctr", null);
-
-        if (DB.ok(uuid_sr_ctr)){
-
-            db.addJsonArrays(job,
-                m.select(SupplyResourceContractQualityLevel.class, "AS used_vc_nsi_276", "code_vc_nsi_276 AS id")
-                    .where("uuid_sr_ctr", uuid_sr_ctr)
-                    .and("is_deleted", 0)
-            );
-        }
     });}
 }

@@ -1,14 +1,5 @@
 define([], function () {
 
-    $_DO.create_supply_resource_contract_subject_quality_levels = function (e) {
-
-        var data = clone($('body').data('data'))
-
-        $_SESSION.set('record', {uuid_sr_ctr_subj: data.item.uuid})
-
-        use.block('supply_resource_contract_subject_quality_levels_popup')
-    }
-
     $_DO.edit_supply_resource_contract_subject_quality_levels = function (e) {
 
         var grid = w2ui [e.target]
@@ -43,14 +34,22 @@ define([], function () {
         var data = clone($('body').data('data'))
 
         query(
-            {type: 'supply_resource_contract_quality_levels', part: 'vocs', id: undefined},
-            {data: {uuid_sr_ctr: data.item.uuid_sr_ctr}}, function (d) {
+            {type: 'supply_resource_contract_quality_levels', part: 'vocs', id: undefined}, {}, function (d) {
 
-            add_vocabularies(d, d)
+            d.vc_nsi_276 = d.vc_nsi_276.filter(function (i) {
+                return i['vc_nsi_239.code'] == data.item.code_vc_nsi_239
+            })
+
+            add_vocabularies(d, {
+                vc_nsi_276: 1,
+                vc_okei: 1,
+            })
 
             for (k in d) {
                 data[k] = d[k]
             }
+
+            $('body').data('data', data)
 
             done(data)
         })
