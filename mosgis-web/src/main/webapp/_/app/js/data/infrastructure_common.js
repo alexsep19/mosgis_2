@@ -77,6 +77,9 @@ define ([], function () {
         v.code_vc_nsi_3 = w2ui ['code_vc_nsi_3_grid'].getSelection ()
         if (!v.code_vc_nsi_3.length) die ('foo', 'Укажите, пожалуйста, по крайней мере один вид коммунальных услуг')
         
+        delete v.manageroki_label
+        delete v.oktmo_code
+
         query ({type: 'infrastructures', action: 'update'}, {data: v}, reload_page)
 
     }

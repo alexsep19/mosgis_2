@@ -3,6 +3,42 @@ define ([], function () {
     var form_name = 'infrastructure_common_form'
 
     return function (data, view) {
+
+        function recalc () {
+
+            var elements = [
+                'independentsource',
+                'code_vc_nsi_34',
+                'code_vc_nsi_35',
+                'code_vc_nsi_40',
+                'code_vc_nsi_37',
+                'code_vc_nsi_38'
+            ]
+
+            var elements_nsi_33 = {
+                independentsource: {'1.1':1, '2.1':1, '5.1':1, '5.2':1},
+                code_vc_nsi_34:    {'1.1':1},
+                code_vc_nsi_35:    {'4.5':1},
+                code_vc_nsi_40:    {'2.1':1},
+                code_vc_nsi_37:    {'5.2':1},
+                code_vc_nsi_38:    {'5.1':1}
+            }
+
+            var r = w2ui [form_name].record
+
+            elements.forEach ((value, index, array) => {
+                if (elements_nsi_33[value][r.code_vc_nsi_33.id]) {
+                    $('#' + value).closest ('.w2ui-field').show ()
+                }
+                else {
+                    $('#' + value).closest ('.w2ui-field').hide ()
+                }
+            })
+
+            if (r.indefinitemanagement.id == 1) $('#endmanagmentdate').prop ('disabled', true)
+            else if (!$('#name').prop ('disabled')) $('#endmanagmentdate').prop ('disabled', false)
+
+        }
     
         $_F5 = function (data) {
         
@@ -94,8 +130,13 @@ define ([], function () {
 
                 clickOn ($('#manageroki_label'), $_DO.open_orgs_infrastructure_popup)
                 clickOn ($('#oktmo_code'), $_DO.open_oktmo_popup)
+                recalc ()
 
-            })}
+            })},
+
+            onChange: function (e) {
+                if (e.target == 'code_vc_nsi_33' || e.target == 'indefinitemanagement') e.done (recalc)
+            }
 
         })
 
@@ -134,7 +175,7 @@ define ([], function () {
 
                 }
             
-            }    
+            },    
         
         }).refresh ()
 
