@@ -67,6 +67,15 @@ define ([], function () {
         var f = w2ui [form_name]
 
         var v = f.values ()
+
+        if (!v.name) die ('name', 'Укажите, пожалуйста, наименование объекта')
+        if (!v.code_vc_nsi_39) die ('code_vc_nsi_39', 'Укажите, пожалуйста, основание управления')
+        if (!v.hasOwnProperty('indefinitemanagement')) die ('indefinitemanagement', 'Укажите, пожалуйста, признак бессрочности управления')
+        if (!v.indefinitemanagement && !v.endmanagmentdate) die ('endmanagmentdate', 'Укажите, пожалуйста, дату окончания управления')
+        if (!v.code_vc_nsi_33) die ('code_vc_nsi_33', 'Укажите, пожалуйста, вид объекта')
+
+        v.code_vc_nsi_3 = w2ui ['code_vc_nsi_3_grid'].getSelection ()
+        if (!v.code_vc_nsi_3.length) die ('foo', 'Укажите, пожалуйста, по крайней мере один вид коммунальных услуг')
         
         query ({type: 'infrastructures', action: 'update'}, {data: v}, reload_page)
 
