@@ -1,5 +1,10 @@
 package ru.eludia.products.mosgis.db.model.incoming.xl.lines;
 
+import java.util.Date;
+import java.util.Map;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
@@ -45,6 +50,143 @@ public class InXlContractObject extends EnTable {
         private Col col;        
         private c (Type type, Object... p) {col = new Col (this, type, p);}
         private c (Class c,   Object... p) {col = new Ref (this, c, p);}
+
+    }
+    
+    public static Map<String, Object> toHash (String uuid, int ord, XSSFRow row) {
+        
+        Map<String, Object> r = DB.HASH (
+            c.UUID_XL, uuid,
+            c.ORD, ord    
+        );
+        
+        try {
+            setFields (r, row);
+        }         
+        catch (XLException ex) {
+            r.put (c.ERR.lc (), ex.getMessage ());
+        }
+        
+        return r;
+        
+    }
+    
+    private static class XLException extends Exception {
+        public XLException (String s) {
+            super (s);
+        }        
+    }
+
+    private static void setFields (Map<String, Object> r, XSSFRow row) throws XLException {
+        
+        try {
+            r.put (c.ADDRESS.lc (), row.getCell (0).getStringCellValue ());
+        }
+        catch (Exception ex) {
+            throw new XLException ("Некорректный тип ячейки адреса (столбец A)");
+        }
+        
+        try {
+            final XSSFCell cell = row.getCell (1);
+            if (cell == null) throw new XLException ("Не указан номер договора (столбец B)");
+            final String s = cell.getStringCellValue ();
+            if (!DB.ok (s)) throw new XLException ("Не указан номер договора (столбец B)");
+            r.put (c.DOCNUM.lc (), s);
+        }
+        catch (XLException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new XLException ("Некорректный тип ячейки номера договора (столбец B)");
+        }
+        
+        try {
+            final XSSFCell cell = row.getCell (2);
+            if (cell == null) throw new XLException ("Не указана дата заключения договора (столбец C)");
+            final Date d = cell.getDateCellValue ();
+            if (d == null) throw new XLException ("Не указана дата заключения договора (столбец C)");
+            r.put (c.SIGNINGDATE.lc (), d);
+        }
+        catch (XLException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new XLException ("Некорректное значение даты заключения договора (столбец C)");
+        }
+        
+        try {
+            final XSSFCell cell = row.getCell (3);
+            if (cell == null) throw new XLException ("Не указан UNOM (столбец D)");
+            r.put (c.UNOM.lc (), Long.parseLong (cell.getStringCellValue ()));
+        }
+        catch (XLException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new XLException ("Некорректное значение UNOM (столбец D)");
+        }
+        
+        try {
+            final XSSFCell cell = row.getCell (4);
+            if (cell == null) throw new XLException ("Не указана дата начала (столбец E)");
+            final Date d = cell.getDateCellValue ();
+            if (d == null) throw new XLException ("Не указана дата начала (столбец E)");
+            r.put (c.STARTDATE.lc (), d);
+        }
+        catch (XLException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new XLException ("Некорректное значение даты начала (столбец E)");
+        }   
+
+        if (((Date) r.get (c.STARTDATE.lc ())).before ((Date) r.get (c.SIGNINGDATE.lc ()))) throw new XLException ("Дата начала (столбец E) не может предшествовать дате заключения договора (столбец C)");
+        
+        try {
+            final XSSFCell cell = row.getCell (5);
+            if (cell == null) throw new XLException ("Не указана дата окончания (столбец F)");
+            final Date d = cell.getDateCellValue ();
+            if (d == null) throw new XLException ("Не указана дата окончания (столбец F)");
+            r.put (c.ENDDATE.lc (), d);
+        }
+        catch (XLException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new XLException ("Некорректное значение даты окончания (столбец F)");
+        }        
+
+        if (((Date) r.get (c.ENDDATE.lc ())).before ((Date) r.get (c.STARTDATE.lc ()))) throw new XLException ("Дата окончания (столбец F) не может предшествовать дате начала (столбец E)");
+
+        if (row.getCell (6) != null && row.getCell (6).getStringCellValue () != null) return;
+        
+        try {
+            final XSSFCell cell = row.getCell (7);
+            if (cell == null) throw new XLException ("Не указан номер дополнительного соглашения (столбец H)");
+            final String s = cell.getStringCellValue ();
+            if (!DB.ok (s)) throw new XLException ("Не указан номер дополнительного соглашения (столбец H)");
+            r.put (c.AGREEMENTNUMBER.lc (), s);
+        }
+        catch (XLException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new XLException ("Некорректный тип номера дополнительного соглашения (столбец H)");
+        }
+        
+        try {
+            final XSSFCell cell = row.getCell (8);
+            if (cell == null) throw new XLException ("Не указана дата дополнительного соглашения (столбец I)");
+            final Date d = cell.getDateCellValue ();
+            if (d == null) throw new XLException ("Не указана дата дополнительного соглашения (столбец I)");
+            r.put (c.SIGNINGDATE.lc (), d);
+        }
+        catch (XLException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new XLException ("Некорректное значение даты дополнительного соглашения (столбец I)");
+        }        
 
     }
 

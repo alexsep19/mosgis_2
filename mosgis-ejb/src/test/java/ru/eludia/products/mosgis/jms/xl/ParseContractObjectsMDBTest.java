@@ -12,6 +12,7 @@ import org.junit.Ignore;
 import org.junit.Test.None;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
+import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlContractObject;
 import ru.eludia.products.mosgis.db.model.tables.base.BaseTest;
 
 public class ParseContractObjectsMDBTest extends BaseTest {
@@ -56,16 +57,11 @@ public class ParseContractObjectsMDBTest extends BaseTest {
 
         XSSFSheet s0 = wb.getSheetAt (0);
 
-        System.out.println ("s0.getFirstRowNum () = " + s0.getFirstRowNum ());
-        System.out.println ("s0.getLastRowNum () = " + s0.getLastRowNum ());
-
         for (int i = 2; i <= s0.getLastRowNum (); i ++) {
 
             XSSFRow row = s0.getRow (i);
             
-            System.out.println ("row.getCell (0).getStringCellValue () = " + row.getCell (0).getStringCellValue ());
-            System.out.println ("row.getCell (3).getStringCellValue () = " + row.getCell (3).getStringCellValue ());
-            System.out.println ("row.getCell (4).getDateCellValue () = " + row.getCell (4).getDateCellValue ());
+            System.out.println (InXlContractObject.toHash ("0000", i, row));
 
         }                        
         
