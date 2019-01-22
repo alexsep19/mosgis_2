@@ -14,7 +14,7 @@ define ([], function () {
 
             f.record = r
             
-            $('div[data-block-name=mgmt_contract_common] input').prop ({disabled: data.__read_only})
+            $('div[data-block-name=infrastructure_common] input, textarea').prop ({disabled: data.__read_only})
 
             f.refresh ()
 
@@ -99,8 +99,6 @@ define ([], function () {
 
         })
 
-        console.log (data)
-
         var is_virgin = 1
 
         $('#type_of_utility_container').w2regrid ({ 
@@ -129,6 +127,12 @@ define ([], function () {
                 $.each (data.item.codes_nsi_3, function () {grid.select ('' + this)})
 
                 is_virgin = 0
+
+                grid.onSelect = grid.onUnselect = function (e) {
+
+                    if ($('#name').prop ('disabled')) return e.preventDefault ()
+
+                }
             
             }    
         
