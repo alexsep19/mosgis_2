@@ -60,7 +60,7 @@ define ([], function () {
 
     }
 
-    $_DO.update_mgmt_contract_common = function (e) {
+    $_DO.update_infrastructure_common = function (e) {
     
         if (!confirm ('Сохранить изменения?')) return
         
@@ -72,7 +72,7 @@ define ([], function () {
 
     }
     
-    $_DO.delete_mgmt_contract_common = function (e) {   
+    $_DO.delete_infrastructure_common = function (e) {   
         if (!confirm ('Удалить эту запись, Вы уверены?')) return        
         query ({type: 'infrastructures', action: 'delete'}, {}, reload_page)
     }

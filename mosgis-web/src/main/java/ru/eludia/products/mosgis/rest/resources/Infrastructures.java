@@ -65,4 +65,13 @@ public class Infrastructures extends EJBResource<InfrastructuresLocal> {
         return back.doCreate (p, getUser());
     }
     
+    @POST
+    @Path("{id}/update") 
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject doUpdate (@PathParam ("id") String id, JsonObject p) {
+        check ();
+        return back.doUpdate (id, p, getUser ());
+    }
+    
 }

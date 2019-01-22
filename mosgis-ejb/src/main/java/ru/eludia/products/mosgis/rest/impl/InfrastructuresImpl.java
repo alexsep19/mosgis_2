@@ -188,4 +188,17 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
 
     });}
     
+    @Override
+    public JsonObject doUpdate (String id, JsonObject p, User user) {return doAction ((db) -> {
+        
+        db.update (getTable (), getData (p,
+            "uuid", id
+        ));
+        
+        setNsi3 (db, id, p);
+
+        logAction (db, user, id, VocAction.i.UPDATE);
+                        
+    });}
+    
 }
