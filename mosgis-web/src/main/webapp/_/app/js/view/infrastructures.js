@@ -42,8 +42,8 @@ define ([], function () {
                 {field: 'adress', caption: 'Адрес', size: 30},
                 {field: 'manageroki_label', caption: 'Правообладатель', size: 30},
                 {filed: 'endmanagmentdate', caption: 'Окончание управления', size: 18, render: _dt},
-                {field: 'id_is_status', caption: 'Статус', size: 15},
-                {field: 'id_is_status_gis', caption: 'Статус в ГИС ЖКХ', size: 15},
+                {field: 'id_is_status', caption: 'Статус', size: 15, voc: data.vc_gis_status},
+                {field: 'id_is_status_gis', caption: 'Статус в ГИС ЖКХ', size: 15, voc: data.vc_gis_status},
             ],
 
             url: '/mosgis/_rest/?type=infrastructures',

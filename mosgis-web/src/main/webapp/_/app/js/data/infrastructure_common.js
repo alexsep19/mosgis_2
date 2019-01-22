@@ -122,7 +122,7 @@ define ([], function () {
 
             if ($_USER.role.nsi_20_8) {
 
-                var oktmos = $_USER.role.filter ((x) => x.startsWith ('oktmo_')).map ((x) => {
+                var oktmos = Object.keys ($_USER.role).filter ((x) => x.startsWith ('oktmo_')).map ((x) => {
                     return x.substring ('oktmo_'.length)
                 })
 
