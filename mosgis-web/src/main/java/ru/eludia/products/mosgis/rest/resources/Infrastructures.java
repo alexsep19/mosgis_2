@@ -14,7 +14,7 @@ import ru.eludia.products.mosgis.rest.misc.EJBResource;
 @Path("infrastructures")
 public class Infrastructures extends EJBResource<InfrastructuresLocal> {
     
-    private void checkGet () {
+    private void check () {
         
         if (!securityContext.isUserInRole ("admin") &&
             !securityContext.isUserInRole ("nsi_20_2") &&
@@ -28,7 +28,7 @@ public class Infrastructures extends EJBResource<InfrastructuresLocal> {
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject select (JsonObject p) {
-        checkGet ();
+        check ();
         return back.select (p, getUser ()); 
     }
 
@@ -36,7 +36,7 @@ public class Infrastructures extends EJBResource<InfrastructuresLocal> {
     @Path ("vocs")
     @Produces (APPLICATION_JSON)
     public JsonObject getVocs () {
-        checkGet ();
+        check ();
         return back.getVocs (); 
     }
     
@@ -44,7 +44,7 @@ public class Infrastructures extends EJBResource<InfrastructuresLocal> {
     @Path("{id}") 
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) { 
-        checkGet ();
+        check ();
         return back.getItem (id);
     }
     
@@ -53,7 +53,7 @@ public class Infrastructures extends EJBResource<InfrastructuresLocal> {
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
-        checkGet ();
+        check ();
         return back.getLog (id, p, getUser ());
     }
     
@@ -61,6 +61,7 @@ public class Infrastructures extends EJBResource<InfrastructuresLocal> {
     @Path("create") 
     @Produces (APPLICATION_JSON)
     public JsonObject doCreate (JsonObject p) {
+        check ();
         return back.doCreate (p, getUser());
     }
     
