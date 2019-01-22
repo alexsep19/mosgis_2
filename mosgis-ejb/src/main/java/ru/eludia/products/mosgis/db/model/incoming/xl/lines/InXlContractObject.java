@@ -200,16 +200,26 @@ public class InXlContractObject extends EnTable {
         key ("uuid_xl", c.UUID_XL);
 
         trigger ("BEFORE INSERT", ""
-
+                
+            + "DECLARE "
+            + " ctr tb_contracts%ROWTYPE; "
+  
             + "BEGIN "
                 
-            + " IF :NEW.err IS NOT NULL THEN RETURN; END IF; "
-
             + " SELECT uuid_org INTO :NEW.uuid_org FROM in_xl_files WHERE uuid=:NEW.uuid_xl; "
 
+            + " IF :NEW.err IS NOT NULL THEN RETURN; END IF; "
+
             + "BEGIN "
-            + " SELECT uuid INTO :NEW.uuid_contract FROM tb_contracts WHERE is_deleted=0 AND uuid_org=:NEW.uuid_org AND docnum=:NEW.docnum AND signingdate=:NEW.signingdate; "
+            + " SELECT * INTO ctr FROM tb_contracts WHERE is_deleted=0 AND uuid_org=:NEW.uuid_org AND docnum=:NEW.docnum AND signingdate=:NEW.signingdate; "
             + " EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Не удалось определить договор по номеру и дате подписания');"
+            + "END;"
+                
+            + " :NEW.uuid_contract := ctr.uuid; "
+                                
+            + "BEGIN "
+            + " SELECT fiashouseguid INTO :NEW.fiashouseguid FROM vc_unom WHERE unom=:NEW.unom; "
+            + " EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Не удалось однозначно определить GUID ФИАС по UNOM');"
             + "END;"
 
             + " EXCEPTION WHEN OTHERS THEN "
