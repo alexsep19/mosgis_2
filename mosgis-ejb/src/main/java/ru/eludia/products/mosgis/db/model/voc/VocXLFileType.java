@@ -65,6 +65,12 @@ public class VocXLFileType extends Table {
         public String toString () {
             return Integer.toString (id);
         }
+        
+        public static i forId (Object iD) {
+            int id = Integer.parseInt (iD.toString ());
+            for (i i: values ()) if (id == i.id) return i;
+            throw new IllegalArgumentException ("Invalid VocXLFileType id: " + iD);
+        }
 
     }
     

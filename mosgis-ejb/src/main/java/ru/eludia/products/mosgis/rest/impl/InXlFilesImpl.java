@@ -10,9 +10,11 @@ import java.sql.SQLException;
 import java.util.Base64;
 import java.util.Map;
 import java.util.logging.Logger;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.jms.Queue;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -41,6 +43,18 @@ import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 public class InXlFilesImpl extends BaseCRUD<InXlFile> implements InXlFilesLocal  {
 
     private static final Logger logger = Logger.getLogger (InXlFilesImpl.class.getName ());    
+    
+    @Resource (mappedName = "mosgis.inXlContractObjectsQueue")
+    Queue inXlContractObjectsQueue;
+
+    public Queue getQueue (VocXLFileType.i type) {
+        
+        switch (type) {
+            case CTR_OBJECTS: return inXlContractObjectsQueue;
+            default: throw new IllegalArgumentException ("XL file type not suported: " + type);
+        }
+
+    }    
 
     @Override
     public JsonObject doCreate (JsonObject p, User user) {return fetchData ((db, job) -> {
@@ -102,15 +116,17 @@ public class InXlFilesImpl extends BaseCRUD<InXlFile> implements InXlFilesLocal 
             
             Map<String, Object> item = db.getMap (getTable (), id);
             
-            if (DB.eq (
-                item.get (c.ID_STATUS.lc ()), 
-                VocFileStatus.i.LOADED.getId ()
-            )) {
-               
+            if (VocFileStatus.i.forId (item.get (c.ID_STATUS.lc ())) == VocFileStatus.i.LOADED) {
+                
                 db.update (getTable (), HASH (
                     EnTable.c.UUID,      uuid,
                     c.ID_STATUS,         VocFileStatus.i.PROCESSING.getId ()
                 ));
+                
+                UUIDPublisher.publish (
+                    getQueue (VocXLFileType.i.forId (item.get (c.ID_TYPE.lc ()))), 
+                    item.get ("uuid").toString ()
+                );
                 
             }
 

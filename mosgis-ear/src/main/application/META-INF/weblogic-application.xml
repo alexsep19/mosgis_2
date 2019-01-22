@@ -16,6 +16,11 @@
         <path>META-INF/mosgismodule-working-plans-jms.xml</path>
     </module>
     
+    <module><type>JMS</type>
+        <name>Workflow-in-xl</name>
+        <path>META-INF/mosgismodule-in-xl-jms.xml</path>
+    </module>
+    
 </weblogic-application>
 
     
