@@ -215,6 +215,9 @@ public class InXlContractObject extends EnTable {
             + " EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Не удалось определить договор по номеру и дате подписания');"
             + "END;"
                 
+            + " IF ctr.id_ctr_status > 11 THEN FOR i IN (SELECT label FROM vc_gis_status WHERE id=ctr.id_ctr_status) LOOP raise_application_error (-20000, 'Договор находится в статусе \"' || i.label || '\"; добавление объектов запрещено'); END LOOP; END IF; "
+            + " IF :NEW.startdate < ctr.effectivedate THEN raise_application_error (-20000, 'Дата начала выходит за период действия договора'); END IF; "
+            + " IF :NEW.enddate > ctr.plandatecomptetion THEN raise_application_error (-20000, 'Дата окончания выходит за период действия договора'); END IF; "
             + " :NEW.uuid_contract := ctr.uuid; "
                                 
             + "BEGIN "
