@@ -2,6 +2,7 @@ package ru.eludia.products.mosgis.db.model.incoming.xl.lines;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import ru.eludia.base.DB;
@@ -53,7 +54,7 @@ public class InXlContractObject extends EnTable {
 
     }
     
-    public static Map<String, Object> toHash (String uuid, int ord, XSSFRow row) {
+    public static Map<String, Object> toHash (UUID uuid, int ord, XSSFRow row) {
         
         Map<String, Object> r = DB.HASH (
             c.UUID_XL, uuid,
