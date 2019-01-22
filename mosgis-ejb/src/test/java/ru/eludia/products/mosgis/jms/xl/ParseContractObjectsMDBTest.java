@@ -22,7 +22,7 @@ public class ParseContractObjectsMDBTest extends BaseTest {
         
         try (DB db = model.getDb ()) {
             
-            Map<String, Object> r = db.getMap (InXlFile.class, "F48DCCA62DA842689A4DCD5D73095268");
+            Map<String, Object> r = db.getMap (InXlFile.class, "7D1395A6795A43E28ECF4FF6F38F7516");
             
             mdb.handleRecord (db, (UUID) r.get ("uuid"), r);
             

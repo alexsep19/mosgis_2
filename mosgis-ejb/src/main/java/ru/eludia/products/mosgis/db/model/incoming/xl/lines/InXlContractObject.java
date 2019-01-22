@@ -196,14 +196,28 @@ public class InXlContractObject extends EnTable {
         super ("in_xl_ctr_objects", "Строки импорта объектов управления");
 
         cols  (c.class);
-        
+
         key ("uuid_xl", c.UUID_XL);
 
-//        trigger ("BEFORE INSERT",
-//            "BEGIN "
-////            + " SELECT uuid_org INTO :NEW.uuid_org FROM vc_users WHERE uuid=:NEW.uuid_user; "
-//            + "END;"
-//        );
+        trigger ("BEFORE INSERT", ""
+
+            + "BEGIN "
+                
+            + " IF :NEW.err IS NOT NULL THEN RETURN; END IF; "
+
+            + " SELECT uuid_org INTO :NEW.uuid_org FROM in_xl_files WHERE uuid=:NEW.uuid_xl; "
+
+            + "BEGIN "
+            + " SELECT uuid INTO :NEW.uuid_contract FROM tb_contracts WHERE is_deleted=0 AND uuid_org=:NEW.uuid_org AND docnum=:NEW.docnum AND signingdate=:NEW.signingdate; "
+            + " EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Не удалось определить договор по номеру и дате подписания');"
+            + "END;"
+
+            + " EXCEPTION WHEN OTHERS THEN "
+            + " :NEW.err := REPLACE(SUBSTR(SQLERRM, 1, 1000), 'ORA-20000: ', ''); "
+
+            + "END;"
+
+        );
 
     }
 
