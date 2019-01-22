@@ -25,6 +25,7 @@ import ru.eludia.products.mosgis.db.model.tables.VocNsi38;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi40;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocNsi33Ref3;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.InfrastructuresLocal;
@@ -147,7 +148,9 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
                     
                 model
                     .select (VocGisStatus.class, "id", "label")
-                    .orderBy ("id")
+                    .orderBy ("id"),
+                
+                VocNsi33Ref3.getRefs ()
 
             );
 

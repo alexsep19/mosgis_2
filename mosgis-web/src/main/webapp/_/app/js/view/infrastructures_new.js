@@ -31,6 +31,8 @@ define ([], function () {
 
     return function (data, view) {
 
+        console.log (data)
+
         $(fill (view, data.record)).w2uppop ({}, function () {
 
             $('#w2ui-popup .w2ui-form').w2reform ({

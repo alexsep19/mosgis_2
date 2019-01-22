@@ -15,6 +15,25 @@ define ([], function () {
 
             add_vocabularies (data, data)
 
+            var ref_33_to_3 = []
+
+            data.ref_33_to_3.items.forEach ((x, index, arr) => {
+
+                if (ref_33_to_3.findIndex ((y) => {
+                    return y.code_33 == x.code_33
+                }) < 0) {
+
+                    ref_33_to_3.push (data.ref_33_to_3.items.filter ((z) => z.code_33 == x.code_33).reduce ((accumulator, currentValue, currentIndex, array) => {
+                        accumulator.code_3.push (currentValue.code_3)
+                        return accumulator
+                    }, {code_33: x.code_33, code_3: []}))
+
+                }
+
+            })
+
+            data.ref_33_to_3 = ref_33_to_3
+
             $('body').data ('data', data)
 
             done (data)

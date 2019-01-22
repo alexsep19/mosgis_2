@@ -4,6 +4,8 @@ define ([], function () {
 
     return function (data, view) {
 
+        console.log (data)
+
         function recalc () {
 
             var elements = [
