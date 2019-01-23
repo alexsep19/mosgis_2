@@ -52,11 +52,36 @@ public class InXlContractObject extends EnTable {
         private c (Type type, Object... p) {col = new Col (this, type, p);}
         private c (Class c,   Object... p) {col = new Ref (this, c, p);}
 
+        boolean isToCopy () {
+
+            switch (this) {
+
+                case UUID_XL:
+
+                case UUID_CONTRACT:
+                case UUID_CONTRACT_AGREEMENT:
+
+                case FIASHOUSEGUID:
+
+                case ENDDATE:
+                case STARTDATE:
+                    
+                    return true;
+                    
+                default:
+                    
+                    return false;
+
+            }
+
+        }
+
     }
     
     public static Map<String, Object> toHash (UUID uuid, int ord, XSSFRow row) {
         
         Map<String, Object> r = DB.HASH (
+            EnTable.c.IS_DELETED, 1,
             c.UUID_XL, uuid,
             c.ORD, ord    
         );
@@ -237,13 +262,32 @@ public class InXlContractObject extends EnTable {
 
         );
         
-        trigger ("AFTER INSERT", ""
-                
+        StringBuilder sb = new StringBuilder ();
+        StringBuilder nsb = new StringBuilder ();
+        
+        for (c c: c.values ()) if (c.isToCopy ()) {
+            sb.append (',');
+            sb.append (c.lc ());
+            nsb.append (",:NEW.");
+            nsb.append (c.lc ());
+        }        
+
+        trigger ("BEFORE UPDATE", ""
+
             + "DECLARE" 
             + " PRAGMA AUTONOMOUS_TRANSACTION; "
+            + " l_err VARCHAR2 (1000); "
             + "BEGIN "
+
+            + " IF :NEW.err IS NOT NULL THEN RETURN; END IF; "
+            + " IF NOT (:OLD.is_deleted = 1 AND :NEW.is_deleted = 0) THEN RETURN; END IF; "
+
+            + " INSERT INTO tb_contract_objects (uuid,is_deleted" + sb + ") VALUES (:NEW.uuid,0" + nsb + "); "
+            + " UPDATE tb_contract_objects SET is_deleted=-1 WHERE uuid=:NEW.uuid; "
+            + " COMMIT; "
+
             + "END; "
-                
+
         );        
 
     }

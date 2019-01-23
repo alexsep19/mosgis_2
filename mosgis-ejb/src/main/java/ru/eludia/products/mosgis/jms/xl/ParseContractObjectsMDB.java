@@ -2,19 +2,20 @@ package ru.eludia.products.mosgis.jms.xl;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.UUID;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
-import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlContractObject;
+import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inXlContractObjectsQueue")
@@ -42,10 +43,60 @@ public class ParseContractObjectsMDB extends UUIDMDB<InXlFile> {
         
     }
     
-    protected void addObjectLines (XSSFSheet sheet, UUID uuid, DB db) throws SQLException {
-        List<Map<String, Object>> oLines = new ArrayList<> ();
-        for (int i = 2; i <= sheet.getLastRowNum (); i ++) oLines.add (InXlContractObject.toHash (uuid, i, sheet.getRow (i)));
-        db.insert (InXlContractObject.class, oLines);
+    protected void addObjectLines (XSSFSheet sheet, UUID parent, DB db) throws SQLException {
+
+        for (int i = 2; i <= sheet.getLastRowNum (); i ++) {
+            
+            UUID uuid = (UUID) db.insertId (InXlContractObject.class, InXlContractObject.toHash (parent, i, sheet.getRow (i)));
+            
+            try {
+                
+                db.update (InXlContractObject.class, DB.HASH (
+                    EnTable.c.UUID, uuid,
+                    EnTable.c.IS_DELETED, 0
+                ));
+                
+            }
+            catch (SQLException e) {
+
+                String s = e.getMessage ();
+
+                if (e.getErrorCode () == 20000) s =
+                    new StringTokenizer (e.getMessage (), "\n\r")
+                    .nextToken ()
+                    .replace ("ORA-20000: ", "");
+
+                db.update (InXlContractObject.class, DB.HASH (
+                    EnTable.c.UUID, uuid,
+                    InXlContractObject.c.ERR, s
+                ));
+                
+            }
+            
+            List<Map<String, Object>> brokenLines = db.getList (db.getModel ()
+                .select (InXlContractObject.class, "*")
+                .where (EnTable.c.IS_DELETED, 1)
+            );
+            
+            if (brokenLines.isEmpty ()) {
+                
+                db.update (ContractObject.class, DB.HASH (
+                    InXlContractObject.c.UUID_XL, parent,
+                    EnTable.c.IS_DELETED, 0
+                ), InXlContractObject.c.UUID_XL.lc ());                
+                
+            }
+            else {
+                
+                db.delete (db.getModel ()
+                    .select (ContractObject.class, "uuid")
+                    .where (InXlContractObject.c.UUID_XL, parent)
+                );
+                
+            }
+
+        }
+        
     }
 
     @Override
