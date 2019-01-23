@@ -1,0 +1,95 @@
+<span
+    data-popup-width=530
+    data-popup-height=345
+    data-popup-title='Поставляемый ресурс'
+    >
+
+    <style>
+
+        label[data-block-name=supply_resource_contract_object_subjects_popup] {
+            width: 160px;
+            margin-right: 10px;
+        }
+
+        input[data-block-name=supply_resource_contract_object_subjects_popup] {
+            width: 310px !important;
+        }
+
+        input[data-block-name=supply_resource_contract_object_subjects_popup].dt {
+            width: 70px !important;
+        }
+        input[data-block-name=supply_resource_contract_object_subjects_popup].medium {
+            width: 200px !important;
+        }
+        input[data-block-name=supply_resource_contract_object_subjects_popup].short {
+            width: 105px !important;
+        }
+	div.w2ui-page {
+	    overflow: hidden !important
+	}
+    </style>
+
+    <div class="w2ui-reset w2ui-form" style="height:295px">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Вид коммунальной услуги</label>
+                <div>
+                    <input name=code_vc_nsi_3 />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Коммунальный ресурс</label>
+                <div>
+                    <input name=code_vc_nsi_239 />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Поставка ресурса с</label>
+                <div>
+                    <input name=startsupplydate placeholder="" class=dt />
+                    по
+                    <input name=endsupplydate placeholder="" class=dt />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Отопление</label>
+                <div>
+                    <input name=is_heat_open />
+                </div>
+            </div>
+
+	    <div class="w2ui-field">
+                <label>Тепловая энергия</label>
+                <div>
+                    <input name=is_heat_centralized />
+                </div>
+            </div>
+
+	    <div class="w2ui-field">
+		<label>Плановый объем</label>
+		<div>
+		    <input name=volume maxlength=18 class=medium />
+		    <input name=unit class=short />
+		</div>
+	    </div>
+
+            <div class="w2ui-field">
+                <label>Режим подачи</label>
+                <div>
+                    <input name=feedingmode maxlength=250 />
+                </div>
+            </div>
+        </div>
+
+        <div class="w2ui-buttons">
+            <button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+    </div>
+
+</span>

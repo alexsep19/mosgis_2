@@ -56,8 +56,8 @@ define ([], function () {
 
         });
 
-        if (it['st_ctr.uuid']) {
-            clickOn ($('#lnk_sr_ctr'), function () {openTab ('/supply_resource_contract/' + it['st_ctr.uuid'])})
+        if (it['sr_ctr.uuid']) {
+            clickOn ($('#lnk_sr_ctr'), function () {openTab ('/supply_resource_contract/' + it['sr_ctr.uuid'])})
         }
 
         if (it['house.uuid']) {
