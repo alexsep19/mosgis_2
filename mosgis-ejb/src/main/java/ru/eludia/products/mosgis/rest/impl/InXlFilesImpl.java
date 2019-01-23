@@ -152,6 +152,11 @@ public class InXlFilesImpl extends BaseCRUD<InXlFile> implements InXlFilesLocal 
     public void download (String id, OutputStream out) throws IOException, WebApplicationException {fetchData ((db, job) -> {        
         db.getStream (getTable (), id, "body", out);
     });}
+    
+    @Override
+    public void download_errors (String id, OutputStream out) throws IOException, WebApplicationException {fetchData ((db, job) -> {
+        db.getStream (getTable (), id, "errr", out);
+    });}    
 
     @Override
     public JsonObject getItem (String id) {
