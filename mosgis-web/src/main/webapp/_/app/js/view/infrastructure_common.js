@@ -1,10 +1,9 @@
 define ([], function () {
 
     var form_name = 'infrastructure_common_form'
+    var grid_name = 'code_vc_nsi_3_grid'
 
     return function (data, view) {
-
-        console.log (data)
 
         function recalc () {
 
@@ -26,10 +25,11 @@ define ([], function () {
                 code_vc_nsi_38:    {'5.1':1}
             }
 
-            var r = w2ui [form_name].record
+            var f = w2ui [form_name]
+            var g = w2ui [grid_name]
 
             elements.forEach ((value, index, array) => {
-                if (elements_nsi_33[value][r.code_vc_nsi_33.id]) {
+                if (elements_nsi_33[value][f.record.code_vc_nsi_33.id]) {
                     $('#' + value).closest ('.w2ui-field').show ()
                 }
                 else {
@@ -37,8 +37,13 @@ define ([], function () {
                 }
             })
 
-            if (r.indefinitemanagement.id == 1) $('#endmanagmentdate').prop ('disabled', true)
+            if (f.record.indefinitemanagement.id == 1) $('#endmanagmentdate').prop ('disabled', true)
             else if (!$('#name').prop ('disabled')) $('#endmanagmentdate').prop ('disabled', false)
+
+            if (f.record.code_vc_nsi_33) {
+                g.records = dia2w2uiRecords (data.ref_33_to_3.find (x => x.code_33 == f.record.code_vc_nsi_33.id).code_3)
+                g.refresh ()
+            }
 
         }
     
@@ -128,13 +133,11 @@ define ([], function () {
 
             focus: -1,
             
-            onRefresh: function (e) {e.done (function () {
-
+            onRefresh: function (e) {e.done (setTimeout (function () {
                 clickOn ($('#manageroki_label'), $_DO.open_orgs_infrastructure_popup)
                 clickOn ($('#oktmo_code'), $_DO.open_oktmo_popup)
                 recalc ()
-
-            })},
+            }, 100))},
 
             onChange: function (e) {
                 if (e.target == 'code_vc_nsi_33' || e.target == 'indefinitemanagement') e.done (recalc)
@@ -146,7 +149,7 @@ define ([], function () {
 
         $('#type_of_utility_container').w2regrid ({ 
         
-            name: 'code_vc_nsi_3_grid',
+            name: grid_name,
             
             show: {
                 toolbar: false,

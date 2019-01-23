@@ -1,6 +1,7 @@
 define ([], function () {
 
     form_name = 'infrastructure_form'
+    grid_name = 'code_vc_nsi_3_grid'
 
     function recalc () {
 
@@ -8,7 +9,9 @@ define ([], function () {
         var $manageroki_label = $('#manageroki_label')
         var $manageroki = $('#manageroki')
 
-        var r = w2ui [form_name].record
+        var data = clone ($('body').data ('data'))
+        var f = w2ui [form_name]
+        var g = w2ui [grid_name]
 
         if ($_USER.uuid_org && !$manageroki.val ()) {
             $manageroki_label.val ($_USER.label_org)
@@ -16,7 +19,7 @@ define ([], function () {
             $manageroki.change ()
         }
 
-        if (r.indefinitemanagement.id) {
+        if (f.record.indefinitemanagement.id) {
             $endmanagmentdate.prop ('disabled', true)
             $endmanagmentdate.prop ('placeholder', 'Управление бессрочно')
         }
@@ -27,11 +30,14 @@ define ([], function () {
 
         if ($_USER.role.nsi_20_2) $manageroki_label.prop ('disabled', true)
 
+        if (f.record.code_vc_nsi_33) {
+            g.records = dia2w2uiRecords (data.ref_33_to_3.find (x => x.code_33 == f.record.code_vc_nsi_33.id).code_3)
+            g.refresh ()
+        }
+
     }
 
     return function (data, view) {
-
-        console.log (data)
 
         $(fill (view, data.record)).w2uppop ({}, function () {
 
@@ -45,7 +51,7 @@ define ([], function () {
                     {name: 'name', type: 'text'},
                     {name: 'manageroki', type: 'hidden'},
                     {name: 'manageroki_label', type: 'text'},
-                    {name: 'code_vc_nsi_39', type: 'list', options: {items: data.vc_nsi_39.items}},
+                    {name: 'code_vc_nsi_39', type: 'list', options: {items: data.vc_nsi_39.items}}, 
                     {name: 'indefinitemanagement', type: 'list', options: {items: [
                         {id: 0, text: 'Нет'},
                         {id: 1, text: 'Да'}
@@ -58,7 +64,7 @@ define ([], function () {
 
                 onChange: function (e) {
 
-                    if (e.target == 'indefinitemanagement') e.done (function () { 
+                    if (e.target == 'indefinitemanagement' || e.target == 'code_vc_nsi_33') e.done (function () { 
                         recalc () 
                         this.refresh ()
                     })
@@ -77,7 +83,7 @@ define ([], function () {
 
             $('#type_of_utility_container').w2regrid ({ 
             
-                name: 'code_vc_nsi_3_grid',
+                name: grid_name,
                 
                 show: {
                     toolbar: false,
@@ -90,7 +96,7 @@ define ([], function () {
                     {field: 'label', caption: 'Наименование', size: 50},
                 ],
                 
-                records: dia2w2uiRecords (data.vc_nsi_3.items),
+                records: [],
 
                 onRefresh: function () {
                 
