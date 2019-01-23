@@ -24,7 +24,7 @@ public class InXlFiles extends EJBResource <InXlFilesLocal> {
         try {
             return Response
                 .ok ((StreamingOutput) (OutputStream output) -> {((InXlFilesLocal) back).download_errors (id, output);})
-                .header ("Content-Disposition", "attachment;filename=" + URLEncoder.encode (fileName + "_(ошибки)", "UTF-8"))
+                .header ("Content-Disposition", "attachment;filename=" + URLEncoder.encode ("Ошибки_" + fileName, "UTF-8"))
                 .header ("Content-Length", len)
                 .build ();
             
@@ -79,7 +79,7 @@ public class InXlFiles extends EJBResource <InXlFilesLocal> {
     @Produces(APPLICATION_OCTET_STREAM)
     public Response download_errors (@PathParam ("id") String id) {
         JsonObject item = back.getItem (id);
-        return createErrDownloadResponse (id, item.getString ("label"), item.getInt ("len"));
+        return createErrDownloadResponse (id, item.getString ("label"), item.getInt ("errr_len"));
     }
     
     @POST

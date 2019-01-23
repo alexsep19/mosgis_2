@@ -7,6 +7,7 @@ import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import static ru.eludia.base.model.def.Blob.EMPTY_BLOB;
 import static ru.eludia.base.model.def.Def.NOW;
+import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocFileStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
@@ -22,7 +23,9 @@ public class InXlFile extends EnTable {
         MIME           (Type.STRING,                                "Тип содержимого"),
         LEN            (Type.INTEGER,                               "Размер"),
         BODY           (Type.BLOB,              EMPTY_BLOB,         "Исходное содержимое"),
-        ERRR           (Type.BLOB,              EMPTY_BLOB,         "Содержимое с ошибками"),
+        ERRR           (Type.BLOB,              EMPTY_BLOB,         "Содержимое с ошибками"),        
+        ERRR_LEN       (Type.INTEGER,           new Virt ("DBMS_LOB.GETLENGTH(\"ERRR\")"),  "Размер файла с ошибками"),
+        
         TS             (Type.TIMESTAMP,         NOW,                "Дата начала импорта"),
 //        ERR            (Type.TEXT,              new ru.eludia.base.model.def.String ("	Ошибки импорта "),  "Ошибки"),
         ID_TYPE        (VocXLFileType.class,                        "Тип"),

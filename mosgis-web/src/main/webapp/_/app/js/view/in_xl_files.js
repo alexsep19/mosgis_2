@@ -24,7 +24,7 @@ define ([], function () {
                 {field: 'org.label', caption: 'Организация',    size: 20, off: !$_USER.role.admin},
                 
                 {field: 'label', caption: 'Файл импорта',    size: 20, attr: 'data-ref=1'},
-                {field: 'label___', caption: 'Протокол ошибок',    size: 20},
+                {field: 'errr', caption: 'Протокол ошибок', render: function (x) {return x.id_status == 5 ? 'Ошибки ' + x.label : null}, attr: 'data-ref=1', size: 20},
                 {field: 'id_status', caption: 'Статус обработки',    size: 20, voc: data.vc_file_status},
 
             ].filter (not_off),
@@ -39,6 +39,7 @@ define ([], function () {
             
                 switch (this.columns[e.column].field) {
                     case 'label': return $_DO.download_in_xl_files (e)
+                    case 'errr': return $_DO.download_errors_in_xl_files (e)
                 }
             
             },
