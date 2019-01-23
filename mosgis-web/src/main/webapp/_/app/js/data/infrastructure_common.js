@@ -50,7 +50,7 @@ define ([], function () {
 
             if (!r) return done ()
 
-            if (!(r.code in oktmos)) alert ('Недопустимый код ОКТМО')
+            if ($_USER.role.nsi_20_8 && !(r.code in oktmos)) alert ('Недопустимый код ОКТМО')
             else {
                 f.record.oktmo = r.recid
                 f.record.oktmo_code = r.code
@@ -100,11 +100,31 @@ define ([], function () {
 
         var v = f.values ()
 
+        var reg_year = /^[1-2][0-9]{3}$/
+
+        console.log (v)
+
+        var elements_nsi_33 = {
+            independentsource: {'1.1':1, '2.1':1, '5.1':1, '5.2':1},
+            code_vc_nsi_34:    {'1.1':1},
+            code_vc_nsi_35:    {'4.5':1},
+            code_vc_nsi_40:    {'2.1':1},
+            code_vc_nsi_37:    {'5.2':1},
+            code_vc_nsi_38:    {'5.1':1}
+        }
+
         if (!v.name) die ('name', 'Укажите, пожалуйста, наименование объекта')
         if (!v.code_vc_nsi_39) die ('code_vc_nsi_39', 'Укажите, пожалуйста, основание управления')
         if (!v.hasOwnProperty('indefinitemanagement')) die ('indefinitemanagement', 'Укажите, пожалуйста, признак бессрочности управления')
         if (!v.indefinitemanagement && !v.endmanagmentdate) die ('endmanagmentdate', 'Укажите, пожалуйста, дату окончания управления')
         if (!v.code_vc_nsi_33) die ('code_vc_nsi_33', 'Укажите, пожалуйста, вид объекта')
+        if (!v.oktmo) die ('oktmo_code', 'Укажите, пожалуйста, код ОКТМО')
+        if (!v.comissioningyear) die ('comissioningyear', 'Укажите, пожалуйста, год ввода в эксплуатацию')
+        if (!reg_year.test (v.comissioningyear) || v.comissioningyear < 1600) die ('comissioningyear', 'Указано неверное значение года ввода в эксплуатацию') 
+
+        Object.keys(elements_nsi_33).forEach ((value, index, array) => {
+            if (elements_nsi_33[value][v.code_vc_nsi_33] && !v[value]) die (value, 'Указаны не все необходимые данные')
+        })
 
         v.code_vc_nsi_3 = w2ui ['code_vc_nsi_3_grid'].getSelection ()
         if (!v.code_vc_nsi_3.length) die ('foo', 'Укажите, пожалуйста, по крайней мере один вид коммунальных услуг')

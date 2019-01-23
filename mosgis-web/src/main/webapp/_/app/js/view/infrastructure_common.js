@@ -33,6 +33,7 @@ define ([], function () {
                     $('#' + value).closest ('.w2ui-field').show ()
                 }
                 else {
+                    f.record[value] = undefined
                     $('#' + value).closest ('.w2ui-field').hide ()
                 }
             })
