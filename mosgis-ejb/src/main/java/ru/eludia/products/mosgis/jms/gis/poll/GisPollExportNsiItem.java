@@ -54,6 +54,7 @@ import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementType;
 import ru.gosuslugi.dom.schema.integration.nsi_common.GetStateResult;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocNsi197Roles;
+import static ru.eludia.products.mosgis.db.model.voc.VocPassportFields.PASSPORT_FIELDS_LIST_NSI_REGISTRY_NUMBER;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisNsiCommonClient;
@@ -363,7 +364,7 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
             
             db.commit ();
             
-            if (registryNumber == 197) {
+            if (registryNumber == PASSPORT_FIELDS_LIST_NSI_REGISTRY_NUMBER) {
                 
                 List<Passport> passports = new ArrayList<> ();
                 
@@ -378,6 +379,7 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
                 for (Passport passport: (Iterable<Passport>) passports::iterator) {
                     
                     passport.addNsiFields (db);
+                    db.updateSchema(passport);
                     List<MultipleRefTable> refTables = passport.getRefTables ();
                     
                     for (MultipleRefTable refTable: (Iterable<MultipleRefTable>) refTables::iterator) {
