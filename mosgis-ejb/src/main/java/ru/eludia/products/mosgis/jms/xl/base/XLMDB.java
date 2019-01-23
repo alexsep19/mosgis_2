@@ -1,6 +1,11 @@
 package ru.eludia.products.mosgis.jms.xl.base;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.sql.Blob;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
@@ -37,8 +42,40 @@ public abstract class XLMDB extends UUIDMDB<InXlFile> {
         setStatus (db, parent, VocFileStatus.i.PROCESSED_OK);
     }
 
-    protected void completeFail (DB db, UUID parent) throws SQLException {
-        setStatus (db, parent, VocFileStatus.i.PROCESSED_FAILED);
+    protected void completeFail (DB db, UUID uuid, XSSFWorkbook wb) throws SQLException {
+        
+        setStatus (db, uuid, VocFileStatus.i.PROCESSED_FAILED);
+        
+        final Connection cn = db.getConnection ();
+        
+        cn.setAutoCommit (false);
+        
+        try (PreparedStatement st = cn.prepareStatement ("SELECT errr FROM in_xl_files WHERE uuid = ? FOR UPDATE")) {
+
+            st.setString (1, uuid.toString ().replace ("-", "").toUpperCase ());
+
+            try (ResultSet rs = st.executeQuery ()) {
+
+                if (rs.next ()) {
+
+                    Blob blob = rs.getBlob (1);
+
+                    try (OutputStream os = blob.setBinaryStream (0L)) {
+                        wb.write (os);
+                    }
+                    catch (IOException ex) {
+                        logger.log (Level.SEVERE, "Cannot store errors", ex);
+                    }
+
+                }
+
+            }
+            
+            cn.commit ();
+            cn.setAutoCommit (true);
+                
+        }         
+        
     }
     
     @Override
@@ -82,11 +119,11 @@ public abstract class XLMDB extends UUIDMDB<InXlFile> {
             completeOK (db, uuid);
         }
         catch (XLException e) {
-            completeFail (db, uuid);
+            completeFail (db, uuid, wb);
         }
         catch (Exception e) {
             logger.log (Level.SEVERE, "Cannot process XL", e);
-            completeFail (db, uuid);
+            completeFail (db, uuid, wb);
         }
         
     }

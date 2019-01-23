@@ -7,6 +7,8 @@ import java.util.StringTokenizer;
 import java.util.UUID;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import ru.eludia.base.DB;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -65,8 +67,13 @@ public class ParseContractObjectsMDB extends XLMDB {
         );
         
         if (brokenLines.isEmpty ()) return true;            
-            
         
+        for (Map<String, Object> brokenLine: brokenLines) {
+            XSSFRow row = sheet.getRow ((int) DB.to.Long (brokenLine.get (InXlContractObject.c.ORD.lc ())));
+            XSSFCell cell = row.getLastCellNum () < 9 ? row.createCell (9) : row.getCell (9);
+            cell.setCellValue (brokenLine.get (InXlContractObject.c.ERR.lc ()).toString ());
+        }
+
         return false;
         
     }
@@ -84,9 +91,9 @@ public class ParseContractObjectsMDB extends XLMDB {
     }
 
     @Override
-    protected void completeFail (DB db, UUID parent) throws SQLException {
+    protected void completeFail (DB db, UUID parent, XSSFWorkbook wb) throws SQLException {
         
-        super.completeFail (db, parent);
+        super.completeFail (db, parent, wb);
         
         db.delete (db.getModel ()
             .select (ContractObject.class, "uuid")
