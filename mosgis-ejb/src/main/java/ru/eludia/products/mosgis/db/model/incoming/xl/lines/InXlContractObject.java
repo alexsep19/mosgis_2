@@ -198,7 +198,7 @@ public class InXlContractObject extends EnTable {
         cols  (c.class);
 
         key ("uuid_xl", c.UUID_XL);
-
+        
         trigger ("BEFORE INSERT", ""
                 
             + "DECLARE "
@@ -236,6 +236,15 @@ public class InXlContractObject extends EnTable {
             + "END;"
 
         );
+        
+        trigger ("AFTER INSERT", ""
+                
+            + "DECLARE" 
+            + " PRAGMA AUTONOMOUS_TRANSACTION; "
+            + "BEGIN "
+            + "END; "
+                
+        );        
 
     }
 

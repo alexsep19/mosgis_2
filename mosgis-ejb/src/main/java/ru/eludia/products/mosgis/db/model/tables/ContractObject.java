@@ -13,6 +13,7 @@ import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Num;
 import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import static ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType.i.OWNERS;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -24,7 +25,11 @@ public class ContractObject extends Table {
     public ContractObject () {
         
         super  ("tb_contract_objects", "Объекты договоров управления");
+
+//        UUID_XL                 (InXlFile.class,            "Файл импорта"),
         
+        ref    ("uuid_xl",                 InXlFile.class,        null,         "Источник импорта");
+
         pk     ("uuid",                    Type.UUID,             NEW_UUID,     "Ключ");
         col    ("is_deleted",              Type.BOOLEAN,          Bool.FALSE,   "1, если запись удалена; иначе 0");
         
