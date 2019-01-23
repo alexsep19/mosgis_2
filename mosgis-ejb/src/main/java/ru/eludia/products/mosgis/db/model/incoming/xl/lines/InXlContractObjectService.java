@@ -35,7 +35,7 @@ public class InXlContractObjectService extends EnTable {
         STARTDATE               (Type.DATE, null,               "Дата начала предоставления услуг"),
         ENDDATE                 (Type.DATE, null,               "Дата окончания предоставления услуг"),
 
-        KIND                    (Type.STRING, 2, null,          "Вид услуги"),
+        KIND                    (Type.STRING, null,             "Вид услуги"),
         UNIQUENUMBER            (Type.STRING, null,             "Код услуги"),
 
         CODE_VC_NSI_3           (Type.STRING, 20, null,         "Коммунальная услуга"),
