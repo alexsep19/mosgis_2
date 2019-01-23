@@ -63,6 +63,7 @@ public class ParseContractObjectsMDB extends XLMDB {
         
         List<Map<String, Object>> brokenLines = db.getList (db.getModel ()
             .select (InXlContractObject.class, "*")
+            .where (InXlContractObject.c.UUID_XL, parent)
             .where (EnTable.c.IS_DELETED, 1)
         );
         

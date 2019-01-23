@@ -18,6 +18,11 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocFileStatus;
 
 public abstract class XLMDB extends UUIDMDB<InXlFile> {
+
+    @Override
+    protected Class getTableClass () {
+        return InXlFile.class;
+    }
     
     protected final XSSFWorkbook readWorkbook (DB db, UUID uuid) throws SQLException {
         
