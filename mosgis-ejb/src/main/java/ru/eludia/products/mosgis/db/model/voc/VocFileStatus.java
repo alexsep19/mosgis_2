@@ -32,11 +32,12 @@ public class VocFileStatus extends Table {
     
     public enum i {
         
-        LOADING    (0, "В процессе загрузки"),
-        LOADED     (1, "Загружен"),
-        DELETED    (2, "Удалён"),
-        PROCESSING (3, "В обработке"),
-        PROCESSED  (4, "Обработан"),
+        LOADING          (0, "В процессе загрузки"),
+        LOADED           (1, "Загружен"),
+        DELETED          (2, "Удалён"),
+        PROCESSING       (3, "В обработке"),
+        PROCESSED_OK     (4, "Обработан успешно"),
+        PROCESSED_FAILED (5, "Обработан с ошибками"),
         ;
                 
         int    id;
