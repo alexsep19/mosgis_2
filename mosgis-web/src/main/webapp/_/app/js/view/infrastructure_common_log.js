@@ -4,7 +4,7 @@ define ([], function () {
     
         data = $('body').data ('data')
         
-        $(w2ui ['passport_layout'].el ('main')).w2regrid ({ 
+        $(w2ui ['topmost_layout'].el ('main')).w2regrid ({ 
 
             name: 'infrastructure_common_log',
 

@@ -16,6 +16,7 @@ define ([], function () {
 
                         tabs: [
                             {id: 'infrastructure_common',   caption: 'Общие'},
+                            {id: 'infrastructure_common_log', caption: 'История изменений'},
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_infrastructure
