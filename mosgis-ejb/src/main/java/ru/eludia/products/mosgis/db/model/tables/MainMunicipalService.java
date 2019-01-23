@@ -21,6 +21,7 @@ public class MainMunicipalService extends Table {
         fk    ("uuid_org",                 VocOrganization.class,                      "Организация");
         col   ("is_deleted",               Type.BOOLEAN,          Bool.FALSE,          "1, если запись удалена; иначе 0");
 
+        col   ("uniquenumber",             Type.STRING,         null,   "Уникальный реестровый номер (в ГИС)");
         col   ("elementguid",              Type.UUID,           null,       "Идентификатор существующего элемента справочника");        
         
         col   ("code_vc_nsi_3",            Type.STRING,  20,    null,       "Ссылка на НСИ \"Вид коммунальной услуги\" (реестровый номер 3)");        

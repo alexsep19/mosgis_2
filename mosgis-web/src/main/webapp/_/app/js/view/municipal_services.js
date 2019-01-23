@@ -55,6 +55,7 @@ define ([], function () {
             ].filter (not_off),
 
             columns: [                
+                {field: 'uniquenumber', caption: 'Код в ГИС ЖКХ', size: 10},
                 {field: 'org.label', caption: 'Организация', size: 100, off: !$_USER.role.admin},
                 {field: 'sortorder', caption: '№ п/п', size: 10},
                 {field: 'label', caption: 'Наименование', size: 50},
