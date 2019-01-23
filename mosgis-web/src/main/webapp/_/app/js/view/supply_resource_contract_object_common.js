@@ -10,7 +10,7 @@ define ([], function () {
         var it = $('body').data('data').item
 
         var is_on = {
-            'input[name=uuid_premise]' : [1, 4].indexOf(it['st_ctr.id_customer_type']) != -1,
+            'input[name=uuid_premise]' : [1, 4].indexOf(it['sr_ctr.id_customer_type']) != -1,
         }
 
         var hidden = 0
@@ -59,6 +59,10 @@ define ([], function () {
                 {type: 'main', size: 200,
                     tabs: {
                         tabs: [
+                            {
+                                id: 'supply_resource_contract_object_subjects',
+                                caption: 'Поставляемые ресурсы'
+                            },
 //                            {
 //                                id: 'supply_resource_contract_object_quality_levels',
 //                                caption: 'Показатели качества коммунальных ресурсов',
@@ -115,8 +119,8 @@ define ([], function () {
                         postData: {
                             offset: 0,
                             limit: 50,
-                            is_condo: [1, 2, 3].indexOf(it['st_ctr.id_customer_type']) != -1 ? '1'
-                                    : 4 == it['st_ctr.id_customer_type'] ? '0'
+                            is_condo: [1, 2, 3].indexOf(it['sr_ctr.id_customer_type']) != -1 ? '1'
+                                    : 4 == it['sr_ctr.id_customer_type'] ? '0'
                                     : undefined
                         },
                         onLoad: function (e) {

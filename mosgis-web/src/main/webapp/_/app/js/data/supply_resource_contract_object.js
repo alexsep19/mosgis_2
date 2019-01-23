@@ -23,6 +23,16 @@ define ([], function () {
 
                 add_vocabularies (d, d)
 
+		d.service2resource = {}
+
+		$.each(d.vw_ms_r.items, function () {
+		    d.service2resource[this.code_vc_nsi_3] = d.service2resource[this.code_vc_nsi_3] || {}
+		    d.service2resource[this.code_vc_nsi_3][this.code_vc_nsi_239] =
+			    d.service2resource[this.code_vc_nsi_3][this.code_vc_nsi_239] || []
+		    var voc_okei = {id: this.code_vc_okei, text: d.vc_okei[this.code_vc_okei]}
+		    d.service2resource[this.code_vc_nsi_3][this.code_vc_nsi_239].push(voc_okei)
+		})
+
                 query ({type: 'supply_resource_contract_objects'}, {}, function (data) {
 
                     var it = data.item
@@ -34,7 +44,7 @@ define ([], function () {
                         edit  : it['sr_ctr.uuid_org'] == $_USER.uuid_org,
                     }
 
-                    it['sr_ctr.label'] = it['sr_ctr.label'] || ('№' + it['st_ctr.contractnumber'] + ' от ' + dt_dmy(it['st_ctr.signingdate']))
+                    it['sr_ctr.label'] = it['sr_ctr.label'] || ('№' + it['sr_ctr.contractnumber'] + ' от ' + dt_dmy(it['sr_ctr.signingdate']))
 
                     for (voc in d) {
                         data[voc] = d[voc]

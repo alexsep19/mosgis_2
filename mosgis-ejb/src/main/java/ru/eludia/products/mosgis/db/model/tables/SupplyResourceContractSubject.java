@@ -7,6 +7,7 @@ import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.Type.DATE;
 import static ru.eludia.base.model.Type.STRING;
 import static ru.eludia.base.model.Type.NUMERIC;
+import static ru.eludia.base.model.Type.BOOLEAN;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Num;
 import ru.eludia.base.model.def.Virt;
@@ -19,6 +20,7 @@ public class SupplyResourceContractSubject extends EnTable {
     public enum c implements EnColEnum {
 
         UUID_SR_CTR           (SupplyResourceContract.class, "Договор"),
+	UUID_SR_CTR_OBJ       (SupplyResourceContractObject.class, null, "Объект жилищного фонда (заполняется, если поставляемый ресурс привязан к ОЖФ)"),
 
         CODE_VC_NSI_239       (STRING, 20, "Ссылка на НСИ \"Вид коммунальной услуги\" (реестровый номер 239)"),
         CODE_VC_NSI_3         (STRING, 20, "Ссылка на НСИ \"Вид коммунального ресурса\" (реестровый номер 3)"),
@@ -32,6 +34,10 @@ public class SupplyResourceContractSubject extends EnTable {
         VOLUME                (NUMERIC, 30, 12, null, "Плановый объем"),
         UNIT                  (VocOkei.class, null, "Единица измерения"),
         FEEDINGMODE           (STRING, 250, null, "Режим подачи"),
+
+	// Заполняется в ОЖФ для отдельных ресурсов
+	IS_HEAT_OPEN          (BOOLEAN, null, "Тип системы теплоснабжения: 1 - если открытая, 0 - если закрытая"),
+	IS_HEAT_CENTRALIZED   (BOOLEAN, null, "Вид системы системы теплоснабжения: 1 - если централизованная, 0 - не централизованная"),
 
         ID_LOG                (SupplyResourceContractSubjectLog.class, null, "Последнее событие редактирования")
         ;
@@ -107,6 +113,7 @@ public class SupplyResourceContractSubject extends EnTable {
                         + "WHERE o.is_deleted = 0 "
                         + " AND o.uuid <> :NEW.uuid "
                         + " AND o.uuid_sr_ctr     = :NEW.uuid_sr_ctr "
+			+ " AND NVL(o.uuid_sr_ctr_obj, '00') = NVL(:NEW.uuid_sr_ctr_obj, '00') "
                         + " AND o.code_vc_nsi_3   = :NEW.code_vc_nsi_3 "
                         + " AND o.code_vc_nsi_239 = :NEW.code_vc_nsi_239 "
                         + " AND (o.endsupplydate   >= :NEW.startsupplydate OR o.endsupplydate IS NULL) "

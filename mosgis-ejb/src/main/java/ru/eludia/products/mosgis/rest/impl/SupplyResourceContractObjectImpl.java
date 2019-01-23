@@ -12,14 +12,18 @@ import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractObject;
+import ru.eludia.products.mosgis.db.model.tables.VocNsi276;
+import ru.eludia.products.mosgis.db.model.tables.VocNsiMunicipalServiceResource;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.SupplyResourceContractObjectLocal;
@@ -89,7 +93,7 @@ public class SupplyResourceContractObjectImpl extends BaseCRUD<SupplyResourceCon
 
         final JsonObject item = db.getJsonObject (m
             .get (SupplyResourceContractObject.class, id, "AS root", "*")
-            .toOne(SupplyResourceContract.class, "AS st_ctr", "*").on()
+            .toOne(SupplyResourceContract.class, "AS sr_ctr", "*").on()
             .toOne(VocBuilding.class, "AS building", "label").on()
             .toMaybeOne(House.class, "AS house", "uuid", "is_condo").on("house.fiashouseguid = root.fiashouseguid")
             .toMaybeOne(Premise.class, "AS premise", "label", "id").on()
@@ -101,9 +105,18 @@ public class SupplyResourceContractObjectImpl extends BaseCRUD<SupplyResourceCon
     @Override
     public JsonObject getVocs (JsonObject p) {return fetchData((db, job) -> {
 
+	final Model m = db.getModel();
+
+	db.addJsonArrays(job,
+	    NsiTable.getNsiTable(3).getVocSelect(),
+	    NsiTable.getNsiTable(239).getVocSelect(),
+	    m.select(VocNsiMunicipalServiceResource.class, "*"),
+	    m.select(VocOkei.class, "code AS id", "national AS label")
+	);
+
         VocGisStatus.addTo(job);
         VocAction.addTo(job);
-
+	VocNsi276.addTo(db, job);
     });}
 
     private static final Pattern RE_ZIP = Pattern.compile("[1-9][0-9]{5}");

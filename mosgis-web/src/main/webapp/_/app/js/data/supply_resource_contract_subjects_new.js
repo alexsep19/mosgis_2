@@ -21,7 +21,7 @@ define ([], function () {
             w2popup.close ()
 
             if (data.id)
-                w2confirm ('Предмет договора ресурсоснабэения зарегистрирован. Открыть его страницу в новой вкладке?')
+                w2confirm ('Предмет договора ресурсоснабжения зарегистрирован. Открыть его страницу в новой вкладке?')
                     .yes (function () {openTab ('/supply_resource_contract_subject/' + data.id)})
 
             var grid = w2ui ['supply_resource_contract_subjects_grid']
