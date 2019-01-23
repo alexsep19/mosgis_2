@@ -195,20 +195,19 @@ public class InXlContractObjectService extends EnTable {
             + "BEGIN "
                 
             + " IF :NEW.err IS NOT NULL THEN RETURN; END IF; "                
-/*                
                 
             + " BEGIN "
             + "  SELECT * INTO in_obj FROM in_xl_ctr_objects WHERE uuid_xl=:NEW.uuid_xl AND address=:NEW.address AND startdate<=:NEW.startdate AND enddate>=:NEW.enddate; "
             + "  EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Не удалось определить объект управления по адресу и датам');"
-            + " END; END IF; "                                
-                
+            + " END; "
+                                
             + " :NEW.uuid_org                := in_obj.uuid_org; "
             + " :NEW.uuid_contract           := in_obj.uuid_contract; "
             + " :NEW.uuid_contract_object    := in_obj.uuid; "
             + " :NEW.uuid_contract_agreement := in_obj.uuid_contract_agreement; "
 
             + " IF :NEW.code_vc_nsi_3 IS NOT NULL THEN BEGIN "
-            + "  SELECT code INTO :NEW.code_vc_nsi_3 FROM vc_nsi_3 WHERE is_deleted=0 AND code=:NEW.code_vc_nsi_3; "
+            + "  SELECT code INTO :NEW.code_vc_nsi_3 FROM vc_nsi_3 WHERE isactual=1 AND code=:NEW.code_vc_nsi_3; "
             + "  EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Не найдена услуга с кодом ' || :NEW.code_vc_nsi_3);"
             + " END; END IF; "
                 
@@ -216,7 +215,7 @@ public class InXlContractObjectService extends EnTable {
             + "  SELECT uuid INTO :NEW.uuid_add_service FROM tb_add_services WHERE is_deleted=0 AND uuid_org=:NEW.uuid_org AND uniquenumber=:NEW.uniquenumber; "
             + "  EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Не найдена дополнительная услуга с кодом ' || :NEW.uniquenumber);"
             + " END; END IF; "
-*/
+
             + " EXCEPTION WHEN OTHERS THEN "
             + " :NEW.err := REPLACE(SUBSTR(SQLERRM, 1, 1000), 'ORA-20000: ', ''); "
 
