@@ -11,6 +11,7 @@ import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
 import ru.gosuslugi.dom.schema.integration.house_management.ContractServiceType;
@@ -23,6 +24,8 @@ public class ContractObjectService extends Table {
 
         super  ("tb_contract_services", "Услуги по договору");
 
+        ref    ("uuid_xl",                 InXlFile.class,        null,         "Источник импорта");
+        
         pk     ("uuid",                    Type.UUID,               NEW_UUID,   "Ключ");
         col    ("is_deleted",              Type.BOOLEAN,            Bool.FALSE, "1, если запись удалена; иначе 0");
 

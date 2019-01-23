@@ -106,7 +106,9 @@ public class InXlContractObject extends EnTable {
     private static void setFields (Map<String, Object> r, XSSFRow row) throws XLException {
         
         try {
-            r.put (c.ADDRESS.lc (), row.getCell (0).getStringCellValue ());
+            final XSSFCell cell = row.getCell (0);
+            if (cell == null) throw new XLException ("Не указан адрес (столбец A)");
+            r.put (c.ADDRESS.lc (), cell.getStringCellValue ());
         }
         catch (Exception ex) {
             throw new XLException ("Некорректный тип ячейки адреса (столбец A)");
@@ -283,7 +285,7 @@ public class InXlContractObject extends EnTable {
             + " IF NOT (:OLD.is_deleted = 1 AND :NEW.is_deleted = 0) THEN RETURN; END IF; "
 
             + " INSERT INTO tb_contract_objects (uuid,is_deleted" + sb + ") VALUES (:NEW.uuid,0" + nsb + "); "
-            + " UPDATE tb_contract_objects SET is_deleted=-1 WHERE uuid=:NEW.uuid; "
+            + " UPDATE tb_contract_objects SET is_deleted=1 WHERE uuid=:NEW.uuid; "
             + " COMMIT; "
 
             + "END; "
