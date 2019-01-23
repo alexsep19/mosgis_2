@@ -1,0 +1,84 @@
+<span
+	data-popup-width=600
+	data-popup-height=455
+	data-popup-title='Объект коммунальной инфраструктуры'
+>
+
+	<style>
+
+        label[data-block-name=infrastructures_new] {
+        	width: 180px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=infrastructures_new] {
+        	width: 335px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:410px ">
+
+        <div class="w2ui-page page-0">
+
+
+            <div class="w2ui-field">
+                <label>Наименование: </label>
+                <div>
+                	<input name=name maxlength=140>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Правообладатель: </label>
+                <div>
+                    <input name=manageroki type=hidden>
+                    <input name=manageroki_label readonly>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Основание управления: </label>
+                <div>
+                	<input name=code_vc_nsi_39>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Бессрочное управление: </label>
+                <div>
+                    <input name=indefinitemanagement>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Дата окончания управления: </label>
+                <div>
+                    <input name=endmanagmentdate>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Вид объекта: </label>
+                <div>
+                    <input name=code_vc_nsi_33>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Виды коммунальных услуг: </label>
+                <div>
+                	<div id=type_of_utility_container style="margin:5px 0 0 60px;width:335px;height:125px;" />
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>
