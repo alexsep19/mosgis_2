@@ -8,9 +8,12 @@ import org.junit.Test.None;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.tables.base.BaseTest;
+import ru.eludia.products.mosgis.db.model.voc.VocFileStatus;
 
 public class ParseContractObjectsMDBTest extends BaseTest {
     
+    private static final UUID uuid = UUID.fromString ("40c88162-0401-45b2-b767-c602c17195b4");
+
     public ParseContractObjectsMDBTest () throws Exception {
     }
 
@@ -22,10 +25,12 @@ public class ParseContractObjectsMDBTest extends BaseTest {
         
         try (DB db = model.getDb ()) {
             
-            Map<String, Object> r = db.getMap (InXlFile.class, "40C88162040145B2B767C602C17195B4");
+            mdb.setStatus (db, uuid, VocFileStatus.i.PROCESSING);
             
-            mdb.handleRecord (db, (UUID) r.get ("uuid"), r);
+            Map<String, Object> r = db.getMap (InXlFile.class, uuid);
             
+            mdb.handleRecord (db, uuid, r);
+                    
         }                        
         
     }
