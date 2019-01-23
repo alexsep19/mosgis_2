@@ -150,7 +150,7 @@ define ([], function () {
                 {field: 'label', caption: 'Наименование', size: 50},
             ],
             
-            records: dia2w2uiRecords (data.vc_nsi_3.items),
+            records: dia2w2uiRecords (data.ref_33_to_3.find (x => x.code_33 == w2ui[form_name].record.code_vc_nsi_33.id).code_3),
 
             onRefresh: function () {
             
