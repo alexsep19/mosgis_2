@@ -32,6 +32,31 @@ define ([], function () {
 
     }
 
+    $_DO.open_oktmo_popup = function (e) {
+
+        var f = w2ui [form_name]
+            
+        function done () {
+            f.refresh ()
+        }
+
+        $_SESSION.set ('voc_oktmo_popup.ids', [])
+
+        $('body').data ('voc_oktmo_popup.callback', function (r) {
+
+            if (!r) return done ()
+
+            f.record.oktmo = r.recid
+            f.record.oktmo_code = r.code
+
+            done ()
+
+        })
+
+        use.block ('voc_oktmo_popup')
+
+    }
+
     $_DO.cancel_infrastructure_common = function (e) {
         
         if (!confirm ('Отменить несохранённые правки?')) return
