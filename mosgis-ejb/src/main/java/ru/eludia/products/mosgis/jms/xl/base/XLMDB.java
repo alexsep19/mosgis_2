@@ -66,7 +66,7 @@ public abstract class XLMDB extends UUIDMDB<InXlFile> {
 
     }
 
-    protected final void setStatus (DB db, UUID uuid, VocFileStatus.i status) throws SQLException {
+    public final void setStatus (DB db, UUID uuid, VocFileStatus.i status) throws SQLException {
         
         db.update (InXlFile.class, DB.HASH (
             EnTable.c.UUID, uuid,
