@@ -42,12 +42,19 @@ define ([], function () {
 
         $_SESSION.set ('voc_oktmo_popup.ids', [])
 
+        var oktmos = Object.keys ($_USER.role).filter ((x) => x.startsWith ('oktmo_')).map ((x) => {
+            return x.substring ('oktmo_'.length)
+        })
+
         $('body').data ('voc_oktmo_popup.callback', function (r) {
 
             if (!r) return done ()
 
-            f.record.oktmo = r.recid
-            f.record.oktmo_code = r.code
+            if (!(r.code in oktmos)) alert ('Недопустимый код ОКТМО')
+            else {
+                f.record.oktmo = r.recid
+                f.record.oktmo_code = r.code
+            }
 
             done ()
 
