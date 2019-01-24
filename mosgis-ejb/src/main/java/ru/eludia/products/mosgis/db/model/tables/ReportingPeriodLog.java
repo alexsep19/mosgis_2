@@ -82,16 +82,20 @@ public class ReportingPeriodLog extends GisWsLogTable {
     
     public static void addUnplannedWorksForExport (DB db, Map<String, Object> r) throws SQLException {
 
-        final NsiTable nsiTable = NsiTable.getNsiTable (56);        
+        final NsiTable nsi56 = NsiTable.getNsiTable (56);
+        final NsiTable nsi57 = NsiTable.getNsiTable (57);
+        final NsiTable nsi3  = NsiTable.getNsiTable (3);
         
         r.put ("unplanned_works", db.getList (db.getModel ()                
-            .select (UnplannedWork.class, "*")
-            .toOne (OrganizationWork.class, "AS ow", "elementguid", "uniquenumber").on ()
-            .toOne (nsiTable, nsiTable.getLabelField ().getfName () + " AS vc_nsi_56", "code", "guid").on ("(ow.code_vc_nsi_56=vc_nsi_56.code AND vc_nsi_56.isactual=1)")
+            .select     (UnplannedWork.class, "*")
+            .toOne      (OrganizationWork.class, "AS ow", "elementguid", "uniquenumber").on ()
+            .toOne      (nsi56, nsi56.getLabelField ().getfName () + " AS vc_nsi_56", "code", "guid").on ("(ow.code_vc_nsi_56=vc_nsi_56.code AND vc_nsi_56.isactual=1)")
+            .toMaybeOne (nsi57, nsi57.getLabelField ().getfName () + " AS vc_nsi_57", "code", "guid").on ("(code_vc_nsi_57=vc_nsi_57.code AND vc_nsi_57.isactual=1)")
+            .toMaybeOne ( nsi3,  nsi3.getLabelField ().getfName () + " AS vc_nsi_3",  "code", "guid").on ("(code_vc_nsi_3=vc_nsi_3.code AND vc_nsi_3.isactual=1)")
             .where (UnplannedWork.c.UUID_REPORTING_PERIOD, r.get ("uuid_object"))
             .and   ("is_deleted", 0)
         ));
-        
+
     }    
-    
+
 }

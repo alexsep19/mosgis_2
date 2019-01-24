@@ -70,12 +70,33 @@ public class UnplannedWork extends EnTable {
     }
     
     static CompletedWorksByPeriodType.UnplannedWork toUnplannedWork (Map<String, Object> r) {
+        
         r.put ("comment", r.get ("comment_"));
         final CompletedWorksByPeriodType.UnplannedWork result = DB.to.javaBean (CompletedWorksByPeriodType.UnplannedWork.class, r);
+        
         result.setMonthlyWork (toMonthlyWork (r));
+        
         result.setWork (NsiTable.toDom (r.get ("ow.uniquenumber").toString (), (UUID) r.get ("ow.elementguid")));
+        
         result.setWorkType (NsiTable.toDom (r, "vc_nsi_56"));
+        
+        switch (result.getWorkType ().getCode ()) {
+            case "3":
+                result.setAccident (toAccident (r));
+                break;
+            case "5":
+                break;
+        }        
+        
         return result;            
+        
+    }
+    
+    private static CompletedWorksByPeriodType.UnplannedWork.Accident toAccident (Map<String, Object> r) {
+        final CompletedWorksByPeriodType.UnplannedWork.Accident result = DB.to.javaBean (CompletedWorksByPeriodType.UnplannedWork.Accident.class, r);
+        result.setAccidentObjectKind (NsiTable.toDom (r, "vc_nsi_57"));
+        result.setMSType (NsiTable.toDom (r, "vc_nsi_3"));
+        return result;
     }
     
     private static MonthlyWorkType toMonthlyWork (Map<String, Object> r) {
