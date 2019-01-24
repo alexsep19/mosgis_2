@@ -46,6 +46,28 @@ public class SupplyResourceContractTemperatureChart extends EnTable {
         cols  (c.class);
 
         key   ("uuid_sr_ctr", c.UUID_SR_CTR);
+
+	trigger("BEFORE INSERT OR UPDATE", ""
+	    + "DECLARE"
+	    + " PRAGMA AUTONOMOUS_TRANSACTION; "
+	    + "BEGIN "
+	    + " IF :NEW.is_deleted = 0 THEN "
+		+ " FOR i IN ("
+		    + "SELECT "
+		    + " o.outsidetemperature t "
+		    + "FROM "
+		    + " tb_sr_ctr_t_charts o "
+		    + "WHERE o.is_deleted = 0 "
+		    + " AND o.uuid_sr_ctr     = :NEW.uuid_sr_ctr "
+		    + " AND o.outsidetemperature = :NEW.outsidetemperature "
+		    + " AND o.uuid           <> :NEW.uuid "
+		+ ") LOOP "
+		+ " raise_application_error (-20000, "
+		+ "'Температура наружного воздуха ' || i.t || ' уже указана в договоре'"
+		+ "|| '. Операция отменена.'); "
+		+ " END LOOP; "
+	    + " END IF; "
+	    + "END;");
     }
 
 }

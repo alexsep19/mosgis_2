@@ -67,7 +67,7 @@ public class VocGisContractDimension extends Table {
         BY_HOUSE                 (20, "O", "в разрезе объектов жилищного фонда"),
         ;
 
-        byte id;
+        Integer id;
         String name;
         String label;
 
@@ -75,7 +75,7 @@ public class VocGisContractDimension extends Table {
             return new ru.eludia.base.model.def.Num (id);
         }
 
-        public byte getId () {
+        public int getId () {
             return id;
         }
 
@@ -88,7 +88,7 @@ public class VocGisContractDimension extends Table {
         }
 
         private i (int id, String name, String label) {
-            this.id = (byte) id;
+            this.id = id;
             this.name = name;
             this.label = label;
         }
@@ -109,7 +109,7 @@ public class VocGisContractDimension extends Table {
 
         @Override
         public String toString () {
-            return Byte.toString (id);
+            return Integer.toString (id);
         }
 
     }

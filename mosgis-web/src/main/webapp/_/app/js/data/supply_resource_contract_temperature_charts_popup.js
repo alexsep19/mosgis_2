@@ -17,7 +17,7 @@ define ([], function () {
         if (!v.oppositelinetemperature)
 	    die('oppositelinetemperature', 'Укажите, пожалуйста, температуру теплоносителя в обратном трубопроводе')
 
-        v.uuid_sr_ctr = it['sr_ctr.uuid']
+        v.uuid_sr_ctr = it.uuid
 
         var tia = {type: 'supply_resource_contract_temperature_charts', action: 'create', id: undefined}
 	tia.id = form.record.id
