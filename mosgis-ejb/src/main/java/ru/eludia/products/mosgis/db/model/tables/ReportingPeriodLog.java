@@ -1,5 +1,7 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
@@ -28,6 +30,7 @@ public class ReportingPeriodLog extends GisWsLogTable {
     
     private static CompletedWorksByPeriodType toCompletedWorksByPeriodType (Map<String, Object> r) {
         final CompletedWorksByPeriodType result = DB.to.javaBean (CompletedWorksByPeriodType.class, r);
+        for (Map<String, Object> p: (List<Map<String, Object>>) r.get ("planned_works")) result.getPlannedWork ().add (WorkingPlanItem.toPlannedWork (p));
         return result;
     }
     
@@ -38,6 +41,7 @@ public class ReportingPeriodLog extends GisWsLogTable {
             .get (this, id, "*")
                 
             .toOne (ReportingPeriod.class, "AS r"
+                , ReportingPeriod.c.UUID_WORKING_PLAN.lc ()
                 , ReportingPeriod.c.ID_CTR_STATUS.lc ()
             ).on ()
                 
@@ -63,19 +67,18 @@ public class ReportingPeriodLog extends GisWsLogTable {
         ;
         
     }    
-/*    
+
     public static void addPlannedWorksForExport (DB db, Map<String, Object> r) throws SQLException {
 
-        r.put ("refs", db.getList (db.getModel ()
+        r.put ("planned_works", db.getList (db.getModel ()
                 
-//            .select (PublicPropertyContractVotingProtocol.class)
+            .select (WorkingPlanItem.class, "*")
 //            .toOne  (VotingProtocol.class, VotingProtocol.c.VOTINGPROTOCOLGUID.lc () + " AS guid").and (EnTable.c.IS_DELETED.IS_DELETED.lc (), 0).on ()
-//            .where  (PublicPropertyContractVotingProtocol.c.UUID_CTR.lc (), r.get ("uuid_object"))
-//            .and    ("is_deleted", 0)
+            .where  (WorkingPlanItem.c.UUID_WORKING_PLAN, r.get ("r.uuid_working_plan"))
+            .and    ("is_deleted", 0)
 
         ));
 
     }
-*/    
     
 }

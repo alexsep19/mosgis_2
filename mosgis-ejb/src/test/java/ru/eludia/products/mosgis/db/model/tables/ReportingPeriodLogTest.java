@@ -67,6 +67,7 @@ public class ReportingPeriodLogTest extends BaseTest {
             String idLog = createData (db);
             
             Map<String, Object> r = db.getMap (logTable.getForExport (idLog));
+            ReportingPeriodLog.addPlannedWorksForExport (db, r);
             
             return r;
             
@@ -78,7 +79,7 @@ public class ReportingPeriodLogTest extends BaseTest {
     public void test () throws SQLException {
         
         Map<String, Object> r = getData ();
-System.out.println (r);
+
         dump (r);
 
         validate (ReportingPeriodLog.toCompletedWorksRequest (r));

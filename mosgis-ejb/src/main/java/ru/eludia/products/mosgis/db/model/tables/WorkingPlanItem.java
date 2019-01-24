@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.math.BigInteger;
 import java.sql.SQLException;
 import java.util.Map;
 import ru.eludia.base.DB;
@@ -8,6 +9,7 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.gosuslugi.dom.schema.integration.services.CompletedWorksByPeriodType;
 
 public class WorkingPlanItem extends EnTable {
 
@@ -84,6 +86,12 @@ public class WorkingPlanItem extends EnTable {
             ).on ()
         ));
         
+    }
+    
+    static CompletedWorksByPeriodType.PlannedWork toPlannedWork (Map<String, Object> r) {
+        final CompletedWorksByPeriodType.PlannedWork result = DB.to.javaBean (CompletedWorksByPeriodType.PlannedWork.class, r);
+        result.setPlannedCount (BigInteger.ZERO); // TODOTODOTODOTODOTODO
+        return result;
     }
 
 }
