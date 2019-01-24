@@ -20,6 +20,8 @@ import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.ActualSupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
+import ru.eludia.products.mosgis.db.model.tables.VocNsi239;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustomerType;
@@ -102,8 +104,6 @@ public class SupplyResourceContractImpl extends BaseCRUD<SupplyResourceContract>
 
     });}
 
-    private static final String CODE_VC_NSI_239_HEAT_ENERGY = "4";
-
     @Override
     public JsonObject getItem (String id) {return fetchData ((db, job) -> {
 
@@ -119,7 +119,21 @@ public class SupplyResourceContractImpl extends BaseCRUD<SupplyResourceContract>
 
         job.add ("item", item);
 
-        VocGisStatus.addLiteTo (job);
+	if (item.getInt(SupplyResourceContract.c.SPECQTYINDS.lc()) == VocGisContractDimension.i.BY_CONTRACT.getId()) {
+
+	    String is_on_tab_temperature = db.getString(m.select(SupplyResourceContractSubject.class, "AS root", "uuid")
+		.toOne(SupplyResourceContract.class, SupplyResourceContract.c.SPECQTYINDS.lc()).on()
+		.where(EnTable.c.IS_DELETED, 0)
+		.and(SupplyResourceContractSubject.c.UUID_SR_CTR, id)
+		.and(SupplyResourceContractSubject.c.CODE_VC_NSI_239, VocNsi239.CODE_VC_NSI_239_HEAT_ENERGY)
+		.limit(0, 1)
+	    );
+
+	    job.add("is_on_tab_temperature", is_on_tab_temperature != null);
+	}
+	
+
+	VocGisStatus.addLiteTo (job);
         VocAction.addTo (job);
         VocGisContractDimension.addTo(job);
         VocSupplyResourceContractFileType.addTo(job);
