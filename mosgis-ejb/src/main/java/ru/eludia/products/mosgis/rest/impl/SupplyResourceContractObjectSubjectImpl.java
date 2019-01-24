@@ -1,8 +1,6 @@
 package ru.eludia.products.mosgis.rest.impl;
 
-import java.util.StringTokenizer;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -13,14 +11,11 @@ import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
-import ru.eludia.products.mosgis.db.model.tables.House;
-import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
+import ru.eludia.products.mosgis.db.model.tables.VocNsi239;
 import ru.eludia.products.mosgis.db.model.tables.VocNsiMunicipalServiceResource;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
-import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
-import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -110,7 +105,7 @@ public class SupplyResourceContractObjectSubjectImpl extends BaseCRUD<SupplyReso
 		    .and("uuid_sr_ctr_obj IS NULL")
 		    .and("is_deleted", 0)
 	    ),
-	    NsiTable.getNsiTable(239).getVocSelect().where("code IN"
+	    VocNsi239.getVocSelect().where("code IN"
 		 , m.select(SupplyResourceContractSubject.class, "code_vc_nsi_239")
 		    .where("uuid_sr_ctr", uuid_sr_ctr)
 		    .and("uuid_sr_ctr_obj IS NULL")

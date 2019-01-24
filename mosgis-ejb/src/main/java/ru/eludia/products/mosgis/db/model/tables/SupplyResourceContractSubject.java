@@ -75,6 +75,7 @@ public class SupplyResourceContractSubject extends EnTable {
         cols  (c.class);
 
         key   ("uuid_sr_ctr", c.UUID_SR_CTR);
+	key   ("code_vc_nsi_239", c.CODE_VC_NSI_239, c.UUID_SR_CTR);
 
         trigger("BEFORE INSERT OR UPDATE", ""
                 + "DECLARE"

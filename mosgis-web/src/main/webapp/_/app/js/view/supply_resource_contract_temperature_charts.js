@@ -8,7 +8,7 @@ define ([], function () {
 
         var $panel = $(layout.el ('main'))
 
-        var is_editable = data.item._can.edit
+        var is_editable = data.item._can.edit && data.is_on_tab_temperature
 
         $panel.w2regrid ({
 
@@ -58,7 +58,16 @@ define ([], function () {
 
             onAdd: $_DO.create_supply_resource_contract_temperature_charts,
 
-	    onDelete: $_DO.delete_supply_resource_contract_temperature_charts
+	    onDelete: $_DO.delete_supply_resource_contract_temperature_charts,
+
+	    onRefresh: function(e) {
+		e.done(function(){
+		    if (!is_editable) {
+			$('#tabs_topmost_layout_main_tabs_tab_supply_resource_contract_temperature_charts')
+			    .attr('title', 'Доступна при наличии в договоре ресурса "Тепловая энергия"')
+		    }
+		})
+	    }
         })
 
     }

@@ -70,8 +70,7 @@ define ([], function () {
                     }
 
                 }
-
-                $('body').data ('data', data)
+		$('body').data ('data', data)
 
                 done (data)
 

@@ -15,6 +15,7 @@ import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.ActualSupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
+import ru.eludia.products.mosgis.db.model.tables.VocNsi239;
 import ru.eludia.products.mosgis.db.model.tables.VocNsiMunicipalServiceResource;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustomerType;
@@ -105,7 +106,7 @@ public class SupplyResourceContractSubjectImpl extends BaseCRUD<SupplyResourceCo
 
         db.addJsonArrays(job,
             NsiTable.getNsiTable(3).getVocSelect(),
-            NsiTable.getNsiTable(239).getVocSelect(),
+            VocNsi239.getVocSelect(),
             m.select(VocNsiMunicipalServiceResource.class, "*"),
             m.select(VocOkei.class, "code AS id", "national AS label")
         );
