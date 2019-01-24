@@ -92,6 +92,7 @@ public class ReportingPeriodLog extends GisWsLogTable {
             .toOne      (nsi56, nsi56.getLabelField ().getfName () + " AS vc_nsi_56", "code", "guid").on ("(ow.code_vc_nsi_56=vc_nsi_56.code AND vc_nsi_56.isactual=1)")
             .toMaybeOne (nsi57, nsi57.getLabelField ().getfName () + " AS vc_nsi_57", "code", "guid").on ("(code_vc_nsi_57=vc_nsi_57.code AND vc_nsi_57.isactual=1)")
             .toMaybeOne ( nsi3,  nsi3.getLabelField ().getfName () + " AS vc_nsi_3",  "code", "guid").on ("(code_vc_nsi_3=vc_nsi_3.code AND vc_nsi_3.isactual=1)")
+            .toOne      (OrganizationWork.class, "AS ow", "elementguid", "uniquenumber").on ()
             .where (UnplannedWork.c.UUID_REPORTING_PERIOD, r.get ("uuid_object"))
             .and   ("is_deleted", 0)
         ));

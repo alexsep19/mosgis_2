@@ -85,6 +85,7 @@ public class UnplannedWork extends EnTable {
                 result.setAccident (toAccident (r));
                 break;
             case "5":
+                result.setDeliveryRestriction (toDeliveryRestriction (r));
                 break;
         }        
         
@@ -99,6 +100,13 @@ public class UnplannedWork extends EnTable {
         return result;
     }
     
+    private static CompletedWorksByPeriodType.UnplannedWork.DeliveryRestriction toDeliveryRestriction (Map<String, Object> r) {
+        final CompletedWorksByPeriodType.UnplannedWork.DeliveryRestriction result = DB.to.javaBean (CompletedWorksByPeriodType.UnplannedWork.DeliveryRestriction.class, r);
+        result.setMSType (NsiTable.toDom (r, "vc_nsi_3"));
+        result.setOrganizationGUID (VocOrganization.regOrgType ((UUID) r.get (c.ORGANIZATIONGUID.lc ())));
+        return result;
+    }
+        
     private static MonthlyWorkType toMonthlyWork (Map<String, Object> r) {
         final MonthlyWorkType result = DB.to.javaBean (MonthlyWorkType.class, r);
         return result;
