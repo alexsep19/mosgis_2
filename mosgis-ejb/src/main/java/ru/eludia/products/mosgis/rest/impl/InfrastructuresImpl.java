@@ -25,6 +25,7 @@ import ru.eludia.products.mosgis.db.model.tables.VocNsi38;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi40;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocInfrastructureFileType;
 import ru.eludia.products.mosgis.db.model.voc.VocNsi33Ref3;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
@@ -124,6 +125,7 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
         JsonObjectBuilder jb = Json.createObjectBuilder ();
         
         VocAction.addTo (jb);
+        VocInfrastructureFileType.addTo (jb);
         
         final MosGisModel model = ModelHolder.getModel ();
 
