@@ -1,12 +1,14 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
 import java.util.Map;
+import java.util.UUID;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.gosuslugi.dom.schema.integration.services.CompletedWorksByPeriodType;
 
@@ -68,6 +70,8 @@ public class UnplannedWork extends EnTable {
     
     static CompletedWorksByPeriodType.UnplannedWork toUnplannedWork (Map<String, Object> r) {
         final CompletedWorksByPeriodType.UnplannedWork result = DB.to.javaBean (CompletedWorksByPeriodType.UnplannedWork.class, r);
+        result.setWork (NsiTable.toDom (r.get ("ow.uniquenumber").toString (), (UUID) r.get ("ow.elementguid")));
+        result.setWorkType (NsiTable.toDom (r, "vc_nsi_56"));
         return result;            
     }
     

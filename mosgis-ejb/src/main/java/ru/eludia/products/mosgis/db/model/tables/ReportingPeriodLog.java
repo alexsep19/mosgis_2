@@ -7,6 +7,7 @@ import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.gosuslugi.dom.schema.integration.services.CompletedWorksByPeriodType;
 import ru.gosuslugi.dom.schema.integration.services.ImportCompletedWorksRequest;
@@ -31,7 +32,7 @@ public class ReportingPeriodLog extends GisWsLogTable {
     private static CompletedWorksByPeriodType toCompletedWorksByPeriodType (Map<String, Object> r) {
         final CompletedWorksByPeriodType result = DB.to.javaBean (CompletedWorksByPeriodType.class, r);
         for (Map<String, Object> p: (List<Map<String, Object>>) r.get ("planned_works")) result.getPlannedWork ().add (WorkingPlanItem.toPlannedWork (p));
-//        for (Map<String, Object> u: (List<Map<String, Object>>) r.get ("unplanned_works")) result.getUnplannedWork ().add (UnplannedWork.toUnplannedWork (u));
+        for (Map<String, Object> u: (List<Map<String, Object>>) r.get ("unplanned_works")) result.getUnplannedWork ().add (UnplannedWork.toUnplannedWork (u));
         return result;
     }
     
@@ -80,11 +81,15 @@ public class ReportingPeriodLog extends GisWsLogTable {
     }
     
     public static void addUnplannedWorksForExport (DB db, Map<String, Object> r) throws SQLException {
+
+        final NsiTable nsiTable = NsiTable.getNsiTable (56);        
         
         r.put ("unplanned_works", db.getList (db.getModel ()                
             .select (UnplannedWork.class, "*")
-            .where  (UnplannedWork.c.UUID_REPORTING_PERIOD, r.get ("r.uuid"))
-            .and    ("is_deleted", 0)
+            .toOne (OrganizationWork.class, "AS ow", "elementguid", "uniquenumber").on ()
+            .toOne (nsiTable, nsiTable.getLabelField ().getfName () + " AS vc_nsi_56", "code", "guid").on ("(ow.code_vc_nsi_56=vc_nsi_56.code AND vc_nsi_56.isactual=1)")
+            .where (UnplannedWork.c.UUID_REPORTING_PERIOD, r.get ("uuid_object"))
+            .and   ("is_deleted", 0)
         ));
         
     }    
