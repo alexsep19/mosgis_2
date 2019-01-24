@@ -40,6 +40,7 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements InfrastructuresLocal {
 
     private final String LABEL_FIELD_NAME_NSI_33 = "f_c8e745bc63";
+    private final String TYPE_FIELD_NAME_NSI_33 = "f_995a303098";
     
     private void filterOffDeleted (Select select) {
         select.and ("is_deleted", 0);
@@ -143,7 +144,7 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
                 VocNsi40.getVocSelect (),
                 
                 model
-                    .select (NsiTable.getNsiTable (33), "code AS id", LABEL_FIELD_NAME_NSI_33 + " AS label")
+                    .select (NsiTable.getNsiTable (33), "code AS id", LABEL_FIELD_NAME_NSI_33 + " AS label", TYPE_FIELD_NAME_NSI_33 + " AS type")
                     .where (LABEL_FIELD_NAME_NSI_33 + " IS NOT NULL")
                     .and ("isactual", 1)
                     .orderBy ("code"),
