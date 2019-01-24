@@ -53,6 +53,14 @@ public class InfrastructureResource extends EnTable {
         
         cols (c.class);
         
+        trigger ("BEFORE INSERT OR UPDATE", ""
+                + "BEGIN "
+                    + "IF :NEW.totalload < NVL(:NEW.industrialload, 0) + NVL(:NEW.socialload, 0) + NVL(:NEW.populationload, 0) THEN "
+                        + "raise_application_error (-20000, 'Значение присоединенной нагрузки не должно быть меньше, чем сумма составляющих нагрузок'); "
+                    + "END IF; "
+                + "END;"
+        );
+        
     }
     
 }
