@@ -74,7 +74,7 @@ public class ReportingPeriodLog extends GisWsLogTable {
 
         r.put ("planned_works", db.getList (db.getModel ()                
             .select (WorkingPlanItem.class, "*")
-            .where  (WorkingPlanItem.c.UUID_WORKING_PLAN, r.get ("r.uuid_working_plan"))
+            .where  (WorkingPlanItem.c.UUID_REPORTING_PERIOD, r.get ("uuid_object"))
             .and    ("is_deleted", 0)
         ));
 
