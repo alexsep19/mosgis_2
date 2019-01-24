@@ -7,6 +7,7 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
+import ru.eludia.products.mosgis.db.model.voc.VocInfrastructureFileType;
 import ru.gosuslugi.dom.schema.integration.base.Attachment;
 import ru.gosuslugi.dom.schema.integration.house_management.Attachments;
 
@@ -14,8 +15,9 @@ public class InfrastructureFile extends AttachTable {
     
     public enum c implements EnColEnum {
 
-        UUID_PROTOCOL (Infrastructure.class,    "Ссылка на объект ОКИ"),
-        ID_LOG        (InfrastructureFileLog.class,  "Последнее событие редактирования")
+        UUID_OKI    (Infrastructure.class,    "Ссылка на объект ОКИ"),
+        ID_TYPE     (VocInfrastructureFileType.class, "Тип документа"),
+        ID_LOG      (InfrastructureFileLog.class,  "Последнее событие редактирования")
         ;
 
         @Override
@@ -37,7 +39,7 @@ public class InfrastructureFile extends AttachTable {
         
         cols   (c.class);
         
-        key    ("parent", c.UUID_PROTOCOL);
+        key    ("parent", c.UUID_OKI);
         key    ("attachmentguid", AttachTable.c.ATTACHMENTGUID);
        
         trigger ("BEFORE UPDATE", 
