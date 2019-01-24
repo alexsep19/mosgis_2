@@ -12,6 +12,12 @@ define ([], function () {
                 footer: true,
             },
 
+            toolbar: {
+                items: [
+                    {type: 'button', id: 'createButton', caption: 'Добавить', onClick: $_DO.create_infrastructure_resource, icon: 'w2ui-icon-plus', off: !data.item._can.edit}
+                ].filter (not_off)
+            },
+
             columnGroups: [
                 {span: 1, master: true},
                 {span: 1, master: true},
