@@ -27,6 +27,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocInfrastructureFileType;
 import ru.eludia.products.mosgis.db.model.voc.VocNsi33Ref3;
+import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.InfrastructuresLocal;
@@ -133,7 +134,12 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
         try (DB db = model.getDb ()) {
             
             db.addJsonArrays (jb,
+                    
+                ModelHolder.getModel ()
+                    .select (VocOkei.class, "code AS id", "national AS label")
+                    .orderBy ("national"),
 
+                NsiTable.getNsiTable (2).getVocSelect (),
                 NsiTable.getNsiTable (3).getVocSelect (),
                 NsiTable.getNsiTable (34).getVocSelect (),
                 NsiTable.getNsiTable (35).getVocSelect (),
