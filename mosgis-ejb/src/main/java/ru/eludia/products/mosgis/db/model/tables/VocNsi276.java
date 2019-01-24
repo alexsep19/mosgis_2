@@ -68,17 +68,17 @@ public class VocNsi276 extends Table {
         db.addJsonArrays(job,
             db.getModel()
                 .select(VocNsi276.class, "code AS id", "label", "id_type")
-                .toMaybeOne("vc_nsi_239", "code").on("vc_nsi_276.guid_vc_nsi_239 = vc_nsi_239.guid")
+                .toMaybeOne(VocNsi239.class, "code").on("vc_nsi_276.guid_vc_nsi_239 = vc_nsi_239.guid")
                 .where(VocNsi276.c.ISACTUAL, 1)
-                .orderBy(VocNsi276.c.LABEL)
+                .orderBy("vc_nsi_276.label")
         );
     }
 
     public static Select getVocSelect() throws SQLException {
         return ModelHolder.getModel()
             .select(VocNsi276.class, "code AS id", "label", "id_type")
-            .toMaybeOne("vc_nsi_239", "code").on("vc_nsi_276.guid_vc_nsi_239 = vc_nsi_239.guid")
+            .toMaybeOne(VocNsi239.class, "code").on("vc_nsi_276.guid_vc_nsi_239 = vc_nsi_239.guid")
             .where(VocNsi276.c.ISACTUAL, 1)
-            .orderBy(VocNsi276.c.LABEL);
+            .orderBy("vc_nsi_276.label");
     }
 }
