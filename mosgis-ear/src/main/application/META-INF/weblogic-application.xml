@@ -17,7 +17,7 @@
     </module>
     
     <module><type>JMS</type>
-        <name>Workflow-working-plans</name>
+        <name>Workflow-reporting-periods</name>
         <path>META-INF/mosgismodule-reporting-periods-jms.xml</path>
     </module>
     

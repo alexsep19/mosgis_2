@@ -45,7 +45,7 @@ define ([], function () {
 
         data.__read_only = 1
        
-        it.gis_status_label = 'проект...'//data.vc_gis_status [it.id_ctr_status]
+        it.gis_status_label = data.vc_gis_status [it.id_ctr_status]
 
         done (data)
         

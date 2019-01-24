@@ -83,12 +83,13 @@ public class ReportingPeriodImpl extends BaseCRUD<ReportingPeriod> implements Re
 
         job.add ("item", item);
         
+        VocGisStatus.addLiteTo (job);
+        
         VocBuilding.addCaCh (db, job, item.getString (fhg));
         
         db.addJsonArrays (job, 
 
-            NsiTable.getNsiTable (3).getVocSelect (),
-            
+            NsiTable.getNsiTable (3).getVocSelect (),            
             NsiTable.getNsiTable (57).getVocSelect (),
             NsiTable.getNsiTable (56).getVocSelect (),
             
