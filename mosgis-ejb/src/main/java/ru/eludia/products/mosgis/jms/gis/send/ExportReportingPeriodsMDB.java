@@ -46,8 +46,11 @@ public class ExportReportingPeriodsMDB extends GisExportMDB<ReportingPeriodLog> 
         if (orgPPAGuid == null) orgPPAGuid = (UUID) r.get ("orgppaguid_2");
             
         switch (action) {
-            case PLACING:     return wsGisServicesClient.importCompletedWorks (orgPPAGuid, messageGUID, r);
-            default: throw new IllegalArgumentException ("No action implemented for " + action);
+            case PLACING:     
+            case EDITING:     
+                return wsGisServicesClient.importCompletedWorks (orgPPAGuid, messageGUID, r);
+            default: 
+                throw new IllegalArgumentException ("No action implemented for " + action);
         }
 
     }

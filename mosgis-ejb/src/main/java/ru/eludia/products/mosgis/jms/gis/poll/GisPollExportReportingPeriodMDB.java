@@ -1,7 +1,6 @@
 package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.ejb.ActivationConfigProperty;
@@ -32,7 +31,6 @@ import ru.eludia.products.mosgis.db.model.tables.WorkingPlan;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisServicesClient;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
-import ru.gosuslugi.dom.schema.integration.services.ExportCompletedWorksResultType;
 import ru.gosuslugi.dom.schema.integration.services.GetStateResult;
 
 @MessageDriven(activationConfig = {
@@ -87,7 +85,9 @@ public class GisPollExportReportingPeriodMDB  extends GisPollMDB {
         UUID orgPPAGuid = (UUID) r.get ("orgppaguid_1");
         if (orgPPAGuid == null) orgPPAGuid = (UUID) r.get ("orgppaguid_2");
         
-        ReportingPeriod.Action action = ReportingPeriod.Action.forLogAction (VocAction.i.forName (r.get ("log.action").toString ()));
+        ReportingPeriod.Action action = ReportingPeriod.Action.forStatus (
+            VocGisStatus.i.forId (r.get ("r.id_ctr_status"))                
+        );
                 
         try {
             

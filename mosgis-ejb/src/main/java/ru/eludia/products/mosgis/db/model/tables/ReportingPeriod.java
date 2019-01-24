@@ -5,7 +5,6 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 
 public class ReportingPeriod extends EnTable {
@@ -64,13 +63,55 @@ public class ReportingPeriod extends EnTable {
             + "END;"                
 
         );
+        
+        trigger ("BEFORE UPDATE", 
+                
+            "DECLARE "
+            + " cnt NUMBER;"
+            + "BEGIN "
+
+                    
+                + "IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS "
+                    + " AND :OLD.ID_CTR_STATUS <> " + VocGisStatus.i.FAILED_PLACING.getId ()
+                    + " AND :NEW.ID_CTR_STATUS =  " + VocGisStatus.i.PROJECT.getId ()
+                + " THEN "
+                    + " :NEW.ID_CTR_STATUS := " + VocGisStatus.i.MUTATING.getId ()
+                + "; END IF; "
+                        
+                + "IF :NEW.is_deleted=0 AND :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING.getId () + " THEN BEGIN "
+                        
+                + " FOR i IN ("
+                    + "SELECT "
+                    + " o.uuid "
+                    + "FROM "
+                    + " tb_work_plan_items o "
+                    + "WHERE o.is_deleted = 0"
+                    + " AND o.uuid_reporting_period = :NEW.uuid "
+                    + " AND (price IS NULL OR amount IS NULL OR count IS NULL) "
+                    + ") LOOP"
+                + " raise_application_error (-20000, 'Для всех работ по плану необходимо заполнить цену, объём и количество. Операция отменена.'); "
+                + " END LOOP; "
+                        
+                        
+                + "END; END IF; "
+
+                + "IF "
+                    + "     :OLD.ID_CTR_STATUS = " + VocGisStatus.i.MUTATING.getId ()
+                    + " AND :NEW.ID_CTR_STATUS = " + VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+                + " THEN "
+                    + " :NEW.ID_CTR_STATUS := " + VocGisStatus.i.PENDING_RQ_EDIT.getId ()
+                + "; END IF; "
+                        
+            + "END;"
+                
+        );
 
     }
     
     public enum Action {
         
-        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.PENDING_RQ_REFRESH, VocGisStatus.i.FAILED_PLACING),
-//        REFRESHING  (VocGisStatus.i.PENDING_RP_REFRESH,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
+        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
+        EDITING     (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_STATE),
         ;
         
         VocGisStatus.i nextStatus;
@@ -98,17 +139,11 @@ public class ReportingPeriod extends EnTable {
         public static Action forStatus (VocGisStatus.i status) {
             switch (status) {
                 case PENDING_RQ_PLACING:   return PLACING;
-//                case PENDING_RQ_REFRESH:   return REFRESHING;
+                case PENDING_RQ_EDIT:      return EDITING;
+                case PENDING_RP_PLACING:   return PLACING;
+                case PENDING_RP_EDIT:      return EDITING;
                 default: return null;
             }            
-        }
-
-        public static Action forLogAction (VocAction.i a) {
-            switch (a) {
-                case APPROVE: return PLACING;
-//              case REFRESH: return REFRESHING;
-                default: return null;
-            }
         }
 
     };    

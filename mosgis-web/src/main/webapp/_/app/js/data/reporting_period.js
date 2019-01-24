@@ -47,11 +47,13 @@ define ([], function () {
                     switch (it.id_ctr_status) {
                         case 10:
                         case 11:
+                            it._can.edit = 1                            
                             it._can.approve = 1                            
                     }
                     
                     switch (it.id_ctr_status) {
                         case 14:
+                        case 34:
                         case 40:
                             it._can.alter = 1
                     }

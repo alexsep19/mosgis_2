@@ -33,7 +33,7 @@ define ([], function () {
 
         query (tia, {data: d}, function () {
         
-            query ({type: 'working_plan_items', id: undefined}, {data: {uuid_working_plan: $('body').data ('data').item.uuid_working_plan}}, function (d) {
+            query ({type: 'working_plan_items', id: undefined}, {data: {uuid_reporting_period: $_REQUEST.id}}, function (d) {
             
                 var totalcost
 
