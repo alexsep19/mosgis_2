@@ -101,8 +101,7 @@ define ([], function () {
         var v = f.values ()
 
         var reg_year = /^[1-2][0-9]{3}$/
-
-        console.log (v)
+        var reg_int  = /^[1-9][0-9]*$/
 
         var elements_nsi_33 = {
             independentsource: {'1.1':1, '2.1':1, '5.1':1, '5.2':1},
@@ -120,7 +119,13 @@ define ([], function () {
         if (!v.code_vc_nsi_33) die ('code_vc_nsi_33', 'Укажите, пожалуйста, вид объекта')
         if (!v.oktmo) die ('oktmo_code', 'Укажите, пожалуйста, код ОКТМО')
         if (!v.comissioningyear) die ('comissioningyear', 'Укажите, пожалуйста, год ввода в эксплуатацию')
-        if (!reg_year.test (v.comissioningyear) || v.comissioningyear < 1600) die ('comissioningyear', 'Указано неверное значение года ввода в эксплуатацию') 
+        if (!reg_year.test (v.comissioningyear) || v.comissioningyear < 1600) die ('comissioningyear', 'Указано неверное значение года ввода в эксплуатацию')
+        if (v.countaccidents && !reg_int.test (v.countaccidents)) die ('countaccidents', 'Указано неверное значение количества аварий на 100 км сетей')
+        if (v.deterioration) {
+            var deterioration = parseFloat (v.deterioration)
+            if (isNaN (deterioration) || deterioration < 0 || deterioration > 100) die ('deterioration', 'Указано неверное значения уровня износа')
+            v.deterioration = deterioration
+        }
 
         Object.keys(elements_nsi_33).forEach ((value, index, array) => {
             if (elements_nsi_33[value][v.code_vc_nsi_33] && !v[value]) die (value, 'Указаны не все необходимые данные')
@@ -167,46 +172,6 @@ define ([], function () {
         data.active_tab = localStorage.getItem ('infrastructure_common.active_tab') || 'infrastructure_common_log'
 
         data.__read_only = 1
-
-        function perms () {
-
-            if ((data.item.id_is_status != 10 && data.item.id_is_status != 11) || data.item.is_deleted)
-                return false;
-
-            if ($_USER.role.admin) return true
-
-            if ($_USER.role.nsi_20_8) {
-
-                var oktmos = Object.keys ($_USER.role).filter ((x) => x.startsWith ('oktmo_')).map ((x) => {
-                    return x.substring ('oktmo_'.length)
-                })
-
-                if (data.item.manageroki == $_USER.uuid_org) {
-
-                    if (!data.item.oktmo || data.item.oktmo_code in oktmos) return true
-
-                }
-
-            }
-
-            if ($_USER.role.nsi_20_2) {
-
-                if (data.item.manageroki == $_USER.uuid_org) return true
-
-            }
-
-            return false
-
-        }
-
-        var mod_perms = perms ()
-
-        data.item._can = {
-            edit: mod_perms,
-            update: mod_perms,
-            cancel: mod_perms,
-            delete: mod_perms,
-        }
 
         done (data)
         
