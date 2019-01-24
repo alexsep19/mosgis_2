@@ -1,0 +1,57 @@
+<span
+    data-popup-width=370
+    data-popup-height=245
+    data-popup-title='Температурный график'
+    >
+
+    <style>
+
+        label[data-block-name=supply_resource_contract_object_temperature_charts_popup] {
+            width: 220px;
+            margin-right: 10px;
+        }
+
+        input[data-block-name=supply_resource_contract_object_temperature_charts_popup] {
+            width: 70px !important;
+        }
+	div.w2ui-field {
+	    padding-top:2px
+	}
+	div.w2ui-field > div {
+	    padding-top:7px
+	}
+    </style>
+
+    <div class="w2ui-reset w2ui-form" style="height:195px">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Температура наружного воздуха, °С</label>
+                <div>
+                    <input name=outsidetemperature />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Температура теплоносителя <br/>в подающем трубопроводе, °С</label>
+                <div>
+                    <input name=flowlinetemperature />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Температура теплоносителя <br/>в обратном трубопроводе, °С</label>
+                <div>
+                    <input name=oppositelinetemperature />
+                </div>
+            </div>
+        </div>
+
+        <div class="w2ui-buttons">
+            <button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+    </div>
+
+</span>

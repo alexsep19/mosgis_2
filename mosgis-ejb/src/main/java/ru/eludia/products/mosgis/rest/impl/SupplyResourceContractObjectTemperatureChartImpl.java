@@ -15,7 +15,7 @@ import ru.eludia.products.mosgis.db.model.tables.ActualSupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractTemperatureChart;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
-import ru.eludia.products.mosgis.rest.api.SupplyResourceContractTemperatureChartLocal;
+import ru.eludia.products.mosgis.rest.api.SupplyResourceContractObjectTemperatureChartLocal;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 import ru.eludia.products.mosgis.web.base.ComplexSearch;
 import ru.eludia.products.mosgis.web.base.Search;
@@ -23,9 +23,9 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-public class SupplyResourceContractTemperatureChartImpl extends BaseCRUD<SupplyResourceContractTemperatureChart> implements SupplyResourceContractTemperatureChartLocal {
+public class SupplyResourceContractObjectTemperatureChartImpl extends BaseCRUD<SupplyResourceContractTemperatureChart> implements SupplyResourceContractObjectTemperatureChartLocal {
 
-    private static final Logger logger = Logger.getLogger (SupplyResourceContractTemperatureChartImpl.class.getName ());
+    private static final Logger logger = Logger.getLogger (SupplyResourceContractObjectTemperatureChartImpl.class.getName ());
 
     private void filterOffDeleted (Select select) {
         select.and (EnTable.c.IS_DELETED, Operator.EQ, 0);
@@ -63,19 +63,15 @@ public class SupplyResourceContractTemperatureChartImpl extends BaseCRUD<SupplyR
 
         final Model m = ModelHolder.getModel ();
 
+	JsonObject data = p.getJsonObject("data");
+
         Select select = m.select (SupplyResourceContractTemperatureChart.class, "*", "uuid AS id")
 	    .where(EnTable.c.IS_DELETED.lc(), 0)
-	    .where(SupplyResourceContractTemperatureChart.c.UUID_SR_CTR_OBJ.lc() + " IS NULL")
+	    .where(SupplyResourceContractTemperatureChart.c.UUID_SR_CTR_OBJ.lc(), data.getString("uuid_sr_ctr_obj"))
             .orderBy (SupplyResourceContractTemperatureChart.c.OUTSIDETEMPERATURE.lc ())
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
         applySearch (Search.from (p), select);
-
-        JsonObject data = p.getJsonObject ("data");
-
-        String k = SupplyResourceContractTemperatureChart.c.UUID_SR_CTR.lc ();
-        String v = data.getString (k, null);
-        if (DB.ok (v)) select.and (k, v);
 
         db.addJsonArrayCnt (job, select);
     });}

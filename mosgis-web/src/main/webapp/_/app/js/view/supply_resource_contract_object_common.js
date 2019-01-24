@@ -73,6 +73,9 @@ define ([], function () {
 //                                caption: 'Иные показатели качества коммунальных ресурсов',
 //                                off: 0
 //                            },
+			    {id: 'supply_resource_contract_object_temperature_charts', caption: 'Температурный график'
+				, off: !data.is_on_tab_temperature
+			    },
                             {id: 'supply_resource_contract_object_common_log', caption: 'История изменений'},
                         ].filter(not_off),
                         onClick: $_DO.choose_tab_supply_resource_contract_object_common

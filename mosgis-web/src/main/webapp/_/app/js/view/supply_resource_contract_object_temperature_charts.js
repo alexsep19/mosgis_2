@@ -1,14 +1,14 @@
 define ([], function () {
 
-    var grid_name = 'supply_resource_contract_temperature_charts_grid'
+    var grid_name = 'supply_resource_contract_object_temperature_charts_grid'
 
     return function (data, view) {
 
-        var layout = w2ui ['topmost_layout']
+        var layout = w2ui ['passport_layout']
 
         var $panel = $(layout.el ('main'))
 
-        var is_editable = data.item._can.edit && data.is_on_tab_temperature
+        var is_editable = data.item._can.edit // && data.is_on_tab_temperature
 
         $panel.w2regrid ({
 
@@ -38,10 +38,10 @@ define ([], function () {
             ],
 
             postData: {data: {
-                uuid_sr_ctr: $_REQUEST.id
+                uuid_sr_ctr_obj: $_REQUEST.id
             }},
 
-            url: '/mosgis/_rest/?type=supply_resource_contract_temperature_charts',
+            url: '/mosgis/_rest/?type=supply_resource_contract_object_temperature_charts',
 
             onDblClick: function (e) {
 
@@ -49,16 +49,16 @@ define ([], function () {
 
 		var r = grid.get(e.recid)
 
-		r.uuid_sr_ctr = $_REQUEST.id
+		r.uuid_sr_ctr_obj = $_REQUEST.id
 
 		$_SESSION.set('record', r)
 
-		use.block ('supply_resource_contract_temperature_charts_popup')
+		use.block ('supply_resource_contract_object_temperature_charts_popup')
 	    },
 
-            onAdd: $_DO.create_supply_resource_contract_temperature_charts,
+            onAdd: $_DO.create_supply_resource_contract_object_temperature_charts,
 
-	    onDelete: $_DO.delete_supply_resource_contract_temperature_charts
+	    onDelete: $_DO.delete_supply_resource_contract_object_temperature_charts
         })
 
     }

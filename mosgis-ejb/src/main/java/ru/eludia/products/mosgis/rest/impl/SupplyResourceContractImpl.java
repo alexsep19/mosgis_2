@@ -122,9 +122,9 @@ public class SupplyResourceContractImpl extends BaseCRUD<SupplyResourceContract>
 	if (item.getInt(SupplyResourceContract.c.SPECQTYINDS.lc()) == VocGisContractDimension.i.BY_CONTRACT.getId()) {
 
 	    String is_on_tab_temperature = db.getString(m.select(SupplyResourceContractSubject.class, "AS root", "uuid")
-		.toOne(SupplyResourceContract.class, SupplyResourceContract.c.SPECQTYINDS.lc()).on()
 		.where(EnTable.c.IS_DELETED, 0)
 		.and(SupplyResourceContractSubject.c.UUID_SR_CTR, id)
+		.and(SupplyResourceContractSubject.c.UUID_SR_CTR_OBJ.lc() + " IS NULL")
 		.and(SupplyResourceContractSubject.c.CODE_VC_NSI_239, VocNsi239.CODE_VC_NSI_239_HEAT_ENERGY)
 		.limit(0, 1)
 	    );
