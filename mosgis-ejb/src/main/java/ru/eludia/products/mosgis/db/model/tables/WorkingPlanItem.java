@@ -11,6 +11,7 @@ import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.gosuslugi.dom.schema.integration.services.CompletedWorksByPeriodType;
+import ru.gosuslugi.dom.schema.integration.services.MonthlyWorkType;
 
 public class WorkingPlanItem extends EnTable {
 
@@ -91,7 +92,13 @@ public class WorkingPlanItem extends EnTable {
     
     static CompletedWorksByPeriodType.PlannedWork toPlannedWork (Map<String, Object> r) {
         final CompletedWorksByPeriodType.PlannedWork result = DB.to.javaBean (CompletedWorksByPeriodType.PlannedWork.class, r);
+        result.setMonthlyWork (toMonthlyWork (r));
         return result;
     }
 
+    private static MonthlyWorkType toMonthlyWork (Map<String, Object> r) {
+        final MonthlyWorkType result = DB.to.javaBean (MonthlyWorkType.class, r);
+        return result;
+    }
+    
 }

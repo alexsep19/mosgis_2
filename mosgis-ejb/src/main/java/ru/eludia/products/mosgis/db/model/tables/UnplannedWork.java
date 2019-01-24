@@ -11,9 +11,10 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.gosuslugi.dom.schema.integration.services.CompletedWorksByPeriodType;
+import ru.gosuslugi.dom.schema.integration.services.MonthlyWorkType;
 
 public class UnplannedWork extends EnTable {
-
+ 
     public enum c implements EnColEnum {
 
         UUID_REPORTING_PERIOD  (ReportingPeriod.class,       "Ссылка период отчётности"),
@@ -69,10 +70,17 @@ public class UnplannedWork extends EnTable {
     }
     
     static CompletedWorksByPeriodType.UnplannedWork toUnplannedWork (Map<String, Object> r) {
+        r.put ("comment", r.get ("comment_"));
         final CompletedWorksByPeriodType.UnplannedWork result = DB.to.javaBean (CompletedWorksByPeriodType.UnplannedWork.class, r);
+        result.setMonthlyWork (toMonthlyWork (r));
         result.setWork (NsiTable.toDom (r.get ("ow.uniquenumber").toString (), (UUID) r.get ("ow.elementguid")));
         result.setWorkType (NsiTable.toDom (r, "vc_nsi_56"));
         return result;            
+    }
+    
+    private static MonthlyWorkType toMonthlyWork (Map<String, Object> r) {
+        final MonthlyWorkType result = DB.to.javaBean (MonthlyWorkType.class, r);
+        return result;
     }
     
 }
