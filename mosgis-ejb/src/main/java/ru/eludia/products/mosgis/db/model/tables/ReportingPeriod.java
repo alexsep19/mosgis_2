@@ -1,18 +1,22 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
 import ru.eludia.base.model.Col;
-import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
+import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 
 public class ReportingPeriod extends EnTable {
 
-    public enum c implements ColEnum {
+    public enum c implements EnColEnum {
 
-        UUID_WORKING_PLAN      (WorkingPlan.class,           "Ссылка на план"),
-        MONTH                  (Type.NUMERIC, 2,             "Месяц"),
-        REPORTINGPERIODGUID    (Type.UUID,  null,            "Ссылка на период отчётности о выполненных работах")
+        UUID_WORKING_PLAN      (WorkingPlan.class,                           "Ссылка на план"),
+        MONTH                  (Type.NUMERIC, 2,                             "Месяц"),
+        REPORTINGPERIODGUID    (Type.UUID,  null,                            "Ссылка на период отчётности о выполненных работах"),
+        ID_LOG                 (ReportingPeriodLog.class,                    "Последнее событие редактирования"),
+        ID_CTR_STATUS          (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения mosgis"),
+        ID_CTR_STATUS_GIS      (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения ГИС ЖКХ"),
         ;
 
         @Override
@@ -20,6 +24,18 @@ public class ReportingPeriod extends EnTable {
         private Col col;        
         private c (Type type, Object... p) {col = new Col (this, type, p);}
         private c (Class c,   Object... p) {col = new Ref (this, c, p);}
+        
+        @Override
+        public boolean isLoggable () {
+            switch (this) {
+                case ID_LOG:
+                case UUID_WORKING_PLAN:
+                case MONTH:
+                    return false;
+                default: 
+                    return true;
+            }
+        }        
 
     }
 
