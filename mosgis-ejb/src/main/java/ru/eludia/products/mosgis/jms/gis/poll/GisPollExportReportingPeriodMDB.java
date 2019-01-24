@@ -95,16 +95,8 @@ public class GisPollExportReportingPeriodMDB  extends GisPollMDB {
             
             ErrorMessageType errorMessage = state.getErrorMessage ();
             
-            if (errorMessage != null) throw new GisPollException (errorMessage);            
-            
-            List<ExportCompletedWorksResultType> exportCompletedWorksResult = state.getExportCompletedWorksResult ();
-            
-            if (exportCompletedWorksResult == null || exportCompletedWorksResult.isEmpty ()) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
-            
-            ExportCompletedWorksResultType result = exportCompletedWorksResult.get (0);
-
-            if (result == null) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
-            
+            if (errorMessage != null) throw new GisPollException (errorMessage);
+                        
             final Map<String, Object> h = statusHash (action.getOkStatus ());            
             
             update (db, uuid, r, h);

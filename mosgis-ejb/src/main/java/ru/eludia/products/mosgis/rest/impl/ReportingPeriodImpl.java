@@ -19,7 +19,9 @@ import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.OrganizationWork;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.ReportingPeriod;
+import ru.eludia.products.mosgis.db.model.tables.ReportingPeriodLog;
 import ru.eludia.products.mosgis.db.model.tables.WorkingList;
 import ru.eludia.products.mosgis.db.model.tables.WorkingListItem;
 import ru.eludia.products.mosgis.db.model.tables.WorkingPlan;
@@ -64,7 +66,7 @@ public class ReportingPeriodImpl extends BaseCRUD<ReportingPeriod> implements Re
         final String fhg = WorkingList.c.FIASHOUSEGUID.lc ();
         
         final JsonObject item = db.getJsonObject (ModelHolder.getModel ()
-                .get (ReportingPeriod.class, id, "*")
+                .get (ReportingPeriod.class, id, "*")                
                 .toOne (WorkingPlan.class, "AS plan", "*").on ()
                 .toOne (WorkingList.class
                         , fhg + " AS " + fhg
@@ -77,7 +79,10 @@ public class ReportingPeriodImpl extends BaseCRUD<ReportingPeriod> implements Re
                 .toMaybeOne (Contract.class, "AS ca", "*").on ()
                 .toMaybeOne (CharterObject.class, "AS cho", "uuid", "startdate", "enddate").on ()
                 .toMaybeOne (Charter.class, "AS ch", "*").on ()
-                .toMaybeOne (VocOrganization.class, "AS chorg", "label").on ("ch.uuid_org=chorg.uuid")                
+                .toMaybeOne (VocOrganization.class, "AS chorg", "label").on ("ch.uuid_org=chorg.uuid")                                
+                
+                .toMaybeOne (ReportingPeriodLog.class, "AS rpl").on ()
+                .toMaybeOne (OutSoap.class, "err_text").on ("rpl.uuid_out_soap=out_soap.uuid")
                 
         );
 
