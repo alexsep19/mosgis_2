@@ -87,6 +87,8 @@ define ([], function () {
                     cancel: mod_perms,
                     delete: mod_perms,
                 }
+                               
+                data.item.okitype = data.vc_nsi_33[data.item.code_vc_nsi_33]
 
                 done (data)
 
