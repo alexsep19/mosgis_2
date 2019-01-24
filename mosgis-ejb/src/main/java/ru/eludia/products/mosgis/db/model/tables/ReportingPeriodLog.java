@@ -31,7 +31,7 @@ public class ReportingPeriodLog extends GisWsLogTable {
     private static CompletedWorksByPeriodType toCompletedWorksByPeriodType (Map<String, Object> r) {
         final CompletedWorksByPeriodType result = DB.to.javaBean (CompletedWorksByPeriodType.class, r);
         for (Map<String, Object> p: (List<Map<String, Object>>) r.get ("planned_works")) result.getPlannedWork ().add (WorkingPlanItem.toPlannedWork (p));
-        for (Map<String, Object> u: (List<Map<String, Object>>) r.get ("unplanned_works")) result.getUnplannedWork ().add (UnplannedWork.toUnplannedWork (u));
+//        for (Map<String, Object> u: (List<Map<String, Object>>) r.get ("unplanned_works")) result.getUnplannedWork ().add (UnplannedWork.toUnplannedWork (u));
         return result;
     }
     
