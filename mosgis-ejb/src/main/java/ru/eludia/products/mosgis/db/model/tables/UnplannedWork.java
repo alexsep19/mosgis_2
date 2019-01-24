@@ -1,11 +1,14 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Map;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.gosuslugi.dom.schema.integration.services.CompletedWorksByPeriodType;
 
 public class UnplannedWork extends EnTable {
 
@@ -61,6 +64,11 @@ public class UnplannedWork extends EnTable {
                 
         );
         
+    }
+    
+    static CompletedWorksByPeriodType.UnplannedWork toUnplannedWork (Map<String, Object> r) {
+        final CompletedWorksByPeriodType.UnplannedWork result = DB.to.javaBean (CompletedWorksByPeriodType.UnplannedWork.class, r);
+        return result;            
     }
     
 }

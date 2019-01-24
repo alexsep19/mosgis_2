@@ -31,6 +31,7 @@ public class ReportingPeriodLog extends GisWsLogTable {
     private static CompletedWorksByPeriodType toCompletedWorksByPeriodType (Map<String, Object> r) {
         final CompletedWorksByPeriodType result = DB.to.javaBean (CompletedWorksByPeriodType.class, r);
         for (Map<String, Object> p: (List<Map<String, Object>>) r.get ("planned_works")) result.getPlannedWork ().add (WorkingPlanItem.toPlannedWork (p));
+        for (Map<String, Object> u: (List<Map<String, Object>>) r.get ("unplanned_works")) result.getUnplannedWork ().add (UnplannedWork.toUnplannedWork (u));
         return result;
     }
     
@@ -70,15 +71,22 @@ public class ReportingPeriodLog extends GisWsLogTable {
 
     public static void addPlannedWorksForExport (DB db, Map<String, Object> r) throws SQLException {
 
-        r.put ("planned_works", db.getList (db.getModel ()
-                
+        r.put ("planned_works", db.getList (db.getModel ()                
             .select (WorkingPlanItem.class, "*")
-//            .toOne  (VotingProtocol.class, VotingProtocol.c.VOTINGPROTOCOLGUID.lc () + " AS guid").and (EnTable.c.IS_DELETED.IS_DELETED.lc (), 0).on ()
             .where  (WorkingPlanItem.c.UUID_WORKING_PLAN, r.get ("r.uuid_working_plan"))
             .and    ("is_deleted", 0)
-
         ));
 
     }
+    
+    public static void addUnplannedWorksForExport (DB db, Map<String, Object> r) throws SQLException {
+        
+        r.put ("unplanned_works", db.getList (db.getModel ()                
+            .select (UnplannedWork.class, "*")
+            .where  (UnplannedWork.c.UUID_REPORTING_PERIOD, r.get ("r.uuid"))
+            .and    ("is_deleted", 0)
+        ));
+        
+    }    
     
 }

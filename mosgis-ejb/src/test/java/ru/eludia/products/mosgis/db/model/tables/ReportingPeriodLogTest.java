@@ -68,6 +68,7 @@ public class ReportingPeriodLogTest extends BaseTest {
             
             Map<String, Object> r = db.getMap (logTable.getForExport (idLog));
             ReportingPeriodLog.addPlannedWorksForExport (db, r);
+            ReportingPeriodLog.addUnplannedWorksForExport (db, r);
             
             return r;
             
