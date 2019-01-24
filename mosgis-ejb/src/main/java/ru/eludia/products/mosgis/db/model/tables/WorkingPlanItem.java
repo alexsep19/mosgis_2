@@ -93,6 +93,7 @@ public class WorkingPlanItem extends EnTable {
     static CompletedWorksByPeriodType.PlannedWork toPlannedWork (Map<String, Object> r) {
         final CompletedWorksByPeriodType.PlannedWork result = DB.to.javaBean (CompletedWorksByPeriodType.PlannedWork.class, r);
         result.setMonthlyWork (toMonthlyWork (r));
+        result.setTotalCost (null);
         return result;
     }
 
