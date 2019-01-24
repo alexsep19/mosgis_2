@@ -48,6 +48,46 @@ define ([], function () {
 
                 $('body').data ('data', data)
 
+                function perms () {
+
+                    if ((data.item.id_is_status != 10 && data.item.id_is_status != 11) || data.item.is_deleted)
+                        return false;
+
+                    if ($_USER.role.admin) return true
+
+                    if ($_USER.role.nsi_20_8) {
+
+                        var oktmos = Object.keys ($_USER.role).filter ((x) => x.startsWith ('oktmo_')).map ((x) => {
+                            return x.substring ('oktmo_'.length)
+                        })
+
+                        if (data.item.manageroki == $_USER.uuid_org) {
+
+                            if (!data.item.oktmo || data.item.oktmo_code in oktmos) return true
+
+                        }
+
+                    }
+
+                    if ($_USER.role.nsi_20_2) {
+
+                        if (data.item.manageroki == $_USER.uuid_org) return true
+
+                    }
+
+                    return false
+
+                }
+
+                var mod_perms = perms ()
+
+                data.item._can = {
+                    edit: mod_perms,
+                    update: mod_perms,
+                    cancel: mod_perms,
+                    delete: mod_perms,
+                }
+
                 done (data)
 
             })
