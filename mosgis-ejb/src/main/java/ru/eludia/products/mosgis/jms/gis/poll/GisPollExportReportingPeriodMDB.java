@@ -10,6 +10,7 @@ import javax.ejb.MessageDriven;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
@@ -35,11 +36,11 @@ import ru.gosuslugi.dom.schema.integration.services.ExportCompletedWorksResultTy
 import ru.gosuslugi.dom.schema.integration.services.GetStateResult;
 
 @MessageDriven(activationConfig = {
- @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outImportReportingPeriodsQueue")
+ @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outExportReportingPeriodsQueue")
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class GisPollImportReportingPeriodMDB  extends GisPollMDB {
+public class GisPollExportReportingPeriodMDB  extends GisPollMDB {
 
     @EJB
     WsGisServicesClient wsGisServicesClient;
@@ -52,6 +53,7 @@ public class GisPollImportReportingPeriodMDB  extends GisPollMDB {
             .toOne (ReportingPeriodLog.class,     "AS log", "uuid", "action").on ("log.uuid_out_soap=root.uuid")
 
             .toOne (ReportingPeriod.class, "AS r"
+                , EnTable.c.UUID.lc ()
                 , ReportingPeriod.c.UUID_WORKING_PLAN.lc ()
                 , ReportingPeriod.c.ID_CTR_STATUS.lc ()
             ).on ()

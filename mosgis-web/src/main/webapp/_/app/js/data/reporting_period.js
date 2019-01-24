@@ -44,11 +44,17 @@ define ([], function () {
                     && it ['tb_work_lists.id_ctr_status'] == 40
                 ) {
 
-//                    switch (it.id_ctr_status) {
-//                        case 10:
-//                        case 11:
-                            it._can.edit = 1
-//                    }
+                    switch (it.id_ctr_status) {
+                        case 10:
+                        case 11:
+                            it._can.approve = 1                            
+                    }
+                    
+                    switch (it.id_ctr_status) {
+                        case 14:
+                        case 40:
+                            it._can.alter = 1
+                    }
 
                 }        
 
