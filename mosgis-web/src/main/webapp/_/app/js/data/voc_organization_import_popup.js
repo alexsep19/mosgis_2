@@ -8,11 +8,9 @@ define ([], function () {
         
         if (!v.import_type) die ('import_type', 'Укажите, пожалуйста, тип импорта')
                 
-        var done = reload_page
-
         query ({type: 'voc_organizations', action: v.import_type}, {}, function () {
             alert ('Запрос в ГИС ЖКХ зарегистрирован')
-            w2popup.close ()
+            reload_page ()
         })
 
     }

@@ -46,6 +46,7 @@ define ([], function () {
             add_vocabularies (data, {
                 vc_acc_req_status: 1,
                 vc_acc_req_types: 1,
+                vc_actions: 1,
             })
             
             var it = data.item
