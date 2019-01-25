@@ -240,7 +240,7 @@ public class InXlContractObjectService extends EnTable {
 
             + "BEGIN "
 
-            + " IF :NEW.err IS NOT NULL THEN RETURN; END IF; "
+            + " IF :NEW.err IS NOT NULL THEN :NEW.is_deleted := 1; END IF; "
             + " IF NOT (:OLD.is_deleted = 1 AND :NEW.is_deleted = 0) THEN RETURN; END IF; "
 
             + " INSERT INTO tb_contract_services (uuid,is_deleted" + sb + ") VALUES (:NEW.uuid,0" + nsb + "); "
