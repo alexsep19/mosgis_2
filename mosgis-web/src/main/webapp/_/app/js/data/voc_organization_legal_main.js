@@ -6,6 +6,8 @@ define ([], function () {
         
         if (!data.import_types.length) die ('foo', 'Для данной организации отсутствуют варианты импорта данных из ГИС ЖКХ')
         
+        use.block ('voc_organization_import_popup')
+        
     }
 
     $_DO.refresh_voc_organization_legal_main = function (e) {
