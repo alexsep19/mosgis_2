@@ -20,7 +20,9 @@ public class InfrastructureResourcesImpl extends BaseCRUD<InfrastructureResource
         
         Select select = ModelHolder.getModel ().select(getTable (), "AS root", "*", "uuid AS id")
                 .orderBy ("root.code_vc_nsi_2")
-                .limit (p.getInt ("offset"), p.getInt ("limit"));
+                .where   ("uuid_oki", p.getJsonObject ("data").getString("uuid_oki"))
+                .and     ("is_deleted", 0)
+                .limit   (p.getInt ("offset"), p.getInt ("limit"));
 
         db.addJsonArrayCnt (job, select);
         

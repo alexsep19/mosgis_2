@@ -56,6 +56,8 @@ define ([], function () {
                 {field: 'socialload', caption: 'Социальная сфера', size: 30},
                 {field: 'populationload', caption: 'Население', size: 30}
             ],
+
+            postData: {data: {uuid_oki: $_REQUEST.id}},
             url: '/mosgis/_rest/?type=infrastructure_resources',
 
             onSelect: recalcToolbar,
