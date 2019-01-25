@@ -17,12 +17,14 @@ import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractObject;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi239;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi276;
 import ru.eludia.products.mosgis.db.model.tables.VocNsiMunicipalServiceResource;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
+import ru.eludia.products.mosgis.db.model.voc.VocGisContractDimension;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -101,6 +103,18 @@ public class SupplyResourceContractObjectImpl extends BaseCRUD<SupplyResourceCon
         );
 
         job.add ("item", item);
+
+	if (item.getInt("sr_ctr." + SupplyResourceContract.c.SPECQTYINDS.lc()) == VocGisContractDimension.i.BY_HOUSE.getId()) {
+
+	    String is_on_tab_temperature = db.getString(m.select(SupplyResourceContractSubject.class, "AS root", "uuid")
+		.where(EnTable.c.IS_DELETED, 0)
+		.and(SupplyResourceContractSubject.c.UUID_SR_CTR_OBJ, id)
+		.and(SupplyResourceContractSubject.c.CODE_VC_NSI_239, VocNsi239.CODE_VC_NSI_239_HEAT_ENERGY)
+		.limit(0, 1)
+	    );
+
+	    job.add("is_on_tab_temperature", is_on_tab_temperature != null);
+	}
     });}
 
     @Override

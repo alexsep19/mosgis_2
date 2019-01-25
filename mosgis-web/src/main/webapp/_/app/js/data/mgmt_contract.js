@@ -49,6 +49,7 @@ define ([], function () {
                             it._can.approve = 1
                             break;
                         case 40:
+                        case 94:
                             it._can.terminate = 1
                         case 14:
                         case 34:
