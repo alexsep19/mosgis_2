@@ -4,6 +4,7 @@ define ([], function () {
 
         var form = w2ui ['infrastructure_resources_new_form']
 
+        var data = clone ($('body').data ('data'))
         var v = form.values ()
 
         if (!v.code_vc_nsi_2) die ('code_vc_nsi_2', 'Укажите, пожалуйста, ресурс')
