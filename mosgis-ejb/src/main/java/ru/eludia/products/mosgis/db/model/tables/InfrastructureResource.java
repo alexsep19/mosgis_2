@@ -13,6 +13,8 @@ public class InfrastructureResource extends EnTable {
     
     public enum c implements EnColEnum {
         
+        UUID_OKI       (Infrastructure.class, "Ссылка на объект ОКИ"),
+        
         CODE_VC_NSI_2  (STRING, 20, "Ресурс (НСИ 2)"),
         
         SETPOWER       (NUMERIC, 9, 3, null, "Установленная мощность"),
@@ -38,6 +40,7 @@ public class InfrastructureResource extends EnTable {
         @Override
         public boolean isLoggable () {
             switch (this) {
+                case UUID_OKI:
                 case ID_LOG:
                     return false;
                 default:
