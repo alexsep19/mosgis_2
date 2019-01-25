@@ -26,7 +26,7 @@ define ([], function () {
             ],
 
             columns: [
-                {field: 'code_vc_nsi_2', caption: 'Ресурс', size: 30, voc: data.vc_nsi_2},
+                {field: 'code_vc_nsi_2', caption: 'Ресурс', size: 30, voc: data.vc_nsi_2_filtered},
                 {field: 'setpower', caption: 'Установленная мощность', size: 30},
                 {field: 'sitingpower', caption: 'Располагаемая мощность', size: 30},
                 {field: 'totalload', caption: 'Общая', size: 30},
