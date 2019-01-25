@@ -87,7 +87,7 @@ public class SupplyResourceContractQualityLevel extends EnTable {
                         + "SELECT "
                         + " o.uuid "
 			+ " , o.uuid_sr_ctr_subj "
-			+ " , sr_ctr.contractnumber || ' от ' || TO_CHAR (sr_ctr.signingdate, 'DD.MM.YYYY') sr_ctr_label "
+			+ " , sr_ctr.label sr_ctr_label "
                         + "FROM "
                         + " tb_sr_ctr_qls o "
 			+ " LEFT JOIN tb_sr_ctr      sr_ctr  ON sr_ctr.uuid = o.uuid_sr_ctr "

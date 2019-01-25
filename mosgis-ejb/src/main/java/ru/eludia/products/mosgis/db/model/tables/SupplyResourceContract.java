@@ -34,6 +34,8 @@ public class SupplyResourceContract extends EnTable {
         COMPLETIONDATE       (Type.DATE, null, "Дата окончания действия"),
         AUTOROLLOVER         (Type.BOOLEAN, null, "1, если автопролонгация на год; иначе 0"),
 
+	LABEL                (Type.STRING, new Virt("'№' || contractnumber || ' от ' || TO_CHAR (signingdate, 'DD.MM.YYYY')"), "№/дата"),
+
         CODE_VC_NSI_58       (Type.STRING, 20, "Основание заключения договора (НСИ 58)"),
         IS_CONTRACT          (Type.BOOLEAN,    null, "1, если является публичным; иначе 0"),
 
@@ -71,7 +73,6 @@ public class SupplyResourceContract extends EnTable {
 
         DDT_N_START          (Type.NUMERIC, 2, null, "Срок предоставления информации о поступивших платежах, не позднее (1..30 — конкретное число; 99 — последнее число)"),
         DDT_N_START_NXT      (Type.BOOLEAN,    null, "1, если срок предоставления информации о поступивших платежах в следующем месяце; иначе 0")
-//        NPE LABEL                (Type.STRING, new Virt("'№' || contractnumber || ' от ' || TO_CHAR (effectivedate, 'DD.MM.YYYY')"), "№/дата"),
         ;
 
         @Override

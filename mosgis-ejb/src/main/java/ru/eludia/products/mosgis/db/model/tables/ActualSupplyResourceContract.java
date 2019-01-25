@@ -21,8 +21,7 @@ public class ActualSupplyResourceContract extends View {
         ORG_LABEL_UC         (Type.STRING, "ИСПОЛНИТЕЛЬ"),
         CUSTOMER_TYPE_LABEL  (Type.STRING, "Тип Заказчика"),
         CUSTOMER_LABEL       (Type.STRING, "Заказчик"),
-        CUSTOMER_LABEL_UC    (Type.STRING, "ЗАКАЗЧИК"),
-        LABEL                (Type.STRING, "№/дата")
+        CUSTOMER_LABEL_UC    (Type.STRING, "ЗАКАЗЧИК")
         ;
 
         @Override
@@ -66,7 +65,6 @@ public class ActualSupplyResourceContract extends View {
             + " , customer_types.label customer_type_label"
             + " , NVL (org_customer.label, prc_customer.label) customer_label"
             + " , UPPER(NVL (org_customer.label, prc_customer.label)) customer_label_uc"
-            + " , '№' || o.contractnumber || ' от ' || TO_CHAR (o.signingdate, 'DD.MM.YYYY') label"
             + " FROM " + getName (SupplyResourceContract.class) + " o"
             + " INNER JOIN " + getName (VocOrganization.class) + " org ON o.uuid_org = org.uuid"
             + " LEFT  JOIN " + getName (VocOrganization.class) + " org_customer ON o.uuid_org_customer = org_customer.uuid"
