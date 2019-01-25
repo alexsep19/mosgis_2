@@ -1,0 +1,80 @@
+<span
+	data-popup-width=580
+	data-popup-height=350
+	data-popup-title='Мощности объекта'
+>
+
+	<style>
+
+        label[data-block-name=infrastructure_resources_new] {
+        	width: 170px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=infrastructure_resources_new] {
+        	width: 320px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:300px ">
+
+        <div class="w2ui-page page-0" style="height:300px;">
+
+
+            <div class="w2ui-field">
+                <label>Ресурс</label>
+                <div>
+                	<input name=code_vc_nsi_2>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Установленная мощность</label>
+                <div>
+                	<input name=setpower maxlength=10>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Располагаемая мощность</label>
+                <div>
+                    <input name=sitingpower maxlength=10>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Присоединенная нагрузка</label>
+                <div>
+                    <input name=totalload maxlength=10>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>в т.ч. промышленность</label>
+                <div>
+                    <input name=industrialload maxlength=10>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>в т.ч. социальная сфера</label>
+                <div>
+                    <input name=socialload maxlength=10>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>в т.ч. население</label>
+                <div>
+                    <input name=populationload maxlength=10>
+                </div>
+            </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>
