@@ -28,7 +28,7 @@ define ([], function () {
 
             show: {
                 toolbar: true,
-                toolbarAdd: true,
+                toolbarAdd: data.item._can.edit,
                 toolbarInput: false,
                 footer: true,
             },
