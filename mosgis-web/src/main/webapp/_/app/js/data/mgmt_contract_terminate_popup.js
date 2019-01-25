@@ -90,7 +90,28 @@ define ([], function () {
 
     return function (done) {
     
-        done (clone ($('body').data ('data')))
+        var data = clone ($('body').data ('data'))
+        
+        data.record = {}
+        
+        query ({type: 'mgmt_contracts', part: 'log'}, {limit:1, offset:0}, function (d) {
+        
+            var log = d.log
+            
+            if (log && log.length) {
+                
+                var r = log [0]
+                
+                if (r.action == "terminate") {                
+                    data.record.code_vc_nsi_54 = r.code_vc_nsi_54
+                    data.record.terminate = dt_dmy (r.terminate)                
+                }                
+                           
+            }
+            
+            done (data)
+        
+        })     
         
     }
     

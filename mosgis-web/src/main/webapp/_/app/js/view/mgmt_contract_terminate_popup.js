@@ -20,6 +20,8 @@ define ([], function () {
                     $('#w2ui-popup .w2ui-form').w2form ({
 
                         name: name,
+                        
+                        record: data.record,
 
                         fields : [
                             {name: 'code_vc_nsi_54',  type: 'list', options: {items: data.vc_nsi_54.items}},
