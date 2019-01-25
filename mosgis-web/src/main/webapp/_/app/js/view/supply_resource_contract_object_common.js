@@ -68,11 +68,11 @@ define ([], function () {
                                 caption: 'Показатели качества коммунальных ресурсов',
                                 off: data.item['sr_ctr.specqtyinds'] != 20
                             },
-//                            {
-//                                id: 'supply_resource_contract_object_other_quality_levels',
-//                                caption: 'Иные показатели качества коммунальных ресурсов',
-//                                off: data.item['sr_ctr.specqtyinds'] != 20
-//                            },
+                            {
+                                id: 'supply_resource_contract_object_other_quality_levels',
+                                caption: 'Иные показатели качества коммунальных ресурсов',
+                                off: data.item['sr_ctr.specqtyinds'] != 20
+                            },
                             {id: 'supply_resource_contract_object_temperature_charts', caption: 'Температурный график'
                                 , off: data.item['sr_ctr.specqtyinds'] != 20 || !data.is_on_tab_temperature
                             },
