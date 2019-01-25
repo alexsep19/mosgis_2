@@ -1,5 +1,25 @@
 define ([], function () {
 
+    function recalcToolbar (e) {e.done (function () {
+
+        var g = w2ui ['infrastructure_resources_grid']
+
+        var t = g.toolbar
+
+        t.disable ('deleteButton')
+        t.disable ('editButton')
+
+        if (g.getSelection ().length != 1) return
+
+        var status = g.get (g.getSelection () [0]).sign
+
+        if (!status) {
+            t.enable ('deleteButton')
+            t.enable ('editButton')
+        }
+
+    })}
+
     return function (data, view) {
 
         $(w2ui ['topmost_layout'].el ('main')).w2regrid ({ 
@@ -8,13 +28,15 @@ define ([], function () {
 
             show: {
                 toolbar: true,
+                toolbarAdd: true,
                 toolbarInput: false,
                 footer: true,
             },
 
             toolbar: {
                 items: [
-                    {type: 'button', id: 'createButton', caption: 'Добавить', onClick: $_DO.create_infrastructure_resource, icon: 'w2ui-icon-plus', off: !data.item._can.edit}
+                    {type: 'button', id: 'editButton', caption: 'Изменить', onClick: $_DO.edit_infrastructure_resource, icon: 'w2ui-icon-pencil', off: !data.item._can.edit, disabled: true},
+                    {type: 'button', id: 'deleteButton', caption: 'Удалить', onClick: $_DO.delete_infrastructure_resource, icon: 'w2ui-icon-cross', off: !data.item._can.edit, disabled: true}
                 ].filter (not_off)
             },
 
@@ -34,7 +56,12 @@ define ([], function () {
                 {field: 'socialload', caption: 'Социальная сфера', size: 30},
                 {field: 'populationload', caption: 'Население', size: 30}
             ],
-            url: '/mosgis/_rest/?type=infrastructure_resources'
+            url: '/mosgis/_rest/?type=infrastructure_resources',
+
+            onSelect: recalcToolbar,
+            onUnselect: recalcToolbar,
+
+            onAdd: $_DO.create_infrastructure_resource
 
         }).refresh ();
 
