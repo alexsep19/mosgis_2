@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.rest.resources;
 
+import javax.annotation.security.RolesAllowed;
 import ru.eludia.products.mosgis.rest.misc.EJBResource;
 import javax.json.JsonObject;
 import javax.ws.rs.Consumes;
@@ -91,6 +92,14 @@ public class VocOrganizations extends EJBResource <VocOrganizationsLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
         return back.getLog (id, p, getUser ());
+    }
+    
+    @POST
+    @Path("{id}/import_mgmt_contracts") 
+    @Produces (APPLICATION_JSON)
+    @RolesAllowed ("admin")
+    public JsonObject do import_mgmt_contracts (@PathParam ("id") String id) { 
+        return back.doRefresh (id, getUser ());
     }
     
 }
