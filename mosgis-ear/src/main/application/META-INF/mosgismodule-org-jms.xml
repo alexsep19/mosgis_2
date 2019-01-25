@@ -39,9 +39,9 @@
   
   
   <!-- очередь обработки запросов на импорт ДУ по организации-исполнителю -->
-  <uniform-distributed-queue name="inOrgImportMgmtContractsQueue">
+  <uniform-distributed-queue name="inExportOrgMgmtContractsQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-    <jndi-name>mosgis.inOrgImportMgmtContractsQueue</jndi-name>
+    <jndi-name>mosgis.inExportOrgMgmtContractsQueue</jndi-name>
   </uniform-distributed-queue>
   
   <!-- очередь опроса статуса исходящих запросов на импорт ДУ по организации-исполнителю -->

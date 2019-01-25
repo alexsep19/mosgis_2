@@ -22,13 +22,13 @@ import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 
 @MessageDriven(activationConfig = {
-    @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inOrgImportMgmtContractsQueue")
+    @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inExportOrgMgmtContractsQueue")
     , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
     , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class GisOrgImportMgmtContractsMDB extends UUIDMDB<VocOrganizationLog> {
+public class ExportOrgMgmtContractsMDB extends UUIDMDB<VocOrganizationLog> {
     
-    private static final Logger logger = Logger.getLogger (GisOrgImportMgmtContractsMDB.class.getName ());
+    private static final Logger logger = Logger.getLogger (ExportOrgMgmtContractsMDB.class.getName ());
 
     @EJB
     protected UUIDPublisher UUIDPublisher;
@@ -42,9 +42,8 @@ public class GisOrgImportMgmtContractsMDB extends UUIDMDB<VocOrganizationLog> {
     @Override
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ()
-            .get (VocOrganizationLog.class, uuid, "*")
-            .toOne (VocOrganization.class, VocOrganization.c.ORGPPAGUID.lc () + " AS ppa").on ()
-        ;
+            .get (VocOrganizationLog.class, uuid, "AS log", "*")
+            .toOne (VocOrganization.class, "AS org", VocOrganization.c.ORGPPAGUID.lc () + " AS ppa").on ("log.uuid_object=org.uuid");
     }    
     
     @Override
@@ -54,7 +53,7 @@ public class GisOrgImportMgmtContractsMDB extends UUIDMDB<VocOrganizationLog> {
 
             db.update (OutSoap.class, DB.HASH (
                 "uuid",     uuid,
-                "uuid_ack", wsGisHouseManagementClient.exportContractData ((UUID) r.get ("ppa"), uuid, Collections.EMPTY_LIST)
+                "uuid_ack", wsGisHouseManagementClient.exportContractData ((UUID) r.get ("ppa"), uuid, Collections.EMPTY_LIST).getMessageGUID ()
             ));
             
             db.update (getTable (), DB.HASH (

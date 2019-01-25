@@ -23,7 +23,7 @@ import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class GisPollOrgImportMgmtContracts extends GisPollMDB {
+public class GisPollExportOrgMgmtContracts extends GisPollMDB {
 
     @EJB
     WsGisHouseManagementClient wsGisHouseManagementClient;
@@ -32,8 +32,8 @@ public class GisPollOrgImportMgmtContracts extends GisPollMDB {
     protected Get get (UUID uuid) {
 
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")
-            .toOne (VocOrganizationLog.class,     "AS log", "uuid", "action").on ("log.uuid_out_soap=root.uuid")
-            .toOne (VocOrganization.class, VocOrganization.c.ORGPPAGUID.lc () + " AS ppa").on ()
+            .toOne (VocOrganizationLog.class, "AS log", "uuid", "action").on ("log.uuid_out_soap=root.uuid")
+            .toOne (VocOrganization.class, "AS org", VocOrganization.c.ORGPPAGUID.lc () + " AS ppa").on ("log.uuid_object=org.uuid")
         ;
         
     }
