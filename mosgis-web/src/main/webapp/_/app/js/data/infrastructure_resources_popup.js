@@ -1,8 +1,8 @@
 define ([], function () {
 
-    $_DO.update_infrastructure_resources_new = function (e) {
+    $_DO.update_infrastructure_resources_popup = function (e) {
 
-        var form = w2ui ['infrastructure_resources_new_form']
+        var form = w2ui ['infrastructure_resources_popup_form']
 
         var data = clone ($('body').data ('data'))
         var v = form.values ()
