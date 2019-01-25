@@ -24,7 +24,7 @@ define ([], function () {
             },     
 
             columnGroups : [
-                {span: 2, caption: 'Обновление'},
+                {span: 3, caption: 'Действие'},
                 {span: 8 + 24, caption: 'Значения полей'},
                 {span: 2, caption: 'Запрос в ГИС ЖКХ'},
             ], 
@@ -32,6 +32,7 @@ define ([], function () {
             columns: [                
                 {field: 'ts', caption: 'Дата/время',    size: 30, render: _ts},
                 {field: 'vc_users.label', caption: 'Оператор',    size: 30},
+                {field: 'action', caption: 'Действие',    size: 30, voc: data.vc_actions},
 
                 {field: 'fullname', caption: 'Полное наименование', size: 100},
                 {field: 'address', caption: 'Адрес', size: 10},

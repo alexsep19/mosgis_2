@@ -98,8 +98,8 @@ public class VocOrganizations extends EJBResource <VocOrganizationsLocal> {
     @Path("{id}/import_mgmt_contracts") 
     @Produces (APPLICATION_JSON)
     @RolesAllowed ("admin")
-    public JsonObject do import_mgmt_contracts (@PathParam ("id") String id) { 
-        return back.doRefresh (id, getUser ());
+    public JsonObject doImportMgmtContracts (@PathParam ("id") String id) { 
+        return back.doImportMgmtContracts (id, getUser ());
     }
     
 }
