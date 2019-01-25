@@ -1,4 +1,3 @@
-
 package ru.eludia.products.mosgis.rest.impl;
 
 import java.util.logging.Logger;
@@ -13,11 +12,13 @@ import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractOtherQualityLevel;
-import ru.eludia.products.mosgis.db.model.voc.VocGisContractQualityLevelType;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractQualityLevel;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
+import ru.eludia.products.mosgis.db.model.tables.VocNsi276;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
-import ru.eludia.products.mosgis.rest.api.SupplyResourceContractOtherQualityLevelLocal;
+import ru.eludia.products.mosgis.rest.api.SupplyResourceContractObjectQualityLevelLocal;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 import ru.eludia.products.mosgis.web.base.ComplexSearch;
 import ru.eludia.products.mosgis.web.base.Search;
@@ -25,9 +26,9 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-public class SupplyResourceContractOtherQualityLevelImpl extends BaseCRUD<SupplyResourceContractOtherQualityLevel> implements SupplyResourceContractOtherQualityLevelLocal {
+public class SupplyResourceContractObjectQualityLevelImpl extends BaseCRUD<SupplyResourceContractQualityLevel> implements SupplyResourceContractObjectQualityLevelLocal {
 
-    private static final Logger logger = Logger.getLogger (SupplyResourceContractOtherQualityLevelImpl.class.getName ());
+    private static final Logger logger = Logger.getLogger (SupplyResourceContractObjectQualityLevelImpl.class.getName ());
 
     private void filterOffDeleted (Select select) {
         select.and (EnTable.c.IS_DELETED, Operator.EQ, 0);
@@ -67,11 +68,13 @@ public class SupplyResourceContractOtherQualityLevelImpl extends BaseCRUD<Supply
 
 	JsonObject data = p.getJsonObject("data");
 
-        Select select = m.select (SupplyResourceContractOtherQualityLevel.class, "*", "uuid AS id")
+	String uuid_sr_ctr_obj = data.getString("uuid_sr_ctr_obj");
+
+        Select select = m.select (SupplyResourceContractQualityLevel.class, "*", "uuid AS id")
+	    .toOne(VocNsi276.class, "*").on("tb_sr_ctr_qls.code_vc_nsi_276 = vc_nsi_276.code")
             .toMaybeOne(VocOkei.class, "AS okei", "*").on()
-	    .where(SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR_OBJ.lc() + " IS NULL")
-	    .and (SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR_SUBJ, data.getString("uuid_sr_ctr_subj"))
-            .limit (p.getInt ("offset"), p.getInt ("limit"));
+	    .where(SupplyResourceContractQualityLevel.c.UUID_SR_CTR_OBJ, uuid_sr_ctr_obj)
+	    .limit (p.getInt ("offset"), p.getInt ("limit"));
 
         applySearch (Search.from (p), select);
 
@@ -84,7 +87,7 @@ public class SupplyResourceContractOtherQualityLevelImpl extends BaseCRUD<Supply
         final MosGisModel m = ModelHolder.getModel ();
 
         final JsonObject item = db.getJsonObject (m
-            .get (SupplyResourceContractOtherQualityLevel.class, id, "*")
+            .get (SupplyResourceContractQualityLevel.class, id, "*")
             .toMaybeOne(VocOkei.class, "AS okei", "*").on()
         );
 
@@ -94,7 +97,7 @@ public class SupplyResourceContractOtherQualityLevelImpl extends BaseCRUD<Supply
     @Override
     public JsonObject getVocs (JsonObject p) {return fetchData((db, job) -> {
 
-        VocGisContractQualityLevelType.addTo(job);
+        VocNsi276.addTo(db, job);
 
         final Model m = db.getModel();
 

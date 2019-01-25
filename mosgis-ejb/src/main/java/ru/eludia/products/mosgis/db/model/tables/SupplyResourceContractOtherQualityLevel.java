@@ -21,6 +21,7 @@ public class SupplyResourceContractOtherQualityLevel extends EnTable {
         UUID_SR_CTR           (SupplyResourceContract.class, null, "Договор ресурсоснабжения (заполняется всегда)"),
 
         UUID_SR_CTR_SUBJ      (SupplyResourceContractSubject.class, null, "Предмет договора (заполняется если показатель привязан к предмету договора)"),
+	UUID_SR_CTR_OBJ       (SupplyResourceContractObject.class, null, "Объект жилищного фонда (заполняется если показатель привязан к ОЖФ)"),
 
         LABEL                 (STRING, null, "Наименование иного показателя качества"),
         ID_TYPE               (VocGisContractQualityLevelType.class, "Тип иного показателя качества"),
@@ -74,6 +75,14 @@ public class SupplyResourceContractOtherQualityLevel extends EnTable {
                     + "     SELECT uuid_sr_ctr INTO :NEW.uuid_sr_ctr FROM tb_sr_ctr_subj WHERE uuid=:NEW.uuid_sr_ctr_subj; "
                     + "  END IF;"
 
+		    + "  IF :NEW.uuid_sr_ctr_obj IS NOT NULL THEN "
+		    + "     SELECT uuid_sr_ctr INTO :NEW.uuid_sr_ctr FROM tb_sr_ctr_obj WHERE uuid=:NEW.uuid_sr_ctr_obj; "
+		    + "  END IF;"
+
+		    + "  IF :NEW.uuid_sr_ctr_obj IS NULL AND :NEW.uuid_sr_ctr_subj IS NULL THEN "
+		    + "     raise_application_error (-20000, 'Показатель качества должен быть привязан к предмету договора или к ОЖФ. Операция отменена.'); "
+		    + "  END IF;"
+
                     + "  IF :NEW.id_type = 1 AND :NEW.indicatorvalue_from IS NULL AND :NEW.indicatorvalue_to IS NULL THEN "
                     + "     raise_application_error (-20000, 'Укажите диапазон иного показателя качества. Операция отменена.'); "
                     + "  END IF;"
@@ -90,28 +99,25 @@ public class SupplyResourceContractOtherQualityLevel extends EnTable {
                         + "SELECT "
                         + " o.uuid "
                         + " , o.label "
+			+ " , o.uuid_sr_ctr_subj "
                         + " , sr_ctr.contractnumber || ' от ' || TO_CHAR (sr_ctr.signingdate, 'DD.MM.YYYY') sr_ctr_label "
-                        + " , nsi_3.f_d966dd6cbc   nsi_3_label "
-                        + " , nsi_239.f_adebb17ebe nsi_239_label "
                         + "FROM "
                         + " tb_sr_ctr_other_qls o "
                         + " LEFT JOIN tb_sr_ctr_subj subj    ON subj.uuid = o.uuid_sr_ctr_subj "
                         + " LEFT JOIN tb_sr_ctr      sr_ctr  ON sr_ctr.uuid = o.uuid_sr_ctr "
-                        + " INNER JOIN vc_nsi_3      nsi_3   ON subj.code_vc_nsi_3   = nsi_3.code "
-                        + " INNER JOIN vc_nsi_239    nsi_239 ON subj.code_vc_nsi_239 = nsi_239.code "
                         + "WHERE o.is_deleted = 0 "
                         + " AND o.uuid_sr_ctr = :NEW.uuid_sr_ctr "
                         + " AND o.label = :NEW.label "
                         + " AND subj.is_deleted = 0 "
-                        + " AND subj.code_vc_nsi_3  IN (SELECT code_vc_nsi_3 FROM tb_sr_ctr_subj WHERE uuid = :NEW.uuid_sr_ctr_subj) "
-                        + " AND subj.code_vc_nsi_239 IN (SELECT code_vc_nsi_239 FROM tb_sr_ctr_subj WHERE uuid = :NEW.uuid_sr_ctr_subj) "
                         + " AND o.uuid <> :NEW.uuid "
+			+ " AND NVL(o.uuid_sr_ctr_subj, '00') = NVL(:NEW.uuid_sr_ctr_subj, '00')"
+			+ " AND NVL(o.uuid_sr_ctr_obj, '00')  = NVL(:NEW.uuid_sr_ctr_obj, '00')"
                     + ") LOOP"
                         + " raise_application_error (-20000, "
                         + "'Иной показатель качества ' || i.label "
-                        + "|| ' (коммунальная услуга ' || i.nsi_3_label "
-                        + "|| ', коммунальный ресурс ' || i.nsi_239_label || ') '"
-                        + "|| ' уже есть в договоре ' || i.sr_ctr_label "
+                        + "|| ' уже есть ' "
+			+ "|| CASE WHEN i.uuid_sr_ctr_subj IS NOT NULL THEN 'в предмете' ELSE 'в объекте жилищного фонда' END "
+			+ "|| ' договора ' || i.sr_ctr_label"
                         + "|| '. Операция отменена.'); "
                     + " END LOOP; "
 

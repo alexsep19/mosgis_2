@@ -21,9 +21,9 @@ define ([], function () {
                 toolbar: true,
                 toolbarColumns: false,
                 toolbarInput: false,
-		toolbarReload: false,
+                toolbarReload: false,
                 toolbarAdd: is_editable,
-		toolbarDelete: is_editable
+                toolbarDelete: is_editable
             },
 
             searches: [
@@ -47,20 +47,20 @@ define ([], function () {
 
             onDblClick: function (e) {
 
-		var grid = w2ui [e.target]
+                var grid = w2ui [e.target]
 
-		var r = grid.get(e.recid)
+                var r = grid.get(e.recid)
 
-		r.uuid_sr_ctr_obj = $_REQUEST.id
+                r.uuid_sr_ctr_obj = $_REQUEST.id
 
-		$_SESSION.set('record', r)
+                $_SESSION.set('record', r)
 
-		use.block('supply_resource_contract_object_subjects_popup')
-	    },
+                use.block('supply_resource_contract_object_subjects_popup')
+            },
 
             onAdd: $_DO.create_supply_resource_contract_object_subjects,
 
-	    onDelete: $_DO.delete_supply_resource_contract_object_subjects
+            onDelete: $_DO.delete_supply_resource_contract_object_subjects
         })
 
     }

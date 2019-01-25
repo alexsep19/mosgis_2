@@ -115,6 +115,13 @@ public class SupplyResourceContractObjectImpl extends BaseCRUD<SupplyResourceCon
 
 	    job.add("is_on_tab_temperature", is_on_tab_temperature != null);
 	}
+
+	db.addJsonArrays(job,
+	    m.select(VocOkei.class, "code AS id", "national AS label").orderBy("national"),
+	     m.select(SupplyResourceContractSubject.class, "AS subjects", "code_vc_nsi_239")
+		.where(SupplyResourceContractSubject.c.UUID_SR_CTR_OBJ, id)
+		.and("is_deleted", 0)
+	);
     });}
 
     @Override
