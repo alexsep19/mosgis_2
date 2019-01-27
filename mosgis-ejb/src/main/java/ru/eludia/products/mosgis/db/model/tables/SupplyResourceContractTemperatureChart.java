@@ -13,6 +13,7 @@ public class SupplyResourceContractTemperatureChart extends EnTable {
     public enum c implements EnColEnum {
 
         UUID_SR_CTR                      (SupplyResourceContract.class, "Договор"),
+	UUID_SR_CTR_OBJ                  (SupplyResourceContractObject.class, null, "Объект жилищного фонда договора (заполняется в случае если график привязан ОЖФ)"),
 
 	OUTSIDETEMPERATURE               (INTEGER, "Температура наружного воздуха, °С"),
 	FLOWLINETEMPERATURE              (NUMERIC, 12, 1, "Температура теплоносителя в подающем трубопроводе, °С"),
@@ -55,15 +56,18 @@ public class SupplyResourceContractTemperatureChart extends EnTable {
 		+ " FOR i IN ("
 		    + "SELECT "
 		    + " o.outsidetemperature t "
+		    + " , o.uuid_sr_ctr_obj "
 		    + "FROM "
 		    + " tb_sr_ctr_t_charts o "
 		    + "WHERE o.is_deleted = 0 "
 		    + " AND o.uuid_sr_ctr     = :NEW.uuid_sr_ctr "
+		    + " AND NVL(o.uuid_sr_ctr_obj, '00') = NVL(:NEW.uuid_sr_ctr_obj, '00') "
 		    + " AND o.outsidetemperature = :NEW.outsidetemperature "
 		    + " AND o.uuid           <> :NEW.uuid "
 		+ ") LOOP "
 		+ " raise_application_error (-20000, "
-		+ "'Температура наружного воздуха ' || i.t || ' уже указана в договоре'"
+		+ "'Температура наружного воздуха ' || i.t || ' уже указана ' "
+		+ "|| CASE WHEN i.uuid_sr_ctr_obj IS NULL THEN 'в договоре' ELSE 'в объекте жилищного фонда' END "
 		+ "|| '. Операция отменена.'); "
 		+ " END LOOP; "
 	    + " END IF; "

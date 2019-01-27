@@ -1,35 +1,64 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.util.Map;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.jms.Queue;
 import javax.json.JsonObject;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.phys.PhysicalCol;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.OrganizationWork;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.ReportingPeriod;
+import ru.eludia.products.mosgis.db.model.tables.ReportingPeriodLog;
 import ru.eludia.products.mosgis.db.model.tables.WorkingList;
 import ru.eludia.products.mosgis.db.model.tables.WorkingListItem;
 import ru.eludia.products.mosgis.db.model.tables.WorkingPlan;
 import ru.eludia.products.mosgis.db.model.tables.WorkingPlanItem;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.ReportingPeriodLocal;
-import ru.eludia.products.mosgis.rest.impl.base.Base;
+import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-public class ReportingPeriodImpl extends Base<ReportingPeriod> implements ReportingPeriodLocal {
+public class ReportingPeriodImpl extends BaseCRUD<ReportingPeriod> implements ReportingPeriodLocal {
+
+    @Resource (mappedName = "mosgis.inReportingPeriodsQueue")
+    Queue queue;
+
+    @Override
+    public Queue getQueue () {
+        return queue;
+    }
+
+    @Override
+    protected void publishMessage (VocAction.i action, String id_log) {
+        
+        switch (action) {
+            case APPROVE:
+                super.publishMessage (action, id_log);
+            default:
+                return;
+        }
+        
+    }
 
     @Override
     public JsonObject getItem (String id) {return fetchData ((db, job) -> {
@@ -37,7 +66,7 @@ public class ReportingPeriodImpl extends Base<ReportingPeriod> implements Report
         final String fhg = WorkingList.c.FIASHOUSEGUID.lc ();
         
         final JsonObject item = db.getJsonObject (ModelHolder.getModel ()
-                .get (ReportingPeriod.class, id, "*")
+                .get (ReportingPeriod.class, id, "*")                
                 .toOne (WorkingPlan.class, "AS plan", "*").on ()
                 .toOne (WorkingList.class
                         , fhg + " AS " + fhg
@@ -50,18 +79,23 @@ public class ReportingPeriodImpl extends Base<ReportingPeriod> implements Report
                 .toMaybeOne (Contract.class, "AS ca", "*").on ()
                 .toMaybeOne (CharterObject.class, "AS cho", "uuid", "startdate", "enddate").on ()
                 .toMaybeOne (Charter.class, "AS ch", "*").on ()
-                .toMaybeOne (VocOrganization.class, "AS chorg", "label").on ("ch.uuid_org=chorg.uuid")                
+                .toMaybeOne (VocOrganization.class, "AS chorg", "label").on ("ch.uuid_org=chorg.uuid")                                
+                
+                .toMaybeOne (ReportingPeriodLog.class, "AS rpl").on ()
+                .toMaybeOne (OutSoap.class, "err_text").on ("rpl.uuid_out_soap=out_soap.uuid")
                 
         );
 
         job.add ("item", item);
         
+        VocGisStatus.addLiteTo (job);
+        VocAction.addTo (job);
+        
         VocBuilding.addCaCh (db, job, item.getString (fhg));
         
         db.addJsonArrays (job, 
 
-            NsiTable.getNsiTable (3).getVocSelect (),
-            
+            NsiTable.getNsiTable (3).getVocSelect (),            
             NsiTable.getNsiTable (57).getVocSelect (),
             NsiTable.getNsiTable (56).getVocSelect (),
             
@@ -134,5 +168,33 @@ public class ReportingPeriodImpl extends Base<ReportingPeriod> implements Report
         db.d0 (qp);
         
     });}
+    
+    @Override
+    public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
+
+        db.update (getTable (), HASH (EnTable.c.UUID,               id,
+            ReportingPeriod.c.ID_CTR_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+        ));
+
+        logAction (db, user, id, VocAction.i.APPROVE);
+
+    });}
+    
+    @Override
+    public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
+                
+        final Map<String, Object> r = HASH (
+            EnTable.c.UUID,               id,
+            ReportingPeriod.c.ID_CTR_STATUS,  VocGisStatus.i.PROJECT.getId ()
+        );
+                
+        db.update (getTable (), r);
+        
+        logAction (db, user, id, VocAction.i.ALTER);
+        
+    });}    
+
+    @Override
+    public JsonObject select (JsonObject p, User user) {return EMPTY_JSON_OBJECT;}
     
 }

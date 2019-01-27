@@ -9,6 +9,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.jws.HandlerChain;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
+import ru.eludia.products.mosgis.db.model.tables.ReportingPeriodLog;
 import ru.eludia.products.mosgis.db.model.tables.WorkingListLog;
 import ru.eludia.products.mosgis.db.model.tables.WorkingPlanLog;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
@@ -65,4 +66,8 @@ public class WsGisServicesClient {
         return getPort (orgPPAGuid, messageGUID).exportWorkingPlan (WorkingPlanLog.toExportWorkingPlanRequest (r)).getAck ();
     }
 
+    public AckRequest.Ack importCompletedWorks (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importCompletedWorks (ReportingPeriodLog.toCompletedWorksRequest (r)).getAck ();
+    }    
+    
 }

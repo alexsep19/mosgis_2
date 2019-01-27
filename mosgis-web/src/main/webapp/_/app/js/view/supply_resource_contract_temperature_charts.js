@@ -21,9 +21,9 @@ define ([], function () {
                 toolbar: true,
                 toolbarColumns: false,
                 toolbarInput: false,
-		toolbarReload: false,
+                toolbarReload: false,
                 toolbarAdd: is_editable,
-		toolbarDelete: is_editable
+                toolbarDelete: is_editable
             },
 
             searches: [
@@ -43,31 +43,22 @@ define ([], function () {
 
             url: '/mosgis/_rest/?type=supply_resource_contract_temperature_charts',
 
-            onDblClick: function (e) {
+            onDblClick: !is_editable ? null : function (e) {
 
-		var grid = w2ui [e.target]
+                var grid = w2ui [e.target]
 
-		var r = grid.get(e.recid)
+                var r = grid.get(e.recid)
 
-		r.uuid_sr_ctr_obj = $_REQUEST.id
+                r.uuid_sr_ctr = $_REQUEST.id
 
-		$_SESSION.set('record', r)
+                $_SESSION.set('record', r)
 
-		use.block ('supply_resource_contract_temperature_charts_popup')
-	    },
+                use.block ('supply_resource_contract_temperature_charts_popup')
+            },
 
             onAdd: $_DO.create_supply_resource_contract_temperature_charts,
 
-	    onDelete: $_DO.delete_supply_resource_contract_temperature_charts,
-
-	    onRefresh: function(e) {
-		e.done(function(){
-		    if (!is_editable) {
-			$('#tabs_topmost_layout_main_tabs_tab_supply_resource_contract_temperature_charts')
-			    .attr('title', 'Доступна при наличии в договоре ресурса "Тепловая энергия"')
-		    }
-		})
-	    }
+            onDelete: $_DO.delete_supply_resource_contract_temperature_charts
         })
 
     }

@@ -1,13 +1,17 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.math.BigInteger;
 import java.sql.SQLException;
 import java.util.Map;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
+import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.gosuslugi.dom.schema.integration.services.CompletedWorksByPeriodType;
+import ru.gosuslugi.dom.schema.integration.services.MonthlyWorkType;
 
 public class WorkingPlanItem extends EnTable {
 
@@ -17,15 +21,15 @@ public class WorkingPlanItem extends EnTable {
         UUID_WORKING_LIST_ITEM (WorkingListItem.class,       "Ссылка на строку перечня"),
         UUID_REPORTING_PERIOD  (ReportingPeriod.class,       "Ссылка период отчётности"),
         MONTH                  (Type.NUMERIC, 2,             "Месяц"),
-        WORKCOUNT              (Type.NUMERIC, 2,             "Количество работ"),
+        WORKCOUNT              (Type.NUMERIC, 2,             "Количество работ по плану"),
         DAYS_BITMASK           (Type.BINARY,  5,       null, "Битовая маска чисел месяца (например, 0x4001 — 31-е и 1-е числа)"),        
         WORKPLANITEMGUID       (Type.UUID,  null,            "Идентификатор работы/услуги перечня"),
 
         PRICE                  (Type.NUMERIC, 14, 4, null,   "Фактическая цена"),
         AMOUNT                 (Type.NUMERIC, 14, 3, null,   "Фактический объём"),
-        COUNT                  (Type.NUMERIC,  4, 0, null,   "Количество работ по плану"),
-//        PLANNEDCOUNT           (Type.NUMERIC,  4, 0, null,   "Количество работ по плану"),
-        
+        COUNT                  (Type.NUMERIC,  4, 0, null,   "Фактическое количество работ"),
+        PLANNEDCOUNT           (Type.NUMERIC,  2, 0, new Virt ("0+\"WORKCOUNT\""), "Количество работ по плану (для SOAP)"),
+                
         TOTALCOST              (Type.NUMERIC, 22, 2, null,   "Фактическая стоимость выполненных работ"),
         
         ;
@@ -85,5 +89,17 @@ public class WorkingPlanItem extends EnTable {
         ));
         
     }
+    
+    static CompletedWorksByPeriodType.PlannedWork toPlannedWork (Map<String, Object> r) {
+        final CompletedWorksByPeriodType.PlannedWork result = DB.to.javaBean (CompletedWorksByPeriodType.PlannedWork.class, r);
+        result.setMonthlyWork (toMonthlyWork (r));
+        result.setTotalCost (null);
+        return result;
+    }
 
+    private static MonthlyWorkType toMonthlyWork (Map<String, Object> r) {
+        final MonthlyWorkType result = DB.to.javaBean (MonthlyWorkType.class, r);
+        return result;
+    }
+    
 }

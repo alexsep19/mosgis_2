@@ -65,17 +65,15 @@ public class SupplyResourceContractOtherQualityLevelImpl extends BaseCRUD<Supply
 
         final Model m = ModelHolder.getModel ();
 
+	JsonObject data = p.getJsonObject("data");
+
         Select select = m.select (SupplyResourceContractOtherQualityLevel.class, "*", "uuid AS id")
             .toMaybeOne(VocOkei.class, "AS okei", "*").on()
+	    .where(SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR_OBJ.lc() + " IS NULL")
+	    .and (SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR_SUBJ, data.getString("uuid_sr_ctr_subj"))
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
         applySearch (Search.from (p), select);
-
-        JsonObject data = p.getJsonObject ("data");
-
-        String k = SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR_SUBJ.lc ();
-        String v = data.getString (k, null);
-        if (DB.ok (v)) select.and (k, v);
 
         db.addJsonArrayCnt (job, select);
     });}

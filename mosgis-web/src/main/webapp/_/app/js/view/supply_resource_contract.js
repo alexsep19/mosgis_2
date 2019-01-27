@@ -43,7 +43,9 @@ define ([], function () {
                             {id: 'supply_resource_contract_docs',       caption: 'Документы'},
                             {id: 'supply_resource_contract_subjects',   caption: 'Предмет договора'},
 			    {id: 'supply_resource_contract_objects',    caption: 'Объекты жилищного фонда'},
-			    {id: 'supply_resource_contract_temperature_charts', caption: 'Температурный график'},
+			    {id: 'supply_resource_contract_temperature_charts', caption: 'Температурный график'
+				, off: !data.is_on_tab_temperature
+			    },
 			    {id: 'supply_resource_contract_common_log', caption: 'История изменений'},
                         ].filter (not_off),
 

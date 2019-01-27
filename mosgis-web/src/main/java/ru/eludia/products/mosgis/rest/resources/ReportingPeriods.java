@@ -2,6 +2,7 @@ package ru.eludia.products.mosgis.rest.resources;
 
 import ru.eludia.products.mosgis.rest.misc.EJBResource;
 import javax.json.JsonObject;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -58,6 +59,30 @@ public class ReportingPeriods extends EJBResource <ReportingPeriodLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject doFill (@PathParam ("id") String id) { 
         return back.doFill (id, getUser ());
+    }
+    
+    @POST
+    @Path("{id}/approve") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject doApprove (@PathParam ("id") String id) { 
+        return back.doApprove (id, getUser ());
+    }
+    
+    @POST
+    @Path("{id}/alter") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject doAlter (@PathParam ("id") String id) { 
+        return back.doAlter (id, getUser ());
+    }
+    
+    @POST
+    @Path("{id}/log") 
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
+//        final JsonObject item = back.getItem (id);
+//        if (!securityContext.isUserInRole ("admin")) checkOrg (item);
+        return back.getLog (id, p, getUser ());
     }
 
 }

@@ -65,7 +65,7 @@ public class SupplyResourceContractTemperatureChartImpl extends BaseCRUD<SupplyR
 
         Select select = m.select (SupplyResourceContractTemperatureChart.class, "*", "uuid AS id")
 	    .where(EnTable.c.IS_DELETED.lc(), 0)
-//	    .where(SupplyResourceContractTemperatureChart.c.UUID_SR_CTR_OBJ.lc() + " IS NULL")
+	    .where(SupplyResourceContractTemperatureChart.c.UUID_SR_CTR_OBJ.lc() + " IS NULL")
             .orderBy (SupplyResourceContractTemperatureChart.c.OUTSIDETEMPERATURE.lc ())
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 

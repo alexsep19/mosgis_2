@@ -27,7 +27,7 @@ define ([], function () {
 
             columnGroups : [            
                 {span: 3, caption: ' '},
-                {span: 6, caption: 'Фактические показатели'},
+                {span: 5, caption: 'Фактические показатели'},
                 {span: 5, caption: 'Плановые показатели'},                
             ],
             
@@ -42,7 +42,7 @@ define ([], function () {
                 {field: 'count', caption: 'Количество', size: 10, editable: !is_own ? null : {type: 'int', min: 1}},
                 {field: 'ok.national', caption: 'ед.', size: 5},
                 {field: 'totalcost', caption: 'Стоимость', size: 20},
-                {field: '_', caption: 'Фото', size: 20},
+//                {field: '_', caption: 'Фото', size: 20},
                 
                 {field: 'li.price', caption: 'Цена', size: 10, render: 'float:2'},
                 {field: 'li.amount', caption: 'Объём', size: 10},

@@ -26,6 +26,7 @@ define ([], function () {
                 vc_nsi_57: 1,
                 vc_nsi_3: 1,
                 org_works: 1,
+                vc_gis_status: 1,
             })
             
             var it = data.item
@@ -43,11 +44,19 @@ define ([], function () {
                     && it ['tb_work_lists.id_ctr_status'] == 40
                 ) {
 
-//                    switch (it.id_ctr_status) {
-//                        case 10:
-//                        case 11:
-                            it._can.edit = 1
-//                    }
+                    switch (it.id_ctr_status) {
+                        case 10:
+                        case 11:
+                            it._can.edit = 1                            
+                            it._can.approve = 1                            
+                    }
+                    
+                    switch (it.id_ctr_status) {
+                        case 14:
+                        case 34:
+                        case 40:
+                            it._can.alter = 1
+                    }
 
                 }        
 

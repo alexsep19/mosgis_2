@@ -30,13 +30,13 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 100},
+                {type: 'top', size: 125},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs: [
                             {id: 'reporting_period_planned_works', caption: 'Информация об услугах и работах'},
                             {id: 'reporting_period_unplanned_works', caption: 'Внеплановые работы'},
-//                            {id: 'reporting_period_common_log', caption: 'История синхронизации'},
+                            {id: 'reporting_period_common_log', caption: 'История синхронизации'},
                         ],
                         onClick: $_DO.choose_tab_reporting_period_common
                     }

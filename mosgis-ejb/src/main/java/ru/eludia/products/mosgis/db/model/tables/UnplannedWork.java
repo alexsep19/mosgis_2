@@ -1,14 +1,20 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Map;
+import java.util.UUID;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.gosuslugi.dom.schema.integration.services.CompletedWorksByPeriodType;
+import ru.gosuslugi.dom.schema.integration.services.MonthlyWorkType;
 
 public class UnplannedWork extends EnTable {
-
+ 
     public enum c implements EnColEnum {
 
         UUID_REPORTING_PERIOD  (ReportingPeriod.class,       "Ссылка период отчётности"),
@@ -61,6 +67,49 @@ public class UnplannedWork extends EnTable {
                 
         );
         
+    }
+    
+    static CompletedWorksByPeriodType.UnplannedWork toUnplannedWork (Map<String, Object> r) {
+        
+        r.put ("comment", r.get ("comment_"));
+        final CompletedWorksByPeriodType.UnplannedWork result = DB.to.javaBean (CompletedWorksByPeriodType.UnplannedWork.class, r);
+        
+        result.setMonthlyWork (toMonthlyWork (r));
+        
+        result.setWork (NsiTable.toDom (r.get ("ow.uniquenumber").toString (), (UUID) r.get ("ow.elementguid")));
+        
+        result.setWorkType (NsiTable.toDom (r, "vc_nsi_56"));
+        
+        switch (result.getWorkType ().getCode ()) {
+            case "3":
+                result.setAccident (toAccident (r));
+                break;
+            case "5":
+                result.setDeliveryRestriction (toDeliveryRestriction (r));
+                break;
+        }        
+        
+        return result;            
+        
+    }
+    
+    private static CompletedWorksByPeriodType.UnplannedWork.Accident toAccident (Map<String, Object> r) {
+        final CompletedWorksByPeriodType.UnplannedWork.Accident result = DB.to.javaBean (CompletedWorksByPeriodType.UnplannedWork.Accident.class, r);
+        result.setAccidentObjectKind (NsiTable.toDom (r, "vc_nsi_57"));
+        result.setMSType (NsiTable.toDom (r, "vc_nsi_3"));
+        return result;
+    }
+    
+    private static CompletedWorksByPeriodType.UnplannedWork.DeliveryRestriction toDeliveryRestriction (Map<String, Object> r) {
+        final CompletedWorksByPeriodType.UnplannedWork.DeliveryRestriction result = DB.to.javaBean (CompletedWorksByPeriodType.UnplannedWork.DeliveryRestriction.class, r);
+        result.setMSType (NsiTable.toDom (r, "vc_nsi_3"));
+        result.setOrganizationGUID (VocOrganization.regOrgType ((UUID) r.get (c.ORGANIZATIONGUID.lc ())));
+        return result;
+    }
+        
+    private static MonthlyWorkType toMonthlyWork (Map<String, Object> r) {
+        final MonthlyWorkType result = DB.to.javaBean (MonthlyWorkType.class, r);
+        return result;
     }
     
 }

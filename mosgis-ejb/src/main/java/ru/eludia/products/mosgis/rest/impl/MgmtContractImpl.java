@@ -98,7 +98,7 @@ public class MgmtContractImpl extends BaseCRUD<Contract> implements MgmtContract
         
         if (searchString == null || searchString.isEmpty ()) return;
 
-        select.and ("label_uc LIKE %?%", searchString.toUpperCase ());
+        select.and ("docnum LIKE ?%", searchString.toUpperCase ());
         
     }
     
