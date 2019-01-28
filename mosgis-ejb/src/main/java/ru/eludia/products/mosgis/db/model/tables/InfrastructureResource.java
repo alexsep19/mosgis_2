@@ -52,7 +52,7 @@ public class InfrastructureResource extends EnTable {
     
     public InfrastructureResource () {
         
-        super ("tb_infrastructure_resources", "Мощности ОКИ");
+        super ("tb_oki_resources", "Мощности ОКИ");
         
         cols (c.class);
         

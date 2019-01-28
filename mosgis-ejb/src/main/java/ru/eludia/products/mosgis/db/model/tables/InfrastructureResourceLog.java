@@ -7,7 +7,7 @@ public class InfrastructureResourceLog extends LogTable {
     
     public InfrastructureResourceLog () {
         
-        super ("tb_infrastructure_resources__log", "История изменений объектов мощностей ОКИ", InfrastructureResource.class, EnTable.c.class, InfrastructureResource.c.class);
+        super ("tb_oki_resources__log", "История изменений объектов мощностей ОКИ", InfrastructureResource.class, EnTable.c.class, InfrastructureResource.c.class);
         
     }
     
