@@ -7,6 +7,19 @@ define ([], function () {
     }
 
     return function (data, view) {
+
+        var is_virgin
+        var oktmo_searchData = []
+
+        if ($_USER.role.nsi_20_8) {
+
+            oktmos = Object.keys($_USER.role).filter ((x) => x.startsWith ('oktmo_')).map ((x) => { return {id: x.substring ('oktmo_'.length)}})
+
+            oktmo_searchData = [
+                {field: 'oktmo_code', operator: 'in', value: oktmos}
+            ]
+
+        }
         
         $(w2ui ['rosters_layout'].el ('main')).w2regrid ({
 
@@ -36,6 +49,8 @@ define ([], function () {
                 ]}}
             ],
 
+            searchData: oktmo_searchData,
+
             columns: [
                 {field: 'code_vc_nsi_33', caption: 'Вид объекта', size: 30, voc: data.vc_nsi_33},
                 {field: 'name', caption: 'Наименование', size: 30},
@@ -46,26 +61,17 @@ define ([], function () {
                 {field: 'id_is_status_gis', caption: 'Статус в ГИС ЖКХ', size: 15, voc: data.vc_gis_status},
             ],
 
+            postData: {searchLogic: 'AND'},
+
             url: '/mosgis/_rest/?type=infrastructures',
             
             onDblClick: function (e) {
                 openTab ('/infrastructure/' + e.recid)
             },
 
-            onRefresh: function (e) {e.done (function () {
-
-                if ($_USER.role.nsi_20_8) {
-
-                    oktmos = Object.keys($_USER.role).filter ((x) => x.startsWith ('oktmo_')).map ((x) => { return {id: x.substring ('oktmo_'.length)}})
-
-                    this.postData = {
-                        search: [{field: 'oktmo_code', operator: 'in', value: oktmos}],
-                        searchLogic: 'AND'
-                    }
-
-                }
-
-            })}
+            onRequest: function (e) {
+                if (!e.postData.searchData) delete this.postData.searchLogic
+            }
 
         }).refresh ();
 
