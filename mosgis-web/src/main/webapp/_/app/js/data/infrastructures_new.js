@@ -47,6 +47,52 @@ define ([], function () {
 
     }
 
+    $_DO.open_oktmo_popup = function (e) {
+
+        var f = w2ui [form_name]
+        var g = w2ui [grid_name]
+        
+        var saved = {
+            data: clone ($('body').data ('data')),
+            record: clone (f.record)
+        }
+
+        saved.record.codes_nsi_3 = g.getSelection ()
+
+        function done () {
+
+            $('body').data ('data', saved.data)
+
+            $_SESSION.set ('record', saved.record)
+
+            use.block ('infrastructures_new')
+
+        }
+
+        $_SESSION.set ('voc_oktmo_popup.ids', [])
+
+        var oktmos = Object.keys ($_USER.role).filter ((x) => x.startsWith ('oktmo_')).map ((x) => {
+            return x.substring ('oktmo_'.length)
+        })
+
+        $('body').data ('voc_oktmo_popup.callback', function (r) {
+
+            if (!r) return done ()
+
+            if ($_USER.role.nsi_20_8 && !(r.code in oktmos)) alert ('Недопустимый код ОКТМО')
+            else {
+                f.record.oktmo = r.recid
+                f.record.oktmo_code = r.code
+            }
+
+            done ()
+
+        })
+
+        use.block ('voc_oktmo_popup')
+
+    }
+
     $_DO.update_infrastructures_new = function (e) {
 
         var form = w2ui [form_name]
