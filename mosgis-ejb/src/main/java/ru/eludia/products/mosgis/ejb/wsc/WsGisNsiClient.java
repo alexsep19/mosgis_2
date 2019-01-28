@@ -47,13 +47,21 @@ public class WsGisNsiClient {
         ((BindingProvider)port).getRequestContext ().put (LoggingOutMessageHandler.FIELD_ORG_PPA_GUID, orgPPAGuid);
         return port;
     }
+    
+    private NsiPortsTypeAsync getPort (UUID orgPPAGuid, UUID messageGUID) {
+        ru.gosuslugi.dom.schema.integration.nsi_service_async.NsiPortsTypeAsync port = service.getNsiPortAsync();
+        VocSetting.setPort (port, "WS_GIS_NSI");
+        ((BindingProvider)port).getRequestContext ().put (LoggingOutMessageHandler.FIELD_MESSAGE_GUID, messageGUID);
+        ((BindingProvider)port).getRequestContext ().put (LoggingOutMessageHandler.FIELD_ORG_PPA_GUID, orgPPAGuid);
+        return port;
+    }
 
     public GetStateResult getState (UUID orgPPAGuid, UUID uuid) throws Fault {
         if (orgPPAGuid == null) throw new NullPointerException ();
         GetStateRequest getStateRequest = new GetStateRequest ();
         getStateRequest.setMessageGUID (uuid.toString ());
         return getPort (orgPPAGuid).getState (getStateRequest);
-    }
+    }           
     
     public AckRequest.Ack importOrganizationWorks (UUID orgPPAGuid, Map<String, Object> r) throws Fault {
         
@@ -124,10 +132,10 @@ logger.info ("rq = " + rq);
         
     }    
 
-    public AckRequest.Ack exportDataProviderNsiItem (UUID orgPPAGuid, long registryNumber) throws Fault {
+    public AckRequest.Ack exportDataProviderNsiItem (UUID orgPPAGuid, UUID messageGUID, long registryNumber) throws Fault {
         final ExportDataProviderNsiItemRequest rq = new ExportDataProviderNsiItemRequest ();
         rq.setRegistryNumber (BigInteger.valueOf (registryNumber));
-        return getPort (orgPPAGuid).exportDataProviderNsiItem (rq).getAck ();
+        return getPort (orgPPAGuid, messageGUID).exportDataProviderNsiItem (rq).getAck ();
     }
     
     public AckRequest.Ack importAdditionalServices (UUID orgPPAGuid, Map<String, Object> r) throws Fault {

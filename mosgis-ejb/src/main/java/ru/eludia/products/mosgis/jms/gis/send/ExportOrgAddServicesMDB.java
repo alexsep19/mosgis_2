@@ -52,7 +52,7 @@ public class ExportOrgAddServicesMDB extends UUIDMDB<VocOrganizationLog> {
 
             db.update (OutSoap.class, DB.HASH (
                 "uuid",     uuid,
-                "uuid_ack", wsGisNsiClient.exportDataProviderNsiItem ((UUID) r.get ("ppa"), 1L).getMessageGUID ()
+                "uuid_ack", wsGisNsiClient.exportDataProviderNsiItem ((UUID) r.get ("ppa"), uuid, 1L).getMessageGUID ()
             ));
             
             db.update (getTable (), DB.HASH (
