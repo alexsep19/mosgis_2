@@ -21,7 +21,7 @@ import ru.eludia.products.mosgis.ejb.wsc.WsGisNsiClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 
 @MessageDriven(activationConfig = {
-    @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inExportOrgMgmtContractsQueue")
+    @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inExportOrgAddServicesQueue")
     , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
     , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
