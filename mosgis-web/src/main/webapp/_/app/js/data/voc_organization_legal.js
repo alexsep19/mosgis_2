@@ -37,7 +37,8 @@ define ([], function () {
 
                 data.import_types = [
 
-                    {id: "import_mgmt_contracts", text: "Импорт договоров управления", off: !data.nsi_20 [1]}
+                    {id: "import_mgmt_contracts", text: "Импорт договоров управления", off: !data.nsi_20 [1]},
+                    {id: "import_add_services",   text: "Импорт справочника дополнительных услуг", off: !data.nsi_20 [1]},
 
                 ].filter (not_off)
                 

@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.ejb.wsc;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -16,6 +17,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ws.base.LoggingOutMessageHandler;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.base.GetStateRequest;
+import ru.gosuslugi.dom.schema.integration.nsi.ExportDataProviderNsiItemRequest;
 import ru.gosuslugi.dom.schema.integration.nsi.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.nsi.ImportAdditionalServicesRequest;
 import ru.gosuslugi.dom.schema.integration.nsi.ImportMunicipalServicesRequest;
@@ -122,6 +124,12 @@ logger.info ("rq = " + rq);
         
     }    
 
+    public AckRequest.Ack exportDataProviderNsiItem (UUID orgPPAGuid, long registryNumber) throws Fault {
+        final ExportDataProviderNsiItemRequest rq = new ExportDataProviderNsiItemRequest ();
+        rq.setRegistryNumber (BigInteger.valueOf (registryNumber));
+        return getPort (orgPPAGuid).exportDataProviderNsiItem (rq).getAck ();
+    }
+    
     public AckRequest.Ack importAdditionalServices (UUID orgPPAGuid, Map<String, Object> r) throws Fault {
         
         if (orgPPAGuid == null) throw new NullPointerException ();

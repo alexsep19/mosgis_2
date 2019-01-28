@@ -53,6 +53,22 @@
         <redelivery-delay>10000</redelivery-delay>
     </delivery-params-overrides>
   </uniform-distributed-queue>
+  
+  
+  <!-- очередь обработки запросов на импорт справочника доплнительных услуг по организации-исполнителю -->
+  <uniform-distributed-queue name="inExportOrgAddServicesQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.inExportOrgAddServicesQueue</jndi-name>
+  </uniform-distributed-queue>
 
+  <!-- очередь опроса статуса исходящих запросов на импорт справочника доплнительных услуг по организации-исполнителю -->
+  <uniform-distributed-queue name="outExportOrgAddServicesQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.outExportOrgAddServicesQueue</jndi-name>
+    <delivery-params-overrides>
+        <time-to-deliver>2000</time-to-deliver>
+        <redelivery-delay>10000</redelivery-delay>
+    </delivery-params-overrides>
+  </uniform-distributed-queue>
 
 </weblogic-jms>
