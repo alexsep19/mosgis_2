@@ -185,6 +185,7 @@ public class PublicPropertyContract extends EnTable {
     public enum Action {
         
         PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
+        EDITING     (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_STATE),
         ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT)
         ;
         
@@ -211,13 +212,23 @@ public class PublicPropertyContract extends EnTable {
         }
         
         public static Action forStatus (VocGisStatus.i status) {
+            
             switch (status) {
+                
                 case PENDING_RQ_PLACING:   return PLACING;
+                case PENDING_RQ_EDIT:      return EDITING;
                 case PENDING_RQ_ANNULMENT: return ANNULMENT;
+                
+                case PENDING_RP_PLACING:   return PLACING;
+                case PENDING_RP_EDIT:      return EDITING;
+                case PENDING_RP_ANNULMENT: return ANNULMENT;
+                
                 default: return null;
+                
             }            
+            
         }
-        
+/*        
         public static Action forLogAction (VocAction.i a) {
             switch (a) {
                 case APPROVE: return PLACING;
@@ -225,7 +236,7 @@ public class PublicPropertyContract extends EnTable {
                 default: return null;
             }            
         }
-                        
+*/
     };
         
 }

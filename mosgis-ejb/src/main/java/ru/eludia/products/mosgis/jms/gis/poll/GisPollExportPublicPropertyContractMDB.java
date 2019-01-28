@@ -43,7 +43,7 @@ public class GisPollExportPublicPropertyContractMDB  extends GisPollMDB {
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
             .toOne (PublicPropertyContractLog.class,     "AS log", "uuid", "action").on ("log.uuid_out_soap=root.uuid")
-            .toOne (PublicPropertyContract.class,        "AS ctr", "uuid").on ()
+            .toOne (PublicPropertyContract.class,        "AS ctr", "uuid, id_ctr_status").on ()
             .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("ctr.uuid_org=org.uuid")
         ;
     }
@@ -55,7 +55,9 @@ public class GisPollExportPublicPropertyContractMDB  extends GisPollMDB {
         
         UUID orgPPAGuid          = (UUID) r.get ("org.orgppaguid");
         
-        PublicPropertyContract.Action action = PublicPropertyContract.Action.forLogAction (VocAction.i.forName (r.get ("log.action").toString ()));
+        PublicPropertyContract.Action action = PublicPropertyContract.Action.forStatus (
+            VocGisStatus.i.forId (r.get ("ctr.id_ctr_status"))                
+        );
                 
         try {
             
