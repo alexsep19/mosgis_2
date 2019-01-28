@@ -77,7 +77,7 @@ define ([], function () {
 
                         if (data.item.manageroki == $_USER.uuid_org) {
 
-                            if (!data.item.oktmo || data.item.oktmo_code in oktmos) return true
+                            if (!data.item.oktmo || oktmos.find (x => x == data.item.oktmo_code)) return true
 
                         }
 
