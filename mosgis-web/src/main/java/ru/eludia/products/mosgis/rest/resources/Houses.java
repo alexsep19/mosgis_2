@@ -104,6 +104,13 @@ public class Houses extends EJBResource <HousesLocal> {
         checkGet (item);
         return item;
     }
+    
+    @POST
+    @Path ("vocs")
+    @Produces (APPLICATION_JSON)
+    public JsonObject getVocs () {
+        return back.getVocs ();
+    }
 
     @POST
     @Path("create") 

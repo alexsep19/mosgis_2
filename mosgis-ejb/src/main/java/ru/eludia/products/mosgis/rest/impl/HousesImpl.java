@@ -136,7 +136,15 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
         
         Model m = ModelHolder.getModel ();
         
-        Select select = m.select (House.class, "uuid AS id", "address", "is_condo", "fiashouseguid", "unom")
+        Select select = m.select (House.class, "uuid AS id", 
+                                               "address", 
+                                               "is_condo", 
+                                               "fiashouseguid", 
+                                               "unom",
+                                               "id_status_gis",
+                                               "id_status",
+                                               "code_vc_nsi_24")
+                .toOne (VocBuilding.class, "oktmo").on()
                 .orderBy ("address")
                 .limit (p.getInt ("offset"), p.getInt ("limit"));
         
@@ -161,7 +169,14 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
         
         Model m = ModelHolder.getModel ();
         
-        Select select = m.select(House.class, "uuid AS id", "address", "is_condo", "fiashouseguid", "unom")
+        Select select = m.select (House.class, "uuid AS id", 
+                                               "address", 
+                                               "is_condo", 
+                                               "fiashouseguid", 
+                                               "unom",
+                                               "id_status_gis",
+                                               "id_status",
+                                               "code_vc_nsi_24")
                 .toOne (VocBuilding.class, "oktmo")
                 .where ("oktmo IN", ModelHolder.getModel ()
                         .select (VocOrganizationTerritory.class)
@@ -193,7 +208,15 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
         
         Model m = ModelHolder.getModel ();
         
-        Select select = m.select (House.class, "uuid AS id", "address", "is_condo", "fiashouseguid", "unom")
+        Select select = m.select (House.class, "uuid AS id", 
+                                               "address", 
+                                               "is_condo", 
+                                               "fiashouseguid", 
+                                               "unom",
+                                               "id_status_gis",
+                                               "id_status",
+                                               "code_vc_nsi_24")
+            .toOne (VocBuilding.class, "oktmo").on()
             .orderBy ("address")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
         
@@ -424,7 +447,29 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
             "г. Операция отменена."
         );
 
-    }    
+    }
+    
+    @Override
+    public JsonObject getVocs () {
+        
+        JsonObjectBuilder jb = Json.createObjectBuilder ();
+        
+        final MosGisModel model = ModelHolder.getModel ();
+
+        try (DB db = model.getDb ()) {
+            
+            db.addJsonArrays (jb, NsiTable.getNsiTable (24).getVocSelect ());            
+            VocGisStatus.addTo(jb);
+            VocHouseStatus.addTo(jb);
+
+        }
+        catch (Exception ex) {
+            throw new InternalServerErrorException (ex);
+        }
+
+        return jb.build ();
+        
+    }
 
     @Override
     public JsonObject getVocPassportFields (String id, Integer[] ids) {
