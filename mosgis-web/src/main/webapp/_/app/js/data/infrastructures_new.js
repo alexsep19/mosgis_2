@@ -79,10 +79,10 @@ define ([], function () {
 
             if (!r) return done ()
 
-            if ($_USER.role.nsi_20_8 && !(r.code in oktmos)) alert ('Недопустимый код ОКТМО')
+            if ($_USER.role.nsi_20_8 && !(oktmos.find (x => x == r.code))) alert ('Недопустимый код ОКТМО')
             else {
-                f.record.oktmo = r.recid
-                f.record.oktmo_code = r.code
+                saved.record.oktmo = r.recid
+                saved.record.oktmo_code = r.code
             }
 
             done ()
@@ -100,6 +100,10 @@ define ([], function () {
         var v = form.values ()
 
         delete v.manageroki_label
+        delete v.oktmo_code
+
+        if (!v.manageroki) die ('manageroki_label', 'Укажите, пожалуйста, правообладателя')
+        if (!v.oktmo) die ('oktmo_code', 'Укажите, пожалуйста, код ОКТМО')
         
         if (!v.name) die ('name', 'Укажите, пожалуйста, наименование объекта')
         if (!v.code_vc_nsi_39) die ('code_vc_nsi_39', 'Укажите, пожалуйста, основание управления')

@@ -61,8 +61,6 @@ define ([], function () {
                 {field: 'id_is_status_gis', caption: 'Статус в ГИС ЖКХ', size: 15, voc: data.vc_gis_status},
             ],
 
-            postData: {searchLogic: 'AND'},
-
             url: '/mosgis/_rest/?type=infrastructures',
             
             onDblClick: function (e) {
@@ -70,8 +68,8 @@ define ([], function () {
             },
 
             onRequest: function (e) {
-                if (!e.postData.searchData) delete this.postData.searchLogic
-            }
+                if (e.postData.searchLogic) e.postData.searchLogic = 'AND'
+            },
 
         }).refresh ();
 
