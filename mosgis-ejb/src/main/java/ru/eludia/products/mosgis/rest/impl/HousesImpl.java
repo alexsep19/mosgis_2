@@ -60,6 +60,8 @@ import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.web.base.Search;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
+import ru.eludia.products.mosgis.web.base.ComplexSearch;
+import ru.eludia.products.mosgis.web.base.SimpleSearch;
 
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
@@ -87,6 +89,44 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
                 return;
         }
         
+    }
+    
+    private void filterOffDeleted (Select select) {
+        select.and ("is_deleted", 0);
+    }
+    
+    private void applyComplexSearch (final ComplexSearch search, Select select) {
+
+        search.filter (select, "");
+        
+        if (!search.getFilters ().containsKey ("is_deleted")) filterOffDeleted (select);
+
+    }
+    
+    private void applySimpleSearch (final SimpleSearch search, Select select) {
+
+        filterOffDeleted (select);
+
+        final String searchString = search.getSearchString ();
+        
+        if (searchString == null || searchString.isEmpty ()) return;
+
+        select.and ("address_uc LIKE %?%", searchString);
+        
+    }
+    
+    private void applySearch (final Search search, Select select) {        
+
+        if (search instanceof SimpleSearch) {
+            applySimpleSearch  ((SimpleSearch) search, select);
+        }
+        else if (search instanceof ComplexSearch) {
+            applyComplexSearch ((ComplexSearch) search, select);
+        }
+        else {
+            filterOffDeleted (select);
+        }
+
     }
 
     private void logAction (DB db, User user, Object id, String uuidOrg, String fiasHouseGuid, VocAction.i action) throws SQLException {
@@ -144,7 +184,7 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
                                                "id_status_gis",
                                                "id_status",
                                                "code_vc_nsi_24")
-                .toOne (VocBuilding.class, "oktmo").on()
+                .toOne (VocBuilding.class, "oktmo AS oktmo").on()
                 .orderBy ("address")
                 .limit (p.getInt ("offset"), p.getInt ("limit"));
         
@@ -177,7 +217,7 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
                                                "id_status_gis",
                                                "id_status",
                                                "code_vc_nsi_24")
-                .toOne (VocBuilding.class, "oktmo")
+                .toOne (VocBuilding.class, "oktmo AS oktmo")
                 .where ("oktmo IN", ModelHolder.getModel ()
                         .select (VocOrganizationTerritory.class)
                         .toOne  (VocOktmo.class, "code").on ()
@@ -216,7 +256,7 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
                                                "id_status_gis",
                                                "id_status",
                                                "code_vc_nsi_24")
-            .toOne (VocBuilding.class, "oktmo").on()
+            .toOne (VocBuilding.class, "oktmo AS oktmo").on()
             .orderBy ("address")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
         
