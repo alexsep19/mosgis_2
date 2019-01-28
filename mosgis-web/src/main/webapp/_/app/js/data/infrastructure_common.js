@@ -115,7 +115,12 @@ define ([], function () {
         if (!v.name) die ('name', 'Укажите, пожалуйста, наименование объекта')
         if (!v.code_vc_nsi_39) die ('code_vc_nsi_39', 'Укажите, пожалуйста, основание управления')
         if (!v.hasOwnProperty('indefinitemanagement')) die ('indefinitemanagement', 'Укажите, пожалуйста, признак бессрочности управления')
-        if (!v.indefinitemanagement && !v.endmanagmentdate) die ('endmanagmentdate', 'Укажите, пожалуйста, дату окончания управления')
+
+        if (v.indefinitemanagement == 0) {
+            if (!v.endmanagmentdate) die ('endmanagmentdate', 'Укажите, пожалуйста, дату окончания управления')
+        }
+        else v.endmanagmentdate = null
+
         if (!v.code_vc_nsi_33) die ('code_vc_nsi_33', 'Укажите, пожалуйста, вид объекта')
         if (!v.oktmo) die ('oktmo_code', 'Укажите, пожалуйста, код ОКТМО')
         if (!v.comissioningyear) die ('comissioningyear', 'Укажите, пожалуйста, год ввода в эксплуатацию')
@@ -128,7 +133,10 @@ define ([], function () {
         }
 
         Object.keys(elements_nsi_33).forEach ((value, index, array) => {
-            if (elements_nsi_33[value][v.code_vc_nsi_33] && !v[value]) die (value, 'Указаны не все необходимые данные')
+            if (elements_nsi_33[value][v.code_vc_nsi_33]) {
+                if (!v[value]) die (value, 'Указаны не все необходимые данные')
+            }
+            else v[value] = null
         })
 
         v.code_vc_nsi_3 = w2ui ['code_vc_nsi_3_grid'].getSelection ()

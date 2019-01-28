@@ -27,6 +27,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocInfrastructureFileType;
 import ru.eludia.products.mosgis.db.model.voc.VocNsi33Ref3;
+import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.InfrastructuresLocal;
@@ -40,6 +41,13 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements InfrastructuresLocal {
 
     private final String LABEL_FIELD_NAME_NSI_33 = "f_c8e745bc63";
+    private final String TYPE_FIELD_NAME_NSI_33 = "f_995a303098";
+    
+    private final String LABEL_FIELD_NAME_NSI_3 = "f_d966dd6cbc";
+    private final String NSI_2_REF_FIELD_NAME_NSI_3 = "f_1587117ecc";
+    
+    private final String LABEL_FIELD_NAME_NSI_2 = "f_c8d77ddad5";
+    private final String OKEI_FIELD_NAME_NSI_2 = "f_c6e5a29665";
     
     private void filterOffDeleted (Select select) {
         select.and ("is_deleted", 0);
@@ -128,28 +136,50 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
         VocInfrastructureFileType.addTo (jb);
         
         final MosGisModel model = ModelHolder.getModel ();
+        
+        NsiTable nsi_2  = NsiTable.getNsiTable (2);
+        NsiTable nsi_3  = NsiTable.getNsiTable (3);
+        NsiTable nsi_33 = NsiTable.getNsiTable (33);
+        NsiTable nsi_34 = NsiTable.getNsiTable (34);
+        NsiTable nsi_35 = NsiTable.getNsiTable (35);
+        NsiTable nsi_37 = NsiTable.getNsiTable (37);
+        NsiTable nsi_39 = NsiTable.getNsiTable (39);
 
         try (DB db = model.getDb ()) {
             
             db.addJsonArrays (jb,
+                    
+                ModelHolder.getModel ()
+                    .select  (VocOkei.class, "code AS id", "national AS label")
+                    .orderBy ("national"),
 
-                NsiTable.getNsiTable (3).getVocSelect (),
-                NsiTable.getNsiTable (34).getVocSelect (),
-                NsiTable.getNsiTable (35).getVocSelect (),
-                NsiTable.getNsiTable (37).getVocSelect (),
-                NsiTable.getNsiTable (39).getVocSelect (),
+                nsi_34.getVocSelect (),
+                nsi_35.getVocSelect (),
+                nsi_37.getVocSelect (),
+                nsi_39.getVocSelect (),
                 
                 VocNsi38.getVocSelect (),
                 VocNsi40.getVocSelect (),
                 
                 model
-                    .select (NsiTable.getNsiTable (33), "code AS id", LABEL_FIELD_NAME_NSI_33 + " AS label")
-                    .where (LABEL_FIELD_NAME_NSI_33 + " IS NOT NULL")
-                    .and ("isactual", 1)
+                    .select  (nsi_2, "code AS id", LABEL_FIELD_NAME_NSI_2 + " AS label", OKEI_FIELD_NAME_NSI_2 + " AS okei")
+                    .where   ("is_actual", 1)
+                    .orderBy ("code"),
+                
+                model
+                    .select  (nsi_3, "code AS id", LABEL_FIELD_NAME_NSI_3 + " AS label")
+                    .toOne   (nsi_2, "code AS nsi_2").on (nsi_3.getName () + "." + NSI_2_REF_FIELD_NAME_NSI_3 + "=" + nsi_2.getName () + ".guid")
+                    .where   ("is_actual", 1)
+                    .orderBy (nsi_3.getName () + ".code"),
+                
+                model
+                    .select  (nsi_33, "code AS id", LABEL_FIELD_NAME_NSI_33 + " AS label", TYPE_FIELD_NAME_NSI_33 + " AS type")
+                    .where   (LABEL_FIELD_NAME_NSI_33 + " IS NOT NULL")
+                    .and     ("isactual", 1)
                     .orderBy ("code"),
                     
                 model
-                    .select (VocGisStatus.class, "id", "label")
+                    .select  (VocGisStatus.class, "id", "label")
                     .orderBy ("id"),
                 
                 VocNsi33Ref3.getRefs ()
