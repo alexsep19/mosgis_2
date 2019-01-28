@@ -17,6 +17,7 @@ define ([], function () {
             $manageroki_label.val ($_USER.label_org)
             $manageroki.val ($_USER.uuid_org)
             $manageroki.change ()
+            $manageroki_label.change ()
         }
 
         if (f.record.indefinitemanagement.id) {

@@ -6,7 +6,7 @@
 
             <style>
 
-                .w2ui-field > label {
+                .w2ui-field label {
                     width: 200px;
                     margin-right: 10px;
                 }
@@ -17,14 +17,6 @@
 
                 .w2ui-field input.num {
                     width: 30px !important;
-                }
-
-                .w2ui-field input.month {
-                    width: 25px !important;
-                }
-
-                .w2ui-field input.year {
-                    width: 37px !important;
                 }
 
                 .w2ui-field input.dt {
@@ -50,17 +42,6 @@
             <table border=0 cellpadding=0 cellspacing=0 width=90%>
 
                 <tr>
-                    <td class="left-block" width=1 valign=top>
-                        <div class="w2ui-field">
-                            <label>Наименование: </label>
-                            <div>
-                                <input name=name maxlength=140>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-
-                <tr>
                     <td colspan=2 valign=top>
                         <div class="w2ui-field">
                             <label>Правообладатель: </label>
@@ -73,6 +54,15 @@
                 </tr>
 
                 <tr>
+                    <td class="left-block" width=1 valign=top>
+                        <div class="w2ui-field">
+                            <label>Наименование: </label>
+                            <div>
+                                <input name=name maxlength=140>
+                            </div>
+                        </div>
+                    </td>
+
                     <td class="left-block" width=1 valign=top>
                         <div class="w2ui-field">
                             <label>Основание управления: </label>
@@ -92,9 +82,6 @@
                             </div>
                         </div>
                     </td>
-                </tr>
-
-                <tr>
                     <td class="left-block" width=1 valign=top>
                         <div class="w2ui-field">
                             <label>Окончание управления: </label>
@@ -102,6 +89,12 @@
                                 <input name=endmanagmentdate placeholder="" class="dt">
                             </div>
                         </div>
+                    </td>
+                </tr>
+
+                <tr id="common_header">
+                    <td colspan=2>
+                        <span class="w2ui-group-title">Общие сведения об объекте</span>
                     </td>
                 </tr>
 
@@ -254,7 +247,7 @@
                 		<div class="w2ui-field">
                 			<label>Виды коммунальных услуг: </label>
 			                <div>
-			                	<div id=type_of_utility_container style="margin:5px 0 0 60px;width:335px;height:125px;" />
+			                	<div id=type_of_utility_container style="margin:5px 0 0 60px;width:335px;height:100px;" />
 			                </div>
 			            </div>
                 	</td>
