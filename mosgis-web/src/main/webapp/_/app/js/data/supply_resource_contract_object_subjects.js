@@ -7,24 +7,22 @@ define([], function () {
 
     $_DO.delete_supply_resource_contract_object_subjects = function (e) {
 
-	if (!e.force) return
+        if (!e.force) return
 
-	var grid = w2ui[e.target]
+        var grid = w2ui[e.target]
 
-	grid.lock()
+        grid.lock()
 
-	query({type: 'supply_resource_contract_object_subjects', action: 'delete', id: grid.getSelection() [0]}, {}, function () {
-	    use.block('supply_resource_contract_object_subjects')
-	})
+        query({type: 'supply_resource_contract_object_subjects', action: 'delete', id: grid.getSelection() [0]}, {}, reload_page)
     }
 
     return function (done) {
 
         w2ui ['topmost_layout'].unlock('main')
 
-	var data = clone($('body').data('data'))
+        var data = clone($('body').data('data'))
 
-	done(data)
+        done(data)
     }
 
 })

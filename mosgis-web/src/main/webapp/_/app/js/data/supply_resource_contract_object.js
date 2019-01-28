@@ -44,8 +44,6 @@ define ([], function () {
                         edit  : it['sr_ctr.uuid_org'] == $_USER.uuid_org,
                     }
 
-                    it['sr_ctr.label'] = it['sr_ctr.label'] || ('№' + it['sr_ctr.contractnumber'] + ' от ' + dt_dmy(it['sr_ctr.signingdate']))
-
                     for (voc in d) {
                         data[voc] = d[voc]
                     }

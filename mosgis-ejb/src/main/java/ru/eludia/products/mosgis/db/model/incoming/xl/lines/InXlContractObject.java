@@ -281,7 +281,7 @@ public class InXlContractObject extends EnTable {
             + " l_err VARCHAR2 (1000); "
             + "BEGIN "
 
-            + " IF :NEW.err IS NOT NULL THEN RETURN; END IF; "
+            + " IF :NEW.err IS NOT NULL THEN :NEW.is_deleted := 1; END IF; "
             + " IF NOT (:OLD.is_deleted = 1 AND :NEW.is_deleted = 0) THEN RETURN; END IF; "
 
             + " INSERT INTO tb_contract_objects (uuid,is_deleted" + sb + ") VALUES (:NEW.uuid,0" + nsb + "); "

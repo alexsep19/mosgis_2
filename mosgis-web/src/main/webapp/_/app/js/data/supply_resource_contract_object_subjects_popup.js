@@ -15,17 +15,9 @@ define ([], function () {
             die ('endsupplydate', 'Дата начала поставки ресурса превышает дату окончания поставки ресурса')
 
         v.uuid_sr_ctr = it['sr_ctr.uuid']
-	v.uuid_sr_ctr_obj = $_REQUEST.id
+        v.uuid_sr_ctr_obj = $_REQUEST.id
 
-        query ({type: 'supply_resource_contract_object_subjects', action: 'create', id: undefined}, {data: v}, function (data) {
-
-            w2popup.close ()
-
-            var grid = w2ui ['supply_resource_contract_object_subjects_grid']
-
-            grid.reload (grid.refresh)
-
-        })
+        query ({type: 'supply_resource_contract_object_subjects', action: 'create', id: undefined}, {data: v}, reload_page)
 
     }
 

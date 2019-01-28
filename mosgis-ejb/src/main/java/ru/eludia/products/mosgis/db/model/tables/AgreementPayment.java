@@ -78,9 +78,9 @@ public class AgreementPayment extends EnTable {
             + "DECLARE" 
             + " PRAGMA AUTONOMOUS_TRANSACTION; "
             + "BEGIN "                    
-                    
-            + "IF :NEW.is_deleted = 0 THEN BEGIN "
-                
+
+            + "IF :NEW.is_deleted = 0 AND :NEW.id_ap_status NOT IN (" + VocGisStatus.i.ANNUL + ") THEN BEGIN "
+
                 + " FOR i IN ("
                     + "SELECT "
                     + " o.DATEFROM"

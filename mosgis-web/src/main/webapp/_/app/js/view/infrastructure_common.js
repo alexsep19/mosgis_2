@@ -38,8 +38,15 @@ define ([], function () {
                 }
             })
 
-            if (f.record.indefinitemanagement.id == 1) $('#endmanagmentdate').prop ('disabled', true)
-            else if (!$('#name').prop ('disabled')) $('#endmanagmentdate').prop ('disabled', false)
+            if (f.record.indefinitemanagement.id == 1) {
+                $('#endmanagmentdate').val ('')
+                $('#endmanagmentdate').prop ('placeholder', 'X')
+                $('#endmanagmentdate').prop ('disabled', true)
+            }
+            else if (!$('#name').prop ('disabled')) {
+                $('#endmanagmentdate').prop ('disabled', false)
+                $('#endmanagmentdate').prop ('placeholder', '')
+            }
 
             if (f.record.code_vc_nsi_33) {
                 g.records = dia2w2uiRecords (data.ref_33_to_3.find (x => x.code_33 == f.record.code_vc_nsi_33.id).code_3)
@@ -134,8 +141,6 @@ define ([], function () {
 
         })
 
-        var is_virgin = 1
-
         $('#type_of_utility_container').w2regrid ({ 
         
             name: grid_name,
@@ -151,25 +156,20 @@ define ([], function () {
                 {field: 'label', caption: 'Наименование', size: 50},
             ],
             
-            records: dia2w2uiRecords (data.ref_33_to_3.find (x => x.code_33 == w2ui[form_name].record.code_vc_nsi_33.id).code_3),
+            records: [],
 
             onRefresh: function () {
-            
-                if (!is_virgin) return
                 
                 var grid = this
+
+                grid.records = dia2w2uiRecords (data.ref_33_to_3.find (x => x.code_33 == w2ui[form_name].record.code_vc_nsi_33.id).code_3)
            
                 $.each (data.item.codes_nsi_3, function () {grid.select ('' + this)})
-
-                is_virgin = 0
-
-                grid.onSelect = grid.onUnselect = function (e) {
-
-                    if ($('#name').prop ('disabled')) return e.preventDefault ()
-
-                }
             
-            },    
+            },
+
+            onSelect: function (e) { if ($('#name').prop ('disabled')) return e.preventDefault () },
+            onUnselect: function (e) { if ($('#name').prop ('disabled')) return e.preventDefault () }
         
         }).refresh ()
 

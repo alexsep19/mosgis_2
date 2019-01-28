@@ -50,8 +50,11 @@ public class ExportPublicPropertyContractMDB extends GisExportMDB<PublicProperty
         UUID orgPPAGuid = (UUID) r.get ("org.orgppaguid");
             
         switch (action) {
-            case PLACING:     return wsGisHouseManagementClient.importPublicPropertyContract (orgPPAGuid, messageGUID, r);
-            case ANNULMENT:   return wsGisHouseManagementClient.annulPublicPropertyContract  (orgPPAGuid, messageGUID, r);
+            case PLACING:     
+            case EDITING:     
+                return wsGisHouseManagementClient.importPublicPropertyContract (orgPPAGuid, messageGUID, r);
+            case ANNULMENT:   
+                return wsGisHouseManagementClient.annulPublicPropertyContract  (orgPPAGuid, messageGUID, r);
             default: throw new IllegalArgumentException ("No action implemented for " + action);
         }
 
@@ -68,7 +71,7 @@ public class ExportPublicPropertyContractMDB extends GisExportMDB<PublicProperty
             return;
         }
         
-        if (action == PublicPropertyContract.Action.PLACING) {
+        if (action != PublicPropertyContract.Action.ANNULMENT) {
             
             PublicPropertyContractLog.addFilesForExport (db, r);
             List<Map<String, Object>> files = (List<Map<String, Object>>) r.get ("files");

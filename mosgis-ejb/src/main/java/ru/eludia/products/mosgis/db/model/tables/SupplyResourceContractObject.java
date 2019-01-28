@@ -77,7 +77,7 @@ public class SupplyResourceContractObject extends EnTable {
 		    + " o.uuid_premise     uuid_premise"
 		    + " , premise.label    premise_label"
 		    + " , building.label   building_label "
-		    + " , sr_ctr.contractnumber || ' от ' || TO_CHAR (sr_ctr.signingdate, 'DD.MM.YYYY') sr_ctr_label "
+		    + " , sr_ctr.label     sr_ctr_label "
 		    + "FROM "
 		    + " tb_sr_ctr_obj o "
 		    + " INNER JOIN tb_sr_ctr    sr_ctr   ON o.uuid_sr_ctr = sr_ctr.uuid "

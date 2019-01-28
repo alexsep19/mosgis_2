@@ -47,6 +47,52 @@ define ([], function () {
 
     }
 
+    $_DO.open_oktmo_popup = function (e) {
+
+        var f = w2ui [form_name]
+        var g = w2ui [grid_name]
+        
+        var saved = {
+            data: clone ($('body').data ('data')),
+            record: clone (f.record)
+        }
+
+        saved.record.codes_nsi_3 = g.getSelection ()
+
+        function done () {
+
+            $('body').data ('data', saved.data)
+
+            $_SESSION.set ('record', saved.record)
+
+            use.block ('infrastructures_new')
+
+        }
+
+        $_SESSION.set ('voc_oktmo_popup.ids', [])
+
+        var oktmos = Object.keys ($_USER.role).filter ((x) => x.startsWith ('oktmo_')).map ((x) => {
+            return x.substring ('oktmo_'.length)
+        })
+
+        $('body').data ('voc_oktmo_popup.callback', function (r) {
+
+            if (!r) return done ()
+
+            if ($_USER.role.nsi_20_8 && !(oktmos.find (x => x == r.code))) alert ('Недопустимый код ОКТМО')
+            else {
+                saved.record.oktmo = r.recid
+                saved.record.oktmo_code = r.code
+            }
+
+            done ()
+
+        })
+
+        use.block ('voc_oktmo_popup')
+
+    }
+
     $_DO.update_infrastructures_new = function (e) {
 
         var form = w2ui [form_name]
@@ -54,6 +100,10 @@ define ([], function () {
         var v = form.values ()
 
         delete v.manageroki_label
+        delete v.oktmo_code
+
+        if (!v.manageroki) die ('manageroki_label', 'Укажите, пожалуйста, правообладателя')
+        if (!v.oktmo) die ('oktmo_code', 'Укажите, пожалуйста, код ОКТМО')
         
         if (!v.name) die ('name', 'Укажите, пожалуйста, наименование объекта')
         if (!v.code_vc_nsi_39) die ('code_vc_nsi_39', 'Укажите, пожалуйста, основание управления')
