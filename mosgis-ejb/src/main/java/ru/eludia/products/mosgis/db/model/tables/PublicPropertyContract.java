@@ -143,6 +143,13 @@ public class PublicPropertyContract extends EnTable {
                     + " END; END IF; "
                             
                 + "END; END IF; "
+                            
+                + "IF "
+                    + "     :OLD.ID_CTR_STATUS = " + VocGisStatus.i.MUTATING.getId ()
+                    + " AND :NEW.ID_CTR_STATUS = " + VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+                + " THEN "
+                    + " :NEW.ID_CTR_STATUS := " + VocGisStatus.i.PENDING_RQ_EDIT.getId ()
+                + "; END IF; "                            
                         
             + "END;"
                 
