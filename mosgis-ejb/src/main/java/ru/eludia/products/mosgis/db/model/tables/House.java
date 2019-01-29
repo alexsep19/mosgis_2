@@ -61,7 +61,9 @@ public class House extends Passport {
         col    ("code_vc_nsi_25",        Type.STRING,  20,    null,       "Способ управления домом (НСИ 25)");
         col    ("code_vc_nsi_336",       Type.STRING,  20,    null,       "Стадия жизненного цикла (НСИ 336)");
         
-        col    ("ts",                    Type.TIMESTAMP,                   "Дата/время последнего изменения в БД");
+        col    ("oktmo",                 Type.STRING,  11,    null,       "Код ОКТМО");
+        
+        col    ("ts",                    Type.TIMESTAMP,                  "Дата/время последнего изменения в БД");
 //        fk     ("uuid_in_open_data",     InOpenData.class,                 "Последний пакет импорта");
 
         key    ("fiashouseguid1", "fiashouseguid");
@@ -69,7 +71,11 @@ public class House extends Passport {
         key    ("address1", "address");
         key    ("unom", "unom");
 
-        trigger ("BEFORE INSERT OR UPDATE", "BEGIN :NEW.ts := CURRENT_TIMESTAMP(); END;");
+        trigger ("BEFORE INSERT OR UPDATE", ""
+                + "BEGIN "
+                + ":NEW.ts := CURRENT_TIMESTAMP(); "
+                + "SELECT oktmo INTO :NEW.oktmo FROM vc_buildings WHERE houseguid = :NEW.fiashouseguid; "
+                + "END; ");
 
     }
 

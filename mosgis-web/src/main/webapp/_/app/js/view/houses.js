@@ -16,7 +16,7 @@ define ([], function () {
                     {id: "1", text: 'МКД'},
                     {id: "0", text: 'ЖД'},
                 ]}},
-                {field: 'oktmo', caption: 'ОКТМО', type: 'text'},
+                {field: 'oktmo', caption: 'ОКТМО', type: 'text', operators: ['is'], operator: 'is'},
                 {field: 'code_vc_nsi_24', caption: 'Состояние', type: 'list', options: {items: data.vc_nsi_24.items}},
                 {field: 'id_status_gis', caption: 'ГИС ЖКХ', type: 'list', options: { items: data.vc_gis_status.items}},
                 {field: 'address_uc',           caption: 'Адрес',         type: 'text'},

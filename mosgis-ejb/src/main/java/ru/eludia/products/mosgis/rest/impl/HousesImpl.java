@@ -91,21 +91,13 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
         
     }
     
-    private void filterOffDeleted (Select select) {
-        select.and ("is_deleted", 0);
-    }
-    
     private void applyComplexSearch (final ComplexSearch search, Select select) {
 
         search.filter (select, "");
-        
-        if (!search.getFilters ().containsKey ("is_deleted")) filterOffDeleted (select);
 
     }
     
     private void applySimpleSearch (final SimpleSearch search, Select select) {
-
-        filterOffDeleted (select);
 
         final String searchString = search.getSearchString ();
         
@@ -122,9 +114,6 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
         }
         else if (search instanceof ComplexSearch) {
             applyComplexSearch ((ComplexSearch) search, select);
-        }
-        else {
-            filterOffDeleted (select);
         }
 
     }
@@ -188,9 +177,7 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
                 .orderBy ("address")
                 .limit (p.getInt ("offset"), p.getInt ("limit"));
         
-        final Search search = Search.from (p);
-
-        if (search != null) select = search.filter (select, simple (search, "unom", "fiashouseguid", "address_uc LIKE %?%"));
+        applySearch (Search.from (p), select);
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();
 
@@ -226,9 +213,7 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
                 .orderBy ("address")
                 .limit (p.getInt ("offset"), p.getInt ("limit"));
         
-        final Search search = Search.from (p);
-
-        if (search != null) select = search.filter (select, simple (search, "unom", "fiashouseguid", "address_uc LIKE %?%"));
+        applySearch (Search.from (p), select);
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();
 
@@ -267,9 +252,7 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
             .where ("uuid_org", uuidOrg)
         );
             
-        final Search search = Search.from (p);
-
-        if (search != null) select = search.filter (select, simple (search, "unom", "fiashouseguid", "address_uc LIKE %?%"));
+        applySearch (Search.from (p), select);
 
         JsonObjectBuilder jb = Json.createObjectBuilder ();
 
@@ -282,34 +265,6 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
         
         return jb.build ();
 
-    }
-    
-    private String simple (Search search, String i, String g, String s) {
-    
-        if (search == null) return s;
-        
-        String searchString = search.getSearchString ();
-        
-        if (searchString == null || searchString.isEmpty ()) return s;
-        
-        try {
-            Integer.parseInt (searchString);
-            return i;
-        }
-        catch (Exception e) {
-            // do nothing
-        }
-        
-        try {
-            UUID.fromString (searchString);
-            return g;
-        }
-        catch (Exception e) {
-            // do nothing
-        }
-    
-        return s;
-        
     }
 
     private static final int NSI_VOC_CONDITION = 24;
