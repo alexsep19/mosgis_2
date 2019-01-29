@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
@@ -36,7 +37,7 @@ public class GisPollExportOrgMgmtContracts extends GisPollMDB {
     protected Get get (UUID uuid) {
 
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")
-            .toOne (VocOrganizationLog.class, "AS log", "uuid", "action").on ("log.uuid_out_soap=root.uuid")
+            .toOne (VocOrganizationLog.class, "AS log", "uuid", "action", "uuid_object").on ("log.uuid_out_soap=root.uuid")
             .toOne (VocOrganization.class, "AS org", VocOrganization.c.ORGPPAGUID.lc () + " AS ppa").on ("log.uuid_object=org.uuid")
         ;
         
@@ -59,9 +60,10 @@ logger.info ("state=" + state);
             if (exportCAChResult == null) throw new GisPollException ("0", "Сервис ГИС вернул пустой результат");
             
             try (DB db0 = ModelHolder.getModel ().getDb ()) {                
-                process (db0, exportCAChResult);                        
+                process (db0, (UUID) r.get ("log.uuid_object"), exportCAChResult);
             }
             catch (Exception ex) {
+                logger.log (Level.SEVERE, "Cannot parse exportCAChResult", ex);
                 throw new GisPollException (ex);
             }
 
@@ -70,6 +72,7 @@ logger.info ("state=" + state);
             return;
         }
         catch (GisPollException ex) {            
+logger.log (Level.SEVERE, "ZZZZ", ex);
             ex.register (db, uuid, r);
         }
         
@@ -95,7 +98,7 @@ logger.info ("state=" + state);
         
     }    
 
-    private void process (DB db, List<ExportCAChResultType> exportCAChResult) throws Exception {
+    private void process (DB db, UUID uuidOrg, List<ExportCAChResultType> exportCAChResult) throws Exception {
         
         List <Map<String, Object>> contracts = new ArrayList<> ();
         
@@ -105,10 +108,14 @@ logger.info ("state=" + state);
             
             if (contract == null) continue;
             
-            contracts.add (Contract.toHASH (contract));
+            final Map<String, Object> h = Contract.toHASH (contract);
+            
+            h.put (Contract.c.UUID_ORG.lc (), uuidOrg);
+            
+            contracts.add (h);
             
         }
-        
+
         db.upsert (Contract.class, contracts, Contract.c.CONTRACTGUID.lc ());
         
     }

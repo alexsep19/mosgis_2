@@ -544,22 +544,10 @@ public class Contract extends EnTable {
         );
                 
         DateDetailsExportType dd = ctr.getDateDetails ();
-        
-        final DaySelectionExportType ddms = dd.getPeriodMetering ().getStartDate ();        
-        result.put (c.DDT_M_START.lc (), ddms.isLastDay () ? 99 : ddms.getDate ());
-        result.put (c.DDT_M_START_NXT.lc (), DB.ok (ddms.isIsNextMonth ()));
                 
-        final DaySelectionExportType ddme = dd.getPeriodMetering ().getEndDate ();
-        result.put (c.DDT_M_END.lc (), ddme.isLastDay () ? 99 : ddme.getDate ());
-        result.put (c.DDT_M_END_NXT.lc (), DB.ok (ddme.isIsNextMonth ()));
-        
-        DateDetailsExportType.PaymentDocumentInterval ddpd = dd.getPaymentDocumentInterval ();
-        result.put (c.DDT_D_START.lc (), ddpd.isLastDay () ? 99 : ddpd.getStartDate ());
-        result.put (c.DDT_D_START_NXT.lc (), DB.ok (ddpd.isNextMounth ()));
-        
-        DateDetailsExportType.PaymentInterval ddpp = dd.getPaymentInterval ();
-        result.put (c.DDT_I_START.lc (), ddpp.isLastDay () ? 99 : ddpp.getStartDate ());
-        result.put (c.DDT_I_START_NXT.lc (), DB.ok (ddpp.isNextMounth ()));
+        set (result, dd.getPeriodMetering ());
+        set (dd.getPaymentDocumentInterval (), result);
+        set (dd.getPaymentInterval (), result);
         
         ExportCAChResultType.Contract.Terminate terminate = ctr.getTerminate ();
         if (terminate != null) {
@@ -569,6 +557,36 @@ public class Contract extends EnTable {
 
         return result;
 
+    }
+
+    private static void set (DateDetailsExportType.PaymentInterval ddpp, final Map<String, Object> result) {
+        if (ddpp == null) return;
+        result.put (c.DDT_I_START.lc (), ddpp.isLastDay () ? 99 : ddpp.getStartDate ());
+        result.put (c.DDT_I_START_NXT.lc (), DB.ok (ddpp.isNextMounth ()));
+    }
+
+    private static void set (DateDetailsExportType.PaymentDocumentInterval ddpd, final Map<String, Object> result) {
+        if (ddpd == null) return;
+        result.put (c.DDT_D_START.lc (), ddpd.isLastDay () ? 99 : ddpd.getStartDate ());
+        result.put (c.DDT_D_START_NXT.lc (), DB.ok (ddpd.isNextMounth ()));
+    }
+
+    private static void set (final Map<String, Object> result, final DateDetailsExportType.PeriodMetering ddpm) {
+        if (ddpm == null) return;
+        setStart (ddpm.getStartDate (), result);
+        setEnd (ddpm.getEndDate (), result);
+    }
+
+    private static void setEnd (final DaySelectionExportType ddme, final Map<String, Object> result) {
+        if (ddme == null) return;
+        result.put (c.DDT_M_END.lc (), ddme.isLastDay () ? 99 : ddme.getDate ());
+        result.put (c.DDT_M_END_NXT.lc (), DB.ok (ddme.isIsNextMonth ()));
+    }
+
+    private static void setStart (final DaySelectionExportType ddms, final Map<String, Object> result) {
+        if (ddms == null) return;
+        result.put (c.DDT_M_START.lc (), ddms.isLastDay () ? 99 : ddms.getDate ());
+        result.put (c.DDT_M_START_NXT.lc (), DB.ok (ddms.isIsNextMonth ()));
     }
 
 }
