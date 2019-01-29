@@ -92,10 +92,26 @@ public final class ComplexSearch extends Search {
     public void apply (Select s) {
         
         Table table = s.getTable ();
+        List<String> refTableNames = table.getColumns ().values ().stream ()
+                .filter  (x -> x instanceof Ref)
+                .map     (x -> ((Ref) x).getTargetTable ().getName ())
+                .collect (Collectors.toList ());
+
         filters.forEach ((n, p) -> {
             final Col column = table.getColumn (n);
-            if (column == null) logger.warning("Column " + n + " not found in " + table.getName () + ". Filter ignored");
-                else s.and (n, p);
+            if (column == null) {
+                String [] colParts = n.split ("\\.");
+                if (colParts.length == 2 && refTableNames.contains(colParts[0])) {
+                    Table refTable = ModelHolder.getModel ().get (colParts[0]);
+                    Col targetRefTableColumn = refTable.getColumn (colParts[1]);
+                    if (targetRefTableColumn == null) 
+                        logger.warning ("Column " + colParts[1] + " not found in referencing table " + colParts[0] + ". Filter ignored");
+                    else 
+                        s.toOne (refTable, "AS ref_" + refTable.getName ()).and (targetRefTableColumn.getName (), p).on ();
+                }
+                else logger.warning ("Column " + n + " not found in " + table.getName () + ". Filter ignored");
+            }
+            else s.and (n, p);
         });
 
     }
