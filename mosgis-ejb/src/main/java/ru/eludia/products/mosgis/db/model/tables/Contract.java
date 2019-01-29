@@ -540,12 +540,13 @@ public class Contract extends EnTable {
             c.DOCNUM, ctr.getDocNum (),
             c.SIGNINGDATE, ctr.getSigningDate (),
             c.EFFECTIVEDATE, ctr.getEffectiveDate (),
-            c.PLANDATECOMPTETION, ctr.getPlanDateComptetion ()
+            c.PLANDATECOMPTETION, ctr.getPlanDateComptetion (),
+            c.ID_CUSTOMER_TYPE, VocGisCustomerType.i.OWNERS.getId ()
         );
         
-        set (result, ctr.getMunicipalHousing ());
-        set (result, ctr.getBuildingOwner ());
-        set (result, ctr.getCooperative ());
+        set (result, ctr.getMunicipalHousing (), VocGisCustomerType.i.MUNICIPAL_HOUSING);
+        set (result, ctr.getBuildingOwner (), VocGisCustomerType.i.BUILDINGOWNER);
+        set (result, ctr.getCooperative (), VocGisCustomerType.i.COOPERATIVE);
                 
         DateDetailsExportType dd = ctr.getDateDetails ();
         if (dd != null) {
@@ -594,9 +595,10 @@ public class Contract extends EnTable {
         result.put (c.DDT_M_START_NXT.lc (), DB.ok (d.isIsNextMonth ()) ? 1 : 0);
     }
     
-    private static void set (Map<String, Object> result, RegOrgType orgCustomer) {
+    private static void set (Map<String, Object> result, RegOrgType orgCustomer, VocGisCustomerType.i type) {
         if (orgCustomer == null) return;
         result.put (c.UUID_ORG_CUSTOMER.lc (), orgCustomer.getOrgRootEntityGUID ());
+        result.put (c.ID_CUSTOMER_TYPE.lc (), type.getId ());
     }
 
 }
