@@ -24,6 +24,7 @@ import ru.gosuslugi.dom.schema.integration.house_management.DateDetailsType;
 import ru.gosuslugi.dom.schema.integration.house_management.DaySelectionExportType;
 import ru.gosuslugi.dom.schema.integration.house_management.DeviceMeteringsDaySelectionType;    
 import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
+import ru.gosuslugi.dom.schema.integration.organizations_registry_base.RegOrgType;
 
 public class Contract extends EnTable {
 
@@ -541,13 +542,18 @@ public class Contract extends EnTable {
             c.EFFECTIVEDATE, ctr.getEffectiveDate (),
             c.PLANDATECOMPTETION, ctr.getPlanDateComptetion ()
         );
+        
+        set (result, ctr.getMunicipalHousing ());
+        set (result, ctr.getBuildingOwner ());
+        set (result, ctr.getCooperative ());
                 
         DateDetailsExportType dd = ctr.getDateDetails ();
-                
-        set (result, dd.getPeriodMetering ());
-        set (dd.getPaymentDocumentInterval (), result);
-        set (dd.getPaymentInterval (), result);
-        
+        if (dd != null) {
+            set (result, dd.getPeriodMetering ());
+            set (dd.getPaymentDocumentInterval (), result);
+            set (dd.getPaymentInterval (), result);
+        }                
+
         ExportCAChResultType.Contract.Terminate terminate = ctr.getTerminate ();
         if (terminate != null) {
             result.put (c.CODE_VC_NSI_54.lc (), terminate.getReasonRef ().getCode ());
@@ -586,6 +592,11 @@ public class Contract extends EnTable {
         if (d == null) return;
         result.put (c.DDT_M_START.lc (), DB.ok (d.isLastDay ()) ? 99 : d.getDate ());
         result.put (c.DDT_M_START_NXT.lc (), DB.ok (d.isIsNextMonth ()) ? 1 : 0);
+    }
+    
+    private static void set (Map<String, Object> result, RegOrgType orgCustomer) {
+        if (orgCustomer == null) return;
+        result.put (c.UUID_ORG_CUSTOMER.lc (), orgCustomer.getOrgRootEntityGUID ());
     }
 
 }
