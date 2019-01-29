@@ -1,6 +1,8 @@
 package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.ejb.ActivationConfigProperty;
@@ -8,6 +10,7 @@ import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
+import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
@@ -16,6 +19,7 @@ import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 
 @MessageDriven(activationConfig = {
@@ -46,8 +50,21 @@ public class GisPollExportOrgMgmtContracts extends GisPollMDB {
         UUID orgPPAGuid = (UUID) r.get ("ppa");
                         
         try {            
-            GetStateResult state = getState (orgPPAGuid, r);            
+            
+            GetStateResult state = getState (orgPPAGuid, r);                        
 logger.info ("state=" + state);
+
+            List<ExportCAChResultType> exportCAChResult = state.getExportCAChResult ();
+            
+            if (exportCAChResult == null) throw new GisPollException ("0", "Сервис ГИС вернул пустой результат");
+            
+            try (DB db0 = ModelHolder.getModel ().getDb ()) {                
+                process (db0, exportCAChResult);                        
+            }
+            catch (Exception ex) {
+                throw new GisPollException (ex);
+            }
+
         }
         catch (GisPollRetryException ex) {
             return;
@@ -77,5 +94,23 @@ logger.info ("state=" + state);
         return rp;
         
     }    
+
+    private void process (DB db, List<ExportCAChResultType> exportCAChResult) throws Exception {
+        
+        List <Map<String, Object>> contracts = new ArrayList<> ();
+        
+        for (ExportCAChResultType cach: exportCAChResult) {
+            
+            ExportCAChResultType.Contract contract = cach.getContract ();
+            
+            if (contract == null) continue;
+            
+            contracts.add (Contract.toHASH (contract));
+            
+        }
+        
+        db.upsert (Contract.class, contracts, Contract.c.CONTRACTGUID.lc ());
+        
+    }
     
 }
