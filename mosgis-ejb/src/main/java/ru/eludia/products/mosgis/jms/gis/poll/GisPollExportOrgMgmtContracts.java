@@ -120,7 +120,7 @@ logger.log (Level.SEVERE, "ZZZZ", ex);
             final Map<String, Object> h = Contract.toHASH (contract);
             
             h.put (Contract.c.UUID_ORG.lc (), uuidOrg);
-            h.put (Contract.c.ID_LOG.lc (), null);
+            h.put (Contract.c.ID_LOG.lc (), "00000000-0000-0000-0000-000000000000");
             
             contracts.add (h);
             
