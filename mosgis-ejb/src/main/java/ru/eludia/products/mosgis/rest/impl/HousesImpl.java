@@ -23,6 +23,7 @@ import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
+import ru.eludia.base.db.sql.gen.Predicate;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.PassportKind;
@@ -93,6 +94,8 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
     
     private void applyComplexSearch (final ComplexSearch search, Select select) {
 
+        //Predicate oktmo = search.getFilters ().get("oktmo");
+        
         search.filter (select, "");
 
     }
