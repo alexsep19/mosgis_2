@@ -151,7 +151,7 @@ public class CharterObjectService extends Table {
             this.uuid_charter = uuid_charter;
             this.files = files;
             commonPart.put ("uuid_charter", uuid_charter);
-            commonPart.put ("is_deleted", 0);
+//          commonPart.put ("is_deleted", 0);
         }                
         
         void setFile (Map<String, Object> h, AttachmentType agreement) {
