@@ -193,6 +193,7 @@ public class Contract extends EnTable {
 
             + "IF :NEW.id_contract_type = " + VocGisContractType.i.MGMT.getId () + " THEN "
 
+                + "IF :NEW.id_customer_type IS NULL THEN "
                 + "IF :NEW.uuid_org_customer IS NULL "
                 + "  THEN "
                 + "    :NEW.id_customer_type:=" + VocGisCustomerType.i.OWNERS.getId () + "; "
@@ -202,6 +203,7 @@ public class Contract extends EnTable {
                 + "    IF :NEW.id_customer_type IS NULL THEN "
                 + "      raise_application_error (-20000, 'Указанная организация не зарегистрирована в ГИС ЖКХ как возможный заказчик договора управления: ТСЖ, ЖСК и т. п. Операция отменена.'); "
                 + "    END IF; "
+                + "END IF; "
                 + "END IF; "
 
                 + "SELECT MIN(code) INTO :NEW.code_vc_nsi_58 FROM vc_gis_customer_type_nsi_58 WHERE code=:NEW.code_vc_nsi_58 AND id=:NEW.id_customer_type; "
