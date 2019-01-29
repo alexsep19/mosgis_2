@@ -18,7 +18,7 @@ define ([], function () {
                 ]}},
                 {field: 'oktmo', caption: 'ОКТМО', type: 'text', operators: ['is'], operator: 'is'},
                 {field: 'code_vc_nsi_24', caption: 'Состояние', type: 'list', options: {items: data.vc_nsi_24.items}},
-                {field: 'id_status_gis', caption: 'ГИС ЖКХ', type: 'list', options: { items: data.vc_gis_status.items}},
+                {field: 'id_status', caption: 'ГИС ЖКХ', type: 'list', options: { items: data.vc_house_status.items}},
                 {field: 'address_uc',           caption: 'Адрес',         type: 'text'},
                 {field: 'fiashouseguid',           caption: 'GUID ФИАС',         type: 'text', operators: ['null', 'not null', 'is'], operator: 'is'},
             ],
@@ -29,9 +29,7 @@ define ([], function () {
                 {field: 'fiashouseguid', caption: 'GUID ФИАС',    size: 30},
                 {field: 'address', caption: 'Адрес',    size: 50},
                 {field: 'oktmo', caption: 'ОКТМО', size: 15},
-                {field: 'status_label', caption: 'Статус', size: 10, render: function (r) {
-                    return data.vc_house_status[r.id_status] + (r.id_status_gis ? " - " + data.vc_gis_status[r.id_status_gis] : "")
-                }},
+                {field: 'id_status', caption: 'Статус', size: 10, voc: data.vc_house_status},
                 {field: 'code_vc_nsi_24', caption: 'Состояние', size: 20, voc: data.vc_nsi_24}
             ],
 
