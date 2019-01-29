@@ -11,7 +11,10 @@ import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
+import ru.eludia.base.model.Table;
+import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
@@ -100,6 +103,12 @@ logger.log (Level.SEVERE, "ZZZZ", ex);
 
     private void process (DB db, UUID uuidOrg, List<ExportCAChResultType> exportCAChResult) throws Exception {
         
+        final MosGisModel model = ModelHolder.getModel ();
+        
+        Table table = model.get (Contract.class);
+        
+        db.begin ();
+        
         List <Map<String, Object>> contracts = new ArrayList<> ();
         
         for (ExportCAChResultType cach: exportCAChResult) {
@@ -111,12 +120,25 @@ logger.log (Level.SEVERE, "ZZZZ", ex);
             final Map<String, Object> h = Contract.toHASH (contract);
             
             h.put (Contract.c.UUID_ORG.lc (), uuidOrg);
+            h.put (Contract.c.ID_LOG.lc (), null);
             
             contracts.add (h);
             
         }
+        
+        for (Map<String, Object> h: contracts) {
+            
+logger.info ("h=" + h);
+            
+            db.upsert (Contract.class, h, Contract.c.CONTRACTGUID.lc ());
+            
+            String uuid = db.getString (db.getModel ().select (Contract.class, "uuid").where (Contract.c.CONTRACTGUID, h.get (Contract.c.CONTRACTGUID.lc ())));
+            
+            model.createIdLog (db, table, null, uuid, VocAction.i.IMPORT_MGMT_CONTRACTS);
 
-        db.upsert (Contract.class, contracts, Contract.c.CONTRACTGUID.lc ());
+        }
+        
+        db.commit ();
         
     }
     
