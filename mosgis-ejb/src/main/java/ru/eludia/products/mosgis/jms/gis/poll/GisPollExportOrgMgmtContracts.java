@@ -62,6 +62,7 @@ public class GisPollExportOrgMgmtContracts extends GisPollMDB {
         if (DB.ok (r.get ("is_failed"))) throw new IllegalStateException (r.get ("err_text").toString ());
         
         UUID orgPPAGuid = (UUID) r.get ("ppa");
+        UUID uuidOrg    = (UUID) r.get ("log.uuid_object");
                         
         try {            
             
@@ -72,8 +73,18 @@ logger.info ("state=" + state);
             
             if (exportCAChResult == null) throw new GisPollException ("0", "Сервис ГИС вернул пустой результат");
             
+            List <Map<String, Object>> contracts = toHashList (exportCAChResult, uuidOrg);
+                        
+            try {                
+                importMissingOrgs (db, contracts);
+            }
+            catch (Exception ex) {
+                logger.log (Level.SEVERE, "Cannot import contract related entity", ex);
+                throw new GisPollException (ex);
+            }
+
             try (DB db0 = ModelHolder.getModel ().getDb ()) {                
-                process (db0, (UUID) r.get ("log.uuid_object"), exportCAChResult);
+                process (db0, uuidOrg, contracts);
             }
             catch (Exception ex) {
                 logger.log (Level.SEVERE, "Cannot parse exportCAChResult", ex);
@@ -85,7 +96,6 @@ logger.info ("state=" + state);
             return;
         }
         catch (GisPollException ex) {            
-logger.log (Level.SEVERE, "ZZZZ", ex);
             ex.register (db, uuid, r);
         }
         
@@ -111,18 +121,14 @@ logger.log (Level.SEVERE, "ZZZZ", ex);
         
     }    
 
-    void process (DB db, UUID uuidOrg, List<ExportCAChResultType> exportCAChResult) throws Exception {
+    void process (DB db, UUID uuidOrg, List <Map<String, Object>> contracts) throws Exception {
         
         final MosGisModel model = ModelHolder.getModel ();
         
         Table table = model.get (Contract.class);
         
         db.begin ();
-        
-        List <Map<String, Object>> contracts = toHashList (exportCAChResult, uuidOrg);
-        
-        importMissingOrgs (db, contracts);
-        
+                        
         for (Map<String, Object> h: contracts) {
             
 logger.info ("h=" + h);

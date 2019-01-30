@@ -40,10 +40,8 @@ public class GisPollExportOrgMgmtContractsTest extends BaseTest {
         }
                 
         try (DB db = model.getDb ()) {
-            
-//            mdb.importMissingOrgs (db, contracts);
-            
-            mdb.process (db, uuidOrg, getStateResult.getExportCAChResult ());
+                        
+            mdb.process (db, uuidOrg, contracts);
             
         }
         
