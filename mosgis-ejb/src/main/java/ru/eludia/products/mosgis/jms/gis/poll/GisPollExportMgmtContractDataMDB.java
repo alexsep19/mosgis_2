@@ -111,7 +111,7 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
 
                 db.begin ();
                 
-                    updateContract  (db, orgUuid, ctrUuid, contract, isAnonymous);
+                    updateContractAndLog  (db, orgUuid, ctrUuid, contract, isAnonymous, filesClient);
 
                 db.commit ();
 
@@ -129,17 +129,31 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
 
     }        
 
-    private void updateContract (DB db, UUID orgUuid, UUID ctrUuid, ExportCAChResultType.Contract contract, boolean isAnonymous) throws SQLException {
+    private void updateContractAndLog (DB db, UUID orgUuid, UUID ctrUuid, ExportCAChResultType.Contract contract, boolean isAnonymous, RestGisFilesClient filesClient) throws SQLException {
+        
+        Map<String, Object> h = updateContract (db, orgUuid, ctrUuid, filesClient, contract, isAnonymous);
+        
+        h.put ("uuid", getUuid ());
+        db.update (ContractLog.class, h);
+        
+        db.update (OutSoap.class, HASH (
+            "uuid", getUuid (),
+            "id_status", DONE.getId ()
+        ));
+        
+    }
+
+    static Map<String, Object> updateContract (DB db, UUID orgUuid, UUID ctrUuid, RestGisFilesClient fc, ExportCAChResultType.Contract contract, boolean isAnonymous) throws SQLException {
         
         Model m = db.getModel ();
         
         AdditionalService.Sync adds = ((AdditionalService) m.get (AdditionalService.class)).new Sync (db, orgUuid);
         adds.reload ();
-                
-        ContractFile.Sync contractFiles = ((ContractFile) m.get (ContractFile.class)).new Sync (db, ctrUuid, filesClient);
+        
+        ContractFile.Sync contractFiles = ((ContractFile) m.get (ContractFile.class)).new Sync (db, ctrUuid, fc);
         contractFiles.addFrom (contract);
         contractFiles.sync ();
-
+        
         ContractObject.Sync contractObjects = ((ContractObject) m.get (ContractObject.class)).new Sync (db, ctrUuid, contractFiles);
         contractObjects.addAll (contract.getContractObject ());
         contractObjects.sync ();
@@ -147,7 +161,6 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
         final ContractObjectService srvTable = (ContractObjectService) m.get (ContractObjectService.class);
         ContractObjectService.SyncH contractObjectServicesH = (srvTable).new SyncH (db, ctrUuid, contractFiles);
         ContractObjectService.SyncA contractObjectServicesA = (srvTable).new SyncA (db, ctrUuid, contractFiles, adds);
-        
         contract.getContractObject ().forEach ((co) -> {
             Map<String, Object> parent = HASH ("uuid_contract_object", contractObjects.getPk (co));
             contractObjectServicesH.addAll (co.getHouseService (), parent);
@@ -158,26 +171,18 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
         contractObjectServicesA.sync ();
         
         VocGisStatus.i status = VocGisStatus.i.forName (contract.getContractStatus ().value ());
-        
         final Map<String, Object> h = HASH (
-            "id_ctr_status",       status.getId (),
-            "id_ctr_status_gis",   status.getId (),
-            "contractversionguid", contract.getContractVersionGUID ()
+                "id_ctr_status",       status.getId (),
+                "id_ctr_status_gis",   status.getId (),
+                "contractversionguid", contract.getContractVersionGUID ()
         );
-        
         Contract.setDateFields (h, contract);
-        if (!isAnonymous) Contract.setExtraFields (h, contract);
         
+        if (!isAnonymous) Contract.setExtraFields (h, contract);
         h.put ("uuid", ctrUuid);
         db.update (Contract.class, h);
         
-        h.put ("uuid", getUuid ());
-        db.update (ContractLog.class, h);
-        
-        db.update (OutSoap.class, HASH (
-            "uuid", getUuid (),
-            "id_status", DONE.getId ()
-        ));
+        return h;
         
     }
 

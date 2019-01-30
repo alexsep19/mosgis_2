@@ -2,14 +2,12 @@ package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.UUID;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -21,8 +19,8 @@ import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
-import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
@@ -31,7 +29,9 @@ import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTypes;
+import ru.eludia.products.mosgis.ejb.wsc.RestGisFilesClient;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
+import static ru.eludia.products.mosgis.jms.gis.poll.GisPollExportMgmtContractDataMDB.updateContract;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 
@@ -44,6 +44,9 @@ public class GisPollExportOrgMgmtContracts extends GisPollMDB {
 
     @EJB
     WsGisHouseManagementClient wsGisHouseManagementClient;
+    
+    @EJB
+    RestGisFilesClient filesClient;
     
     @Resource (mappedName = "mosgis.inOrgByGUIDQueue")
     Queue inOrgByGUIDQueue;
@@ -86,7 +89,7 @@ logger.info ("state=" + state);
             }
 
             try (DB db0 = ModelHolder.getModel ().getDb ()) {                
-                process (db0, uuidOrg, contracts);
+                process (db0, uuidOrg, contracts);                
             }
             catch (Exception ex) {
                 logger.log (Level.SEVERE, "Cannot parse exportCAChResult", ex);
@@ -124,23 +127,18 @@ logger.info ("state=" + state);
     }    
 
     void process (DB db, UUID uuidOrg, List <Map<String, Object>> contracts) throws Exception {
-        
-        final MosGisModel model = ModelHolder.getModel ();
-        
-        Table table = model.get (Contract.class);
-        
-        db.begin ();
-                        
-        for (Map<String, Object> h: contracts) {
-            
-logger.info ("h=" + h);
-            
-            upsertContract (db, h, model, table);
 
+        final MosGisModel model = ModelHolder.getModel ();
+
+        Table table = model.get (Contract.class);
+
+        for (Map<String, Object> h: contracts) {
+logger.info ("h=" + h);
+            db.begin ();
+            upsertContract (db, h, model, table, uuidOrg);
+            db.commit ();
         }
-        
-        db.commit ();
-        
+
     }
     
     void importMissingOrgs (DB db, List<Map<String, Object>> contracts) throws Exception {
@@ -186,10 +184,12 @@ logger.info ("h=" + h);
                         
     }
 
-    void upsertContract (DB db, Map<String, Object> h, final MosGisModel model, Table table) throws SQLException {        
+    void upsertContract (DB db, Map<String, Object> h, final MosGisModel model, Table table, UUID uuidOrg) throws SQLException {        
+        h.put (Contract.c.ID_CTR_STATUS.lc (), VocGisStatus.i.PENDING_RQ_RELOAD);
         db.upsert (Contract.class, h, Contract.c.CONTRACTGUID.lc ());        
-        String uuid = db.getString (db.getModel ().select (Contract.class, "uuid").where (Contract.c.CONTRACTGUID, h.get (Contract.c.CONTRACTGUID.lc ())));        
-        model.createIdLog (db, table, null, uuid, VocAction.i.IMPORT_MGMT_CONTRACTS);
+        String ctrUuid = db.getString (db.getModel ().select (Contract.class, "uuid").where (Contract.c.CONTRACTGUID, h.get (Contract.c.CONTRACTGUID.lc ())));        
+        updateContract (db, uuidOrg, UUID.fromString (ctrUuid), filesClient, (ExportCAChResultType.Contract) h.get ("_"), true);
+        model.createIdLog (db, table, null, ctrUuid, VocAction.i.IMPORT_MGMT_CONTRACTS);
     }
 
     List<Map<String, Object>> toHashList (List<ExportCAChResultType> exportCAChResult, UUID uuidOrg) {
@@ -207,7 +207,8 @@ logger.info ("h=" + h);
         h.put (Contract.c.UUID_ORG.lc (), uuidOrg);
         h.put (Contract.c.ID_CONTRACT_TYPE.lc (), 1);
         h.put (Contract.c.ID_LOG.lc (), null);
-                
+        h.put ("_", contract);
+        
         contracts.add (h);
         
     }
