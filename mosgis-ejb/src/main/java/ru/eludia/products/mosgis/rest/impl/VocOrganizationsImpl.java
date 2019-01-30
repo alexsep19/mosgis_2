@@ -164,6 +164,7 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
         
         Select select = ModelHolder.getModel ().select (VocOrganization.class, "*", "uuid AS id")
             .where ("id_type", p.getString ("id_type", null))
+            .and ("is_deleted", 0)
             .orderBy ("label")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
         
