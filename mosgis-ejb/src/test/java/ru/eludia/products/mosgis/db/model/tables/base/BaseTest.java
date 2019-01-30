@@ -28,7 +28,7 @@ import ru.eludia.products.mosgis.ejb.ModelHolder;
 
 public class BaseTest {
     
-    private static JsonWriterFactory jwf;
+    protected static JsonWriterFactory jwf;
     protected JAXBContext jc;
     protected Schema schema;
     protected MosGisModel model;

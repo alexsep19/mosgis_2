@@ -2,8 +2,11 @@ package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.UUID;
 import java.util.logging.Level;
 import javax.ejb.ActivationConfigProperty;
@@ -12,6 +15,7 @@ import javax.ejb.MessageDriven;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.base.model.Table;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -109,37 +113,98 @@ logger.log (Level.SEVERE, "ZZZZ", ex);
         
         db.begin ();
         
-        List <Map<String, Object>> contracts = new ArrayList<> ();
+        List <Map<String, Object>> contracts = toHashList (exportCAChResult, uuidOrg);
         
-        for (ExportCAChResultType cach: exportCAChResult) {
-            
-            ExportCAChResultType.Contract contract = cach.getContract ();
-            
-            if (contract == null) continue;
-            
-            final Map<String, Object> h = Contract.toHASH (contract);
-            
-            h.put (Contract.c.UUID_ORG.lc (), uuidOrg);
-            h.put (Contract.c.ID_CONTRACT_TYPE.lc (), 1);
-            h.put (Contract.c.ID_LOG.lc (), null);
-            
-            contracts.add (h);
-            
-        }
+        getUuidOrgs (contracts);
         
         for (Map<String, Object> h: contracts) {
             
 logger.info ("h=" + h);
             
-            db.upsert (Contract.class, h, Contract.c.CONTRACTGUID.lc ());
-            
-            String uuid = db.getString (db.getModel ().select (Contract.class, "uuid").where (Contract.c.CONTRACTGUID, h.get (Contract.c.CONTRACTGUID.lc ())));
-            
-            model.createIdLog (db, table, null, uuid, VocAction.i.IMPORT_MGMT_CONTRACTS);
+            upsertContract (db, h, model, table);
 
         }
         
         db.commit ();
+        
+    }
+
+    Set<String> getUuidOrgs (List<Map<String, Object>> contracts) {
+        
+        Set<String> uuidOrgs = new HashSet <> ();
+        
+        for (Map<String, Object> h: contracts) {
+            Object uuid = h.get (Contract.c.UUID_ORG_CUSTOMER.lc ());
+            if (uuid != null) uuidOrgs.add (uuid.toString ());
+        }
+        
+        return uuidOrgs;
+        
+    }
+    
+    Set<String> getAddedUuidOrgs (DB db, List<Map<String, Object>> contracts) throws Exception {
+        
+        Set<String> uuidOrgs = getUuidOrgs (contracts);
+        
+        if (uuidOrgs.isEmpty ()) return Collections.EMPTY_SET;
+        
+        db.forEach (db.getModel ()
+            .select (VocOrganization.class, "uuid")
+            .where ("uuid IN", uuidOrgs.toArray ()), (rs) -> {
+                uuidOrgs.remove (DB.to.UUIDFromHex (rs.getString (1)).toString ());
+            }
+        );
+
+        List<String> already = null;
+        
+        for (String uuid: uuidOrgs) {
+            
+            try {
+                
+                db.insert (VocOrganization.class, DB.HASH (
+                    EnTable.c.IS_DELETED, 1,
+                    VocOrganization.c.ORGROOTENTITYGUID, uuid,
+                    VocOrganization.c.SHORTNAME, "[Загрузка в процессе...]"
+                ));
+                
+            }
+            catch (SQLException ex) {
+                if (ex.getErrorCode () != 1) throw ex;
+                if (already == null) already = new ArrayList<> ();
+                already.add (uuid);
+            }
+            
+        }
+        
+        if (already != null) uuidOrgs.removeAll (already);
+        
+        return uuidOrgs;
+        
+    }
+
+    void upsertContract (DB db, Map<String, Object> h, final MosGisModel model, Table table) throws SQLException {        
+        db.upsert (Contract.class, h, Contract.c.CONTRACTGUID.lc ());        
+        String uuid = db.getString (db.getModel ().select (Contract.class, "uuid").where (Contract.c.CONTRACTGUID, h.get (Contract.c.CONTRACTGUID.lc ())));        
+        model.createIdLog (db, table, null, uuid, VocAction.i.IMPORT_MGMT_CONTRACTS);
+    }
+
+    List<Map<String, Object>> toHashList (List<ExportCAChResultType> exportCAChResult, UUID uuidOrg) {
+        List <Map<String, Object>> contracts = new ArrayList<> ();
+        for (ExportCAChResultType cach: exportCAChResult) addhash (cach.getContract (), uuidOrg, contracts);
+        return contracts;
+    }
+
+    void addhash (ExportCAChResultType.Contract contract, UUID uuidOrg, List<Map<String, Object>> contracts) {
+        
+        if (contract == null) return;
+
+        final Map<String, Object> h = Contract.toHASH (contract);
+        
+        h.put (Contract.c.UUID_ORG.lc (), uuidOrg);
+        h.put (Contract.c.ID_CONTRACT_TYPE.lc (), 1);
+        h.put (Contract.c.ID_LOG.lc (), null);
+        
+        contracts.add (h);
         
     }
     

@@ -1,12 +1,17 @@
 package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.io.File;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import javax.json.JsonObject;
+import javax.json.JsonWriter;
 import javax.xml.bind.JAXBContext;
 import org.junit.Test;
 import org.junit.Test.None;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.tables.base.BaseTest;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 
 public class GisPollExportOrgMgmtContractsTest extends BaseTest {
@@ -26,9 +31,21 @@ public class GisPollExportOrgMgmtContractsTest extends BaseTest {
         
         GetStateResult getStateResult = (GetStateResult) jc.createUnmarshaller ().unmarshal (new File ("c:\\projects\\mosgis\\incoming\\tmp\\exportCAChResult.xml"));
         
+        List<ExportCAChResultType> exportCAChResult = getStateResult.getExportCAChResult ();
+                
+        final List<Map<String, Object>> contracts = mdb.toHashList (exportCAChResult, uuidOrg);
+        
+        try (JsonWriter jw = jwf.createWriter (System.out)) {
+            jw.writeArray (DB.to.JsonArrayBuilder (contracts).build ());
+        }
+        
+        System.out.println (mdb.getUuidOrgs (contracts));
+        
         try (DB db = model.getDb ()) {
             
-            mdb.process (db, uuidOrg, getStateResult.getExportCAChResult ());
+            System.out.println (mdb.getAddedUuidOrgs (db, contracts));
+            
+//            mdb.process (db, uuidOrg, getStateResult.getExportCAChResult ());
             
         }
         
