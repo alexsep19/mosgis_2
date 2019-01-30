@@ -9,9 +9,11 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.UUID;
 import java.util.logging.Level;
+import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
+import javax.jms.Queue;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.base.model.Table;
@@ -26,6 +28,7 @@ import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTypes;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
@@ -39,6 +42,9 @@ public class GisPollExportOrgMgmtContracts extends GisPollMDB {
 
     @EJB
     WsGisHouseManagementClient wsGisHouseManagementClient;
+    
+    @Resource (mappedName = "mosgis.inOrgByGUIDQueue")
+    Queue inOrgByGUIDQueue;
 
     @Override
     protected Get get (UUID uuid) {
@@ -115,7 +121,7 @@ logger.log (Level.SEVERE, "ZZZZ", ex);
         
         List <Map<String, Object>> contracts = toHashList (exportCAChResult, uuidOrg);
         
-        getUuidOrgs (contracts);
+        importMissingOrgs (db, contracts);
         
         for (Map<String, Object> h: contracts) {
             
@@ -128,8 +134,8 @@ logger.info ("h=" + h);
         db.commit ();
         
     }
-
-    Set<String> getUuidOrgs (List<Map<String, Object>> contracts) {
+    
+    void importMissingOrgs (DB db, List<Map<String, Object>> contracts) throws Exception {
         
         Set<String> uuidOrgs = new HashSet <> ();
         
@@ -138,48 +144,38 @@ logger.info ("h=" + h);
             if (uuid != null) uuidOrgs.add (uuid.toString ());
         }
         
-        return uuidOrgs;
+        if (uuidOrgs.isEmpty ()) return;
         
-    }
-    
-    Set<String> getAddedUuidOrgs (DB db, List<Map<String, Object>> contracts) throws Exception {
+        MosGisModel model = ModelHolder.getModel ();
+        Table t = model.get (VocOrganization.class);
         
-        Set<String> uuidOrgs = getUuidOrgs (contracts);
-        
-        if (uuidOrgs.isEmpty ()) return Collections.EMPTY_SET;
-        
-        db.forEach (db.getModel ()
-            .select (VocOrganization.class, "uuid")
+        db.forEach (model
+            .select (t, "uuid")
             .where ("uuid IN", uuidOrgs.toArray ()), (rs) -> {
                 uuidOrgs.remove (DB.to.UUIDFromHex (rs.getString (1)).toString ());
             }
         );
 
-        List<String> already = null;
-        
+        final Map<String, Object> h = DB.HASH (
+            EnTable.c.IS_DELETED, 1,
+            VocOrganization.c.ID_TYPE, VocOrganizationTypes.i.LEGAL.getId (),
+            VocOrganization.c.SHORTNAME, "[Загрузка в процессе...]"
+        );
+    
         for (String uuid: uuidOrgs) {
-            
+
             try {
-                
-                db.insert (VocOrganization.class, DB.HASH (
-                    EnTable.c.IS_DELETED, 1,
-                    VocOrganization.c.ORGROOTENTITYGUID, uuid,
-                    VocOrganization.c.SHORTNAME, "[Загрузка в процессе...]"
-                ));
-                
+                h.put (VocOrganization.c.ORGROOTENTITYGUID.lc (), uuid);
+                db.insert (t, h);
+                String idLog = model.createIdLog (db, t, null, uuid, VocAction.i.REFRESH);
+                if (uuidPublisher != null) uuidPublisher.publish (inOrgByGUIDQueue, idLog);
             }
             catch (SQLException ex) {
-                if (ex.getErrorCode () != 1) throw ex;
-                if (already == null) already = new ArrayList<> ();
-                already.add (uuid);
+                if (ex.getErrorCode () != 1) logger.log (Level.SEVERE, "Cannot register org #" + uuid, ex);
             }
             
         }
-        
-        if (already != null) uuidOrgs.removeAll (already);
-        
-        return uuidOrgs;
-        
+                        
     }
 
     void upsertContract (DB db, Map<String, Object> h, final MosGisModel model, Table table) throws SQLException {        

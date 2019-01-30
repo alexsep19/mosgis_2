@@ -38,14 +38,12 @@ public class GisPollExportOrgMgmtContractsTest extends BaseTest {
         try (JsonWriter jw = jwf.createWriter (System.out)) {
             jw.writeArray (DB.to.JsonArrayBuilder (contracts).build ());
         }
-        
-        System.out.println (mdb.getUuidOrgs (contracts));
-        
+                
         try (DB db = model.getDb ()) {
             
-            System.out.println (mdb.getAddedUuidOrgs (db, contracts));
+//            mdb.importMissingOrgs (db, contracts);
             
-//            mdb.process (db, uuidOrg, getStateResult.getExportCAChResult ());
+            mdb.process (db, uuidOrg, getStateResult.getExportCAChResult ());
             
         }
         
