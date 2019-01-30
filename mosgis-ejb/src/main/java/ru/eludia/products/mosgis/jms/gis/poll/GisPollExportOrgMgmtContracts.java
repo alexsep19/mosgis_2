@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -20,6 +21,7 @@ import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
+import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -205,9 +207,9 @@ logger.info ("h=" + h);
         h.put (Contract.c.UUID_ORG.lc (), uuidOrg);
         h.put (Contract.c.ID_CONTRACT_TYPE.lc (), 1);
         h.put (Contract.c.ID_LOG.lc (), null);
-        
+                
         contracts.add (h);
         
     }
-    
+                
 }

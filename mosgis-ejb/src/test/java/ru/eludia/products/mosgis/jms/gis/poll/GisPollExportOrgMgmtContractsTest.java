@@ -39,11 +39,11 @@ public class GisPollExportOrgMgmtContractsTest extends BaseTest {
             jw.writeArray (DB.to.JsonArrayBuilder (contracts).build ());
         }
                 
-        try (DB db = model.getDb ()) {
+//        try (DB db = model.getDb ()) {
                         
-            mdb.process (db, uuidOrg, contracts);
+//            mdb.process (db, uuidOrg, contracts);
             
-        }
+//        }
         
     }
     
