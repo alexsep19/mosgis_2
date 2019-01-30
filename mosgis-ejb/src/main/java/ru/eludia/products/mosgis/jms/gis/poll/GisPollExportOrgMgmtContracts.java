@@ -101,7 +101,7 @@ logger.log (Level.SEVERE, "ZZZZ", ex);
         
     }    
 
-    private void process (DB db, UUID uuidOrg, List<ExportCAChResultType> exportCAChResult) throws Exception {
+    void process (DB db, UUID uuidOrg, List<ExportCAChResultType> exportCAChResult) throws Exception {
         
         final MosGisModel model = ModelHolder.getModel ();
         
