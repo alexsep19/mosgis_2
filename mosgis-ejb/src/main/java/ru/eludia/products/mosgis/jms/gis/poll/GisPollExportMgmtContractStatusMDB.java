@@ -101,8 +101,8 @@ public class GisPollExportMgmtContractStatusMDB extends GisPollMDB {
         List <UUID> toPromote = new ArrayList<> ();
         Model m = db.getModel ();        
         for (ExportStatusCAChResultType er: rp.getExportStatusCAChResult ()) processExportStatus (er, db, m, toPromote, versionsOnly, contractRecords, objectRecords);
+        db.update (ContractObject.class, objectRecords, "uuid_contract", "fiashouseguid");        
         db.update (Contract.class, contractRecords);
-        db.upsert (ContractObject.class, objectRecords, "uuid_contract", "fiashouseguid");        
         return toPromote;
         
     }   

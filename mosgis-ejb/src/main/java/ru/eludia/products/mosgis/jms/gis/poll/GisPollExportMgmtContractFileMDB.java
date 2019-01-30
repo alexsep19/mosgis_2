@@ -12,9 +12,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
+import javax.jms.Queue;
 import javax.ws.rs.core.Response;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
@@ -23,6 +25,7 @@ import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractFile;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.RestGisFilesClient;
 
 @MessageDriven(activationConfig = {
@@ -34,7 +37,7 @@ public class GisPollExportMgmtContractFileMDB extends UUIDMDB<ContractFile> {
 
     @EJB
     protected RestGisFilesClient restGisFilesClient;
-
+    
     @Override
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "attachmentguid")

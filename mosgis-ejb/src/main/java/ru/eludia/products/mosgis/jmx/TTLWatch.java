@@ -76,12 +76,7 @@ public class TTLWatch implements TTLWatchMBean {
         }
 
     }
-    
-    static final Object [] progressStatus = Arrays.asList (VocGisStatus.i.values ()).stream ()
-        .filter ((t) -> t.isInProgress ())
-        .map ((t) -> t.getId ())
-        .toArray ();
-        
+            
     public static Ref getParentCol (Table t) {
         return (Ref) t.getColumn ("uuid_object");
     }
@@ -123,7 +118,7 @@ public class TTLWatch implements TTLWatchMBean {
 
             db.forEach (m
                     .select (entityTable, "AS root", "uuid")
-                    .where (statusCol.getName () + " IN", progressStatus)
+                    .where (statusCol.getName () + " IN", VocGisStatus.i.progressStatus)
                     .toOne  (logTable, "AS log")
                         .where ("ts <", new java.sql.Timestamp (System.currentTimeMillis () - getPeriodMs ()))
                         .on ("root.id_log=log.uuid")

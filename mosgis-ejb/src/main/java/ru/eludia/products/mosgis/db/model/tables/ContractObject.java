@@ -78,7 +78,7 @@ public class ContractObject extends EnTable {
                 + " OR (:OLD.startdate <> :NEW.startdate)"
                 + " OR (:OLD.enddate   <> :NEW.enddate)"
             + " THEN "
-            + " FOR i IN (SELECT uuid FROM tb_contracts WHERE uuid=:NEW.uuid_contract AND id_ctr_status NOT IN (10, 11) AND contractversionguid IS NOT NULL) LOOP"
+            + " FOR i IN (SELECT uuid FROM tb_contracts WHERE uuid=:NEW.uuid_contract AND id_ctr_status NOT IN (10, 11, " + VocGisStatus.i.progressStatusString + ") AND contractversionguid IS NOT NULL) LOOP"
             + "   raise_application_error (-20000, 'Внесение изменений в договор в настоящее время запрещено. Операция отменена.'); "
             + " END LOOP; "
             + "END IF; "

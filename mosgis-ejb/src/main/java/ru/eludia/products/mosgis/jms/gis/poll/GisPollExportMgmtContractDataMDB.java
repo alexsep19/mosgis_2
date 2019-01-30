@@ -3,11 +3,9 @@ package ru.eludia.products.mosgis.jms.gis.poll;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
-import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
-import javax.jms.Queue;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
@@ -23,6 +21,7 @@ import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.ejb.wsc.RestGisFilesClient;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
@@ -44,10 +43,10 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
     
     @EJB
     MgmtContractLocal mgmtContract;
-        
-    @Resource (mappedName = "mosgis.outExportHouseMgmtContractFilesQueue")
-    Queue outExportHouseMgmtContractFilesQueue;    
     
+    @EJB
+    RestGisFilesClient filesClient;
+
     private GetStateResult getState (UUID orgPPAGuid, Map<String, Object> r) throws GisPollRetryException, GisPollException {
         
         GetStateResult rp;
@@ -78,10 +77,6 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
         
     }    
     
-    public void download (final UUID uuid) {
-        uuidPublisher.publish (outExportHouseMgmtContractFilesQueue, uuid);
-    }
-
     @Override
     protected void handleOutSoapRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
         
@@ -141,7 +136,7 @@ public class GisPollExportMgmtContractDataMDB extends GisPollMDB {
         AdditionalService.Sync adds = ((AdditionalService) m.get (AdditionalService.class)).new Sync (db, orgUuid);
         adds.reload ();
                 
-        ContractFile.Sync contractFiles = ((ContractFile) m.get (ContractFile.class)).new Sync (db, ctrUuid, this);
+        ContractFile.Sync contractFiles = ((ContractFile) m.get (ContractFile.class)).new Sync (db, ctrUuid, filesClient);
         contractFiles.addFrom (contract);
         contractFiles.sync ();
 
