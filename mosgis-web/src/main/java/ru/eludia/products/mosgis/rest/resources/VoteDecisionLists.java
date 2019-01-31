@@ -69,7 +69,7 @@ public class VoteDecisionLists extends EJBResource<VoteDecisionListsLocal> {
             securityContext.isUserInRole ("nsi_20_22") && 
             userOrg.equals (itemOrg) &&
             item.containsKey ("cach") && 
-            "1".equals (item.getJsonObject ("cach").get ("is_own").toString ()))
+            item.getJsonObject ("cach").getInt ("is_own") == 1)
             return true;
         
         if (securityContext.isUserInRole("nsi_20_8")) {
@@ -96,7 +96,7 @@ public class VoteDecisionLists extends EJBResource<VoteDecisionListsLocal> {
             securityContext.isUserInRole ("nsi_20_21") ||
             securityContext.isUserInRole ("nsi_20_22") && 
                 cach.containsKey ("cach") && 
-                "1".equals (cach.getJsonObject ("cach").getString ("is_own")))
+                cach.getJsonObject ("cach").getInt ("is_own") == 1)
             return true;
 
         return securityContext.isUserInRole ("nsi_20_8") && securityContext.isUserInRole("oktmo_" + oktmo.getString ("oktmo"));
