@@ -8,7 +8,7 @@ public class InfrastructureTransportationResourceLog extends LogTable {
     public InfrastructureTransportationResourceLog () {
         
         super ("tb_oki_tr_resources__log", "История изменений объектов передачи коммунальных ресурсов ОКИ", 
-                InfrastructureTransportationResource.class, EnTable.class, InfrastructureTransportationResource.c.class);
+                InfrastructureTransportationResource.class, EnTable.c.class, InfrastructureTransportationResource.c.class);
         
     }
     
