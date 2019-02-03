@@ -246,7 +246,9 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
         boolean isCondo = TypeConverter.Boolean(r.get("is_condo"));
         boolean hasBlocks =  TypeConverter.Boolean(r.get("hasblocks"));
         
-        addOGFData(r, passportFields, isCondo);
+        Map <String, Object> houseData = db.getMap(House.class, r.get("uuid_object"));
+        addOGFData(houseData, passportFields, isCondo);
+        r.put("ogfdata", houseData.get("ogfdata"));
         
         JsonObjectBuilder objectByTransportGuid = Json.createObjectBuilder();
         r.put("object_by_transport_guid", objectByTransportGuid);
