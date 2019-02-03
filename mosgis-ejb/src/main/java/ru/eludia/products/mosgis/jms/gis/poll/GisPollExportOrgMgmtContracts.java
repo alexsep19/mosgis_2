@@ -31,7 +31,6 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTypes;
 import ru.eludia.products.mosgis.ejb.wsc.RestGisFilesClient;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
-import static ru.eludia.products.mosgis.jms.gis.poll.GisPollExportMgmtContractDataMDB.updateContract;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 
@@ -88,12 +87,12 @@ logger.info ("state=" + state);
                 throw new GisPollException (ex);
             }
 
-            try (DB db0 = ModelHolder.getModel ().getDb ()) {                
-                process (db0, uuidOrg, contracts);                
+            try {                
+                process (db, uuidOrg, contracts);                
             }
-            catch (Exception ex) {
-                logger.log (Level.SEVERE, "Cannot parse exportCAChResult", ex);
-                throw new GisPollException (ex);
+            catch (Exception x) {
+                logger.log (Level.SEVERE, "Cannot parse exportCAChResult", x);
+                throw new GisPollException (x);
             }
 
         }
@@ -134,9 +133,7 @@ logger.info ("state=" + state);
 
         for (Map<String, Object> h: contracts) {
 logger.info ("h=" + h);
-            db.begin ();
             upsertContract (db, h, model, table, uuidOrg);
-            db.commit ();
         }
 
     }
@@ -184,12 +181,39 @@ logger.info ("h=" + h);
                         
     }
 
-    void upsertContract (DB db, Map<String, Object> h, final MosGisModel model, Table table, UUID uuidOrg) throws SQLException {        
-        h.put (Contract.c.ID_CTR_STATUS.lc (), VocGisStatus.i.PENDING_RQ_RELOAD);
-        db.upsert (Contract.class, h, Contract.c.CONTRACTGUID.lc ());        
-        String ctrUuid = db.getString (db.getModel ().select (Contract.class, "uuid").where (Contract.c.CONTRACTGUID, h.get (Contract.c.CONTRACTGUID.lc ())));        
-        updateContract (db, uuidOrg, UUID.fromString (ctrUuid), filesClient, (ExportCAChResultType.Contract) h.get ("_"), true);
-        model.createIdLog (db, table, null, ctrUuid, VocAction.i.IMPORT_MGMT_CONTRACTS);
+    void upsertContract (DB db, Map<String, Object> h, final MosGisModel model, Table table, UUID uuidOrg) throws SQLException {
+        
+        final String k = Contract.c.CONTRACTGUID.lc ();
+        final Object contractGuid = h.get (k);
+                
+        db.update (Contract.class, DB.HASH (
+            k, contractGuid, 
+            Contract.c.ID_CTR_STATUS, VocGisStatus.i.PENDING_RQ_RELOAD
+        ), k);
+
+        h.remove (Contract.c.ID_CTR_STATUS.lc ());
+        
+//        db.begin ();
+        
+        try {
+            
+            db.upsert (Contract.class, h, k);            
+            
+            Map<String, Object> ex = db.getMap (db.getModel ().select (Contract.class, "*").where (k, contractGuid));
+logger.info ("ex = " + ex);
+            UUID ctrUuid = (UUID) ex.get ("uuid");
+logger.info ("contractGuid = " + contractGuid + ", ctrUuid = " + ctrUuid);
+            GisPollExportMgmtContractDataMDB.updateContract (db, uuidOrg, ctrUuid, filesClient, (ExportCAChResultType.Contract) h.get ("_"), true);
+            model.createIdLog (db, table, null, ctrUuid, VocAction.i.IMPORT_MGMT_CONTRACTS);
+            
+//            db.commit ();
+            
+        }
+        catch (Exception ex) {
+            logger.log (Level.SEVERE, "Cannot upsert " + h, ex);
+//            db.rollback ();
+        }
+        
     }
 
     List<Map<String, Object>> toHashList (List<ExportCAChResultType> exportCAChResult, UUID uuidOrg) {
