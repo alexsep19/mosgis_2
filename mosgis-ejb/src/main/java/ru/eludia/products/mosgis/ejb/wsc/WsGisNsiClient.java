@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.ejb.wsc;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -16,6 +17,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ws.base.LoggingOutMessageHandler;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.base.GetStateRequest;
+import ru.gosuslugi.dom.schema.integration.nsi.ExportDataProviderNsiItemRequest;
 import ru.gosuslugi.dom.schema.integration.nsi.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.nsi.ImportAdditionalServicesRequest;
 import ru.gosuslugi.dom.schema.integration.nsi.ImportMunicipalServicesRequest;
@@ -45,13 +47,21 @@ public class WsGisNsiClient {
         ((BindingProvider)port).getRequestContext ().put (LoggingOutMessageHandler.FIELD_ORG_PPA_GUID, orgPPAGuid);
         return port;
     }
+    
+    private NsiPortsTypeAsync getPort (UUID orgPPAGuid, UUID messageGUID) {
+        ru.gosuslugi.dom.schema.integration.nsi_service_async.NsiPortsTypeAsync port = service.getNsiPortAsync();
+        VocSetting.setPort (port, "WS_GIS_NSI");
+        ((BindingProvider)port).getRequestContext ().put (LoggingOutMessageHandler.FIELD_MESSAGE_GUID, messageGUID);
+        ((BindingProvider)port).getRequestContext ().put (LoggingOutMessageHandler.FIELD_ORG_PPA_GUID, orgPPAGuid);
+        return port;
+    }
 
     public GetStateResult getState (UUID orgPPAGuid, UUID uuid) throws Fault {
         if (orgPPAGuid == null) throw new NullPointerException ();
         GetStateRequest getStateRequest = new GetStateRequest ();
         getStateRequest.setMessageGUID (uuid.toString ());
         return getPort (orgPPAGuid).getState (getStateRequest);
-    }
+    }           
     
     public AckRequest.Ack importOrganizationWorks (UUID orgPPAGuid, Map<String, Object> r) throws Fault {
         
@@ -122,6 +132,12 @@ logger.info ("rq = " + rq);
         
     }    
 
+    public AckRequest.Ack exportDataProviderNsiItem (UUID orgPPAGuid, UUID messageGUID, long registryNumber) throws Fault {
+        final ExportDataProviderNsiItemRequest rq = new ExportDataProviderNsiItemRequest ();
+        rq.setRegistryNumber (BigInteger.valueOf (registryNumber));
+        return getPort (orgPPAGuid, messageGUID).exportDataProviderNsiItem (rq).getAck ();
+    }
+    
     public AckRequest.Ack importAdditionalServices (UUID orgPPAGuid, Map<String, Object> r) throws Fault {
         
         if (orgPPAGuid == null) throw new NullPointerException ();

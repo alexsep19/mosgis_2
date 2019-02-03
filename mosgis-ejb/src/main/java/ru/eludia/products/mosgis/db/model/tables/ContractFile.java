@@ -2,7 +2,6 @@ package ru.eludia.products.mosgis.db.model.tables;
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -14,7 +13,7 @@ import static ru.eludia.base.model.def.Blob.EMPTY_BLOB;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import static ru.eludia.base.model.def.Num.ZERO;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
-import ru.eludia.products.mosgis.jms.gis.poll.GisPollExportMgmtContractDataMDB;
+import ru.eludia.products.mosgis.ejb.wsc.RestGisFilesClient;
 import ru.gosuslugi.dom.schema.integration.base.Attachment;
 import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
 import ru.gosuslugi.dom.schema.integration.house_management.BaseServiceType;
@@ -177,12 +176,12 @@ public class ContractFile extends Table {
     public class Sync extends SyncMap<AttachmentType> {
         
         UUID uuid_contract;
-        GisPollExportMgmtContractDataMDB mDB;
+        RestGisFilesClient filesClient;
 
-        public Sync (DB db, UUID uuid_contract, GisPollExportMgmtContractDataMDB mDB) {
+        public Sync (DB db, UUID uuid_contract, RestGisFilesClient mDB) {
             super (db);
             this.uuid_contract = uuid_contract;
-            this.mDB = mDB;
+            this.filesClient = mDB;
             commonPart.put ("uuid_contract", uuid_contract);
             commonPart.put ("id_status", 1);
         }                
@@ -222,7 +221,7 @@ public class ContractFile extends Table {
 
                 logger.info ("Scheduling download for " + uuid);
 
-                mDB.download (uuid);
+                filesClient.download (uuid);
                 
             });
                 
@@ -242,7 +241,7 @@ public class ContractFile extends Table {
 
                 logger.info ("Scheduling download for " + uuid + ": " + hashToBe + " <> " + hashAsIs);
                 
-                mDB.download (uuid);
+                filesClient.download (uuid);
                 
             });
             

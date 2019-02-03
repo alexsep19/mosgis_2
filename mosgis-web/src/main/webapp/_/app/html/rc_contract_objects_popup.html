@@ -1,0 +1,63 @@
+<span
+    data-popup-width=480
+    data-popup-height=250
+    data-popup-title='Объект жилищного фонда'
+    >
+
+    <style>
+
+        label[data-block-name=rc_contract_objects_popup] {
+            width: 100px;
+            margin-right: 10px;
+        }
+
+        input[data-block-name=rc_contract_objects_popup].dt {
+	    width: 70px !important;
+        }
+
+        input[data-block-name=rc_contract_objects_popup] {
+            width: 300px !important;
+        }
+
+    </style>
+
+    <div class="w2ui-reset w2ui-form" style="height:205px ">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Адрес</label>
+                <div>
+                    <input name=fiashouseguid>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Дата начала</label>
+                <div>
+                    <input name=dt_from class=dt placeholder="" />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Дата окончания</label>
+                <div>
+                    <input name=dt_to class=dt placeholder="">
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Статус</label>
+                <div>
+                    <input name=id_ctr_status readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="w2ui-buttons">
+            <button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+    </div>
+
+</span>

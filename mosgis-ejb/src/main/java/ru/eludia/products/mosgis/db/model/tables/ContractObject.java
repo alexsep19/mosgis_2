@@ -7,12 +7,16 @@ import java.util.UUID;
 import java.util.logging.Logger;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.util.SyncMap;
+import ru.eludia.base.model.Col;
+import ru.eludia.base.model.ColEnum;
+import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Num;
 import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import static ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType.i.OWNERS;
@@ -20,42 +24,47 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportContractRequest;
 
-public class ContractObject extends Table {
+public class ContractObject extends EnTable {
+    
+    public enum c implements ColEnum {
+        
+	UUID_XL                 	(InXlFile.class,        null,         "Источник импорта"),
+
+	UUID_CONTRACT           	(Contract.class,                      "Ссылка на договор"),
+	UUID_CONTRACT_AGREEMENT 	(ContractFile.class,    null,         "Ссылка на дополнительное соглашение"),
+
+	FIASHOUSEGUID           	(VocBuilding.class,                   "Глобальный уникальный идентификатор дома по ФИАС"),
+
+	STARTDATE               	(Type.DATE,                           "Дата начала предоставления услуг"),
+	ENDDATE                 	(Type.DATE,                           "Дата окончания предоставления услуг"),        
+
+	ANNULMENTINFO           	(Type.STRING,           null,       "Причина аннулирования."),
+	IS_ANNULED              	(Type.BOOLEAN,          new Virt ("DECODE(\"ANNULMENTINFO\",NULL,0,1)"),  "1, если запись аннулирована, иначе 0"),
+
+	ID_CTR_STATUS           	(VocGisStatus.class,                  new Num (VocGisStatus.i.PROJECT.getId ()), "Статус объекта договора с точки зрения mosgis"),
+	ID_CTR_STATUS_GIS       	(VocGisStatus.class,                  new Num (VocGisStatus.i.PROJECT.getId ()), "Статус объекта договора с точки зрения ГИС ЖКХ"),
+
+	ISCONFLICTED            	(Type.BOOLEAN,          Bool.FALSE,   "Признак расхождения с Реестром инфомрации об управлении МКД"),
+	ISBLOCKED               	(Type.BOOLEAN,          Bool.FALSE,   "Признак заблокированного дома"),
+
+	CONTRACTOBJECTVERSIONGUID       (Type.UUID,       null,          "UUID последней версии данного объекта в ГИС ЖКХ"),
+
+	FIAS_START              	(Type.STRING,          new Virt ("CONCAT(LOWER(RAWTOHEX(\"FIASHOUSEGUID\")),TO_CHAR(\"STARTDATE\",'YYYY-MM-DD'))"),  "ключ для различения объектов внутри договора"),
+	IS_TO_IGNORE            	(Type.BOOLEAN,         new Virt (isToIgnoreSrc ()), "1, если объект следует игнорировать в контролях на пересечение периодов"),
+
+	ID_LOG                  	(ContractObjectLog.class,  null,      "Последнее событие редактирования"),    
+        ;
+        
+        @Override
+        public Col getCol () {return col;} private Col col; private c (Type type, Object... p) {col = new Col (this, type, p);} private c (Class c,   Object... p) {col = new Ref (this, c, p);}        
+    
+    }
     
     public ContractObject () {
         
         super  ("tb_contract_objects", "Объекты договоров управления");
-
-//        UUID_XL                 (InXlFile.class,            "Файл импорта"),
-        
-        ref    ("uuid_xl",                 InXlFile.class,        null,         "Источник импорта");
-
-        pk     ("uuid",                    Type.UUID,             NEW_UUID,     "Ключ");
-        col    ("is_deleted",              Type.BOOLEAN,          Bool.FALSE,   "1, если запись удалена; иначе 0");
-        
-        ref    ("uuid_contract",           Contract.class,                      "Ссылка на договор");
-        ref    ("uuid_contract_agreement", ContractFile.class,    null,         "Ссылка на дополнительное соглашение");
-        
-        fk     ("fiashouseguid",           VocBuilding.class,                   "Глобальный уникальный идентификатор дома по ФИАС");
-
-        col    ("startdate",               Type.DATE,                           "Дата начала предоставления услуг");
-        col    ("enddate",                 Type.DATE,                           "Дата окончания предоставления услуг");        
-       
-        col    ("annulmentinfo",           Type.STRING,           null,       "Причина аннулирования.");
-        col    ("is_annuled",              Type.BOOLEAN,          new Virt ("DECODE(\"ANNULMENTINFO\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0");
-        
-        fk     ("id_ctr_status",           VocGisStatus.class,                  new Num (VocGisStatus.i.PROJECT.getId ()), "Статус объекта договора с точки зрения mosgis");
-        fk     ("id_ctr_status_gis",       VocGisStatus.class,                  new Num (VocGisStatus.i.PROJECT.getId ()), "Статус объекта договора с точки зрения ГИС ЖКХ");
-
-        col    ("isconflicted",            Type.BOOLEAN,          Bool.FALSE,   "Признак расхождения с Реестром инфомрации об управлении МКД");
-        col    ("isblocked",               Type.BOOLEAN,          Bool.FALSE,   "Признак заблокированного дома");
-
-        col    ("contractobjectversionguid",     Type.UUID,       null,          "UUID последней версии данного объекта в ГИС ЖКХ");
-        
-        col    ("fias_start",              Type.STRING,          new Virt ("CONCAT(LOWER(RAWTOHEX(\"FIASHOUSEGUID\")),TO_CHAR(\"STARTDATE\",'YYYY-MM-DD'))"),  "ключ для различения объектов внутри договора");
-        col    ("is_to_ignore",            Type.BOOLEAN,         new Virt (isToIgnoreSrc ()), "1, если объект следует игнорировать в контролях на пересечение периодов");
-        
-        fk     ("id_log",                  ContractObjectLog.class,  null,      "Последнее событие редактирования");
+        cols   (c.class);        
+        key (c.UUID_XL.lc (), c.UUID_XL);
  
         trigger ("BEFORE INSERT OR UPDATE", ""
                 
@@ -69,8 +78,8 @@ public class ContractObject extends Table {
                 + " OR (:OLD.startdate <> :NEW.startdate)"
                 + " OR (:OLD.enddate   <> :NEW.enddate)"
             + " THEN "
-            + " FOR i IN (SELECT uuid FROM tb_contracts WHERE uuid=:NEW.uuid_contract AND id_ctr_status NOT IN (10, 11) AND contractversionguid IS NOT NULL) LOOP"
-            + "   raise_application_error (-20000, 'Внесение изменений в договор в настоящее время запрещено. Операция отменена.'); "
+            + " FOR i IN (SELECT c.uuid, s.label FROM tb_contracts c LEFT JOIN vc_gis_status s ON c.id_ctr_status = s.id WHERE uuid=:NEW.uuid_contract AND c.id_ctr_status NOT IN (10, 11, " + VocGisStatus.i.progressStatusString + ") AND contractversionguid IS NOT NULL) LOOP"
+            + "   raise_application_error (-20000, 'Внесение изменений в договор в настоящее время запрещено (статус: ' || i.label || '). Операция отменена.'); "
             + " END LOOP; "
             + "END IF; "
 
@@ -300,5 +309,5 @@ logger.info ("r=" + r);
         }
         
     }
-            
+
 }

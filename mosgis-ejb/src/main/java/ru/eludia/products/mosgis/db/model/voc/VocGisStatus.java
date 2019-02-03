@@ -1,5 +1,7 @@
 package ru.eludia.products.mosgis.db.model.voc;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
@@ -179,6 +181,17 @@ public class VocGisStatus extends Table {
         public String toString () {
             return Byte.toString (id);
         }
+        
+        public static final Object [] progressStatus = Arrays.asList (VocGisStatus.i.values ()).stream ()
+            .filter ((t) -> t.isInProgress ())
+            .map ((t) -> t.getId ())
+            .toArray ();        
+        
+        public static final String progressStatusString = Arrays
+            .asList (progressStatus)
+            .stream ()
+            .map ((t) -> t.toString ())
+            .collect (Collectors.joining (","));
 
     }
 

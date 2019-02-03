@@ -110,7 +110,7 @@ public class SupplyResourceContract extends EnTable {
                 + "BEGIN "
 
                 + " IF :NEW.is_deleted = 0 THEN "
-                    + " IF :NEW.completiondate IS NULL AND :NEW.automaticrolloveroneyear = 1 THEN "
+                    + " IF :NEW.completiondate IS NULL AND :NEW.autorollover = 1 THEN "
                     + "   raise_application_error (-20000, 'Укажите дату окончания или Автопролонгация нет. Операция отменена.'); "
                     + " END IF; "
 

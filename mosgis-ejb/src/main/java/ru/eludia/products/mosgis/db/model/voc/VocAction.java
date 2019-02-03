@@ -50,6 +50,10 @@ public class VocAction extends Table {
         CREATE       ("create",        "создание"),
         DELETE       ("delete",        "удаление"),
         EXPIRE       ("expire",        "проверка на просроченность"),
+        
+        IMPORT_MGMT_CONTRACTS ("import_mgmt_contracts", "импорт ДУ"),
+        IMPORT_ADD_SERVICES   ("import_add_services", "Импорт справочника дополнительных услуг"),
+        
         LOCK         ("lock",          "блокировка"),
         PROMOTE      ("promote",       "утверждение"),
         REFRESH      ("refresh",       "обновление статусов"),

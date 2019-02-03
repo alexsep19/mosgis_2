@@ -53,9 +53,39 @@ public class GisPollExportOrgByGuid extends UUIDMDB<OutSoap> {
 
         try {
             
-            db.begin ();
+            GetStateResult rp = null;
+            
+            try {
+                rp = wsGisOrgClient.getState ((UUID) r.get ("uuid_ack"));
+            }
+            catch (Fault e) {
+                
+                db.update (OutSoap.class, HASH (
+                    "uuid", uuid,
+                    "id_status", DONE.getId (),
+                    "is_failed", 1,
+                    "err_code",  e.getFaultInfo ().getErrorCode (),
+                    "err_text",  e.getFaultInfo ().getErrorMessage ()
+                ));
 
-            GetStateResult rp = wsGisOrgClient.getState ((UUID) r.get ("uuid_ack"));
+                return;
+                
+            }
+            catch (Exception e) {
+                logger.log (Level.SEVERE, "wsGisOrgClient.getState failed, will retry", e);
+                uuidPublisher.publish (ownDestination, uuid);
+                return;
+            }
+            
+            final byte requestState = rp.getRequestState ();
+        
+            if (requestState < DONE.getId ()) {                
+                logger.info ("requestState = " + requestState + ", retrying request");
+                uuidPublisher.publish (ownDestination, uuid);
+                return;        
+            }        
+
+            db.begin ();
 
             ErrorMessageType errorMessage = rp.getErrorMessage ();
 
@@ -85,7 +115,7 @@ public class GisPollExportOrgByGuid extends UUIDMDB<OutSoap> {
             db.commit ();
 
         }
-        catch (Fault ex) {
+        catch (SQLException ex) {
             logger.log (Level.SEVERE, null, ex);
         }
         

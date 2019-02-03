@@ -3,12 +3,14 @@ package ru.eludia.products.mosgis.db.model.tables;
 import java.util.Map;
 import java.util.UUID;
 import ru.eludia.base.DB;
-import ru.eludia.base.model.Table;
+import ru.eludia.base.model.Col;
+import ru.eludia.base.model.ColEnum;
+import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
-import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Num;
 import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractType;
@@ -22,64 +24,67 @@ import ru.gosuslugi.dom.schema.integration.house_management.DateDetailsType;
 import ru.gosuslugi.dom.schema.integration.house_management.DaySelectionExportType;
 import ru.gosuslugi.dom.schema.integration.house_management.DeviceMeteringsDaySelectionType;    
 import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
+import ru.gosuslugi.dom.schema.integration.organizations_registry_base.RegOrgType;
 
-public class Contract extends Table {
+public class Contract extends EnTable {
 
+    public enum c implements ColEnum {
+
+        ID_CONTRACT_TYPE         (VocGisContractType.class,                   "Тип договора"),
+        UUID_ORG                 (VocOrganization.class,                      "Исполнитель"),
+
+        UUID_ORG_CUSTOMER        (VocOrganization.class,              null,   "Заказчик"),
+        ID_CUSTOMER_TYPE         (VocGisCustomerType.class,                   "Тип заказчика"),
+
+        ID_CTR_STATUS            (VocGisStatus.class,          new Num (VocGisStatus.i.PROJECT.getId ()), "Статус договора с точки зрения mosgis"),
+        ID_CTR_STATUS_GIS        (VocGisStatus.class,          new Num (VocGisStatus.i.PROJECT.getId ()), "Статус договора с точки зрения ГИС ЖКХ"),
+        ID_CTR_STATE_GIS         (VocGisStatus.class,          new Num (VocGisStatus.i.NOT_RUNNING.getId ()), "Состояние договора с точки зрения ГИС ЖКХ"),
+
+        DOCNUM                   (Type.STRING,           255,         "Номер договора"),
+        SIGNINGDATE              (Type.DATE,                          "Дата заключения"),
+        EFFECTIVEDATE            (Type.DATE,                          "Дата вступления в силу"),
+        PLANDATECOMPTETION       (Type.DATE,                          "Планируемая дата окончания"),
+        TERMINATE                (Type.DATE,             null,        "Дата расторжения"),
+        ROLLTODATE               (Type.DATE,             null,        "Пролонгировать до даты"),
+
+        AUTOMATICROLLOVERONEYEAR (Type.BOOLEAN,          Bool.FALSE,  "Автоматически продлить срок оказания услуг на один год"),
+        CODE_VC_NSI_58           (Type.STRING,           20,   null,  "Ссылка на НСИ \"Основание заключения договора\" (реестровый номер 58)"),
+        CODE_VC_NSI_54           (Type.STRING,           20,   null,  "Ссылка на НСИ \"Основание расторжения договора\" (реестровый номер 54)"),
+
+        DDT_M_START              (Type.NUMERIC,          2,   null,  "Начало периода ввода показаний ПУ (1..31 — конкретное число, 99 — последнее число)"),
+        DDT_M_START_NXT          (Type.BOOLEAN,          Bool.FALSE, "1, если начало периода ввода показаний ПУ в следующем месяце, иначе 0"),
+        DDT_M_END                (Type.NUMERIC,          2,   null,  "Окончание периода ввода показаний ПУ (1..31 — конкретное число, 99 — последнее число)"),
+        DDT_M_END_NXT            (Type.BOOLEAN,          Bool.FALSE, "1, если окончание периода ввода показаний ПУ в следующем месяце, иначе 0"),
+
+        DDT_D_START              (Type.NUMERIC,          2,   null,  "Срок представления (выставления) платежных документов для внесения платы за жилое помещение и (или) коммунальные услуги (1..30 — конкретное число, 99 — последнее число)"),
+        DDT_D_START_NXT          (Type.BOOLEAN,          Bool.FALSE, "1, если срок представления (выставления) платежных документов для внесения платы за жилое помещение и (или) коммунальные услуги в следующем месяце, иначе 0"),
+
+        DDT_I_START              (Type.NUMERIC,          2,   null,  "Срок внесения платы за жилое помещение и (или) коммунальные услуги (1..30 — конкретное число, 99 — последнее число)"),
+        DDT_I_START_NXT          (Type.BOOLEAN,          Bool.FALSE, "1, если срок внесения платы за жилое помещение и (или) коммунальные услуги в следующем месяце, иначе 0"),
+
+        CONTRACTBASE             (Type.STRING,  new Virt ("(''||\"CODE_VC_NSI_58\")"),  "Основание заключения договора"),
+
+        UUID_OUT_SOAP            (OutSoap.class,             null,    "Последний запрос на импорт в ГИС ЖКХ"),
+        CONTRACTGUID             (Type.UUID,                 null,    "UUID договора в ГИС ЖКХ"),
+        CONTRACTVERSIONGUID      (Type.UUID,                 null,    "Идентификатор последней известной версии договора"),
+
+        ID_LOG                   (ContractLog.class,         null,    "Последнее событие редактирования"),
+
+        VERSIONNUMBER            (Type.INTEGER,          10, null,    "Номер версии (по состоянию в ГИС ЖКХ)"),
+        REASONOFANNULMENT        (Type.STRING,         1000, null,    "Причина аннулирования"),
+        IS_ANNULED               (Type.BOOLEAN,          new Virt ("DECODE(\"REASONOFANNULMENT\",NULL,0,1)"),  "1, если запись аннулирована, иначе 0"),
+
+        ;
+
+        @Override
+        public Col getCol () {return col;} private Col col; private c (Type type, Object... p) {col = new Col (this, type, p);} private c (Class c,   Object... p) {col = new Ref (this, c, p);}
+
+    }        
+        
     public Contract () {
 
         super ("tb_contracts", "Договоры");
-
-        pk    ("uuid",                      Type.UUID,             NEW_UUID,            "Ключ");
-        col   ("is_deleted",                Type.BOOLEAN,          Bool.FALSE,          "1, если запись удалена; иначе 0");
-
-        fk    ("id_contract_type",          VocGisContractType.class,                   "Тип договора");
-        fk    ("uuid_org",                  VocOrganization.class,                      "Исполнитель");
-
-        fk    ("uuid_org_customer",         VocOrganization.class,              null,   "Заказчик");
-        fk    ("id_customer_type",          VocGisCustomerType.class,                   "Тип заказчика");
-        
-        fk    ("id_ctr_status",             VocGisStatus.class,          new Num (VocGisStatus.i.PROJECT.getId ()), "Статус договора с точки зрения mosgis");
-        fk    ("id_ctr_status_gis",         VocGisStatus.class,          new Num (VocGisStatus.i.PROJECT.getId ()), "Статус договора с точки зрения ГИС ЖКХ");
-        fk    ("id_ctr_state_gis",          VocGisStatus.class,          new Num (VocGisStatus.i.NOT_RUNNING.getId ()), "Состояние договора с точки зрения ГИС ЖКХ");
-        
-        col   ("docnum",                    Type.STRING,           255,         "Номер договора");
-        col   ("signingdate",               Type.DATE,                          "Дата заключения");
-        col   ("effectivedate",             Type.DATE,                          "Дата вступления в силу");
-        col   ("plandatecomptetion",        Type.DATE,                          "Планируемая дата окончания");
-        col   ("terminate",                 Type.DATE,             null,        "Дата расторжения");
-        col   ("rolltodate",                Type.DATE,             null,        "Пролонгировать до даты");
-
-        col   ("automaticrolloveroneyear",  Type.BOOLEAN,          Bool.FALSE,  "Автоматически продлить срок оказания услуг на один год");
-        col   ("code_vc_nsi_58",            Type.STRING,           20,   null,  "Ссылка на НСИ \"Основание заключения договора\" (реестровый номер 58)");
-        col   ("code_vc_nsi_54",            Type.STRING,           20,   null,  "Ссылка на НСИ \"Основание расторжения договора\" (реестровый номер 54)");
-
-    //  DateDetailsType:
-
-        //    PeriodMetering
-        col   ("ddt_m_start",               Type.NUMERIC,          2,   null,  "Начало периода ввода показаний ПУ (1..31 — конкретное число; 99 — последнее число)");
-        col   ("ddt_m_start_nxt",           Type.BOOLEAN,          Bool.FALSE, "1, если начало периода ввода показаний ПУ в следующем месяце; иначе 0");
-        col   ("ddt_m_end",                 Type.NUMERIC,          2,   null,  "Окончание периода ввода показаний ПУ (1..31 — конкретное число; 99 — последнее число)");
-        col   ("ddt_m_end_nxt",             Type.BOOLEAN,          Bool.FALSE, "1, если окончание периода ввода показаний ПУ в следующем месяце; иначе 0");
-
-        //    PaymentDocumentInterval
-        col   ("ddt_d_start",               Type.NUMERIC,          2,   null,  "Срок представления (выставления) платежных документов для внесения платы за жилое помещение и (или) коммунальные услуги (1..30 — конкретное число; 99 — последнее число)");
-        col   ("ddt_d_start_nxt",           Type.BOOLEAN,          Bool.FALSE, "1, если срок представления (выставления) платежных документов для внесения платы за жилое помещение и (или) коммунальные услуги в следующем месяце; иначе 0");
-
-        //    PaymentInterval
-        col   ("ddt_i_start",               Type.NUMERIC,          2,   null,  "Срок внесения платы за жилое помещение и (или) коммунальные услуги (1..30 — конкретное число; 99 — последнее число)");
-        col   ("ddt_i_start_nxt",           Type.BOOLEAN,          Bool.FALSE, "1, если срок внесения платы за жилое помещение и (или) коммунальные услуги в следующем месяце; иначе 0");
-
-        col   ("contractbase",              Type.STRING,  new Virt ("(''||\"CODE_VC_NSI_58\")"),  "Основание заключения договора");
-        
-        fk    ("uuid_out_soap",             OutSoap.class,             null,    "Последний запрос на импорт в ГИС ЖКХ");
-        col   ("contractguid",              Type.UUID,                 null,    "UUID договора в ГИС ЖКХ");
-        col   ("contractversionguid",       Type.UUID,                 null,    "Идентификатор последней известной версии договора");
-
-        fk    ("id_log",                    ContractLog.class,         null,    "Последнее событие редактирования");
-        
-        col   ("versionnumber",             Type.INTEGER,          10, null,    "Номер версии (по состоянию в ГИС ЖКХ)");
-        col   ("reasonofannulment",         Type.STRING,         1000, null,    "Причина аннулирования");
-        col   ("is_annuled",                Type.BOOLEAN,          new Virt ("DECODE(\"REASONOFANNULMENT\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0");
+        cols   (c.class);        
 
         key   ("org_docnum", "uuid_org", "docnum");
         key   ("contractguid", "contractguid");
@@ -188,6 +193,7 @@ public class Contract extends Table {
 
             + "IF :NEW.id_contract_type = " + VocGisContractType.i.MGMT.getId () + " THEN "
 
+                + "IF :NEW.id_customer_type IS NULL THEN "
                 + "IF :NEW.uuid_org_customer IS NULL "
                 + "  THEN "
                 + "    :NEW.id_customer_type:=" + VocGisCustomerType.i.OWNERS.getId () + "; "
@@ -197,6 +203,7 @@ public class Contract extends Table {
                 + "    IF :NEW.id_customer_type IS NULL THEN "
                 + "      raise_application_error (-20000, 'Указанная организация не зарегистрирована в ГИС ЖКХ как возможный заказчик договора управления: ТСЖ, ЖСК и т. п. Операция отменена.'); "
                 + "    END IF; "
+                + "END IF; "
                 + "END IF; "
 
                 + "SELECT MIN(code) INTO :NEW.code_vc_nsi_58 FROM vc_gis_customer_type_nsi_58 WHERE code=:NEW.code_vc_nsi_58 AND id=:NEW.id_customer_type; "
@@ -520,5 +527,80 @@ public class Contract extends Table {
         }        
                 
     };
+    
+    public static Map<String, Object> toHASH (ExportCAChResultType.Contract ctr) {
+        
+        VocGisStatus.i status = VocGisStatus.i.forName (ctr.getContractStatus ().value ());
+        
+        final Map<String, Object> result = DB.HASH (
+            c.ID_CTR_STATUS, status,
+            c.ID_CTR_STATUS_GIS, status,
+            c.CONTRACTGUID, ctr.getContractGUID (),
+            c.CONTRACTVERSIONGUID, ctr.getContractVersionGUID (),
+            c.AUTOMATICROLLOVERONEYEAR, DB.ok (ctr.isAutomaticRollOverOneYear ()) ? 1 : 0,
+            c.CODE_VC_NSI_58, ctr.getContractBase ().getCode (),
+            c.DOCNUM, ctr.getDocNum (),
+            c.SIGNINGDATE, ctr.getSigningDate (),
+            c.EFFECTIVEDATE, ctr.getEffectiveDate (),
+            c.PLANDATECOMPTETION, ctr.getPlanDateComptetion (),
+            c.ID_CUSTOMER_TYPE, VocGisCustomerType.i.OWNERS.getId ()
+        );
+        
+        set (result, ctr.getMunicipalHousing (), VocGisCustomerType.i.MUNICIPAL_HOUSING);
+        set (result, ctr.getBuildingOwner (), VocGisCustomerType.i.BUILDINGOWNER);
+        set (result, ctr.getCooperative (), VocGisCustomerType.i.COOPERATIVE);
+                
+        DateDetailsExportType dd = ctr.getDateDetails ();
+        if (dd != null) {
+            set (result, dd.getPeriodMetering ());
+            set (dd.getPaymentDocumentInterval (), result);
+            set (dd.getPaymentInterval (), result);
+        }                
+
+        ExportCAChResultType.Contract.Terminate terminate = ctr.getTerminate ();
+        if (terminate != null) {
+            result.put (c.CODE_VC_NSI_54.lc (), terminate.getReasonRef ().getCode ());
+            result.put (c.TERMINATE.lc (), terminate.getTerminate ());
+        }
+
+        return result;
+
+    }
+
+    private static void set (DateDetailsExportType.PaymentInterval d, final Map<String, Object> result) {
+        if (d == null) return;
+        result.put (c.DDT_I_START.lc (), DB.ok (d.isLastDay ()) ? 99 : d.getStartDate ());
+        result.put (c.DDT_I_START_NXT.lc (), DB.ok (d.isNextMounth ()) ? 1 : 0);
+    }
+
+    private static void set (DateDetailsExportType.PaymentDocumentInterval d, final Map<String, Object> result) {
+        if (d == null) return;
+        result.put (c.DDT_D_START.lc (), DB.ok (d.isLastDay ()) ? 99 : d.getStartDate ());
+        result.put (c.DDT_D_START_NXT.lc (), DB.ok (d.isNextMounth ()) ? 1 : 0);
+    }
+
+    private static void set (final Map<String, Object> result, final DateDetailsExportType.PeriodMetering d) {
+        if (d == null) return;
+        setStart (d.getStartDate (), result);
+        setEnd (d.getEndDate (), result);
+    }
+
+    private static void setEnd (final DaySelectionExportType d, final Map<String, Object> result) {
+        if (d == null) return;
+        result.put (c.DDT_M_END.lc (), DB.ok (d.isLastDay ()) ? 99 : d.getDate ());
+        result.put (c.DDT_M_END_NXT.lc (), DB.ok (d.isIsNextMonth ()) ? 1 : 0);
+    }
+
+    private static void setStart (final DaySelectionExportType d, final Map<String, Object> result) {
+        if (d == null) return;
+        result.put (c.DDT_M_START.lc (), DB.ok (d.isLastDay ()) ? 99 : d.getDate ());
+        result.put (c.DDT_M_START_NXT.lc (), DB.ok (d.isIsNextMonth ()) ? 1 : 0);
+    }
+    
+    private static void set (Map<String, Object> result, RegOrgType orgCustomer, VocGisCustomerType.i type) {
+        if (orgCustomer == null) return;
+        result.put (c.UUID_ORG_CUSTOMER.lc (), orgCustomer.getOrgRootEntityGUID ());
+        result.put (c.ID_CUSTOMER_TYPE.lc (), type.getId ());
+    }
 
 }

@@ -3,7 +3,6 @@ package ru.eludia.products.mosgis.rest.impl;
 import java.sql.SQLException;
 import java.util.UUID;
 import java.util.logging.Logger;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Resource;
@@ -18,7 +17,6 @@ import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
-import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Predicate;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
@@ -57,11 +55,24 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
     Queue inOrgQueue;
     
     @Resource (mappedName = "mosgis.inOrgByGUIDQueue")
-    Queue queue;
+    Queue inOrgByGUIDQueue;
+    
+    @Resource (mappedName = "mosgis.inExportOrgMgmtContractsQueue")
+    Queue inExportOrgMgmtContractsQueue;
+    
+    @Resource (mappedName = "mosgis.inExportOrgAddServicesQueue")
+    Queue inExportOrgAddServicesQueue;
 
     @Override
-    public Queue getQueue () {
-        return queue;
+    protected Queue getQueue (VocAction.i action) {
+        
+        switch (action) {
+            case REFRESH: return inOrgByGUIDQueue;
+            case IMPORT_MGMT_CONTRACTS: return inExportOrgMgmtContractsQueue;
+            case IMPORT_ADD_SERVICES: return inExportOrgAddServicesQueue;
+            default: return null;
+        }
+        
     }
 
     private final static String DEFAULT_SEARCH = "label_uc LIKE %?%";
@@ -153,6 +164,7 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
         
         Select select = ModelHolder.getModel ().select (VocOrganization.class, "*", "uuid AS id")
             .where ("id_type", p.getString ("id_type", null))
+            .and ("is_deleted", 0)
             .orderBy ("label")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
         
@@ -234,6 +246,7 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
             
             VocAccessRequestType.addTo (jb);
             VocAccessRequestStatus.addTo (jb);
+            VocAction.addTo (jb);
 
         }
         catch (Exception ex) {
@@ -318,9 +331,17 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
 
     @Override
     public JsonObject doRefresh (String id, User user) {return doAction ((db) -> {
-
-        logAction (db, user, id, VocAction.i.REFRESH);
-        
+        logAction (db, user, id, VocAction.i.REFRESH);        
+    });}
+    
+    @Override
+    public JsonObject doImportMgmtContracts (String id, User user) {return doAction ((db) -> {
+        logAction (db, user, id, VocAction.i.IMPORT_MGMT_CONTRACTS);
+    });}
+    
+    @Override
+    public JsonObject doImportAddServices (String id, User user) {return doAction ((db) -> {
+        logAction (db, user, id, VocAction.i.IMPORT_ADD_SERVICES);
     });}
 
     @Override
@@ -375,6 +396,7 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
         });
     }
 
+    @Override
     protected void logAction (DB db, User user, Object id, VocAction.i action) throws SQLException {
 
         Table logTable = ModelHolder.getModel ().getLogTable (getTable ());
@@ -392,9 +414,8 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
             "id_log",    id_log
         ));
 
-        if (action != VocAction.i.UPDATE) { // не отправлять в ГИС, пока меняем только локальные справочные поля
-            publishMessage(action, id_log);
-        }
+        publishMessage (action, id_log);
+
     }    
 
 }

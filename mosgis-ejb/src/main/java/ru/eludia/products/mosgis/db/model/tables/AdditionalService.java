@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import ru.eludia.base.DB;
@@ -14,6 +15,10 @@ import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState.i.PENDING;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementFieldType;
+import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementOkeiRefFieldType;
+import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementStringFieldType;
+import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
 
 public class AdditionalService extends Table {
@@ -84,5 +89,28 @@ public class AdditionalService extends Table {
         }
         
     }
+    
+    public static Map<String, Object> toHASH (NsiElementType t) {
+        
+        final Map<String, Object> result = DB.HASH (
+            "is_deleted",   t.isIsActual () ? 0 : 1,
+            "uniquenumber", t.getCode (),
+            "elementguid",  t.getGUID ()
+        );
+
+        for (NsiElementFieldType f: t.getNsiElementField ()) {
+            
+            if (f instanceof NsiElementOkeiRefFieldType) {
+                result.put ("okei", ((NsiElementOkeiRefFieldType) f).getCode ());
+            }
+            else if (f instanceof NsiElementStringFieldType && "Вид дополнительной услуги".equals (f.getName ())) {
+                result.put ("additionalservicetypename", ((NsiElementStringFieldType) f).getValue ());
+            }
+            
+        }
+
+        return result;
+        
+    }    
 
 }
