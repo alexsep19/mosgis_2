@@ -15,7 +15,7 @@ public class InfrastructureTransportationResource extends EnTable {
         
         UUID_OKI (Infrastructure.class, "Ссылка на объект ОКИ"),
         
-        CODE_VC_NSI_2 (STRING, 20, "Ресурс (НСИ 2)"),
+        CODE_VC_NSI_2  (STRING, 20, "Ресурс (НСИ 2)"),
         
         TOTALLOAD      (NUMERIC, 9, 3, null, "Присоединенная нагрузка"),
         INDUSTRIALLOAD (NUMERIC, 9, 3, null, "Промышленность"),
@@ -24,7 +24,7 @@ public class InfrastructureTransportationResource extends EnTable {
         
         VOLUMELOSSES   (NUMERIC, 9, 3, "Объем потерь"),
         
-        COOLANTTYPE    (STRING, 20, null, "Вид теплоносителя (НСИ 41)"),
+        CODE_VC_NSI_41 (STRING, 20, null, "Вид теплоносителя (НСИ 41)"),
         
         OKEI           (VocOkei.class, "Единицы измерения (ОКЕИ)"),
         
