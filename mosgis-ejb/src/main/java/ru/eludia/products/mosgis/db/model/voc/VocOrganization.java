@@ -24,6 +24,7 @@ public class VocOrganization extends Table {
 
         ORGROOTENTITYGUID (Type.UUID, "Первичный ключ организации"),
 
+        ID_TYPE        (VocOrganizationTypes.class, "Тип организации"),
         UUID_ORG_OWNER (VocOrganization.class, "Организация оператора, создавшего заявку на добавление [обособленного подразделения / ФПИЮЛ]"),
                 
         ORGPPAGUID     (Type.UUID,   null,           "Идентификатор зарегистрированной организации"),        
@@ -131,11 +132,10 @@ public class VocOrganization extends Table {
 
         pk("orgrootentityguid",  Type.UUID, "Ключ");
 
-        fk("id_type", VocOrganizationTypes.class, null, "Тип организации");
-
         fk("id_log", VocOrganizationLog.class, null, "Последний запрос");
 
         key("label_uc", "label_uc");
+        
     }
 
     public static final RegOrgType regOrgType (UUID uuid) {

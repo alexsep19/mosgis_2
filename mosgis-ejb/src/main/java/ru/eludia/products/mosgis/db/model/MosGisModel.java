@@ -42,9 +42,9 @@ public final class MosGisModel extends ru.eludia.base.Model {
         )).toString ();
         
         db.update (table, HASH (
-            "uuid",      id,
-            "id_status", VocAsyncEntityState.i.PENDING.getId (),
-            "id_log",    idLog
+            table.getPk ().get (0).getName (), id,
+            "id_status",                       VocAsyncEntityState.i.PENDING.getId (),
+            "id_log",                          idLog
         ));
                 
         return idLog;

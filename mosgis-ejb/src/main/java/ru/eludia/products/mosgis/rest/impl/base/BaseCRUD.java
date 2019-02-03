@@ -2,7 +2,6 @@ package ru.eludia.products.mosgis.rest.impl.base;
 
 import java.sql.SQLException;
 import java.util.Map;
-import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.jms.Queue;
 import javax.json.JsonObject;
@@ -14,7 +13,6 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
-import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -29,13 +27,17 @@ public abstract class BaseCRUD <T extends Table> extends Base<T> implements CRUD
     @EJB
     protected UUIDPublisher UUIDPublisher;
 
+    protected Queue getQueue (VocAction.i action) {
+        return getQueue ();
+    }
+
     protected Queue getQueue () {
         return null;
     }
     
     protected void publishMessage (VocAction.i action, String id_log) {
         
-        Queue queue = getQueue ();
+        Queue queue = getQueue (action);
         
         if (queue != null) UUIDPublisher.publish (queue, id_log);
         
