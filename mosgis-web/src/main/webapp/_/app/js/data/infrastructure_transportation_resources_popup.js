@@ -1,6 +1,6 @@
 define ([], function () {
 
-    $_DO.update_infrastructure_resources_popup = function (e) {
+    $_DO.update_infrastructure_transportation_resources_popup = function (e) {
 
         var form = w2ui ['infrastructure_transportation_resources_popup_form']
 
@@ -10,6 +10,7 @@ define ([], function () {
         var reg_number = /^\d+(\.\d{1,3})?$/
 
         if (!v.code_vc_nsi_2) die ('code_vc_nsi_2', 'Укажите, пожалуйста, ресурс')
+        else if (v.code_vc_nsi_2 == 5 && !v.code_vc_nsi_41) die ('code_vc_nsi_41', 'Укажите, пожалуйста, вид теплоносителя')
         
         if (!v.volumelosses) die ('volumelosses', 'Укажите, пожалуйста, объем потерь')
         if (!reg_number.test (v.volumelosses)) die ('volumelosses', 'Указано неверное значение объема потерь')

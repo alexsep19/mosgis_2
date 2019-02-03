@@ -5,11 +5,17 @@ define ([], function () {
     function reset_okei () {
 
         var data = clone ($('body').data ('data'))
+
         var record = w2ui[form_name].record
+
+        $('#code_vc_nsi_41').val ('')
+        $('#code_vc_nsi_41').prop ('disabled', true)
 
         if (record.code_vc_nsi_2) {
             okei_label = data.vc_okei[data.vc_nsi_2_filtered.items.find (x => x.id == record.code_vc_nsi_2.id).okei]
             $('.span_okei').text (' ' + okei_label)
+
+            if (record.code_vc_nsi_2.id == 5) $('#code_vc_nsi_41').prop ('disabled', false)
         }
 
     }
