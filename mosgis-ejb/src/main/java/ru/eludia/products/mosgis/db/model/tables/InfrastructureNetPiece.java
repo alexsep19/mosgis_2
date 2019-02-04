@@ -7,7 +7,6 @@ import static ru.eludia.base.model.Type.NUMERIC;
 import static ru.eludia.base.model.Type.STRING;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 
 public class InfrastructureNetPiece  extends EnTable {
     
