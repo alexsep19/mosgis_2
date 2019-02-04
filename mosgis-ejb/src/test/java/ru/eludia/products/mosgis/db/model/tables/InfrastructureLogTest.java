@@ -14,7 +14,7 @@ import ru.gosuslugi.dom.schema.integration.infrastructure.ExportOKIRequest;
 
 public class InfrastructureLogTest extends BaseTest {
     
-    private static final String uuid = "3145162D2CE348DD889A8D6987C3FA35";
+    private static final String uuid = "067A469E3D9644808DA2559620CAD47F";
     
     private Infrastructure table;
     private InfrastructureLog logTable;

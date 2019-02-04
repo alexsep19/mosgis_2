@@ -12,6 +12,7 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.gosuslugi.dom.schema.integration.base.OKTMORefType;
 import ru.gosuslugi.dom.schema.integration.infrastructure.ImportOKIRequest;
 import ru.gosuslugi.dom.schema.integration.infrastructure.InfrastructureType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
@@ -51,7 +52,15 @@ public class InfrastructureLog extends GisWsLogTable {
                     (UUID) x.get("guid")
                 )
             );
-  
+        
+        OKTMORefType oktmo = new OKTMORefType ();
+        oktmo.setCode(r.get ("oktmo_code").toString ());
+        result.setOKTMO(oktmo);
+        
+        result.setCommissioningYear(Short.valueOf (r.get ("comissioningyear").toString ()));
+        
+        if ((long) r.get ("independentsource") == 0) result.setIndependentSource(null);
+        
         return result;
     }
     
