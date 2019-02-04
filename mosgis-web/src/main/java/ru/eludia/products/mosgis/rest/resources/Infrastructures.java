@@ -82,4 +82,11 @@ public class Infrastructures extends EJBResource<InfrastructuresLocal> {
         return back.doDelete (id, getUser ());
     }
     
+    @POST
+    @Path("{id}/approve") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject doApprove (@PathParam ("id") String id) { 
+        return back.doApprove (id, getUser ());
+    }
+    
 }

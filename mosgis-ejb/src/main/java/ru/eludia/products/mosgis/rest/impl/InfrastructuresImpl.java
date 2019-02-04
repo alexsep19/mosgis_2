@@ -3,9 +3,11 @@ package ru.eludia.products.mosgis.rest.impl;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.jms.Queue;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
@@ -17,6 +19,7 @@ import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.Infrastructure;
@@ -48,6 +51,26 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
     
     private final String LABEL_FIELD_NAME_NSI_2 = "f_c8d77ddad5";
     private final String OKEI_FIELD_NAME_NSI_2 = "f_c6e5a29665";
+    
+    @Resource (mappedName = "mosgis.inInfrastructuresQueue")
+    Queue queue;
+
+    @Override
+    public Queue getQueue () {
+        return queue;
+    }
+
+    @Override
+    protected void publishMessage (VocAction.i action, String id_log) {
+        
+        switch (action) {
+            case APPROVE:
+                super.publishMessage (action, id_log);
+            default:
+                return;
+        }
+        
+    }
     
     private void filterOffDeleted (Select select) {
         select.and ("is_deleted", 0);
@@ -240,6 +263,18 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
 
         logAction (db, user, id, VocAction.i.UPDATE);
                         
+    });}
+
+    @Override
+    public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
+
+        db.update (getTable (), HASH (
+            EnTable.c.UUID,               id,
+            Infrastructure.c.ID_IS_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+        ));
+
+        logAction (db, user, id, VocAction.i.APPROVE);
+
     });}
     
 }
