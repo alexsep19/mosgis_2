@@ -142,9 +142,11 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
         NsiTable nsi_33 = NsiTable.getNsiTable (33);
         NsiTable nsi_34 = NsiTable.getNsiTable (34);
         NsiTable nsi_35 = NsiTable.getNsiTable (35);
+        NsiTable nsi_36 = NsiTable.getNsiTable (36);
         NsiTable nsi_37 = NsiTable.getNsiTable (37);
         NsiTable nsi_39 = NsiTable.getNsiTable (39);
         NsiTable nsi_41 = NsiTable.getNsiTable (41);
+        NsiTable nsi_45 = NsiTable.getNsiTable (45);
 
         try (DB db = model.getDb ()) {
             
@@ -156,9 +158,11 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
 
                 nsi_34.getVocSelect (),
                 nsi_35.getVocSelect (),
+                nsi_36.getVocSelect (),
                 nsi_37.getVocSelect (),
                 nsi_39.getVocSelect (),
                 nsi_41.getVocSelect (),
+                nsi_45.getVocSelect (),
                 
                 VocNsi38.getVocSelect (),
                 VocNsi40.getVocSelect (),
