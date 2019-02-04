@@ -29,8 +29,8 @@ public class VocGisSupplyResourceContractCustomerType extends Table {
         REPRESENTATIVEOWNER (2, "ApartmentBuildingRepresentativeOwner", "Представитель собственников МКД"),
         SOLEOWNER           (3, "ApartmentBuildingSoleOwner",           "Собственник МКД"),
         LIVINGHOUSEOWNER    (4, "LivingHouseOwner",                     "Собственник (пользователь) помещений ЖД"),
-        OFFER               (5, "Offer",                                "Исполнитель коммунальных услуг"),
-        ORGANIZATION        (6, "Organization",                         "Договор оферта")
+        ORGANIZATION        (5, "Organization",                         "Исполнитель коммунальных услуг"),
+        OFFER               (6, "Offer",                                "Договор оферта")
         ;
 
 
@@ -50,7 +50,29 @@ public class VocGisSupplyResourceContractCustomerType extends Table {
             return label;
         }
 
-        private i (int id, String name, String label) {
+	public static i forName(String name) {
+	    for (i i : values()) {
+		if (i.name.equals(name)) {
+		    return i;
+		}
+	    }
+	    return null;
+	}
+
+	public static i forId(int id) {
+	    for (i i : values()) {
+		if (i.id == id) {
+		    return i;
+		}
+	    }
+	    return null;
+	}
+
+	public static i forId(Object id) {
+	    return forId(Integer.parseInt(id.toString()));
+	}
+
+	private i (int id, String name, String label) {
             this.id = (byte) id;
             this.name = name;
             this.label = label;

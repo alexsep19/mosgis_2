@@ -16,6 +16,8 @@ public class Premise extends View {
         UUID_HOUSE                (House.class,                   "Дом"),
         LABEL                     (STRING,        null,           "Номер помещения"),
         CADASTRALNUMBER           (STRING,        null,           "Кадастровый номер"),
+	APARTMENTNUMBER           (STRING,        null,           "Номер помещения / Номер блока"),
+	ROOMNUMBER                (STRING,        null,           "Номер комнаты"),
         TOTALAREA                 (NUMERIC,       25, 4, null,    "Общая площадь жилого помещения"),
         CLASS                     (STRING,        null,           "Класс")
         ;
@@ -38,17 +40,22 @@ public class Premise extends View {
     public final String getSQL () {
 
         return ""
-            + "SELECT uuid id, uuid_house, premisesnum label, cadastralnumber, totalarea, 'ResidentialPremise' class FROM " + getName (ResidentialPremise.class) + " WHERE is_deleted = 0 AND is_annuled = 0"
+            + "SELECT uuid id, uuid_house, premisesnum label, premisesnum apartmentnumber, NULL roomnumber, cadastralnumber, totalarea, 'ResidentialPremise' class FROM " + getName (ResidentialPremise.class) + " WHERE is_deleted = 0 AND is_annuled = 0"
             + " UNION "
-            + "SELECT uuid id, uuid_house, premisesnum label, cadastralnumber, totalarea, 'NonResidentialPremise' class FROM " + getName (NonResidentialPremise.class) + " WHERE is_deleted = 0 AND is_annuled = 0"
+            + "SELECT uuid id, uuid_house, premisesnum label,  premisesnum apartmentnumber, NULL roomnumber, cadastralnumber, totalarea, 'NonResidentialPremise' class FROM " + getName (NonResidentialPremise.class) + " WHERE is_deleted = 0 AND is_annuled = 0"
             + " UNION "
-            + "SELECT uuid id, uuid_house, 'блок ' || blocknum label, cadastralnumber, totalarea, 'Block' class FROM " + getName (Block.class) + " WHERE is_deleted = 0 AND is_annuled = 0"
+            + "SELECT uuid id, uuid_house, 'блок ' || blocknum label,  blocknum apartmentnumber, NULL roomnumber, cadastralnumber, totalarea, 'Block' class FROM " + getName (Block.class) + " WHERE is_deleted = 0 AND is_annuled = 0"
             + " UNION "
             + "SELECT r.uuid id, r.uuid_house, "
                 + "CASE "
                 + " WHEN b.blocknum IS NOT NULL THEN 'блок ' || b.blocknum "
                 + " ELSE 'кв. ' || p.premisesnum "
                 + "END || ' к. ' || roomnumber label"
+		+ ", CASE "
+		+ " WHEN b.blocknum IS NOT NULL THEN b.blocknum "
+		+ " ELSE p.premisesnum "
+		+ "END apartmentnumber "
+		+ ", r.roomnumber "
                 + ", r.cadastralnumber, r.square totalarea, 'LivingRoom' class "
                 + "FROM " + getName (LivingRoom.class) + " r "
                 + " LEFT JOIN " + getName (ResidentialPremise.class) + " p ON r.uuid_premise = p.uuid "

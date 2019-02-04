@@ -1,31 +1,36 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Logger;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.json.Json;
+import javax.jms.Queue;
 import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
 import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
-import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
-import ru.eludia.products.mosgis.db.model.incoming.nsi.InNsiItem;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.ActualSupplyResourceContract;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractFile;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractFileLog;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi239;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustomerType;
-import ru.eludia.products.mosgis.db.model.voc.VocUserOktmo;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractDimension;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
@@ -41,6 +46,14 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class SupplyResourceContractImpl extends BaseCRUD<SupplyResourceContract> implements SupplyResourceContractLocal {
+
+    @Resource(mappedName = "mosgis.inHouseSupplyResourceContractsQueue")
+    Queue queue;
+
+    @Override
+    public Queue getQueue() {
+	return queue;
+    }
 
     private static final Logger logger = Logger.getLogger (SupplyResourceContractImpl.class.getName ());
 
@@ -115,6 +128,8 @@ public class SupplyResourceContractImpl extends BaseCRUD<SupplyResourceContract>
             .toMaybeOne(VocOrganization.class, "AS org_customer", "label").on("uuid_org_customer")
             .toMaybeOne(VocPerson.class, "AS person_customer", "label").on("uuid_person_customer")
             .toMaybeOne(VocOrganization.class, "AS org", "label").on("uuid_org")
+	    .toMaybeOne(SupplyResourceContractLog.class, "AS cpl").on()
+	    .toMaybeOne(OutSoap.class, "uuid", "err_text").on("cpl.uuid_out_soap=out_soap.uuid")
         );
 
         job.add ("item", item);
@@ -152,4 +167,87 @@ public class SupplyResourceContractImpl extends BaseCRUD<SupplyResourceContract>
             NsiTable.getNsiTable(58).getVocSelect().where(IS_RS_CTR_NSI_58, 1)
         );
     });}
+
+    @Override
+    protected void publishMessage (VocAction.i action, String id_log) {
+
+        switch (action) {
+            case APPROVE:
+//	    case ANNUL:
+                super.publishMessage (action, id_log);
+            default:
+                return;
+        }
+
+    }
+
+    @Override
+    public JsonObject doApprove(String id, User user) {
+	return doAction((db) -> {
+
+	    db.update(getTable(), HASH(
+		EnTable.c.UUID, id,
+		SupplyResourceContract.c.ID_CTR_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId()
+	    ));
+
+	    logAction(db, user, id, VocAction.i.APPROVE);
+
+	    List<UUID> ids = new ArrayList<>();
+	    db.forEach(db.getModel().select(SupplyResourceContractFile.class, "uuid")
+		.where(SupplyResourceContractFile.c.UUID_SR_CTR.lc(), id).and(EnTable.c.IS_DELETED.lc(), 0)
+		, (rs) -> {
+		final Object u = db.getValue(rs, 1);
+		if (u != null) {
+		    ids.add((UUID) u);
+		}
+	    });
+
+	    for (UUID idFile : ids) {
+
+		String idFileLog = db.insertId(SupplyResourceContractFileLog.class, HASH(
+		    "action", VocAction.i.APPROVE.getName(),
+		    "uuid_object", idFile,
+		    "uuid_user", user == null ? null : user.getId()
+		)).toString();
+
+		db.update(SupplyResourceContractFile.class, HASH(
+		    "uuid", idFile,
+		    AttachTable.c.ATTACHMENTGUID, null,
+		    "id_log", idFileLog
+		));
+
+	    }
+
+	});
+    }
+
+    @Override
+    public JsonObject doAlter(String id, JsonObject p, User user) {
+	return doAction((db) -> {
+
+	    final Map<String, Object> r = HASH(
+		EnTable.c.UUID, id,
+		SupplyResourceContract.c.ID_CTR_STATUS, VocGisStatus.i.PROJECT.getId()
+	    );
+
+	    db.update(getTable(), r);
+
+	    logAction(db, user, id, VocAction.i.ALTER);
+	});
+    }
+
+    @Override
+    public JsonObject doAnnul(String id, JsonObject p, User user) {
+	return doAction((db) -> {
+
+	    db.update(getTable(), getData(p,
+		EnTable.c.UUID, id,
+		SupplyResourceContract.c.ID_CTR_STATUS, VocGisStatus.i.PENDING_RQ_ANNULMENT.getId(),
+		SupplyResourceContract.c.REASONOFANNULMENT, p.getJsonObject("data").getString(SupplyResourceContract.c.REASONOFANNULMENT.lc())
+	    ));
+
+	    logAction(db, user, id, VocAction.i.ANNUL);
+
+	});
+    }
 }

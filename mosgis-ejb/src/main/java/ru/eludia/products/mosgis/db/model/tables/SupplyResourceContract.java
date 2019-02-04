@@ -72,7 +72,13 @@ public class SupplyResourceContract extends EnTable {
         DDT_I_START_NXT      (Type.BOOLEAN,    null, "1, если срок внесения платы за жилое помещение и (или) коммунальные услуги в следующем месяце; иначе 0"),
 
         DDT_N_START          (Type.NUMERIC, 2, null, "Срок предоставления информации о поступивших платежах, не позднее (1..30 — конкретное число; 99 — последнее число)"),
-        DDT_N_START_NXT      (Type.BOOLEAN,    null, "1, если срок предоставления информации о поступивших платежах в следующем месяце; иначе 0")
+        DDT_N_START_NXT      (Type.BOOLEAN,    null, "1, если срок предоставления информации о поступивших платежах в следующем месяце; иначе 0"),
+
+	REASONOFANNULMENT    (Type.STRING, 1000, null, "Причина аннулирования"),
+	IS_ANNULED           (Type.BOOLEAN, new Virt("DECODE(\"REASONOFANNULMENT\",NULL,0,1)"), "1, если запись аннулирована; иначе 0"),
+
+	CONTRACTGUID         (Type.UUID, null, "Идентификатор версии ДРСО в ГИС ЖКХ"),
+	CONTRACTROOTGUID     (Type.UUID, null, "Идентификатор ДРСО в ГИС ЖКХ")
         ;
 
         @Override
@@ -176,4 +182,55 @@ public class SupplyResourceContract extends EnTable {
         + "END;");
     }
 
+    public enum Action {
+
+	PLACING      (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
+	EDITING      (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_STATE),
+	ANNULMENT    (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT);
+
+	VocGisStatus.i nextStatus;
+	VocGisStatus.i okStatus;
+	VocGisStatus.i failStatus;
+
+	private Action(VocGisStatus.i nextStatus, VocGisStatus.i okStatus, VocGisStatus.i failStatus) {
+	    this.nextStatus = nextStatus;
+	    this.okStatus = okStatus;
+	    this.failStatus = failStatus;
+	}
+
+	public VocGisStatus.i getNextStatus() {
+	    return nextStatus;
+	}
+
+	public VocGisStatus.i getFailStatus() {
+	    return failStatus;
+	}
+
+	public VocGisStatus.i getOkStatus() {
+	    return okStatus;
+	}
+
+	public static Action forStatus(VocGisStatus.i status) {
+
+	    switch (status) {
+
+	    case PENDING_RQ_PLACING:
+		return PLACING;
+	    case PENDING_RQ_EDIT:
+		return EDITING;
+	    case PENDING_RQ_ANNULMENT:
+		return ANNULMENT;
+
+	    case PENDING_RP_PLACING:
+		return PLACING;
+	    case PENDING_RP_EDIT:
+		return EDITING;
+	    case PENDING_RP_ANNULMENT:
+		return ANNULMENT;
+
+	    default:
+		return null;
+	    }
+	}
+    };
 }
