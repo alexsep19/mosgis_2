@@ -85,6 +85,13 @@ public interface ConfMBean {
     public int    getWsGisHouseManagementRespTimeout ();     
     public void   setWsGisHouseManagementRespTimeout (int i);  
     
+    public String getWsGisInfrastructureUrl ();
+    public void   setWsGisInfrastructureUrl (String s);    
+    public int    getWsGisInfrastructureConnTimeout ();     
+    public void   setWsGisInfrastructureConnTimeout (int i);
+    public int    getWsGisInfrastructureRespTimeout ();     
+    public void   setWsGisInfrastructureRespTimeout (int i);
+    
     public String getGisIdOrganization ();
     public void   setGisIdOrganization (String s);
     
