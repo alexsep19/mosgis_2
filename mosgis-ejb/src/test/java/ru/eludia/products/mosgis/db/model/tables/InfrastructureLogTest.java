@@ -14,16 +14,20 @@ import ru.gosuslugi.dom.schema.integration.infrastructure.ExportOKIRequest;
 
 public class InfrastructureLogTest extends BaseTest {
     
-    private static final String uuid = "3DFBF64592774F2DB05C43890847FA9D";
+    private static final String uuid = "3145162D2CE348DD889A8D6987C3FA35";
     
     private Infrastructure table;
+    private InfrastructureLog logTable;
     
     public InfrastructureLogTest() throws Exception {
         
         super ();
         
         jc            = JAXBContext.newInstance (ImportOKIRequest.class, ExportOKIRequest.class);
-        schema        = AbstactServiceAsync.loadSchema ("infrastructure/hcs-infrastructure-types");
+        schema        = AbstactServiceAsync.loadSchema ("infrastructure/hcs-infrastructure-types.xsd");
+        
+        table = (Infrastructure) model.get (Infrastructure.class);
+        logTable = (InfrastructureLog) model.get(InfrastructureLog.class);
         
     }
     
@@ -31,7 +35,10 @@ public class InfrastructureLogTest extends BaseTest {
         
         try (DB db = model.getDb ()) {
             
-            Map<String, Object> record = db.getMap(table, uuid);
+            Map<String, Object> record = 
+                    db.getMap (logTable.getForExport(uuid));
+            
+            System.out.println (record);
             
             checkImport (record);
             
