@@ -9,6 +9,7 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.Type.BOOLEAN;
 import static ru.eludia.base.model.Type.STRING;
+import static ru.eludia.base.model.Type.UUID;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
@@ -24,6 +25,8 @@ public class VocNsi40 extends EnTable {
         F_0EF1925149 (STRING, null, "Наименование топлива"),
         
         LABEL        (STRING, new Virt ("DECODE (\"F_0EF1925149\", NULL, \"F_8BB30AD91A\", \"F_8BB30AD91A\"||' ('|| \"F_0EF1925149\" ||')')"), "Полное наименование топлива"),
+        
+        GUID         (UUID, "Глобально-уникальный идентификатор элемента справочника"),
         
         ISACTUAL     (BOOLEAN, "Актуально")
         
