@@ -38,6 +38,8 @@ public class InfrastructureLogTest extends BaseTest {
             Map<String, Object> record = 
                     db.getMap (logTable.getForExport(uuid));
             
+            InfrastructureLog.addServicesForImport (db, record);
+            
             System.out.println (record);
             
             checkImport (record);

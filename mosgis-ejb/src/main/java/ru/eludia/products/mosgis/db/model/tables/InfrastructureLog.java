@@ -1,7 +1,10 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.base.model.Table;
@@ -40,6 +43,15 @@ public class InfrastructureLog extends GisWsLogTable {
         result.setOKIType(toOKIType (r));
         if ((long) r.get ("indefinitemanagement") == 1) result.setEndManagmentDate(null);
         else result.setIndefiniteManagement(null);
+        result.getServices ().clear();
+        for (Map <String, Object> x: (List <Map <String, Object>>) r.get ("services")) 
+            result.getServices ().add (
+                NsiTable.toDom (
+                    x.get("code").toString (), 
+                    (UUID) x.get("guid")
+                )
+            );
+  
         return result;
     }
     
@@ -53,8 +65,18 @@ public class InfrastructureLog extends GisWsLogTable {
         if (r.containsKey ("vc_nsi_38")) result.setPowerPlantType  (NsiTable.toDom (r, "vc_nsi_38"));
         if (r.containsKey ("vc_nsi_34")) result.setWaterIntakeType (NsiTable.toDom (r, "vc_nsi_34"));
         if (r.containsKey ("vc_nsi_40")) result.setFuelType        (NsiTable.toDom (r, "vc_nsi_40"));
-        if (r.containsKey ("vc_nsi_35")) result.setGasNetworkType  (NsiTable.toDom (r, "vc_nsi_35"));
+        if (r.containsKey ("vc_nsi_35")) result.setGasNetworkType  (NsiTable.toDom (r, "vc_nsi_35"));        
         return result;
+    }
+    
+    public static void addServicesForImport (DB db, Map<String, Object> r) throws SQLException {
+        
+        r.put ("services", db.getList (db.getModel ()
+                .select  (InfrastructureNsi3.class, "AS ref", "code")
+                .toOne   (NsiTable.getNsiTable (3), "AS nsi3", "guid AS guid").on ("(ref.code = nsi3.code)")
+                .where   ("uuid", r.get("uuid_object"))
+        ));
+        
     }
     
     public Get getForExport (String id) {
