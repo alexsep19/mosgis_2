@@ -26,6 +26,7 @@ import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.ejb.wsc.RestGisFilesClient;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
@@ -51,6 +52,9 @@ public class GisPollExportCharterDataMDB extends GisPollMDB {
         
     @Resource (mappedName = "mosgis.outExportHouseCharterFilesQueue")
     Queue outExportHouseCharterFilesQueue;    
+
+    @EJB
+    RestGisFilesClient filesClient;
     
     private GetStateResult getState (UUID orgPPAGuid, Map<String, Object> r) throws GisPollRetryException, GisPollException {
 
@@ -150,9 +154,9 @@ public class GisPollExportCharterDataMDB extends GisPollMDB {
             AdditionalService.Sync adds = ((AdditionalService) m.get (AdditionalService.class)).new Sync (db, orgUuid);
             adds.reload ();
 
-            CharterFile.Sync charterFiles = ((CharterFile) m.get (CharterFile.class)).new Sync (db, ctrUuid, this);
+            CharterFile.Sync charterFiles = ((CharterFile) m.get (CharterFile.class)).new Sync (db, ctrUuid, filesClient);
             charterFiles.addFrom (charter);
-            charterFiles.sync ();                        
+            charterFiles.sync ();
 
             final String key = "uuid_charter";
             List<Map<String, Object>> idsCharterObject = db.getList (m.select (CharterObject.class, "uuid").where (key, ctrUuid).and ("is_deleted", 0));
