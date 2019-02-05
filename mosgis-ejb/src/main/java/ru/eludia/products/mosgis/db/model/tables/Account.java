@@ -40,11 +40,11 @@ public class Account extends EnTable {
 */        
         
         UUID_ORG               (VocOrganization.class, null, "Организация. ЮЛ/ИП/ОП"),
-        UUID_PERSON            (VocPerson.class, null, "Физическое лицо/индивидуальный предприниматель."),
+        UUID_PERSON            (VocPerson.class,       null, "Физическое лицо/индивидуальный предприниматель."),
         
-        ACCOUNTGUID            (Type.UUID,           null,    "Идентификатор ЛС в ГИС ЖКХ (при обновлении данных ЛС)"),        
+        ACCOUNTGUID            (Type.UUID,             null,    "Идентификатор ЛС в ГИС ЖКХ (при обновлении данных ЛС)"),        
 
-//        ID_LOG                 (AccountLog.class,                    "Последнее событие редактирования"),
+        ID_LOG                 (AccountLog.class,                    "Последнее событие редактирования"),
         
         ID_CTR_STATUS          (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения mosgis"),
         ID_CTR_STATUS_GIS      (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения ГИС ЖКХ"),
@@ -60,11 +60,10 @@ public class Account extends EnTable {
         @Override
         public boolean isLoggable () {
             switch (this) {
-//                case ID_LOG:
-//                case UUID_WORKING_PLAN:
-//                case MONTH:
-//                    return false;
-                default: 
+                case ID_LOG:
+                case ID_TYPE:
+                    return false;
+                default:
                     return true;
             }
         }        
