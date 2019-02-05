@@ -24,6 +24,7 @@ import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.Infrastructure;
 import ru.eludia.products.mosgis.db.model.tables.InfrastructureNsi3;
+import ru.eludia.products.mosgis.db.model.tables.VocNsi33;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi38;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi40;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -42,9 +43,6 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements InfrastructuresLocal {
-
-    private final String LABEL_FIELD_NAME_NSI_33 = "f_c8e745bc63";
-    private final String TYPE_FIELD_NAME_NSI_33 = "f_995a303098";
     
     private final String LABEL_FIELD_NAME_NSI_3 = "f_d966dd6cbc";
     private final String NSI_2_REF_FIELD_NAME_NSI_3 = "f_1587117ecc";
@@ -187,6 +185,7 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
                 nsi_41.getVocSelect (),
                 nsi_45.getVocSelect (),
                 
+                VocNsi33.getVocSelect (),
                 VocNsi38.getVocSelect (),
                 VocNsi40.getVocSelect (),
                 
@@ -200,12 +199,6 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
                     .toOne   (nsi_2, "code AS nsi_2").on (nsi_3.getName () + "." + NSI_2_REF_FIELD_NAME_NSI_3 + "=" + nsi_2.getName () + ".guid")
                     .where   ("is_actual", 1)
                     .orderBy (nsi_3.getName () + ".code"),
-                
-                model
-                    .select  (nsi_33, "code AS id", LABEL_FIELD_NAME_NSI_33 + " AS label", TYPE_FIELD_NAME_NSI_33 + " AS type")
-                    .where   (LABEL_FIELD_NAME_NSI_33 + " IS NOT NULL")
-                    .and     ("isactual", 1)
-                    .orderBy ("code"),
                     
                 model
                     .select  (VocGisStatus.class, "id", "label")

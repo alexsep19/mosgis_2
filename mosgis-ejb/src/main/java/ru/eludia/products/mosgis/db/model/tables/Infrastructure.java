@@ -95,6 +95,8 @@ public class Infrastructure extends EnTable {
         );
         
         trigger ("BEFORE UPDATE", ""
+                + "DECLARE "
+                    + "cnt NUMBER; "
                 + "BEGIN "
                     + "IF :NEW.ID_IS_STATUS <> :OLD.ID_IS_STATUS "
                         + " AND :OLD.ID_IS_STATUS <> " + VocGisStatus.i.FAILED_PLACING.getId ()
@@ -104,6 +106,23 @@ public class Infrastructure extends EnTable {
                     + "; END IF; "
                 
                     + "IF :NEW.is_deleted=0 AND :NEW.ID_IS_STATUS <> :OLD.ID_IS_STATUS AND :NEW.ID_IS_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING.getId () + " THEN BEGIN "
+                            
+                        + "SELECT COUNT(*) INTO cnt FROM vw_nsi_33_objects code_objects WHERE code_objects.code = :NEW.CODE_VC_NSI_33; "
+                        + "IF cnt > 0 THEN  BEGIN "
+                            + "SELECT COUNT(*) INTO cnt FROM tb_oki_resources res WHERE res.uuid_oki = :NEW.uuid; "
+                            + "IF cnt = 0 THEN "
+                                + "raise_application_error (-20000, 'Укажите хотя бы одну характеристику мощностей объекта. Операция отменена'); "
+                            + "END IF; END; "
+                        + "ELSE BEGIN "
+                            + "SELECT COUNT(*) INTO cnt FROM tb_oki_tr_resources res WHERE res.uuid_oki = :NEW.uuid; "
+                            + "IF cnt = 0 THEN "
+                                + "raise_application_error (-20000, 'Укажите хотя бы одну характеристику передачи коммунальных ресурсов. Операция отменена'); "
+                            + "END IF; "
+                            + "SELECT COUNT(*) INTO cnt FROM tb_oki_net_pieces net WHERE net.uuid_oki = :NEW.uuid; "
+                            + "IF cnt = 0 THEN "
+                                + "raise_application_error (-20000, 'Укажите хотя бы один участок сети. Операция отменена'); "
+                            + "END IF; "
+                        + "END; END IF; "
                 
                         + "IF :NEW.indefinitemanagement=0 AND :NEW.endmanagmentdate IS NULL THEN "
                             + "raise_application_error (-20000, 'Не указана дата окончания управления. Операция отменена'); "
