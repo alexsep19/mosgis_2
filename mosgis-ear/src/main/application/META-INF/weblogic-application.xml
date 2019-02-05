@@ -32,7 +32,7 @@
     </module>
     
     <module><type>JMS</type>
-        <name>Workflow-org</name>
+        <name>Workflow-infrastructure</name>
         <path>META-INF/mosgismodule-infrastructure-jms.xml</path>
     </module>
     

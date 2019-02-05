@@ -97,6 +97,7 @@ define ([], function () {
 
                 data.item._can = {
                     edit: mod_perms,
+                    approve: mod_perms,
                     update: mod_perms,
                     cancel: mod_perms,
                     delete: mod_perms,

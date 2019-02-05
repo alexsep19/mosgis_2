@@ -1,39 +1,31 @@
 package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
-import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.tables.Charter;
-import ru.eludia.products.mosgis.db.model.tables.CharterObject;
-import ru.eludia.products.mosgis.db.model.tables.Contract;
-import ru.eludia.products.mosgis.db.model.tables.ContractObject;
-import ru.eludia.products.mosgis.db.model.tables.OrganizationWork;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.Infrastructure;
 import ru.eludia.products.mosgis.db.model.tables.InfrastructureLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
-import ru.eludia.products.mosgis.db.model.tables.ReportingPeriod;
-import ru.eludia.products.mosgis.db.model.tables.WorkingList;
-import ru.eludia.products.mosgis.db.model.tables.WorkingListItem;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.gosuslugi.dom.schema.integration.infrastructure_service_async.Fault;
 import ru.eludia.products.mosgis.db.model.tables.Infrastructure.c;
+import ru.eludia.products.mosgis.db.model.tables.VocNsi38;
+import ru.eludia.products.mosgis.db.model.tables.VocNsi40;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import static ru.eludia.products.mosgis.ejb.ModelHolder.getModel;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisInfrastructureClient;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.infrastructure.ExportOKIResultType;
@@ -51,28 +43,28 @@ public class GisPollImportInfrastructureMDB  extends GisPollMDB {
 
     @Override
     protected Get get (UUID uuid) {
-        return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
+        
+        final NsiTable nsi_33 = NsiTable.getNsiTable (33);
+        final NsiTable nsi_34 = NsiTable.getNsiTable (34);
+        final NsiTable nsi_35 = NsiTable.getNsiTable (35);
+        final NsiTable nsi_37 = NsiTable.getNsiTable (37);
+        final VocNsi38 nsi_38 = (VocNsi38) getModel ().get (VocNsi38.class);
+        final NsiTable nsi_39 = NsiTable.getNsiTable (39);
+        final VocNsi40 nsi_40 = (VocNsi40) getModel ().get (VocNsi40.class);
+        
+        return (Get) getModel ().get (getTable (), uuid, "AS root", "*")                
                 
             .toOne (InfrastructureLog.class,     "AS log", "uuid", "action").on ("log.uuid_out_soap=root.uuid")
             .toOne (Infrastructure.class,        "AS r", "uuid").on ()
 
-            .toOne (WorkingList.class, "AS l").on ()
-                
-            .toMaybeOne (ContractObject.class, "AS co").on ()
-            .toMaybeOne (Contract.class, "AS ctr"
-                , "contractguid AS contractguid"
-            ).on ()
-            .toMaybeOne (VocOrganization.class, "AS o1"
-                , "orgppaguid AS orgppaguid_1"
-            ).on ("ctr.uuid_org=o1.uuid")
-                
-            .toMaybeOne (CharterObject.class, "AS co").on ()
-            .toMaybeOne (Charter.class, "AS ch"
-                , "charterguid AS charterguid"
-            ).on ()
-            .toMaybeOne (VocOrganization.class, "AS o2"
-                , "orgppaguid AS orgppaguid_2"
-            ).on ("ch.uuid_org=o1.uuid")
+            .toOne      (VocOrganization.class, "AS org", "orgppaguid").on ()
+            .toOne      (nsi_33, nsi_33.getLabelField ().getfName () + " AS vc_nsi_33", "code", "guid").on ("(r.code_vc_nsi_33 = vc_nsi_33.code AND vc_nsi_33.isactual=1)")
+            .toOne      (nsi_39, nsi_39.getLabelField ().getfName () + " AS vc_nsi_39", "code", "guid").on ("(r.code_vc_nsi_39 = vc_nsi_39.code AND vc_nsi_39.isactual=1)")
+            .toMaybeOne (nsi_37, nsi_37.getLabelField ().getfName () + " AS vc_nsi_37", "code", "guid").on ("(r.code_vc_nsi_37 = vc_nsi_37.code AND vc_nsi_37.isactual=1)")
+            .toMaybeOne (nsi_38, "label AS vc_nsi_38", "code", "guid").on ("(r.code_vc_nsi_38 = vc_nsi_38.code AND vc_nsi_38.isactual=1)")
+            .toMaybeOne (nsi_34, nsi_34.getLabelField ().getfName () + " AS vc_nsi_34", "code", "guid").on ("(r.code_vc_nsi_34 = vc_nsi_34.code AND vc_nsi_34.isactual=1)")
+            .toMaybeOne (nsi_40, "label AS vc_nsi_40", "code", "guid").on ("(r.code_vc_nsi_40 = vc_nsi_40.code AND vc_nsi_40.isactual=1)")
+            .toMaybeOne (nsi_35, nsi_35.getLabelField ().getfName () + " AS vc_nsi_35", "code", "guid").on ("(r.code_vc_nsi_35 = vc_nsi_35.code AND vc_nsi_35.isactual=1)")
         ;
     }
 
@@ -101,65 +93,11 @@ public class GisPollImportInfrastructureMDB  extends GisPollMDB {
 
             if (result == null) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
             
-            ExportOKIResultType.OKI workingPlan = result.getOKI ();
+            ExportOKIResultType.OKI oki = result.getOKI ();
             
-            if (workingPlan == null) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
-
-            Map<Object, Map<String, Object>> code_month2wpi = new HashMap<> ();
-            
-            db.forEach (db.getModel ()
-                .select (InfrastructureItem.class, EnTable.c.UUID.lc (), InfrastructureItem.c.MONTH.lc ())
-                .where (InfrastructureItem.c.UUID_WORKING_PLAN, r.get ("r.uuid"))
-                .toOne (WorkingListItem.class).on ()
-                .toOne (OrganizationWork.class, "uniquenumber AS code").on (),
-                (rs) -> {
-                    final String k = rs.getString ("code") + '_' + rs.getString ("month");
-                    final Map<String, Object> wpi = db.HASH (rs);
-                    wpi.remove ("code");
-                    wpi.put (InfrastructureItem.c.UUID_REPORTING_PERIOD.lc (), null);
-                    code_month2wpi.put (k, wpi);
-                }
-            );
-            
-logger.info ("code2wpi = " + code_month2wpi);
-
-            for (ExportInfrastructureResultType.Infrastructure.ReportingPeriod p: workingPlan.getReportingPeriod ()) {
-                
-                for (ExportInfrastructureResultType.Infrastructure.ReportingPeriod.WorkPlanItem i: p.getWorkPlanItem ()) {
-                    
-                    final String k = i.getWorkGUID ().getCode () + '_' + p.getMonthYear ().getMonth ();                    
-                    final Map<String, Object> wpi = code_month2wpi.get (k);
-                    if (wpi == null) {
-                        logger.warning ("InfrastructureItem not found for " + k);
-                        continue;
-                    }
-                    wpi.put (InfrastructureItem.c.WORKPLANITEMGUID.lc (), i.getWorkPlanItemGUID ());
-                    wpi.put (InfrastructureItem.c.UUID_REPORTING_PERIOD.lc (), null);
-                    
-                }
-                                
-            }
-            
- //           db.update (InfrastructureItem.class, code_month2wpi.values ().stream ().collect (Collectors.toList ()));
-            
-logger.info ("code2wpi = " + code_month2wpi);
-            
-            db.dupsert (ReportingPeriod.class, 
-
-                HASH (
-                    ReportingPeriod.c.UUID_WORKING_PLAN, r.get ("r.uuid")
-                ),
-
-                workingPlan.getReportingPeriod ().stream ().map ((t) -> HASH (
-                    ReportingPeriod.c.MONTH, t.getMonthYear ().getMonth (),
-                    ReportingPeriod.c.REPORTINGPERIODGUID, t.getReportingPeriodGuid ()
-                )).collect (Collectors.toList ()),
-
-                ReportingPeriod.c.MONTH.lc ()
-
-            );            
-            
-            final Map<String, Object> h = statusHash (action.getOkStatus ());            
+            if (oki == null) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
+                        
+            final Map<String, Object> h = statusHash (action.getOkStatus ());
             
             update (db, uuid, r, h);
 

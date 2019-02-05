@@ -64,6 +64,11 @@ define ([], function () {
 
     }
 
+    $_DO.approve_infrastructure_common = function (e) {
+        if (!confirm ('Разместить эти данные в ГИС ЖКХ?')) return
+        query ({type: 'infrastructures', action: 'approve'}, {}, reload_page)
+    }
+
     $_DO.cancel_infrastructure_common = function (e) {
         
         if (!confirm ('Отменить несохранённые правки?')) return
