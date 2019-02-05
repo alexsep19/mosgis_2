@@ -15,6 +15,7 @@ public class Account extends EnTable {
 
     public enum c implements EnColEnum {
         
+        UUID_ORG               (VocOrganization.class, null, "Организация, которая создала данный счёт"),
         ID_TYPE                (VocAccountType.class,       "Тип ЛС"),
         
 	UUID_CONTRACT          (Contract.class,      null,  "Ссылка на договор"),
@@ -39,7 +40,7 @@ public class Account extends EnTable {
         SHAREPERCENT           (Type.NUMERIC, 5, 2, null,  "Отапливаемая площадь"),
 */        
         
-        UUID_ORG               (VocOrganization.class, null, "Организация. ЮЛ/ИП/ОП"),
+        UUID_ORG_CUSTOMER      (VocOrganization.class, null, "Организация. ЮЛ/ИП/ОП"),
         UUID_PERSON            (VocPerson.class,       null, "Физическое лицо/индивидуальный предприниматель."),
         
         ACCOUNTGUID            (Type.UUID,             null,    "Идентификатор ЛС в ГИС ЖКХ (при обновлении данных ЛС)"),        
