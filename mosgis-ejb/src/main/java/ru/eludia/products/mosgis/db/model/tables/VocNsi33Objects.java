@@ -9,8 +9,7 @@ import ru.eludia.base.model.View;
 public class VocNsi33Objects extends View {
     
     public enum c implements ColEnum {
-        
-        UUID (Type.UUID,   null, "Ключ"),
+
         CODE (Type.STRING,   20, "Код элемента справочника")
         
         ;
@@ -28,7 +27,6 @@ public class VocNsi33Objects extends View {
         super ("vw_nsi_33_objects", "Элементы справочника НСИ 33, имеющие тип 'Объект'");
         
         cols   (c.class);
-        pk     (c.UUID);
         
     }
     

@@ -160,7 +160,6 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
         
         NsiTable nsi_2  = NsiTable.getNsiTable (2);
         NsiTable nsi_3  = NsiTable.getNsiTable (3);
-        NsiTable nsi_33 = NsiTable.getNsiTable (33);
         NsiTable nsi_34 = NsiTable.getNsiTable (34);
         NsiTable nsi_35 = NsiTable.getNsiTable (35);
         NsiTable nsi_36 = NsiTable.getNsiTable (36);
