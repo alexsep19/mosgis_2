@@ -85,8 +85,8 @@ public class GisPollExportOrgCharterDataMDB extends GisPollMDB {
     protected Get get (UUID uuid) {
         
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
-            .toOne (VocOrganizationLog.class,  "AS log", "uuid", "id_ctr_status", "action", "uuid_user").on ("log.uuid_out_soap=root.uuid")
-            .toOne (VocOrganization.class,     "AS org", "uuid").on ()
+            .toOne (VocOrganizationLog.class,  "AS log", "uuid", "action", "uuid_user").on ("log.uuid_out_soap=root.uuid")
+            .toOne (VocOrganization.class,     "AS org", "uuid").on ("log.uuid_object=org.uuid")
         ;
         
     }    
@@ -135,7 +135,10 @@ public class GisPollExportOrgCharterDataMDB extends GisPollMDB {
             
             for (UUID u: toAnnul) {                
                 try {
-                    wsGisHouseManagementClient.annulCharterData (orgPPAGuid, UUID.randomUUID (), HASH ("ctr.charterversionguid", u));
+                    wsGisHouseManagementClient.annulCharterData (orgPPAGuid, UUID.randomUUID (), HASH (
+                        "reasonofannulment", "exportCAChData вернул более одного утверждённого устава: первый оставляем, остальные аннулируем",
+                        "ctr.charterversionguid", u
+                    ));
                 }
                 catch (Exception e) {
                     logger.log (Level.SEVERE, "Cannot annul conflicting charter", e);
@@ -169,7 +172,7 @@ public class GisPollExportOrgCharterDataMDB extends GisPollMDB {
             Charter.c.UUID_ORG,           orgUuid,
             Charter.c.ID_CTR_STATUS,      VocGisStatus.i.PENDING_RP_RELOAD.getId (),
             Charter.c.ID_CTR_STATUS_GIS,  VocGisStatus.i.forName (charter.getCharterStatus ().value ())
-        ), Charter.c.CHARTERGUID.lc ());
+        ), Charter.c.UUID_ORG.lc ());
         
         UUID ctrUuid = (UUID) db.getMap (m.select (Charter.class, "uuid").where (Charter.c.CHARTERGUID, charter.getCharterGUID ())).get ("uuid");
         

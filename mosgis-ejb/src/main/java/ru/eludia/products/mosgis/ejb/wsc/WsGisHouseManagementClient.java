@@ -22,6 +22,7 @@ import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.AgreementPaymentLog;
 import ru.eludia.products.mosgis.db.model.tables.Block;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
+import ru.eludia.products.mosgis.db.model.tables.CharterLog;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.CharterPayment;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
@@ -600,14 +601,7 @@ public class WsGisHouseManagementClient {
     }
 
     public AckRequest.Ack annulCharterData (UUID orgPPAGuid, UUID messageGUID,  Map<String, Object> r) throws Fault {
-        
-        final ImportCharterRequest.AnnulmentCharter ac = (ImportCharterRequest.AnnulmentCharter) DB.to.javaBean (ImportCharterRequest.AnnulmentCharter.class, r);
-        ac.setCharterVersionGUID (r.get ("ctr.charterversionguid").toString ());        
-        ImportCharterRequest importCharterRequest = of.createImportCharterRequest ();
-        importCharterRequest.setAnnulmentCharter (new ImportCharterRequest.AnnulmentCharter ());
-        importCharterRequest.setTransportGUID (UUID.randomUUID ().toString ());
-        return getPort (orgPPAGuid, messageGUID).importCharterData (importCharterRequest).getAck ();
-        
+        return getPort (orgPPAGuid, messageGUID).importCharterData (CharterLog.toAnnul (r)).getAck ();        
     }
     
     public AckRequest.Ack exportCharterData (UUID orgPPAGuid, UUID messageGUID, List<UUID> ids) throws Fault {

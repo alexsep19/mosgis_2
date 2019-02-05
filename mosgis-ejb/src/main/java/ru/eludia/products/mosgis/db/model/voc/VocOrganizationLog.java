@@ -1,12 +1,11 @@
 package ru.eludia.products.mosgis.db.model.voc;
 
-import ru.eludia.products.mosgis.db.model.LogTable;
+import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import java.util.UUID;
-import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_base.ObjectFactory;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_base.RegOrgType;
 
-public class VocOrganizationLog extends LogTable {
+public class VocOrganizationLog extends GisWsLogTable {
     
     private static final ObjectFactory of = new ObjectFactory ();
 
@@ -16,7 +15,6 @@ public class VocOrganizationLog extends LogTable {
                 VocOrganization.c.class
         );
 
-        fk    ("uuid_out_soap", OutSoap.class, null, "Последний запрос на импорт в ГИС ЖКХ");
     }
     
     public static final RegOrgType regOrgType (UUID uuid) {
