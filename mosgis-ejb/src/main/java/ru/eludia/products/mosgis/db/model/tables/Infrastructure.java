@@ -116,7 +116,7 @@ public class Infrastructure extends EnTable {
                         + "IF :NEW.oktmo_code IS NULL THEN "
                             + "raise_application_error (-20000, 'Не указан ОКТМО объекта. Операция отменена'); "
                         + "END IF; "
-                    + "END IF; "
+                    + "END; END IF; "
                 + "END; "
         );
         
