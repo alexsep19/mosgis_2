@@ -28,6 +28,7 @@ import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
@@ -99,7 +100,8 @@ public class GisPollExportHouse extends GisPollMDB {
             
             db.update (House.class, HASH (
                 "uuid",          r.get ("house.uuid"),
-                "id_status_gis", null
+                "id_status_gis", null,
+                "id_status", VocHouseStatus.i.PUBLISHED
             ));
             
             db.update(OutSoap.class, HASH(

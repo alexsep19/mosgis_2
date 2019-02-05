@@ -66,20 +66,36 @@ public class Houses extends EJBResource <HousesLocal> {
         
     }
     
-    private void checkOrg (JsonObject item) {
-        
-        if (securityContext.isUserInRole ("admin")) return;
-        
-        if (!(
-            securityContext.isUserInRole ("nsi_20_1")
-            || securityContext.isUserInRole ("nsi_20_19")
-            || securityContext.isUserInRole ("nsi_20_20")
-            || securityContext.isUserInRole ("nsi_20_21")
-            || securityContext.isUserInRole ("nsi_20_22")
-        )) throw new ValidationException ("foo", "Доступ запрещён");
-        
-        if (!item.containsKey ("cach")) throw new ValidationException ("foo", "Ваша организация не управляет домом по этому адресу. Доступ запрещён.");
+    private void checkOrg(JsonObject item) {
 
+        if (securityContext.isUserInRole("admin")
+                || securityContext.isUserInRole("nsi_20_7")
+                || securityContext.isUserInRole("nsi_20_14")) {
+            return;
+        }
+
+        if ((securityContext.isUserInRole("nsi_20_1")
+                || securityContext.isUserInRole("nsi_20_19")
+                || securityContext.isUserInRole("nsi_20_20")
+                || securityContext.isUserInRole("nsi_20_21")
+                || securityContext.isUserInRole("nsi_20_22"))
+                && item.containsKey("cach") && getUserOrg ().equals (item.getJsonObject ("cach").getString("org.uuid")))
+            return;
+        
+        String itemOktmo = item.getJsonObject ("item").get ("fias.oktmo").toString ();
+        
+        if (securityContext.isUserInRole("nsi_20_8") && securityContext.isUserInRole("oktmo_" + itemOktmo)) {
+            return;
+        }
+        
+        if (securityContext.isUserInRole("nsi_20_2"))
+            throw new ValidationException("foo", "Доcтуп запрещён. Добавить проверку договора РСО");
+                
+        if (securityContext.isUserInRole("nsi_20_34")) {
+            throw new ValidationException("foo", "Доступ запрещён. Добавить проверки единоличного собственника МКД");
+        }
+
+        throw new ValidationException("foo", "Доступ запрещён");
     }
     
     private JsonObject getInnerItem (String id) {
@@ -401,7 +417,12 @@ public class Houses extends EJBResource <HousesLocal> {
     public JsonObject doReload (@PathParam ("id") String id) { 
         final JsonObject item = back.getItem (id);
         checkOrg (item);
-        return back.doReload (id, item.getJsonObject("cach").getString("org.uuid"), getUser());
+        
+        String orgUuid = null;
+        if (item.getJsonObject("cach") != null)
+            orgUuid = item.getJsonObject("cach").getString("org.uuid");
+        
+        return back.doReload (id, orgUuid, getUser());
     }
     
     @POST
@@ -410,6 +431,11 @@ public class Houses extends EJBResource <HousesLocal> {
     public JsonObject doApprove (@PathParam ("id") String id) { 
         final JsonObject item = back.getItem (id);
         checkOrg (item);
-        return back.doSend (id, item.getJsonObject("cach").getString("org.uuid"), getUser ());
+        
+        String orgUuid = null;
+        if (item.getJsonObject("cach") != null)
+            orgUuid = item.getJsonObject("cach").getString("org.uuid");
+        
+        return back.doSend (id, orgUuid, getUser ());
     }
 }
