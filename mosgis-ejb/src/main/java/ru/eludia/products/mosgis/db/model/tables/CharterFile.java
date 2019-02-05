@@ -163,7 +163,7 @@ public class CharterFile extends Table {
 
                 logger.info ("Scheduling download for " + uuid);
 
-                mDB.download (uuid);
+                mDB.download (uuid, true);
                 
             });
                 
@@ -186,7 +186,7 @@ public class CharterFile extends Table {
 
                 logger.info ("Scheduling download for " + uuid + ": " + hashToBe + " <> " + hashAsIs);
                 
-                mDB.download (uuid);
+                mDB.download (uuid, true);
                 
             });
             

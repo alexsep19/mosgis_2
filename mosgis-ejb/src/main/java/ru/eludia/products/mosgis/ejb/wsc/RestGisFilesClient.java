@@ -44,8 +44,15 @@ public class RestGisFilesClient {
     @Resource (mappedName = "mosgis.outExportHouseMgmtContractFilesQueue")
     Queue outExportHouseMgmtContractFilesQueue;    
     
-    public void download (final UUID uuid) {
-        uuidPublisher.publish (outExportHouseMgmtContractFilesQueue, uuid);
+    @Resource (mappedName = "mosgis.outExportHouseCharterFilesQueue")
+    Queue outExportHouseCharterFilesQueue;    
+    
+    Queue getQueue (boolean isCharter) {
+        return isCharter ? outExportHouseCharterFilesQueue : outExportHouseMgmtContractFilesQueue;
+    }    
+    
+    public void download (final UUID uuid, boolean isCharter) {
+        uuidPublisher.publish (getQueue (isCharter), uuid);
     }
     
     private class Authenticator implements ClientRequestFilter {

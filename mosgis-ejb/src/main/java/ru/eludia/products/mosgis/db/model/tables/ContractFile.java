@@ -221,7 +221,7 @@ public class ContractFile extends Table {
 
                 logger.info ("Scheduling download for " + uuid);
 
-                filesClient.download (uuid);
+                filesClient.download (uuid, false);
                 
             });
                 
@@ -241,7 +241,7 @@ public class ContractFile extends Table {
 
                 logger.info ("Scheduling download for " + uuid + ": " + hashToBe + " <> " + hashAsIs);
                 
-                filesClient.download (uuid);
+                filesClient.download (uuid, false);
                 
             });
             
