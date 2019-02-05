@@ -17,12 +17,20 @@ define ([], function () {
             show: {
                 toolbar: data.item._can.create_account,
                 footer: 1,
-                toolbarReload: false,
+                toolbarReload: true,
                 toolbarColumns: false,
-                toolbarInput: false,
-                toolbarAdd: data.item._can.create_account,
+                toolbarInput: true,
             },            
-
+            
+            toolbar: {
+            
+                items: [
+                    {type: 'button', id: 'ind', caption: 'Добавить ЛС физического лица', onClick: $_DO.create_mgmt_contract_accounts, off: !data.item._can.create_account, icon: 'w2ui-icon-plus'},
+                    {type: 'button', id: 'org', caption: 'Добавить ЛС юридического лица', onClick: $_DO.create_mgmt_contract_accounts, off: !data.item._can.create_account, icon: 'w2ui-icon-plus'},
+                ].filter (not_off),
+                
+            },
+            
             textSearch: 'contains',
             
             columns: [              

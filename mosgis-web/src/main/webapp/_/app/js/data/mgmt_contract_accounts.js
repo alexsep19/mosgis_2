@@ -1,8 +1,8 @@
 define ([], function () {
 
     $_DO.create_mgmt_contract_accounts = function (e) {           
-    
-        use.block ('account_new')
+        
+        use.block ('account_' + e.target + '_new')
         
     }  
     
