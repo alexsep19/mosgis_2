@@ -25,8 +25,8 @@ public class CharterPayment extends EnTable {
 
     public enum c implements EnColEnum {
 
-        UUID_CHARTER         (Charter.class,          "Ссылка на договор"),
-        UUID_CHARTER_OBJECT  (CharterObject.class,    "Ссылка на объект договора"),
+        UUID_CHARTER         (Charter.class,          "Ссылка на устав"),
+        UUID_CHARTER_OBJECT  (CharterObject.class,    "Ссылка на объект устава"),
         UUID_FILE_0          (CharterPaymentFile.class, "Ссылка на протокол для членов кооператива"),
         UUID_FILE_1          (CharterPaymentFile.class, "Ссылка на протокол для не членов кооператива"),
         FIASHOUSEGUID        (VocBuilding.class,       "Дом"),
