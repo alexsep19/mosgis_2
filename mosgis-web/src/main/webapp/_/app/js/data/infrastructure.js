@@ -107,6 +107,7 @@ define ([], function () {
 
                     switch (data.item.id_is_status) {
                         case 14:
+                        case 34:
                             it._can.alter = 1
                     } 
 
@@ -114,6 +115,8 @@ define ([], function () {
                                
                 data.item.okitype = data.vc_nsi_33[data.item.code_vc_nsi_33]
                 data.item.is_object = data.vc_nsi_33.items.find (x => x.id == data.item.code_vc_nsi_33).type == "Объект"
+
+                console.log (data.item)
 
                 done (data)
 
