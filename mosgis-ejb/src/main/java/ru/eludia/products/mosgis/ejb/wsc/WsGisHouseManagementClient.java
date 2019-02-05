@@ -326,7 +326,7 @@ public class WsGisHouseManagementClient {
             //ЖД
             ImportHouseUORequest.LivingHouse house = new ImportHouseUORequest.LivingHouse();
             importHouseUORequest.setLivingHouse(house);
-            if (r.get("house.gis_unique_number") == null) {
+            if (StringUtils.isBlank((String)r.get("house.gis_unique_number"))) {
                 //Создание
                 ImportHouseUORequest.LivingHouse.LivingHouseToCreate livingHouse
                         = TypeConverter.javaBean(ImportHouseUORequest.LivingHouse.LivingHouseToCreate.class, r);
@@ -344,7 +344,7 @@ public class WsGisHouseManagementClient {
             ((Collection<Map<String, Object>>) r.get("livingrooms")).forEach((item) -> LivingRoom.add(house, item));
         }
         
-        return getPort (orgPPAGuid, messageGUID).importHouseUOData(importHouseUORequest).getAck ();       
+        return getPort (orgPPAGuid, messageGUID).importHouseUOData(importHouseUORequest).getAck ();
     }
     
     public AckRequest.Ack importHouseOMSData (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {

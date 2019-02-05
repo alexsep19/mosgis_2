@@ -639,8 +639,8 @@ public class HouseDataMDB extends UUIDMDB<HouseLog> {
     
     private enum OrgRoles {
         ESP("34"),
-        OMS("8"),
-        RSO("2"),
+        OMS("7", "8"),
+        RSO("2", "14"),
         UO("1","19","20","21","22");
         
         private OrgRoles (String... nsiCodes) {

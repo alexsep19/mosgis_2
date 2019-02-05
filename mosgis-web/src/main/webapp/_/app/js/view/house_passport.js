@@ -59,6 +59,9 @@ define ([], function () {
             cach.click = function () {openTab ('/' + cach.type + '/' + cach.uuid)}
         }
         
+        if ($_USER.role.nsi_20_7 || data.is_under_nsi_20_8)
+            it._can.edit = 1      
+        
         it.status_label = data.vc_house_status[it.id_status] + (it.id_status_gis ? " - " + data.vc_gis_status[it.id_status_gis] : "")
         
         it.err_text = it ['out_soap.err_text']
