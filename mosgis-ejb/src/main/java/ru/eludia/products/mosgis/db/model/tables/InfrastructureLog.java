@@ -10,9 +10,11 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
 import ru.gosuslugi.dom.schema.integration.base.OKTMORefType;
 import ru.gosuslugi.dom.schema.integration.infrastructure.ImportOKIRequest;
 import ru.gosuslugi.dom.schema.integration.infrastructure.InfrastructureType;
+import ru.gosuslugi.dom.schema.integration.infrastructure.ManagerOKIType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
 
 public class InfrastructureLog extends GisWsLogTable {
@@ -39,7 +41,8 @@ public class InfrastructureLog extends GisWsLogTable {
     private static ImportOKIRequest.RKIItem.OKI toOKI (Map<String, Object> r) {
         final ImportOKIRequest.RKIItem.OKI result = DB.to.javaBean (ImportOKIRequest.RKIItem.OKI.class, r);
         result.setBase (NsiTable.toDom (r, "vc_nsi_39"));
-        result.setOKIType(toOKIType (r));
+        result.setOKIType (toOKIType (r));
+        result.setManagerOKI (toManagerOKIType (r));
         if ((long) r.get ("indefinitemanagement") == 1) result.setEndManagmentDate(null);
         else result.setIndefiniteManagement(null);
         result.getServices ().clear();
@@ -76,6 +79,17 @@ public class InfrastructureLog extends GisWsLogTable {
         return result;
     }
     
+    private static ManagerOKIType toManagerOKIType(Map<String, Object> r) {
+        final ManagerOKIType result = new ManagerOKIType ();
+        if ("".equals (r.get("is_rso"))) result.setMunicipalities(Boolean.TRUE);
+        else {
+            ManagerOKIType.RSO rso = new ManagerOKIType.RSO ();
+            rso.setRSOOrganizationGUID (r.get ("org.orgppaguid").toString ());
+            result.setRSO (rso);
+        }
+        return result;
+    }
+    
     public static void addServicesForImport (DB db, Map<String, Object> r) throws SQLException {
         
         r.put ("services", db.getList (db.getModel ()
@@ -102,6 +116,7 @@ public class InfrastructureLog extends GisWsLogTable {
             .toOne      (VocOrganization.class, "AS org", "orgppaguid").on ()
             .toOne      (nsi_33, nsi_33.getLabelField ().getfName () + " AS vc_nsi_33", "code", "guid").on ("(r.code_vc_nsi_33 = vc_nsi_33.code AND vc_nsi_33.isactual=1)")
             .toOne      (nsi_39, nsi_39.getLabelField ().getfName () + " AS vc_nsi_39", "code", "guid").on ("(r.code_vc_nsi_39 = vc_nsi_39.code AND vc_nsi_39.isactual=1)")
+            .toMaybeOne (VocOrganizationNsi20.class, "AS org_perms", "code AS is_rso").on ("r.manageroki=org_perms.uuid AND org_perms.code=2 AND org_perms.is_deleted=0")
             .toMaybeOne (nsi_37, nsi_37.getLabelField ().getfName () + " AS vc_nsi_37", "code", "guid").on ("(r.code_vc_nsi_37 = vc_nsi_37.code AND vc_nsi_37.isactual=1)")
             .toMaybeOne (nsi_38, "label AS vc_nsi_38", "code", "guid").on ("(r.code_vc_nsi_38 = vc_nsi_38.code AND vc_nsi_38.isactual=1)")
             .toMaybeOne (nsi_34, nsi_34.getLabelField ().getfName () + " AS vc_nsi_34", "code", "guid").on ("(r.code_vc_nsi_34 = vc_nsi_34.code AND vc_nsi_34.isactual=1)")
