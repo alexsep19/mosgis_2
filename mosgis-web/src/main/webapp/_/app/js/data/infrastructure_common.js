@@ -69,6 +69,11 @@ define ([], function () {
         query ({type: 'infrastructures', action: 'approve'}, {}, reload_page)
     }
 
+    $_DO.alter_infrastructure_common = function (e) {
+        if (!confirm ('Открыть эту карточку на редактирование?')) return
+        query ({type: 'infrastructures', action: 'alter'}, {}, reload_page)
+    }
+
     $_DO.cancel_infrastructure_common = function (e) {
         
         if (!confirm ('Отменить несохранённые правки?')) return

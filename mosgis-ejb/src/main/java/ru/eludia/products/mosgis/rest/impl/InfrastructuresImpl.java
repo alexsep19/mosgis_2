@@ -277,4 +277,18 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
 
     });}
     
+    @Override
+    public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
+                
+        final Map<String, Object> r = HASH (
+            EnTable.c.UUID,               id,
+            Infrastructure.c.ID_IS_STATUS,  VocGisStatus.i.PROJECT.getId ()
+        );
+                
+        db.update (getTable (), r);
+        
+        logAction (db, user, id, VocAction.i.ALTER);
+        
+    });}
+    
 }
