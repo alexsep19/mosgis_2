@@ -53,8 +53,6 @@ public class GisPollExportOrgAddServices extends GisPollMDB {
             
             GetStateResult state = getState (orgPPAGuid, r);
             
-logger.info ("state=" + state);
-
             NsiItemType nsiItem = state.getNsiItem ();
             
             if (nsiItem == null) throw new GisPollException ("0", "Сервис ГИС вернул пустой результат");
@@ -67,7 +65,7 @@ logger.info ("state=" + state);
                     return h; 
                 }).collect (Collectors.toList ()),
 
-            "uniquenumber");
+            "elementguid");
 
         }
         catch (GisPollRetryException ex) {
