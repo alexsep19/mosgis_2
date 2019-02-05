@@ -240,6 +240,7 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
                 .toMaybeOne (VocOrganizationLog.class).on ()
                 .toMaybeOne (OutSoap.class, "id_status").on ()
                 .toMaybeOne (Charter.class, "AS charter", "uuid").on ("root.uuid=charter.uuid_org")
+                .orderBy ("charter.id_ctr_status_gis")
             );
 
             jb.add ("item", item);

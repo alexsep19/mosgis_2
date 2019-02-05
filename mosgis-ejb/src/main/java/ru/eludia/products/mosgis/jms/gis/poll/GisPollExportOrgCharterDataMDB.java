@@ -3,8 +3,10 @@ package ru.eludia.products.mosgis.jms.gis.poll;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -25,6 +27,8 @@ import ru.eludia.products.mosgis.db.model.tables.CharterObjectServiceLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.wsc.RestGisFilesClient;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
@@ -33,6 +37,7 @@ import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.rest.api.CharterLocal;
+import ru.gosuslugi.dom.schema.integration.house_management.CharterStatusExportType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
@@ -42,7 +47,7 @@ import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class GisPollExportCharterDataMDB extends GisPollMDB {
+public class GisPollExportOrgCharterDataMDB extends GisPollMDB {
     
     @EJB
     WsGisHouseManagementClient wsGisHouseManagementClient;
@@ -50,7 +55,7 @@ public class GisPollExportCharterDataMDB extends GisPollMDB {
     @EJB
     CharterLocal mgmtCharter;
         
-    @Resource (mappedName = "mosgis.outExportHouseCharterFilesQueue")
+    @Resource (mappedName = "mosgis.outExportOrgChartersQueue")
     Queue outExportHouseCharterFilesQueue;    
 
     @EJB
@@ -78,9 +83,10 @@ public class GisPollExportCharterDataMDB extends GisPollMDB {
     
     @Override
     protected Get get (UUID uuid) {
+        
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
-            .toOne (CharterLog.class,     "AS log", "uuid", "id_ctr_status", "action", "uuid_user").on ("log.uuid_out_soap=root.uuid")
-            .toOne (Charter.class,        "AS ctr", "uuid", "charterguid", "charterversionguid", "uuid_org").on ()
+            .toOne (VocOrganizationLog.class,  "AS log", "uuid", "id_ctr_status", "action", "uuid_user").on ("log.uuid_out_soap=root.uuid")
+            .toOne (VocOrganization.class,     "AS org", "uuid").on ()
         ;
         
     }    
@@ -95,42 +101,54 @@ public class GisPollExportCharterDataMDB extends GisPollMDB {
         if (DB.ok (r.get ("is_failed"))) throw new IllegalStateException (r.get ("err_text").toString ());
         
         UUID orgPPAGuid          = (UUID) r.get ("orgppaguid");
-        UUID ctrUuid             = (UUID) r.get ("ctr.uuid");
-        UUID orgUuid             = (UUID) r.get ("ctr.uuid_org");
-        UUID charterversionguid = (UUID) r.get ("ctr.charterversionguid");
-        
-        if (charterversionguid == null) {
-            logger.warning ("Empty charterversionguid, bailing out");
-            return;
-        }
-        
-        String scharterversionguid = charterversionguid.toString ();
-                
+        UUID orgUuid             = (UUID) r.get ("org.uuid");
+
         try {
             
             GetStateResult state = getState (orgPPAGuid, r);        
-        
-            for (ExportCAChResultType er: state.getExportCAChResult ()) {
-
-                ExportCAChResultType.Charter charter = er.getCharter ();
-
-                if (isWrong (charter, scharterversionguid)) continue;                                       
-
-                db.update (Charter.class, HASH (
-                    "uuid", ctrUuid,
-                    "charterversionguid", null
-                ));                
-
-                db.begin ();
-                
-                    updateCharter  (db, orgUuid, ctrUuid, charter);
-
-                db.commit ();
-
-                break;
-
-            }            
             
+            ExportCAChResultType.Charter theCharter = null;
+            
+            List<UUID> toAnnul = null;
+                        
+            for (ExportCAChResultType er: state.getExportCAChResult ()) {
+                
+                ExportCAChResultType.Charter charter = er.getCharter ();
+                
+                if (charter == null) continue;
+                
+                if (charter.getCharterStatus () != CharterStatusExportType.APPROVED) continue;
+                
+                if (theCharter == null) {
+                    theCharter = charter;
+                    continue;
+                }
+                
+                theCharter.getAttachmentCharter ().addAll (charter.getAttachmentCharter ());
+                theCharter.getCharterPaymentsInfo ().addAll (charter.getCharterPaymentsInfo ());
+                theCharter.getContractObject ().addAll (charter.getContractObject ());
+                
+                if (toAnnul == null) toAnnul = new ArrayList<> ();
+                toAnnul.add (UUID.fromString (charter.getCharterVersionGUID ()));
+                
+            }
+            
+            for (UUID u: toAnnul) {                
+                try {
+                    wsGisHouseManagementClient.annulCharterData (orgPPAGuid, UUID.randomUUID (), HASH ("ctr.charterversionguid", u));
+                }
+                catch (Exception e) {
+                    logger.log (Level.SEVERE, "Cannot annul conflicting charter", e);
+                }                
+            }
+            
+            if (theCharter == null) {
+                logger.info ("No actual charter returned");
+            }
+            else {
+                updateCharter  (db, orgUuid, theCharter);
+            }                
+                       
         }
         catch (GisPollRetryException ex) {
             return;
@@ -141,11 +159,21 @@ public class GisPollExportCharterDataMDB extends GisPollMDB {
 
     }        
 
-    private void updateCharter (DB db, UUID orgUuid, UUID ctrUuid, ExportCAChResultType.Charter charter) throws SQLException {
+    private void updateCharter (DB db, UUID orgUuid, ExportCAChResultType.Charter charter) throws SQLException {
         
         Model m = db.getModel ();
         
-        Map<String, Object> logRecord = db.getMap (m.select (CharterLog.class, "action", "uuid_user", "uuid_out_soap", "uuid_message").where ("uuid_object", ctrUuid).orderBy ("ts DESC"));
+        db.upsert (Charter.class, HASH (               
+            Charter.c.CHARTERGUID,        charter.getCharterGUID (),
+            Charter.c.CHARTERVERSIONGUID, charter.getCharterVersionGUID (),
+            Charter.c.UUID_ORG,           orgUuid,
+            Charter.c.ID_CTR_STATUS,      VocGisStatus.i.PENDING_RP_RELOAD.getId (),
+            Charter.c.ID_CTR_STATUS_GIS,  VocGisStatus.i.forName (charter.getCharterStatus ().value ())
+        ), Charter.c.CHARTERGUID.lc ());
+        
+        UUID ctrUuid = (UUID) db.getMap (m.select (Charter.class, "uuid").where (Charter.c.CHARTERGUID, charter.getCharterGUID ())).get ("uuid");
+        
+        Map<String, Object> logRecord = db.getMap (m.select (VocOrganizationLog.class, "action", "uuid_user", "uuid_out_soap", "uuid_message").where ("uuid_object", orgUuid).orderBy ("ts DESC"));
                 
         try {
             
@@ -212,8 +240,8 @@ public class GisPollExportCharterDataMDB extends GisPollMDB {
             h.put ("uuid", ctrUuid);
             db.update (Charter.class, h);
 
-            h.put ("uuid", getUuid ());
-            db.update (CharterLog.class, h);
+//            h.put ("uuid", getUuid ());
+//            db.update (CharterLog.class, h);
 
             db.update (OutSoap.class, HASH (
                 "uuid", getUuid (),
@@ -257,29 +285,6 @@ public class GisPollExportCharterDataMDB extends GisPollMDB {
             logRecord.put ("uuid_object", i.get ("uuid"));
             db.insert (c, logRecord);
         }
-    }
-
-    private boolean isWrong (ExportCAChResultType.Charter charter, String scharterversionguid) {
-        
-        if (charter == null) {
-            logger.warning ("Not a Charter? Bizarre, bizarre...");
-            return true;
-        }
-        
-        String v = charter.getCharterVersionGUID ();
-        
-        if (v == null) {
-            logger.warning ("Empty CharterVersionGUID? Bizarre, bizarre...");
-            return true;
-        }
-        
-        if (!v.equals (scharterversionguid)) {
-            logger.warning ("We requested " + scharterversionguid + ". Why did they send back " + v + "?");
-            return true;
-        }
-        
-        return false;
-        
     }
     
 }
