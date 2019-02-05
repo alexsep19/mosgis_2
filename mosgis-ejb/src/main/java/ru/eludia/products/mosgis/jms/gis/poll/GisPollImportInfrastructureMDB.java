@@ -32,7 +32,7 @@ import ru.gosuslugi.dom.schema.integration.infrastructure.ExportOKIResultType;
 import ru.gosuslugi.dom.schema.integration.infrastructure.GetStateResult;
 
 @MessageDriven(activationConfig = {
- @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outImportInfrastructuresQueue")
+ @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outExportInfrastructuresQueue")
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })

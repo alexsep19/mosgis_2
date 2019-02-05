@@ -73,7 +73,7 @@ public class ExportInfrastructureMDB extends GisExportMDB<InfrastructureLog> {
             uuidPublisher.publish (getQueue (action), ack.getRequesterMessageGUID ());
         }
         catch (Fault ex) {
-            logger.log (Level.SEVERE, "Can't place working plan", ex);
+            logger.log (Level.SEVERE, "Can't place infrastructure object", ex);
             fail (db, ex.getFaultInfo (), r, action.getFailStatus ());
             return;
         }
