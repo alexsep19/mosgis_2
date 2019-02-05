@@ -176,8 +176,11 @@ public class CharterFile extends Table {
                 
                 Object hashAsIs = ((Map) h.get (ACTUAL)).get (ATTACHMENTHASH);
                 Object hashToBe = ((Map) h.get (WANTED)).get (ATTACHMENTHASH);
+                
+                Map act = (Map) h.get (ACTUAL);
+                Object len = act.get ("len");
                     
-                if (DB.eq (hashAsIs, hashToBe) && Long.parseLong (((Map) h.get (ACTUAL)).get ("len").toString ()) > 0) return;
+                if (DB.eq (hashAsIs, hashToBe) && DB.ok (len)) return;
                 
                 final UUID uuid = UUID.fromString (h.get ("uuid").toString ());
 

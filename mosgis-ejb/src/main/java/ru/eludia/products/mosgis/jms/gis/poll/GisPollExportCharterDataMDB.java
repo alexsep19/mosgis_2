@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -224,6 +225,8 @@ public class GisPollExportCharterDataMDB extends GisPollMDB {
             
         }
         catch (Exception ex) {
+            
+            logger.log (Level.SEVERE, "Cannot update charter", ex);
             
             db.rollback ();
             

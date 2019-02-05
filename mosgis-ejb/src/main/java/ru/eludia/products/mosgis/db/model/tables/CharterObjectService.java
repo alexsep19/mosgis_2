@@ -16,6 +16,7 @@ import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
 import ru.gosuslugi.dom.schema.integration.house_management.ContractServiceType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportCharterRequest;
+import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
 
 public class CharterObjectService extends Table {
 
@@ -229,11 +230,18 @@ public class CharterObjectService extends Table {
 
             setDateFields (h, co);
             
-            h.put ("uuid_add_service", adds.get (co.getServiceType ().getCode ()).get ("uuid"));
-
-            if (h.get ("uuid_add_service") == null) {
-                logger.warning ("null uuid_add_service set: adds = " + adds + ", co.getServiceType () = " + co.getServiceType () + ", co.getServiceType ().getCode () = " + co.getServiceType ().getCode ());
-            }
+logger.info ("co=" + co);
+            NsiRef st = co.getServiceType ();
+logger.info ("st=" + st);
+            String code = st.getCode ();
+logger.info ("code=" + code);
+            Map<String, Object> add = adds.get (code);
+logger.info ("add=" + add);
+            if (add == null) throw new IllegalStateException ("Не найдена услуга с кодом '" + code + "' среди " + adds.keySet ());
+            Object uuuuuuuuid = add.get ("uuid");
+logger.info ("uuuuuuuuid=" + uuuuuuuuid);
+            
+            h.put ("uuid_add_service", uuuuuuuuid);
             
             setFile (h, co.getBaseService ().getAgreement ());
             
