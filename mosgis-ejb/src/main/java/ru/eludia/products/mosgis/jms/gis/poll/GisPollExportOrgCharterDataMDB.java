@@ -16,6 +16,7 @@ import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Get;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.AdditionalService;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
@@ -59,6 +60,9 @@ public class GisPollExportOrgCharterDataMDB extends GisPollMDB {
     @Resource (mappedName = "mosgis.outExportOrgChartersQueue")
     Queue outExportHouseCharterFilesQueue;    
 
+    @Resource (mappedName = "mosgis.inHouseChartersQueue")
+    Queue inHouseChartersQueue;        
+    
     @EJB
     RestGisFilesClient filesClient;
     
@@ -133,8 +137,16 @@ public class GisPollExportOrgCharterDataMDB extends GisPollMDB {
                 toAnnul.add (UUID.fromString (charter.getCharterVersionGUID ()));
                 
             }
+                        
+            if (theCharter == null) {
+                logger.info ("No actual charter returned");
+                return;
+            }
+
+            updateCharter  (db, orgUuid, theCharter);
             
             if (toAnnul != null) for (UUID u: toAnnul) {
+                
                 try {
                     wsGisHouseManagementClient.annulCharterData (orgPPAGuid, UUID.randomUUID (), HASH (
                         "reasonofannulment", "exportCAChData вернул более одного утверждённого устава: первый оставляем, остальные аннулируем",
@@ -143,16 +155,21 @@ public class GisPollExportOrgCharterDataMDB extends GisPollMDB {
                 }
                 catch (Exception e) {
                     logger.log (Level.SEVERE, "Cannot annul conflicting charter", e);
-                }                
+                }
+                
+                UUID ctrUuid = (UUID) db.getMap (db.getModel ().select (Charter.class, "uuid").where (Charter.c.CHARTERGUID, theCharter.getCharterGUID ())).get ("uuid");
+                
+                db.upsert (Charter.class, HASH (               
+                    EnTable.c.UUID,          ctrUuid,
+                    Charter.c.ID_CTR_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+                ));
+                
+                String idLog = ((MosGisModel) db.getModel ()).createIdLog (db, db.getModel ().get (Charter.class), null, ctrUuid, VocAction.i.APPROVE);
+                
+                uuidPublisher.publish (inHouseChartersQueue, idLog);
+
             }
             
-            if (theCharter == null) {
-                logger.info ("No actual charter returned");
-            }
-            else {
-                updateCharter  (db, orgUuid, theCharter);
-            }                
-                       
         }
         catch (GisPollRetryException ex) {
             return;

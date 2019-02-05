@@ -226,9 +226,17 @@ public class CharterObjectService extends Table {
 
         @Override
         public void setFields (Map<String, Object> h, ExportCAChResultType.Charter.ContractObject.AddService co) {
+
             setDateFields (h, co);
-            h.put ("uuid_add_service", adds.getPk (co.getServiceType ()));
+            
+            h.put ("uuid_add_service", adds.get (co.getServiceType ().getCode ()).get ("uuid"));
+
+            if (h.get ("uuid_add_service") == null) {
+                logger.warning ("null uuid_add_service set: adds = " + adds + ", co.getServiceType () = " + co.getServiceType () + ", co.getServiceType ().getCode () = " + co.getServiceType ().getCode ());
+            }
+            
             setFile (h, co.getBaseService ().getAgreement ());
+            
         }
 
     }        
