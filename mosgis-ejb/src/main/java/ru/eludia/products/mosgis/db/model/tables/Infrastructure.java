@@ -94,6 +94,32 @@ public class Infrastructure extends EnTable {
                 + "END; "
         );
         
+        trigger ("BEFORE UPDATE", ""
+                + "BEGIN "
+                    + "IF :NEW.ID_IS_STATUS <> :OLD.ID_IS_STATUS "
+                        + " AND :OLD.ID_IS_STATUS <> " + VocGisStatus.i.FAILED_PLACING.getId ()
+                        + " AND :NEW.ID_IS_STATUS =  " + VocGisStatus.i.PROJECT.getId ()
+                    + " THEN "
+                        + " :NEW.ID_IS_STATUS := " + VocGisStatus.i.MUTATING.getId ()
+                    + "; END IF; "
+                
+                    + "IF :NEW.is_deleted=0 AND :NEW.ID_IS_STATUS <> :OLD.ID_IS_STATUS AND :NEW.ID_IS_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING.getId () + " THEN BEGIN "
+                
+                        + "IF :NEW.indefinitemanagement=0 AND :NEW.endmanagmentdate IS NULL THEN "
+                            + "raise_application_error (-20000, 'Не указана дата окончания управления. Операция отменена'); "
+                        + "END IF; "
+                            
+                        + "IF :NEW.comissioningyear IS NULL THEN "
+                            + "raise_application_error (-20000, 'Не указан год ввода объекта в эксплуатацию. Операция отменена'); "
+                        + "END IF; "
+                            
+                        + "IF :NEW.oktmo_code IS NULL THEN "
+                            + "raise_application_error (-20000, 'Не указан ОКТМО объекта. Операция отменена'); "
+                        + "END IF; "
+                    + "END IF; "
+                + "END; "
+        );
+        
     }
     
     public enum Action {

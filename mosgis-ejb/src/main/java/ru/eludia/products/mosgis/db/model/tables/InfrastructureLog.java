@@ -4,10 +4,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
-import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
@@ -45,7 +43,7 @@ public class InfrastructureLog extends GisWsLogTable {
         if ((long) r.get ("indefinitemanagement") == 1) result.setEndManagmentDate(null);
         else result.setIndefiniteManagement(null);
         result.getServices ().clear();
-        for (Map <String, Object> x: (List <Map <String, Object>>) r.get ("services")) 
+        for (Map <String, Object> x: (List <Map <String, Object>>) r.get ("services"))
             result.getServices ().add (
                 NsiTable.toDom (
                     x.get("code").toString (), 
@@ -59,7 +57,7 @@ public class InfrastructureLog extends GisWsLogTable {
         
         result.setCommissioningYear(Short.valueOf (r.get ("comissioningyear").toString ()));
         
-        if ((long) r.get ("independentsource") == 0) result.setIndependentSource(null);
+        if (r.containsKey ("independentsource") && (long) r.get ("independentsource") == 0) result.setIndependentSource(null);
         
         return result;
     }

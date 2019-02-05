@@ -62,6 +62,8 @@ public class ExportInfrastructureMDB extends GisExportMDB<InfrastructureLog> {
             logger.warning ("No action is implemented for " + status);
             return;
         }
+        
+        InfrastructureLog.addServicesForImport(db, r);
                                 
         logger.info ("r=" + DB.to.json (r));
        
