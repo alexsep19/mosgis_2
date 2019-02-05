@@ -57,7 +57,7 @@ public class GisPollExportOrgCharterDataMDB extends GisPollMDB {
     @EJB
     CharterLocal mgmtCharter;
         
-    @Resource (mappedName = "mosgis.outExportOrgChartersQueue")
+    @Resource (mappedName = "mosgis.outExportHouseCharterFilesQueue")
     Queue outExportHouseCharterFilesQueue;    
 
     @Resource (mappedName = "mosgis.inHouseChartersQueue")

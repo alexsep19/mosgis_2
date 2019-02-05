@@ -230,16 +230,14 @@ public class CharterObjectService extends Table {
 
             setDateFields (h, co);
             
-logger.info ("co=" + co);
             NsiRef st = co.getServiceType ();
-logger.info ("st=" + st);
+
             String code = st.getCode ();
-logger.info ("code=" + code);
+
             Map<String, Object> add = adds.get (code);
-logger.info ("add=" + add);
+
             if (add == null) throw new IllegalStateException ("Не найдена услуга с кодом '" + code + "' среди " + adds.keySet ());
             Object uuuuuuuuid = add.get ("uuid");
-logger.info ("uuuuuuuuid=" + uuuuuuuuid);
             
             h.put ("uuid_add_service", uuuuuuuuid);
             
