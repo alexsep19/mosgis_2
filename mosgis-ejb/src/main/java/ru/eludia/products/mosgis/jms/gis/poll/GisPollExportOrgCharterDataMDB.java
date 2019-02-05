@@ -16,15 +16,16 @@ import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Get;
+import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.AdditionalService;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.CharterFile;
-import ru.eludia.products.mosgis.db.model.tables.CharterLog;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.CharterObjectLog;
 import ru.eludia.products.mosgis.db.model.tables.CharterObjectService;
 import ru.eludia.products.mosgis.db.model.tables.CharterObjectServiceLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -133,7 +134,7 @@ public class GisPollExportOrgCharterDataMDB extends GisPollMDB {
                 
             }
             
-            for (UUID u: toAnnul) {                
+            if (toAnnul != null) for (UUID u: toAnnul) {
                 try {
                     wsGisHouseManagementClient.annulCharterData (orgPPAGuid, UUID.randomUUID (), HASH (
                         "reasonofannulment", "exportCAChData вернул более одного утверждённого устава: первый оставляем, остальные аннулируем",
@@ -243,8 +244,7 @@ public class GisPollExportOrgCharterDataMDB extends GisPollMDB {
             h.put ("uuid", ctrUuid);
             db.update (Charter.class, h);
 
-//            h.put ("uuid", getUuid ());
-//            db.update (CharterLog.class, h);
+            ((MosGisModel) db.getModel ()).createIdLog (db, db.getModel ().get (Charter.class), null, ctrUuid, VocAction.i.IMPORT_CHARTERS);
 
             db.update (OutSoap.class, HASH (
                 "uuid", getUuid (),
@@ -273,12 +273,9 @@ public class GisPollExportOrgCharterDataMDB extends GisPollMDB {
                 "uuid", ctrUuid,
                 Charter.c.ID_CTR_STATUS.lc (), VocGisStatus.i.FAILED_STATE.getId ()
             ));
-
-            db.update (CharterLog.class, HASH (
-                "uuid", logRecord.get ("uuid"),
-                Charter.c.ID_CTR_STATUS.lc (), VocGisStatus.i.FAILED_STATE.getId ()
-            ));
-                
+            
+            ((MosGisModel) db.getModel ()).createIdLog (db, db.getModel ().get (Charter.class), null, ctrUuid, VocAction.i.IMPORT_CHARTERS);
+                            
         }        
                 
     }
