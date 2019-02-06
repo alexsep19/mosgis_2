@@ -4,6 +4,8 @@ define ([], function () {
         
         var it = data.item
         
+        it.type_label = data.vc_acc_types [it.id_type]
+        
         $('title').text ('ЛС ' + it.accountnumber)
         
         fill (view, it, $('#body'))

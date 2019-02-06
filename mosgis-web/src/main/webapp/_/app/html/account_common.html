@@ -15,25 +15,51 @@
         			width: 230px !important;
         		}
 
-        	</style>
+        		.w2ui-field input.short {
+        			width: 100px !important;
+        		}
 
-        	<table border=0 cellpadding=0 cellspacing=0 width=90%>
+        	</style>
+			<center>
+        	<table border=0 cellpadding=0 cellspacing=0 style="min-width:850px;">
 
         		<tr>
 
-					<td style="min-width:650px;" width=1 valign=top>
+					<td style="min-width:520px;" width=1 valign=top>
 
 							<div class="w2ui-field" data-on=org_label>
-								<label>Организация:</label>
+								<label>Организация</label>
 								<div class=name>
 									<span data-text=org_label/>
 								</div>
 							</div>
 
-							<div class="w2ui-field" data-on=org_label>
-								<label>Основание :</label>
+							<div class="w2ui-field">
+								<label>Основание</label>
 								<div class=name id=label_reason>
 									<span data-text=label_reason/>
+								</div>
+							</div>
+
+							<div class="w2ui-field" data-on=is_customer_org>
+								<label>Плательщик</label>
+								<div>
+									<input name=uuid_org_customer type=hidden>
+									<input name=label_org_customer readonly>
+								</div>
+							</div>
+
+							<div class="w2ui-field">
+								<label>Является нанимателем?</label>
+								<div>
+									<input name=isrenter>
+								</div>
+							</div>
+
+							<div class="w2ui-field">
+								<label>Счета разделены?</label>
+								<div>
+									<input name=isaccountsdivided>
 								</div>
 							</div>
 
@@ -41,23 +67,54 @@
 
 					<td valign=top>
 
+							<div class="w2ui-field">
+								<label>Общая площадь, м<sup>2</sup></label>
+								<div>
+									<input name=totalsquare maxlength=26 class=short>
+								</div>
+							</div>
+
+							<div class="w2ui-field">
+								<label>Жилая площадь, м<sup>2</sup></label>
+								<div>
+									<input name=residentialsquare maxlength=26 class=short>
+								</div>
+							</div>
+
+							<div class="w2ui-field">
+								<label>Отапливаемая площадь, м<sup>2</sup></label>
+								<div>
+									<input name=heatedarea maxlength=26 class=short>
+								</div>
+							</div>
+
+							<div class="w2ui-field">
+								<label>Количество проживающих, чел.</label>
+								<div>
+									<input name=livingpersonsnumber maxlength=4 class=short>
+								</div>
+							</div>
+
 						<table border=0 cellpadding=0 cellspacing=0 width=100% class=sync>
 
 							<tr>
 								<td>Статус:</td>
 								<td data-text=status_label></td>
 							</tr>
-							<tr>
+							<tr data-on=err_text>
 								<th colspan=2 data-text=err_text></th>
 							</tr>
 
 						</table>
+
+
 
 					</td>
 
         		</tr>
 
         	</table>
+			</center>
 
         </div>
 

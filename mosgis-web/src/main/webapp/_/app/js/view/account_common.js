@@ -4,16 +4,7 @@ define ([], function () {
 
     return function (data, view) {
     
-        var it = data.item
-        
-        it.status_label = data.vc_gis_status [it.id_ctr_status]            
-        it.type_label = data.vc_acc_types [it.id_type]
-        it.org_label = it ['org.label']
-        
-        if (it.uuid_contract) {
-            it.label_reason = 'Договор управления №' + it ['ca.docnum'] + ' от '  + dt_dmy (it ['ca.signingdate'])
-            it.url_reason = '/mgmt_contract/' + it.uuid_contract
-        }       
+        var it = data.item              
     
         $_F5 = function (data) {
         
@@ -39,7 +30,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 160},
+                {type: 'top', size: 250},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
@@ -65,20 +56,43 @@ define ([], function () {
         
             name   : form_name,
             
-            record : data.item,                
+            record : it,                
             
             fields : [            
-/*            
-                {name: 'additionalservicetypename', type: 'text'},
-                {name: 'okei', type: 'list', options: {items: data.vc_okei.items}},
-*/                
+            
+                {name: 'label_org_customer', type: 'text'},
+                {name: 'uuid_org_customer', type: 'hidden'},
+            
+                {name: 'isaccountsdivided', type: 'list', options: {items: [
+                    {id: -1, text: '[нет данных]'},
+                    {id:  0, text: 'нет, не разделен(ы)'},
+                    {id:  1, text: 'да, разделен(ы)'},
+                ]}},
+                
+                {name: 'isrenter', type: 'list', options: {items: [
+                    {id: -1, text: '[нет данных]'},
+                    {id:  0, text: 'нет, не является нанимателем'},
+                    {id:  1, text: 'да, является нанимателем'},
+                ]}},
+                
+                {name: 'totalsquare', type: 'float', options: {min: 0, precision: 2}},
+                {name: 'residentialsquare', type: 'float', options: {min: 0, precision: 2}},
+                {name: 'heatedarea', type: 'float', options: {min: 0, precision: 2}},
+            
+                {name: 'livingpersonsnumber', type: 'int', options: {min: 0, max: 9999}},
+            
             ],
 
             focus: -1,
             
             onRefresh: function (e) {e.done (function () {
+            
                 clickOff ($('#label_reason'))
                 clickOn ($('#label_reason'), function () {openTab (it.url_reason)})
+                
+                clickOff ($('#label_org_customer'))
+                clickOn ($('#label_org_customer'), $_DO.open_orgs_account_common)
+                
             })}                
             
         })
