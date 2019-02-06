@@ -14,6 +14,7 @@ import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.voc.VocAccountType;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -106,14 +107,18 @@ public class AccountImpl extends BaseCRUD<Account> implements AccountLocal {
     public JsonObject getItem (String id) {return fetchData ((db, job) -> {
 
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
-            .get (getTable (), id, "*")
+            .get (getTable (), id, "AS root", "*")
             .toMaybeOne (Contract.class, "AS ca", "*").on ()
             .toMaybeOne (Charter.class, "AS ch", "*").on ()
             .toMaybeOne (AccountLog.class, "AS log").on ()
             .toMaybeOne (OutSoap.class, "err_text").on ("log.uuid_out_soap=out_soap.uuid")
+            .toOne (VocOrganization.class, "AS org", "label").on ("root.uuid_org=org.uuid")
+            .toMaybeOne (VocOrganization.class, "AS org_customer", "label").on ("root.uuid_org_customer=org_customer.uuid")
+            .toMaybeOne (VocPerson.class,       "AS ind_customer", "label").on ("root.uuid_person_customer=ind_customer.uuid")
         ));
         
         VocAccountType.addTo (job);
+        VocGisStatus.addTo (job);
 
     });}
 
