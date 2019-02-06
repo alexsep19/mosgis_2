@@ -72,6 +72,11 @@ public class VocGisSupplyResourceContractCustomerType extends Table {
 	    return forId(Integer.parseInt(id.toString()));
 	}
 
+	@Override
+	public String toString() {
+	    return Integer.toString(id);
+	}
+
 	private i (int id, String name, String label) {
             this.id = (byte) id;
             this.name = name;

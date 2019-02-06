@@ -17,6 +17,7 @@ import ru.eludia.products.mosgis.ejb.ModelHolder;
 
 public class VocNsi239 extends Table {
 
+    public static final String CODE_VC_NSI_239_HOT_WATER = "3";
     public static final String CODE_VC_NSI_239_HEAT_ENERGY = "4";
 
     public enum c implements EnColEnum {
