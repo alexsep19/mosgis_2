@@ -20,6 +20,7 @@ define ([], function () {
             show: {
                 toolbar: true,
                 toolbarInput: false,
+                toolbarReload: false,
                 footer: true,
             },
 

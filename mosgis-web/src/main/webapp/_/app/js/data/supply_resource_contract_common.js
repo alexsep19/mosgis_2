@@ -50,26 +50,6 @@ define ([], function () {
 
         if (v.effectivedate > v.completiondate) die ('completiondate', 'Дата окончания не может предшествовать дате начала')
 
-//        if (v.isgratuitousbasis == 0) {
-//
-//            if (!v.ddt_start) die ('ddt_start', 'Укажите, пожалуйста, дату начала периода оплаты')
-//            if (!v.ddt_end) die ('ddt_end', 'Укажите, пожалуйста, дату окончания периода оплаты')
-//
-//            if (v.ddt_start_nxt > v.ddt_end_nxt) {
-//                die ('ddt_end_nxt', 'Окончание срока не может предшествовать его началу')
-//            }
-//            else if (v.ddt_start_nxt == v.ddt_end_nxt) {
-//                if (v.ddt_start > v.ddt_end) die ('ddt_end', 'Окончание срока не может предшествовать его началу')
-//            }
-//            else {
-//                if (v.ddt_start < v.ddt_end) die ('ddt_end', 'Период оплаты указан некорректно: обнаружено пересечение периодов')
-//            }
-//        }
-//        else {
-//            v.ddt_start = null
-//            v.ddt_end = null
-//        }
-
         query ({type: 'supply_resource_contracts', action: 'update'}, {data: v}, reload_page)
 
     }

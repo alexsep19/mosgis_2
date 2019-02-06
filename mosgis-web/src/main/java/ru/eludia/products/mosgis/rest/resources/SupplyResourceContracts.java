@@ -141,4 +141,32 @@ public class SupplyResourceContracts extends EJBResource <SupplyResourceContract
     public JsonObject getVocs (JsonObject p) {
         return back.getVocs (p);
     }
+
+    @POST
+    @Path("{id}/approve")
+    @Produces(APPLICATION_JSON)
+    public JsonObject doApprove(@PathParam("id") String id) {
+	final JsonObject item = getInnerItem(id);
+	checkOrg(item);
+	return back.doApprove(id, getUser());
+    }
+
+    @POST
+    @Path("{id}/alter")
+    @Produces(APPLICATION_JSON)
+    public JsonObject doAlter(@PathParam("id") String id, JsonObject p) {
+	final JsonObject item = getInnerItem(id);
+	checkOrg(item);
+	return back.doAlter(id, p, getUser());
+    }
+
+    @POST
+    @Path("{id}/annul")
+    @Consumes(APPLICATION_JSON)
+    @Produces(APPLICATION_JSON)
+    public JsonObject doAnnul(@PathParam("id") String id, JsonObject p) {
+	final JsonObject item = getInnerItem(id);
+	checkOrg(item);
+	return back.doAnnul(id, p, getUser());
+    }
 }

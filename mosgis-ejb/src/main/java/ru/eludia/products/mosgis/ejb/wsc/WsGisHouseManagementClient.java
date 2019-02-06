@@ -36,6 +36,7 @@ import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContractLog;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocolLog;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
@@ -710,4 +711,7 @@ public class WsGisHouseManagementClient {
         return getPort (orgPPAGuid, messageGUID).importPublicPropertyContract (AgreementPaymentLog.toImportPublicPropertyContractAnnulRequest (r)).getAck ();
     }
 
+    public AckRequest.Ack importSupplyResourceContract(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+	return getPort(orgPPAGuid, messageGUID).importSupplyResourceContractData(SupplyResourceContractLog.toImportSupplyResourceContractRequest(r)).getAck();
+    }
 }

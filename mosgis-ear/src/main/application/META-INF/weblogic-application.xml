@@ -20,7 +20,13 @@
         <name>Workflow-reporting-periods</name>
         <path>META-INF/mosgismodule-reporting-periods-jms.xml</path>
     </module>
-    
+
+    <module>
+	<type>JMS</type>
+	<name>Workflow-supply-resource-contracts</name>
+	<path>META-INF/mosgismodule-supply-resource-contracts-jms.xml</path>
+    </module>
+
     <module><type>JMS</type>
         <name>Workflow-in-xl</name>
         <path>META-INF/mosgismodule-in-xl-jms.xml</path>
@@ -30,7 +36,6 @@
         <name>Workflow-org</name>
         <path>META-INF/mosgismodule-org-jms.xml</path>
     </module>
-    
 </weblogic-application>
 
     

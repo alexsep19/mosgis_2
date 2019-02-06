@@ -13,7 +13,7 @@ define ([], function () {
         }
         else if (it.id_ctr_status == 40) {
 
-            if (!it.uuid_out_soap) {
+            if (!it['out_soap.uuid']) {
 
                 it.sync_label = 'Ожидание отправки в ГИС ЖКХ'
 

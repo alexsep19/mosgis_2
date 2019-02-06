@@ -13,6 +13,7 @@ import static ru.eludia.base.model.Type.STRING;
 import static ru.eludia.base.model.def.Bool.FALSE;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
+import ru.gosuslugi.dom.schema.integration.house_management.DRSORegOrgType;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_base.ObjectFactory;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_base.RegOrgType;
 
@@ -144,4 +145,9 @@ public class VocOrganization extends Table {
         return o;
     }
 
+    public static final DRSORegOrgType dRSORegOrgType(UUID uuid) {
+	final DRSORegOrgType o = new DRSORegOrgType();
+	o.setOrgRootEntityGUID(uuid.toString());
+	return o;
+    }
 }
