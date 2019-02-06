@@ -119,6 +119,7 @@ public class AccountImpl extends BaseCRUD<Account> implements AccountLocal {
         
         VocAccountType.addTo (job);
         VocGisStatus.addTo (job);
+        VocAction.addTo (job);
 
     });}
 
