@@ -73,17 +73,28 @@ public class AccountImpl extends BaseCRUD<Account> implements AccountLocal {
         }
 
     }
+    
+    private void checkFilter (JsonObject data, Account.c field, Select select) {
+        String key = field.lc ();
+        String value = data.getString (key, null);
+        if (value == null) return;
+        select.and (field, value);
+    }
 
     @Override
-    public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
+    public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {                
 
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
             .toMaybeOne (AccountLog.class               ).on ()
             .toMaybeOne (OutSoap.class,       "err_text").on ()
-            .toMaybeOne (VocOrganization.class, "AS org").on ("root.uuid_org_customer=org.uuid")
-            .toMaybeOne (VocPerson.class,       "AS ind").on ("root.uuid_person_customer=ind.uuid")
+            .toMaybeOne (VocOrganization.class, "AS org", "label").on ("root.uuid_org_customer=org.uuid")
+            .toMaybeOne (VocPerson.class,       "AS ind", "label").on ("root.uuid_person_customer=ind.uuid")
             .orderBy ("root.accountnumber")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
+        
+        JsonObject data = p.getJsonObject ("data");
+        
+        checkFilter (data, Account.c.UUID_CONTRACT, select);
 
         applySearch (Search.from (p), select);
 

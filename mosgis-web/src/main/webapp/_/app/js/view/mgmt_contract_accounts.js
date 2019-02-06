@@ -33,8 +33,17 @@ define ([], function () {
             
             textSearch: 'contains',
             
+            columnGroups : [
+                {master: true},
+                {master: true},
+                {span: 2, caption: 'Плательщик'},
+            ],            
+            
             columns: [              
-                {field: 'accountnumber', caption: 'Номер', size: 100},
+                {field: 'accountnumber', caption: 'Номер', size: 20},
+                {field: 'totalsquare', caption: 'Площадь', size: 20, render: 'float:2'},
+                {field: 'ind.label', caption: 'Физ. лицо', size: 50},
+                {field: 'org.label', caption: 'Юр. лицо', size: 50},
             ],
             
             postData: {data: {uuid_contract: $_REQUEST.id}},
