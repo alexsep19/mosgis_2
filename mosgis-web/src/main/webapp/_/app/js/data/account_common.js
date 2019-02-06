@@ -122,6 +122,11 @@ define ([], function () {
             it.url_reason = '/mgmt_contract/' + it.uuid_contract
         } 
         
+        if (it.uuid_charter) {
+            it.label_reason = 'Устав от '  + dt_dmy (it ['ch.date_'])
+            it.url_reason = '/charter/' + it.uuid_charter
+        } 
+        
         it.persons = []
         if (it.uuid_person_customer) {        
             it.persons.push ({
@@ -145,18 +150,40 @@ define ([], function () {
         var it = data.item
         
         fix (it)
-
-/*        
-        data.item.status_label = data.vc_async_entity_states [data.item.id_status]
-        data.item.err_text = data.item ['out_soap.err_text']
-*/        
-        it._can = $_USER.role.admin /*|| data.item.id_status == 10*/ ? {} : {
-            edit: 1 - data.item.is_deleted,
-            update: 1,
-            cancel: 1,
-            delete: 1 - data.item.is_deleted,
+        
+        it._can = {cancel: 1}
+        
+        if (!it.is_deleted && it.uuid_org == $_USER.uuid_org) {
+        
+            switch (it ['ca.id_ctr_status'] || it ['ch.id_ctr_status']) {
+            
+                    case 40:
+                    case 42:
+                    case 43:
+                    case 34:
+                    case 11:
+                    case 92:
+                    case 93:
+                    case 94:
+                    case 100:
+                        it._can.edit = 1
+                        
+            }            
+                    
+            if (it._can.edit) {
+            
+                it._can.update = 1
+            
+                switch (it.id_ctr_status) {
+                    case 10:
+                    case 14:
+                        it._can.delete = 1
+                }
+            
+            }
+        
         }
-
+        
         done (data)
         
     }

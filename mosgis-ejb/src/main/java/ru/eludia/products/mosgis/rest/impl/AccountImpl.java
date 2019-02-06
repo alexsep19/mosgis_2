@@ -96,6 +96,7 @@ public class AccountImpl extends BaseCRUD<Account> implements AccountLocal {
         JsonObject data = p.getJsonObject ("data");
         
         checkFilter (data, Account.c.UUID_CONTRACT, select);
+        checkFilter (data, Account.c.UUID_CHARTER, select);
 
         applySearch (Search.from (p), select);
 
