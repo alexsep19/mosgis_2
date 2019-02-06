@@ -107,8 +107,8 @@ public class AccountImpl extends BaseCRUD<Account> implements AccountLocal {
 
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
             .get (getTable (), id, "*")
-            .toMaybeOne (Contract.class, "*").on ()
-            .toMaybeOne (Charter.class, "*").on ()
+            .toMaybeOne (Contract.class, "AS ca", "*").on ()
+            .toMaybeOne (Charter.class, "AS ch", "*").on ()
             .toMaybeOne (AccountLog.class, "AS log").on ()
             .toMaybeOne (OutSoap.class, "err_text").on ("log.uuid_out_soap=out_soap.uuid")
         ));
