@@ -80,7 +80,34 @@ define ([], function () {
                 {name: 'heatedarea', type: 'float', options: {min: 0, precision: 2}},
             
                 {name: 'livingpersonsnumber', type: 'int', options: {min: 0, max: 9999}},
-            
+
+                {name: 'uuid_person_customer', type: 'list', options: 
+                    {
+                        items: it.persons,
+                        url: '/mosgis/_rest/?type=vc_persons',
+                        postData: {
+                            uuid_org: it.uuid_org, 
+                            searchLogic: 'OR',
+                            offset: 0,
+                            limit: 50,
+                        },
+                        cacheMax: 50,
+                        filter: false,
+
+                        onSearch: function (e) {
+                            this.options.postData['search'] = [{'value': e.search}]
+                        },
+
+                        onLoad: function (e) {
+                            dia2w2ui (e)
+                            e.xhr.responseJSON = JSON.parse (e.xhr.responseText)
+                            e.data = e.xhr.responseJSON                                
+                            $.each (e.data.records, function () {this.text = this.label})
+                        }
+                        
+                    }
+                },                    
+
             ],
 
             focus: -1,

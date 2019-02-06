@@ -121,6 +121,14 @@ define ([], function () {
             it.label_reason = 'Договор управления №' + it ['ca.docnum'] + ' от '  + dt_dmy (it ['ca.signingdate'])
             it.url_reason = '/mgmt_contract/' + it.uuid_contract
         } 
+        
+        it.persons = []
+        if (it.uuid_person_customer) {        
+            it.persons.push ({
+                id: it.uuid_person_customer,
+                text: it ['ind_customer.label']
+            })            
+        }
 
     }
 
