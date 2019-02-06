@@ -108,9 +108,7 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	}
 	if (id_customer_type == VocGisSupplyResourceContractCustomerType.i.ORGANIZATION) {
 	    SupplyResourceContractType.Organization org = new SupplyResourceContractType.Organization();
-	    if (r.get("ctr.uuid_org_customer") != null) {
-		org.setOrgRootEntityGUID(r.get("ctr.uuid_org_customer").toString());
-	    }
+	    org.setOrgRootEntityGUID(r.get("ctr.uuid_org_customer").toString());
 	    result.setOrganization(org);
 	}
 	if (id_customer_type == VocGisSupplyResourceContractCustomerType.i.OFFER) {
@@ -250,7 +248,7 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	    ind.setID(toID(r));
 	    ind.setSNILS(null);
 	} else {
-	    ind.setSNILS(r.get("p.snils").toString());
+	    ind.setSNILS(DB.to.String(r.get("p.snils")));
 	}
 
 	return ind;
@@ -369,7 +367,7 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	if(r.get(f) == null) {
 	    return null;
 	}
-	byte d = Byte.parseByte(r.get(f).toString());
+	byte d = Byte.parseByte(DB.to.String(r.get(f)));
 	if (d == 32) {
 	    start.setNextMonth(true);
 	} else {
@@ -383,7 +381,7 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	if (r.get(f) == null) {
 	    return null;
 	}
-	d = Byte.parseByte(r.get(f).toString());
+	d = Byte.parseByte(DB.to.String(r.get(f)));
 	if (d == 32) {
 	    end.setNextMonth(true);
 	} else {
@@ -409,12 +407,12 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	    return null;
 	}
 
-	byte d = Byte.parseByte(r.get(f).toString());
+	byte d = Byte.parseByte(DB.to.String(r.get(f)));
 	if (d == 99) {
 	    d = -1;
 	}
 
-	if (r.get(f + "_nxt").toString().equals("1")) {
+	if (DB.ok(r.get(f + "_nxt"))) {
 	    result.setDateType("N");
 	} else {
 	    result.setDateType("C");
@@ -434,12 +432,12 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	    return null;
 	}
 
-	byte d = Byte.parseByte(r.get(f).toString());
+	byte d = Byte.parseByte(DB.to.String(r.get(f)));
 	if (d == 99) {
 	    d = -1;
 	}
 
-	if (r.get(f + "_nxt").toString().equals("1")) {
+	if (DB.ok(r.get(f + "_nxt"))) {
 	    result.setDateType("N");
 	} else {
 	    result.setDateType("C");
@@ -459,12 +457,12 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	    return null;
 	}
 
-	byte d = Byte.parseByte(r.get(f).toString());
+	byte d = Byte.parseByte(DB.to.String(r.get(f)));
 	if (d == 99) {
 	    d = -1;
 	}
 
-	if (r.get(f + "_nxt").toString().equals("1")) {
+	if (DB.ok(r.get(f + "_nxt"))) {
 	    result.setDateType("N");
 	} else {
 	    result.setDateType("C");
@@ -488,10 +486,10 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 		SupplyResourceContract.c.ID_CTR_STATUS.lc(),
 		SupplyResourceContract.c.ID_CUSTOMER_TYPE.lc()
 	    ).on()
-	    .toOne(nsi58, "AS vc_nsi_58", "code", "guid").on("ctr.code_vc_nsi_58=vc_nsi_58.code AND vc_nsi_58.isactual = 1")
-	    .toOne(VocGisContractDimension.class, "AS voc_plannedvolumetype", "name").on("ctr.plannedvolumetype = voc_plannedvolumetype.id")
-	    .toOne(VocGisContractDimension.class, "AS voc_specqtyinds", "name").on("ctr.specqtyinds = voc_specqtyinds.id")
-	    .toOne(VocGisContractDimension.class, "AS voc_accrualprocedure", "name").on("ctr.accrualprocedure = voc_accrualprocedure.id")
+	    .toMaybeOne(nsi58, "AS vc_nsi_58", "code", "guid").on("ctr.code_vc_nsi_58=vc_nsi_58.code AND vc_nsi_58.isactual = 1")
+	    .toMaybeOne(VocGisContractDimension.class, "AS voc_plannedvolumetype", "name").on("ctr.plannedvolumetype = voc_plannedvolumetype.id")
+	    .toMaybeOne(VocGisContractDimension.class, "AS voc_specqtyinds", "name").on("ctr.specqtyinds = voc_specqtyinds.id")
+	    .toMaybeOne(VocGisContractDimension.class, "AS voc_accrualprocedure", "name").on("ctr.accrualprocedure = voc_accrualprocedure.id")
 	    .toMaybeOne(VocOrganization.class, "AS org", "orgppaguid").on("ctr.uuid_org=org.uuid")
 	    .toMaybeOne(VocPerson.class, "AS p", "*").on("ctr.uuid_person_customer=p.uuid")
 	    .toMaybeOne(nsi95, "AS vc_nsi_95", "*").on("p.code_vc_nsi_95=vc_nsi_95.code")
