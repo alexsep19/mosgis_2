@@ -79,7 +79,6 @@ define ([], function () {
 
         data.__read_only = 1
 
-        data.item.org_label = data.item ['vc_orgs.label']
 /*        
         data.item.status_label = data.vc_async_entity_states [data.item.id_status]
         data.item.err_text = data.item ['out_soap.err_text']

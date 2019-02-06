@@ -15,7 +15,7 @@ define ([], function () {
             name: grid_name,
 
             show: {
-                toolbar: data.item._can.create_account,
+                toolbar: 1,
                 footer: 1,
                 toolbarReload: true,
                 toolbarColumns: false,

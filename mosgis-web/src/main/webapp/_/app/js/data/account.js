@@ -21,8 +21,13 @@ define ([], function () {
 
         query ({type: 'accounts'}, {}, function (data) {        
 
-            add_vocabularies (data, {})
-
+            add_vocabularies (data, {
+                vc_acc_types: 1,
+                vc_gis_status: 1,
+            })
+            
+            var it = data.item
+                        
             $('body').data ('data', data)
     
             done (data)

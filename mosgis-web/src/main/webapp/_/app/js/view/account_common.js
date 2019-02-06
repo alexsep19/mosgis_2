@@ -4,6 +4,17 @@ define ([], function () {
 
     return function (data, view) {
     
+        var it = data.item
+        
+        it.status_label = data.vc_gis_status [it.id_ctr_status]            
+        it.type_label = data.vc_acc_types [it.id_type]
+        it.org_label = it ['org.label']
+        
+        if (it.uuid_contract) {
+            it.label_reason = 'Договор управления №' + it ['ca.docnum'] + ' от '  + dt_dmy (it ['ca.signingdate'])
+            it.url_reason = '/mgmt_contract/' + it.uuid_contract
+        }       
+    
         $_F5 = function (data) {
         
             data.item.__read_only = data.__read_only
@@ -64,6 +75,11 @@ define ([], function () {
             ],
 
             focus: -1,
+            
+            onRefresh: function (e) {e.done (function () {
+                clickOff ($('#label_reason'))
+                clickOn ($('#label_reason'), function () {openTab (it.url_reason)})
+            })}                
             
         })
 

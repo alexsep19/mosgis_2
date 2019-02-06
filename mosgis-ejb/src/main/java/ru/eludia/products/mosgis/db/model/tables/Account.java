@@ -44,7 +44,9 @@ public class Account extends EnTable {
         
         ISRENTER               (Type.BOOLEAN,          null,  "1, если является нанимателем; 0, если не является нанимателем"),
         ISACCOUNTSDIVIDED      (Type.BOOLEAN,          null,  "1, если лицевые счета на помещение(я) разделены; 0, если лицевые счета на помещение(я) не разделены"),
-        
+
+        IS_CUSTOMER_ORG        (Type.BOOLEAN,          Boolean.FALSE,  "1, если плательщик — юридическое лицо; 0, если физическое"),
+
         UUID_ORG_CUSTOMER      (VocOrganization.class, null, "Организация. ЮЛ/ИП/ОП"),
         UUID_PERSON_CUSTOMER   (VocPerson.class,       null, "Физическое лицо/индивидуальный предприниматель."),
         
@@ -68,6 +70,7 @@ public class Account extends EnTable {
             switch (this) {
                 case ID_LOG:
                 case ID_TYPE:
+                case IS_CUSTOMER_ORG:
                     return false;
                 default:
                     return true;
