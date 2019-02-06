@@ -17,10 +17,7 @@ public class AccountItem extends EnTable {
 	UUID_PREMISE           (Premise.class,       null,       "Помещение"),
         SHAREPERCENT           (Type.NUMERIC, 5, 2,  null,       "Доля внесения платы, размер доли в %"),
 
-//        ID_LOG                 (AccountLog.class,                    "Последнее событие редактирования"),
-        
-//        ID_CTR_STATUS          (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения mosgis"),
-//        ID_CTR_STATUS_GIS      (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения ГИС ЖКХ"),
+        ID_LOG                 (AccountItemLog.class,            "Последнее событие редактирования"),
         
         ;
 
@@ -33,8 +30,9 @@ public class AccountItem extends EnTable {
         @Override
         public boolean isLoggable () {
             switch (this) {
-//                case ID_LOG:
-//                    return false;
+                case ID_LOG:
+                case UUID_ACCOUNT:
+                    return false;
                 default:
                     return true;
             }
