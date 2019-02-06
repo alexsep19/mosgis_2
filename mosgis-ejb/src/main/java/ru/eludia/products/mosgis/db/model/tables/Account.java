@@ -3,6 +3,8 @@ package ru.eludia.products.mosgis.db.model.tables;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
+import static ru.eludia.base.model.Type.BOOLEAN;
+import static ru.eludia.base.model.def.Bool.FALSE;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
@@ -40,8 +42,11 @@ public class Account extends EnTable {
         SHAREPERCENT           (Type.NUMERIC, 5, 2, null,  "Отапливаемая площадь"),
 */        
         
+        ISRENTER               (Type.BOOLEAN,          null,  "1, если является нанимателем; 0, если не является нанимателем"),
+        ISACCOUNTSDIVIDED      (Type.BOOLEAN,          null,  "1, если лицевые счета на помещение(я) разделены; 0, если лицевые счета на помещение(я) не разделены"),
+        
         UUID_ORG_CUSTOMER      (VocOrganization.class, null, "Организация. ЮЛ/ИП/ОП"),
-        UUID_PERSON            (VocPerson.class,       null, "Физическое лицо/индивидуальный предприниматель."),
+        UUID_PERSON_CUSTOMER   (VocPerson.class,       null, "Физическое лицо/индивидуальный предприниматель."),
         
         ACCOUNTGUID            (Type.UUID,             null,    "Идентификатор ЛС в ГИС ЖКХ (при обновлении данных ЛС)"),        
 

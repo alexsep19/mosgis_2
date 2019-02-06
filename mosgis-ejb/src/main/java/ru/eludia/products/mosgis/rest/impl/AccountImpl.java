@@ -14,6 +14,8 @@ import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.voc.VocAccountType;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.AccountLocal;
@@ -76,8 +78,10 @@ public class AccountImpl extends BaseCRUD<Account> implements AccountLocal {
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
 
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
-            .toMaybeOne (AccountLog.class         ).on ()
-            .toMaybeOne (OutSoap.class,           "err_text").on ()
+            .toMaybeOne (AccountLog.class               ).on ()
+            .toMaybeOne (OutSoap.class,       "err_text").on ()
+            .toMaybeOne (VocOrganization.class, "AS org").on ("root.uuid_org_customer=org.uuid")
+            .toMaybeOne (VocPerson.class,       "AS ind").on ("root.uuid_person_customer=ind.uuid")
             .orderBy ("root.accountnumber")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
