@@ -3,8 +3,6 @@ package ru.eludia.products.mosgis.db.model.tables;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
-import static ru.eludia.base.model.Type.BOOLEAN;
-import static ru.eludia.base.model.def.Bool.FALSE;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
@@ -84,6 +82,10 @@ public class Account extends EnTable {
         super  ("tb_accounts", "Лицевые счета");
         
         cols   (c.class);        
+        
+        key ("uuid_contract", "uuid_contract");
+        key ("uuid_charter", "uuid_charter");
+
 /*                
         trigger ("AFTER INSERT OR UPDATE", ""
 
