@@ -35,15 +35,24 @@ define ([], function () {
             
             columnGroups : [
                 {master: true},
+                {span: 3, caption: 'Площадь, м\xB2'},
                 {master: true},
-                {span: 2, caption: 'Плательщик'},
+                {span: 4, caption: 'Плательщик'},
             ],            
             
             columns: [              
                 {field: 'accountnumber', caption: 'Номер', size: 20},
-                {field: 'totalsquare', caption: 'Площадь', size: 20, render: 'float:2'},
+                
+                {field: 'totalsquare', caption: 'Общая', size: 20, render: 'float:2'},
+                {field: 'residentialsquare', caption: 'Жилая', size: 20, render: 'float:2'},
+                {field: 'heatedarea', caption: 'Отапливаемая', size: 20, render: 'float:2'},
+
+                {field: 'livingpersonsnumber', caption: 'К-во прож.', size: 20, render: 'int'},
+                
                 {field: 'ind.label', caption: 'Физ. лицо', size: 50},
                 {field: 'org.label', caption: 'Юр. лицо', size: 50},
+                {field: 'isrenter',  caption: 'Нанинматель?', size: 10, voc: {0: 'нет', 1: 'да'}},
+                {field: 'isaccountsdivided', caption: 'Разделён?', size: 10, voc: {0: 'нет', 1: 'да'}},
             ],
             
             postData: {data: {uuid_contract: $_REQUEST.id}},
