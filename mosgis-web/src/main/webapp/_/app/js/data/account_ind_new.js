@@ -31,7 +31,10 @@ define ([], function () {
 
         var data = clone ($('body').data ('data'))
         
-        data.record = {}
+        data.record = {
+            isaccountsdivided: -1,
+            isrenter: -1,
+        }
                 
         done (data)
 
