@@ -143,47 +143,14 @@ define ([], function () {
         
         var data = clone ($('body').data ('data'))
 
-        data.active_tab = localStorage.getItem ('account_common.active_tab') || 'account_common_log'
+        data.active_tab = localStorage.getItem ('account_common.active_tab') || 'account_common_items'
 
         data.__read_only = 1
         
         var it = data.item
         
         fix (it)
-        
-        it._can = {cancel: 1}
-        
-        if (!it.is_deleted && it.uuid_org == $_USER.uuid_org) {
-        
-            switch (it ['ca.id_ctr_status'] || it ['ch.id_ctr_status']) {
-            
-                    case 40:
-                    case 42:
-                    case 43:
-                    case 34:
-                    case 11:
-                    case 92:
-                    case 93:
-                    case 94:
-                    case 100:
-                        it._can.edit = 1
-                        
-            }            
-                    
-            if (it._can.edit) {
-            
-                it._can.update = 1
-            
-                switch (it.id_ctr_status) {
-                    case 10:
-                    case 14:
-                        it._can.delete = 1
-                }
-            
-            }
-        
-        }
-        
+                
         done (data)
         
     }
