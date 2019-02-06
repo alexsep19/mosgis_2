@@ -28,7 +28,7 @@ define ([], function () {
                     
                     {name: 'totalsquare', type: 'float', options: {min: 0, precision: 2}},
                     
-                    {name: 'uuid_person', type: 'list', options: 
+                    {name: 'uuid_person_customer', type: 'list', options: 
                         {
                             url: '/mosgis/_rest/?type=vc_persons',
                             postData: {
