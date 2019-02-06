@@ -44,11 +44,11 @@ public class SupplyResourceContract extends EnTable {
         ISPLANNEDVOLUME      (Type.BOOLEAN, null, "1, если в договоре есть плановый объем и режим подачи поставки ресурсов; иначе 0"),
 
         PLANNEDVOLUMETYPE    (VocGisContractDimension.class
-                , VocGisContractDimension.i.BY_CONTRACT.asDef()
+		, null
                 , "Тип ведения планового объема и режима подачи в разрезе"
         ),
         ACCRUALPROCEDURE     (VocGisContractDimension.class
-                , VocGisContractDimension.i.BY_CONTRACT.asDef()
+		, null
                 , "Порядок размещения информации о начислениях за коммунальные услуги в разрезе"
         ),
         SPECQTYINDS          (VocGisContractDimension.class
@@ -116,6 +116,44 @@ public class SupplyResourceContract extends EnTable {
                 + "BEGIN "
 
                 + " IF :NEW.is_deleted = 0 THEN "
+
+		    + " IF :NEW.isplannedvolume IS NULL THEN "
+		    + "     :NEW.isplannedvolume:= 0; "
+		    + " END IF; "
+
+		    + " IF :NEW.isplannedvolume = 0 THEN "
+		    + "   :NEW.plannedvolumetype := NULL; "
+		    + " END IF; "
+
+		    + " IF :NEW.id_customer_type = " + VocGisSupplyResourceContractCustomerType.i.ORGANIZATION.getId() + " THEN "
+		    + "   :NEW.plannedvolumetype := NULL; "
+		    + "   :NEW.onetimepayment:= NULL; "
+		    + "   :NEW.volumedepends:= NULL; "
+		    + "   IF :NEW.uuid_org_customer IS NULL THEN "
+		    + "     raise_application_error (-20000, 'Укажите организацию-заказчик. Операция отменена.'); "
+		    + "   END IF; "
+		    + " ELSE "
+		    + "   :NEW.accrualprocedure:= NULL; "
+		    + "   :NEW.countingresource:= NULL; "
+		    + "   :NEW.mdinfo:= NULL; "
+		    + " END IF; "
+
+		    + " IF :NEW.onetimepayment = 1 THEN "
+		    + "   :NEW.volumedepends:= NULL; "
+		    + "   :NEW.ddt_d_start:= NULL; "
+		    + "   :NEW.ddt_d_start_nxt:= NULL; "
+		    + "   :NEW.ddt_i_start:= NULL; "
+		    + "   :NEW.ddt_i_start_nxt:= NULL; "
+		    + " END IF; "
+
+		    + " IF :NEW.accrualprocedure <> " + VocGisContractDimension.i.BY_CONTRACT.getId() + " THEN "
+		    + "   :NEW.countingresource:= NULL; "
+		    + " END IF; "
+
+		    + " IF :NEW.countingresource <> 1 THEN "
+		    + "   :NEW.mdinfo:= NULL; "
+		    + " END IF; "
+
                     + " IF :NEW.completiondate IS NULL AND :NEW.autorollover = 1 THEN "
                     + "   raise_application_error (-20000, 'Укажите дату окончания или Автопролонгация нет. Операция отменена.'); "
                     + " END IF; "
