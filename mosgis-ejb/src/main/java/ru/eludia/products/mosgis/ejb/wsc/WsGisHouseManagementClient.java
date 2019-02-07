@@ -19,6 +19,7 @@ import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.util.JDBCConsumer;
 import ru.eludia.base.db.util.TypeConverter;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.AccountLog;
 import ru.eludia.products.mosgis.db.model.tables.AgreementPaymentLog;
 import ru.eludia.products.mosgis.db.model.tables.Block;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
@@ -714,4 +715,9 @@ public class WsGisHouseManagementClient {
     public AckRequest.Ack importSupplyResourceContract(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
 	return getPort(orgPPAGuid, messageGUID).importSupplyResourceContractData(SupplyResourceContractLog.toImportSupplyResourceContractRequest(r)).getAck();
     }
+    
+    public AckRequest.Ack importAccountData (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort(orgPPAGuid, messageGUID).importAccountData (AccountLog.toImportAccountRequest (r)).getAck ();
+    }
+    
 }

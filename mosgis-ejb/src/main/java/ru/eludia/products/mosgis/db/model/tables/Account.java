@@ -33,13 +33,7 @@ public class Account extends EnTable {
         CLOSEDATE              (Type.DATE,           null,                                  "Дата закрытия"),
 
         DESCRIPTION            (Type.STRING,  250,   null,                                  "Примечание (для закрытия)"),
-/*        
-	FIASHOUSEGUID          (VocBuilding.class,   null,                "Глобальный уникальный идентификатор дома по ФИАС"),
-	UUID_PREMISE           (Premise.class,       null,                "Помещение"),
-	UUID_ROOM              (LivingRoom.class,    null,                "Комната"),
-        SHAREPERCENT           (Type.NUMERIC, 5, 2, null,  "Отапливаемая площадь"),
-*/        
-        
+  
         ISRENTER               (Type.BOOLEAN,          null,  "1, если является нанимателем; 0, если не является нанимателем"),
         ISACCOUNTSDIVIDED      (Type.BOOLEAN,          null,  "1, если лицевые счета на помещение(я) разделены; 0, если лицевые счета на помещение(я) не разделены"),
 
