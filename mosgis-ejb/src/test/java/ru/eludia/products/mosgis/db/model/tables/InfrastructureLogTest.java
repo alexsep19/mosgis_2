@@ -39,6 +39,7 @@ public class InfrastructureLogTest extends BaseTest {
                     db.getMap (logTable.getForExport(uuid));
             
             InfrastructureLog.addServicesForImport (db, record);
+            InfrastructureLog.addPropertiesForImport (db, record);
             
             System.out.println (record);
             
@@ -53,7 +54,6 @@ public class InfrastructureLogTest extends BaseTest {
         validate (InfrastructureLog.toImportOKIRequest (r));
     }
     
- //   @Ignore
     @Test
     public void testInsert () throws SQLException {
 

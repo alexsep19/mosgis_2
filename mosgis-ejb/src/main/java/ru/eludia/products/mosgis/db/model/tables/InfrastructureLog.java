@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +63,8 @@ public class InfrastructureLog extends GisWsLogTable {
         
         if (r.getOrDefault ("independentsource", null) != null && (long) r.get ("independentsource") == 0) result.setIndependentSource(null);
         
+        result.setObjectProperty (toObjectProperty (r));
+        
         return result;
     }
     
@@ -90,6 +93,23 @@ public class InfrastructureLog extends GisWsLogTable {
         return result;
     }
     
+    private static InfrastructureType.ObjectProperty toObjectProperty(Map<String, Object> r) {
+        final InfrastructureType.ObjectProperty result = new InfrastructureType.ObjectProperty ();
+        if ((long) r.get ("is_object") == 1)
+            for (Map <String, Object> x: (List <Map <String, Object>>) r.get ("resources")) {
+                InfrastructureType.ObjectProperty.Resources resource = new InfrastructureType.ObjectProperty.Resources ();
+                resource.setMunicipalResource (NsiTable.toDom(x.get ("code_vc_nsi_2").toString (), (UUID) x.get ("guid_vc_nsi_2")));
+                resource.setTotalLoad ((BigDecimal) x.getOrDefault ("totalload", null));
+                resource.setIndustrialLoad ((BigDecimal) x.getOrDefault ("industrialload", null));
+                resource.setSocialLoad ((BigDecimal) x.getOrDefault ("socialload", null));
+                resource.setPopulationLoad ((BigDecimal) x.getOrDefault ("populationload", null));
+                resource.setSetPower ((BigDecimal) x.getOrDefault ("setpower", null));
+                resource.setSitingPower ((BigDecimal) x.getOrDefault ("sitingpower", null));
+                result.getResources ().add (resource);
+            }
+        return result;
+    }
+    
     public static void addServicesForImport (DB db, Map<String, Object> r) throws SQLException {
         
         r.put ("services", db.getList (db.getModel ()
@@ -100,9 +120,19 @@ public class InfrastructureLog extends GisWsLogTable {
         
     }
     
+    public static void addPropertiesForImport (DB db, Map<String, Object> r) throws SQLException {
+        
+        r.put ("resources", db.getList (db.getModel ()
+                .select (InfrastructureResource.class, "AS res", "*")
+                .toOne   (NsiTable.getNsiTable (2), "AS nsi2", "guid AS guid_vc_nsi_2").on ("(res.code_vc_nsi_2 = nsi2.code)")
+                .orderBy (InfrastructureResource.c.CODE_VC_NSI_2.lc ())
+        ));
+        
+    }
+    
     public Get getForExport (String id) {
         
-        final NsiTable nsi_33 = NsiTable.getNsiTable (33);
+        final VocNsi33 nsi_33 = (VocNsi33) getModel ().get (VocNsi33.class);
         final NsiTable nsi_34 = NsiTable.getNsiTable (34);
         final NsiTable nsi_35 = NsiTable.getNsiTable (35);
         final NsiTable nsi_37 = NsiTable.getNsiTable (37);
@@ -114,7 +144,7 @@ public class InfrastructureLog extends GisWsLogTable {
             .get        (this, id, "*")
             .toOne      (Infrastructure.class, "AS r", Infrastructure.c.ID_IS_STATUS.lc ()).on ()
             .toOne      (VocOrganization.class, "AS org", "orgppaguid").on ()
-            .toOne      (nsi_33, nsi_33.getLabelField ().getfName () + " AS vc_nsi_33", "code", "guid").on ("(r.code_vc_nsi_33 = vc_nsi_33.code AND vc_nsi_33.isactual=1)")
+            .toOne      (nsi_33, "label AS vc_nsi_33", "code", "guid", "is_object AS is_object").on ("(r.code_vc_nsi_33 = vc_nsi_33.code AND vc_nsi_33.isactual=1)")
             .toOne      (nsi_39, nsi_39.getLabelField ().getfName () + " AS vc_nsi_39", "code", "guid").on ("(r.code_vc_nsi_39 = vc_nsi_39.code AND vc_nsi_39.isactual=1)")
             .toMaybeOne (VocOrganizationNsi20.class, "AS org_perms", "code AS is_rso").on ("r.manageroki=org_perms.uuid AND org_perms.code=2 AND org_perms.is_deleted=0")
             .toMaybeOne (nsi_37, nsi_37.getLabelField ().getfName () + " AS vc_nsi_37", "code", "guid").on ("(r.code_vc_nsi_37 = vc_nsi_37.code AND vc_nsi_37.isactual=1)")
