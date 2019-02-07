@@ -144,6 +144,8 @@ define ([], function () {
                 text: it ['ind_customer.label']
             })            
         }
+        
+        it.err_text = it ['out_soap.err_text']
 
     }
 
