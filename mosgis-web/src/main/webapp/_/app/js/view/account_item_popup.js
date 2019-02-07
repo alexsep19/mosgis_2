@@ -1,6 +1,8 @@
 define ([], function () {
 
     return function (data, view) {
+    
+        var is_virgin = true
 
         $(fill (view, data.record)).w2uppop ({}, function () {
 
@@ -18,6 +20,13 @@ define ([], function () {
                 
                 onChange: function (e) {                
                     if (e.target == 'fiashouseguid') e.done ($_DO.load_premises_for_account_item_popup)
+                },
+                
+                onRender: function (e) {                
+//                    if (!is_virgin) return
+//                    is_virgin = false                
+//                    if (data.record.fiashouseguid) 
+                    e.done ($_DO.load_premises_for_account_item_popup)
                 }
 
             })

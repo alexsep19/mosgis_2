@@ -6,18 +6,22 @@ define ([], function () {
 
         var form = w2ui [form_name]
         
-        var v = form.values ()
-        
+        var r = form.record
+
         var premises = []
         
         function done () {
             form.get ('uuid_premise').options.items = premises
             form.refresh ()
         }
-                
-        if (!v.fiashouseguid) return done ()
+
+        var fiashouseguid = r.fiashouseguid
+            
+        if (!fiashouseguid) return done ()
         
-        var uuid_house = form.record.f2h [v.fiashouseguid]
+        if (fiashouseguid.id) fiashouseguid = fiashouseguid.id
+        
+        var uuid_house = form.record.f2h [fiashouseguid]
 
         if (!uuid_house) return done ()
         
@@ -109,7 +113,7 @@ define ([], function () {
             
             data.record.f2h = f2h
 
-//            if (!data.record.fiashouseguid && data.fias.length == 1) data.record.fiashouseguid = data.fias [0].id
+            if (!data.record.fiashouseguid && data.fias.length == 1) data.record.fiashouseguid = data.fias [0].id
 
             done (data)
 
