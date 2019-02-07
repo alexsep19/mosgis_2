@@ -23,6 +23,7 @@ import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 import ru.eludia.products.mosgis.db.model.tables.Account.c;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
+import ru.gosuslugi.dom.schema.integration.base.CommonResultType;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportResult;
@@ -81,9 +82,15 @@ public class GisPollExportAccountMDB  extends GisPollMDB {
 
             if (commonResult == null || commonResult.isEmpty ()) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
 
+            final ImportResult.CommonResult cr = commonResult.get (0);
+            
+            List<CommonResultType.Error> error = cr.getError ();
+            
+            if (error != null && !error.isEmpty ()) throw new GisPollException (error.get (0));
+            
             final Map<String, Object> h = statusHash (action.getOkStatus ());
 
-            h.put (Account.c.ACCOUNTGUID.lc (), commonResult.get (0).getGUID ());
+            h.put (Account.c.ACCOUNTGUID.lc (), cr.getGUID ());
 
             update (db, uuid, r, h);
 

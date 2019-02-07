@@ -44,21 +44,28 @@ define ([], function () {
                         case 93:
                         case 94:
                         case 100:
-                            it._can.edit = 1
+                        
+                        switch (it.id_ctr_status) {
+                            case 10:
+                            case 11:
+                                it._can.edit = 1                            
+                                it._can.approve = 1                            
+                        }
+                        
+                        switch (it.id_ctr_status) {
+                            case 14:
+                            case 34:
+                            case 40:
+                                it._can.alter = 1
+                        }
 
+                        switch (it.id_ctr_status) {
+                            case 10:
+                            case 14:
+                                it._can.delete = 1
+                        }
+                        
                 }            
-
-                if (it._can.edit) {
-
-                    it._can.update = 1
-
-                    switch (it.id_ctr_status) {
-                        case 10:
-                        case 14:
-                            it._can.delete = 1
-                    }
-
-                }
 
             }            
                         

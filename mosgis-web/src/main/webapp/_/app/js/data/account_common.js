@@ -2,6 +2,16 @@ define ([], function () {
 
     var form_name = 'account_common_form'
     
+    $_DO.approve_account_common = function (e) {
+        if (!confirm ('Разместить эти данные в ГИС ЖКХ?')) return
+        query ({type: 'accounts', action: 'approve'}, {}, reload_page)
+    }
+        
+    $_DO.alter_account_common = function (e) {
+        if (!confirm ('Открыть эту карточку на редактирование?')) return
+        query ({type: 'accounts', action: 'alter'}, {}, reload_page)
+    }    
+    
     $_DO.open_orgs_account_common = function (e) {
     
         var f = w2ui [form_name]
