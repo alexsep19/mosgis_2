@@ -10,8 +10,11 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import ru.eludia.products.mosgis.db.model.voc.VocAccountType;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocPerson;
+import ru.gosuslugi.dom.schema.integration.house_management.AccountIndType;
 import ru.gosuslugi.dom.schema.integration.house_management.AccountType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportAccountRequest;
+import ru.gosuslugi.dom.schema.integration.organizations_registry_base.RegOrgVersionType;
 
 public class AccountLog extends GisWsLogTable {
 
@@ -33,9 +36,14 @@ public class AccountLog extends GisWsLogTable {
             .toOne (Account.class, "AS r"
                 , Account.c.ID_CTR_STATUS.lc ()
                 , Account.c.ID_TYPE.lc ()
+                , Account.c.IS_CUSTOMER_ORG.lc ()
             ).on ()
                 
             .toMaybeOne (VocOrganization.class, "AS org", "orgppaguid AS orgppaguid").on ("r.uuid_org=org.uuid")
+                
+            .toMaybeOne (VocOrganization.class, "AS org_customer", "orgversionguid AS orgversionguid").on ("r.uuid_org_customer=org_customer.uuid")
+                
+            .toMaybeOne (VocPerson.class, "AS ind", "*").on ("r.uuid_org=org.uuid")
                 
             .toMaybeOne (Contract.class, "AS ca"
                 , "contractguid AS contractguid"
@@ -79,10 +87,39 @@ public class AccountLog extends GisWsLogTable {
     }
     
     private static AccountType.PayerInfo toPayerInfo (Map<String, Object> r) {
+        
         final AccountType.PayerInfo result = DB.to.javaBean (AccountType.PayerInfo.class, r);
+        
         if (Boolean.FALSE.equals (result.isIsAccountsDivided ())) result.setIsAccountsDivided (null);
         if (Boolean.FALSE.equals (result.isIsRenter ())) result.setIsRenter (null);
+        
+        if (DB.ok (r.get ("r.is_customer_org"))) {
+            result.setOrg (toOrg (r));
+        }
+        else {
+            result.setInd (toInd (r));
+        }
+        
         return result;
+        
+    }
+
+    private static RegOrgVersionType toOrg (Map<String, Object> r) {
+        final RegOrgVersionType result = DB.to.javaBean (RegOrgVersionType.class, r);
+        return result;
+    }
+
+    private static AccountIndType toInd (Map<String, Object> r) {
+        
+        Map<String, Object> rr = DB.HASH ();
+        
+        r.entrySet ().forEach ((kv) -> {
+            if (kv.getKey ().startsWith ("ind.")) rr.put (kv.getKey ().substring (4), kv.getValue ());
+        });
+        
+        final AccountIndType result = DB.to.javaBean (AccountIndType.class, rr);
+        return result;
+        
     }
 
 }
