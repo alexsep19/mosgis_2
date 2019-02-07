@@ -1,12 +1,17 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.util.Map;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.jms.Queue;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.Account;
 import ru.eludia.products.mosgis.db.model.tables.AccountLog;
@@ -28,15 +33,15 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class AccountImpl extends BaseCRUD<Account> implements AccountLocal {
-/*
-    @Resource (mappedName = "mosgis.inNsiAccountsQueue")
+
+    @Resource (mappedName = "mosgis.inAccountsQueue")
     Queue queue;
 
     @Override
     public Queue getQueue () {
         return queue;
     }
-*/
+
     private void filterOffDeleted (Select select) {
         select.and ("is_deleted", 0);
     }
@@ -132,34 +137,33 @@ public class AccountImpl extends BaseCRUD<Account> implements AccountLocal {
         VocAccountType.addTo (jb);
         VocAction.addTo (jb);
         
-/*        
-        
-        try (DB db = ModelHolder.getModel ().getDb ()) {
-            
-            db.addJsonArrays (jb,
-                    
-                ModelHolder.getModel ()
-                    .select (VocOkei.class, "code AS id", "national AS label")
-                    .orderBy ("national"),
-                    
-                ModelHolder.getModel ()
-                    .select (VocOrganization.class, "uuid AS id", "label")                    
-                    .orderBy ("label")
-                    .and ("uuid", ModelHolder.getModel ().select (Account.class, "uuid_org").where ("is_deleted", 0)),
-
-                ModelHolder.getModel ()
-                    .select (VocAsyncEntityState.class, "id", "label")                    
-                    .orderBy ("label")
-
-            );
-
-        }
-        catch (Exception ex) {
-            throw new InternalServerErrorException (ex);
-        }
-*/
         return jb.build ();
         
     }
+    
+    @Override
+    public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
+
+        db.update (getTable (), HASH (EnTable.c.UUID,               id,
+            Account.c.ID_CTR_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+        ));
+
+        logAction (db, user, id, VocAction.i.APPROVE);
+
+    });}
+    
+    @Override
+    public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
+                
+        final Map<String, Object> r = HASH (
+            EnTable.c.UUID,               id,
+            Account.c.ID_CTR_STATUS,  VocGisStatus.i.PROJECT.getId ()
+        );
+                
+        db.update (getTable (), r);
+        
+        logAction (db, user, id, VocAction.i.ALTER);
+        
+    });}    
     
 }
