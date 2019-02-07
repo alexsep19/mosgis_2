@@ -101,12 +101,19 @@ public class GisPollImportInfrastructureMDB  extends GisPollMDB {
             
             String uniqueNumber = result.getUniqueNumber ();
             String OKIGuid = result.getGUID ();
-            
-            if (uniqueNumber != null && OKIGuid != null) db.update (Infrastructure.class, HASH (
-                "uuid", r.get ("uuid_object"),
-                "uniquenumber", uniqueNumber,
-                "okiguid", OKIGuid
-            ));
+
+            if (uniqueNumber != null && OKIGuid != null) {
+                db.update (Infrastructure.class, HASH (
+                    "uuid", r.get ("r.uuid"),
+                    "uniquenumber", uniqueNumber,
+                    "okiguid", OKIGuid
+                ));
+                db.update (InfrastructureLog.class, HASH (
+                    "uuid", r.get ("log.uuid"),
+                    "uniquenumber", uniqueNumber,
+                    "okiguid", OKIGuid
+                ));
+            }
                         
             final Map<String, Object> h = statusHash (action.getOkStatus ());
             

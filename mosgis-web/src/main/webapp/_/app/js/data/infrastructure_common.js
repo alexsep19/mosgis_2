@@ -135,7 +135,10 @@ define ([], function () {
         if (!v.oktmo) die ('oktmo_code', 'Укажите, пожалуйста, код ОКТМО')
         if (!v.comissioningyear) die ('comissioningyear', 'Укажите, пожалуйста, год ввода в эксплуатацию')
         if (!reg_year.test (v.comissioningyear) || v.comissioningyear < 1800) die ('comissioningyear', 'Указано неверное значение года ввода в эксплуатацию')
-        if ((v.countaccidents && !reg_int.test (v.countaccidents)) || v.countaccidents < 0 || v.countaccidents > 100) die ('countaccidents', 'Указано неверное значение количества аварий на 100 км сетей')
+        if (v.countaccidents) {
+            if (!reg_int.test (v.countaccidents) || v.countaccidents < 0 || v.countaccidents > 100) die ('countaccidents', 'Указано неверное значение количества аварий на 100 км сетей')
+        }
+        else v.countaccidents = undefined
         if (v.deterioration) {
             var deterioration = parseFloat (v.deterioration)
             if (isNaN (deterioration) || deterioration < 0 || deterioration > 100) die ('deterioration', 'Указано неверное значения уровня износа')
