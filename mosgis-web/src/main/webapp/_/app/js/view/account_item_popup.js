@@ -15,6 +15,10 @@ define ([], function () {
                     {name: 'uuid_premise',  type: 'list',  options: {items: []}},
                     {name: 'sharepercent',  type: 'float', options: {min: 0, max: 100, precision: 2}},
                 ],
+                
+                onChange: function (e) {                
+                    if (e.target == 'fiashouseguid') e.done ($_DO.load_premises_for_account_item_popup)
+                }
 
             })
 
