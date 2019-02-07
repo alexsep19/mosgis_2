@@ -98,19 +98,20 @@ public class Account extends EnTable {
                 + "SELECT COUNT(*) INTO cnt FROM tb_account_items WHERE is_deleted=0 AND uuid_account=:NEW.uuid; "
                 + "IF cnt=0 THEN raise_application_error (-20000, 'Для данного счёта не указано ни одно помещение. Операция отменена.'); END IF; "
 
-/*                        
                 + " FOR i IN ("
                     + "SELECT "
                     + " o.uuid "
+                    + " , h.address "
                     + "FROM "
-                    + " tb_work_plan_items o "
-                    + "WHERE o.is_deleted = 0"
-                    + " AND o.uuid_reporting_period = :NEW.uuid "
-                    + " AND (price IS NULL OR amount IS NULL OR count IS NULL) "
+                    + " tb_account_items o "
+                    + " LEFT JOIN tb_houses h ON o.fiashouseguid = h.fiashouseguid"
+                    + " WHERE o.is_deleted = 0"
+                    + " AND o.uuid_account = :NEW.uuid "
+                    + " AND h.gis_guid IS NULL "
                     + ") LOOP"
-                + " raise_application_error (-20000, 'Для всех работ по плану необходимо заполнить цену, объём и количество. Операция отменена.'); "
+                + " raise_application_error (-20000, 'Паспорт МКД с адресом ' || i.address || ' не размещён в ГИС ЖКХ. Операция отменена.'); "
                 + " END LOOP; "                        
-*/                        
+
                 + "END; END IF; "
 
                 + "IF "
