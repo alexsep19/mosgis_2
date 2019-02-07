@@ -3,6 +3,7 @@ package ru.eludia.products.mosgis.db.model.tables;
 import java.sql.SQLException;
 import java.util.Map;
 import javax.xml.bind.JAXBContext;
+import org.junit.Ignore;
 import org.junit.Test;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
@@ -13,7 +14,7 @@ import ru.gosuslugi.dom.schema.integration.infrastructure.ExportOKIRequest;
 
 public class InfrastructureLogTest extends BaseTest {
     
-    private static final String uuid = "D04A7D8F6FB2498198A3959BD5F7E156";
+    private static final String uuid = "00000000000000000000000000000000";
     
     private Infrastructure table;
     private InfrastructureLog logTable;
@@ -53,6 +54,7 @@ public class InfrastructureLogTest extends BaseTest {
         validate (InfrastructureLog.toImportOKIRequest (r));
     }
     
+    @Ignore
     @Test
     public void testInsert () throws SQLException {
 
