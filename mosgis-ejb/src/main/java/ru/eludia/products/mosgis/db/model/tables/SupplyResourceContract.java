@@ -11,6 +11,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractDimension;
 import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustomerType;
+import ru.eludia.products.mosgis.db.model.voc.VocSupplyResourceContractFileType;
 
 
 public class SupplyResourceContract extends EnTable {
@@ -111,8 +112,8 @@ public class SupplyResourceContract extends EnTable {
         key    ("uuid_org", c.UUID_ORG);
 
         trigger("BEFORE INSERT OR UPDATE", ""
-//                + "DECLARE"
-//                + " PRAGMA AUTONOMOUS_TRANSACTION; "
+                + "DECLARE"
+                + " cnt NUMBER; "
                 + "BEGIN "
 
                 + " IF :NEW.is_deleted = 0 THEN "
@@ -216,7 +217,68 @@ public class SupplyResourceContract extends EnTable {
                         + "|| '. Операция отменена.'); "
                     + " END LOOP; "
 
-                + " END IF; "
+		    + " IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING + " THEN "
+
+			+ " IF :NEW.is_contract = 1 THEN "
+			+ "   SELECT COUNT(*) INTO cnt FROM tb_sr_ctr_files WHERE is_deleted = 0 AND id_type=" + VocSupplyResourceContractFileType.i.CONTRACT + " AND id_status=1 AND UUID_SR_CTR=:NEW.uuid; "
+			+ "   IF cnt=0 THEN raise_application_error (-20000, 'Файл договора не загружен на сервер. Операция отменена.'); END IF; "
+			+ " END IF; "
+
+			+ " SELECT COUNT(*) INTO cnt FROM tb_sr_ctr_subj WHERE is_deleted = 0 AND uuid_sr_ctr_obj IS NULL AND UUID_SR_CTR=:NEW.uuid; "
+			+ " IF cnt=0 THEN raise_application_error (-20000, 'Укажите предметы договора. Операция отменена.'); END IF; "
+
+			+ " SELECT COUNT(*) INTO cnt FROM tb_sr_ctr_obj WHERE is_deleted = 0 AND id_ctr_status <> " + VocGisStatus.i.ANNUL + "AND UUID_SR_CTR=:NEW.uuid; "
+			+ " IF cnt=0 THEN raise_application_error (-20000, 'Укажите объекты жилищного фонда договора. Операция отменена.'); END IF; "
+
+			+ " SELECT COUNT(*) INTO cnt FROM tb_sr_ctr_subj WHERE is_deleted = 0 AND uuid_sr_ctr_obj IS NOT NULL AND UUID_SR_CTR=:NEW.uuid; "
+			+ " IF cnt=0 THEN raise_application_error (-20000, 'Укажите поставляемые ресурсы в каждом объекте жилищного фонда договора. Операция отменена.'); END IF; "
+
+			+ " IF :NEW.id_customer_type = " + VocGisSupplyResourceContractCustomerType.i.ORGANIZATION + " THEN "
+			+ "   IF :NEW.DDT_D_START IS NULL THEN raise_application_error (-20000, 'Необходимо заполнить поля \"Срок выставления платежных документов\", если заказчик - исполнитель коммунальных услуг. Операция отменена.'); END IF; "
+			+ "   IF :NEW.DDT_N_START IS NULL AND :NEW.countingresource = 1 THEN raise_application_error (-20000, 'Необходимо заполнить поля \"Срок предоставления информации о поступивших платежах\". Операция отменена.'); END IF; "
+			+ " ELSE "
+			+ "   IF :NEW.DDT_M_START IS NULL OR :NEW.DDT_M_END IS NULL THEN raise_application_error (-20000, 'Необходимо заполнить поля \"периода ввода показаний ПУ\". Операция отменена.'); END IF; "
+			+ "   IF :NEW.DDT_I_START IS NULL THEN raise_application_error (-20000, 'Необходимо заполнить поля \"Срок внесения платы\", если заказчик - не исполнитель коммунальных услуг. Операция отменена.'); END IF; "
+			+ " END IF; "
+
+			+ " FOR i IN ("
+			+ "SELECT "
+			+ " o.uuid "
+			+ "FROM "
+			+ " tb_sr_ctr_subj o "
+			+ "INNER JOIN tb_sr_ctr_obj obj ON obj.uuid = o.uuid_sr_ctr_obj "
+			+ " AND obj.is_deleted = 0 "
+			+ " AND obj.id_ctr_status <> " + VocGisStatus.i.ANNUL
+			+ "WHERE o.is_deleted = 0 "
+			+ " AND o.uuid_sr_ctr     = :NEW.uuid "
+			+ " AND o.code_vc_nsi_239 IN ("
+			+ VocNsi239.CODE_VC_NSI_239_HEAT_ENERGY + "," + VocNsi239.CODE_VC_NSI_239_HOT_WATER
+			+ " )"
+			+ " AND o.is_heat_open IS NULL "
+			+ ") LOOP "
+			+ " raise_application_error (-20000, "
+			+ "'Для коммунальных ресурсов \"Тепловая энергия\" и \"Горячая вода\" должен быть указан тип системы теплоснабжения для каждого объекта жилищного фонда в договоре' "
+			+ "|| '. Операция отменена.'); "
+			+ " END LOOP; "
+
+			+ " IF :NEW.plannedvolumetype = " + VocGisContractDimension.i.BY_CONTRACT + " THEN "
+			    + " FOR i IN ("
+			    + "SELECT "
+			    + " o.uuid "
+			    + "FROM "
+			    + " tb_sr_ctr_subj o "
+			    + "WHERE o.is_deleted = 0 "
+			    + " AND o.uuid_sr_ctr_obj IS NULL "
+			    + " AND o.uuid_sr_ctr     = :NEW.uuid "
+			    + " AND o.volume IS NULL "
+			    + ") LOOP "
+			    + " raise_application_error (-20000, "
+			    + "'В предмете договора должен быть указан плановый объем и режим подачи' "
+			    + "|| '. Операция отменена.'); "
+			    + " END LOOP; "
+			+ " END IF; "
+		    + " END IF; " // IF :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING
+		+ " END IF; " // IF :NEW.is_deleted = 0
         + "END;");
     }
 
