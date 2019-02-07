@@ -23,10 +23,9 @@ define ([], function () {
                 },
                 
                 onRender: function (e) {                
-//                    if (!is_virgin) return
-//                    is_virgin = false                
-//                    if (data.record.fiashouseguid) 
-                    e.done ($_DO.load_premises_for_account_item_popup)
+                    if (!is_virgin) return
+                    is_virgin = false                
+                    if (data.record.fiashouseguid) e.done ($_DO.load_premises_for_account_item_popup)
                 }
 
             })

@@ -93,22 +93,37 @@ define ([], function () {
             })
             
         }               
+        if (it.uuid_charter) {
+        
+            tia.type = 'charter_objects'
+            
+            p.search.push ({
+                field:    "uuid_charter",
+                operator: "is",
+                value:    it.uuid_charter
+            })
+            
+        }   
+        
+        data.fias = []
         
         query (tia, p, function (d) {
         
             var f2h = {}
-
-            data.fias = d.root.map (function (i) {
             
-                var id = i.fiashouseguid            
+            $.each (d.root, function () {
+            
+                var id = this.fiashouseguid            
                 
-                f2h [id] = i ['house.uuid']
+                if (id in f2h) return
+                
+                f2h [id] = this ['house.uuid']
             
-                return {
+                data.fias.push ({
                     id: id,
-                    text: i ['fias.label'],
-                }
-                
+                    text: this ['fias.label'],
+                })
+            
             })
             
             data.record.f2h = f2h
