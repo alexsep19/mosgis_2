@@ -94,19 +94,32 @@ public class InfrastructureLog extends GisWsLogTable {
     }
     
     private static InfrastructureType.ObjectProperty toObjectProperty(Map<String, Object> r) {
-        final InfrastructureType.ObjectProperty result = new InfrastructureType.ObjectProperty ();
-        if ((long) r.get ("is_object") == 1)
+        final InfrastructureType.ObjectProperty result = DB.to.javaBean (InfrastructureType.ObjectProperty.class, r);
+        result.getResources ().clear ();
+        result.getTransportationResources ().clear ();
+        result.getNetPieces ().clear ();
+        if ((long) r.get ("is_object") == 1) {
+            result.setCountAccidents (null);
             for (Map <String, Object> x: (List <Map <String, Object>>) r.get ("resources")) {
-                InfrastructureType.ObjectProperty.Resources resource = new InfrastructureType.ObjectProperty.Resources ();
-                resource.setMunicipalResource (NsiTable.toDom(x.get ("code_vc_nsi_2").toString (), (UUID) x.get ("guid_vc_nsi_2")));
-                resource.setTotalLoad ((BigDecimal) x.getOrDefault ("totalload", null));
-                resource.setIndustrialLoad ((BigDecimal) x.getOrDefault ("industrialload", null));
-                resource.setSocialLoad ((BigDecimal) x.getOrDefault ("socialload", null));
-                resource.setPopulationLoad ((BigDecimal) x.getOrDefault ("populationload", null));
-                resource.setSetPower ((BigDecimal) x.getOrDefault ("setpower", null));
-                resource.setSitingPower ((BigDecimal) x.getOrDefault ("sitingpower", null));
+                InfrastructureType.ObjectProperty.Resources resource = DB.to.javaBean (InfrastructureType.ObjectProperty.Resources.class, x);
+                resource.setMunicipalResource (NsiTable.toDom (x.get ("code_vc_nsi_2").toString (), (UUID) x.get ("guid_vc_nsi_2")));
                 result.getResources ().add (resource);
             }
+        }
+        else {
+            for (Map <String, Object> x: (List <Map <String, Object>>) r.get ("transportation_resources")) {
+                InfrastructureType.ObjectProperty.TransportationResources resource = DB.to.javaBean (InfrastructureType.ObjectProperty.TransportationResources.class, x);
+                resource.setMunicipalResource (NsiTable.toDom (x.get ("code_vc_nsi_2").toString (), (UUID) x.get ("guid_vc_nsi_2")));
+                resource.setCoolantType       (NsiTable.toDom (x.get ("code_vc_nsi_41").toString (), (UUID) x.get ("guid_vc_nsi_41")));
+                result.getTransportationResources ().add (resource);
+            }
+            for (Map <String, Object> x: (List <Map <String, Object>>) r.get ("net_pieces")) {
+                InfrastructureType.ObjectProperty.NetPieces netPiece = DB.to.javaBean (InfrastructureType.ObjectProperty.NetPieces.class, x);
+                netPiece.setPressureType (NsiTable.toDom (x.get ("code_vc_nsi_36").toString (), (UUID) x.get ("guid_vc_nsi_36")));
+                netPiece.setVoltageType  (NsiTable.toDom (x.get ("code_vc_nsi_45").toString (), (UUID) x.get ("guid_vc_nsi_45")));
+                result.getNetPieces ().add (netPiece);
+            }
+        }
         return result;
     }
     
@@ -123,9 +136,29 @@ public class InfrastructureLog extends GisWsLogTable {
     public static void addPropertiesForImport (DB db, Map<String, Object> r) throws SQLException {
         
         r.put ("resources", db.getList (db.getModel ()
-                .select (InfrastructureResource.class, "AS res", "*")
+                .select  (InfrastructureResource.class, "AS res", "*")
                 .toOne   (NsiTable.getNsiTable (2), "AS nsi2", "guid AS guid_vc_nsi_2").on ("(res.code_vc_nsi_2 = nsi2.code)")
+                .where   ("uuid_oki", r.get("uuid_object"))
+                .and     ("is_deleted", 0)
                 .orderBy (InfrastructureResource.c.CODE_VC_NSI_2.lc ())
+        ));
+        
+        r.put ("transportation_resources", db.getList (db.getModel ()
+                .select     (InfrastructureTransportationResource.class, "AS res", "*")
+                .toOne      (NsiTable.getNsiTable (2), "AS nsi2", "guid AS guid_vc_nsi_2").on ("(res.code_vc_nsi_2 = nsi2.code)")
+                .toMaybeOne (NsiTable.getNsiTable (41), "AS nsi41", "guid AS guid_vc_nsi_41").on ("(res.code_vc_nsi_41 = nsi41.code)")
+                .where      ("uuid_oki", r.get("uuid_object"))
+                .and        ("is_deleted", 0)
+                .orderBy    (InfrastructureTransportationResource.c.CODE_VC_NSI_2.lc ())
+        ));
+        
+        r.put ("net_pieces", db.getList (db.getModel ()
+                .select  (InfrastructureNetPiece.class, "AS res", "*")
+                .toMaybeOne   (NsiTable.getNsiTable (36), "AS nsi36", "guid AS guid_vc_nsi_36").on ("(res.code_vc_nsi_36 = nsi36.code)")
+                .toMaybeOne   (NsiTable.getNsiTable (45), "AS nsi45", "guid AS guid_vc_nsi_45").on ("(res.code_vc_nsi_45 = nsi45.code)")
+                .where   ("uuid_oki", r.get("uuid_object"))
+                .and     ("is_deleted", 0)
+                .orderBy (InfrastructureNetPiece.c.LENGTH)
         ));
         
     }

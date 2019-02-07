@@ -63,7 +63,8 @@ public class ExportInfrastructureMDB extends GisExportMDB<InfrastructureLog> {
             return;
         }
         
-        InfrastructureLog.addServicesForImport(db, r);
+        InfrastructureLog.addServicesForImport (db, r);
+        InfrastructureLog.addPropertiesForImport (db, r);
                                 
         logger.info ("r=" + DB.to.json (r));
        
