@@ -108,6 +108,26 @@ public class Infrastructure extends EnTable {
                     + " THEN "
                         + " :NEW.ID_IS_STATUS := " + VocGisStatus.i.MUTATING.getId ()
                     + "; END IF; "
+                            
+                    + "IF :NEW.code_vc_nsi_33 <> :OLD.code_vc_nsi_33 THEN BEGIN "
+                        + "SELECT COUNT(*) INTO cnt FROM vc_nsi_33 nsi_33 WHERE nsi_33.code = :NEW.code_vc_nsi_33 AND nsi_33.is_object = 1; "
+                        + "IF cnt > 0 THEN  BEGIN "
+                            + "SELECT COUNT(*) INTO cnt FROM tb_oki_resources res WHERE res.uuid_oki = :NEW.uuid; "
+                            + "IF cnt > 0 THEN "
+                                + "raise_application_error (-20000, 'К данному объекту привязаны характеристики мощностей объекта. Операция отменена'); "
+                            + "END IF; END; "
+                        + "ELSE BEGIN "
+                            + "SELECT COUNT(*) INTO cnt FROM tb_oki_tr_resources res WHERE res.uuid_oki = :NEW.uuid; "
+                            + "IF cnt > 0 THEN "
+                                + "raise_application_error (-20000, 'К данному объекту привязаны характеристики передачи коммунальных ресурсов. Операция отменена'); "
+                            + "END IF; "
+                            + "SELECT COUNT(*) INTO cnt FROM tb_oki_net_pieces net WHERE net.uuid_oki = :NEW.uuid; "
+                            + "IF cnt > 0 THEN "
+                                + "raise_application_error (-20000, 'К данному объекту привязаны участки сети. Операция отменена'); "
+                            + "END IF; "
+                        + "END; END IF; "
+                    + "END; END IF; "
+                        
                 
                     + "IF :NEW.is_deleted=0 AND :NEW.ID_IS_STATUS <> :OLD.ID_IS_STATUS AND :NEW.ID_IS_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING.getId () + " THEN BEGIN "
                             

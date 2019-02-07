@@ -62,6 +62,7 @@ public class InfrastructureLog extends GisWsLogTable {
         result.setCommissioningYear(Short.valueOf (r.get ("comissioningyear").toString ()));
         
         if (r.getOrDefault ("independentsource", null) != null && (long) r.get ("independentsource") == 0) result.setIndependentSource(null);
+        if (r.getOrDefault ("deterioration", null) == null) result.setDeterioration(BigDecimal.ZERO);
         
         result.setObjectProperty (toObjectProperty (r));
         
