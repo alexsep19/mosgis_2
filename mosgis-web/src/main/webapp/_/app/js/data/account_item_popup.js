@@ -25,7 +25,7 @@ define ([], function () {
         
             for (k in d) premises = d [k].map (function (i) {return {
                 id: i.id,
-                text: i.label,
+                text: i.label + ' (' + i.totalarea + ' м\xB2)',
             }})
             
             done ()

@@ -24,7 +24,9 @@ define ([], function () {
             },     
             
             columns: [                
-                {field: 'addr.label', caption: 'Адрес', size: 50},
+                {field: 'addr.label', caption: 'Адрес', size: 100},
+                {field: 'prem.label', caption: '№ помещения', size: 10},
+                {field: 'prem.totalarea', caption: 'Общ. пл., м\xB2', size: 10, render: 'float:2'},
                 {field: 'sharepercent', caption: 'Доля, %', size: 20, render: 'float:2'},
             ],
 
