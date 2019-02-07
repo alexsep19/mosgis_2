@@ -10,7 +10,7 @@ define ([], function () {
 
         $(w2ui ['passport_layout'].el ('main')).w2regrid ({ 
 
-            name: 'account_common_items',
+            name: 'account_common_items_grid',
 
             multiSelect: false,
 

@@ -1,50 +1,22 @@
 define ([], function () {
 
     $_DO.update_account_item_popup = function (e) {
-/*
+
         var form = w2ui ['account_item_popup_form']
 
         var v = form.values ()
-        if (v.accountnumber == null) die ('accountnumber', 'Укажите, пожалуйста, номер лицевого счёта')
-        if (!/[0-9а-яА-Яa-zA-Z]/.test (v.accountnumber)) die ('accountnumber', 'Некорректный номер лицевого счёта')
-//        if (!v.uuid_person_customer) die ('uuid_person_customer', 'Укажите, пожалуйста, плательщика')
-        if (!(v.totalsquare >= 0.01)) die ('totalsquare', 'Укажите, пожалуйста, корректный размер общей площади')
+        
+        if (!v.fiashouseguid) die ('fiashouseguid', 'Укажите, пожалуйста, адрес')
+        if (!(v.sharepercent >= 0.01)) die ('sharepercent', 'Укажите, пожалуйста, корректное значение доли в процентах')
+        
+        v.uuid_account = $_REQUEST.id
 
-        switch (v.isaccountsdivided) {
-            case 0: case 1: break
-            default: v.isaccountsdivided = null
-        }
-
-        switch (v.isrenter) {
-            case 0: case 1: break
-            default: v.isrenter = null
-        }
-        
-        function get_ref () {
-        
-            switch ($_REQUEST.type) {
-                case 'mgmt_contract': return 'uuid_contract'
-                case 'charter':       return 'uuid_charter'
-            }
-            
-        }
-        
-        v [get_ref ()] = $_REQUEST.id
-        v.id_type = 1
-        v.is_customer_org = 0
-        
-        query ({type: 'accounts', id: undefined, action: 'create'}, {data: v}, function (data) {
-        
-            w2popup.close ()
-            
-            if (data.id) w2confirm ('Перейти на страницу лицевого счёта?').yes (function () {openTab ('/account/' + data.id)})
-            
-            var grid = w2ui [$_REQUEST.type + '_accounts_grid']
-
+        query ({type: 'account_items', id: undefined, action: 'create'}, {data: v}, function (data) {        
+            w2popup.close ()                        
+            var grid = w2ui ['account_common_items_grid']
             grid.reload (grid.refresh)
-
         })
-*/        
+
     }
 
     return function (done) {
@@ -55,7 +27,35 @@ define ([], function () {
             sharepercent: 100,
         }
                 
-        done (data)
+        var tia = {id: undefined}
+        var p   = {limit: 100000, offset:0}
+        
+        var it = data.item
+
+        if (it.uuid_contract) {
+        
+            tia.type = 'contract_objects'
+            
+            p.search = [{
+                field:    "uuid_contract",
+                operator: "is",
+                value:    it.uuid_contract
+            }]
+            
+        }
+        
+        query (tia, p, function (d) {
+
+            data.fias = d.root.map (function (i) {return {
+                id: i.fiashouseguid,
+                text: i ['fias.label'],
+            }})
+
+            if (!data.record.fiashouseguid && data.fias.length == 1) data.record.fiashouseguid = data.fias [0].id
+
+            done (data)
+
+        })
 
     }
 

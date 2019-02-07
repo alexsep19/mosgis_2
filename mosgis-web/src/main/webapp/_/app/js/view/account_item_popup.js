@@ -11,8 +11,8 @@ define ([], function () {
                 record: data.record,
 
                 fields : [
-                    {name: 'fiashouseguid', type: 'list',  options: {items: []}},
-                    {name: 'uuid_premise',  type: 'list',  options: {items: []}},                                       
+                    {name: 'fiashouseguid', type: 'list',  options: {items: data.fias}},
+                    {name: 'uuid_premise',  type: 'list',  options: {items: []}},
                     {name: 'sharepercent',  type: 'float', options: {min: 0, max: 100, precision: 2}},
                 ],
 
