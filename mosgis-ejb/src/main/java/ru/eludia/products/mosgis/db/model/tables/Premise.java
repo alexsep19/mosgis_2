@@ -44,7 +44,7 @@ public class Premise extends View {
             + " UNION "
             + "SELECT uuid id, uuid_house, premisesnum label,  premisesnum apartmentnumber, NULL roomnumber, cadastralnumber, totalarea, premisesguid, NULL livingroomguid, 'NonResidentialPremise' class FROM " + getName (NonResidentialPremise.class) + " WHERE is_deleted = 0 AND is_annuled = 0"
             + " UNION "
-            + "SELECT uuid id, uuid_house, 'блок ' || blocknum label,  blocknum apartmentnumber, NULL roomnumber, cadastralnumber, totalarea, NULL premisesguid, NULL livingroomguid, 'Block' class FROM " + getName (Block.class) + " WHERE is_deleted = 0 AND is_annuled = 0"
+            + "SELECT uuid id, uuid_house, 'блок ' || blocknum label,  blocknum apartmentnumber, NULL roomnumber, cadastralnumber, totalarea, blockguid premisesguid, NULL livingroomguid, 'Block' class FROM " + getName (Block.class) + " WHERE is_deleted = 0 AND is_annuled = 0"
             + " UNION "
             + "SELECT r.uuid id, r.uuid_house, "
                 + "CASE "
