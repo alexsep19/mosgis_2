@@ -97,7 +97,23 @@ public class Account extends EnTable {
                         
                 + "SELECT COUNT(*) INTO cnt FROM tb_account_items WHERE is_deleted=0 AND uuid_account=:NEW.uuid; "
                 + "IF cnt=0 THEN raise_application_error (-20000, 'Для данного счёта не указано ни одно помещение. Операция отменена.'); END IF; "
-
+                        
+                + " FOR i IN ("
+                    + "SELECT "
+                    + " o.uuid "
+                    + " , h.address "
+                    + " , p.label "
+                    + "FROM "
+                    + " tb_account_items o "
+                    + " LEFT JOIN tb_houses h ON o.fiashouseguid = h.fiashouseguid"
+                    + " LEFT JOIN vw_premises p ON o.uuid_premise = p.id"
+                    + " WHERE o.is_deleted = 0"
+                    + " AND o.uuid_account = :NEW.uuid "
+                    + " AND p.id IS NOT NULL AND p.premisesguid IS NULL AND p.livingroomguid IS NULL"
+                    + ") LOOP"
+                + " raise_application_error (-20000, 'Помещение ' || i.address || ', ' || i.label || ' не размещено в ГИС ЖКХ. Операция отменена.'); "
+                + " END LOOP; "
+                        
                 + " FOR i IN ("
                     + "SELECT "
                     + " o.uuid "
