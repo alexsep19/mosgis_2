@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -26,6 +27,7 @@ import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.ejb.wsc.RestGisFilesClient;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
@@ -51,6 +53,9 @@ public class GisPollExportCharterDataMDB extends GisPollMDB {
         
     @Resource (mappedName = "mosgis.outExportHouseCharterFilesQueue")
     Queue outExportHouseCharterFilesQueue;    
+
+    @EJB
+    RestGisFilesClient filesClient;
     
     private GetStateResult getState (UUID orgPPAGuid, Map<String, Object> r) throws GisPollRetryException, GisPollException {
 
@@ -141,7 +146,7 @@ public class GisPollExportCharterDataMDB extends GisPollMDB {
         
         Model m = db.getModel ();
         
-        Map<String, Object> logRecord = db.getMap (m.select (CharterLog.class, "action", "uuid_user", "uuid_out_soap", "uuid_message").orderBy ("ts DESC"));
+        Map<String, Object> logRecord = db.getMap (m.select (CharterLog.class, "action", "uuid_user", "uuid_out_soap", "uuid_message").where ("uuid_object", ctrUuid).orderBy ("ts DESC"));
                 
         try {
             
@@ -150,9 +155,9 @@ public class GisPollExportCharterDataMDB extends GisPollMDB {
             AdditionalService.Sync adds = ((AdditionalService) m.get (AdditionalService.class)).new Sync (db, orgUuid);
             adds.reload ();
 
-            CharterFile.Sync charterFiles = ((CharterFile) m.get (CharterFile.class)).new Sync (db, ctrUuid, this);
+            CharterFile.Sync charterFiles = ((CharterFile) m.get (CharterFile.class)).new Sync (db, ctrUuid, filesClient);
             charterFiles.addFrom (charter);
-            charterFiles.sync ();                        
+            charterFiles.sync ();
 
             final String key = "uuid_charter";
             List<Map<String, Object>> idsCharterObject = db.getList (m.select (CharterObject.class, "uuid").where (key, ctrUuid).and ("is_deleted", 0));
@@ -220,6 +225,8 @@ public class GisPollExportCharterDataMDB extends GisPollMDB {
             
         }
         catch (Exception ex) {
+            
+            logger.log (Level.SEVERE, "Cannot update charter", ex);
             
             db.rollback ();
             

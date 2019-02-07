@@ -53,7 +53,28 @@
         <redelivery-delay>10000</redelivery-delay>
     </delivery-params-overrides>
   </uniform-distributed-queue>
+ 
   
+   
+    
+     
+  <!-- очередь обработки запросов на импорт уставов по организации -->
+  <uniform-distributed-queue name="inExportOrgCharterQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.inExportOrgCharterQueue</jndi-name>
+  </uniform-distributed-queue>
+      
+  <!-- очередь опроса статуса исходящих запросов на импорт ДУ по организации-исполнителю -->
+  <uniform-distributed-queue name="outExportOrgChartersQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.outExportOrgChartersQueue</jndi-name>
+    <delivery-params-overrides>
+        <time-to-deliver>2000</time-to-deliver>
+        <redelivery-delay>10000</redelivery-delay>
+    </delivery-params-overrides>
+  </uniform-distributed-queue>
+
+                
   
   <!-- очередь обработки запросов на импорт справочника доплнительных услуг по организации-исполнителю -->
   <uniform-distributed-queue name="inExportOrgAddServicesQueue">

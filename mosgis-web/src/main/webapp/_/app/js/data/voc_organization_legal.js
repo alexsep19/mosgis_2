@@ -34,11 +34,15 @@ define ([], function () {
             $.each (data.vc_orgs_nsi_20, function () {data.nsi_20 [this.code] = 1})
             
             if ($_USER.role.admin) {
+            
+                var is_coop = false
+                for (var i = 19; i <= 22; i ++) is_coop |= data.nsi_20 [i]
 
                 data.import_types = [
 
                     {id: "import_mgmt_contracts", text: "Импорт договоров управления", off: !data.nsi_20 [1]},
-                    {id: "import_add_services",   text: "Импорт справочника дополнительных услуг", off: !data.nsi_20 [1]},
+                    {id: "import_charters", text: "Импорт устава", off: !is_coop},
+                    {id: "import_add_services",   text: "Импорт справочника дополнительных услуг", off: !data.nsi_20 [1] && !is_coop},
 
                 ].filter (not_off)
                 

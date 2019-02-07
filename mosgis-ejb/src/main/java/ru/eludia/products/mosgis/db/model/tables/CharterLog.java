@@ -1,5 +1,8 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Map;
+import java.util.UUID;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
@@ -8,6 +11,7 @@ import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportCharterRequest;
 public class CharterLog extends Table {
 
     public CharterLog () {
@@ -91,6 +95,19 @@ public class CharterLog extends Table {
 
        + "END;");
        
+    }
+    
+    public static ImportCharterRequest toAnnul (Map<String, Object> r) {
+        ImportCharterRequest result = new ImportCharterRequest ();
+        result.setAnnulmentCharter (toAnnulmentCharter (r));
+        result.setTransportGUID (UUID.randomUUID ().toString ());
+        return result;
+    }
+
+    private static ImportCharterRequest.AnnulmentCharter toAnnulmentCharter (Map<String, Object> r) {
+        final ImportCharterRequest.AnnulmentCharter result = (ImportCharterRequest.AnnulmentCharter) DB.to.javaBean (ImportCharterRequest.AnnulmentCharter.class, r);
+        result.setCharterVersionGUID (r.get ("ctr.charterversionguid").toString ());
+        return result;
     }
     
 }

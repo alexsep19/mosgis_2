@@ -101,6 +101,15 @@ public class VocOrganizations extends EJBResource <VocOrganizationsLocal> {
     public JsonObject doImportMgmtContracts (@PathParam ("id") String id) { 
         return back.doImportMgmtContracts (id, getUser ());
     }
+    
+    @POST
+    @Path("{id}/import_charters") 
+    @Produces (APPLICATION_JSON)
+    @RolesAllowed ("admin")
+    public JsonObject doImportCharters (@PathParam ("id") String id) { 
+        return back.doImportCharters (id, getUser ());
+    }
+    
     @POST    
     @Path("{id}/import_add_services") 
     @Produces (APPLICATION_JSON)

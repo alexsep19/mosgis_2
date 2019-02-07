@@ -77,6 +77,7 @@ public class CharterObjectsImpl extends BaseCRUD<CharterObject> implements Chart
         Select select = db.getModel ()
             .select     (getTable (),              "AS root", "*", "uuid AS id")
             .toOne      (VocBuildingAddress.class, "AS fias",      "label"                                       ).on ("root.fiashouseguid=fias.houseguid")
+            .toMaybeOne (House.class,              "AS house",     "uuid"                                        ).on ("root.fiashouseguid=house.fiashouseguid")
 //            .toMaybeOne (CharterFile.class,       "AS agreement", "agreementnumber AS no", "agreementdate AS dt").on ()
             .toMaybeOne (CharterObjectLog.class,  "AS log",       "ts"                                          ).on ()
             .where      ("is_deleted", 0)

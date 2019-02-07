@@ -59,20 +59,24 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
     
     @Resource (mappedName = "mosgis.inExportOrgMgmtContractsQueue")
     Queue inExportOrgMgmtContractsQueue;
+
+    @Resource (mappedName = "mosgis.inExportOrgCharterQueue")
+    Queue inExportOrgCharterQueue;
     
     @Resource (mappedName = "mosgis.inExportOrgAddServicesQueue")
     Queue inExportOrgAddServicesQueue;
 
     @Override
     protected Queue getQueue (VocAction.i action) {
-        
+
         switch (action) {
             case REFRESH: return inOrgByGUIDQueue;
             case IMPORT_MGMT_CONTRACTS: return inExportOrgMgmtContractsQueue;
-            case IMPORT_ADD_SERVICES: return inExportOrgAddServicesQueue;
+            case IMPORT_CHARTERS:       return inExportOrgCharterQueue;
+            case IMPORT_ADD_SERVICES:   return inExportOrgAddServicesQueue;
             default: return null;
         }
-        
+
     }
 
     private final static String DEFAULT_SEARCH = "label_uc LIKE %?%";
@@ -236,6 +240,7 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
                 .toMaybeOne (VocOrganizationLog.class).on ()
                 .toMaybeOne (OutSoap.class, "id_status").on ()
                 .toMaybeOne (Charter.class, "AS charter", "uuid").on ("root.uuid=charter.uuid_org")
+                .orderBy ("charter.id_ctr_status_gis")
             );
 
             jb.add ("item", item);
@@ -337,6 +342,11 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
     @Override
     public JsonObject doImportMgmtContracts (String id, User user) {return doAction ((db) -> {
         logAction (db, user, id, VocAction.i.IMPORT_MGMT_CONTRACTS);
+    });}
+    
+    @Override
+    public JsonObject doImportCharters (String id, User user) {return doAction ((db) -> {
+        logAction (db, user, id, VocAction.i.IMPORT_CHARTERS);
     });}
     
     @Override

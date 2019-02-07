@@ -52,6 +52,7 @@ public class VocAction extends Table {
         EXPIRE       ("expire",        "проверка на просроченность"),
         
         IMPORT_MGMT_CONTRACTS ("import_mgmt_contracts", "импорт ДУ"),
+        IMPORT_CHARTERS       ("import_charters", "импорт устава"),
         IMPORT_ADD_SERVICES   ("import_add_services", "Импорт справочника дополнительных услуг"),
         
         LOCK         ("lock",          "блокировка"),
@@ -63,7 +64,7 @@ public class VocAction extends Table {
         TERMINATE    ("terminate",     "расторжение"),
         UNDELETE     ("undelete",      "восстановление"),
         UNLOCK       ("unlock",        "разблокировка"),
-        UPDATE       ("update",        "редактирование"),
+        UPDATE       ("update",        "редактирование"), 
         ;
                 
         String name;
