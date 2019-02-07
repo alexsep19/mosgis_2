@@ -107,7 +107,7 @@ public class Infrastructure extends EnTable {
                 
                     + "IF :NEW.is_deleted=0 AND :NEW.ID_IS_STATUS <> :OLD.ID_IS_STATUS AND :NEW.ID_IS_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING.getId () + " THEN BEGIN "
                             
-                        + "SELECT COUNT(*) INTO cnt FROM vw_nsi_33_objects code_objects WHERE code_objects.code = :NEW.CODE_VC_NSI_33; "
+                        + "SELECT COUNT(*) INTO cnt FROM vc_nsi_33 nsi_33 WHERE nsi_33.code = :NEW.CODE_VC_NSI_33 AND nsi_33.is_object = 1; "
                         + "IF cnt > 0 THEN  BEGIN "
                             + "SELECT COUNT(*) INTO cnt FROM tb_oki_resources res WHERE res.uuid_oki = :NEW.uuid; "
                             + "IF cnt = 0 THEN "
