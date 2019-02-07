@@ -22,6 +22,7 @@ import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.gosuslugi.dom.schema.integration.infrastructure_service_async.Fault;
 import ru.eludia.products.mosgis.db.model.tables.Infrastructure.c;
+import ru.eludia.products.mosgis.db.model.tables.VocNsi33;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi38;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi40;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -44,7 +45,7 @@ public class GisPollImportInfrastructureMDB  extends GisPollMDB {
     @Override
     protected Get get (UUID uuid) {
         
-        final NsiTable nsi_33 = NsiTable.getNsiTable (33);
+        final VocNsi33 nsi_33 = (VocNsi33) getModel ().get (VocNsi33.class);
         final NsiTable nsi_34 = NsiTable.getNsiTable (34);
         final NsiTable nsi_35 = NsiTable.getNsiTable (35);
         final NsiTable nsi_37 = NsiTable.getNsiTable (37);
@@ -58,7 +59,7 @@ public class GisPollImportInfrastructureMDB  extends GisPollMDB {
             .toOne (Infrastructure.class,        "AS r", "uuid").on ()
 
             .toOne      (VocOrganization.class, "AS org", "orgppaguid").on ()
-            .toOne      (nsi_33, nsi_33.getLabelField ().getfName () + " AS vc_nsi_33", "code", "guid").on ("(r.code_vc_nsi_33 = vc_nsi_33.code AND vc_nsi_33.isactual=1)")
+            .toOne      (nsi_33, "label AS vc_nsi_33", "code", "guid").on ("(r.code_vc_nsi_33 = vc_nsi_33.code AND vc_nsi_33.isactual=1)")
             .toOne      (nsi_39, nsi_39.getLabelField ().getfName () + " AS vc_nsi_39", "code", "guid").on ("(r.code_vc_nsi_39 = vc_nsi_39.code AND vc_nsi_39.isactual=1)")
             .toMaybeOne (nsi_37, nsi_37.getLabelField ().getfName () + " AS vc_nsi_37", "code", "guid").on ("(r.code_vc_nsi_37 = vc_nsi_37.code AND vc_nsi_37.isactual=1)")
             .toMaybeOne (nsi_38, "label AS vc_nsi_38", "code", "guid").on ("(r.code_vc_nsi_38 = vc_nsi_38.code AND vc_nsi_38.isactual=1)")
