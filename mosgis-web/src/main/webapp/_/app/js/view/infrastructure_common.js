@@ -28,6 +28,15 @@ define ([], function () {
             var f = w2ui [form_name]
             var g = w2ui [grid_name]
 
+            if (f.record.code_vc_nsi_33.is_object) {
+                $('#countaccidents').val ('')
+                $('#countaccidents').closest ('.w2ui-field').hide ()
+            }
+            else {
+                $('#countaccidents').show ()
+                $('#countaccidents').closest ('.w2ui-field').show ()
+            }
+
             elements.forEach ((value, index, array) => {
                 if (elements_nsi_33[value][f.record.code_vc_nsi_33.id]) {
                     $('#' + value).closest ('.w2ui-field').show ()
