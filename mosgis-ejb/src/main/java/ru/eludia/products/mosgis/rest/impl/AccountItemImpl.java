@@ -5,6 +5,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.json.JsonObject;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.AccountItem;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -29,6 +30,7 @@ public class AccountItemImpl extends BaseCRUD<AccountItem> implements AccountIte
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
 //            .toMaybeOne (AccountItemLog.class               ).on ()
             .toOne (VocBuilding.class, "AS addr", "label").on ()
+            .where (EnTable.c.IS_DELETED, 0)
             .orderBy ("addr.label")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
         

@@ -8,11 +8,19 @@ define ([], function () {
         
         if (!v.fiashouseguid) die ('fiashouseguid', 'Укажите, пожалуйста, адрес')
         if (!(v.sharepercent >= 0.01)) die ('sharepercent', 'Укажите, пожалуйста, корректное значение доли в процентах')
+                
+        var tia = {type: 'account_items', id: form.record.uuid}
         
-        v.uuid_account = $_REQUEST.id
+        if (tia.id) {
+            tia.action = 'update'
+        }
+        else {
+            tia.action = 'create'
+            v.uuid_account = $_REQUEST.id
+        }
 
-        query ({type: 'account_items', id: undefined, action: 'create'}, {data: v}, function (data) {        
-            w2popup.close ()                        
+        query (tia, {data: v}, function (data) {
+            w2popup.close ()
             var grid = w2ui ['account_common_items_grid']
             grid.reload (grid.refresh)
         })
