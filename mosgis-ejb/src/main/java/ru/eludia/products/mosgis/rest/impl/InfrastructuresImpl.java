@@ -24,6 +24,7 @@ import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.Infrastructure;
 import ru.eludia.products.mosgis.db.model.tables.InfrastructureNsi3;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi33;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi38;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi40;
@@ -126,7 +127,8 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
 
         final MosGisModel model = ModelHolder.getModel ();
         
-        final Select get = model.get (getTable (), id, "*");
+        final Select get = model.get (getTable (), id, "*")
+                .toMaybeOne (OutSoap.class, "err_text").on ();
         
         QP qp = db.toQP (get);
         

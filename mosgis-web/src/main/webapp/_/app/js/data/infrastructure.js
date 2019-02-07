@@ -116,6 +116,8 @@ define ([], function () {
                 data.item.okitype = data.vc_nsi_33[data.item.code_vc_nsi_33]
                 data.item.is_object = data.vc_nsi_33.items.find (x => x.id == data.item.code_vc_nsi_33).is_object
 
+                console.log (data.item)
+
                 done (data)
 
             })
