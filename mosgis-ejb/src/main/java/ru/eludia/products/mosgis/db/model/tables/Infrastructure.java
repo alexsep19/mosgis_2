@@ -8,6 +8,7 @@ import static ru.eludia.base.model.Type.DATE;
 import static ru.eludia.base.model.Type.INTEGER;
 import static ru.eludia.base.model.Type.NUMERIC;
 import static ru.eludia.base.model.Type.STRING;
+import static ru.eludia.base.model.Type.UUID;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -21,6 +22,9 @@ public class Infrastructure extends EnTable {
         
         ID_IS_STATUS            (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус объекта инфраструктуры с точки зрения mosgis"),
         ID_IS_STATUS_GIS        (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус объекта инфраструктуры с точки зрения ГИС ЖКХ"),
+        
+        UNIQUENUMBER            (STRING, null, "Уникальный реестровый номер в ГИС"),
+        OKIGUID                 (UUID, null, "Идентификатор в ГИС"),
         
         NAME                    (STRING, 140, "Наименование объекта"),
         

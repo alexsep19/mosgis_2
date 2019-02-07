@@ -28,6 +28,7 @@ import ru.eludia.products.mosgis.db.model.tables.VocNsi40;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import static ru.eludia.products.mosgis.ejb.ModelHolder.getModel;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisInfrastructureClient;
+import ru.gosuslugi.dom.schema.integration.base.CommonResultType;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.infrastructure.ExportOKIResultType;
 import ru.gosuslugi.dom.schema.integration.infrastructure.GetStateResult;
@@ -86,17 +87,26 @@ public class GisPollImportInfrastructureMDB  extends GisPollMDB {
             
             if (!errorMessages.isEmpty()) throw new GisPollException (errorMessages.get(0));
             
-            List<ExportOKIResultType> exportOKIResult = state.getExportOKIResult();
+            List<CommonResultType> importResult = state.getImportResult();
             
-            if (exportOKIResult == null || exportOKIResult.isEmpty ()) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
+            if (importResult == null || importResult.isEmpty ()) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
             
-            ExportOKIResultType result = exportOKIResult.get (0);
+            CommonResultType result = importResult.get (0);
 
             if (result == null) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
             
-            ExportOKIResultType.OKI oki = result.getOKI ();
+            List<CommonResultType.Error> resultErrors = result.getError();
             
-            if (oki == null) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
+            if (!resultErrors.isEmpty()) throw new GisPollException (resultErrors.get(0));
+            
+            String uniqueNumber = result.getUniqueNumber ();
+            String OKIGuid = result.getGUID ();
+            
+            if (uniqueNumber != null && OKIGuid != null) db.update (Infrastructure.class, HASH (
+                "uuid", r.get ("uuid_object"),
+                "uniquenumber", uniqueNumber,
+                "okiguid", OKIGuid
+            ));
                         
             final Map<String, Object> h = statusHash (action.getOkStatus ());
             
