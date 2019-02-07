@@ -19,13 +19,13 @@ public class VocNsi33 extends Table {
         
         CODE                  (STRING, 20, "Код элемента справочника, уникальный в пределах справочника"),
 
-        F_C8E745BC63          (UUID, null, "Вид объекта"),
-        LABEL                 (UUID, new Virt ("''||F_C8E745BC63"), "Вид объекта (синоним)"),
+        F_C8E745BC63          (STRING, null, "Вид объекта"),
+        LABEL                 (STRING, new Virt ("''||F_C8E745BC63"), "Вид объекта (синоним)"),
 
-        F_995A303098          (UUID, null, "Тип объекта"),
-        TYPE                  (UUID, new Virt ("''||F_995A303098"), "Тип объекта (синоним)"),
+        F_995A303098          (STRING, null, "Тип объекта"),
+        TYPE                  (STRING, new Virt ("''||F_995A303098"), "Тип объекта (синоним)"),
         
-        IS_OBJECT             (BOOLEAN, new Virt("DECODE (\"LABEL\", 'Объект', 1, 0)"), "1, если является объектом, иначе 0"),
+        IS_OBJECT             (BOOLEAN, new Virt("DECODE (\"TYPE\", 'Объект', 1, 0)"), "1, если является объектом, иначе 0"),
         
         GUID                  (UUID, "Глобально-уникальный идентификатор элемента справочника"),
         
@@ -64,7 +64,7 @@ public class VocNsi33 extends Table {
     
     public static Select getVocSelect() throws SQLException {
         return ModelHolder.getModel()
-            .select  (VocNsi33.class, "code AS id", "label", "type")
+            .select  (VocNsi33.class, "code AS id", "label", "is_object")
             .where   (VocNsi33.c.ISACTUAL, 1)
             .orderBy (VocNsi33.c.CODE);
     }
