@@ -93,7 +93,11 @@ public class Account extends EnTable {
                     + " :NEW.ID_CTR_STATUS := " + VocGisStatus.i.MUTATING
                 + "; END IF; "
                         
-//                + "IF :NEW.is_deleted=0 AND :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING + " THEN BEGIN "
+                + "IF :NEW.is_deleted=0 AND :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING + " THEN BEGIN "
+                        
+                + "SELECT COUNT(*) INTO cnt FROM tb_account_items WHERE is_deleted=0 AND uuid_account=:NEW.uuid; "
+                + "IF cnt=0 THEN raise_application_error (-20000, 'Для данного счёта не указано ни одно помещение. Операция отменена.'); END IF; "
+
 /*                        
                 + " FOR i IN ("
                     + "SELECT "
@@ -107,7 +111,7 @@ public class Account extends EnTable {
                 + " raise_application_error (-20000, 'Для всех работ по плану необходимо заполнить цену, объём и количество. Операция отменена.'); "
                 + " END LOOP; "                        
 */                        
-//                + "END; END IF; "
+                + "END; END IF; "
 
                 + "IF "
                     + "     :OLD.ID_CTR_STATUS = " + VocGisStatus.i.MUTATING
