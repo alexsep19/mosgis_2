@@ -8,12 +8,14 @@ import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.voc.VocAccountType;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.gosuslugi.dom.schema.integration.house_management.AccountIndType;
 import ru.gosuslugi.dom.schema.integration.house_management.AccountType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportAccountRequest;
+import ru.gosuslugi.dom.schema.integration.individual_registry_base.ID;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_base.RegOrgVersionType;
 
 public class AccountLog extends GisWsLogTable {
@@ -28,6 +30,8 @@ public class AccountLog extends GisWsLogTable {
     }
 
     public Get getForExport (String id) {
+        
+        final NsiTable nsi95 = NsiTable.getNsiTable (95);
 
         return (Get) getModel ()
                 
@@ -44,6 +48,7 @@ public class AccountLog extends GisWsLogTable {
             .toMaybeOne (VocOrganization.class, "AS org_customer", "orgversionguid AS orgversionguid").on ("r.uuid_org_customer=org_customer.uuid")
                 
             .toMaybeOne (VocPerson.class, "AS ind", "*").on ("r.uuid_org=org.uuid")
+            .toOne      (nsi95, nsi95.getLabelField ().getfName () + " AS vc_nsi_95", "code", "guid").on ("(ind.code_vc_nsi_95=vc_nsi_95.code AND vc_nsi_95.isactual=1)")
                 
             .toMaybeOne (Contract.class, "AS ca"
                 , "contractguid AS contractguid"
@@ -57,7 +62,7 @@ public class AccountLog extends GisWsLogTable {
         
     }
     
-    public static void addPlannedWorksForExport (DB db, Map<String, Object> r) throws SQLException {
+    public static void addItemsForExport (DB db, Map<String, Object> r) throws SQLException {
 
         r.put ("items", db.getList (db.getModel ()                
             .select (AccountItem.class, "*")
@@ -118,8 +123,18 @@ public class AccountLog extends GisWsLogTable {
         });
         
         final AccountIndType result = DB.to.javaBean (AccountIndType.class, rr);
+
+        if (result.getSNILS () == null && DB.ok (r.get ("ind.code_vc_nsi_95"))) result.setID (toID (r, rr));
+        
         return result;
         
     }
 
+    private static ID toID (Map<String, Object> r, Map<String, Object> rr) {
+        rr.put ("number", rr.get ("number_"));
+        final ID result = DB.to.javaBean (ID.class, rr);
+        result.setType (NsiTable.toDom (r, "vc_nsi_95"));
+        return result;
+    }
+    
 }
