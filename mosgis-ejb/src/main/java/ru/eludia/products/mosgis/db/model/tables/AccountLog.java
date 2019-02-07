@@ -1,5 +1,7 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
@@ -44,6 +46,20 @@ public class AccountLog extends GisWsLogTable {
         ;
         
     }
+    
+    public static void addPlannedWorksForExport (DB db, Map<String, Object> r) throws SQLException {
+
+        r.put ("items", db.getList (db.getModel ()                
+            .select (AccountItem.class, "*")
+            .toMaybeOne (Premise.class, "AS prem"
+                , "livingroomguid AS livingroomguid"
+                , "premisesguid AS premisesguid"
+            ).on ()
+            .where  (AccountItem.c.UUID_ACCOUNT, r.get ("uuid_object"))
+            .and    ("is_deleted", 0)
+        ));
+
+    }    
 
     public static ImportAccountRequest toImportAccountRequest (Map<String, Object> r) {
         final ImportAccountRequest result = DB.to.javaBean (ImportAccountRequest.class, r);
@@ -54,6 +70,7 @@ public class AccountLog extends GisWsLogTable {
     private static ImportAccountRequest.Account toAccount (Map<String, Object> r) {         
         r.put (VocAccountType.i.forId (r.get ("r.id_type")).getFlagName (), 1);        
         final ImportAccountRequest.Account result = DB.to.javaBean (ImportAccountRequest.Account.class, r);
+        for (Map<String, Object> i: (List<Map<String, Object>>) r.get ("items")) result.getAccommodation ().add (AccountItem.toAccommodation (i));
         return result;
     }
 

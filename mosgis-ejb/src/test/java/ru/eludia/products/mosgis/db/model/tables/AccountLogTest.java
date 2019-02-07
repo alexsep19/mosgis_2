@@ -40,7 +40,11 @@ public class AccountLogTest extends BaseTest {
         
         try (DB db = model.getDb ()) {
             
-            return db.getMap (logTable.getForExport ("9b582a88-e060-405a-8a1d-56baef2cb6f5"));
+            final Map<String, Object> r = db.getMap (logTable.getForExport ("9b582a88-e060-405a-8a1d-56baef2cb6f5"));
+            
+            AccountLog.addPlannedWorksForExport (db, r);
+            
+            return r;
 
         }
         

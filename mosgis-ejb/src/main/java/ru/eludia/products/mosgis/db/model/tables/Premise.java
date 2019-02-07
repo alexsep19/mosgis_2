@@ -5,8 +5,6 @@ import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.View;
 import ru.eludia.base.model.Type;
-import static ru.eludia.base.model.Type.NUMERIC;
-import static ru.eludia.base.model.Type.STRING;
 
 public class Premise extends View {
     
@@ -14,12 +12,14 @@ public class Premise extends View {
         
         ID                        (Type.UUID,     null,           "Ключ"),        
         UUID_HOUSE                (House.class,                   "Дом"),
-        LABEL                     (STRING,        null,           "Номер помещения"),
-        CADASTRALNUMBER           (STRING,        null,           "Кадастровый номер"),
-	APARTMENTNUMBER           (STRING,        null,           "Номер помещения / Номер блока"),
-	ROOMNUMBER                (STRING,        null,           "Номер комнаты"),
-        TOTALAREA                 (NUMERIC,       25, 4, null,    "Общая площадь жилого помещения"),
-        CLASS                     (STRING,        null,           "Класс")
+        LABEL                     (Type.STRING,   null,           "Номер помещения"),
+        CADASTRALNUMBER           (Type.STRING,   null,           "Кадастровый номер"),
+	APARTMENTNUMBER           (Type.STRING,   null,           "Номер помещения / Номер блока"),
+	ROOMNUMBER                (Type.STRING,   null,           "Номер комнаты"),
+        TOTALAREA                 (Type.NUMERIC,  25, 4, null,    "Общая площадь жилого помещения"),
+        PREMISESGUID              (Type.UUID,     null,           "Идентификатор помещения"),       
+        LIVINGROOMGUID            (Type.UUID,     null,           "Идентификатор комнаты"),
+        CLASS                     (Type.STRING,   null,           "Класс")
         ;
         
         @Override
@@ -40,11 +40,11 @@ public class Premise extends View {
     public final String getSQL () {
 
         return ""
-            + "SELECT uuid id, uuid_house, premisesnum label, premisesnum apartmentnumber, NULL roomnumber, cadastralnumber, totalarea, 'ResidentialPremise' class FROM " + getName (ResidentialPremise.class) + " WHERE is_deleted = 0 AND is_annuled = 0"
+            + "SELECT uuid id, uuid_house, premisesnum label, premisesnum apartmentnumber, NULL roomnumber, cadastralnumber, totalarea, premisesguid, NULL livingroomguid, 'ResidentialPremise' class FROM " + getName (ResidentialPremise.class) + " WHERE is_deleted = 0 AND is_annuled = 0"
             + " UNION "
-            + "SELECT uuid id, uuid_house, premisesnum label,  premisesnum apartmentnumber, NULL roomnumber, cadastralnumber, totalarea, 'NonResidentialPremise' class FROM " + getName (NonResidentialPremise.class) + " WHERE is_deleted = 0 AND is_annuled = 0"
+            + "SELECT uuid id, uuid_house, premisesnum label,  premisesnum apartmentnumber, NULL roomnumber, cadastralnumber, totalarea, premisesguid, NULL livingroomguid, 'NonResidentialPremise' class FROM " + getName (NonResidentialPremise.class) + " WHERE is_deleted = 0 AND is_annuled = 0"
             + " UNION "
-            + "SELECT uuid id, uuid_house, 'блок ' || blocknum label,  blocknum apartmentnumber, NULL roomnumber, cadastralnumber, totalarea, 'Block' class FROM " + getName (Block.class) + " WHERE is_deleted = 0 AND is_annuled = 0"
+            + "SELECT uuid id, uuid_house, 'блок ' || blocknum label,  blocknum apartmentnumber, NULL roomnumber, cadastralnumber, totalarea, NULL premisesguid, NULL livingroomguid, 'Block' class FROM " + getName (Block.class) + " WHERE is_deleted = 0 AND is_annuled = 0"
             + " UNION "
             + "SELECT r.uuid id, r.uuid_house, "
                 + "CASE "
@@ -56,7 +56,7 @@ public class Premise extends View {
 		+ " ELSE p.premisesnum "
 		+ "END apartmentnumber "
 		+ ", r.roomnumber "
-                + ", r.cadastralnumber, r.square totalarea, 'LivingRoom' class "
+                + ", r.cadastralnumber, r.square totalarea, NULL premisesguid, livingroomguid, 'LivingRoom' class "
                 + "FROM " + getName (LivingRoom.class) + " r "
                 + " LEFT JOIN " + getName (ResidentialPremise.class) + " p ON r.uuid_premise = p.uuid "
                 + " LEFT JOIN " + getName (Block.class)              + " b ON r.uuid_block = b.uuid "
