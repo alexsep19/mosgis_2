@@ -5,6 +5,7 @@ import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
+import ru.eludia.products.mosgis.db.model.voc.VocAccountType;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportAccountRequest;
 
@@ -50,7 +51,8 @@ public class AccountLog extends GisWsLogTable {
         return result;
     }    
 
-    private static ImportAccountRequest.Account toAccount (Map<String, Object> r) { 
+    private static ImportAccountRequest.Account toAccount (Map<String, Object> r) {         
+        r.put (VocAccountType.i.forId (r.get ("r.id_type")).getFlagName (), 1);        
         final ImportAccountRequest.Account result = DB.to.javaBean (ImportAccountRequest.Account.class, r);
         return result;
     }

@@ -29,11 +29,11 @@ public class VocAccountType extends Table {
     
     public enum i {
         
-        UO  (1, "Лицевой счет для оплаты за жилое помещение и коммунальные услуги"),
-        RSO (2, "Лицевой счет для оплаты за коммунальные услуги"),
-        CRA (3, "Лицевой счет для оплаты капитального ремонта"),
-        OGV (4, "Лицевой счет ОГВ/ОМС"),
-        RCA (5, "Лицевой счет РКЦ"),
+        UO       (1, "Лицевой счет для оплаты за жилое помещение и коммунальные услуги"),
+        RSO      (2, "Лицевой счет для оплаты за коммунальные услуги"),
+        CR       (3, "Лицевой счет для оплаты капитального ремонта"),
+        OGVorOMS (4, "Лицевой счет ОГВ/ОМС"),
+        RC       (5, "Лицевой счет РКЦ"),
         ;
                 
         int    id;
@@ -74,6 +74,10 @@ public class VocAccountType extends Table {
             int id = Integer.parseInt (iD.toString ());
             for (i i: values ()) if (id == i.id) return i;
             throw new IllegalArgumentException ("Invalid VocXLFileType id: " + iD);
+        }
+        
+        public String getFlagName () {
+            return "is" + name ().toLowerCase () + "account";
         }
 
     }
