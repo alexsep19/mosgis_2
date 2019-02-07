@@ -10,6 +10,7 @@ import javax.ejb.MessageDriven;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.AccountLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.Account;
@@ -46,6 +47,7 @@ public class GisPollExportAccountMDB  extends GisPollMDB {
             .toOne (AccountLog.class, "AS log", "uuid", "action").on ("log.uuid_out_soap=root.uuid")
 
             .toOne (Account.class, "AS r"
+                , EnTable.c.UUID.lc ()
                 , Account.c.ID_CTR_STATUS.lc ()
             ).on ()
                 
