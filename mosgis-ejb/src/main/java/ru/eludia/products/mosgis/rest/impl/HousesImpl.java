@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,6 +24,7 @@ import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
+import ru.eludia.base.db.sql.gen.Join;
 import ru.eludia.base.db.sql.gen.Predicate;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
@@ -94,7 +96,12 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
     
     private void applyComplexSearch (final ComplexSearch search, Select select) {
 
-        //Predicate oktmo = search.getFilters ().get("oktmo");
+        Predicate oktmo = search.getFilters ().get("oktmo");
+        select.getJoins ().stream ()
+                .filter(x -> "vc_buildings".equals (x.getTableAlias ()))
+                .collect(Collectors.toList ())
+                .get (0)
+                .and("oktmo", oktmo);
         
         search.filter (select, "");
 
