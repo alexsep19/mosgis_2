@@ -44,7 +44,7 @@ define ([], function () {
 
         var data = clone ($('body').data ('data'))
 
-        data.active_tab = localStorage.getItem ('settlement_doc_common.active_tab') || 'settlement_doc_common_log'
+        data.active_tab = localStorage.getItem ('settlement_doc_common.active_tab') || 'settlement_doc_payments'
 
         data.__read_only = 1
 
