@@ -237,7 +237,9 @@ public class SupplyResourceContract extends EnTable {
 			+ "   IF :NEW.DDT_D_START IS NULL THEN raise_application_error (-20000, 'Необходимо заполнить поля \"Срок выставления платежных документов\", если заказчик - исполнитель коммунальных услуг. Операция отменена.'); END IF; "
 			+ "   IF :NEW.DDT_N_START IS NULL AND :NEW.countingresource = 1 THEN raise_application_error (-20000, 'Необходимо заполнить поля \"Срок предоставления информации о поступивших платежах\". Операция отменена.'); END IF; "
 			+ " ELSE "
-			+ "   IF :NEW.DDT_M_START IS NULL OR :NEW.DDT_M_END IS NULL THEN raise_application_error (-20000, 'Необходимо заполнить поля \"периода ввода показаний ПУ\". Операция отменена.'); END IF; "
+			+ "   IF (:NEW.volumedepends = 1 OR :NEW.mdinfo = 1) AND (:NEW.DDT_M_START IS NULL OR :NEW.DDT_M_END IS NULL) THEN "
+			+ "     raise_application_error (-20000, 'Необходимо заполнить поля \"периода ввода показаний ПУ\". Операция отменена.'); "
+			+ "   END IF; "
 			+ "   IF :NEW.DDT_I_START IS NULL THEN raise_application_error (-20000, 'Необходимо заполнить поля \"Срок внесения платы\", если заказчик - не исполнитель коммунальных услуг. Операция отменена.'); END IF; "
 			+ " END IF; "
 
