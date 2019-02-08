@@ -1,7 +1,7 @@
 package ru.eludia.products.mosgis.db.model;
 
 import java.util.Map;
-import java.util.UUID;
+import javax.json.JsonObject;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
@@ -57,6 +57,17 @@ public abstract class AttachTable extends EnTable {
         a.setAttachment (aa);
         aa.setAttachmentGUID (guid.toString ());
         return a;
+    }
+    
+    public static Map<String, Object> getBasicRecord (JsonObject file) {
+        
+        return DB.HASH (
+            c.LABEL,       file.getString ("label"),
+            c.DESCRIPTION, file.getString ("description", ""),
+            c.MIME,        file.getString ("type"),
+            c.LEN,         file.getInt    ("size")
+        );
+                
     }
     
     public static final AttachmentType toAttachmentType (Map<String, Object> r) {

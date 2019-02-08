@@ -32,6 +32,7 @@ public class AccountIndividualService extends AttachTable {
 
             switch (this) {
                 case UUID_ACCOUNT:
+                case ID_LOG:
                     return false;
                 default:
                     return true;                    

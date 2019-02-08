@@ -8,17 +8,20 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Base64;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.json.JsonObject;
+import javax.json.JsonValue;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.WebApplicationException;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
+import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.rest.api.AccountIndividualServicesLocal;
 import ru.eludia.products.mosgis.db.model.tables.AccountIndividualService;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
@@ -42,15 +45,15 @@ public class AccountIndividualServicesImpl extends BaseCRUD<AccountIndividualSer
                        
         db.begin ();
         
-            Object id = db.insertId (getTable (), HASH (
-                
-                "uuid_charter_payment",  file.getString ("uuid_charter_payment"),
-                "label",          file.getString ("label"),
-                "description",    file.getString ("description", ""),
-                "mime",           file.getString ("type"),
-                "len",            file.getInt    ("size")
-                
-            ));
+            Map<String, Object> r = AttachTable.getBasicRecord (file);
+            
+            for (AccountIndividualService.c col: AccountIndividualService.c.values ()) if (col != AccountIndividualService.c.ID_LOG) {
+                final String k = col.lc ();
+                String v = file.getString (k, null);
+                if (v != null) r.put (k, v);
+            }
+        
+            Object id = db.insertId (getTable (), r);
         
             job.add ("id", id.toString ());
 
