@@ -17,7 +17,7 @@ public class AccountIndividualService extends AttachTable {
         BEGINDATE              (DATE,                    "Дата начала представления услуги"),
         ENDDATE                (DATE,                    "Дата окончания представления услуги"),
 
-//        ID_LOG               (AccountIndividualServiceLog.class,  "Последнее событие редактирования")
+        ID_LOG               (AccountIndividualServiceLog.class,  "Последнее событие редактирования")
         
         ;
 
@@ -29,7 +29,14 @@ public class AccountIndividualService extends AttachTable {
 
         @Override
         public boolean isLoggable () {
-            return false;
+
+            switch (this) {
+                case UUID_ACCOUNT:
+                    return false;
+                default:
+                    return true;                    
+            }
+
         }
 
     }    
