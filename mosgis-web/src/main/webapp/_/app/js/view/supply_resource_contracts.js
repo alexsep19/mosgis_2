@@ -10,11 +10,13 @@ define ([], function () {
     if ($_USER.has_nsi_20(1, 19, 20, 21, 22))
         postData.uuid_org_customer = $_USER.uuid_org
 
+    var is_popup = 1 == $_SESSION.delete('supply_resource_contracts_popup.on')
+
     return function (data, view) {
 
-        $(w2ui ['rosters_layout'].el ('main')).w2regrid ({
+        $((w2ui ['popup_layout'] || w2ui ['rosters_layout']).el('main')).w2regrid({
 
-            name: 'supply_resource_contracts_grid',
+            name: 'supply_resource_contracts_grid' + (is_popup ? '_popup' : ''),
 
             show: {
                 toolbarSearch: true,
@@ -29,7 +31,7 @@ define ([], function () {
                         use.block('supply_resource_contract_new')
                     }
                 },
-                items: !is_owner ? [] : [
+                items: is_popup? [] : [
                     {
                         id: 'create',
                         type: 'menu',
@@ -40,7 +42,17 @@ define ([], function () {
                                 id: i.id,
                                 text: (i.id == 6? '' : 'Заказчик: ') + i.text
                             }
-                        })
+                        }),
+                        off: !is_owner
+                    },
+                    {
+                        id: 'settlement_docs',
+                        type: 'button',
+                        text: 'Информация о состоянии расчетов',
+                        onClick: function(e) {
+                            openTab('/settlement_docs')
+                        },
+                        off: !($_USER.is_building_society() || $_USER.has_nsi_20(1, 2))
                     }
                 ].filter (not_off),
             },
@@ -71,8 +83,6 @@ define ([], function () {
                             return true;
                     }
                 })}},
-//                {field: '???', caption: 'Вид коммунальной услуги', size: 10, voc: data.???},
-//                {field: '???', caption: 'Вид коммунального ресурса', size: 10, voc: data.???},
                 {field: 'id_customer_type', caption: 'Тип заказчика', type: 'enum', options: {
                         items: data.vc_gis_sr_customer_type.items
                 }},
@@ -117,10 +127,42 @@ define ([], function () {
 
             url: '/mosgis/_rest/?type=supply_resource_contracts',
 
+            onRequest: function (e) {
+
+                if (is_popup) {
+
+                    var post_data = this.post_data || $_SESSION.delete('supply_resource_contracts_popup.post_data');
+
+                    if (post_data) {
+
+                        if (e.postData.search) {
+                            $.each(e.postData.search, function () {
+                                post_data.search.push(this)
+                            })
+                        }
+
+                        $.extend(e.postData, post_data)
+
+                        this.post_data = post_data
+                    }
+                }
+            },
+
             onAdd:      $_DO.create_supply_resource_contracts,
 
             onDblClick: function (e) {
-                openTab ('/supply_resource_contract/' + e.recid)
+
+                var r = this.get (e.recid)
+
+                if (is_popup) {
+
+                    $_SESSION.set ('supply_resource_contracts_popup.data', clone (r))
+
+                    w2popup.close ()
+
+                } else {
+                    openTab ('/supply_resource_contract/' + e.recid)
+                }
             },
 
         }).refresh ();
