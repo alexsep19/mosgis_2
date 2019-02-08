@@ -64,6 +64,16 @@ define ([], function () {
 
     }
 
+    $_DO.approve_infrastructure_common = function (e) {
+        if (!confirm ('Разместить эти данные в ГИС ЖКХ?')) return
+        query ({type: 'infrastructures', action: 'approve'}, {}, reload_page)
+    }
+
+    $_DO.alter_infrastructure_common = function (e) {
+        if (!confirm ('Открыть эту карточку на редактирование?')) return
+        query ({type: 'infrastructures', action: 'alter'}, {}, reload_page)
+    }
+
     $_DO.cancel_infrastructure_common = function (e) {
         
         if (!confirm ('Отменить несохранённые правки?')) return
@@ -115,12 +125,20 @@ define ([], function () {
         if (!v.name) die ('name', 'Укажите, пожалуйста, наименование объекта')
         if (!v.code_vc_nsi_39) die ('code_vc_nsi_39', 'Укажите, пожалуйста, основание управления')
         if (!v.hasOwnProperty('indefinitemanagement')) die ('indefinitemanagement', 'Укажите, пожалуйста, признак бессрочности управления')
-        if (!v.indefinitemanagement && !v.endmanagmentdate) die ('endmanagmentdate', 'Укажите, пожалуйста, дату окончания управления')
+
+        if (v.indefinitemanagement == 0) {
+            if (!v.endmanagmentdate) die ('endmanagmentdate', 'Укажите, пожалуйста, дату окончания управления')
+        }
+        else v.endmanagmentdate = null
+
         if (!v.code_vc_nsi_33) die ('code_vc_nsi_33', 'Укажите, пожалуйста, вид объекта')
         if (!v.oktmo) die ('oktmo_code', 'Укажите, пожалуйста, код ОКТМО')
         if (!v.comissioningyear) die ('comissioningyear', 'Укажите, пожалуйста, год ввода в эксплуатацию')
-        if (!reg_year.test (v.comissioningyear) || v.comissioningyear < 1600) die ('comissioningyear', 'Указано неверное значение года ввода в эксплуатацию')
-        if (v.countaccidents && !reg_int.test (v.countaccidents)) die ('countaccidents', 'Указано неверное значение количества аварий на 100 км сетей')
+        if (!reg_year.test (v.comissioningyear) || v.comissioningyear < 1850) die ('comissioningyear', 'Указано неверное значение года ввода в эксплуатацию')
+        if (v.countaccidents) {
+            if (!reg_int.test (v.countaccidents) || v.countaccidents < 0 || v.countaccidents > 100) die ('countaccidents', 'Указано неверное значение количества аварий на 100 км сетей')
+        }
+        else v.countaccidents = undefined
         if (v.deterioration) {
             var deterioration = parseFloat (v.deterioration)
             if (isNaN (deterioration) || deterioration < 0 || deterioration > 100) die ('deterioration', 'Указано неверное значения уровня износа')
@@ -128,7 +146,10 @@ define ([], function () {
         }
 
         Object.keys(elements_nsi_33).forEach ((value, index, array) => {
-            if (elements_nsi_33[value][v.code_vc_nsi_33] && !v[value]) die (value, 'Указаны не все необходимые данные')
+            if (elements_nsi_33[value][v.code_vc_nsi_33]) {
+                if (!v[value]) die (value, 'Указаны не все необходимые данные')
+            }
+            else v[value] = null
         })
 
         v.code_vc_nsi_3 = w2ui ['code_vc_nsi_3_grid'].getSelection ()

@@ -101,9 +101,9 @@
 
 				</td>
 
-				<td valign=top data-on=cach>
+				<td valign=top>
 
-					<div class="w2ui-field">
+					<div class="w2ui-field" data-on=cach>
 						<label style="width:180px;">Управляющая организация:</label>
 						<div id="cach" class=name data-text=cach.org_label />
 					</div>
@@ -137,7 +137,7 @@
         	<span>
 				<button class=w2ui-btn name=edit   data-on=__read_only>Редактировать</button>
 				<button class=w2ui-btn name=send   data-on=__read_only data-question="Вы уверены, что хотите передать паспорт дома в ГИС ЖКХ?">Передать в ГИС ЖКХ</button>
-				<button class=w2ui-btn name=reload data-on=__read_only data-question="Все изменения, не переданные в ГИС ЖКХ, будут потеряны. Вы действительно хотите обновить данные из ГИС ЖКХ?">Обновить из ГИС ЖКХ</button>
+				<button class=w2ui-btn name=reload data-on=__read_only data-question="При обновлении сохранятся только отсутствующие в АСУ ЕИРЦ данные. Вы действительно хотите обновить данные из ГИС ЖКХ?">Обновить из ГИС ЖКХ</button>
 				<button class=w2ui-btn name=update data-off=__read_only>Сохранить</button>
 				<button class=w2ui-btn name=cancel data-off=__read_only>Отменить</button>
             </span>

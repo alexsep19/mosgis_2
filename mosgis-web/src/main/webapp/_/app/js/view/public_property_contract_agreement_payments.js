@@ -34,7 +34,6 @@ define ([], function () {
             case 10:
             case 11:
             case 14:
-            case 40:
                 t.enable ('edit')
                 break
             default:

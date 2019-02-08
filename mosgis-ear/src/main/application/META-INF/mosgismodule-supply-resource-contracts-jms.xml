@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<weblogic-jms xmlns="http://xmlns.oracle.com/weblogic/weblogic-jms" xmlns:sec="http://xmlns.oracle.com/weblogic/security" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wls="http://xmlns.oracle.com/weblogic/security/wls" xsi:schemaLocation="http://xmlns.oracle.com/weblogic/weblogic-jms http://xmlns.oracle.com/weblogic/weblogic-jms/1.1/weblogic-jms.xsd">
+ 
+ <!-- очередь обработки запросов на экспорт ДРСО -->
+ <uniform-distributed-queue name="inHouseSupplyResourceContractsQueue">
+   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+   <jndi-name>mosgis.inHouseSupplyResourceContractsQueue</jndi-name>
+   <delivery-params-overrides>
+       <time-to-deliver>2000</time-to-deliver>
+       <redelivery-delay>10000</redelivery-delay>
+   </delivery-params-overrides>
+ </uniform-distributed-queue>
+ 
+ <!-- очередь опроса статуса исходящих запросов на ДРСО -->
+ <uniform-distributed-queue name="outExportHouseSupplyResourceContractsQueue">
+   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>    
+   <jndi-name>mosgis.outExportHouseSupplyResourceContractsQueue</jndi-name>
+   <delivery-params-overrides>
+       <time-to-deliver>2000</time-to-deliver>
+       <redelivery-delay>10000</redelivery-delay>
+   </delivery-params-overrides>
+ </uniform-distributed-queue> 
+ 
+ <!-- очередь обработки запросов на экспорт документов, приложенных к ДРСО -->
+ <uniform-distributed-queue name="inHouseSupplyResourceContractFilesQueue">
+     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+     <jndi-name>mosgis.inHouseSupplyResourceContractFilesQueue</jndi-name>
+ </uniform-distributed-queue>
+</weblogic-jms>

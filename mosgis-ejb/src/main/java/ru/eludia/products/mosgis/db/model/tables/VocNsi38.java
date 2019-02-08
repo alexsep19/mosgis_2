@@ -9,6 +9,7 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.Type.BOOLEAN;
 import static ru.eludia.base.model.Type.STRING;
+import static ru.eludia.base.model.Type.UUID;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
@@ -24,6 +25,8 @@ public class VocNsi38 extends EnTable {
         F_674707B1DD (STRING, null, "Вид тепловой электростанции"),
         
         LABEL        (STRING, new Virt ("DECODE (\"F_674707B1DD\", NULL, \"F_415A4B3285\", \"F_415A4B3285\"||' ('|| \"F_674707B1DD\" ||')')"), "Полное наименование вида электростанции"),
+        
+        GUID         (UUID, "Глобально-уникальный идентификатор элемента справочника"),
         
         ISACTUAL     (BOOLEAN, "Актуально")
         

@@ -48,6 +48,20 @@ define ([], function () {
 
                 $('body').data ('data', data)
 
+                var vc_nsi_2_filtered = {}
+
+                data.vc_nsi_3.items.filter (x => data.item.codes_nsi_3.indexOf (x.id) >= 0)
+                                   .forEach ((value, index, array) => {
+                                        
+                                        var code = value.nsi_2
+                                        vc_nsi_2_filtered[code] = data.vc_nsi_2[value.nsi_2]
+
+                                   })
+
+                vc_nsi_2_filtered.items = data.vc_nsi_2.items.filter (x => Object.keys (vc_nsi_2_filtered).find (y => x.id == y))
+
+                data.vc_nsi_2_filtered = vc_nsi_2_filtered
+
                 function perms () {
 
                     if ((data.item.id_is_status != 10 && data.item.id_is_status != 11) || data.item.is_deleted)
@@ -63,7 +77,7 @@ define ([], function () {
 
                         if (data.item.manageroki == $_USER.uuid_org) {
 
-                            if (!data.item.oktmo || data.item.oktmo_code in oktmos) return true
+                            if (!data.item.oktmo || oktmos.find (x => x == data.item.oktmo_code)) return true
 
                         }
 
@@ -83,12 +97,27 @@ define ([], function () {
 
                 data.item._can = {
                     edit: mod_perms,
+                    approve: mod_perms,
                     update: mod_perms,
                     cancel: mod_perms,
                     delete: mod_perms,
                 }
+
+                if (!data.item.is_deleted) {
+
+                    switch (data.item.id_is_status) {
+                        case 14:
+                        case 34:
+                            it._can.alter = 1
+                    } 
+
+                }            
                                
                 data.item.okitype = data.vc_nsi_33[data.item.code_vc_nsi_33]
+                data.item.is_object = data.vc_nsi_33.items.find (x => x.id == data.item.code_vc_nsi_33).is_object
+
+                data.item.status_label = data.vc_gis_status[data.item.id_is_status_gis]
+                data.item.err_text = data.item['out_soap.err_text']
 
                 done (data)
 

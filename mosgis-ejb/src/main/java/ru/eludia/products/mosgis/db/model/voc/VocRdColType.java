@@ -3,8 +3,6 @@ package ru.eludia.products.mosgis.db.model.voc;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.Table;
-import static ru.eludia.base.model.def.Bool.FALSE;
-import ru.eludia.base.model.def.Def;
 
 public class VocRdColType extends Table {
 
@@ -89,7 +87,7 @@ public class VocRdColType extends Table {
             switch (this) {
                 case TEXT:  return new Col (name, Type.STRING,   null, remark);
                 case INT:   return new Col (name, Type.INTEGER, null,  remark);
-                case BOOL:  return new Col (name, Type.BOOLEAN, FALSE, remark);
+                case BOOL:  return new Col (name, Type.BOOLEAN, null, remark);
                 case FLOAT: return new Col (name, Type.NUMERIC, 19, 4, null, remark);
                 case YEAR:  return new Col (name, Type.INTEGER, 4, null, remark);
                 case TIME:  return new Col (name, Type.DATE, null, remark);

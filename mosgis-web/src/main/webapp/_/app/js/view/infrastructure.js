@@ -16,6 +16,9 @@ define ([], function () {
 
                         tabs: [
                             {id: 'infrastructure_common',   caption: 'Общие'},
+                            {id: 'infrastructure_resources', caption: 'Мощности объекта', off: !data.item.is_object},
+                            {id: 'infrastructure_net_pieces', caption: 'Участки сети', off: data.item.is_object},
+                            {id: 'infrastructure_transportation_resources', caption: 'Передача коммунальных ресурсов', off: data.item.is_object},
                             {id: 'infrastructure_docs', caption: 'Документы'},
                             {id: 'infrastructure_common_log', caption: 'История изменений'},
                         ].filter (not_off),

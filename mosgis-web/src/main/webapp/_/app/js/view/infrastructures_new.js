@@ -17,6 +17,7 @@ define ([], function () {
             $manageroki_label.val ($_USER.label_org)
             $manageroki.val ($_USER.uuid_org)
             $manageroki.change ()
+            $manageroki_label.change ()
         }
 
         if (f.record.indefinitemanagement.id) {
@@ -51,7 +52,9 @@ define ([], function () {
                     {name: 'name', type: 'text'},
                     {name: 'manageroki', type: 'hidden'},
                     {name: 'manageroki_label', type: 'text'},
-                    {name: 'code_vc_nsi_39', type: 'list', options: {items: data.vc_nsi_39.items}}, 
+                    {name: 'oktmo', type: 'hidden'},
+                    {name: 'oktmo_code', type: 'text'},
+                    {name: 'code_vc_nsi_39', type: 'list', options: {items: data.vc_nsi_39.items}},
                     {name: 'indefinitemanagement', type: 'list', options: {items: [
                         {id: 0, text: 'Нет'},
                         {id: 1, text: 'Да'}
@@ -74,6 +77,7 @@ define ([], function () {
                 onRefresh: function (e) {e.done (function () {
                 
                     clickOn ($('#manageroki_label'), $_DO.open_orgs_infrastructure_popup)
+                    clickOn ($('#oktmo_code'), $_DO.open_oktmo_popup)
                 
                 })}
 

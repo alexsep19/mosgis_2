@@ -7,7 +7,6 @@ import ru.eludia.base.model.def.Bool;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -109,9 +108,14 @@ public class PublicPropertyContract extends EnTable {
                 + "; END IF; "
                         
                 + "IF :NEW.is_deleted=0 AND :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING.getId () + " THEN BEGIN "
-                        
+
+                    + " IF :NEW.isgratuitousbasis=1 THEN raise_application_error (-20000, 'Отправка в ГИС ЖКХ договоров безвозмездного пользования временно недоступна. Операция отменена.'); END IF; "
+
                     + " IF :NEW.ENDDATE<SYSDATE THEN raise_application_error (-20000, 'Для договора указанная дата окончания действия меньше текущей даты. Договоры с истекшим сроком действия не размещаются'); END IF; "
-                        
+
+                    + " SELECT COUNT(*) INTO cnt FROM tb_houses WHERE fiashouseguid=:NEW.fiashouseguid AND gis_guid IS NOT NULL; "
+                    + " IF cnt<>1 THEN raise_application_error (-20000, 'Первоначально необходимо разместить паспорт дома в ГИС ЖКХ. Операция отменена.'); END IF; "
+
                     + " SELECT COUNT(*) INTO cnt FROM vw_ca_ch_objects WHERE FIASHOUSEGUID=:NEW.FIASHOUSEGUID; "
                     + " IF cnt=0 THEN FOR i IN (SELECT label FROM vc_buildings WHERE houseguid=:NEW.FIASHOUSEGUID) LOOP "
                         + "raise_application_error (-20000, 'Для адреса дома '||i.label||' не указан действующий договор управления/устав'); "

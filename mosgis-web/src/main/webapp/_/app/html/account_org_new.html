@@ -1,0 +1,68 @@
+<span
+	data-popup-width=540
+	data-popup-height=285
+	data-popup-title='ЛС юридического лица'
+>
+
+	<style>
+
+        label[data-block-name=account_org_new] {
+        	width: 150px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=account_org_new] {
+        	width: 320px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Номер л/счёта</label>
+                <div>
+                	<input name=accountnumber maxlength=30>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Плательщик</label>
+                <div>
+					<input name=uuid_org_customer type=hidden>
+					<input name=label_org_customer readonly>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Является нанимателем?</label>
+                <div>
+                	<input name=isrenter>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Счета разделены?</label>
+                <div>
+                	<input name=isaccountsdivided>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Общая площадь, м<sup>2</sup></label>
+                <div>
+                	<input name=totalsquare maxlength=26>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>

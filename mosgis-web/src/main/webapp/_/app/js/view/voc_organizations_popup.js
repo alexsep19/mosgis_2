@@ -23,7 +23,9 @@ define ([], function () {
 
                 onRender: function (e) {
                     $_SESSION.set ('voc_organizations_popup.on', 1)
-                    $_SESSION.set ('voc_organization_popup.post_data', postdata)
+                    if (postdata) {
+                        $_SESSION.set('voc_organization_popup.post_data', postdata)
+                    }
                     use.block ('voc_organizations')
                 },
                 

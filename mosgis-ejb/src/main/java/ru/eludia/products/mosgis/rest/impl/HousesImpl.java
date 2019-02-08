@@ -614,7 +614,7 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
         final Table table = getTable ();
 
         Map<String, Object> data = getData (p);
-        data.put("id_status", VocGisStatus.i.PENDING_RQ_RELOAD.getId());
+        data.put("id_status_gis", VocGisStatus.i.PENDING_RQ_RELOAD.getId());
 
         db.upsert (table, data, FIASHOUSEGUID);
 

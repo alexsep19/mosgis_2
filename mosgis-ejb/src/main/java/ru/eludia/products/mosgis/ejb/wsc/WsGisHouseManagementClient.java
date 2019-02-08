@@ -19,9 +19,11 @@ import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.util.JDBCConsumer;
 import ru.eludia.base.db.util.TypeConverter;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.AccountLog;
 import ru.eludia.products.mosgis.db.model.tables.AgreementPaymentLog;
 import ru.eludia.products.mosgis.db.model.tables.Block;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
+import ru.eludia.products.mosgis.db.model.tables.CharterLog;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.CharterPayment;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
@@ -35,6 +37,7 @@ import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContractLog;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocolLog;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
@@ -325,7 +328,7 @@ public class WsGisHouseManagementClient {
             //ЖД
             ImportHouseUORequest.LivingHouse house = new ImportHouseUORequest.LivingHouse();
             importHouseUORequest.setLivingHouse(house);
-            if (r.get("house.gis_unique_number") == null) {
+            if (StringUtils.isBlank((String)r.get("house.gis_unique_number"))) {
                 //Создание
                 ImportHouseUORequest.LivingHouse.LivingHouseToCreate livingHouse
                         = TypeConverter.javaBean(ImportHouseUORequest.LivingHouse.LivingHouseToCreate.class, r);
@@ -343,7 +346,7 @@ public class WsGisHouseManagementClient {
             ((Collection<Map<String, Object>>) r.get("livingrooms")).forEach((item) -> LivingRoom.add(house, item));
         }
         
-        return getPort (orgPPAGuid, messageGUID).importHouseUOData(importHouseUORequest).getAck ();       
+        return getPort (orgPPAGuid, messageGUID).importHouseUOData(importHouseUORequest).getAck ();
     }
     
     public AckRequest.Ack importHouseOMSData (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
@@ -600,14 +603,7 @@ public class WsGisHouseManagementClient {
     }
 
     public AckRequest.Ack annulCharterData (UUID orgPPAGuid, UUID messageGUID,  Map<String, Object> r) throws Fault {
-        
-        final ImportCharterRequest.AnnulmentCharter ac = (ImportCharterRequest.AnnulmentCharter) DB.to.javaBean (ImportCharterRequest.AnnulmentCharter.class, r);
-        ac.setCharterVersionGUID (r.get ("ctr.charterversionguid").toString ());        
-        ImportCharterRequest importCharterRequest = of.createImportCharterRequest ();
-        importCharterRequest.setAnnulmentCharter (new ImportCharterRequest.AnnulmentCharter ());
-        importCharterRequest.setTransportGUID (UUID.randomUUID ().toString ());
-        return getPort (orgPPAGuid, messageGUID).importCharterData (importCharterRequest).getAck ();
-        
+        return getPort (orgPPAGuid, messageGUID).importCharterData (CharterLog.toAnnul (r)).getAck ();        
     }
     
     public AckRequest.Ack exportCharterData (UUID orgPPAGuid, UUID messageGUID, List<UUID> ids) throws Fault {
@@ -716,4 +712,12 @@ public class WsGisHouseManagementClient {
         return getPort (orgPPAGuid, messageGUID).importPublicPropertyContract (AgreementPaymentLog.toImportPublicPropertyContractAnnulRequest (r)).getAck ();
     }
 
+    public AckRequest.Ack importSupplyResourceContract(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+	return getPort(orgPPAGuid, messageGUID).importSupplyResourceContractData(SupplyResourceContractLog.toImportSupplyResourceContractRequest(r)).getAck();
+    }
+    
+    public AckRequest.Ack importAccountData (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort(orgPPAGuid, messageGUID).importAccountData (AccountLog.toImportAccountRequest (r)).getAck ();
+    }
+    
 }

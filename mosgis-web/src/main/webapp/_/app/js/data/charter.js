@@ -88,7 +88,21 @@ define ([], function () {
                                     it._can.refresh = 1
                                     it._can.reload = 1
                             }
-                    }                    
+                    }              
+                    
+                    switch (it.id_ctr_status) {
+                        case 11:
+                        case 34:
+                        case 40:
+                        case 42:
+                        case 43:                        
+                        case 92:
+                        case 93:
+                        case 94:
+                        case 100:
+                            it._can.create_account   = 1
+                            break;
+                    }
 
                     if (!it.contractobjectversionguid) it._can.delete = 1
 

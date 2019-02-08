@@ -67,6 +67,20 @@ define ([], function () {
                             break;
                     }
                     
+                    switch (it.id_ctr_status) {
+                        case 11:
+                        case 34:
+                        case 40:
+                        case 42:
+                        case 43:                        
+                        case 92:
+                        case 93:
+                        case 94:
+                        case 100:
+                            it._can.create_account   = 1
+                            break;
+                    }
+                                        
                     if (it.id_ctr_state_gis == 50) {
                     
                         switch (it.id_ctr_status) {

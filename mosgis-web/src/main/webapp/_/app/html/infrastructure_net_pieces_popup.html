@@ -1,0 +1,79 @@
+<span
+	data-popup-width=580
+	data-popup-height=350
+	data-popup-title='Участок сети'
+>
+
+	<style>
+
+        label[data-block-name=infrastructure_net_pieces_popup] {
+        	width: 200px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=infrastructure_net_pieces_popup] {
+        	width: 320px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:300px ">
+
+        <div class="w2ui-page page-0" style="height:300px;">
+
+            <div class="w2ui-field">
+                <label>Уровень давления газопровода:</label>
+                <div>
+                    <input name=code_vc_nsi_36>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Уровень напряжения:</label>
+                <div>
+                    <input name=code_vc_nsi_45>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Наименование:</label>
+                <div>
+                	<input name=name maxlength=140>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Диаметр:</label>
+                <div>
+                    <input name=diameter maxlength=10>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Длина:</label>
+                <div>
+                    <input name=length maxlength=10>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Нуждается в замене:</label>
+                <div>
+                    <input name=needreplaced maxlength=10>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Уровень износа:</label>
+                <div>
+                    <input name=wearout maxlength=4>
+                </div>
+            </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>

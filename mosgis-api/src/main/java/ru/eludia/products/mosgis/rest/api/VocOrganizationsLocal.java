@@ -18,4 +18,8 @@ public interface VocOrganizationsLocal extends CRUDBackend {
     JsonObject doRefresh    (String id, User user);
     JsonObject doPatch      (String id, JsonObject p, User user);
     JsonObject doPatchHours (String id, JsonObject p);
+    JsonObject doImportMgmtContracts (String id, User user);
+    JsonObject doImportAddServices   (String id, User user);
+    JsonObject doImportCharters      (String id, User user);
+    
 }

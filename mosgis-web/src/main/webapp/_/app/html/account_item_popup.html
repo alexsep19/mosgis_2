@@ -1,0 +1,57 @@
+<span
+	data-popup-width=540
+	data-popup-height=225
+	data-popup-title='ЛС / помещение'
+>
+
+	<style>
+
+        label[data-block-name=account_item_popup] {
+        	width: 150px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=account_item_popup] {
+        	width: 320px !important;
+        }
+
+        input.short[data-block-name=account_item_popup] {
+        	width: 50px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Адрес</label>
+                <div>
+                	<input name=fiashouseguid>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Помещение</label>
+                <div>
+                	<input name=uuid_premise>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Доля, %</label>
+                <div>
+                	<input name=sharepercent maxlength=6 class=short>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>

@@ -23,16 +23,37 @@ import javax.ws.rs.client.WebTarget;
 import static javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM;
 import javax.ws.rs.core.Response;
 import java.util.Base64;
+import javax.annotation.Resource;
+import javax.ejb.EJB;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.jms.Queue;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.bind.DatatypeConverter;
 import ru.eludia.base.DB;
+import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.jmx.Conf;
 
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class RestGisFilesClient {
+    
+    @EJB
+    public UUIDPublisher uuidPublisher;
+
+    @Resource (mappedName = "mosgis.outExportHouseMgmtContractFilesQueue")
+    Queue outExportHouseMgmtContractFilesQueue;    
+    
+    @Resource (mappedName = "mosgis.outExportHouseCharterFilesQueue")
+    Queue outExportHouseCharterFilesQueue;    
+    
+    Queue getQueue (boolean isCharter) {
+        return isCharter ? outExportHouseCharterFilesQueue : outExportHouseMgmtContractFilesQueue;
+    }    
+    
+    public void download (final UUID uuid, boolean isCharter) {
+        uuidPublisher.publish (getQueue (isCharter), uuid);
+    }
     
     private class Authenticator implements ClientRequestFilter {
 
