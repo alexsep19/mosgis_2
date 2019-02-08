@@ -73,4 +73,26 @@ public class SettlementDocs extends EJBResource <SettlementDocLocal> {
     public JsonObject getVocs (JsonObject p) {
         return back.getVocs (p);
     }
+
+    @POST
+    @Path("{id}/approve")
+    @Produces(APPLICATION_JSON)
+    public JsonObject doApprove(@PathParam("id") String id) {
+	return back.doApprove(id, getUser());
+    }
+
+    @POST
+    @Path("{id}/alter")
+    @Produces(APPLICATION_JSON)
+    public JsonObject doAlter(@PathParam("id") String id, JsonObject p) {
+	return back.doAlter(id, p, getUser());
+    }
+
+    @POST
+    @Path("{id}/annul")
+    @Consumes(APPLICATION_JSON)
+    @Produces(APPLICATION_JSON)
+    public JsonObject doAnnul(@PathParam("id") String id, JsonObject p) {
+	return back.doAnnul(id, p, getUser());
+    }
 }

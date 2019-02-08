@@ -19,11 +19,11 @@ define ([], function () {
 
             var $row = $('input[name=credited]')
             var o = {
-                form: 233,
-                page: 244,
-                box: 246,
-                popup: 278,
-                'form-box': 233,
+                form: 263,
+                page: 274,
+                box: 276,
+                popup: 308,
+                'form-box': 263,
             }
 
             for (var k in o)
@@ -45,6 +45,7 @@ define ([], function () {
                     {name: 'credited', type: 'float', options: {precision: 2}},
                     {name: 'receipt', type: 'float', options: {precision: 2}},
                     {name: 'debts', type: 'float', options: {precision: 2}},
+                    {name: 'overpayment', type: 'float', options: {precision: 2}},
                     {name: 'paid', type: 'float', options: {precision: 2}},
 
                 ],

@@ -12,6 +12,7 @@ import javax.jws.HandlerChain;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
 import ru.eludia.base.DB;
+import ru.eludia.products.mosgis.db.model.tables.SettlementDocLog;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ws.base.LoggingOutMessageHandler;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
@@ -41,7 +42,16 @@ public class WsGisBillsClient {
         ((BindingProvider)port).getRequestContext ().put (LoggingOutMessageHandler.FIELD_ORG_PPA_GUID, orgPPAGuid);
         return port;
     }    
-    
+
+    private ru.gosuslugi.dom.schema.integration.bills_service_async.BillsPortsTypeAsync getPort(UUID orgPPAGuid, UUID messageGUID) {
+	ru.gosuslugi.dom.schema.integration.bills_service_async.BillsPortsTypeAsync port = service.getBillsPortAsync();
+	VocSetting.setPort(port, "WS_GIS_BILLS");
+	final Map<String, Object> requestContext = ((BindingProvider) port).getRequestContext();
+	requestContext.put(LoggingOutMessageHandler.FIELD_MESSAGE_GUID, messageGUID);
+	requestContext.put(LoggingOutMessageHandler.FIELD_ORG_PPA_GUID, orgPPAGuid);
+	return port;
+    }
+
     public GetStateResult getState (UUID orgPPAGuid, UUID uuid) throws Fault {
         GetStateRequest getStateRequest = new GetStateRequest ();
         getStateRequest.setMessageGUID (uuid.toString ());
@@ -88,5 +98,12 @@ public class WsGisBillsClient {
         return getPort (orgPPAGuid).importInsuranceProduct (rq).getAck ();
         
     }
-    
+
+    public AckRequest.Ack importSettlementDocRSO(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+	return getPort(orgPPAGuid, messageGUID).importRSOSettlements(SettlementDocLog.toImportRSOSettlementsRequest(r)).getAck();
+    }
+
+    public AckRequest.Ack importSettlementDocUO(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+	return getPort(orgPPAGuid, messageGUID).importIKUSettlements(SettlementDocLog.toImportIKUSettlementsRequest(r)).getAck();
+    }
 }

@@ -46,5 +46,10 @@
         <name>Workflow-accounts</name>
         <path>META-INF/mosgismodule-accounts-jms.xml</path>
     </module>
-    
+
+    <module>
+	<type>JMS</type>
+	<name>Workflow-settlement-docs</name>
+	<path>META-INF/mosgismodule-settlement-docs-jms.xml</path>
+    </module>
 </weblogic-application>

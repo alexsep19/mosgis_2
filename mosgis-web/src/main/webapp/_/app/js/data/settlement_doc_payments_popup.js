@@ -27,11 +27,17 @@ define ([], function () {
             if (!(v.receipt >= 0)) die('receipt', 'В поле "Оплачено за период" должна быть указана неотрицательная денежная сумма')
 
             v.debts = parseFloat (v.debts)
-            if (!((v.debts >= 0) || (v.debts < 0))) die ('debts', 'В поле "Задолженность" должна быть указана положительная, отрицательная или нулевая денежная сумма')
+            if (!(v.debts >= 0))
+                die ('debts', 'В поле "Задолженность" должна быть указана положительная или нулевая денежная сумма')
+
+            v.overpayment = parseFloat(v.overpayment)
+            if (!(v.overpayment >= 0))
+                die('overpayment', 'В поле "Переплата" должна быть указана положительная или нулевая денежная сумма')
         } else {
             delete v.credited
             delete v.receipt
             delete v.debts
+            delete v.overpayment
         }
 
         v.paid = parseFloat (v.paid)
@@ -65,6 +71,8 @@ define ([], function () {
             year: now.getFullYear(),
             month: month(1 + now.getMonth())
         }
+
+        data.record.debts = data.record.overpayment? data.record.overpayment : -data.record.debts
 
         data.months = []
         for (var i = 1; i <= 12; i ++) data.months.push(month(i))

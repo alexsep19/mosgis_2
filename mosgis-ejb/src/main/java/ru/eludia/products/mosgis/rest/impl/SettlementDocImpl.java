@@ -1,11 +1,15 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.util.Map;
 import java.util.logging.Logger;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.jms.Queue;
 import javax.json.JsonObject;
 import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Select;
@@ -27,6 +31,14 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class SettlementDocImpl extends BaseCRUD<SettlementDoc> implements SettlementDocLocal {
+
+    @Resource(mappedName = "mosgis.inSettlementDocsQueue")
+    Queue queue;
+
+    @Override
+    public Queue getQueue() {
+	return queue;
+    }
 
     private static final Logger logger = Logger.getLogger (SettlementDocImpl.class.getName ());
 
@@ -111,4 +123,61 @@ public class SettlementDocImpl extends BaseCRUD<SettlementDoc> implements Settle
     public JsonObject getVocs (JsonObject p) {return fetchData((db, job) -> {
 
     });}
+
+    @Override
+    protected void publishMessage(VocAction.i action, String id_log) {
+
+	switch (action) {
+	case APPROVE:
+    //	    case ANNUL:
+	    super.publishMessage(action, id_log);
+	default:
+	    return;
+	}
+
+    }
+
+    @Override
+    public JsonObject doApprove(String id, User user) {
+	return doAction((db) -> {
+
+	    db.update(getTable(), HASH(
+		EnTable.c.UUID, id,
+		SettlementDoc.c.ID_SD_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId()
+	    ));
+
+	    logAction(db, user, id, VocAction.i.APPROVE);
+	});
+    }
+
+    @Override
+    public JsonObject doAlter(String id, JsonObject p, User user) {
+	return doAction((db) -> {
+
+	    final Map<String, Object> r = HASH(
+		EnTable.c.UUID, id,
+		SettlementDoc.c.ID_SD_STATUS, VocGisStatus.i.PROJECT.getId()
+	    );
+
+	    db.update(getTable(), r);
+
+	    logAction(db, user, id, VocAction.i.ALTER);
+	});
+    }
+
+    @Override
+    public JsonObject doAnnul(String id, JsonObject p, User user) {
+
+	return doAction((db) -> {
+
+	    db.update(getTable(), getData(p,
+		EnTable.c.UUID, id,
+		SettlementDoc.c.ID_SD_STATUS, VocGisStatus.i.PENDING_RQ_ANNULMENT.getId(),
+		SettlementDoc.c.REASONOFANNULMENT, p.getJsonObject("data").getString(SupplyResourceContract.c.REASONOFANNULMENT.lc())
+	    ));
+
+	    logAction(db, user, id, VocAction.i.ANNUL);
+
+	});
+    }
 }
