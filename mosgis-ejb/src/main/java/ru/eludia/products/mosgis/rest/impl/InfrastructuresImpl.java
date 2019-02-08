@@ -3,9 +3,11 @@ package ru.eludia.products.mosgis.rest.impl;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.jms.Queue;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
@@ -17,10 +19,13 @@ import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.Infrastructure;
 import ru.eludia.products.mosgis.db.model.tables.InfrastructureNsi3;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.tables.VocNsi33;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi38;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi40;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -39,15 +44,32 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements InfrastructuresLocal {
-
-    private final String LABEL_FIELD_NAME_NSI_33 = "f_c8e745bc63";
-    private final String TYPE_FIELD_NAME_NSI_33 = "f_995a303098";
     
     private final String LABEL_FIELD_NAME_NSI_3 = "f_d966dd6cbc";
     private final String NSI_2_REF_FIELD_NAME_NSI_3 = "f_1587117ecc";
     
     private final String LABEL_FIELD_NAME_NSI_2 = "f_c8d77ddad5";
     private final String OKEI_FIELD_NAME_NSI_2 = "f_c6e5a29665";
+    
+    @Resource (mappedName = "mosgis.inInfrastructuresQueue")
+    Queue queue;
+
+    @Override
+    public Queue getQueue () {
+        return queue;
+    }
+
+    @Override
+    protected void publishMessage (VocAction.i action, String id_log) {
+        
+        switch (action) {
+            case APPROVE:
+                super.publishMessage (action, id_log);
+            default:
+                return;
+        }
+        
+    }
     
     private void filterOffDeleted (Select select) {
         select.and ("is_deleted", 0);
@@ -105,7 +127,8 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
 
         final MosGisModel model = ModelHolder.getModel ();
         
-        final Select get = model.get (getTable (), id, "*");
+        final Select get = model.get (getTable (), id, "*")
+                .toMaybeOne (OutSoap.class, "err_text").on ();
         
         QP qp = db.toQP (get);
         
@@ -139,7 +162,6 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
         
         NsiTable nsi_2  = NsiTable.getNsiTable (2);
         NsiTable nsi_3  = NsiTable.getNsiTable (3);
-        NsiTable nsi_33 = NsiTable.getNsiTable (33);
         NsiTable nsi_34 = NsiTable.getNsiTable (34);
         NsiTable nsi_35 = NsiTable.getNsiTable (35);
         NsiTable nsi_36 = NsiTable.getNsiTable (36);
@@ -164,6 +186,7 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
                 nsi_41.getVocSelect (),
                 nsi_45.getVocSelect (),
                 
+                VocNsi33.getVocSelect (),
                 VocNsi38.getVocSelect (),
                 VocNsi40.getVocSelect (),
                 
@@ -177,12 +200,6 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
                     .toOne   (nsi_2, "code AS nsi_2").on (nsi_3.getName () + "." + NSI_2_REF_FIELD_NAME_NSI_3 + "=" + nsi_2.getName () + ".guid")
                     .where   ("is_actual", 1)
                     .orderBy (nsi_3.getName () + ".code"),
-                
-                model
-                    .select  (nsi_33, "code AS id", LABEL_FIELD_NAME_NSI_33 + " AS label", TYPE_FIELD_NAME_NSI_33 + " AS type")
-                    .where   (LABEL_FIELD_NAME_NSI_33 + " IS NOT NULL")
-                    .and     ("isactual", 1)
-                    .orderBy ("code"),
                     
                 model
                     .select  (VocGisStatus.class, "id", "label")
@@ -232,14 +249,40 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
     @Override
     public JsonObject doUpdate (String id, JsonObject p, User user) {return doAction ((db) -> {
         
+        setNsi3 (db, id, p);
+        
         db.update (getTable (), getData (p,
             "uuid", id
         ));
-        
-        setNsi3 (db, id, p);
 
         logAction (db, user, id, VocAction.i.UPDATE);
                         
+    });}
+
+    @Override
+    public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
+
+        db.update (getTable (), HASH (
+            EnTable.c.UUID,               id,
+            Infrastructure.c.ID_IS_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+        ));
+
+        logAction (db, user, id, VocAction.i.APPROVE);
+
+    });}
+    
+    @Override
+    public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
+                
+        final Map<String, Object> r = HASH (
+            EnTable.c.UUID,               id,
+            Infrastructure.c.ID_IS_STATUS,  VocGisStatus.i.PROJECT.getId ()
+        );
+                
+        db.update (getTable (), r);
+        
+        logAction (db, user, id, VocAction.i.ALTER);
+        
     });}
     
 }

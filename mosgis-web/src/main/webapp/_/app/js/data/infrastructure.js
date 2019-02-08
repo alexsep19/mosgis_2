@@ -97,13 +97,27 @@ define ([], function () {
 
                 data.item._can = {
                     edit: mod_perms,
+                    approve: mod_perms,
                     update: mod_perms,
                     cancel: mod_perms,
                     delete: mod_perms,
                 }
+
+                if (!data.item.is_deleted) {
+
+                    switch (data.item.id_is_status) {
+                        case 14:
+                        case 34:
+                            it._can.alter = 1
+                    } 
+
+                }            
                                
                 data.item.okitype = data.vc_nsi_33[data.item.code_vc_nsi_33]
-                data.item.is_object = data.vc_nsi_33.items.find (x => x.id == data.item.code_vc_nsi_33).type == "Объект"
+                data.item.is_object = data.vc_nsi_33.items.find (x => x.id == data.item.code_vc_nsi_33).is_object
+
+                data.item.status_label = data.vc_gis_status[data.item.id_is_status_gis]
+                data.item.err_text = data.item['out_soap.err_text']
 
                 done (data)
 

@@ -8,8 +8,10 @@ import static ru.eludia.base.model.Type.DATE;
 import static ru.eludia.base.model.Type.INTEGER;
 import static ru.eludia.base.model.Type.NUMERIC;
 import static ru.eludia.base.model.Type.STRING;
+import static ru.eludia.base.model.Type.UUID;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -20,6 +22,9 @@ public class Infrastructure extends EnTable {
         
         ID_IS_STATUS            (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус объекта инфраструктуры с точки зрения mosgis"),
         ID_IS_STATUS_GIS        (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус объекта инфраструктуры с точки зрения ГИС ЖКХ"),
+        
+        UNIQUENUMBER            (STRING, null, "Уникальный реестровый номер в ГИС"),
+        OKIGUID                 (UUID, null, "Идентификатор в ГИС"),
         
         NAME                    (STRING, 140, "Наименование объекта"),
         
@@ -48,6 +53,7 @@ public class Infrastructure extends EnTable {
         
         ADDINFO                 (STRING, 2000, null, "Дополнительная информация"),
         
+        ID_OUT_SOAP             (OutSoap.class, "Последнее событие импорта"),
         ID_LOG                  (InfrastructureLog.class, "Последнее событие редактирования")
         
         ;
@@ -93,6 +99,114 @@ public class Infrastructure extends EnTable {
                 + "END; "
         );
         
+        trigger ("BEFORE UPDATE", ""
+                + "DECLARE "
+                    + "cnt NUMBER; "
+                + "BEGIN "
+                    + "IF :NEW.ID_IS_STATUS <> :OLD.ID_IS_STATUS "
+                        + " AND :OLD.ID_IS_STATUS <> " + VocGisStatus.i.FAILED_PLACING.getId ()
+                        + " AND :NEW.ID_IS_STATUS =  " + VocGisStatus.i.PROJECT.getId ()
+                    + " THEN "
+                        + " :NEW.ID_IS_STATUS := " + VocGisStatus.i.MUTATING.getId ()
+                    + "; END IF; "
+                            
+                    + "IF :NEW.code_vc_nsi_33 <> :OLD.code_vc_nsi_33 THEN BEGIN "
+                        + "SELECT COUNT(*) INTO cnt FROM vc_nsi_33 nsi_33 WHERE nsi_33.code = :OLD.code_vc_nsi_33 AND nsi_33.is_object = 1; "
+                        + "IF cnt > 0 THEN  BEGIN "
+                            + "SELECT COUNT(*) INTO cnt FROM tb_oki_resources res WHERE res.uuid_oki = :OLD.uuid AND res.is_deleted = 0; "
+                            + "IF cnt > 0 THEN "
+                                + "raise_application_error (-20000, 'К данному объекту привязаны характеристики мощностей объекта. Операция отменена'); "
+                            + "END IF; END; "
+                        + "ELSE BEGIN "
+                            + "SELECT COUNT(*) INTO cnt FROM tb_oki_tr_resources res WHERE res.uuid_oki = :OLD.uuid AND res.is_deleted = 0; "
+                            + "IF cnt > 0 THEN "
+                                + "raise_application_error (-20000, 'К данному объекту привязаны характеристики передачи коммунальных ресурсов. Операция отменена'); "
+                            + "END IF; "
+                            + "SELECT COUNT(*) INTO cnt FROM tb_oki_net_pieces net WHERE net.uuid_oki = :OLD.uuid AND net.is_deleted = 0; "
+                            + "IF cnt > 0 THEN "
+                                + "raise_application_error (-20000, 'К данному объекту привязаны участки сети. Операция отменена'); "
+                            + "END IF; "
+                        + "END; END IF; "
+                    + "END; END IF; "
+                        
+                
+                    + "IF :NEW.is_deleted=0 AND :NEW.ID_IS_STATUS <> :OLD.ID_IS_STATUS AND :NEW.ID_IS_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING.getId () + " THEN BEGIN "
+                            
+                        + "SELECT COUNT(*) INTO cnt FROM vc_nsi_33 nsi_33 WHERE nsi_33.code = :OLD.code_vc_nsi_33 AND nsi_33.is_object = 1; "
+                        + "IF cnt > 0 THEN  BEGIN "
+                            + "SELECT COUNT(*) INTO cnt FROM tb_oki_resources res WHERE res.uuid_oki = :OLD.uuid AND res.is_deleted = 0; "
+                            + "IF cnt = 0 THEN "
+                                + "raise_application_error (-20000, 'Укажите хотя бы одну характеристику мощностей объекта. Операция отменена'); "
+                            + "END IF; END; "
+                        + "ELSE BEGIN "
+                            + "SELECT COUNT(*) INTO cnt FROM tb_oki_tr_resources res WHERE res.uuid_oki = :OLD.uuid AND res.is_deleted = 0; "
+                            + "IF cnt = 0 THEN "
+                                + "raise_application_error (-20000, 'Укажите хотя бы одну характеристику передачи коммунальных ресурсов. Операция отменена'); "
+                            + "END IF; "
+                            + "SELECT COUNT(*) INTO cnt FROM tb_oki_net_pieces net WHERE net.uuid_oki = :OLD.uuid AND net.is_deleted = 0; "
+                            + "IF cnt = 0 THEN "
+                                + "raise_application_error (-20000, 'Укажите хотя бы один участок сети. Операция отменена'); "
+                            + "END IF; "
+                        + "END; END IF; "
+                
+                        + "IF :NEW.indefinitemanagement=0 AND :NEW.endmanagmentdate IS NULL THEN "
+                            + "raise_application_error (-20000, 'Не указана дата окончания управления. Операция отменена'); "
+                        + "END IF; "
+                            
+                        + "IF :NEW.comissioningyear IS NULL THEN "
+                            + "raise_application_error (-20000, 'Не указан год ввода объекта в эксплуатацию. Операция отменена'); "
+                        + "END IF; "
+                            
+                        + "IF :NEW.oktmo_code IS NULL THEN "
+                            + "raise_application_error (-20000, 'Не указан ОКТМО объекта. Операция отменена'); "
+                        + "END IF; "
+                    + "END; END IF; "
+                + "END; "
+        );
+        
     }
+    
+    public enum Action {
+        
+        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING)
+        ;
+        
+        VocGisStatus.i nextStatus;
+        VocGisStatus.i okStatus;
+        VocGisStatus.i failStatus;
+
+        private Action (VocGisStatus.i nextStatus, VocGisStatus.i okStatus, VocGisStatus.i failStatus) {
+            this.nextStatus = nextStatus;
+            this.okStatus = okStatus;
+            this.failStatus = failStatus;
+        }
+
+        public VocGisStatus.i getNextStatus () {
+            return nextStatus;
+        }
+
+        public VocGisStatus.i getFailStatus () {
+            return failStatus;
+        }
+
+        public VocGisStatus.i getOkStatus () {
+            return okStatus;
+        }
+
+        public static Action forStatus (VocGisStatus.i status) {
+            switch (status) {
+                case PENDING_RQ_PLACING:   return PLACING;
+                default: return null;
+            }            
+        }
+
+        public static Action forLogAction (VocAction.i a) {
+            switch (a) {
+                case APPROVE: return PLACING;
+                default: return null;
+            }
+        }
+
+    };
     
 }
