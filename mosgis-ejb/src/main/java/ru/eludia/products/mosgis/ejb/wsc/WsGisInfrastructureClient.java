@@ -23,7 +23,7 @@ import ru.gosuslugi.dom.schema.integration.infrastructure_service_async.Infrastr
 public class WsGisInfrastructureClient {
     
     @HandlerChain (file="handler-chain-out.xml")
-    @WebServiceRef(wsdlLocation = "META-INF/wsdl/services/hcs-infrastructure-service-async.wsdl")
+    @WebServiceRef(wsdlLocation = "META-INF/wsdl/infrastructure/hcs-infrastructure-service-async.wsdl")
     private InfrastructureServiceAsync service;
     
     private InfrastructurePortsTypeAsync getPort (UUID orgPPAGuid, UUID messageGUID) {
