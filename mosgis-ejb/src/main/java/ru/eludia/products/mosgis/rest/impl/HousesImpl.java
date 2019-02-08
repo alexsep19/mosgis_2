@@ -5,8 +5,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -24,11 +22,6 @@ import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
-<<<<<<< HEAD
-import ru.eludia.base.db.sql.gen.Join;
-=======
->>>>>>> cd11432c... ComplexSearch updated for tasks/f93bfa7a-6d44-4300-9e57-9fd3041b50ce
-import ru.eludia.base.db.sql.gen.Predicate;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.PassportKind;
@@ -39,7 +32,6 @@ import ru.eludia.products.mosgis.rest.api.HousesLocal;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.ActualCaChObject;
 import ru.eludia.products.mosgis.db.model.tables.Block;
-import ru.eludia.products.mosgis.db.model.tables.CharterLog;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.Entrance;
@@ -98,17 +90,6 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
     }
     
     private void applyComplexSearch (final ComplexSearch search, Select select) {
-
-<<<<<<< HEAD
-        Predicate oktmo = search.getFilters ().get("oktmo");
-        select.getJoins ().stream ()
-                .filter(x -> "vc_buildings".equals (x.getTableAlias ()))
-                .collect(Collectors.toList ())
-                .get (0)
-                .and("oktmo", oktmo);
-=======
-        //Predicate oktmo = search.getFilters ().get("oktmo");
->>>>>>> cd11432c... ComplexSearch updated for tasks/f93bfa7a-6d44-4300-9e57-9fd3041b50ce
         
         search.filter (select, "");
 
