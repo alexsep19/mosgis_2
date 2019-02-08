@@ -68,6 +68,7 @@ public class Infrastructure extends EnTable {
         public boolean isLoggable () {
             switch (this) {
                 case ID_LOG:
+                case ID_OUT_SOAP:
                     return false;
                 default:
                     return true;
