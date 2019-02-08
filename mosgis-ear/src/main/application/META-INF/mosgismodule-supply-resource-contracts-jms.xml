@@ -26,5 +26,4 @@
      <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
      <jndi-name>mosgis.inHouseSupplyResourceContractFilesQueue</jndi-name>
  </uniform-distributed-queue>
-
 </weblogic-jms>
