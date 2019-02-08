@@ -59,17 +59,17 @@ public abstract class AttachTable extends EnTable {
         return a;
     }
     
-    public static Map<String, Object> getBasicRecord (JsonObject file) {
-        
-        return DB.HASH (
+    public Map<String, Object> HASH (JsonObject file) {
+
+        return super.HASH (file,
             c.LABEL,       file.getString ("label"),
             c.DESCRIPTION, file.getString ("description", ""),
             c.MIME,        file.getString ("type"),
             c.LEN,         file.getInt    ("size")
         );
-                
+
     }
-    
+
     public static final AttachmentType toAttachmentType (Map<String, Object> r) {
         
         return toAttachmentType (

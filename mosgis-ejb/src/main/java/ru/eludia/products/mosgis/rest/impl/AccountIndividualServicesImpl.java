@@ -14,7 +14,6 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.json.JsonObject;
-import javax.json.JsonValue;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.WebApplicationException;
 import ru.eludia.base.DB;
@@ -24,13 +23,12 @@ import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.rest.api.AccountIndividualServicesLocal;
 import ru.eludia.products.mosgis.db.model.tables.AccountIndividualService;
-import ru.eludia.products.mosgis.db.model.tables.CharterObject;
+import ru.eludia.products.mosgis.db.model.tables.AdditionalService;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
-import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
+import ru.eludia.products.mosgis.db.model.voc.VocFileStatus;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
-import ru.eludia.products.mosgis.web.base.ComplexSearch;
 
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
@@ -43,22 +41,10 @@ public class AccountIndividualServicesImpl extends BaseCRUD<AccountIndividualSer
 
         JsonObject file = p.getJsonObject ("file");
                        
-        db.begin ();
-        
-            Map<String, Object> r = AttachTable.getBasicRecord (file);
-            
-            for (AccountIndividualService.c col: AccountIndividualService.c.values ()) if (col != AccountIndividualService.c.ID_LOG) {
-                final String k = col.lc ();
-                String v = file.getString (k, null);
-                if (v != null) r.put (k, v);
-            }
-        
-            Object id = db.insertId (getTable (), r);
-        
+        db.begin ();                            
+            Object id = db.insertId (getTable (), ((AttachTable) getTable ()).HASH (file));
             job.add ("id", id.toString ());
-
-            logAction (db, user, id, VocAction.i.CREATE);
-            
+            logAction (db, user, id, VocAction.i.CREATE);            
         db.commit ();
         
     });}
@@ -156,33 +142,26 @@ public class AccountIndividualServicesImpl extends BaseCRUD<AccountIndividualSer
     }
 
     @Override
-    public JsonObject doEdit (String id, JsonObject p, User user) {return doAction (db -> {
-        
-        final JsonObject data = p.getJsonObject ("data");
-
-        db.update (AccountIndividualService.class, HASH (
-            "uuid",            id,
-            "description",     data.getString ("description",     "")
-        ));
-        
+    public JsonObject doEdit (String id, JsonObject p, User user) {return doAction (db -> {        
+        Map<String, Object> r = ((AttachTable) getTable ()).HASH (p.getJsonObject ("data"));
+        r.put ("uuid", id);
+        db.update (AccountIndividualService.class, r);        
         logAction (db, user, id, VocAction.i.UPDATE);
-
     });}
 
     @Override
     public JsonObject select (JsonObject p, User u) {return fetchData ((db, job) -> {
-        
-        ComplexSearch s = new ComplexSearch (p.getJsonArray ("search"));
-        
-        if (!s.getFilters ().containsKey ("uuid_charter_payment")) throw new IllegalStateException ("uuid_charter_payment filter is not set");
-                
+
         Select select = ModelHolder.getModel ()
-            .select (getTable (), "*", "uuid AS id")
-            .toMaybeOne (CharterObject.class, "AS obj").on ()
-            .toMaybeOne (VocBuildingAddress.class, "AS fias", "label").on ("obj.fiashouseguid=fias.houseguid")
-            .where  ("id_status",  1);
-        
-        db.addJsonArrays (job, s.filter (select, ""));
+            .select  (getTable (), "*", "uuid AS id")
+            .toOne   (AdditionalService.class, "AS svc", "*").on ()
+            .where   (AccountIndividualService.c.UUID_ACCOUNT, p.getJsonObject ("data").getString ("uuid_account"))
+            .where   ("id_status", VocFileStatus.i.LOADED.getId ())
+            .orderBy ("svc.label")
+            .orderBy (AccountIndividualService.c.BEGINDATE.lc ())
+        ;
+
+        db.addJsonArrays (job, select);
 
     });}
 
