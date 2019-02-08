@@ -1,0 +1,81 @@
+<span
+	data-popup-width=440
+	data-popup-height=280
+	data-popup-title='Данные о расчетах'
+>
+
+	<style>
+
+        label[data-block-name=settlement_doc_payments_popup] {
+        	width: 220px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=settlement_doc_payments_popup] {
+        	width: 130px !important;
+        }
+
+        input[data-block-name=settlement_doc_payments_popup].year {
+        	width: 50px !important;
+        }
+
+        input[data-block-name=settlement_doc_payments_popup].month {
+	    width: 80px !important;
+        }
+	div.w2ui-field-helper > input{
+	    width: 80px !important
+	}
+
+	div.w2ui-page {
+	    overflow: hidden !important
+	}
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:235px ">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Период:</label>
+                <div>
+		    <input name=month class=month />
+		    <input name=year  class=year maxlength=4 />
+		    &nbsp;г.
+		</div>
+	    </div>
+            <div class="w2ui-field">
+                <label>Начислено</label>
+                <div>
+                    <input name=credited />&nbsp;&nbsp;руб.
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Поступило</label>
+                <div>
+                    <input name=receipt />&nbsp;&nbsp;руб.
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Задолженность (-) / переплата (+)</label>
+                <div>
+                    <input name=debts />&nbsp;&nbsp;руб.
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Оплачено</label>
+                <div>
+                    <input name=paid />&nbsp;&nbsp;руб.
+                </div>
+            </div>
+        </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>
