@@ -38,6 +38,7 @@ define ([], function () {
                 {span: 3, caption: 'Площадь, м\xB2'},
                 {master: true},
                 {span: 4, caption: 'Плательщик'},
+                {master: true},
             ],            
             
             columns: [              
@@ -53,6 +54,7 @@ define ([], function () {
                 {field: 'org.label', caption: 'Юр. лицо', size: 50},
                 {field: 'isrenter',  caption: 'Нанинматель?', size: 10, voc: {0: 'нет', 1: 'да'}},
                 {field: 'isaccountsdivided', caption: 'Разделён?', size: 10, voc: {0: 'нет', 1: 'да'}},
+                {field: 'id_ctr_status', caption: 'Статус', size: 10, voc: data.vc_gis_status},
             ],
             
             postData: {data: {uuid_charter: $_REQUEST.id}},
