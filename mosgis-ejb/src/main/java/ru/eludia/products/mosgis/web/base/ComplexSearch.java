@@ -1,21 +1,19 @@
 package ru.eludia.products.mosgis.web.base;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.logging.Level;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonNumber;
 import javax.json.JsonValue;
+import ru.eludia.base.db.sql.gen.Join;
 import ru.eludia.base.db.sql.gen.Predicate;
+import ru.eludia.base.db.sql.gen.ResultCol;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Col;
-import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
-import ru.eludia.base.model.abs.Roster;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
 
 public final class ComplexSearch extends Search {
 
@@ -92,24 +90,18 @@ public final class ComplexSearch extends Search {
     public void apply (Select s) {
         
         Table table = s.getTable ();
-        List<String> refTableNames = table.getColumns ().values ().stream ()
-                .filter  (x -> x instanceof Ref)
-                .map     (x -> ((Ref) x).getTargetTable ().getName ())
-                .collect (Collectors.toList ());
 
         filters.forEach ((n, p) -> {
             final Col column = table.getColumn (n);
             if (column == null) {
-                String [] colParts = n.split ("\\.");
-                if (colParts.length == 2 && refTableNames.contains(colParts[0])) {
-                    Table refTable = ModelHolder.getModel ().get (colParts[0]);
-                    Col targetRefTableColumn = refTable.getColumn (colParts[1]);
-                    if (targetRefTableColumn == null) 
-                        logger.warning ("Column " + colParts[1] + " not found in referencing table " + colParts[0] + ". Filter ignored");
-                    else 
-                        s.toOne (refTable, "AS ref_" + refTable.getName ()).and (targetRefTableColumn.getName (), p).on ();
+                for (Join join: s.getJoins ()) {
+                    for (ResultCol col: join.getColumns ())
+                        if (n.equals (col.getAlias ()) && join.isInner ()) {
+                            join.and (col.getName (), p);
+                            return;
+                        }
                 }
-                else logger.warning ("Column " + n + " not found in " + table.getName () + ". Filter ignored");
+                logger.warning ("No column '" + n + "' in table '" + table.getName () + "'; no alias '" + n + "' in select or joined table not inner");
             }
             else s.and (n, p);
         });
