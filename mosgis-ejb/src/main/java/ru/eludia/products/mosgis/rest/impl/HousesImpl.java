@@ -171,7 +171,7 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
                                                "id_status_gis",
                                                "id_status",
                                                "code_vc_nsi_24")
-                .toOne (VocBuilding.class, "oktmo AS oktmo").on()
+                .toOne (VocBuilding.class, "AS building", "oktmo AS oktmo").on()
                 .orderBy ("address")
                 .limit (p.getInt ("offset"), p.getInt ("limit"));
         
@@ -202,7 +202,7 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
                                                "id_status_gis",
                                                "id_status",
                                                "code_vc_nsi_24")
-                .toOne (VocBuilding.class, "oktmo AS oktmo")
+                .toOne (VocBuilding.class, "AS building", "oktmo AS oktmo")
                 .where ("oktmo IN", ModelHolder.getModel ()
                         .select (VocOrganizationTerritory.class)
                         .toOne  (VocOktmo.class, "code").on ()
@@ -239,7 +239,7 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
                                                "id_status_gis",
                                                "id_status",
                                                "code_vc_nsi_24")
-            .toOne (VocBuilding.class, "oktmo AS oktmo").on()
+            .toOne (VocBuilding.class, "AS building", "oktmo AS oktmo").on()
             .orderBy ("address")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
         

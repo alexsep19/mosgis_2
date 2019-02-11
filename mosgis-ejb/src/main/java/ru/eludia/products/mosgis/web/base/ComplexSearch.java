@@ -1,19 +1,22 @@
 package ru.eludia.products.mosgis.web.base;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
+import java.util.stream.Collectors;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonNumber;
 import javax.json.JsonValue;
-import ru.eludia.base.db.sql.gen.Join;
+import ru.eludia.base.db.sql.gen.Part;
 import ru.eludia.base.db.sql.gen.Predicate;
-import ru.eludia.base.db.sql.gen.ResultCol;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Col;
+import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
+import ru.eludia.base.model.abs.Roster;
+import ru.eludia.products.mosgis.ejb.ModelHolder;
 
 public final class ComplexSearch extends Search {
 
@@ -94,14 +97,13 @@ public final class ComplexSearch extends Search {
         filters.forEach ((n, p) -> {
             final Col column = table.getColumn (n);
             if (column == null) {
-                for (Join join: s.getJoins ()) {
-                    for (ResultCol col: join.getColumns ())
-                        if (n.equals (col.getAlias ()) && join.isInner ()) {
-                            join.and (col.getName (), p);
-                            return;
-                        }
+                String [] colParts = n.split ("\\.");
+                if (colParts.length == 2) {
+                    Part part = s.getPart (colParts[0]);
+                    if (part != null) part.and (colParts[1], p);
+                    else logger.warning ("No alias '" + colParts[0] + "' in select. Filter ignored");
                 }
-                logger.warning ("No column '" + n + "' in table '" + table.getName () + "'; no alias '" + n + "' in select or joined table not inner");
+                else logger.warning ("Column " + n + " not found in " + table.getName () + ". Filter ignored");
             }
             else s.and (n, p);
         });
