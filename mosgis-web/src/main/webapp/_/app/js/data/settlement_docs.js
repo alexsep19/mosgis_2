@@ -22,7 +22,7 @@ define ([], function () {
             if (!r)
                 return done()
 
-            var v = {uuid_sr_ctr: r.uuid, uuid_org_author: $_USER.uuid_org}
+            var v = {uuid_sr_ctr: r.uuid, uuid_org_author: $_USER.uuid_org, id_type: $_USER.has_nsi_20(2)? 1 : 2}
 
             query({type: 'settlement_docs', action: 'create', id: undefined}, {data: v}, function (data) {
 

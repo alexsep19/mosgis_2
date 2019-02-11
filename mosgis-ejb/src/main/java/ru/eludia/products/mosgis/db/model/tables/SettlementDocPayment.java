@@ -8,10 +8,12 @@ import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocSettlementDocType;
 
 public class SettlementDocPayment extends EnTable {
 
     public enum c implements EnColEnum {
+	ID_TYPE               (VocSettlementDocType.class, VocSettlementDocType.i.RSO.asDef(), "Тип расчетов"),
 
 	UUID_ST_DOC           (SettlementDoc.class, "Документ информации о состоянии расчетов"),
 
@@ -24,7 +26,8 @@ public class SettlementDocPayment extends EnTable {
 
 	CREDITED              (Type.NUMERIC, 10, 2, null, "Начислено, руб"),
 	RECEIPT               (Type.NUMERIC, 10, 2, null, "Поступило, руб"),
-	DEBTS                 (Type.NUMERIC, 10, 2, null, "Размер задолженности (-)/переплаты (+) за период"),
+	DEBTS                 (Type.NUMERIC, 10, 2, null, "Размер задолженности (+) за период"),
+	OVERPAYMENT           (Type.NUMERIC, 10, 2, null, "Размер переплаты (+) за период"),
 	PAID                  (Type.NUMERIC, 10, 2, null, "Оплачено"),
 
 	REASONOFANNULMENT     (Type.STRING, 1000, null, "Причина аннулирования"),
@@ -78,12 +81,13 @@ public class SettlementDocPayment extends EnTable {
 	    + "BEGIN "
 
 	    + " SELECT uuid_sr_ctr INTO :NEW.uuid_sr_ctr FROM tb_st_docs WHERE uuid = :NEW.uuid_st_doc; "
+	    + " SELECT id_type     INTO :NEW.id_type     FROM tb_st_docs WHERE uuid = :NEW.uuid_st_doc; "
 
 	    + " dt_from := ADD_MONTHS(TO_DATE(:NEW.year || '-01-01', 'YYYY-MM-DD'), :NEW.month - 1); "
 	    + " dt_to   := ADD_MONTHS(dt_from, 1) - 1; "
 
 
-	    + " FOR i IN (SELECT effectivedate dt_from, completiondate dt_to FROM tb_sr_ctr WHERE uuid = :NEW.uuid_sr_ctr AND completiondate < dt_from OR effectivedate > dt_to"
+	    + " FOR i IN (SELECT effectivedate dt_from, completiondate dt_to FROM tb_sr_ctr WHERE uuid = :NEW.uuid_sr_ctr AND (completiondate < dt_from OR effectivedate > dt_to)"
 	    + ") LOOP"
 	    + "    raise_application_error (-20000, 'Период начисления должен входить в период действия договора' "
 	    + "      || ' с ' || TO_CHAR (i.dt_from, 'DD.MM.YYYY') "

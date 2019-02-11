@@ -17,10 +17,14 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustomerType;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocSettlementDocType;
 
 public class SettlementDoc extends EnTable {
 
     public enum c implements EnColEnum {
+
+	ID_TYPE               (VocSettlementDocType.class, VocSettlementDocType.i.RSO.asDef(), "Тип расчетов"),
+
         UUID_ORG_AUTHOR       (VocOrganization.class, "Поставщик данных"),
 
 	UUID_SR_CTR           (SupplyResourceContract.class, "Договор"),
@@ -28,6 +32,12 @@ public class SettlementDoc extends EnTable {
 	UUID_ORG_CUSTOMER     (VocOrganization.class, "Организация-заказчик из договора"),
 
 	ID_SD_STATUS          (VocGisStatus.class, new Num(VocGisStatus.i.PROJECT.getId()), "Статус документа расчетов с точки зрения mosgis"),
+	ID_SD_STATUS_GIS      (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef(), "Статус документа расчетов с точки зрения ГИС ЖКХ"),
+
+	REASONOFANNULMENT     (Type.STRING, 1000, null, "Причина аннулирования"),
+	IS_ANNULED            (Type.BOOLEAN, new Virt("DECODE(\"REASONOFANNULMENT\",NULL,0,1)"), "1, если запись аннулирована; иначе 0"),
+
+	SETTLEMENTGUID        (Type.UUID, null, "Идентификатор документа о расчетах в ГИС ЖКХ"),
 
 	ID_LOG                (SettlementDocLog.class, null, "Последнее событие редактирования")
         ;
@@ -50,7 +60,9 @@ public class SettlementDoc extends EnTable {
         public boolean isLoggable() {
             switch (this) {
                 case UUID_SR_CTR:
+		case UUID_ORG_AUTHOR:
 		case UUID_ORG:
+		case UUID_ORG_CUSTOMER:
 		case ID_LOG:
                     return false;
                 default:
@@ -97,4 +109,55 @@ public class SettlementDoc extends EnTable {
 	    + "END;");
     }
 
+    public enum Action {
+
+	PLACING  (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
+	EDITING  (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_STATE),
+	ANNULMENT(VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT);
+
+	VocGisStatus.i nextStatus;
+	VocGisStatus.i okStatus;
+	VocGisStatus.i failStatus;
+
+	private Action(VocGisStatus.i nextStatus, VocGisStatus.i okStatus, VocGisStatus.i failStatus) {
+	    this.nextStatus = nextStatus;
+	    this.okStatus = okStatus;
+	    this.failStatus = failStatus;
+	}
+
+	public VocGisStatus.i getNextStatus() {
+	    return nextStatus;
+	}
+
+	public VocGisStatus.i getFailStatus() {
+	    return failStatus;
+	}
+
+	public VocGisStatus.i getOkStatus() {
+	    return okStatus;
+	}
+
+	public static Action forStatus(VocGisStatus.i status) {
+
+	    switch (status) {
+
+	    case PENDING_RQ_PLACING:
+		return PLACING;
+	    case PENDING_RQ_EDIT:
+		return EDITING;
+	    case PENDING_RQ_ANNULMENT:
+		return ANNULMENT;
+
+	    case PENDING_RP_PLACING:
+		return PLACING;
+	    case PENDING_RP_EDIT:
+		return EDITING;
+	    case PENDING_RP_ANNULMENT:
+		return ANNULMENT;
+
+	    default:
+		return null;
+	    }
+	}
+    };
 }

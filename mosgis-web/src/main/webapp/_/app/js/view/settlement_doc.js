@@ -40,7 +40,7 @@ define ([], function () {
 
                         tabs: [
                             {id: 'settlement_doc_common',     caption: 'Общие'},
-                            {id: 'settlement_doc_common_log', caption: 'История изменений', off: 1}
+                            {id: 'settlement_doc_common_log', caption: 'История изменений'}
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_settlement_doc
