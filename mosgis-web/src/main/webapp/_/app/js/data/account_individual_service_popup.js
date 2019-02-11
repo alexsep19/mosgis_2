@@ -20,29 +20,30 @@ define ([], function () {
         }
         
         var id = form.record.uuid
+
+        if (id && !v.files) {
         
-        if (id) {        
-            query ({type: 'account_individual_services', id: id, action: 'edit'}, {data: v}, done)         
+            query ({type: 'account_individual_services', id: id, action: 'edit'}, {data: v}, done)
+            
         }
         else {
-
+        
             var file = get_valid_gis_file (v, 'files')
+            
+            var data = {
+                uuid_account: $_REQUEST.id,
+                uuid_add_service: v.uuid_add_service,
+                begindate: v.begindate,
+                enddate: v.enddate,
+            }
+            
+            if (id) data.uuid = id
 
             Base64file.upload (file, {
-
                 type: 'account_individual_services',
-
-                data: {
-                    uuid_account: $_REQUEST.id,
-                    uuid_add_service: v.uuid_add_service,
-                    begindate: v.begindate,
-                    enddate: v.enddate,
-                },
-
+                data: data,
                 onprogress: show_popup_progress (file.size),
-
                 onloadend: done
-
             })
 
         }

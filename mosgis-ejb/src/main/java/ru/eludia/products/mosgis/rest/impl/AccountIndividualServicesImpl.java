@@ -20,6 +20,7 @@ import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
+import static ru.eludia.base.model.def.Blob.EMPTY_BLOB;
 import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.rest.api.AccountIndividualServicesLocal;
 import ru.eludia.products.mosgis.db.model.tables.AccountIndividualService;
@@ -41,10 +42,25 @@ public class AccountIndividualServicesImpl extends BaseCRUD<AccountIndividualSer
 
         JsonObject file = p.getJsonObject ("file");
                        
-        db.begin ();                            
-            Object id = db.insertId (getTable (), ((AttachTable) getTable ()).HASH (file));
+        db.begin ();        
+        
+            final Map<String, Object> h = ((AttachTable) getTable ()).HASH (file);
+            
+            Object id;
+            
+            if (file.containsKey ("uuid")) {
+                id = file.getString ("uuid");
+                h.put (AttachTable.c.BODY.lc (), null);
+                db.update (getTable (), h);
+                logAction (db, user, id, VocAction.i.UPDATE);
+            }
+            else {
+                id = db.insertId (getTable (), h);
+                logAction (db, user, id, VocAction.i.CREATE);
+            }
+            
             job.add ("id", id.toString ());
-            logAction (db, user, id, VocAction.i.CREATE);            
+            
         db.commit ();
         
     });}
