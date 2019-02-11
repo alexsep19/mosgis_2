@@ -45,11 +45,11 @@ public class ExportAccountsMDB extends GisExportMDB<AccountLog> {
         UUID orgPPAGuid = (UUID) r.get ("orgppaguid");
             
         switch (action) {
-            case PLACING:     
-//            case EDITING:     
+            case PLACING:
+            case EDITING:
                 return wsGisHouseManagementClient.importAccountData (orgPPAGuid, messageGUID, r);
             default: 
-                throw new IllegalArgumentException ("No action implemented for " + action);
+                throw new IllegalArgumentException ("No action implemented for " + action.name ());
         }
 
     }
