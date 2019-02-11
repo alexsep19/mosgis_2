@@ -120,7 +120,18 @@ define ([], function () {
 */            
         }
         
-        done (data)
+        query ({type: 'add_services', id: undefined}, {limit: 100000, offset: 0}, function (d) {
+        
+            data.add_services = d.root.map (function (r) {return {
+                id: r.uuid,
+                text: r.label
+            }})
+
+darn (data)
+    
+            done (data)
+
+        })
 
     }
 

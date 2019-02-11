@@ -38,13 +38,7 @@ define ([], function () {
         
         var data = clone ($('body').data ('data'))
         
-        query ({type: 'add_services', id: undefined}, {limit: 100000, offset: 0}, function (d) {
-
-darn (d)            
-    
-            done (data)
-
-        })
+        done (data)
 
     }
 

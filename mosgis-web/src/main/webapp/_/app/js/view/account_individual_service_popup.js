@@ -24,7 +24,7 @@ define ([], function () {
                     }},
                     
                     
-                    {name: 'uuid_add_service', type: 'list', options: {items: []}},
+                    {name: 'uuid_add_service', type: 'list', options: {items: data.add_services}},
 
                     {name: 'files', type: 'file', options: {max: 1}},                    
                     
