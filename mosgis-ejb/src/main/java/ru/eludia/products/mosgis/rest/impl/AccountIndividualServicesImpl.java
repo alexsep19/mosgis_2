@@ -142,10 +142,10 @@ public class AccountIndividualServicesImpl extends BaseCRUD<AccountIndividualSer
     }
 
     @Override
-    public JsonObject doEdit (String id, JsonObject p, User user) {return doAction (db -> {        
-        Map<String, Object> r = ((AttachTable) getTable ()).HASH (p.getJsonObject ("data"));
+    public JsonObject doEdit (String id, JsonObject p, User user) {return doAction (db -> {
+        Map<String, Object> r = ((AttachTable) getTable ()).HASH (p.getJsonObject ("data"), "uuid", id);
         r.put ("uuid", id);
-        db.update (AccountIndividualService.class, r);        
+        db.update (AccountIndividualService.class, r);
         logAction (db, user, id, VocAction.i.UPDATE);
     });}
 
