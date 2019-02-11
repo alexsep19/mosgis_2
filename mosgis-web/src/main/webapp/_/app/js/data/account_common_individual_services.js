@@ -21,9 +21,9 @@ define ([], function () {
     
     $_DO.edit_account_common_individual_services = function (e) {
     
-//        $_SESSION.set ('record', w2ui ['account_common_individual_services_grid'].get (e.recid))
+        $_SESSION.set ('record', w2ui ['account_common_individual_services_grid'].get (e.recid))
 
-//        use.block ('account_individual_service_popup')
+        use.block ('account_individual_service_popup')
 
     }
 

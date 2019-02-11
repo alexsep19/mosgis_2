@@ -12,30 +12,41 @@ define ([], function () {
         if (!v.enddate) die ('enddate', 'Укажите, пожалуйста, дату окончания')        
 
         if (v.enddate < v.begindate) die ('enddate', 'Дата начала управления превышает дату окончания')
+        
+        function done () {
+            w2popup.close ()
+            var grid = w2ui ['account_common_individual_services_grid']
+            grid.reload (grid.refresh)
+        }
+        
+        var id = form.record.uuid
+        
+        if (id) {        
+            query ({type: 'account_individual_services', id: id, action: 'edit'}, {data: v}, done)         
+        }
+        else {
 
-        var file = get_valid_gis_file (v, 'files')
+            var file = get_valid_gis_file (v, 'files')
 
-        Base64file.upload (file, {
+            Base64file.upload (file, {
 
-            type: 'account_individual_services',
+                type: 'account_individual_services',
 
-            data: {
-                uuid_account: $_REQUEST.id,
-                uuid_add_service: v.uuid_add_service,
-                begindate: v.begindate,
-                enddate: v.enddate,
-            },
+                data: {
+                    uuid_account: $_REQUEST.id,
+                    uuid_add_service: v.uuid_add_service,
+                    begindate: v.begindate,
+                    enddate: v.enddate,
+                },
 
-            onprogress: show_popup_progress (file.size),
+                onprogress: show_popup_progress (file.size),
 
-            onloadend: function (id) {
-                w2popup.close ()
-                var grid = w2ui ['account_common_individual_services_grid']
-                grid.reload (grid.refresh)
-            }
+                onloadend: done
 
-        })
+            })
 
+        }
+        
     }
 
     return function (done) {
@@ -57,7 +68,7 @@ define ([], function () {
         data.dt_from = dt_dmy (data.dt_from)
         data.dt_to   = dt_dmy (data.dt_to)
 
-        data.record = {
+        data.record = $_SESSION.delete ('record') || {
             begindate: data.dt_from,
             enddate:   data.dt_to,
         }
