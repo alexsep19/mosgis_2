@@ -25,18 +25,25 @@ define ([], function () {
             
             columns: [                
                 {field: 'svc.label', caption: 'Услуга', size: 100},
-                {field: 'begindate', caption: 'Начало', size: 10, render: _dt},
-                {field: 'enddate', caption: 'Окончание', size: 10, render: _dt},
+                {field: 'begindate', caption: 'Начало', size: 18, render: _dt},
+                {field: 'enddate', caption: 'Окончание', size: 18, render: _dt},
+                {field: 'label', caption: 'Основание', size: 100, attr: 'data-ref=1'},
             ],
 
             postData: {data: {uuid_account: $_REQUEST.id}},
             
             url: '/mosgis/_rest/?type=account_individual_services',
+                        
             
             onAdd: $_DO.create_account_common_individual_services,
             onEdit: $_DO.edit_account_common_individual_services,
             onDblClick: $_DO.edit_account_common_individual_services,
             onDelete: $_DO.delete_account_common_individual_services,
+            onClick: function (e) {                
+                switch (this.columns [e.column].field) {
+                    case 'label': return $_DO.download_account_common_individual_services (e)
+                }                
+            }
 
         }).refresh ();
 

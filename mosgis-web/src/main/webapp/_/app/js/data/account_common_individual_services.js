@@ -1,5 +1,18 @@
 define ([], function () {
 
+    $_DO.download_account_common_individual_services = function (e) {
+    
+        var box = w2ui ['account_common_individual_services_grid'].box
+        function label (cur, max) {return String (Math.round (100 * cur / max)) + '%'}
+        w2utils.lock (box, label (0, 1))
+        
+        download ({type:   'account_individual_services', id: e.recid, action: 'download'}, {}, {
+            onprogress: function (cur, max) {$('.w2ui-lock-msg').html ('<br><br>' + label (cur, max))},
+            onload: function () {w2utils.unlock (box)},
+        })
+    
+    }    
+
     $_DO.create_account_common_individual_services = function (e) {
 
         use.block ('account_individual_service_popup')
