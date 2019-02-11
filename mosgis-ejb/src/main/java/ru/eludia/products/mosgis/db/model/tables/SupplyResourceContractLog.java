@@ -149,8 +149,8 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 
 	if (!subjects.isEmpty()) {
 
-	    boolean plannedVolumeInSubjects = result.isIsPlannedVolume()
-		&& result.getPlannedVolumeType().equals(VocGisContractDimension.i.BY_CONTRACT.getName());
+	    boolean plannedVolumeInSubjects = DB.ok(r.get("isplannedvolume"))
+		&& DB.to.String(r.get("plannedvolumetype")).equals(VocGisContractDimension.i.BY_CONTRACT.getName());
 
 	    for (Map<String, Object> s : subjects) {
 		ContractSubject cs = DB.to.javaBean(ContractSubject.class, s);
@@ -185,8 +185,8 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 
 	if (!objects.isEmpty()) {
 
-	    boolean plannedVolumeInObjects = result.isIsPlannedVolume()
-		&& result.getPlannedVolumeType().equals(VocGisContractDimension.i.BY_HOUSE.getName());
+	    boolean plannedVolumeInObjects = DB.ok(r.get("isplannedvolume"))
+		&& DB.to.String(r.get("plannedvolumetype")).equals(VocGisContractDimension.i.BY_HOUSE.getName());
 
 	    for (Map<String, Object> o : objects) {
 		o.put("apartmentnumber", o.get("premise.apartmentnumber"));
