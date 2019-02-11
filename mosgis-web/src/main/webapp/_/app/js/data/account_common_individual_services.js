@@ -2,7 +2,7 @@ define ([], function () {
 
     $_DO.create_account_common_individual_services = function (e) {
 
-//        use.block ('account_item_popup')
+        use.block ('account_individual_service_popup')
 
     }
     
@@ -10,7 +10,7 @@ define ([], function () {
     
 //        $_SESSION.set ('record', w2ui ['account_common_individual_services_grid'].get (e.recid))
 
-//        use.block ('account_item_popup')
+//        use.block ('account_individual_service_popup')
 
     }
 
@@ -37,9 +37,15 @@ define ([], function () {
         if (layout) layout.unlock ('main')
         
         var data = clone ($('body').data ('data'))
+        
+        query ({type: 'add_services', id: undefined}, {limit: 100000, offset: 0}, function (d) {
 
-        done (data)
-                
+darn (d)            
+    
+            done (data)
+
+        })
+
     }
 
 })

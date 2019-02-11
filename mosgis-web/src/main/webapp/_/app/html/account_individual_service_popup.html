@@ -1,0 +1,60 @@
+<span
+	data-popup-width=500
+	data-popup-height=230
+	data-popup-title='Индивидуальная услуга'
+>
+
+	<style>
+
+        label[data-block-name=account_individual_service_popup] {
+        	width: 120px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=account_individual_service_popup] {
+        	width: 320px !important;
+        }
+
+        input[data-block-name=account_individual_service_popup].dt {
+        	width: 100px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:185px ">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Услуга</label>
+                <div>
+                	<input name=uuid_add_service>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Период: с</label>
+                <div>
+                    <input name=begindate placeholder="" class=dt />
+по
+                    <input name=enddate placeholder="" class=dt />
+                </div>
+            </div>
+
+            <div class="w2ui-field protocol">
+                <label>Основание</label>
+                <div>
+                    <input name=files style="width:300px" />
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+        	<progress/>
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>
