@@ -51,7 +51,7 @@ define ([], function () {
         var it = data.item
 
         it.status_label     = data.vc_gis_status [it.id_sd_status]
-        it.state_label      = data.vc_gis_status [it.id_sd_state]
+        it.type_label       = data.vc_st_doc_types [it.id_type]
 
         if (it.id_sd_status != 10) {
             if (it.id_sd_status != it.id_sd_status_gis) it.gis_status_label = data.vc_gis_status [it.id_sd_status_gis]
@@ -61,8 +61,6 @@ define ([], function () {
         it.err_text = it ['out_soap.err_text']
 
         if (it.id_sd_status_gis == 110) it.is_annuled = 1
-
-        if (it.isgratuitousbasis == 0 && it.other) it.isgratuitousbasis = -1
 
         done (data)
 

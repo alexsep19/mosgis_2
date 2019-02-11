@@ -16,9 +16,9 @@ define ([], function () {
         if (!(1920 <= v.year && v.year <= 2050))
             die('year', 'В поле "Год" должен быть указан год между 1920 и 2050')
 
-        var is_rso = $_USER.has_nsi_20(2)
+        v.id_type  = $_USER.has_nsi_20(2)? 1 : 2;
 
-        if (is_rso) {
+        if (v.id_type == 1) {
 
             v.credited = parseFloat (v.credited)
             if (!(v.credited >= 0)) die ('credited', 'В поле "Начислено за период" должна быть указана неотрицательная денежная сумма')

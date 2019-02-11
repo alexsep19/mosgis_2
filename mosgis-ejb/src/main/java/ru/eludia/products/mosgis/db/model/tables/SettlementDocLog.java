@@ -25,6 +25,7 @@ import ru.gosuslugi.dom.schema.integration.bills.ImportIKUSettlementsRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ContractSubjectType;
 import ru.gosuslugi.dom.schema.integration.house_management.DRSOIndType;
 import ru.gosuslugi.dom.schema.integration.bills.ImportRSOSettlementsRequest;
+import ru.gosuslugi.dom.schema.integration.bills.ReportPeriodIKUInfoType;
 import ru.gosuslugi.dom.schema.integration.bills.ReportPeriodRSOInfoType;
 import ru.gosuslugi.dom.schema.integration.bills.ReportPeriodType;
 import ru.gosuslugi.dom.schema.integration.house_management.SupplyResourceContractType;
@@ -108,7 +109,9 @@ public class SettlementDocLog extends GisWsLogTable {
 
     public static ImportIKUSettlementsRequest toImportIKUSettlementsRequest(Map<String, Object> r) {
 	final ImportIKUSettlementsRequest createImportIKUSettlementsRequest = new ImportIKUSettlementsRequest();
-	final ImportIKUSettlementsRequest.ImportSettlement settlement = new ImportIKUSettlementsRequest.ImportSettlement(); // toImportUOSettlement(r);
+	final ImportIKUSettlementsRequest.ImportSettlement settlement = toImportSettlementUO(r);
+
+	createImportIKUSettlementsRequest.getImportSettlement().add(settlement);
 
 	final Object ver = r.get(SettlementDoc.c.SETTLEMENTGUID.lc());
 	if (ver != null) {
@@ -116,6 +119,44 @@ public class SettlementDocLog extends GisWsLogTable {
 	}
 
 	return createImportIKUSettlementsRequest;
+    }
+
+    private static ImportIKUSettlementsRequest.ImportSettlement toImportSettlementUO(Map<String, Object> r) {
+
+	ImportIKUSettlementsRequest.ImportSettlement result = DB.to.javaBean(ImportIKUSettlementsRequest.ImportSettlement.class, r);
+
+	result.setTransportGUID(UUID.randomUUID().toString());
+
+	ImportIKUSettlementsRequest.ImportSettlement.Settlement s = new ImportIKUSettlementsRequest.ImportSettlement.Settlement();
+
+	ImportIKUSettlementsRequest.ImportSettlement.Settlement.Contract c = new ImportIKUSettlementsRequest.ImportSettlement.Settlement.Contract();
+	c.setContractRootGUID(DB.to.String(r.get("sr_ctr.contractrootguid")));
+	s.setContract(c);
+
+	List<Map<String, Object>> payments = (List<Map<String, Object>>) r.get("payments");
+	if (payments == null) {
+	    throw new IllegalStateException("No settlement doc payments fetched: " + r);
+	}
+
+	if (!payments.isEmpty()) {
+
+	    for (Map<String, Object> p : payments) {
+
+		ImportIKUSettlementsRequest.ImportSettlement.Settlement.ReportingPeriod rp = DB.to.javaBean(ImportIKUSettlementsRequest.ImportSettlement.Settlement.ReportingPeriod.class, p);
+
+		ReportPeriodIKUInfoType info = DB.to.javaBean(ReportPeriodIKUInfoType.class, p);
+
+		rp.setReportingPeriodInfo(info);
+
+		s.getReportingPeriod().add(rp);
+	    }
+
+	}
+
+	result.setSettlement(s);
+
+	return result;
+
     }
 
     public Get getForExport(Object id) {
