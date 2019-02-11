@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -33,7 +32,6 @@ import ru.eludia.products.mosgis.rest.api.HousesLocal;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.ActualCaChObject;
 import ru.eludia.products.mosgis.db.model.tables.Block;
-import ru.eludia.products.mosgis.db.model.tables.CharterLog;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
 import ru.eludia.products.mosgis.db.model.tables.Entrance;
@@ -60,6 +58,8 @@ import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.web.base.Search;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
+import ru.eludia.products.mosgis.web.base.ComplexSearch;
+import ru.eludia.products.mosgis.web.base.SimpleSearch;
 
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
@@ -87,6 +87,33 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
                 return;
         }
         
+    }
+    
+    private void applyComplexSearch (final ComplexSearch search, Select select) {
+        
+        search.filter (select, "");
+
+    }
+    
+    private void applySimpleSearch (final SimpleSearch search, Select select) {
+
+        final String searchString = search.getSearchString ();
+        
+        if (searchString == null || searchString.isEmpty ()) return;
+
+        select.and ("address_uc LIKE %?%", searchString);
+        
+    }
+    
+    private void applySearch (final Search search, Select select) {        
+
+        if (search instanceof SimpleSearch) {
+            applySimpleSearch  ((SimpleSearch) search, select);
+        }
+        else if (search instanceof ComplexSearch) {
+            applyComplexSearch ((ComplexSearch) search, select);
+        }
+
     }
 
     private void logAction (DB db, User user, Object id, String uuidOrg, String fiasHouseGuid, VocAction.i action) throws SQLException {
@@ -136,13 +163,19 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
         
         Model m = ModelHolder.getModel ();
         
-        Select select = m.select (House.class, "uuid AS id", "address", "is_condo", "fiashouseguid", "unom")
+        Select select = m.select (House.class, "uuid AS id", 
+                                               "address", 
+                                               "is_condo", 
+                                               "fiashouseguid", 
+                                               "unom",
+                                               "id_status_gis",
+                                               "id_status",
+                                               "code_vc_nsi_24")
+                .toOne (VocBuilding.class, "AS building", "oktmo AS oktmo").on()
                 .orderBy ("address")
                 .limit (p.getInt ("offset"), p.getInt ("limit"));
         
-        final Search search = Search.from (p);
-
-        if (search != null) select = search.filter (select, simple (search, "unom", "fiashouseguid", "address_uc LIKE %?%"));
+        applySearch (Search.from (p), select);
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();
 
@@ -161,8 +194,15 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
         
         Model m = ModelHolder.getModel ();
         
-        Select select = m.select(House.class, "uuid AS id", "address", "is_condo", "fiashouseguid", "unom")
-                .toOne (VocBuilding.class, "oktmo")
+        Select select = m.select (House.class, "uuid AS id", 
+                                               "address", 
+                                               "is_condo", 
+                                               "fiashouseguid", 
+                                               "unom",
+                                               "id_status_gis",
+                                               "id_status",
+                                               "code_vc_nsi_24")
+                .toOne (VocBuilding.class, "AS building", "oktmo AS oktmo")
                 .where ("oktmo IN", ModelHolder.getModel ()
                         .select (VocOrganizationTerritory.class)
                         .toOne  (VocOktmo.class, "code").on ()
@@ -171,9 +211,7 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
                 .orderBy ("address")
                 .limit (p.getInt ("offset"), p.getInt ("limit"));
         
-        final Search search = Search.from (p);
-
-        if (search != null) select = search.filter (select, simple (search, "unom", "fiashouseguid", "address_uc LIKE %?%"));
+        applySearch (Search.from (p), select);
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();
 
@@ -193,7 +231,15 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
         
         Model m = ModelHolder.getModel ();
         
-        Select select = m.select (House.class, "uuid AS id", "address", "is_condo", "fiashouseguid", "unom")
+        Select select = m.select (House.class, "uuid AS id", 
+                                               "address", 
+                                               "is_condo", 
+                                               "fiashouseguid", 
+                                               "unom",
+                                               "id_status_gis",
+                                               "id_status",
+                                               "code_vc_nsi_24")
+            .toOne (VocBuilding.class, "AS building", "oktmo AS oktmo").on()
             .orderBy ("address")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
         
@@ -204,9 +250,7 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
             .where ("uuid_org", uuidOrg)
         );
             
-        final Search search = Search.from (p);
-
-        if (search != null) select = search.filter (select, simple (search, "unom", "fiashouseguid", "address_uc LIKE %?%"));
+        applySearch (Search.from (p), select);
 
         JsonObjectBuilder jb = Json.createObjectBuilder ();
 
@@ -219,34 +263,6 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
         
         return jb.build ();
 
-    }
-    
-    private String simple (Search search, String i, String g, String s) {
-    
-        if (search == null) return s;
-        
-        String searchString = search.getSearchString ();
-        
-        if (searchString == null || searchString.isEmpty ()) return s;
-        
-        try {
-            Integer.parseInt (searchString);
-            return i;
-        }
-        catch (Exception e) {
-            // do nothing
-        }
-        
-        try {
-            UUID.fromString (searchString);
-            return g;
-        }
-        catch (Exception e) {
-            // do nothing
-        }
-    
-        return s;
-        
     }
 
     private static final int NSI_VOC_CONDITION = 24;
@@ -424,7 +440,29 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
             "г. Операция отменена."
         );
 
-    }    
+    }
+    
+    @Override
+    public JsonObject getVocs () {
+        
+        JsonObjectBuilder jb = Json.createObjectBuilder ();
+        
+        final MosGisModel model = ModelHolder.getModel ();
+
+        try (DB db = model.getDb ()) {
+            
+            db.addJsonArrays (jb, NsiTable.getNsiTable (24).getVocSelect ());            
+            VocGisStatus.addTo(jb);
+            VocHouseStatus.addTo(jb);
+
+        }
+        catch (Exception ex) {
+            throw new InternalServerErrorException (ex);
+        }
+
+        return jb.build ();
+        
+    }
 
     @Override
     public JsonObject getVocPassportFields (String id, Integer[] ids) {
