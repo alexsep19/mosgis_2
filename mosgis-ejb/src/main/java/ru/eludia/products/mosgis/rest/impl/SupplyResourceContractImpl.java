@@ -153,7 +153,9 @@ public class SupplyResourceContractImpl extends BaseCRUD<SupplyResourceContract>
         VocGisContractDimension.addTo(job);
         VocSupplyResourceContractFileType.addTo(job);
         db.addJsonArrays(job,
-                NsiTable.getNsiTable(58).getVocSelect().where(IS_RS_CTR_NSI_58, 1)
+	    NsiTable.getNsiTable(58).getVocSelect().where(IS_RS_CTR_NSI_58, 1),
+	    NsiTable.getNsiTable(3).getVocSelect(),
+	    VocNsi239.getVocSelect()
         );
     });}
 

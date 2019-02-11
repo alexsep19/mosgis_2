@@ -1,0 +1,71 @@
+<span
+	data-popup-width=540
+	data-popup-height=285
+	data-popup-title='Информация о перерывах'
+>
+
+	<style>
+
+        label[data-block-name=interval_new] {
+        	width:220px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=interval_new] {
+        	width: 250px !important;
+        }
+
+        input[data-block-name=interval_new].datetime {
+	    width: 110px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Вид коммунальной услуги:</label>
+                <div>
+		    <input name=code_vc_nsi_3>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Вид коммунального ресурса:</label>
+                <div>
+		    <input name=code_vc_nsi_239>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Дата и время начала перерыва:</label>
+                <div>
+                	<input name=startdateandtime class=datetime >
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Дата и время окончания перерыва:</label>
+                <div>
+		    <input name=enddateandtime class=datetime>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Причина перерыва</label>
+                <div>
+                	<input name=intervalreason maxlength=1000>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>
