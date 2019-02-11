@@ -30,11 +30,11 @@ define ([], function () {
 
             panels: [
 
-                {type: 'top', size: 150},
+                {type: 'top', size: 185},
                 {type: 'main', size: 200,
                     tabs: {
                         tabs:    [
-                            {id: 'settlement_doc_payments', caption: 'Отченые периоды'},
+                            {id: 'settlement_doc_payments', caption: 'Отчетные периоды'},
                         ],
                         onClick: $_DO.choose_tab_settlement_doc_common
                     }

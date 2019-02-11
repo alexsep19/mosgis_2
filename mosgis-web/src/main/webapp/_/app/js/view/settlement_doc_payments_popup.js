@@ -2,13 +2,18 @@ define ([], function () {
 
     return function (data, view) {
 
+        var form_name = 'settlement_doc_payments_popup_form';
+
         function recalc(){
-            var is_rso = $_USER.has_nsi_20(2)
+            var r = w2ui[form_name].record
+
+            var id_type = r.id? r.id_type : ($_USER.has_nsi_20(2)? 1 : 0)
 
             var is_on = {
-                'input[name=credited]': is_rso,
-                'input[name=receipt]': is_rso,
-                'input[name=debts]': is_rso
+                'input[name=credited]': id_type == 1,
+                'input[name=receipt]': id_type == 1,
+                'input[name=debts]': id_type == 1,
+                'input[name=overpayment]': id_type == 1
             }
 
             var hidden = 0
@@ -34,7 +39,7 @@ define ([], function () {
 
             $('#w2ui-popup .w2ui-form').w2reform ({
 
-                name: 'settlement_doc_payments_popup_form',
+                name: form_name,
 
                 record: data.record,
 

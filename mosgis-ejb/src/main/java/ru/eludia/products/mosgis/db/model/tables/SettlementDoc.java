@@ -84,6 +84,7 @@ public class SettlementDoc extends EnTable {
 	trigger("BEFORE INSERT OR UPDATE", ""
 	    + "DECLARE"
 	    + " PRAGMA AUTONOMOUS_TRANSACTION; "
+	    + " cnt NUMBER; "
 	    + "BEGIN "
 
 	    + " SELECT uuid_org_customer INTO :NEW.uuid_org_customer FROM tb_sr_ctr WHERE uuid = :NEW.uuid_sr_ctr; "
@@ -105,6 +106,10 @@ public class SettlementDoc extends EnTable {
 		+ "'Уже есть документ о состоянии расчетов на этот договор' "
 		+ "|| '. Операция отменена.'); "
 		+ " END LOOP; "
+		+ " IF :NEW.ID_SD_STATUS <> :OLD.ID_SD_STATUS AND :NEW.ID_SD_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING + " THEN "
+		    + " SELECT COUNT(*) INTO cnt FROM tb_st_doc_ps WHERE is_deleted = 0 AND uuid_st_doc =:NEW.uuid; "
+		    + " IF cnt=0 THEN raise_application_error (-20000, 'Укажите расчеты в документе расчетов. Операция отменена.'); END IF; "
+		+ " END IF; " // IF :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING
 	    + " END IF; " // IF :NEW.is_deleted = 0
 	    + "END;");
     }

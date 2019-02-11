@@ -22,7 +22,8 @@ define ([], function () {
             query ({type: 'settlement_docs'}, {}, function (data) {
 
                 add_vocabularies (data, {
-                    vc_gis_status: 1
+                    vc_gis_status: 1,
+                    vc_st_doc_types: 1
                 })
 
                 var it = data.item
