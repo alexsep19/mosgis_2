@@ -1,6 +1,6 @@
 define ([], function () {
 
-    var name = 'voc_user_form'
+    var name = 'account_individual_service_popup_form'
 
     return function (data, view) {
 
@@ -16,11 +16,11 @@ define ([], function () {
                 
                     {name: 'begindate', type: 'date', options: {
                         keyboard: false,
-//                        start:    dt_dmy (data.item.date_),
+                        start:    data.dt_from,
                     }},
                     {name: 'enddate',   type: 'date', options: {
                         keyboard: false,
-//                        start:    dt_dmy (data.item.date_),
+                        end:      data.dt_to,
                     }},
                     
                     
@@ -29,6 +29,8 @@ define ([], function () {
                     {name: 'files', type: 'file', options: {max: 1}},                    
                     
                 ],
+                
+                focus: -1,
                                                         
             })
 
