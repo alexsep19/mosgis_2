@@ -2,6 +2,7 @@ package ru.eludia.products.mosgis.db.model.tables;
 
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.UUID;
 import javax.xml.bind.JAXBContext;
 import org.junit.Test;
 import ru.eludia.base.DB;
@@ -29,6 +30,14 @@ public class AccountLogTest extends BaseTest {
     public void test () throws Exception {
         
         Map<String, Object> r = getData ();
+        
+        r.put ("accountguid", null);
+
+        dump (r);
+
+        validate (AccountLog.toImportAccountRequest (r));
+        
+        r.put ("accountguid", UUID.randomUUID ());
 
         dump (r);
 

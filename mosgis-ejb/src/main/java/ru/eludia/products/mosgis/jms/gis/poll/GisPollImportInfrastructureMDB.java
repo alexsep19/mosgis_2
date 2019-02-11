@@ -81,16 +81,6 @@ public class GisPollImportInfrastructureMDB  extends GisPollMDB {
                 
         try {
             
-            db.update (Infrastructure.class, HASH (
-                "uuid", r.get ("r.uuid"),
-                "id_out_soap", r.get ("uuid")
-            ));
-            
-            db.update (InfrastructureLog.class, HASH (
-                "uuid", r.get ("log.uuid"),
-                "id_out_soap", r.get ("uuid")
-            ));
-            
             GetStateResult state = getState (orgPPAGuid, r);
             
             List<ErrorMessageType> errorMessages = state.getErrorMessage ();

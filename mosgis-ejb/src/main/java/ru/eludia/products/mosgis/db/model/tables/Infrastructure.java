@@ -53,7 +53,6 @@ public class Infrastructure extends EnTable {
         
         ADDINFO                 (STRING, 2000, null, "Дополнительная информация"),
         
-        ID_OUT_SOAP             (OutSoap.class, "Последнее событие импорта"),
         ID_LOG                  (InfrastructureLog.class, "Последнее событие редактирования")
         
         ;
