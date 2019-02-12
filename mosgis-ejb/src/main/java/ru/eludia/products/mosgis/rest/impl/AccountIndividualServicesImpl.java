@@ -49,6 +49,7 @@ public class AccountIndividualServicesImpl extends BaseCRUD<AccountIndividualSer
         switch (action) {
             case APPROVE:
             case ALTER:
+            case ANNUL:
                 return queue;
             default:
                 return null;

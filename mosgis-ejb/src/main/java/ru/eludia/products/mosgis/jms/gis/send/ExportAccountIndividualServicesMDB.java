@@ -78,12 +78,12 @@ public class ExportAccountIndividualServicesMDB extends GisExportMDB<AccountIndi
         switch (action) {
             case ANNULMENT:
                 sendSoap (db, action, uuid, r);
+                break;
             default:
                 sendFileThenSoap (db, uuid, action, r);
+                break;
         }
-       
-        sendFileThenSoap (db, uuid, action, r);
-        
+
     }
 
     private void sendSoap (DB db, AccountIndividualService.Action action, UUID uuid, Map<String, Object> r) throws SQLException {
