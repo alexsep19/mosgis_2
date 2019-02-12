@@ -1,63 +1,90 @@
 package ru.eludia.products.mosgis.ws.base;
 
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.logging.Level;
 import javax.xml.soap.SOAPMessage;
-import javax.xml.ws.handler.soap.SOAPHandler;
+import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
+import ru.eludia.base.DB;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.ws.WsMessages;
+import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.util.StringUtils;
+import ru.mos.gkh.gis.schema.integration.base.AckRequest;
+import ru.mos.gkh.gis.schema.integration.base.HeaderType;
+import ru.mos.gkh.gis.schema.integration.base.RequestHeader;
+import ru.mos.gkh.gis.schema.integration.base.ResultHeader;
 
-public class LoggingMessageHandler extends BaseLoggingMessageHandler implements SOAPHandler<SOAPMessageContext> {
+public class LoggingMessageHandler extends BaseLoggingMessageHandler {
+   
+    private static final String GET_STATE_OPERATION = "getState";
+    
+    private Object storeToDB(MessageInfo messageInfo, HeaderType rh, String s) {
 
-/*    
-    private void storeToDB (MessageInfo messageInfo, RequestHeader rh, String s) {
+        try (DB db = ModelHolder.getModel().getDb()) {
+            String uuidOrg = null;
+            if (RequestHeader.class.equals(rh.getClass())) {
+                String orgPPAGuid = ((RequestHeader) rh).getOrgPPAGUID();
+                uuidOrg = db.getString(db.getModel()
+                        .select(VocOrganization.class, VocOrganization.c.UUID.lc())
+                        .where(VocOrganization.c.ORGPPAGUID.lc(), orgPPAGuid));
+            }
 
-        try (DB db = ModelHolder.getModel ().getDb ()) {
-
-            db.insert (InSoap.class, DB.HASH (                                    
-                "svc",          messageInfo.getService (),
-                "op",           messageInfo.getOperation (),
-                "is_out",       messageInfo.isOut (),
-                "uuid_sender",  rh.getSenderID (),
-                "uuid_message", rh.getMessageGUID (),
-                "dt",           rh.getDate (),
-                "soap",         s
+            String msgGuid = db.getString(db.getModel()
+                    .select(WsMessages.class, WsMessages.c.UUID.lc())
+                    .where(WsMessages.c.UUID_MESSAGE.lc(), rh.getMessageGUID()));
+            if (StringUtils.isNotBlank(msgGuid))
+                return msgGuid;
+            return db.insertId(WsMessages.class, DB.HASH(
+                    WsMessages.c.SERVICE,      messageInfo.getService(),
+                    WsMessages.c.OPERATION,    messageInfo.getOperation(),
+                    WsMessages.c.UUID_ORG,     uuidOrg,
+                    WsMessages.c.UUID_MESSAGE, rh.getMessageGUID(),
+                    WsMessages.c.REQUEST,      s
             ));
 
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
+            logger.log(Level.SEVERE, "Cannot log SOAP message", ex);
 
-            if (ex instanceof SQLIntegrityConstraintViolationException && ex.getErrorCode () == 1) {
-                
-                throw new IllegalStateException ("MessageGUID=" + rh.getMessageGUID () + " was already registered");
-                
-            }
-            
-            logger.log (Level.SEVERE, "Cannot log SOAP message", ex);
-
-            throw new IllegalStateException ("Cannot log SOAP message", ex);
-            
+            throw new IllegalStateException("Cannot log SOAP message", ex);
         }
-        
+
     }
-*/
+    
+    @Override
     public boolean handleMessage (SOAPMessageContext messageContext) {
 
         SOAPMessage msg = messageContext.getMessage ();
         
         MessageInfo messageInfo = new MessageInfo (messageContext);
         
-        byte [] bytes = toBytes (msg);
-        
-        String s = getLoggedMessge (messageInfo, bytes, getCharSetName (msg));
-/*        
-        if (!messageInfo.isOut) {
-
-            RequestHeader rh = AbstactServiceAsync.getRequestHeader (msg);
+        if (!messageInfo.isOut && !GET_STATE_OPERATION.equals(messageInfo.operation)) {
+            byte [] bytes = toBytes (msg);
+            String s = getLoggedMessge (messageInfo, bytes, getCharSetName (msg));
             
-            storeToDB (messageInfo, rh, s);
+            HeaderType rh = AbstactServiceAsync.getHeader(msg, HeaderType.class);
 
+            Object msgId = storeToDB (messageInfo, rh, s);
+
+            AckRequest.Ack ack = new AckRequest.Ack();
+            ack.setMessageGUID(msgId.toString());
+            ack.setRequesterMessageGUID(rh.getMessageGUID());
+            addParamToMessageContext(messageContext, "ack", ack);
+            addParamToMessageContext(messageContext, "msgId", MessageContext.Scope.APPLICATION);
+        } else if (messageInfo.isOut && GET_STATE_OPERATION.equals(messageInfo.operation)){
+            ResultHeader resultHeader = new ResultHeader();
+            resultHeader.setDate(LocalDateTime.now());
+            resultHeader.setMessageGUID(messageContext.get("msgId").toString());
+            AbstactServiceAsync.addHeaderToResponse(msg, resultHeader);
         }
-*/        
+                
         return true;
         
     }
-        
+    
+    private void addParamToMessageContext(SOAPMessageContext messageContext, String name, Object value) {
+        messageContext.put(name, value);
+        messageContext.setScope(name, MessageContext.Scope.APPLICATION);
+    }
 }

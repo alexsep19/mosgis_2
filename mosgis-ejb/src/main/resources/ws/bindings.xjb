@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bindings version="2.1" 
+    xmlns="http://java.sun.com/xml/ns/jaxb" 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+>
+    <globalBindings fixedAttributeAsConstantProperty="true">
+        <javaType name="java.time.LocalDateTime" xmlType="xsd:dateTime"
+	        parseMethod="ru.eludia.products.mosgis.util.XmlDateConverter.parseDateTime"
+	        printMethod="ru.eludia.products.mosgis.util.XmlDateConverter.printDateTime" />
+	    <javaType name="java.time.LocalDate" xmlType="xsd:date"
+	        parseMethod="ru.eludia.products.mosgis.util.XmlDateConverter.parseDate" 
+	        printMethod="ru.eludia.products.mosgis.util.XmlDateConverter.printDate" />
+	    <javaType name="java.time.LocalTime" xmlType="xsd:time"
+	        parseMethod="ru.eludia.products.mosgis.util.XmlDateConverter.parseTime"
+	        printMethod="ru.eludia.products.mosgis.util.XmlDateConverter.printTime" />
+    </globalBindings>       
+</bindings>

@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
+import javax.ws.rs.NotFoundException;
 import javax.xml.namespace.QName;
 import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPException;
@@ -60,7 +61,11 @@ public abstract class BaseLoggingMessageHandler implements SOAPHandler<SOAPMessa
         MessageInfo (SOAPMessageContext messageContext) {            
             this.isOut     = (Boolean) messageContext.get (MessageContext.MESSAGE_OUTBOUND_PROPERTY);
             this.service   = ((javax.xml.namespace.QName) messageContext.get (MessageContext.WSDL_SERVICE)).getLocalPart ();
-            this.operation = ((javax.xml.namespace.QName) messageContext.get (MessageContext.WSDL_OPERATION)).getLocalPart ();            
+            try {
+                this.operation = ((javax.xml.namespace.QName) messageContext.get (MessageContext.WSDL_OPERATION)).getLocalPart ();
+            } catch (Exception e) {
+                throw new NotFoundException("Операция не найдена в сервисе " + service);
+            }
         }
         
         @Override
