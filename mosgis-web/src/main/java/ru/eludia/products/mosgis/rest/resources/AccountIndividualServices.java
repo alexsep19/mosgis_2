@@ -75,4 +75,11 @@ public class AccountIndividualServices extends EJBResource <AccountIndividualSer
         return back.doAlter (id, getUser ());
     }
     
+    @POST
+    @Path("{id}/annul") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject doAnnul (@PathParam ("id") String id) { 
+        return back.doAnnul (id, getUser ());
+    }
+    
 }

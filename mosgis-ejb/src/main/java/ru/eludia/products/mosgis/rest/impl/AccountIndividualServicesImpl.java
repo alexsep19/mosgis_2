@@ -232,4 +232,18 @@ public class AccountIndividualServicesImpl extends BaseCRUD<AccountIndividualSer
         
     });}    
     
+    @Override
+    public JsonObject doAnnul (String id, User user) {return doAction ((db) -> {
+                
+        final Map<String, Object> r = HASH (
+            EnTable.c.UUID,               id,
+            AccountIndividualService.c.ID_CTR_STATUS,  VocGisStatus.i.PENDING_RQ_ANNULMENT.getId ()
+        );
+                
+        db.update (getTable (), r);
+        
+        logAction (db, user, id, VocAction.i.ANNUL);
+        
+    });}    
+    
 }

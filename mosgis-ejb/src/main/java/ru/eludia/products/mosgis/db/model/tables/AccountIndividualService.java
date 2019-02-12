@@ -5,6 +5,7 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.AttachTable;
+import ru.eludia.products.mosgis.db.model.voc.VocFileStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 
 public class AccountIndividualService extends AttachTable {
@@ -67,6 +68,8 @@ public class AccountIndividualService extends AttachTable {
                 + " :NEW.ID_CTR_STATUS := " + VocGisStatus.i.MUTATING
             + "; END IF; "
 
+            + "IF :NEW.ID_CTR_STATUS = " + VocGisStatus.i.ANNUL + " THEN " + " :NEW.ID_STATUS := " + VocFileStatus.i.DELETED + "; END IF; "
+                    
         + "END;");        
 
     }
@@ -75,6 +78,7 @@ public class AccountIndividualService extends AttachTable {
         
         PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
         EDITING     (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_STATE),
+        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT),
         ;
         
         VocGisStatus.i nextStatus;
@@ -100,13 +104,17 @@ public class AccountIndividualService extends AttachTable {
         }
 
         public static Action forStatus (VocGisStatus.i status) {
+            
             switch (status) {
                 case PENDING_RQ_PLACING:   return PLACING;
-                case PENDING_RQ_EDIT:      return EDITING;
                 case PENDING_RP_PLACING:   return PLACING;
+                case PENDING_RQ_EDIT:      return EDITING;
                 case PENDING_RP_EDIT:      return EDITING;
+                case PENDING_RQ_ANNULMENT: return ANNULMENT;
+                case PENDING_RP_ANNULMENT: return ANNULMENT;
                 default: return null;
-            }            
+            }
+            
         }
 
     };    

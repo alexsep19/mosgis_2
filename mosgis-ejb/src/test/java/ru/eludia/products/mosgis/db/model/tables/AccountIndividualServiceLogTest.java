@@ -26,7 +26,7 @@ public class AccountIndividualServiceLogTest extends BaseTest {
     }
 
     @Test (expected = Test.None.class)
-    public void test () throws SQLException {
+    public void testInsert () throws SQLException {
         
         Map<String, Object> r = getData ();
         
@@ -34,9 +34,27 @@ public class AccountIndividualServiceLogTest extends BaseTest {
         dump (r);        
         validate (AccountIndividualServiceLog.toImportAccountIndividualServicesRequest (r));
         
+    }
+    
+    @Test (expected = Test.None.class)
+    public void testUpdate () throws SQLException {
+        
+        Map<String, Object> r = getData ();
+                
         r.put ("accountindividualserviceguid", r.get ("uuid"));
         dump (r);        
         validate (AccountIndividualServiceLog.toImportAccountIndividualServicesRequest (r));
+
+    }
+    
+    @Test (expected = Test.None.class)
+    public void testDelete () throws SQLException {
+        
+        Map<String, Object> r = getData ();
+                
+        r.put ("accountindividualserviceguid", r.get ("uuid"));
+        dump (r);        
+        validate (AccountIndividualServiceLog.toDeleteAccountIndividualServicesRequest (r));
 
     }
 
