@@ -58,7 +58,7 @@ define ([], function () {
             die('code_vc_nsi_239', 'Укажите, пожалуйста, вид коммунального ресурса')
         if (!v.startdateandtime)
             die('startdateandtime', 'Укажите, пожалуйста, дату и время начала перерыва')
-        
+
         query ({type: 'intervals', action: 'update'}, {data: v}, reload_page)
 
     }

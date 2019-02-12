@@ -1,21 +1,15 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Map;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
-import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
-import static ru.eludia.base.model.Type.DATE;
-import static ru.eludia.base.model.Type.STRING;
-import static ru.eludia.base.model.Type.NUMERIC;
-import static ru.eludia.base.model.def.Def.NEW_UUID;
-import ru.eludia.base.model.def.Num;
-import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
-import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
-import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustomerType;
-import ru.eludia.products.mosgis.db.model.voc.VocOkei;
+import ru.gosuslugi.dom.schema.integration.volume_quality.AddressObjectType;
+import ru.gosuslugi.dom.schema.integration.volume_quality.IntervalType;
 
 public class IntervalObject extends EnTable {
 
@@ -99,4 +93,10 @@ public class IntervalObject extends EnTable {
 	    + "END;");
     }
 
+    static IntervalType.AddressObject toAddressObject(Map<String, Object> r) {
+
+	final IntervalType.AddressObject result = DB.to.javaBean(IntervalType.AddressObject.class, r);
+
+	return result;
+    }
 }

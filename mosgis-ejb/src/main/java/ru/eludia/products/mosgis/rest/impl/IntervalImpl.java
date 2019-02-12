@@ -32,13 +32,13 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class IntervalImpl extends BaseCRUD<Interval> implements IntervalLocal {
 
-//    @Resource (mappedName = "mosgis.inIntervalsQueue")
-//    Queue queue;
-//
-//    @Override
-//    public Queue getQueue () {
-//        return queue;
-//    }
+    @Resource (mappedName = "mosgis.inIntervalsQueue")
+    Queue queue;
+
+    @Override
+    public Queue getQueue () {
+        return queue;
+    }
 
     private void filterOffDeleted (Select select) {
         select.and ("is_deleted", 0);
