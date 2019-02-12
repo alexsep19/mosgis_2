@@ -196,10 +196,11 @@ public class AccountIndividualServicesImpl extends BaseCRUD<AccountIndividualSer
         Select select = ModelHolder.getModel ()
             .select  (getTable (), "*", "uuid AS id")
             .toOne   (AdditionalService.class, "AS svc", "*").on ()
+            .toOne   (AccountIndividualServiceLog.class, "AS log").on ()
+            .toMaybeOne (OutSoap.class, "AS soap", "*").on ("log.uuid_out_soap=soap.uuid")
             .where   (AccountIndividualService.c.UUID_ACCOUNT, p.getJsonObject ("data").getString ("uuid_account"))
             .where   ("id_status", VocFileStatus.i.LOADED.getId ())
             .orderBy ("svc.label")
-            .orderBy (AccountIndividualService.c.BEGINDATE.lc ())
         ;
 
         db.addJsonArrays (job, select);

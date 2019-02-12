@@ -11,6 +11,7 @@ import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.tables.Account;
 import ru.eludia.products.mosgis.db.model.tables.AccountIndividualServiceLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.AccountIndividualService;
@@ -41,7 +42,7 @@ public class GisPollExportIndividualServiceMDB  extends GisPollMDB {
 
     @Override
     protected Get get (UUID uuid) {
-        
+
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
 
             .toOne (AccountIndividualServiceLog.class, "AS log", "uuid", "action").on ("log.uuid_out_soap=root.uuid")
@@ -50,11 +51,13 @@ public class GisPollExportIndividualServiceMDB  extends GisPollMDB {
                 , EnTable.c.UUID.lc ()
                 , AccountIndividualService.c.ID_CTR_STATUS.lc ()
             ).on ()
-                
-            .toMaybeOne (VocOrganization.class, "AS org", "orgppaguid AS orgppaguid").on ("r.uuid_org=org.uuid")
-                                                
+
+            .toOne (Account.class, "AS acc").on ()
+
+            .toOne (VocOrganization.class, "AS org", "orgppaguid AS orgppaguid").on ("acc.uuid_org=org.uuid")
+
         ;
-        
+
     }
 
     @Override
