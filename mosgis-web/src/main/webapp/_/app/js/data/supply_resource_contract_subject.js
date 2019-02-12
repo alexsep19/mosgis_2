@@ -40,8 +40,8 @@ define ([], function () {
                     it._can = {
                         cancel: 1,
                         update: 1,
-                        delete: it['sr_ctr.uuid_org'] == $_USER.uuid_org,
-                        edit  : it['sr_ctr.uuid_org'] == $_USER.uuid_org,
+                        delete: it['sr_ctr.uuid_org'] == $_USER.uuid_org && !it.is_deleted,
+                        edit  : it['sr_ctr.uuid_org'] == $_USER.uuid_org && !it.is_deleted,
                     }
 
                     for (voc in d) {

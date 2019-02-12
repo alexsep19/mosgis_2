@@ -41,9 +41,9 @@ define ([], function () {
                 {field: 'id_ctr_status', caption: 'Статус', size: 20, voc: data.vc_gis_status}
             ],
 
-            postData: {data: {
-                uuid_sr_ctr: $_REQUEST.id
-            }},
+            postData: {search: [
+                {field: "uuid_sr_ctr", operator: "is", value: $_REQUEST.id},
+            ]},
 
             url: '/mosgis/_rest/?type=supply_resource_contract_objects',
 

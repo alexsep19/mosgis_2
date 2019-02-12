@@ -75,18 +75,23 @@ public class SupplyResourceContractObjectImpl extends BaseCRUD<SupplyResourceCon
     @Override
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
 
+	ComplexSearch s = new ComplexSearch(p.getJsonArray("search"));
+
+	if (!s.getFilters().containsKey("uuid_sr_ctr")) {
+	    throw new IllegalStateException("uuid_sr_ctr filter is not set");
+	}
+
         final Model m = ModelHolder.getModel ();
 
-        Select select = m.select (SupplyResourceContractObject.class, "*", "uuid AS id")
+        Select select = m.select (SupplyResourceContractObject.class, "AS root", "*", "uuid AS id")
             .toOne(VocBuilding.class, "AS building", "houseguid", "label").on()
             .toMaybeOne(Premise.class, "AS premise", "id", "label").on()
-            .where("uuid_sr_ctr", p.getJsonObject("data").getString("uuid_sr_ctr"))
+	    .toOne(VocBuildingAddress.class, "AS fias", "label").on("root.fiashouseguid=fias.houseguid")
+	    .toMaybeOne(House.class, "AS house", "uuid").on("root.fiashouseguid=house.fiashouseguid")
             .orderBy ("building.label")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
-        applySearch (Search.from (p), select);
-
-        db.addJsonArrayCnt (job, select);
+        db.addJsonArrays(job, s.filter(select, ""));
     });}
 
     @Override
