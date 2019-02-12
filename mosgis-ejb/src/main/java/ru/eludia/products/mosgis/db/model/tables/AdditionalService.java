@@ -36,6 +36,9 @@ public class AdditionalService extends EnTable {
 
         LABEL                     (Type.STRING,  new Virt ("(''||\"ADDITIONALSERVICETYPENAME\")"),  "Наименование"),
         LABEL_UC                  (Type.STRING,  new Virt ("UPPER(\"ADDITIONALSERVICETYPENAME\")"),  "НАИМЕНОВАНИЕ В ВЕРХНЕМ РЕГИСТРЕ"),
+        
+        GUID                      (Type.UUID,    new Virt ("HEXTORAW(''||RAWTOHEX(\"ELEMENTGUID\"))"),  "GUID НСИ"),
+        CODE                      (Type.STRING,  new Virt ("(''||\"UNIQUENUMBER\")"),  "Код НСИ"),
 
         ID_STATUS                 (VocAsyncEntityState.class,          new Num (VocAsyncEntityState.i.PENDING.getId ()), "Статус синхронизации"),
         ID_LOG                    (AdditionalServiceLog.class,         null, "Последнее событие редактирования"),
