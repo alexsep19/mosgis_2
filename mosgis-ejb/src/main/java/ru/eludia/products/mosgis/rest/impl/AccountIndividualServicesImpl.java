@@ -10,9 +10,11 @@ import java.sql.SQLException;
 import java.util.Base64;
 import java.util.Map;
 import java.util.logging.Logger;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.jms.Queue;
 import javax.json.JsonObject;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.WebApplicationException;
@@ -20,13 +22,14 @@ import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
-import static ru.eludia.base.model.def.Blob.EMPTY_BLOB;
 import ru.eludia.products.mosgis.db.model.AttachTable;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.rest.api.AccountIndividualServicesLocal;
 import ru.eludia.products.mosgis.db.model.tables.AccountIndividualService;
 import ru.eludia.products.mosgis.db.model.tables.AdditionalService;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocFileStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
@@ -34,6 +37,22 @@ import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class AccountIndividualServicesImpl extends BaseCRUD<AccountIndividualService> implements AccountIndividualServicesLocal  {
+
+    @Resource (mappedName = "mosgis.inAccountIndividualServicesQueue")
+    Queue queue;
+
+    @Override
+    protected Queue getQueue (VocAction.i action) {
+        
+        switch (action) {
+            case APPROVE:
+            case ALTER:
+                return queue;
+            default:
+                return null;
+        }
+        
+    }
 
     private static final Logger logger = Logger.getLogger (AccountIndividualServicesImpl.class.getName ());    
 
@@ -181,4 +200,29 @@ public class AccountIndividualServicesImpl extends BaseCRUD<AccountIndividualSer
 
     });}
 
+    @Override
+    public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
+
+        db.update (getTable (), HASH (EnTable.c.UUID,               id,
+            AccountIndividualService.c.ID_CTR_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+        ));
+
+        logAction (db, user, id, VocAction.i.APPROVE);
+
+    });}
+    
+    @Override
+    public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
+                
+        final Map<String, Object> r = HASH (
+            EnTable.c.UUID,               id,
+            AccountIndividualService.c.ID_CTR_STATUS,  VocGisStatus.i.PROJECT.getId ()
+        );
+                
+        db.update (getTable (), r);
+        
+        logAction (db, user, id, VocAction.i.ALTER);
+        
+    });}    
+    
 }

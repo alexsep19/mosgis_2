@@ -70,4 +70,44 @@ public class AccountIndividualService extends AttachTable {
 
     }
     
+    public enum Action {
+        
+        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
+        EDITING     (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_STATE),
+        ;
+        
+        VocGisStatus.i nextStatus;
+        VocGisStatus.i okStatus;
+        VocGisStatus.i failStatus;
+
+        private Action (VocGisStatus.i nextStatus, VocGisStatus.i okStatus, VocGisStatus.i failStatus) {
+            this.nextStatus = nextStatus;
+            this.okStatus = okStatus;
+            this.failStatus = failStatus;
+        }
+
+        public VocGisStatus.i getNextStatus () {
+            return nextStatus;
+        }
+
+        public VocGisStatus.i getFailStatus () {
+            return failStatus;
+        }
+
+        public VocGisStatus.i getOkStatus () {
+            return okStatus;
+        }
+
+        public static Action forStatus (VocGisStatus.i status) {
+            switch (status) {
+                case PENDING_RQ_PLACING:   return PLACING;
+                case PENDING_RQ_EDIT:      return EDITING;
+                case PENDING_RP_PLACING:   return PLACING;
+                case PENDING_RP_EDIT:      return EDITING;
+                default: return null;
+            }            
+        }
+
+    };    
+    
 }

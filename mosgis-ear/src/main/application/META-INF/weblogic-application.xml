@@ -46,6 +46,11 @@
         <name>Workflow-accounts</name>
         <path>META-INF/mosgismodule-accounts-jms.xml</path>
     </module>
+    
+    <module><type>JMS</type>
+        <name>Workflow-account-individual-services</name>
+        <path>META-INF/mosgismodule-account-individual-services-jms.xml</path>
+    </module>
 
     <module>
 	<type>JMS</type>
