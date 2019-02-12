@@ -26,7 +26,9 @@ import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.rest.api.AccountIndividualServicesLocal;
 import ru.eludia.products.mosgis.db.model.tables.AccountIndividualService;
+import ru.eludia.products.mosgis.db.model.tables.AccountIndividualServiceLog;
 import ru.eludia.products.mosgis.db.model.tables.AdditionalService;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocFileStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -141,7 +143,7 @@ public class AccountIndividualServicesImpl extends BaseCRUD<AccountIndividualSer
             "id_log",    id_log
         ));
 
-//        publishMessage (action, id_log);
+        publishMessage (action, id_log);
 
     }
     
@@ -168,7 +170,11 @@ public class AccountIndividualServicesImpl extends BaseCRUD<AccountIndividualSer
     public JsonObject getItem (String id) {
 
         try (DB db = ModelHolder.getModel ().getDb ()) {            
-            return db.getJsonObject (ModelHolder.getModel ().get (getTable (), id, "*"));
+            return db.getJsonObject (ModelHolder.getModel ()
+                .get (getTable (), id, "*")
+                .toOne (AccountIndividualServiceLog.class, "AS log").on ()
+                .toMaybeOne (OutSoap.class, "AS soap", "*").on ("log.uuid_out_soap=soap.uuid")
+            );
         }
         catch (Exception ex) {
             throw new InternalServerErrorException (ex);

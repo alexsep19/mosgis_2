@@ -58,13 +58,14 @@ public class AccountIndividualService extends AttachTable {
        
         trigger ("BEFORE UPDATE", "BEGIN "
                 
-//            + " IF :NEW.len IS NULL THEN :NEW.len := -1; END IF; "                
-/*
-            + "IF (NVL (:OLD.attachmentguid, '00') = NVL (:NEW.attachmentguid, '00')) THEN BEGIN"
-            + " UPDATE tb_charter_files__log SET attachmentguid = :NEW.attachmentguid, attachmenthash = :NEW.attachmenthash WHERE uuid = :NEW.id_log; "
-            + "END; END IF; "
-*/
             + CHECK_LEN
+                
+            + "IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS "
+                + " AND :OLD.ID_CTR_STATUS <> " + VocGisStatus.i.FAILED_PLACING
+                + " AND :NEW.ID_CTR_STATUS =  " + VocGisStatus.i.PROJECT
+            + " THEN "
+                + " :NEW.ID_CTR_STATUS := " + VocGisStatus.i.MUTATING
+            + "; END IF; "
 
         + "END;");        
 

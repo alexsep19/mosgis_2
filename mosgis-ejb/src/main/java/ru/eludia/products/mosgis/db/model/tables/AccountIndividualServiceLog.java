@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.UUID;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
+import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisFileLogTable;
@@ -20,6 +21,9 @@ public class AccountIndividualServiceLog extends GisFileLogTable {
             , AttachTable.c.class
             , AccountIndividualService.c.class
         );
+        
+        fk    ("uuid_out_soap",             OutSoap.class,                      null,   "Последний запрос на импорт в ГИС ЖКХ");
+        col   ("uuid_message",              Type.UUID,                          null,   "UUID запроса в ГИС ЖКХ");
         
     }
     
