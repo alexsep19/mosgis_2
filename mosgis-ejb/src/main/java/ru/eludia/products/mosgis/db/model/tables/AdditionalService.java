@@ -1,16 +1,17 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.util.SyncMap;
+import ru.eludia.base.model.Col;
+import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
-import ru.eludia.base.model.def.Bool;
-import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Num;
 import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.model.EnColEnum;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState.i.PENDING;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
@@ -21,28 +22,53 @@ import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementStringFieldType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
 
-public class AdditionalService extends Table {
+public class AdditionalService extends EnTable {
+
+    public enum c implements EnColEnum {
+
+        UUID_ORG                  (VocOrganization.class,                      "Организация"),
+
+        OKEI                      (VocOkei.class,                      null,   "Единица измерения"),
+        ADDITIONALSERVICETYPENAME (Type.STRING,           100,         null,   "Наименование вида дополнительной услуги"),
+
+        UNIQUENUMBER              (Type.STRING,                        null,   "Уникальный реестровый номер (в ГИС)"),
+        ELEMENTGUID               (Type.UUID,                          null,   "Идентификатор существующей в ГИС версии элемента справочника"),
+
+        LABEL                     (Type.STRING,  new Virt ("(''||\"ADDITIONALSERVICETYPENAME\")"),  "Наименование"),
+        LABEL_UC                  (Type.STRING,  new Virt ("UPPER(\"ADDITIONALSERVICETYPENAME\")"),  "НАИМЕНОВАНИЕ В ВЕРХНЕМ РЕГИСТРЕ"),
+
+        ID_STATUS                 (VocAsyncEntityState.class,          new Num (VocAsyncEntityState.i.PENDING.getId ()), "Статус синхронизации"),
+        ID_LOG                    (AdditionalServiceLog.class,         null, "Последнее событие редактирования"),
+        
+        ;
+
+        @Override
+        public Col getCol () {return col;}
+        private Col col;        
+        private c (Type type, Object... p) {col = new Col (this, type, p);}
+        private c (Class c,   Object... p) {col = new Ref (this, c, p);}
+
+        @Override
+        public boolean isLoggable () {
+
+            switch (this) {
+                case UUID_ORG:
+                case ID_LOG:
+                    return false;
+                default:
+                    return true;                    
+            }
+
+        }
+
+    }   
 
     public AdditionalService () {
 
         super ("tb_add_services",                                                       "Дополнительные услуги");
+        cols   (c.class);
 
-        pk    ("uuid",                      Type.UUID,             NEW_UUID,            "Ключ");
-        fk    ("uuid_org",                  VocOrganization.class,                      "Организация");
-        col   ("is_deleted",                Type.BOOLEAN,          Bool.FALSE,          "1, если запись удалена; иначе 0");
-                
-        fk    ("okei",                      VocOkei.class,                      null,   "Единица измерения");
-        col   ("additionalservicetypename", Type.STRING,           100,         null,   "Наименование вида дополнительной услуги");
-
-        col   ("uniquenumber",              Type.STRING,                        null,   "Уникальный реестровый номер (в ГИС)");
-        col   ("elementguid",               Type.UUID,                          null,   "Идентификатор существующей в ГИС версии элемента справочника");
-
-        col   ("label",                     Type.STRING,  new Virt ("(''||\"ADDITIONALSERVICETYPENAME\")"),  "Наименование");
-        col   ("label_uc",                  Type.STRING,  new Virt ("UPPER(\"ADDITIONALSERVICETYPENAME\")"),  "НАИМЕНОВАНИЕ В ВЕРХНЕМ РЕГИСТРЕ");
-
-        fk    ("id_status",                 VocAsyncEntityState.class,          new Num (VocAsyncEntityState.i.PENDING.getId ()), "Статус синхронизации");
-        fk    ("id_log",                    AdditionalServiceLog.class,         null, "Последнее событие редактирования");
-
+        key   ("uuid_org", "uuid_org");
         key   ("label_uc", "label_uc");
         key   ("org_label", "uuid_org", "label");
 

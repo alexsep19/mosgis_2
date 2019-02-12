@@ -28,6 +28,8 @@ public class AccountIndividualServiceLog extends GisFileLogTable {
                 
             .get (this, id, "*")
                 
+            .toOne (AdditionalService.class, "AS add_service", "uniquenumber AS code", "elementguid AS guid").on ()
+                
             .toOne (AccountIndividualService.class, "AS r"
                 , EnTable.c.UUID.lc ()
                 , AccountIndividualService.c.ID_CTR_STATUS.lc ()
