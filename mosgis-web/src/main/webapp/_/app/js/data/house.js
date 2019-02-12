@@ -80,8 +80,9 @@ define ([], function () {
 
                 if ($_USER.role.admin) return true
 
-                if (data.controlled) return $_USER.uuid_org == data.cach['org.uuid']
-                else return (data.is_under_nsi_20_8)
+                if ($_USER.has_nsi_20 (1, 19, 20, 21, 22)) return data.controlled && $_USER.uuid_org == data.cach['org.uuid']
+
+                return $_USER.role.nsi_20_8 && data.is_under_nsi_20_8
 
             }
 
