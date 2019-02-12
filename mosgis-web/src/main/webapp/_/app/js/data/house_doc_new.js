@@ -9,6 +9,11 @@ define ([], function () {
             return alert ('Укажите, пожалуйста, тип документа');
         }
 
+        if (r.file_type.is_not_editable) {
+            $('input[name=file_type]').focus ()
+            return alert ('Укажите, пожалуйста, тип документа');
+        }
+
         if (!r.dt) {
             $('input[name=dt]').focus ()
             return alert ('Укажите, пожалуйста, дату документа');

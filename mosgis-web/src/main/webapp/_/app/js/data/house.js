@@ -86,6 +86,23 @@ define ([], function () {
             }
 
             data.is_passport_editable = editable ()
+
+            data.non_editable_fields = [
+                '20168',
+                '20815',
+                '20816',
+                '11052',
+                '20024',
+                '20817',
+                '20818',
+                '11053',
+                '20169',
+                '13026',
+                '14526',
+                '20025',
+                '20062',
+                '20170'
+            ]
             
             data.depends = {
 
