@@ -2,6 +2,8 @@ package ru.eludia.products.mosgis.ws.base;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.ws.handler.MessageContext;
@@ -10,7 +12,6 @@ import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.ws.WsMessages;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
-import ru.eludia.products.mosgis.util.StringUtils;
 import ru.mos.gkh.gis.schema.integration.base.AckRequest;
 import ru.mos.gkh.gis.schema.integration.base.HeaderType;
 import ru.mos.gkh.gis.schema.integration.base.RequestHeader;
@@ -20,8 +21,10 @@ public class LoggingMessageHandler extends BaseLoggingMessageHandler {
    
     private static final String GET_STATE_OPERATION = "getState";
     
-    private Object storeToDB(MessageInfo messageInfo, HeaderType rh, String s) {
+    private Map<String, Object> storeToDB(MessageInfo messageInfo, HeaderType rh, String s) {
 
+        Map<String, Object> result = new HashMap<>();
+        
         try (DB db = ModelHolder.getModel().getDb()) {
             String uuidOrg = null;
             if (RequestHeader.class.equals(rh.getClass())) {
@@ -31,19 +34,23 @@ public class LoggingMessageHandler extends BaseLoggingMessageHandler {
                         .where(VocOrganization.c.ORGPPAGUID.lc(), orgPPAGuid));
             }
 
-            String msgGuid = db.getString(db.getModel()
+            Map<String, Object> msg = db.getMap(db.getModel()
                     .select(WsMessages.class, WsMessages.c.UUID.lc())
                     .where(WsMessages.c.UUID_MESSAGE.lc(), rh.getMessageGUID()));
-            if (StringUtils.isNotBlank(msgGuid))
-                return msgGuid;
-            return db.insertId(WsMessages.class, DB.HASH(
+            if (msg != null && !msg.isEmpty()) {
+                result.put("isNew", false);
+                result.put("msgId", msg.get(WsMessages.c.UUID.lc()));
+                return result;
+            }
+            result.put("isNew", true);
+            result.put("msgId", db.insertId(WsMessages.class, DB.HASH(
                     WsMessages.c.SERVICE,      messageInfo.getService(),
                     WsMessages.c.OPERATION,    messageInfo.getOperation(),
                     WsMessages.c.UUID_ORG,     uuidOrg,
                     WsMessages.c.UUID_MESSAGE, rh.getMessageGUID(),
                     WsMessages.c.REQUEST,      s
-            ));
-
+            )));
+            return result;
         } catch (SQLException ex) {
             logger.log(Level.SEVERE, "Cannot log SOAP message", ex);
 
@@ -65,14 +72,15 @@ public class LoggingMessageHandler extends BaseLoggingMessageHandler {
             
             HeaderType rh = AbstactServiceAsync.getHeader(msg, HeaderType.class);
 
-            Object msgId = storeToDB (messageInfo, rh, s);
+            Map<String, Object> savedMsg = storeToDB (messageInfo, rh, s);
 
             AckRequest.Ack ack = new AckRequest.Ack();
-            ack.setMessageGUID(msgId.toString());
+            ack.setMessageGUID(savedMsg.get("msgId").toString());
             ack.setRequesterMessageGUID(rh.getMessageGUID());
             addParamToMessageContext(messageContext, "ack", ack);
-            addParamToMessageContext(messageContext, "msgId", MessageContext.Scope.APPLICATION);
-        } else if (messageInfo.isOut && GET_STATE_OPERATION.equals(messageInfo.operation)){
+            addParamToMessageContext(messageContext, "msgId", savedMsg.get("msgId"));
+            addParamToMessageContext(messageContext, "isNew", savedMsg.get("isNew"));
+        } else if (messageInfo.isOut){
             ResultHeader resultHeader = new ResultHeader();
             resultHeader.setDate(LocalDateTime.now());
             resultHeader.setMessageGUID(messageContext.get("msgId").toString());

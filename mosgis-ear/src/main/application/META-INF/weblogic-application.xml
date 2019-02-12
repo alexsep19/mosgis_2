@@ -52,4 +52,11 @@
 	<name>Workflow-settlement-docs</name>
 	<path>META-INF/mosgismodule-settlement-docs-jms.xml</path>
     </module>
+    
+    <module>
+        <type>JMS</type>
+        <name>WS-RegOrgServiceAsync</name>
+        <path>META-INF/ws-jms/mosgismodule-ws-reg-org-service-async-jms.xml</path>
+    </module>
+    
 </weblogic-application>
