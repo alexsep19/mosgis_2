@@ -7,6 +7,7 @@ import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisFileLogTable;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportAccountIndividualServicesRequest;
 
@@ -28,7 +29,7 @@ public class AccountIndividualServiceLog extends GisFileLogTable {
                 
             .get (this, id, "*")
                 
-            .toOne (AdditionalService.class, "AS add_service", "uniquenumber AS code", "elementguid AS guid").on ()
+            .toOne (AdditionalService.class, "AS add_service", "code", "guid").on ()
                 
             .toOne (AccountIndividualService.class, "AS r"
                 , EnTable.c.UUID.lc ()
@@ -53,7 +54,10 @@ public class AccountIndividualServiceLog extends GisFileLogTable {
     
     private static ImportAccountIndividualServicesRequest.IndividualService toIndividualService (Map<String, Object> r) {
         final ImportAccountIndividualServicesRequest.IndividualService result = DB.to.javaBean (ImportAccountIndividualServicesRequest.IndividualService.class, r);
+        if (result.getAccountIndividualServiceGUID () != null) result.setAccountGUID (null);
         result.setTransportGUID (UUID.randomUUID ().toString ());
+        result.setAdditionalService (NsiTable.toDom (r, "add_service"));
+        result.setAttachment (AccountIndividualService.toAttachmentType (r));                
         return result;
     }
     

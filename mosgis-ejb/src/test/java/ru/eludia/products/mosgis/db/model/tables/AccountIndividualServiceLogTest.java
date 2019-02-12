@@ -30,16 +30,22 @@ public class AccountIndividualServiceLogTest extends BaseTest {
         
         Map<String, Object> r = getData ();
         
-        dump (r);
-        
+        r.put ("accountindividualserviceguid", null);        
+        dump (r);        
         validate (AccountIndividualServiceLog.toImportAccountIndividualServicesRequest (r));
         
+        r.put ("accountindividualserviceguid", r.get ("uuid"));
+        dump (r);        
+        validate (AccountIndividualServiceLog.toImportAccountIndividualServicesRequest (r));
+
     }
 
     private Map<String, Object> getData () throws SQLException {
 
         try (DB db = model.getDb ()) {            
-            final Map<String, Object> r = db.getMap (logTable.getForExport ("c3d0e3e3-e41b-4cbd-87f7-ced6c4262734"));                                                                             
+            final Map<String, Object> r = db.getMap (logTable.getForExport ("c3d0e3e3-e41b-4cbd-87f7-ced6c4262734"));
+            r.put ("attachmentguid", r.get ("uuid"));
+            r.put ("attachmenthash", "0000000000000000");
             return r;
         }
 
