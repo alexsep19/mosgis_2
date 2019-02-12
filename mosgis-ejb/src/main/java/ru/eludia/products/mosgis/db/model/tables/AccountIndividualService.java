@@ -3,21 +3,26 @@ package ru.eludia.products.mosgis.db.model.tables;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
-import static ru.eludia.base.model.Type.DATE;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.AttachTable;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 
 public class AccountIndividualService extends AttachTable {
     
     public enum c implements EnColEnum {
 
-        UUID_ACCOUNT           (Account.class,           "Лицевой счёт"),
+        UUID_ACCOUNT                 (Account.class,                            "Лицевой счёт"),
         
-        UUID_ADD_SERVICE       (AdditionalService.class, "Дополнительная услуга"),
-        BEGINDATE              (DATE,                    "Дата начала представления услуги"),
-        ENDDATE                (DATE,                    "Дата окончания представления услуги"),
+        UUID_ADD_SERVICE             (AdditionalService.class,                  "Дополнительная услуга"),
+        BEGINDATE                    (Type.DATE,                                "Дата начала представления услуги"),
+        ENDDATE                      (Type.DATE,                                "Дата окончания представления услуги"),
 
-        ID_LOG               (AccountIndividualServiceLog.class,  "Последнее событие редактирования")
+        ID_LOG                       (AccountIndividualServiceLog.class,        "Последнее событие редактирования"),
+        
+        ID_CTR_STATUS                (VocGisStatus.class, VocGisStatus.DEFAULT, "Статус с точки зрения mosgis"),
+        ID_CTR_STATUS_GIS            (VocGisStatus.class, VocGisStatus.DEFAULT, "Статус с точки зрения ГИС ЖКХ"),
+        
+        ACCOUNTINDIVIDUALSERVICEGUID (Type.UUID,          null,                 "Идентификатор индивидуальной услуги ЛС"),
         
         ;
 
