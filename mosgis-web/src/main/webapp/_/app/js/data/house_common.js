@@ -50,9 +50,28 @@ define ([], function () {
     
     }
 
+    var non_editable_fields = [
+        20168,
+        20815,
+        20816,
+        11052,
+        20024,
+        20817,
+        20818,
+        11053,
+        20169,
+        13026,
+        14526,
+        20025,
+        20062,
+        20170
+    ]
+
     return function (done) {
     
         var house = $('body').data ('data')
+
+        var is_not_oms = !$_USER.role.nsi_20_8
                 
         house.doc_fields = {}
 
@@ -65,6 +84,8 @@ define ([], function () {
             $.each (fields, function () {
             
                 this.recid = this.id
+
+                this.is_not_editable = non_editable_fields.includes (this.id) && is_not_oms
                 
                 this.name = 'f_' + this.id
 
