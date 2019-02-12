@@ -155,6 +155,8 @@ define ([], function () {
                 var editable = col.editable (record)
                 var v        = getData ().item ['f_' + e.recid]
 
+                if (record.is_not_editable) return e.preventDefault ()
+
                 if (record.id_type == 4 && v == 1) {
                     var d = data.depends
                     for (var i in d) if (d [i] == record.id) {

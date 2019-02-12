@@ -3,9 +3,23 @@ define ([], function () {
     var form_name = 'house_passport_form'
     
     function recalc_hidden_td () {
+
+        var house = $('body').data ('data')
     
         var $hb = $('#hasblocks')
         var $hm = $('#hasmultiplehouseswithsameadres')
+
+        if (house.controlled && $_USER.role.nsi_20_8) {
+            $('#totalsquare').prop ('disabled', 1)
+            $('#usedyear').prop ('disabled', 1)
+            $('#floorcount').prop ('disabled', 1)
+            $('#undergroundfloorcount').prop ('disabled', 1)
+            $('#minfloorcount').prop ('disabled', 1)
+            $('#culturalheritage').prop ('disabled', 1)
+            $('#kad_n').prop ('disabled', 1)
+            $('#hasblocks').prop ('disabled', 1)
+            $('#hasmultiplehouseswithsameadres').prop ('disabled', 1)
+        }
     
         if ($hb.prop ('checked')) {
             $hm.prop ('disabled', $('#totalsquare').prop ('disabled'))
@@ -59,8 +73,8 @@ define ([], function () {
             cach.click = function () {openTab ('/' + cach.type + '/' + cach.uuid)}
         }
         
-        if ($_USER.role.nsi_20_7 || data.is_under_nsi_20_8)
-            it._can.edit = 1      
+        if ($_USER.role.nsi_20_8 || data.is_under_nsi_20_8)
+            it._can.edit = 1
         
         it.status_label = data.vc_house_status[it.id_status] + (it.id_status_gis ? " - " + data.vc_gis_status[it.id_status_gis] : "")
         
