@@ -12,8 +12,13 @@ import ru.eludia.products.mosgis.db.model.EnColEnum;
 public class VocNsi236 extends Table {
 
     public enum c implements EnColEnum {
+	CODE                  (STRING, 20, "Код элемента справочника, уникальный в пределах справочника"),
 
-        F_D966DD6CBC          (UUID, null, "Вид коммунальной услуги"),
+	PARENT                (UUID, null, "Ссылка на GUID родительского элемента XML"),
+
+	GUID                  (UUID, null, "Уникальный идентификатор элемента справочника"),
+
+	F_D966DD6CBC          (UUID, null, "Вид коммунальной услуги"),
         GUID_VC_NSI_3         (UUID, new Virt("''||F_D966DD6CBC"), "Вид коммунальной услуги (синоним)"),
 
         F_ADEBB17EBE          (UUID, null, "Вид коммунального ресурса"),
@@ -46,6 +51,8 @@ public class VocNsi236 extends Table {
     public VocNsi236 () {
 
         super ("vc_nsi_236", "Справочник ГИС ЖКХ номер 236");
+
+	pk    (c.GUID);
 
         cols  (c.class);
     }
