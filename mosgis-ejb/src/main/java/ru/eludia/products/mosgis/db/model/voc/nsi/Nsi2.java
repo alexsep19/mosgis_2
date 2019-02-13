@@ -15,8 +15,8 @@ public class Nsi2 extends View {
     
     public enum c implements ColEnum {
         
-        ID     (Type.STRING, 20, null, "Код"),
-        MASK   (Type.NUMERIC,    null, "Битовая маска"),
+        CODE   (Type.STRING, 20, null, "Код"),
+        ID     (Type.NUMERIC,    null, "Битовая маска"),
         LABEL  (Type.STRING,     null, "Наименование"),
         ;
         
