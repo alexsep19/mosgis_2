@@ -593,4 +593,35 @@ public class Conf implements ConfMBean, ConfLocal {
         setInt (VocSetting.i.WS_GIS_LICENSES_TMT_RESP, i);
     }
 
+    @Override
+    public String getWsGisVolumeQualityUrl() {
+	return get(VocSetting.i.WS_GIS_VOLUME_QUALITY_URL);
+    }
+
+    @Override
+    public void setWsGisVolumeQualityUrl(String s) {
+	set(VocSetting.i.WS_GIS_VOLUME_QUALITY_URL, s);
+	set(VocSetting.i.WS_GIS_URL_ROOT, "");
+    }
+
+    @Override
+    public int getWsGisVolumeQualityConnTimeout() {
+	return getInt(VocSetting.i.WS_GIS_VOLUME_QUALITY_TMT_CONN);
+    }
+
+    @Override
+    public void setWsGisVolumeQualityConnTimeout(int i) {
+	setInt(VocSetting.i.WS_GIS_VOLUME_QUALITY_TMT_CONN, i);
+    }
+
+    @Override
+    public int getWsGisVolumeQualityRespTimeout() {
+	return getInt(VocSetting.i.WS_GIS_VOLUME_QUALITY_TMT_RESP);
+    }
+
+    @Override
+    public void setWsGisVolumeQualityRespTimeout(int i) {
+	setInt(VocSetting.i.WS_GIS_VOLUME_QUALITY_TMT_RESP, i);
+    }
+
 }
