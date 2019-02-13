@@ -39,7 +39,7 @@ public class MeteringDevice extends EnTable {
         ID_CTR_STATUS          (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения mosgis"),
         ID_CTR_STATUS_GIS      (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения ГИС ЖКХ"),
 
-///        ID_LOG                 (MeteringDeviceLog.class,                     "Последнее событие редактирования"),
+        ID_LOG                 (MeteringDeviceLog.class,                        "Последнее событие редактирования"),
 
         ;
 
@@ -49,7 +49,7 @@ public class MeteringDevice extends EnTable {
             switch (this) {
                 case FIASHOUSEGUID:
                 case UUID_ORG:
-//                case ID_LOG:
+                case ID_LOG:
                     return false;
                 default:
                     return true;
@@ -58,10 +58,10 @@ public class MeteringDevice extends EnTable {
 
     }
 
-    public MeteringDevice () {        
-        super  ("tb_meters", "Приборы учёта");        
-        cols   (c.class);        
-        key    ("fiashouseguid", "fiashouseguid");        
-    }    
+    public MeteringDevice () {
+        super  ("tb_meters", "Приборы учёта");
+        cols   (c.class);
+        key    ("fiashouseguid", "fiashouseguid");
+    }
 
 }
