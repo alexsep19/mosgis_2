@@ -1,10 +1,5 @@
 package ru.eludia.products.mosgis.db.model.voc.nsi;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
@@ -38,7 +33,7 @@ public class Nsi16 extends View {
 
         return "SELECT "
             + " code id, "
-            + " f_17e03ccf84 || ' ' || f_a008c7d1f3 label "
+            + " " + VocNsi16.c.F_17E03CCF84.name () + " || ' ' || " + VocNsi16.c.F_A008C7D1F3.name () + " label "
             + "FROM "
             + " vc_nsi_16 "
             + "WHERE"
