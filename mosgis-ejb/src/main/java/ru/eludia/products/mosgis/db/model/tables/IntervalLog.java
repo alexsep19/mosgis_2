@@ -27,8 +27,6 @@ public class IntervalLog extends GisWsLogTable {
 
     public Get getForExport(String id) {
 
-	final NsiTable nsi3 = NsiTable.getNsiTable(3);
-
 	return (Get) getModel()
 	    .get(this, id, "*")
 	    .toOne(Interval.class, "AS r",
@@ -36,7 +34,7 @@ public class IntervalLog extends GisWsLogTable {
 	    ).on()
 	    .toMaybeOne(SupplyResourceContract.class, "AS sr_ctr", "contractrootguid").on()
 	    .toMaybeOne(VocOrganization.class, "AS org", "orgppaguid AS orgppaguid").on("r.uuid_org=org.uuid")
-	    .toOne(nsi3, "AS vc_nsi_3", "code", "guid").on("r.code_vc_nsi_3=vc_nsi_3.code AND vc_nsi_3.isactual = 1")
+	    .toOne(VocNsi3.class, "AS vc_nsi_3", "code", "guid").on("r.code_vc_nsi_3=vc_nsi_3.code AND vc_nsi_3.isactual = 1")
 	    .toOne(VocNsi239.class, "AS vc_nsi_239", "code", "guid").on("r.code_vc_nsi_239=vc_nsi_239.code AND vc_nsi_239.isactual = 1")
 	;
     }
