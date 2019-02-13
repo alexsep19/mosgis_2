@@ -1,31 +1,21 @@
 package ru.eludia.products.mosgis.web;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.SQLException;
-import java.util.Map;
-import java.util.logging.Level;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.interceptor.Interceptors;
 import javax.jms.Queue;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
-import ru.eludia.base.DB;
-import ru.eludia.base.db.util.TypeConverter;
-import ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState;
-import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
-import ru.eludia.products.mosgis.db.model.ws.WsMessages;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
+import ru.eludia.products.mosgis.web.base.Fault;
+import ru.eludia.products.mosgis.ws.base.WsInterceptor;
 import ru.mos.gkh.gis.schema.integration.base.AckRequest;
 import ru.mos.gkh.gis.schema.integration.base.GetStateRequest;
-import ru.mos.gkh.gis.schema.integration.base.RequestHeader;
 import ru.mos.gkh.gis.schema.integration.organizations_registry_common.ExportOrgRegistryRequest;
 import ru.mos.gkh.gis.schema.integration.organizations_registry_common.GetStateResult;
-import ru.mos.gkh.gis.schema.integration.organizations_registry_common_service_async.Fault;
 
 /**
  *
@@ -50,42 +40,9 @@ public class RegOrgServiceCommonAsync {
     @EJB
     protected UUIDPublisher UUIDPublisher;
     
+    @Interceptors(WsInterceptor.class)
     public GetStateResult getState(GetStateRequest getStateRequest) throws Fault {
-        
-        MessageContext msgContext = wsContext.getMessageContext();
-        
-        GetStateResult result = new GetStateResult();
-        try (DB db = ModelHolder.getModel().getDb()) {
-            
-            Map<String, Object> wsMsg = db.getMap(WsMessages.class, getStateRequest.getMessageGUID());
-            
-            if (wsMsg == null || wsMsg.isEmpty())
-                throw new Exception("Не найдено сообщение с идентификатором " + getStateRequest.getMessageGUID());
-            
-            msgContext.put("msgId", wsMsg.get(WsMessages.c.UUID_MESSAGE.lc()));
-            
-            if (VocAsyncRequestState.i.ACCEPTED.equals(wsMsg.get(WsMessages.c.ID_STATUS.lc())))
-                throw new Exception("OK");
-            else {
-                result.setMessageGUID(wsMsg.get(WsMessages.c.UUID.lc()).toString());
-                result.setRequestState(Byte.valueOf(wsMsg.get(WsMessages.c.ID_STATUS.lc()).toString()));
-            }
-            
-            return result;
-            
-        } catch (Exception ex) {
-            ru.mos.gkh.gis.schema.integration.base.Fault fault = new ru.mos.gkh.gis.schema.integration.base.Fault();
-            fault.setErrorCode("EXP000000");
-            fault.setErrorMessage(ex.getMessage());
-            
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw, true);
-            ex.printStackTrace(pw);
-            sw.getBuffer().toString();
-            fault.setStackTrace(sw.getBuffer().toString());
-            
-            throw new Fault(ex.getMessage(), fault);
-        }
+        return null;
     }
     
     public AckRequest exportOrgRegistry(ExportOrgRegistryRequest exportOrgRegistryRequest) throws Fault {

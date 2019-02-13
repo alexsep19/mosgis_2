@@ -1,10 +1,13 @@
 package ru.eludia.products.mosgis.ws.base;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
@@ -80,6 +83,14 @@ public class LoggingMessageHandler extends BaseLoggingMessageHandler {
             addParamToMessageContext(messageContext, "ack", ack);
             addParamToMessageContext(messageContext, "msgId", savedMsg.get("msgId"));
             addParamToMessageContext(messageContext, "isNew", savedMsg.get("isNew"));
+        } else if (messageInfo.isOut && messageContext.get("response") != null) { 
+            InputStream is = new ByteArrayInputStream(messageContext.get("response").toString().getBytes());
+            try {
+                SOAPMessage response = MessageFactory.newInstance().createMessage(null, is);
+                messageContext.setMessage(response);
+            } catch (Exception ex) {
+                throw new IllegalStateException("Cannot create SOAP message", ex);
+            }
         } else if (messageInfo.isOut){
             ResultHeader resultHeader = new ResultHeader();
             resultHeader.setDate(LocalDateTime.now());
