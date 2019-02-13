@@ -10,8 +10,8 @@ public class Nsi16 extends View {
     
     public enum c implements ColEnum {
         
-        ID                        (Type.STRING,   null,           "Код"),
-        LABEL                     (Type.STRING,   null,           "Наименование"),
+        ID    (Type.STRING, 20, null, "Код"),
+        LABEL (Type.STRING,     null, "Наименование"),
         ;
         
         @Override

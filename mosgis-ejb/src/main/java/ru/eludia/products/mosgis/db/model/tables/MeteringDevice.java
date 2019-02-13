@@ -8,6 +8,8 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi16;
+import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi27;
 
 public class MeteringDevice extends EnTable {
     
@@ -28,8 +30,8 @@ public class MeteringDevice extends EnTable {
         
         FIRSTVERIFICATIONDATE  (Type.DATE,           null,                      "Дата последней поверки"),
 
-        CODE_VC_NSI_27         (Type.STRING,  20,    null,                      "Тип прибора учета (НСИ 27)"),
-        CODE_VC_NSI_16         (Type.STRING,  20,    null,                      "Межповерочный интервал (НСИ 16)"),
+        CODE_VC_NSI_27         (Nsi27.class,  20,    null,                      "Тип прибора учета (НСИ 27)"),
+        CODE_VC_NSI_16         (Nsi16.class,         null,                      "Межповерочный интервал (НСИ 16)"),
 
         FACTORYSEALDATE        (Type.DATE,           null,                      "Дата опломбирования ПУ заводом-изготовителем"),
 
