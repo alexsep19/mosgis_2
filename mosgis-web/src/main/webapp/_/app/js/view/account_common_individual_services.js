@@ -51,7 +51,7 @@ define ([], function () {
 
         var it = data.item
 
-        var can_edit = it._can.edit
+        var can_edit = it._can.edit || it._can.alter
 
         $(w2ui ['passport_layout'].el ('main')).w2regrid ({ 
 
