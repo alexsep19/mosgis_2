@@ -28,6 +28,7 @@ public class MeteringDevice extends EnTable {
         
         FIRSTVERIFICATIONDATE  (Type.DATE,           null,                      "Дата последней поверки"),
 
+        CODE_VC_NSI_27         (Type.STRING,  20,    null,                      "Тип прибора учета (НСИ 27)"),
         CODE_VC_NSI_16         (Type.STRING,  20,    null,                      "Межповерочный интервал (НСИ 16)"),
 
         FACTORYSEALDATE        (Type.DATE,           null,                      "Дата опломбирования ПУ заводом-изготовителем"),
@@ -49,6 +50,7 @@ public class MeteringDevice extends EnTable {
             switch (this) {
                 case FIASHOUSEGUID:
                 case UUID_ORG:
+                case CODE_VC_NSI_27:
                 case ID_LOG:
                     return false;
                 default:
