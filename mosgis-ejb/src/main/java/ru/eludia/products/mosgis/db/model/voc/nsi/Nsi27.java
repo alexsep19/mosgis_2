@@ -28,7 +28,7 @@ public class Nsi27 extends View {
     }    
 
     public Nsi27 () {        
-        super  ("vw_nsi_27", "Помещения и блоки");
+        super  ("vw_nsi_27", "Типы приборов учёта");
         cols   (c.class);
         pk     (c.ID);        
     }
