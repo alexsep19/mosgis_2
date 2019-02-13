@@ -48,9 +48,6 @@ public class VocNsi236 extends Table {
         super ("vc_nsi_236", "Справочник ГИС ЖКХ номер 236");
 
         cols  (c.class);
-        
-        pk (c.)
-        
     }
 
 }
