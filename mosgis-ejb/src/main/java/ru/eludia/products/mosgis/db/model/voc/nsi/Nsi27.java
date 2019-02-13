@@ -38,7 +38,7 @@ public class Nsi27 extends View {
 
         return "SELECT "
             + " code id, "
-            + " f_bcab5caf38 label "
+            + VocNsi27.c.F_BCAB5CAF38.name () + " label "
             + "FROM "
             + " vc_nsi_27 "
             + "WHERE"
