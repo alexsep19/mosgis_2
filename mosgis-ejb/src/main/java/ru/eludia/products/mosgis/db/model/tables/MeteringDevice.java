@@ -17,6 +17,7 @@ public class MeteringDevice extends EnTable {
     public enum c implements EnColEnum {
         
         UUID_ORG               (VocOrganization.class,                          "Организация, которая завела данный прибор в БД"),
+        UUID_PREMISE           (Premise.class,       null,                      "Помещение"),
 	FIASHOUSEGUID          (VocBuilding.class,                              "Глобальный уникальный идентификатор дома по ФИАС"),
         
         METERINGDEVICENUMBER   (Type.STRING,  50,                               "Заводской (серийный) номер ПУ"),

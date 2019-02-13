@@ -12,6 +12,7 @@ import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.MeteringDevice;
 import ru.eludia.products.mosgis.db.model.tables.MeteringDeviceLog;
+import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -85,6 +86,7 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {                
 
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
+            .toMaybeOne (Premise.class, "AS premise", Premise.c.LABEL.lc ()).on ()
 //            .toMaybeOne (MeteringDeviceLog.class               ).on ()
 //            .toMaybeOne (OutSoap.class,       "err_text").on ()
             .orderBy ("root.meteringdevicenumber")
@@ -106,6 +108,7 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
 
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
             .get (getTable (), id, "AS root", "*")
+            .toMaybeOne (Premise.class, "AS premise", Premise.c.LABEL.lc ()).on ()
             .toMaybeOne (MeteringDeviceLog.class, "AS log").on ()
             .toMaybeOne (OutSoap.class, "err_text").on ("log.uuid_out_soap=out_soap.uuid")
             .toOne (VocOrganization.class, "AS org", "label").on ("root.uuid_org=org.uuid")
