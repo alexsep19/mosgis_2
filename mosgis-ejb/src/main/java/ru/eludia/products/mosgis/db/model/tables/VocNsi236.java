@@ -16,7 +16,7 @@ public class VocNsi236 extends Table {
 
 	PARENT                (UUID, null, "Ссылка на GUID родительского элемента XML"),
 
-	GUID                  (UUID, null, "Уникальный идентификатор элемента справочника"),
+	GUID                  (UUID, "Уникальный идентификатор элемента справочника"),
 
 	F_D966DD6CBC          (UUID, null, "Вид коммунальной услуги"),
         GUID_VC_NSI_3         (UUID, new Virt("''||F_D966DD6CBC"), "Вид коммунальной услуги (синоним)"),
