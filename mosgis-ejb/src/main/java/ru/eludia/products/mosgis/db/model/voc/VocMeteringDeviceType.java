@@ -98,11 +98,15 @@ public class VocMeteringDeviceType extends Table {
             this (id, is_condo, nsi27, clazz, label);
             this.code_vc_nsi_30 = nsi30.getId ();
         }
-        
+
         private JsonObject toJsonObject () {
             return Json.createObjectBuilder ()
                 .add ("id",    id)
                 .add ("label", label)
+                .add ("is_condo", is_condo)
+                .add ("clazz", clazz)
+                .add ("code_vc_nsi_27", code_vc_nsi_27)
+                .add ("code_vc_nsi_30", code_vc_nsi_30)
             .build ();
         }
 

@@ -15,6 +15,7 @@ import ru.eludia.products.mosgis.db.model.tables.MeteringDeviceLog;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceType;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi27;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -127,6 +128,7 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
         
         Nsi27.i.addTo (job);
         VocAction.addTo (job);
+        VocMeteringDeviceType.addTo (job);
         
         return job.build ();
         
