@@ -3,6 +3,8 @@ package ru.eludia.products.mosgis.jms.base;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -12,11 +14,13 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPBody;
+import javax.xml.soap.SOAPConstants;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import org.w3c.dom.Document;
@@ -27,8 +31,10 @@ import org.xml.sax.SAXException;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState;
 import ru.eludia.products.mosgis.db.model.ws.WsMessages;
+import ru.eludia.products.mosgis.web.base.Fault;
 import ru.eludia.products.mosgis.ws.base.AbstactServiceAsync;
 import ru.mos.gkh.gis.schema.integration.base.BaseAsyncResponseType;
+import ru.mos.gkh.gis.schema.integration.base.ErrorMessageType;
 import ru.mos.gkh.gis.schema.integration.base.ResultHeader;
 
 /**
@@ -36,6 +42,9 @@ import ru.mos.gkh.gis.schema.integration.base.ResultHeader;
  * @author Aleksei
  */
 public abstract class WsMDB extends UUIDMDB<WsMessages>{
+    
+    private static final QName SOAP_SERVER_FAULT =
+         new QName(SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE, "Server", SOAPConstants.SOAP_ENV_PREFIX);
     
     protected abstract JAXBContext getJAXBContext() throws JAXBException;
     
@@ -80,10 +89,25 @@ public abstract class WsMDB extends UUIDMDB<WsMessages>{
 
             r.put(WsMessages.c.RESPONSE_TIME.lc(), responseDt);
             r.put(WsMessages.c.RESPONSE.lc(), responseStr);
+        } catch (Exception ex) {
+            try {
+                SOAPMessage soapMessage = MessageFactory.newInstance().createMessage();
+                SOAPBody soapBody = soapMessage.getSOAPBody();
+                soapBody.addFault(SOAP_SERVER_FAULT, ex.getCause().getMessage());
+                
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                soapMessage.writeTo(out);
+                String responseStr = new String(out.toByteArray(), "UTF-8");
+            
+                r.put(WsMessages.c.RESPONSE_TIME.lc(), LocalDateTime.now());
+                r.put(WsMessages.c.RESPONSE.lc(), responseStr);
+                
+            } catch (SOAPException | IOException e){
+                logger.log (Level.SEVERE, "Cannot create SOAP fault", e);
+            }
+        } finally {
             r.put(WsMessages.c.ID_STATUS.lc(), VocAsyncRequestState.i.DONE.getId());
             db.update(WsMessages.class, r);
-        } catch (Exception ex) {
-            logger.log(Level.SEVERE, null, ex);
         }
 
     }
@@ -124,5 +148,17 @@ public abstract class WsMDB extends UUIDMDB<WsMessages>{
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
         return builder;
+    }
+    
+    protected ErrorMessageType createErrorMessage(Fault e) {
+        ErrorMessageType errorMessage = new ErrorMessageType();
+        errorMessage.setErrorCode(e.getFaultCode());
+        errorMessage.setDescription(e.getFaultMessage());
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw, true);
+        e.printStackTrace(pw);
+        sw.getBuffer().toString();
+        errorMessage.setStackTrace(sw.getBuffer().toString());
+        return errorMessage;
     }
 }

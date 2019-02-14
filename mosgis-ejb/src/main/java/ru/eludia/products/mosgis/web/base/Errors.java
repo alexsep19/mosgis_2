@@ -10,6 +10,7 @@ package ru.eludia.products.mosgis.web.base;
  * @author Aleksei
  */
 public enum Errors {
+    INT002012("Нет объектов для экспорта"),
     INT002013("Запрос не найден");
 
     private Errors(String message) {

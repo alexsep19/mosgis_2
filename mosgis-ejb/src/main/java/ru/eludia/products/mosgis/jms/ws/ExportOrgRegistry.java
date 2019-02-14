@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.jms.ws;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +19,8 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTypes;
 import ru.eludia.products.mosgis.jms.base.WsMDB;
 import ru.eludia.products.mosgis.util.StringUtils;
 import ru.eludia.products.mosgis.util.XmlUtils;
+import ru.eludia.products.mosgis.web.base.Errors;
+import ru.eludia.products.mosgis.web.base.Fault;
 import ru.mos.gkh.gis.schema.integration.base.BaseAsyncResponseType;
 import ru.mos.gkh.gis.schema.integration.organizations_registry_base.EntpsType;
 import ru.mos.gkh.gis.schema.integration.organizations_registry_base.ForeignBranchType;
@@ -43,6 +46,17 @@ public class ExportOrgRegistry extends WsMDB {
 
     @Override
     protected BaseAsyncResponseType handleRequest(DB db, Object request) throws Exception {
+        try {
+            return generateResponse(db, request);
+        } catch (Fault e) {
+            GetStateResult result = new GetStateResult();
+            result.setErrorMessage(createErrorMessage(e));
+            return result;
+        }
+    }
+        
+    private BaseAsyncResponseType generateResponse(DB db, Object request) throws Fault, SQLException {    
+        
         ExportOrgRegistryRequest exportOrgRegistryRequest = (ExportOrgRegistryRequest) request;
 
         HashMap<String, ExportOrgRegistryResultType> orgRegistryList = new HashMap<>();
@@ -120,7 +134,10 @@ public class ExportOrgRegistry extends WsMDB {
                 orgRegistryList.put(org.get(VocOrganization.c.UUID.lc()).toString(), result);
             }
         }
-
+        
+        if (orgRegistryList.isEmpty())
+            throw new Fault(Errors.INT002012);
+            
         GetStateResult result = new GetStateResult();
         result.getExportOrgRegistryResult().addAll(orgRegistryList.values());
 
