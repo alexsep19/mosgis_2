@@ -16,8 +16,15 @@ public abstract class UUIDMDB<T extends Table> extends TextMDB {
     
     protected abstract void handleRecord (DB db, final UUID uuid, Map<String, Object> r) throws Exception;    
     
-    protected Class getTableClass () {
-        return (Class) ((ParameterizedType)getClass ().getGenericSuperclass ()).getActualTypeArguments () [0];
+    protected Class getTableClass() {
+        Class clazz = getClass();
+        Class tableClass = null;
+        while (tableClass == null) {
+            if (clazz.getGenericSuperclass() instanceof ParameterizedType)
+                tableClass = (Class) ((ParameterizedType) clazz.getGenericSuperclass()).getActualTypeArguments()[0];
+            clazz = clazz.getSuperclass();
+        }
+        return tableClass;
     }
     
     protected final Table getTable () {

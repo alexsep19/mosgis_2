@@ -1,168 +1,130 @@
 package ru.eludia.products.mosgis.jms.ws;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Level;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
-import javax.json.JsonObject;
-import javax.json.JsonString;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import ru.eludia.base.DB;
-import static ru.eludia.base.DB.HASH;
-import ru.eludia.products.mosgis.db.model.voc.VocAction;
-import ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState;
+import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.base.db.util.TypeConverter;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
-import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTypes;
-import ru.eludia.products.mosgis.db.model.ws.WsMessages;
-import ru.eludia.products.mosgis.jms.base.UUIDMDB;
-import ru.eludia.products.mosgis.ws.base.AbstactServiceAsync;
-import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
-import ru.gosuslugi.dom.schema.integration.organizations_registry_common.ExportOrgRegistryResultType;
-import ru.gosuslugi.dom.schema.integration.organizations_registry_common.GetStateResult;
+import ru.eludia.products.mosgis.jms.base.WsMDB;
+import ru.eludia.products.mosgis.util.StringUtils;
+import ru.eludia.products.mosgis.util.XmlUtils;
+import ru.mos.gkh.gis.schema.integration.base.BaseAsyncResponseType;
+import ru.mos.gkh.gis.schema.integration.organizations_registry_base.EntpsType;
+import ru.mos.gkh.gis.schema.integration.organizations_registry_base.ForeignBranchType;
+import ru.mos.gkh.gis.schema.integration.organizations_registry_base.LegalType;
+import ru.mos.gkh.gis.schema.integration.organizations_registry_base.RegOrgVersionType;
+import ru.mos.gkh.gis.schema.integration.organizations_registry_common.ExportOrgRegistryRequest;
+import ru.mos.gkh.gis.schema.integration.organizations_registry_common.ExportOrgRegistryResultType;
+import ru.mos.gkh.gis.schema.integration.organizations_registry_common.GetStateResult;
 
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.exportOrgRegistry")
     , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
     , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class ExportOrgRegistry extends UUIDMDB<WsMessages> {   
-    
+public class ExportOrgRegistry extends WsMDB {
+
     @Override
-    protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
-
-        try {
-            
-            r.put(WsMessages.c.ID_STATUS.lc(), VocAsyncRequestState.i.IN_PROGRESS.getId());           
-            db.update (WsMessages.class, r);
-            
-            /*
-            
-            
-            
-            
-
-            GetStateResult rp = wsGisOrgClient.getState ((UUID) r.get ("uuid_ack"));
-
-            ErrorMessageType errorMessage = rp.getErrorMessage ();
-
-            if (errorMessage != null) {
-
-                if ("INT002012".equals (errorMessage.getErrorCode ())) {
-                    
-                    logger.warning ("OGRN not found");
-                
-                    db.update (OutSoap.class, HASH (
-                        "uuid", uuid,
-                        "id_status", DONE.getId ()
-                    ));
-                    
-                }
-                else {
-
-                    logger.warning (errorMessage.getErrorCode () + " " + errorMessage.getDescription ());
-
-                    db.update (OutSoap.class, HASH (
-                        "uuid", uuid,
-                        "id_status", DONE.getId (),
-                        "is_failed", 1,
-                        "err_code",  errorMessage.getErrorCode (),
-                        "err_text",  errorMessage.getDescription ()
-                    ));
-
-                }                
-                
-                return;
-
-            }
-
-            for (ExportOrgRegistryResultType i: rp.getExportOrgRegistryResult ()) if (handleOrgRegistryResult (i.getOrgVersion (), rp, i, db, uuid, (UUID) r.get ("i.uuid_user"))) continue;
-
-            db.update (OutSoap.class, HASH (
-                "uuid", uuid,
-                "id_status", DONE.getId ()
-            ));*/
-            
-        }
-        catch (Exception ex) {
-            logger.log (Level.SEVERE, null, ex);
-        }
-
+    protected JAXBContext getJAXBContext() throws JAXBException {
+        return JAXBContext.newInstance(
+                ExportOrgRegistryRequest.class,
+                GetStateResult.class);
     }
 
-    private boolean handleOrgRegistryResult (ExportOrgRegistryResultType.OrgVersion orgVersion, GetStateResult rp, ExportOrgRegistryResultType i, DB db, UUID uuidOutSoap, UUID uuidUser) throws SQLException {
-        
-        Object o = null;
-        
-        if (orgVersion.getLegal () != null) o = orgVersion.getLegal ();
-        if (orgVersion.getEntrp () != null) o = orgVersion.getEntrp ();
-        if (orgVersion.getSubsidiary () != null) o = orgVersion.getSubsidiary ();
-        if (orgVersion.getForeignBranch () != null) o = orgVersion.getForeignBranch ();
-                
-        if (o == null) {
-            logger.warning ("Cannot import org: " + AbstactServiceAsync.toJSON (rp));
-            return true;        
+    @Override
+    protected BaseAsyncResponseType handleRequest(DB db, Object request) throws Exception {
+        ExportOrgRegistryRequest exportOrgRegistryRequest = (ExportOrgRegistryRequest) request;
+
+        HashMap<String, ExportOrgRegistryResultType> orgRegistryList = new HashMap<>();
+
+        LocalDate lastEditingDateFrom = exportOrgRegistryRequest.getLastEditingDateFrom(); //TODO ??
+
+        for (ExportOrgRegistryRequest.SearchCriteria searchCriteria : exportOrgRegistryRequest.getSearchCriteria()) {
+
+            Select select = db.getModel().select(VocOrganization.class, "*");
+            if (StringUtils.isNotBlank(searchCriteria.getOGRNIP())) {
+                select.where(VocOrganization.c.OGRN, searchCriteria.getOGRNIP());
+            } else if (StringUtils.isNotBlank(searchCriteria.getOGRN())) {
+                select.where(VocOrganization.c.OGRN, searchCriteria.getOGRN());
+                if (StringUtils.isNotBlank(searchCriteria.getKPP())) {
+                    select.where(VocOrganization.c.KPP, searchCriteria.getKPP());
+                }
+            } else if (StringUtils.isNotBlank(searchCriteria.getNZA())) {
+                select.where(VocOrganization.c.OGRN, searchCriteria.getNZA());
+            } else if (StringUtils.isNotBlank(searchCriteria.getOrgVersionGUID())) {
+                select.where(VocOrganization.c.ORGVERSIONGUID, searchCriteria.getOrgVersionGUID());
+            } else if (StringUtils.isNotBlank(searchCriteria.getOrgRootEntityGUID())) {
+                select.where(VocOrganization.c.ORGROOTENTITYGUID, searchCriteria.getOrgRootEntityGUID());
+            } else if (StringUtils.isNotBlank(searchCriteria.getOrgPPAGUID())) {
+                select.where(VocOrganization.c.ORGPPAGUID, searchCriteria.getOrgPPAGUID());
+            }
+            searchCriteria.isIsRegistered(); //TODO ??
+
+            List<Map<String, Object>> orgs = db.getList(select);
+            for (Map<String, Object> org : orgs) {
+                ExportOrgRegistryResultType result = TypeConverter.javaBean(ExportOrgRegistryResultType.class, org);
+
+                ExportOrgRegistryResultType.OrgVersion orgVersion = TypeConverter.javaBean(ExportOrgRegistryResultType.OrgVersion.class, org);
+                result.setOrgVersion(orgVersion);
+
+                result.setIsRegistered(Boolean.TRUE); //TODO ??
+                orgVersion.setIsActual(true); //TODO ??
+                orgVersion.setRegistryOrganizationStatus("P"); //TODO ??
+                orgVersion.setLastEditingDate(LocalDate.now()); //TODO ??
+
+                VocOrganizationTypes.i orgType = VocOrganizationTypes.i.forId(org.get(VocOrganization.c.ID_TYPE.lc()));
+                switch (orgType) {
+                    case ENTPS:
+                        org.put("ogrnip", org.get(VocOrganization.c.OGRN.lc()));
+                        orgVersion.setEntrp(TypeConverter.javaBean(EntpsType.class, org));
+                        break;
+                    case FOREIGN_BRANCH:
+                        org.put("nza", org.get(VocOrganization.c.OGRN.lc()));
+                        orgVersion.setForeignBranch(TypeConverter.javaBean(ForeignBranchType.class, org));
+                        break;
+                    case LEGAL:
+                        orgVersion.setLegal(TypeConverter.javaBean(LegalType.class, org));
+                        break;
+                    case SUBSIDIARY:
+                        ExportOrgRegistryResultType.OrgVersion.Subsidiary subsidiary = TypeConverter.javaBean(ExportOrgRegistryResultType.OrgVersion.Subsidiary.class, org);
+                        subsidiary.setStatusVersion("P"); //TODO ??
+
+                        //Головная организация
+                        RegOrgVersionType regOrgVersion = new RegOrgVersionType();
+                        regOrgVersion.setOrgVersionGUID(UUID.randomUUID().toString()); //TODO Доработать
+                        ExportOrgRegistryResultType.OrgVersion.Subsidiary.ParentOrg parentOrg = new ExportOrgRegistryResultType.OrgVersion.Subsidiary.ParentOrg();
+                        parentOrg.setRegOrgVersion(regOrgVersion);
+                        subsidiary.setParentOrg(parentOrg);
+
+                        orgVersion.setSubsidiary(subsidiary);
+                        break;
+                }
+
+                List<Map<String, Object>> roles = db.getList(db.getModel()
+                        .select(VocOrganizationNsi20.class, "*")
+                        .where("uuid", org.get(VocOrganization.c.UUID.lc()))
+                        .and("is_deleted", 0));
+                for (Map<String, Object> role : roles) {
+                    result.getOrganizationRoles().add(XmlUtils.createWsNsiRef(20, role.get("code").toString()));
+                }
+                orgRegistryList.put(org.get(VocOrganization.c.UUID.lc()).toString(), result);
+            }
         }
 
-        JsonObject jo = DB.to.JsonObject (AbstactServiceAsync.toJSON (o));
+        GetStateResult result = new GetStateResult();
+        result.getExportOrgRegistryResult().addAll(orgRegistryList.values());
 
-        final String uuid = i.getOrgRootEntityGUID ();
-        
-        Map<String, Object> record = DB.HASH (
-            "id_type",           VocOrganizationTypes.i.valueOf (o).getId (),
-            "orgrootentityguid", uuid,
-            "orgppaguid",        i.getOrgPPAGUID ()
-        );
-        
-        jo.forEach ((k, v) -> {
-            
-            if (!(v instanceof JsonString)) return;
-            
-            String f = k.toLowerCase ();
-            
-            if ("ogrnip".equals (f)) f = "ogrn";
-            
-            record.put (f, ((JsonString) v).getString ());
-            
-        });
-        
-        record.put (VocOrganization.c.ORGVERSIONGUID.lc (), orgVersion.getOrgVersionGUID ());
-                
-        db.upsert (VocOrganization.class, record);
-        
-        record.put ("uuid_object", uuid);
-        record.put ("uuid_user", uuidUser);
-        record.put ("uuid_out_soap", uuidOutSoap);
-        record.put ("action", VocAction.i.REFRESH);
-        
-        db.insert (VocOrganizationLog.class, record);
-        
-        boolean isUo = false;
-        
-        List<Map<String, Object>> roles = new ArrayList<>();
-        for (NsiRef role : i.getOrganizationRoles()) {
-            if ("1".equals(role.getCode()))
-                isUo = true;
-            
-            roles.add(HASH(
-                "is_deleted", 0,
-                "code", role.getCode()
-            ));
-        }
-        
-        db.dupsert (
-            VocOrganizationNsi20.class, 
-            HASH ("uuid", uuid), 
-            roles,
-            "code"
-        );
-        
-        return false;
-
+        return result;
     }
 
 }

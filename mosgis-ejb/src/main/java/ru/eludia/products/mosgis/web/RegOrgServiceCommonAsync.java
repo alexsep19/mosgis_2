@@ -52,7 +52,7 @@ public class RegOrgServiceCommonAsync {
         result.setAck(ack);
         
         if (msgContext.get("isNew") != null && ((Boolean) msgContext.get("isNew")))
-            UUIDPublisher.publish(exportOrgRegistryQueue, msgContext.get("msgId").toString());
+            UUIDPublisher.publish(exportOrgRegistryQueue, ack.getMessageGUID().toString());
         
         return result;
     }

@@ -81,11 +81,11 @@ public class LoggingMessageHandler extends BaseLoggingMessageHandler {
             ack.setMessageGUID(savedMsg.get("msgId").toString());
             ack.setRequesterMessageGUID(rh.getMessageGUID());
             addParamToMessageContext(messageContext, "ack", ack);
-            addParamToMessageContext(messageContext, "msgId", savedMsg.get("msgId"));
+            addParamToMessageContext(messageContext, "msgId", rh.getMessageGUID());
             addParamToMessageContext(messageContext, "isNew", savedMsg.get("isNew"));
         } else if (messageInfo.isOut && messageContext.get("response") != null) { 
-            InputStream is = new ByteArrayInputStream(messageContext.get("response").toString().getBytes());
             try {
+                InputStream is = new ByteArrayInputStream(messageContext.get("response").toString().getBytes("UTF-8"));
                 SOAPMessage response = MessageFactory.newInstance().createMessage(null, is);
                 messageContext.setMessage(response);
             } catch (Exception ex) {
