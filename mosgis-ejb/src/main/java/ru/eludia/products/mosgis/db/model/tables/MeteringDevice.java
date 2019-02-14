@@ -32,7 +32,7 @@ public class MeteringDevice extends EnTable {
         
         FIRSTVERIFICATIONDATE  (Type.DATE,           null,                      "Дата последней поверки"),
 
-        CODE_VC_NSI_27         (Nsi27.class,  20,    null,                      "Тип прибора учета (НСИ 27)"),
+        CODE_VC_NSI_27         (Nsi27.class,                                    "Тип прибора учета (НСИ 27)"),
         CODE_VC_NSI_16         (Nsi16.class,         null,                      "Межповерочный интервал (НСИ 16)"),
 
         MASK_VC_NSI_2          (Type.NUMERIC, 3, 0,  BigInteger.ZERO,           "Битовая маска типов коммунальных ресурсов"),
