@@ -14,6 +14,7 @@ import ru.eludia.products.mosgis.db.model.tables.LivingRoom;
 import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi27;
+import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi30;
 
 public class VocMeteringDeviceType extends Table {
     
@@ -31,6 +32,7 @@ public class VocMeteringDeviceType extends Table {
         ID             (Type.NUMERIC, 1,    "Идентификатор"),
         LABEL          (Type.STRING,        "Наименование"),
         CODE_VC_NSI_27 (Nsi27.class,        "Тип прибора учета (НСИ 27)"),
+        CODE_VC_NSI_30 (Nsi30.class,  null, "Характеристика помещения (НСИ 30)"),
         CLAZZ          (Type.STRING,  null, "Класс")
         ;
         
@@ -40,18 +42,19 @@ public class VocMeteringDeviceType extends Table {
     
     public enum i {
      
-        APARTMENT_HOUSE         (1, Nsi27.i.INDIVIDUAL,                                        "ИПУ жилого дома"),
-        COLLECTIVE              (2, Nsi27.i.COLLECTIVE,                                        "общедомовой ПУ"),       
-        NON_RESIDENTIAL_PREMISE (3, Nsi27.i.INDIVIDUAL,           NonResidentialPremise.class, "ИПУ нежилого помещения"),
-        RESIDENTIAL_PREMISE     (4, Nsi27.i.INDIVIDUAL,           ResidentialPremise.class,    "ИПУ жилого помещения"),
-        COLLECTIVE_APARTMENT    (5, Nsi27.i.COLLECTIVE_APARTMENT, ResidentialPremise.class,    "общеквартирный ПУ"),
-        LIVING_ROOM             (6, Nsi27.i.LIVING_ROOM,          LivingRoom.class,            "комнатный ИПУ"),
+        APARTMENT_HOUSE         (1, Nsi27.i.INDIVIDUAL,                                                            "ИПУ жилого дома"),
+        COLLECTIVE              (2, Nsi27.i.COLLECTIVE,                                                            "общедомовой ПУ"),
+        NON_RESIDENTIAL_PREMISE (3, Nsi27.i.INDIVIDUAL,           NonResidentialPremise.class,                     "ИПУ нежилого помещения"),
+        RESIDENTIAL_PREMISE     (4, Nsi27.i.INDIVIDUAL,           ResidentialPremise.class,    Nsi30.i.INDIVIDUAL, "ИПУ жилого помещения"),
+        COLLECTIVE_APARTMENT    (5, Nsi27.i.COLLECTIVE_APARTMENT, ResidentialPremise.class,    Nsi30.i.COLLECTIVE, "общеквартирный ПУ"),
+        LIVING_ROOM             (6, Nsi27.i.LIVING_ROOM,          LivingRoom.class,                                "комнатный ИПУ"),
         ;
                 
-        int    id;
-        int    code_vc_nsi_27;
-        String clazz;
-        String label;
+        int     id;
+        int     code_vc_nsi_27;
+        Integer code_vc_nsi_30 = null;
+        String  clazz;
+        String  label;
 
         public int getId () {
             return id;
@@ -69,6 +72,10 @@ public class VocMeteringDeviceType extends Table {
             return code_vc_nsi_27;
         }
 
+        public Integer getCode_vc_nsi_30 () {
+            return code_vc_nsi_30;
+        }      
+
         private i (int id, Nsi27.i nsi27, String label) {
             this.id = id;
             this.code_vc_nsi_27 = nsi27.getId ();
@@ -78,6 +85,11 @@ public class VocMeteringDeviceType extends Table {
         private i (int id, Nsi27.i nsi27, Class clazz, String label) {
             this (id, nsi27, label);
             this.clazz = clazz.getSimpleName ();
+        }
+        
+        private i (int id, Nsi27.i nsi27, Class clazz, Nsi30.i nsi30, String label) {
+            this (id, nsi27, clazz, label);
+            this.code_vc_nsi_30 = nsi30.getId ();
         }
         
         private JsonObject toJsonObject () {
