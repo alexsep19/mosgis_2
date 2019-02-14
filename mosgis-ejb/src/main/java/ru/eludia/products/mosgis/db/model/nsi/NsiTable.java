@@ -193,7 +193,7 @@ public class NsiTable extends Table {
 	    return;
 	}
 
-	if ("236".equals(this.registryNumber)) {
+	if ("236".equals(this.registryNumber)) { // HACK: 236 pkey
 	    col("parent", Type.UUID, "Ссылка на родительскую запись");
 	} else {
 	    col("parent", Type.UUID, null, "Ссылка на родительскую запись");
@@ -224,7 +224,7 @@ public class NsiTable extends Table {
 
 	this.registryNumber = DB.to.String(record.get("registrynumber"));
 
-	if ("236".equals(this.registryNumber)) { // HACK: 236 pkey
+	if (!"236".equals(this.registryNumber)) { // HACK: 236 pkey
 	    pk("guid", Type.UUID, "Глобально-уникальный идентификатор элемента справочника");
 	}
 
