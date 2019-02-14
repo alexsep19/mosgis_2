@@ -29,7 +29,7 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements MeteringDeviceLocal {
-
+/*
     @Resource (mappedName = "mosgis.inMeteringDevicesQueue")
     Queue queue;
 
@@ -37,7 +37,7 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
     public Queue getQueue () {
         return queue;
     }
-
+*/
     private void filterOffDeleted (Select select) {
         select.and ("is_deleted", 0);
     }
