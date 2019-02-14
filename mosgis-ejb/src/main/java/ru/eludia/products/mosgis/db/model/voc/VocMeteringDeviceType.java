@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.db.model.voc;
 
+import java.math.BigDecimal;
 import javax.json.Json;
 import ru.eludia.base.model.Type;
 import javax.json.JsonArray;
@@ -100,14 +101,19 @@ public class VocMeteringDeviceType extends Table {
         }
 
         private JsonObject toJsonObject () {
-            return Json.createObjectBuilder ()
+
+            final JsonObjectBuilder job = Json.createObjectBuilder ()
                 .add ("id",    id)
                 .add ("label", label)
                 .add ("is_condo", is_condo)
-                .add ("clazz", clazz)
                 .add ("code_vc_nsi_27", code_vc_nsi_27)
-                .add ("code_vc_nsi_30", code_vc_nsi_30)
-            .build ();
+            ;
+
+            if (clazz != null)          job.add ("clazz", clazz);
+            if (code_vc_nsi_30 != null) job.add ("code_vc_nsi_30", code_vc_nsi_30);
+
+            return job.build ();
+
         }
 
         public static JsonArray toJsonArray () {            
