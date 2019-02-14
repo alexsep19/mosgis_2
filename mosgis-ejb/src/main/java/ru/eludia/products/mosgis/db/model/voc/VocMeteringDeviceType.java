@@ -40,16 +40,6 @@ public class VocMeteringDeviceType extends Table {
     
     public enum i {
      
-/*
-CollectiveDevice 	Характеристики общедомового ПУ (тип прибора учета = "Коллективный (общедомовой)")
-
-NonResidentialPremiseDevice 	Характеристики ИПУ нежилого помещения (тип прибора учета = "Индивидуальный")
-ResidentialPremiseDevice 	Характеристики ИПУ жилого помещения (тип прибора учета = "Индивидуальный")
-LivingRoomDevice 	        Характеристики комнатного ИПУ (тип прибора учета = "Комнатный")
-CollectiveApartmentDevice 	Характеристики общеквартирного ПУ (для квартир коммунального заселения) (тип прибора учета = "Общий (квартирный)")
-
-ApartmentHouseDevice 	Характеристики ИПУ жилого дома (тип прибора учета = "Индивидуальный", тип дома = "Жилой")
-*/        
         APARTMENT_HOUSE         (1, Nsi27.i.INDIVIDUAL,                                        "ИПУ жилого дома"),
         COLLECTIVE              (2, Nsi27.i.COLLECTIVE,                                        "общедомовой ПУ"),       
         NON_RESIDENTIAL_PREMISE (3, Nsi27.i.INDIVIDUAL,           NonResidentialPremise.class, "ИПУ нежилого помещения"),
