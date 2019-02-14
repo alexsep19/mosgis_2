@@ -157,7 +157,10 @@ public class SupplyResourceContractObjectImpl extends BaseCRUD<SupplyResourceCon
             .limit(0, 50)
         ;
 
-        select.andEither("is_condo IS NULL").or("is_condo", p.getString("is_condo", null));
+	String is_condo = p.getString("is_condo", null);
+	if (is_condo != null) {
+	    select.andEither("is_condo IS NULL").or("is_condo", is_condo);
+	}
 
         StringBuilder sb = new StringBuilder();
         StringTokenizer st = new StringTokenizer(p.getString("search", ""));
