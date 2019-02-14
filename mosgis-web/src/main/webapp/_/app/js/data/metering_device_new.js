@@ -65,6 +65,7 @@ define ([], function () {
                 
             function go () {
                 $.each (types, function () {this.text = this.label})
+darn (types)                
                 data.types = types
                 if (types.length) data.record.id_type = types [0].id
                 done (data)            
@@ -95,10 +96,14 @@ darn (t)
                     $.each (dd.vw_premises, function () {
                     
                         if (this.class != t.clazz) return
+                                                
+                        if (t.code_vc_nsi_30 != this.code_vc_nsi_30) return
+                        
+                        if (t.code_vc_nsi_30)
                         
                         types.push ({
                             id: t.id + '_' + this.id,
-                            text: t.label + ' ' + this.label
+                            label: t.label + ' ' + this.label
                         })
 
                     })          
