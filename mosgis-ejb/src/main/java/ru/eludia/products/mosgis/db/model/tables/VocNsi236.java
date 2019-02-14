@@ -14,7 +14,7 @@ public class VocNsi236 extends Table {
     public enum c implements EnColEnum {
 	CODE                  (STRING, 20, "Код элемента справочника, уникальный в пределах справочника"),
 
-	PARENT                (UUID, null, "Ссылка на GUID родительского элемента XML"),
+	PARENT                (UUID, "Ссылка на родительскую запись"),
 
 	GUID                  (UUID, "Уникальный идентификатор элемента справочника"),
 
@@ -54,8 +54,18 @@ public class VocNsi236 extends Table {
         
         cols  (c.class);
 
-        pk    (c.GUID);
+	// HACK: 236 pkey
+	pk    (c.GUID);
+	pk    (c.PARENT);
 
+	key   ("parent", c.PARENT);
+
+	trigger("BEFORE INSERT OR UPDATE", ""
+	    + "BEGIN "
+	    + " IF :NEW.parent IS NULL THEN "
+	    + "   :NEW.parent:= HEXTORAW(REPLACE(UPPER('00000000-0000-0000-0000-000000000000'), '-', '')); "
+	    + " END IF; "
+	    + "END;"
+	);
     }
-
 }
