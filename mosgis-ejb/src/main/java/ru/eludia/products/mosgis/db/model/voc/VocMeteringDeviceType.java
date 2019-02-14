@@ -29,11 +29,12 @@ public class VocMeteringDeviceType extends Table {
     
     public enum c implements ColEnum {        
         
-        ID             (Type.NUMERIC, 1,    "Идентификатор"),
-        LABEL          (Type.STRING,        "Наименование"),
-        CODE_VC_NSI_27 (Nsi27.class,        "Тип прибора учета (НСИ 27)"),
-        CODE_VC_NSI_30 (Nsi30.class,  null, "Характеристика помещения (НСИ 30)"),
-        CLAZZ          (Type.STRING,  null, "Класс")
+        ID             (Type.NUMERIC, 1,            "Идентификатор"),
+        LABEL          (Type.STRING,                "Наименование"),
+        IS_CONDO       (Type.BOOLEAN, Boolean.TRUE, "1 для МКД, 0 для ЖД"),
+        CODE_VC_NSI_27 (Nsi27.class,                "Тип прибора учета (НСИ 27)"),
+        CODE_VC_NSI_30 (Nsi30.class,  null,         "Характеристика помещения (НСИ 30)"),
+        CLAZZ          (Type.STRING,  null,         "Класс")
         ;
         
         @Override public Col getCol () {return col;} private Col col; private c (Type type, Object... p) {col = new Col (this, type, p);} private c (Class c,   Object... p) {col = new Ref (this, c, p);}        
@@ -42,15 +43,16 @@ public class VocMeteringDeviceType extends Table {
     
     public enum i {
      
-        APARTMENT_HOUSE         (1, Nsi27.i.INDIVIDUAL,                                                            "ИПУ жилого дома"),
-        COLLECTIVE              (2, Nsi27.i.COLLECTIVE,                                                            "общедомовой ПУ"),
-        NON_RESIDENTIAL_PREMISE (3, Nsi27.i.INDIVIDUAL,           NonResidentialPremise.class,                     "ИПУ нежилого помещения"),
-        RESIDENTIAL_PREMISE     (4, Nsi27.i.INDIVIDUAL,           ResidentialPremise.class,    Nsi30.i.INDIVIDUAL, "ИПУ жилого помещения"),
-        COLLECTIVE_APARTMENT    (5, Nsi27.i.COLLECTIVE_APARTMENT, ResidentialPremise.class,    Nsi30.i.COLLECTIVE, "общеквартирный ПУ"),
-        LIVING_ROOM             (6, Nsi27.i.LIVING_ROOM,          LivingRoom.class,                                "комнатный ИПУ"),
+        APARTMENT_HOUSE         (1, 0, Nsi27.i.INDIVIDUAL,                                                            "ИПУ жилого дома"),
+        COLLECTIVE              (2, 1, Nsi27.i.COLLECTIVE,                                                            "общедомовой ПУ"),
+        NON_RESIDENTIAL_PREMISE (3, 1, Nsi27.i.INDIVIDUAL,           NonResidentialPremise.class,                     "ИПУ нежилого помещения"),
+        RESIDENTIAL_PREMISE     (4, 1, Nsi27.i.INDIVIDUAL,           ResidentialPremise.class,    Nsi30.i.INDIVIDUAL, "ИПУ жилого помещения"),
+        COLLECTIVE_APARTMENT    (5, 1, Nsi27.i.COLLECTIVE_APARTMENT, ResidentialPremise.class,    Nsi30.i.COLLECTIVE, "общеквартирный ПУ"),
+        LIVING_ROOM             (6, 1, Nsi27.i.LIVING_ROOM,          LivingRoom.class,                                "комнатный ИПУ"),
         ;
                 
         int     id;
+        int     is_condo;
         int     code_vc_nsi_27;
         Integer code_vc_nsi_30 = null;
         String  clazz;
@@ -58,6 +60,10 @@ public class VocMeteringDeviceType extends Table {
 
         public int getId () {
             return id;
+        }
+
+        public int getIs_condo () {
+            return is_condo;
         }
         
         public String getLabel () {
@@ -76,19 +82,20 @@ public class VocMeteringDeviceType extends Table {
             return code_vc_nsi_30;
         }      
 
-        private i (int id, Nsi27.i nsi27, String label) {
+        private i (int id, int is_condo, Nsi27.i nsi27, String label) {
             this.id = id;
+            this.is_condo = is_condo;
             this.code_vc_nsi_27 = nsi27.getId ();
             this.label = label;                    
         }
         
-        private i (int id, Nsi27.i nsi27, Class clazz, String label) {
-            this (id, nsi27, label);
+        private i (int id, int is_condo, Nsi27.i nsi27, Class clazz, String label) {
+            this (id, is_condo, nsi27, label);
             this.clazz = clazz.getSimpleName ();
         }
         
-        private i (int id, Nsi27.i nsi27, Class clazz, Nsi30.i nsi30, String label) {
-            this (id, nsi27, clazz, label);
+        private i (int id, int is_condo, Nsi27.i nsi27, Class clazz, Nsi30.i nsi30, String label) {
+            this (id, is_condo, nsi27, clazz, label);
             this.code_vc_nsi_30 = nsi30.getId ();
         }
         
