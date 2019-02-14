@@ -65,10 +65,13 @@ define ([], function () {
                 
             function go () {
                 $.each (types, function () {this.text = this.label})
-                data.types = types            
+                data.types = types
+                if (types.length) data.record.id_type = types [0].id
                 done (data)            
             }
             
+            if (!it.is_condo) return go ()
+/*
             var classes = null; 
             
             $.each (types, function () {
@@ -77,11 +80,53 @@ define ([], function () {
                 if (!classes) classes = {}
                 classes [c] = 0
             })                        
+*/            
             
-            if (!classes) return go ()
+            query ({type: 'premises', id: null}, {data: {uuid_house: $_REQUEST.id}}, function (dd) {
             
-            
+                var tmp = types.filter (function (i) {return i.clazz})
+                
+                types = types.filter (function (i) {return !i.clazz})
+                
+                $.each (tmp, function () {
+                
+                    var t = this
+darn (t)                    
+                    $.each (dd.vw_premises, function () {
                     
+                        if (this.class != t.clazz) return
+                        
+                        types.push ({
+                            id: t.id + '_' + this.id,
+                            text: t.label + ' ' + this.label
+                        })
+
+                    })          
+                
+                }) 
+            
+/*            
+
+                $.each (dd.vw_premises, function () {
+                    var c = this.class
+darn (c)                    
+                    if (!c) return
+                    if (!(c in classes)) return
+                    classes [c] ++
+                })          
+                
+                types = types
+                    .filter (function (i) {
+                        var c = i.clazz
+                        return !c || classes [c]
+                    })
+                
+darn (classes)                
+*/
+
+                go ()
+            
+            })                     
 
         })
 
