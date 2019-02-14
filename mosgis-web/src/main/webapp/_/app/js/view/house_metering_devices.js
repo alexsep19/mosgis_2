@@ -3,6 +3,8 @@ define ([], function () {
     var grid_name = 'house_metering_devices_grid'
 
     return function (data, view) {
+    
+        var it = data.item
 
         var is_author = $_USER.role.nsi_20_1 || $_USER.is_building_society ()
 
@@ -11,16 +13,7 @@ define ([], function () {
         if (is_author) postData.data.uuid_org = $_USER.uuid_org
     
         $(w2ui ['topmost_layout'].el ('main')).w2regrid ({
-        
-            toolbar: {
-            
-                items: [
-//                    {type: 'button', id: 'create_person', caption: 'Физическое лицо', icon: 'w2ui-icon-plus', onClick: $_DO.create_person_house_metering_devices, off: !data.is_passport_editable},
-//                    {type: 'button', id: 'create_org', caption: 'Юридическое лицо', icon: 'w2ui-icon-plus', onClick: $_DO.create_org_house_metering_devices, off: !data.is_passport_editable},
-                ].filter (not_off),
                 
-            },         
-        
             multiSelect: false,
 
             name: grid_name,
@@ -28,11 +21,12 @@ define ([], function () {
             show: {
                 toolbar: true,
                 toolbarInput: false,
+                toolbarAdd: it._can.add_metering_devices,
                 footer: 1,
             },            
 
             textSearch: 'contains',
-
+/*
             searches: [            
                 {field: 'label',  caption: 'Номер помещения',  type: 'text'},
                 {field: 'owner_label_uc',  caption: 'Собственник',  type: 'text'},
@@ -41,7 +35,7 @@ define ([], function () {
                     {id: "1", text: "Удалённые"},
                 ]}},
             ].filter (not_off),
-            
+*/            
             columns: [                
                 {field: 'label', caption: '???', size: 10},
 /*            
@@ -59,7 +53,9 @@ define ([], function () {
 
             url: '/mosgis/_rest/?type=metering_devices',
             
-            onDblClick: function (e) {openTab ('/metering_device/' + e.recid)}
+            onDblClick: function (e) {openTab ('/metering_device/' + e.recid)},
+            
+            onAdd: $_DO.create_house_metering_devices,
                                                                         
         })
 

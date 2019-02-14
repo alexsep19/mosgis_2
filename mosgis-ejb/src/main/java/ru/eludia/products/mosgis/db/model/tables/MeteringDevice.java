@@ -8,6 +8,7 @@ import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceType;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi16;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi27;
@@ -15,6 +16,8 @@ import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi27;
 public class MeteringDevice extends EnTable {
     
     public enum c implements EnColEnum {
+        
+        ID_TYPE                (VocMeteringDeviceType.class,                    "Тип прибора учёта"),
         
         UUID_ORG               (VocOrganization.class,                          "Организация, которая завела данный прибор в БД"),
         UUID_PREMISE           (Premise.class,       null,                      "Помещение"),
@@ -57,6 +60,7 @@ public class MeteringDevice extends EnTable {
                 case FIASHOUSEGUID:
                 case UUID_ORG:
                 case CODE_VC_NSI_27:
+                case ID_TYPE:
                 case ID_LOG:
                     return false;
                 default:
@@ -70,6 +74,13 @@ public class MeteringDevice extends EnTable {
         super  ("tb_meters", "Приборы учёта");
         cols   (c.class);
         key    ("fiashouseguid", "fiashouseguid");
+        
+        trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
+
+            + "SELECT CODE_VC_NSI_27 INTO :NEW.CODE_VC_NSI_27 FROM vc_meter_types WHERE id = :NEW.ID_TYPE; "
+                    
+        + "END;");
+        
     }
 
 }
