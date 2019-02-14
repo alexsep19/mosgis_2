@@ -51,10 +51,11 @@ public class VocNsi236 extends Table {
     public VocNsi236 () {
 
         super ("vc_nsi_236", "Справочник ГИС ЖКХ номер 236");
-
-	pk    (c.GUID);
-
+        
         cols  (c.class);
+
+        pk    (c.GUID);
+
     }
 
 }
