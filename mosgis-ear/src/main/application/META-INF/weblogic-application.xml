@@ -63,4 +63,11 @@
 	<name>Workflow-intervals</name>
 	<path>META-INF/mosgismodule-intervals-jms.xml</path>
     </module>
+    
+    <module>
+        <type>JMS</type>
+        <name>WS-RegOrgServiceAsync</name>
+        <path>META-INF/ws-jms/mosgismodule-ws-reg-org-service-async-jms.xml</path>
+    </module>
+    
 </weblogic-application>

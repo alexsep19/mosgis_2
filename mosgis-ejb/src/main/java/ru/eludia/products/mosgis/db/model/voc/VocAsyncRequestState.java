@@ -2,6 +2,8 @@ package ru.eludia.products.mosgis.db.model.voc;
 
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.Table;
+import static ru.eludia.products.mosgis.db.model.voc.VocHouseStatus.i.forId;
+import static ru.eludia.products.mosgis.db.model.voc.VocHouseStatus.i.values;
 
 public class VocAsyncRequestState extends Table {
 
@@ -36,6 +38,15 @@ public class VocAsyncRequestState extends Table {
         private i (int id, String label) {
             this.id = (byte) id;
             this.label = label;
+        }
+        
+        public static i forId (byte id) {
+            for (i i: values ()) if (i.id == id) return i;
+            return null;
+        }
+        
+        public static i forId(Object id) {
+            return forId(Byte.parseByte(id.toString()));
         }
         
     }

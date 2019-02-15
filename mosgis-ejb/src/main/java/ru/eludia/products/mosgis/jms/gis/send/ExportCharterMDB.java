@@ -32,6 +32,7 @@ import ru.eludia.products.mosgis.db.model.tables.CharterLog;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.CharterObjectService;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.tables.VocNsi3;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -471,8 +472,6 @@ public class ExportCharterMDB extends UUIDMDB<CharterLog> {
         
         r.put ("files", files);
         
-        NsiTable nsi3 = NsiTable.getNsiTable (3);
-        
         Map<UUID, Map<String, Object>> id2o = new HashMap <> ();
         
         db.forEach (m
@@ -497,7 +496,7 @@ public class ExportCharterMDB extends UUIDMDB<CharterLog> {
             .select (CharterObjectService.class, "AS root", "*")
             .toMaybeOne (CharterFile.class, "AS doc", "label", "description", "attachmentguid", "attachmenthash").on ()
             .toMaybeOne (AdditionalService.class, "AS add_service", "uniquenumber", "elementguid").on ()
-            .toMaybeOne (nsi3, "AS vc_nsi_3", "code", "guid").on ("vc_nsi_3.code=root.code_vc_nsi_3 AND vc_nsi_3.isactual=1")
+            .toMaybeOne (VocNsi3.class, "AS vc_nsi_3", "code", "guid").on ("vc_nsi_3.code=root.code_vc_nsi_3 AND vc_nsi_3.isactual=1")
             .where ("uuid_charter", r.get ("uuid_object"))
             .and ("is_deleted", 0),
 

@@ -512,11 +512,9 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 
 	final Model m = db.getModel();
 
-	NsiTable nsi3 = NsiTable.getNsiTable(3);
-
 	r.put("subjects", db.getList(m
 	    .select(SupplyResourceContractSubject.class, "AS root", "*")
-	    .toOne(nsi3, "AS vc_nsi_3", "code", "guid").on("root.code_vc_nsi_3=vc_nsi_3.code AND vc_nsi_3.isactual = 1")
+	    .toOne(VocNsi3.class, "AS vc_nsi_3", "code", "guid").on("root.code_vc_nsi_3=vc_nsi_3.code AND vc_nsi_3.isactual = 1")
 	    .toOne(VocNsi239.class, "AS vc_nsi_239", "code", "guid").on("root.code_vc_nsi_239=vc_nsi_239.code AND vc_nsi_239.isactual = 1")
 	    .where(SupplyResourceContractSubject.c.UUID_SR_CTR, r.get("ctr.uuid"))
 	    .and(SupplyResourceContractSubject.c.UUID_SR_CTR_OBJ.lc() + " IS NULL")

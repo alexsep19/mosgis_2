@@ -12,12 +12,12 @@ import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
-import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractObject;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
+import ru.eludia.products.mosgis.db.model.tables.VocNsi3;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi239;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi276;
 import ru.eludia.products.mosgis.db.model.tables.VocNsiMunicipalServiceResource;
@@ -135,7 +135,7 @@ public class SupplyResourceContractObjectImpl extends BaseCRUD<SupplyResourceCon
 	final Model m = db.getModel();
 
 	db.addJsonArrays(job,
-	    NsiTable.getNsiTable(3).getVocSelect(),
+	    VocNsi3.getVocSelect(),
 	    VocNsi239.getVocSelect(),
 	    m.select(VocNsiMunicipalServiceResource.class, "*"),
 	    m.select(VocOkei.class, "code AS id", "national AS label")
@@ -157,7 +157,10 @@ public class SupplyResourceContractObjectImpl extends BaseCRUD<SupplyResourceCon
             .limit(0, 50)
         ;
 
-        select.andEither("is_condo IS NULL").or("is_condo", p.getString("is_condo", null));
+	String is_condo = p.getString("is_condo", null);
+	if (is_condo != null) {
+	    select.andEither("is_condo IS NULL").or("is_condo", is_condo);
+	}
 
         StringBuilder sb = new StringBuilder();
         StringTokenizer st = new StringTokenizer(p.getString("search", ""));

@@ -27,6 +27,7 @@ import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractFile;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractFileLog;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
+import ru.eludia.products.mosgis.db.model.tables.VocNsi3;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi239;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -154,7 +155,7 @@ public class SupplyResourceContractImpl extends BaseCRUD<SupplyResourceContract>
         VocSupplyResourceContractFileType.addTo(job);
         db.addJsonArrays(job,
 	    NsiTable.getNsiTable(58).getVocSelect().where(IS_RS_CTR_NSI_58, 1),
-	    NsiTable.getNsiTable(3).getVocSelect(),
+	    VocNsi3.getVocSelect(),
 	    VocNsi239.getVocSelect()
         );
     });}

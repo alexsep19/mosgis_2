@@ -11,12 +11,11 @@ import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.Interval;
 import ru.eludia.products.mosgis.db.model.tables.IntervalLog;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
-import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
+import ru.eludia.products.mosgis.db.model.tables.VocNsi3;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi239;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -119,7 +118,7 @@ public class IntervalImpl extends BaseCRUD<Interval> implements IntervalLocal {
 
 	final Model m = db.getModel();
 	db.addJsonArrays(job,
-	    NsiTable.getNsiTable(3).getVocSelect(),
+	    VocNsi3.getVocSelect(),
 	    VocNsi239.getVocSelect()
 	);
     });}
@@ -132,7 +131,7 @@ public class IntervalImpl extends BaseCRUD<Interval> implements IntervalLocal {
 	final Model m = db.getModel();
 
 	db.addJsonArrays(job,
-	    NsiTable.getNsiTable(3).getVocSelect(),
+	    VocNsi3.getVocSelect(),
 	    VocNsi239.getVocSelect()
 	);
     });}
