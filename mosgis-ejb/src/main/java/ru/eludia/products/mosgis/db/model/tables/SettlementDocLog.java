@@ -169,7 +169,9 @@ public class SettlementDocLog extends GisWsLogTable {
 		SettlementDoc.c.ID_SD_STATUS.lc(),
 		SettlementDoc.c.ID_TYPE.lc()
 	    ).on()
+
 	    .toMaybeOne(VocOrganization.class, "AS org", "orgppaguid AS orgppaguid").on("r.uuid_org_author=org.uuid")
+
 	    .toOne(SupplyResourceContract.class, "AS sr_ctr",
 		SupplyResourceContract.c.CONTRACTROOTGUID.lc(),
 		SupplyResourceContract.c.UUID_ORG_CUSTOMER.lc(),
