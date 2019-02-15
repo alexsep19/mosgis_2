@@ -13,6 +13,7 @@ import ru.eludia.base.model.def.Bool;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 
 public class InXlHouse extends EnTable {
@@ -25,6 +26,7 @@ public class InXlHouse extends EnTable {
         
         ADDRESS                         (Type.STRING,         "Адрес"),
         UNOM                            (Type.NUMERIC, 12,    "UNOM"),
+        FIASHOUSEGUID                   (VocBuilding.class,         "Код ФИАС"),
         HASBLOCKS                       (Type.BOOLEAN, Bool.FALSE, "Блокированная застройка"),
         HASMULTIPLEHOUSESWITHSAMEADRES  (Type.BOOLEAN, null,       "Несколько ЖД с одинаковым адресом"),
         OKTMO                           (Type.INTEGER, 11, null,    "ОКТМО"),
@@ -47,6 +49,28 @@ public class InXlHouse extends EnTable {
         private Col col;        
         private c (Type type, Object... p) {col = new Col (this, type, p);}
         private c (Class c,   Object... p) {col = new Ref (this, c, p);}
+        
+        boolean isToCopy () {
+            
+            switch (this) {
+                case ADDRESS:
+                case UNOM:
+                case FIASHOUSEGUID:
+                case HASBLOCKS:
+                case HASMULTIPLEHOUSESWITHSAMEADRES:
+                case CODE_VC_NSI_24:
+                case CODE_VC_NSI_338:
+                case TOTALSQUARE:
+                case USEDYEAR:
+                case FLOORCOUNT:
+                case CULTURALHERITAGE:
+                case KAD_N:
+                    return true;
+                default:
+                    return false;
+            }
+            
+        }
         
     }
     
@@ -201,6 +225,58 @@ public class InXlHouse extends EnTable {
             throw new XLException ("Некорректный тип ячейки общей площади здания (столбец H)");
         }
         
+        try {
+            final XSSFCell cell = row.getCell (8);
+            if (cell == null) throw new XLException ("Не указан год ввода в эксплуатацию (столбец I)");
+            r.put (c.USEDYEAR.lc (), cell.getStringCellValue ());
+        }
+        catch (Exception ex) {
+            throw new XLException ("Некорректный тип ячейки года ввода в эксплуатацию (столбец I)");
+        }
+        
+        try {
+            final XSSFCell cell = row.getCell (9);
+            if (cell == null) throw new XLException ("Не указано количество этажей (столбец J)");
+            r.put (c.FLOORCOUNT.lc (), cell.getStringCellValue ());
+        }
+        catch (Exception ex) {
+            throw new XLException ("Некорректный тип ячейки количества этажей (столбец J)");
+        }
+        
+        try {
+            final XSSFCell cell = row.getCell (10);
+            if (cell == null) throw new XLException ("Не указано наличие статуса объекта культурного наследия (столбец K)");
+            final String s = cell.getStringCellValue ();
+            if (!DB.ok (s)) throw new XLException ("Не указано наличие статуса объекта культурного наследия (столбец K)");
+            switch (s) {
+                case "Да":
+                    r.put (c.CULTURALHERITAGE.lc (), Bool.TRUE);
+                    break;
+                case "Нет":
+                    r.put (c.CULTURALHERITAGE.lc (), Bool.FALSE);
+                    break;
+                default:
+                    throw new XLException ("Указан неверный признак наличия статуса объекта культурного наследия (столбец K): " + s);
+            }
+        }
+        catch (XLException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new XLException ("Некорректный тип ячейки признака наличия статуса объекта культурного наследия (столбец K)");
+        }
+        
+        try {
+            final XSSFCell cell = row.getCell (11);
+            if (cell == null) throw new XLException ("Не указан кадастровый номер (столбец L)");
+            final String s = cell.getStringCellValue ();
+            if (!DB.ok (s)) throw new XLException ("Не указан кадастровый номер (столбец L)");
+            r.put (c.KAD_N.lc (), s);
+        }
+        catch (Exception ex) {
+            throw new XLException ("Некорректный тип ячейки кадастрового номера (столбец L)");
+        }
+        
     }
     
     public InXlHouse () {
@@ -210,6 +286,45 @@ public class InXlHouse extends EnTable {
         cols (c.class);
         
         key ("uuid_xl", c.UUID_XL);
+        
+        trigger ("BEFORE INSERT", ""
+                + "BEGIN "
+                    + "IF :NEW.err IS NOT NULL THEN RETURN; END IF; "
+                    
+                    + "BEGIN "
+                        + "SELECT fiashouseguid INTO :NEW.fiashouseguid FROM vc_unom WHERE unom=:NEW.unom; "
+                        + "EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Не удалось однозначно определить GUID ФИАС по UNOM'); "
+                    + "END; "
+
+                    + "EXCEPTION WHEN OTHERS THEN "
+                    + ":NEW.err := REPLACE(SUBSTR(SQLERRM, 1, 1000), 'ORA-20000: ', ''); "
+                + "END; "
+        );
+        
+        StringBuilder sb = new StringBuilder ();
+        StringBuilder nsb = new StringBuilder ();
+        
+        for (c c: c.values ()) if (c.isToCopy ()) {
+            sb.append (',');
+            sb.append (c.lc ());
+            nsb.append (",:NEW.");
+            nsb.append (c.lc ());
+        }
+        
+        trigger ("BEFORE UPDATE", ""
+                + "DECLARE" 
+                    + "PRAGMA AUTONOMOUS_TRANSACTION; "
+                + "BEGIN "
+                
+                    + "IF :NEW.err IS NOT NULL THEN :NEW.is_deleted := 1; END IF; "
+                    + "IF NOT (:OLD.is_deleted = 1 AND :NEW.is_deleted = 0) THEN RETURN; END IF; "
+                
+                    + "INSERT INTO tb_houses (uuid,is_deleted" + sb + ") VALUES (:NEW.uuid,0" + nsb + "); "
+                    + "UPDATE tb_houses SET is_deleted=1 WHERE uuid=:NEW.uuid; "
+                    + "COMMIT; "
+
+                + "END; "
+        );
         
     }
     

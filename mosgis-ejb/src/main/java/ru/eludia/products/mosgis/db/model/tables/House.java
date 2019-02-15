@@ -41,10 +41,12 @@ public class House extends Passport {
         col    ("floorcount",            Type.NUMERIC,  3, null,           "Количество этажей");
         col    ("minfloorcount",         Type.NUMERIC,  3, null,           "Количество этажей, наименьшее");
         col    ("undergroundfloorcount", Type.NUMERIC,  3, null,           "Количество подземных этажей");
+        col    ("residentscount",        Type.INTEGER, null,               "Количество проживающих");
 
         col    ("is_condo",              Type.BOOLEAN, null,                "1 для МКД, 0 для ЖД");
         col    ("hasblocks",                      Type.BOOLEAN, Bool.FALSE, "1 для жилых домов блокированной застройки, иначе 0");
         col    ("hasmultiplehouseswithsameadres", Type.BOOLEAN, Bool.FALSE, "1, если есть несколько жилых домов с одинаковым адресом, иначе 0");
+        col    ("hasundergroundparking",          Type.BOOLEAN, null,       "1, если есть подзменая парковка, иначе 0");
         
         col    ("id_vc_rd_1240",         Type.INTEGER, null,               "Вид жилого фонда");
         
