@@ -338,6 +338,11 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
 		if (registryNumber == 236) { // HACK: 236 pkey
 		    key.add(VocNsi236.c.GUID.lc());
 		    key.add(VocNsi236.c.PARENT.lc());
+		    records.forEach(rec -> {
+			if (rec.get("parent") == null) {
+			    rec.put("parent", UUID.fromString("00000000-0000-0000-0000-000000000000"));
+			}
+		    });
 		}
 
 		db.upsert(table, records, key.toArray(new String[key.size()]));
