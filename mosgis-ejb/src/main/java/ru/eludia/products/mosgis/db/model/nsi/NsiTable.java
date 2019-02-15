@@ -239,7 +239,9 @@ public class NsiTable extends Table {
 
 	this.registryNumber = DB.to.String(record.get("registrynumber"));
 
-	if (!"236".equals(this.registryNumber)) { // HACK: 236 pkey
+	if ("236".equals(this.registryNumber)) { // HACK: 236 pkey
+	    col("guid", Type.UUID, "Глобально-уникальный идентификатор элемента справочника");
+	} else {
 	    pk("guid", Type.UUID, "Глобально-уникальный идентификатор элемента справочника");
 	}
 
