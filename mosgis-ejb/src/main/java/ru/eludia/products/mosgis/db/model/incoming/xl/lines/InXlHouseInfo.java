@@ -134,7 +134,7 @@ public class InXlHouseInfo extends EnTable {
                         + "IF cnt = 0 THEN "
                             + "raise_application_exception (-20000, 'По указанному адресу не найдено информации по импорту'); "
                         + "ELSEIF cnt > 1 THEN "
-                            + "raise_aaplication_exception (-20000, 'Для указанной информации нет соответствующего дома для импорта'); "
+                            + "raise_aaplication_exception (-20000, 'Для указанной информации нет соответствующего дома'); "
                     + "END; "
                 + "END; "
         );
