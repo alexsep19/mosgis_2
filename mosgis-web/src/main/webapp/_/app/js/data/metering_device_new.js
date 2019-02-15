@@ -63,6 +63,10 @@ define ([], function () {
             var types = d.vc_meter_types
                 .filter (function (i) {return i.is_condo == it.is_condo})
                 
+            add_vocabularies (d, d)
+            
+            for (k in d) data [k] = d [k]
+                
             function go () {
                 $.each (types, function () {this.text = this.label})
 darn (types)                
@@ -92,7 +96,7 @@ darn (types)
                 $.each (tmp, function () {
                 
                     var t = this
-darn (t)                    
+
                     $.each (dd.vw_premises, function () {
                     
                         if (this.class != t.clazz) return

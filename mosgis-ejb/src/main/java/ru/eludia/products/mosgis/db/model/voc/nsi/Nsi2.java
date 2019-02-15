@@ -29,7 +29,7 @@ public class Nsi2 extends View {
     }    
 
     public Nsi2 () {        
-        super  ("vw_nsi_2", "Типы приборов учёта");
+        super  ("vw_nsi_2", "Вид коммунального ресурса");
         cols   (c.class);
         pk     (c.ID);        
     }
