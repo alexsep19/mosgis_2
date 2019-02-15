@@ -64,6 +64,8 @@ define ([], function () {
 
         var house = $('body').data ('data')
 
+        var is_not_oms = !$_USER.role.nsi_20_8 && !$_USER.role.admin
+
         var doc_fields = []
 
         query ({type: 'houses', part: 'passport_fields_common'}, {}, function (data) {
@@ -79,6 +81,8 @@ define ([], function () {
                 var parent = house.depends [this.id]
                 
                 if (parent && house.item ['f_' + parent] == 0) this.off = 1
+
+                if (house.non_editable_fields.includes (this.id) && is_not_oms) this.off = 1
                 
                 doc_fields.push (this)
 

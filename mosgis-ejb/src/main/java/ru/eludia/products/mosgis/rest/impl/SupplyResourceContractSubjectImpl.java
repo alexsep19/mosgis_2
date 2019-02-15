@@ -11,14 +11,12 @@ import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
-import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.ActualSupplyResourceContract;
-import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
+import ru.eludia.products.mosgis.db.model.tables.VocNsi3;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi239;
 import ru.eludia.products.mosgis.db.model.tables.VocNsiMunicipalServiceResource;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
-import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustomerType;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
@@ -105,7 +103,7 @@ public class SupplyResourceContractSubjectImpl extends BaseCRUD<SupplyResourceCo
         final Model m = db.getModel();
 
         db.addJsonArrays(job,
-            NsiTable.getNsiTable(3).getVocSelect(),
+            VocNsi3.getVocSelect(),
             VocNsi239.getVocSelect(),
             m.select(VocNsiMunicipalServiceResource.class, "*"),
             m.select(VocOkei.class, "code AS id", "national AS label")

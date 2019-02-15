@@ -12,12 +12,12 @@ import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
-import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractObject;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
+import ru.eludia.products.mosgis.db.model.tables.VocNsi3;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi239;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi276;
 import ru.eludia.products.mosgis.db.model.tables.VocNsiMunicipalServiceResource;
@@ -75,18 +75,23 @@ public class SupplyResourceContractObjectImpl extends BaseCRUD<SupplyResourceCon
     @Override
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
 
+	ComplexSearch s = new ComplexSearch(p.getJsonArray("search"));
+
+	if (!s.getFilters().containsKey("uuid_sr_ctr")) {
+	    throw new IllegalStateException("uuid_sr_ctr filter is not set");
+	}
+
         final Model m = ModelHolder.getModel ();
 
-        Select select = m.select (SupplyResourceContractObject.class, "*", "uuid AS id")
+        Select select = m.select (SupplyResourceContractObject.class, "AS root", "*", "uuid AS id")
             .toOne(VocBuilding.class, "AS building", "houseguid", "label").on()
             .toMaybeOne(Premise.class, "AS premise", "id", "label").on()
-            .where("uuid_sr_ctr", p.getJsonObject("data").getString("uuid_sr_ctr"))
+	    .toOne(VocBuildingAddress.class, "AS fias", "label").on("root.fiashouseguid=fias.houseguid")
+	    .toMaybeOne(House.class, "AS house", "uuid").on("root.fiashouseguid=house.fiashouseguid")
             .orderBy ("building.label")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
-        applySearch (Search.from (p), select);
-
-        db.addJsonArrayCnt (job, select);
+        db.addJsonArrays(job, s.filter(select, ""));
     });}
 
     @Override
@@ -130,7 +135,7 @@ public class SupplyResourceContractObjectImpl extends BaseCRUD<SupplyResourceCon
 	final Model m = db.getModel();
 
 	db.addJsonArrays(job,
-	    NsiTable.getNsiTable(3).getVocSelect(),
+	    VocNsi3.getVocSelect(),
 	    VocNsi239.getVocSelect(),
 	    m.select(VocNsiMunicipalServiceResource.class, "*"),
 	    m.select(VocOkei.class, "code AS id", "national AS label")
@@ -152,7 +157,10 @@ public class SupplyResourceContractObjectImpl extends BaseCRUD<SupplyResourceCon
             .limit(0, 50)
         ;
 
-        select.andEither("is_condo IS NULL").or("is_condo", p.getString("is_condo", null));
+	String is_condo = p.getString("is_condo", null);
+	if (is_condo != null) {
+	    select.andEither("is_condo IS NULL").or("is_condo", is_condo);
+	}
 
         StringBuilder sb = new StringBuilder();
         StringTokenizer st = new StringTokenizer(p.getString("search", ""));

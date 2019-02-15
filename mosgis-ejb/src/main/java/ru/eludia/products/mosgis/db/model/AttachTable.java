@@ -1,7 +1,7 @@
 package ru.eludia.products.mosgis.db.model;
 
 import java.util.Map;
-import java.util.UUID;
+import javax.json.JsonObject;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
@@ -14,7 +14,10 @@ import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
 public abstract class AttachTable extends EnTable {
     
     protected final static String CHECK_LEN =
-        " IF :NEW.id_status = 0 AND DBMS_LOB.GETLENGTH (:NEW.body) = :NEW.len THEN "
+            
+        " IF :NEW.body IS NULL THEN :NEW.body := EMPTY_BLOB(); END IF; "
+            
+        + " IF :NEW.id_status = 0 AND DBMS_LOB.GETLENGTH (:NEW.body) = :NEW.len THEN "
         + "   :NEW.id_status := 1; "
         + " END IF;";
 
@@ -59,6 +62,17 @@ public abstract class AttachTable extends EnTable {
         return a;
     }
     
+    public Map<String, Object> HASH (JsonObject file) {
+
+        return super.HASH (file,
+            c.LABEL,       file.getString ("label"),
+            c.DESCRIPTION, file.getString ("description", ""),
+            c.MIME,        file.getString ("type"),
+            c.LEN,         file.getInt    ("size")
+        );
+
+    }
+
     public static final AttachmentType toAttachmentType (Map<String, Object> r) {
         
         return toAttachmentType (

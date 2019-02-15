@@ -50,9 +50,20 @@ define ([], function () {
     
     }
 
+    function can_be_edited (house, field_id) {
+
+        if ($_USER.role.admin) return true
+
+        if ($_USER.role.nsi_20_8) return house.controlled ? house.non_editable_fields.includes (field_id) : true
+        else return $_USER.has_nsi_20 (1, 19, 20, 21, 22) && !house.non_editable_fields.includes (this.id)
+
+    }
+
     return function (done) {
     
         var house = $('body').data ('data')
+
+        console.log (house)
                 
         house.doc_fields = {}
 
@@ -65,6 +76,8 @@ define ([], function () {
             $.each (fields, function () {
             
                 this.recid = this.id
+
+                this.is_not_editable = !can_be_edited
                 
                 this.name = 'f_' + this.id
 

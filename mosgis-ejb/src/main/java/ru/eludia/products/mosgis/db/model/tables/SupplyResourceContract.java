@@ -126,8 +126,11 @@ public class SupplyResourceContract extends EnTable {
 		    + "   :NEW.plannedvolumetype := NULL; "
 		    + " END IF; "
 
+		    + " IF :NEW.isplannedvolume = 1 AND :NEW.plannedvolumetype IS NULL THEN "
+		    + "   raise_application_error (-20000, 'Укажите тип ведения планового объема и режима подачи. Операция отменена.'); "
+		    + " END IF; "
+
 		    + " IF :NEW.id_customer_type = " + VocGisSupplyResourceContractCustomerType.i.ORGANIZATION.getId() + " THEN "
-		    + "   :NEW.plannedvolumetype := NULL; "
 		    + "   :NEW.onetimepayment:= NULL; "
 		    + "   :NEW.volumedepends:= NULL; "
 		    + "   IF :NEW.uuid_org_customer IS NULL THEN "

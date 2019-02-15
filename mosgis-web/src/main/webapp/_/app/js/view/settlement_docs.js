@@ -31,7 +31,7 @@ define ([], function () {
             ].filter (not_off),
 
             columns: [
-
+                {field: 'id_type', caption: 'Тип', voc: data.vc_st_doc_types, size: 50},
                 {field: 'org.label', caption: 'Поставщик информации', size: 50},
                 {field: 'sr_ctr.label', caption: 'Договор', size: 50},
                 {field: 'org_executor.label', caption: 'Ресурсоснабжающая организация', size: 50},

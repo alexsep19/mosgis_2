@@ -20,6 +20,7 @@ import ru.eludia.products.mosgis.db.model.tables.SettlementDoc;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocSettlementDocType;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.SettlementDocLocal;
@@ -117,11 +118,12 @@ public class SettlementDocImpl extends BaseCRUD<SettlementDoc> implements Settle
 
 	VocGisStatus.addTo(job);
 	VocAction.addTo(job);
+	VocSettlementDocType.addTo(job);
     });}
 
     @Override
     public JsonObject getVocs (JsonObject p) {return fetchData((db, job) -> {
-
+	VocSettlementDocType.addTo(job);
     });}
 
     @Override

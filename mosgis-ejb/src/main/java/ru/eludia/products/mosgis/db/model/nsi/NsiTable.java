@@ -27,6 +27,7 @@ import ru.eludia.products.mosgis.db.model.nsi.fields.NsiNsiRefField;
 import ru.eludia.products.mosgis.db.model.nsi.fields.NsiOkeiRefField;
 import ru.eludia.products.mosgis.db.model.nsi.fields.NsiScalarField;
 import ru.eludia.products.mosgis.db.model.nsi.fields.NsiStringField;
+import ru.eludia.products.mosgis.db.model.tables.VocNsi236;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiList;
 import static ru.eludia.products.mosgis.db.model.voc.VocPassportFields.PASSPORT_FIELDS_LIST_NSI_REGISTRY_NUMBER;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -172,10 +173,11 @@ public class NsiTable extends Table {
         return (NsiTable) ModelHolder.getModel ().get(getName (n));
     }
 
+    private String registryNumber;
+
     public NsiTable (DB db, int n) throws SQLException {
-        
         this (db.getMap (VocNsiList.class, n));
-        
+        this.registryNumber = DB.to.String(n);
     }        
 
     public NsiTable (DB db, ResultSet rs) throws SQLException {
@@ -187,7 +189,15 @@ public class NsiTable extends Table {
     }
     
     public void addParentCol () {
-        if (!columns.containsKey ("parent")) col ("parent", Type.UUID, null, "Ссылка на родительскую запись");
+	if (columns.containsKey ("parent")) {
+	    return;
+	}
+
+	if ("236".equals(this.registryNumber)) { // HACK: 236 pkey
+	    col("parent", Type.UUID, "Ссылка на родительскую запись");
+	} else {
+	    col("parent", Type.UUID, null, "Ссылка на родительскую запись");
+	}
     }
     
     public final String getColNameByRemarkPrefix (String prefix) {
@@ -209,10 +219,15 @@ public class NsiTable extends Table {
     }
 
     public NsiTable (Map<String, Object> record) {
-        
-        super  (getName (record.get ("registrynumber")), record.get ("name").toString ());
-        
-        pk  ("guid",     Type.UUID, "Глобально-уникальный идентификатор элемента справочника");
+
+	super(getName(record.get("registrynumber")), record.get("name").toString());
+
+	this.registryNumber = DB.to.String(record.get("registrynumber"));
+
+	if (!"236".equals(this.registryNumber)) { // HACK: 236 pkey
+	    pk("guid", Type.UUID, "Глобально-уникальный идентификатор элемента справочника");
+	}
+
         col ("code",     Type.STRING, 20, "Код элемента справочника, уникальный в пределах справочника");
         col ("isactual", Type.BOOLEAN, "Признак актуальности элемента справочника");
         

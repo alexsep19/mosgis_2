@@ -28,7 +28,9 @@ define ([], function () {
                     vc_gis_status: 1,
                     vc_gis_ctr_dims: 1,
                     vc_nsi_58: 1,
-                    vc_sr_ctr_file_types: 1
+                    vc_sr_ctr_file_types: 1,
+                    vc_nsi_3: 1,
+                    vc_nsi_239: 1
                 })
 
                 var it = data.item
@@ -61,6 +63,7 @@ define ([], function () {
                         case 34:
                         case 40:
                             it._can.alter = 1
+                            it._can.create_intervals = it.contractrootguid
                     }
 
                     switch (it.id_ctr_status) {

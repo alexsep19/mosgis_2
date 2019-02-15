@@ -12,8 +12,13 @@ import ru.eludia.products.mosgis.db.model.EnColEnum;
 public class VocNsi236 extends Table {
 
     public enum c implements EnColEnum {
+	CODE                  (STRING, 20, "Код элемента справочника, уникальный в пределах справочника"),
 
-        F_D966DD6CBC          (UUID, null, "Вид коммунальной услуги"),
+	PARENT                (UUID, "Ссылка на родительскую запись"),
+
+	GUID                  (UUID, "Уникальный идентификатор элемента справочника"),
+
+	F_D966DD6CBC          (UUID, null, "Вид коммунальной услуги"),
         GUID_VC_NSI_3         (UUID, new Virt("''||F_D966DD6CBC"), "Вид коммунальной услуги (синоним)"),
 
         F_ADEBB17EBE          (UUID, null, "Вид коммунального ресурса"),
@@ -46,8 +51,21 @@ public class VocNsi236 extends Table {
     public VocNsi236 () {
 
         super ("vc_nsi_236", "Справочник ГИС ЖКХ номер 236");
-
+        
         cols  (c.class);
-    }
 
+	// HACK: 236 pkey
+	pk    (c.GUID);
+	pk    (c.PARENT);
+
+	key   ("parent", c.PARENT);
+
+	trigger("BEFORE INSERT OR UPDATE", ""
+	    + "BEGIN "
+	    + " IF :NEW.parent IS NULL THEN "
+	    + "   :NEW.parent:= HEXTORAW(REPLACE(UPPER('00000000-0000-0000-0000-000000000000'), '-', '')); "
+	    + " END IF; "
+	    + "END;"
+	);
+    }
 }

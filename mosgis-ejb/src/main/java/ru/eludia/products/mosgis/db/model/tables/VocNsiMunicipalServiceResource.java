@@ -38,7 +38,7 @@ public class VocNsiMunicipalServiceResource extends View {
             + " , vc_nsi_239.code code_vc_nsi_239 "
             + " , vc_okei.code    code_vc_okei "
             + " FROM vc_nsi_236 o "
-            + " LEFT  JOIN vc_okei             ON o.f_c5e560ed97 = vc_okei.code "
+            + " LEFT  JOIN vc_okei             ON o.unit        = vc_okei.code "
             + " INNER JOIN vc_nsi_236 parent_1 ON parent_1.guid = o.parent "
             + " INNER JOIN vc_nsi_236 parent_2 ON parent_2.guid = parent_1.parent "
             + " INNER JOIN vc_nsi_239          ON parent_1." + VocNsi236.c.GUID_VC_NSI_239.lc() + " = vc_nsi_239.guid "

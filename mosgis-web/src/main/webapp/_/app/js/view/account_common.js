@@ -35,6 +35,7 @@ define ([], function () {
                     tabs: {
                         tabs:    [
                             {id: 'account_common_items', caption: 'Помещения'},
+                            {id: 'account_common_individual_services', caption: 'Индивидуальные услуги'},
                             {id: 'account_common_log', caption: 'История изменений'},
                         ],
                         onClick: $_DO.choose_tab_account_common

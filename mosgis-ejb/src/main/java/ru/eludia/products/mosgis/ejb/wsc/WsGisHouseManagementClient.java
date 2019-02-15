@@ -20,6 +20,7 @@ import ru.eludia.base.db.util.JDBCConsumer;
 import ru.eludia.base.db.util.TypeConverter;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.AccountLog;
+import ru.eludia.products.mosgis.db.model.tables.AccountIndividualServiceLog;
 import ru.eludia.products.mosgis.db.model.tables.AgreementPaymentLog;
 import ru.eludia.products.mosgis.db.model.tables.Block;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
@@ -720,4 +721,12 @@ public class WsGisHouseManagementClient {
         return getPort(orgPPAGuid, messageGUID).importAccountData (AccountLog.toImportAccountRequest (r)).getAck ();
     }
     
+    public AckRequest.Ack importAccountIndividualServices (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort(orgPPAGuid, messageGUID).importAccountIndividualServices (AccountIndividualServiceLog.toImportAccountIndividualServicesRequest (r)).getAck ();
+    }
+    
+    public AckRequest.Ack deleteAccountIndividualServices (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort(orgPPAGuid, messageGUID).importAccountIndividualServices (AccountIndividualServiceLog.toDeleteAccountIndividualServicesRequest (r)).getAck ();
+    }
+        
 }
