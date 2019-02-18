@@ -20,24 +20,28 @@ define ([], function () {
 
             show: {
                 toolbar: true,
-                toolbarInput: false,
                 toolbarAdd: it._can.add_metering_devices,
                 footer: 1,
             },            
 
             textSearch: 'contains',
-/*
+
             searches: [            
-                {field: 'label',  caption: 'Номер помещения',  type: 'text'},
-                {field: 'owner_label_uc',  caption: 'Собственник',  type: 'text'},
-                {field: 'is_deleted', caption: 'Статус записи', type: 'enum', options: {items: [
-                    {id: "0", text: "Актуальные"},
-                    {id: "1", text: "Удалённые"},
-                ]}},
+                {field: 'code_vc_nsi_27', caption: 'Тип ПУ', type: 'enum', options: {items: data.vc_nsi_27.items}},
+                {field: 'mask_vc_nsi_2', caption: 'Учитываемый ресурс', type: 'enum', options: {items: data.vc_nsi_2.items}},
+                {field: 'meteringdevicenumber',  caption: 'Заводской (серийный) №',  type: 'text'},
             ].filter (not_off),
-*/            
+
             columns: [                
-                {field: 'label', caption: '???', size: 10},
+            
+                {field: 'code_vc_nsi_27', caption: 'Тип', size: 10, voc: data.vc_nsi_27},
+                {field: 'premise.label', caption: 'Помещение', size: 5},                
+                {field: 'meteringdevicenumber', caption: '№', size: 10},
+                {field: 'meteringdevicestamp', caption: 'Марка', size: 10},
+                {field: 'meteringdevicemodel', caption: 'Модель', size: 10},
+                {field: 'mask_vc_nsi_2', caption: 'Ресурс', size: 10, voc: data.vc_nsi_2},
+                {field: 'id_ctr_status', caption: 'Статус', size: 50, voc: data.vc_gis_status},
+                
 /*            
                 {field: 'owner_label', caption: 'Собственник', size: 30},
                 {field: 'totalarea', caption: 'Площадь, м2', size: 10},

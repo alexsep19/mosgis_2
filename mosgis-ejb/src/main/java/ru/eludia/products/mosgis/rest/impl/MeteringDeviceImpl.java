@@ -59,7 +59,7 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
         
         if (searchString == null || searchString.isEmpty ()) return;
 
-        select.and ("accountnumber LIKE ?%", searchString.toUpperCase ());
+        select.and ("meteringdevicenumber LIKE ?%", searchString.toUpperCase ());
         
     }
     

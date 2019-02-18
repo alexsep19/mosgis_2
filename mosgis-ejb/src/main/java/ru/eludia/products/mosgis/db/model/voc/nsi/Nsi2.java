@@ -96,15 +96,15 @@ public class Nsi2 extends View {
 
         public static JsonArray toMeteringJsonArray () {            
             JsonArrayBuilder builder = Json.createArrayBuilder ();                    
-                builder.add (COLD_WATER.toJsonObject ());            
-                builder.add (HOT_WATER.toJsonObject ());            
-                builder.add (POWER.toJsonObject ());            
-                builder.add (GAS.toJsonObject ());            
-                builder.add (HEAT.toJsonObject ());            
-                builder.add (HEAT_HOT_WATER.toJsonObject ());            
-                builder.add (HEAT_COLD_WATER.toJsonObject ());            
+                builder.add (POWER.toJsonObject ());
+                builder.add (COLD_WATER.toJsonObject ());
+                builder.add (HOT_WATER.toJsonObject ());
+                builder.add (GAS.toJsonObject ());
+                builder.add (HEAT.toJsonObject ());
+                builder.add (HEAT_HOT_WATER.toJsonObject ());
+                builder.add (HEAT_COLD_WATER.toJsonObject ());
                 builder.add (HEAT_WATER.toJsonObject ());
-                builder.add (WASTE_WATER.toJsonObject ());            
+                builder.add (WASTE_WATER.toJsonObject ());
             return builder.build ();            
         }
         

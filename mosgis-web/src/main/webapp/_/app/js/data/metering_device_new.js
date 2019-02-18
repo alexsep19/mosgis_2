@@ -1,53 +1,35 @@
 define ([], function () {
 
     $_DO.update_metering_device_new = function (e) {
-/*    
+
         var form = w2ui ['metering_device_new_form']
 
         var v = form.values ()
-        
-        if (!v.uuid_add_service)     die ('uuid_add_service', 'Укажите, пожалуйста, услугу из справочника')       
-        
-        if (!v.begindate) die ('begindate', 'Укажите, пожалуйста, дату начала')
-        if (!v.enddate) die ('enddate', 'Укажите, пожалуйста, дату окончания')        
 
-        if (v.enddate < v.begindate) die ('enddate', 'Дата начала управления превышает дату окончания')
+        if (!v.id_type) die ('id_type', 'Укажите, пожалуйста, какой прибор требуется зарегистрировать')
+        if (!v.mask_vc_nsi_2) die ('mask_vc_nsi_2', 'Укажите, пожалуйста, тип измеряемого ресурса')
+        if (!v.meteringdevicestamp) die ('meteringdevicestamp', 'Укажите, пожалуйста, марку прибора')
+        if (!v.meteringdevicemodel) die ('meteringdevicemodel', 'Укажите, пожалуйста, модель прибора')
+        if (!v.meteringdevicenumber) die ('meteringdevicenumber', 'Укажите, пожалуйста, серийный (заводской) номер прибора')
         
-        function done () {
+        var t = v.id_type.split ('_')  
+        
+        v.id_type       = t [0]
+        v.uuid_premise  = t [1] || null
+        v.fiashouseguid = $('body').data ('data').item.fiashouseguid
+        
+        query ({type: 'metering_devices', id: null, action: 'create'}, {data: v}, function (data) {
+
             w2popup.close ()
-            var grid = w2ui ['account_common_individual_services_grid']
+
+            w2confirm ('Прибор учёта зарегистрирован. Открыть его страницу в новой вкладке?').yes (function () {openTab ('/metering_device/' + data.id)})
+
+            var grid = w2ui ['house_metering_devices_grid']
+
             grid.reload (grid.refresh)
-        }
-        
-        var id = form.record.uuid
 
-        if (id && !v.files) {
-        
-            query ({type: 'account_individual_services', id: id, action: 'edit'}, {data: v}, done)
-            
-        }
-        else {
-        
-            var file = get_valid_gis_file (v, 'files')
-            
-            var data = {
-                uuid_account: $_REQUEST.id,
-                uuid_add_service: v.uuid_add_service,
-                begindate: v.begindate,
-                enddate: v.enddate,
-            }
-            
-            if (id) data.uuid = id
+        })
 
-            Base64file.upload (file, {
-                type: 'account_individual_services',
-                data: data,
-                onprogress: show_popup_progress (file.size),
-                onloadend: done
-            })
-
-        }
-*/        
     }
     
     function sample_by_premise (types, vw_premises) {
@@ -94,6 +76,8 @@ define ([], function () {
             data.vc_nsi_2.items = data.vc_nsi_2.items.filter (function (i) {return i.id & mask})
             
             if (!data.vc_nsi_2.items.length) die ('foo', 'Ваша организация не предоставляет ни одной услуги, связанной с коммунальными ресурсами, для которых предусмотрена установка приборов учёта. Проверьте, пожалуйста, полностью ли оформлен ваш договор управления.')
+            
+            data.record.mask_vc_nsi_2 = data.vc_nsi_2.items [0].id
 
             done (data)
 

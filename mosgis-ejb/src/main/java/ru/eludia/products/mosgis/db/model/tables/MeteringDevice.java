@@ -31,7 +31,7 @@ public class MeteringDevice extends EnTable {
         COMMISSIONINGDATE      (Type.DATE,           null,                      "Дата ввода в эксплуатацию"),
         
         REMOTEMETERINGMODE     (Type.BOOLEAN,  Boolean.FALSE,                   "Наличие возможности дистанционного снятия показаний"),
-        REMOTEMETERINGINFO     (Type.STRING,  2000,                             "Информация о наличии возможности дистанционного снятия показаний ПУ указанием наименования установленной системы"),
+        REMOTEMETERINGINFO     (Type.STRING,  2000,  null,                      "Информация о наличии возможности дистанционного снятия показаний ПУ указанием наименования установленной системы"),
         
         FIRSTVERIFICATIONDATE  (Type.DATE,           null,                      "Дата последней поверки"),
 
