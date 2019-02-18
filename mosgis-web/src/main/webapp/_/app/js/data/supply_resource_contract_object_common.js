@@ -82,13 +82,6 @@ define ([], function () {
 
         data.active_tab = localStorage.getItem ('supply_resource_contract_object_common.active_tab') || 'supply_resource_contract_object_common_log'
 
-        data._can = it._can = {
-            cancel: 1,
-            update: 1,
-            edit  : 1,
-            delete: 1
-        }
-
         data.__read_only = 1
 
         done (data)

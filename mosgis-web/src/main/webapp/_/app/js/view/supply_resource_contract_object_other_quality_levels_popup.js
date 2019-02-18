@@ -47,6 +47,8 @@ define ([], function () {
                             {id: 1, text: 'Соответствует'}
                         ]
                     }},
+                    {name: 'code_vc_nsi_3', type: 'list', options: {items: data.vc_nsi_3.items}},
+                    {name: 'code_vc_nsi_239', type: 'list', options: {items: data.vc_nsi_239.items}},
                     {name: 'code_vc_okei', type: 'list', options: {items: data.vc_okei.items}},
                     {name: 'additionalinformation', type: 'text'},
                 ],

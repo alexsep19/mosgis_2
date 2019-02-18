@@ -26,6 +26,7 @@ import ru.gosuslugi.dom.schema.integration.house_management.SupplyResourceContra
 import ru.gosuslugi.dom.schema.integration.house_management.SupplyResourceContractType.ContractSubject;
 import ru.gosuslugi.dom.schema.integration.house_management.SupplyResourceContractType.ObjectAddress;
 import ru.gosuslugi.dom.schema.integration.house_management.SupplyResourceContractType.Quality;
+import ru.gosuslugi.dom.schema.integration.house_management.SupplyResourceContractType.OtherQualityIndicator;
 import ru.gosuslugi.dom.schema.integration.individual_registry_base.ID;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
 
@@ -63,17 +64,17 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	r.put("plannedvolumetype", r.get("voc_plannedvolumetype.name"));
 	r.put("accrualprocedure", r.get("voc_accrualprocedure.name"));
 	if (r.get("countingresource") != null) {
-	    r.put("countingresource", Boolean.TRUE.equals(r.get("countingresource")) ? "R" : "P");
+	    r.put("countingresource", DB.ok(r.get("countingresource")) ? "R" : "P");
 	}
 
 	SupplyResourceContractType result = DB.to.javaBean(SupplyResourceContractType.class, r);
 
-	if (!Boolean.TRUE.equals(result.isIsPlannedVolume())) {
+	if (!DB.ok(result.isIsPlannedVolume())) {
 	    result.setIsPlannedVolume(Boolean.FALSE);
 	    result.setPlannedVolumeType(null);
 	}
 
-	if (Boolean.TRUE.equals(r.get("is_contract"))) {
+	if (DB.ok(r.get("is_contract"))) {
 	    SupplyResourceContractType.IsContract is_c = DB.to.javaBean(SupplyResourceContractType.IsContract.class, r);
 	    result.setIsContract(is_c);
 	} else {
@@ -83,7 +84,7 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 
 	result.getContractBase().add(NsiTable.toDom(r, "vc_nsi_58"));
 
-	if (Boolean.TRUE.equals(result.isVolumeDepends()) || Boolean.TRUE.equals(result.isMeteringDeviceInformation())) {
+	if (DB.ok(result.isVolumeDepends()) || DB.ok(result.isMeteringDeviceInformation())) {
 	    result.setPeriod(toPeriod(r));
 	}
 
@@ -207,8 +208,8 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 
 		    ObjectAddress.Pair.HeatingSystemType hs = new ObjectAddress.Pair.HeatingSystemType ();
 
-		    hs.setOpenOrNot(Boolean.TRUE.equals(service.get("is_heat_open")) ? "Opened" : "Closed");
-		    hs.setCentralizedOrNot(Boolean.TRUE.equals(service.get("is_heat_centralized")) ? "Centralized" : "Decentralized");
+		    hs.setOpenOrNot(DB.ok(service.get("is_heat_open")) ? "Opened" : "Closed");
+		    hs.setCentralizedOrNot(DB.ok(service.get("is_heat_centralized")) ? "Centralized" : "Decentralized");
 
 		    pair.setHeatingSystemType(hs);
 
@@ -226,8 +227,7 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	}
 
 	toQuality(r, result);
-
-	// TODO: result.getOtherQualityIndicator().add(oquality)
+	toOtherQuality(r, result);
 	// TODO: result.getTemperatureChart().add(tc)
 
 	return result;
@@ -282,6 +282,53 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	    quality_item.setIndicatorValue(i_value);
 
 	    result.getQuality().add(quality_item);
+	}
+    }
+
+    private static void toOtherQuality(Map<String, Object> r, SupplyResourceContractType result) {
+
+	List<Map<String, Object>> other_quality = (List<Map<String, Object>>) r.get("other_quality");
+	if (other_quality == null) {
+	    throw new IllegalStateException("No supply resource contract quality fetched: " + r);
+	}
+
+	result.getOtherQualityIndicator().clear();
+
+	if (other_quality.isEmpty()) {
+	    return;
+	}
+
+	for (Map<String, Object> q : other_quality) {
+	    q.put("okei", q.get("code_vc_okei"));
+	    q.put("startrange", q.get("indicatorvalue_from"));
+	    q.put("endrange", q.get("indicatorvalue_to"));
+	    q.put("correspond", q.get("indicatorvalue_is"));
+	    q.put("number", q.get("indicatorvalue"));
+	    q.put("indicatorname", q.get("label"));
+	    q.put("pairkey", q.get("pair.uuid"));
+	    q.put("addressobjectkey", q.get("addressobject.uuid"));
+
+	    OtherQualityIndicator i_value = DB.to.javaBean(OtherQualityIndicator.class, q);
+
+	    switch (DB.to.String(q.get("id_type"))) {
+		case "1":
+		    i_value.setNumber(null);
+		    i_value.setCorrespond(null);
+		    break;
+		case "2":
+		    i_value.setStartRange(null);
+		    i_value.setEndRange(null);
+		    i_value.setCorrespond(null);
+		    break;
+		case "3":
+		    i_value.setStartRange(null);
+		    i_value.setEndRange(null);
+		    i_value.setNumber(null);
+		    i_value.setCorrespond(DB.ok(q.get("indicatorvalue_is")));
+		    break;
+	    }
+
+	    result.getOtherQualityIndicator().add(i_value);
 	}
     }
 
@@ -640,6 +687,24 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	    )
 	    .where(SupplyResourceContractQualityLevel.c.UUID_SR_CTR, r.get("ctr.uuid"))
 	    .and(SupplyResourceContractQualityLevel.c.UUID_SR_CTR_OBJ.lc() + (qty_by_house? " IS NOT NULL" : " IS NULL"))
+	    .and("is_deleted", 0)
+	));
+
+	// Иные показатели качества
+	r.put("other_quality", db.getList(m
+	    .select(SupplyResourceContractOtherQualityLevel.class, "AS root", "*")
+	    .toMaybeOne(SupplyResourceContractObject.class, "AS addressobject", "uuid").on()
+	    .toMaybeOne(SupplyResourceContractSubject.class, "AS pair", "uuid")
+	    .on("pair.uuid_sr_ctr = root.uuid_sr_ctr "
+		+ " AND pair.is_deleted = 0 "
+		+ " AND pair.uuid_sr_ctr_obj IS NULL "
+		+ " AND root.code_vc_nsi_239 = pair.code_vc_nsi_239 "
+		+ " AND root.code_vc_nsi_3   = pair.code_vc_nsi_3 "
+		+ " AND (CURRENT_DATE <= pair.endsupplydate OR pair.endsupplydate IS NULL) "
+		+ " AND (CURRENT_DATE >= pair.startsupplydate) "
+	    )
+	    .where(SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR, r.get("ctr.uuid"))
+	    .and(SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR_OBJ.lc() + (qty_by_house ? " IS NOT NULL" : " IS NULL"))
 	    .and("is_deleted", 0)
 	));
     }
