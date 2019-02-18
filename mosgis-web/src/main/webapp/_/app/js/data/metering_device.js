@@ -23,6 +23,7 @@ define ([], function () {
 
             add_vocabularies (data, {
                 vc_meter_types: 1,
+                vc_nsi_2: 1,
 /*            
                 vc_gis_status: 1,
                 vc_actions: 1,
@@ -32,8 +33,12 @@ define ([], function () {
             var it = data.item
             
             it._can = {cancel: 1}
-/*
+
             if (!it.is_deleted && it.uuid_org == $_USER.uuid_org) {
+            
+                it._can.edit = 1                            
+
+/*
 
                 switch (it ['ca.id_ctr_status'] || it ['ch.id_ctr_status']) {
 
@@ -69,10 +74,12 @@ define ([], function () {
                         
                 }            
                 
+
+*/                        
                 it._can.update = it._can.edit
 
             }            
-*/                        
+            
             $('body').data ('data', data)
     
             done (data)

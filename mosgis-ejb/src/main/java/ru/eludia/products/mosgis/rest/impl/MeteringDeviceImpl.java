@@ -120,6 +120,7 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
             .toOne (VocOrganization.class, "AS org", "label").on ("root.uuid_org=org.uuid")
         ));
         
+        Nsi2.i.addMeteringTo (job);
         Nsi27.i.addTo (job);
         VocGisStatus.addTo (job);
         VocAction.addTo (job);

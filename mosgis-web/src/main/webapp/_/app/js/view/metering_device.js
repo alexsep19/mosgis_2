@@ -8,6 +8,8 @@ define ([], function () {
 
         it.label = l.charAt (0).toUpperCase () + l.slice (1)
                 
+        it.resource_label = data.vc_nsi_2 [it.mask_vc_nsi_2]
+                
         $('title').text ('ПУ №' + it.meteringdevicenumber)
         
         fill (view, it, $('#body'))
