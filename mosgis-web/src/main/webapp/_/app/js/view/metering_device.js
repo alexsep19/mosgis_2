@@ -7,13 +7,7 @@ define ([], function () {
         var l = data.vc_meter_types [it.id_type]
 
         it.label = l.charAt (0).toUpperCase () + l.slice (1)
-        
-//        l = it ['premise.label']
-        
-//        if (l) it.label += ' ' + l
-        
-//        it.type_label = data.vc_acc_types [it.id_type]
-        
+                
         $('title').text ('ПУ №' + it.meteringdevicenumber)
         
         fill (view, it, $('#body'))

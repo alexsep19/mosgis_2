@@ -9,6 +9,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.MeteringDevice;
 import ru.eludia.products.mosgis.db.model.tables.MeteringDeviceLog;
@@ -112,7 +113,8 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
             .get (getTable (), id, "AS root", "*")
             .toOne (VocBuilding.class, "label AS address").on ()
-            .toMaybeOne (Premise.class, "AS premise", Premise.c.LABEL.lc ()).on ()
+            .toOne (VocBuilding.class, "label AS address").on ()
+            .toMaybeOne (House.class, "AS house", "uuid").on ("root.fiashouseguid=house.fiashouseguid")
             .toMaybeOne (MeteringDeviceLog.class, "AS log").on ()
             .toMaybeOne (OutSoap.class, "err_text").on ("log.uuid_out_soap=out_soap.uuid")
             .toOne (VocOrganization.class, "AS org", "label").on ("root.uuid_org=org.uuid")
