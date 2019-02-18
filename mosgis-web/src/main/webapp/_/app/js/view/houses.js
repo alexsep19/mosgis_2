@@ -9,6 +9,23 @@ define ([], function () {
             show: {
                 toolbar: true,
                 footer: true,
+            },
+
+            toolbar: {
+            
+                items: [
+                
+                    {
+                        type: 'button', 
+                        id: 'import_objects', 
+                        caption: 'Импорт паспорта ЖД', 
+                        icon: 'w2ui-icon-plus', 
+                        onClick: $_DO.import_houses, 
+                        //off: !$_USER.role.nsi_20_1
+                    },
+                    
+                ].filter (not_off),
+                
             },     
             
             searches: [
