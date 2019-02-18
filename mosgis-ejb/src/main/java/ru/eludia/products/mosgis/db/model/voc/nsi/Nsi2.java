@@ -51,13 +51,18 @@ public class Nsi2 extends View {
     
     public enum i {
         
-        COLD_WATER           (1, 1,   "Холодная вода"),
-        HOT_WATER            (2, 2,   "Горячая вода"),
+        COLD_WATER           (1, 1,   "Холодная вода (ХВ)"),
+        HOT_WATER            (2, 2,   "Горячая вода (ГВ)"),
         POWER                (3, 4,   "Электрическая энергия"),
         GAS                  (4, 8,   "Газ"),
         HEAT                 (5, 16,  "Тепловая энергия"),
+
+        HEAT_HOT_WATER       (0, HEAT.getId () | HOT_WATER.getId (),  "Тепловая энергия + ГВ"),
+        HEAT_COLD_WATER      (0, HEAT.getId () | COLD_WATER.getId (),  "Тепловая энергия + ХВ"),
+        HEAT_WATER           (0, HEAT.getId () | HOT_WATER.getId () | COLD_WATER.getId (),  "Тепловая энергия + ХВ + ГВ"),
         
         WASTE_WATER          (8, 128, "Сточные воды"),
+
         ;
                 
         int    id;
@@ -96,6 +101,9 @@ public class Nsi2 extends View {
                 builder.add (POWER.toJsonObject ());            
                 builder.add (GAS.toJsonObject ());            
                 builder.add (HEAT.toJsonObject ());            
+                builder.add (HEAT_HOT_WATER.toJsonObject ());            
+                builder.add (HEAT_COLD_WATER.toJsonObject ());            
+                builder.add (HEAT_WATER.toJsonObject ());
                 builder.add (WASTE_WATER.toJsonObject ());            
             return builder.build ();            
         }
