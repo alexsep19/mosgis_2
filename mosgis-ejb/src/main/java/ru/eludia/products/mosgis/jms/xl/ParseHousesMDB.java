@@ -103,8 +103,7 @@ public class ParseHousesMDB extends XLMDB {
         super.completeOK (db, parent);
         
         db.update (House.class, DB.HASH (
-            InXlHouse.c.UUID_XL, parent,
-            EnTable.c.IS_DELETED, 0
+            InXlHouse.c.UUID_XL, parent
         ), InXlHouse.c.UUID_XL.lc ());
         
     }

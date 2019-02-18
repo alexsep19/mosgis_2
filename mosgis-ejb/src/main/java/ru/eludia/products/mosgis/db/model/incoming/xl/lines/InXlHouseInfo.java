@@ -142,7 +142,7 @@ public class InXlHouseInfo extends EnTable {
         );
         
         trigger ("BEFORE UPDATE", ""
-                + "DECLARE" 
+                + "DECLARE " 
                     + "PRAGMA AUTONOMOUS_TRANSACTION; "
                 + "BEGIN "
                 

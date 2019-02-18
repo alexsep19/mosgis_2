@@ -32,7 +32,7 @@ public class InXlHouse extends EnTable {
         OKTMO                           (Type.INTEGER, 11, null,    "ОКТМО"),
         
         CODE_VC_NSI_24                  (Type.STRING, 20,       "Состояние дома"),
-        CODE_VC_NSI_338                 (Type.STRING, 20, null, "Стадия жизненного цикла"),
+        CODE_VC_NSI_336                 (Type.STRING, 20, null, "Стадия жизненного цикла"),
         
         TOTALSQUARE                     (Type.NUMERIC, 25, 4,        "Общая площадь"),
         USEDYEAR                        (Type.NUMERIC,  4,     "Год ввода в эксплуатацию"),
@@ -59,7 +59,7 @@ public class InXlHouse extends EnTable {
                 case HASBLOCKS:
                 case HASMULTIPLEHOUSESWITHSAMEADRES:
                 case CODE_VC_NSI_24:
-                case CODE_VC_NSI_338:
+                case CODE_VC_NSI_336:
                 case TOTALSQUARE:
                 case USEDYEAR:
                 case FLOORCOUNT:
@@ -102,7 +102,7 @@ public class InXlHouse extends EnTable {
     private static void setFields (Map<String, Object> r, XSSFRow row) throws InXlHouse.XLException {
         
         NsiTable nsi_24 = NsiTable.getNsiTable (24);
-        NsiTable nsi_338 = NsiTable.getNsiTable (338);
+        NsiTable nsi_336 = NsiTable.getNsiTable (336);
         
         try {
             final XSSFCell cell = row.getCell (0);
@@ -203,12 +203,12 @@ public class InXlHouse extends EnTable {
                 if (DB.ok (s)) {
                     final String code = ModelHolder.getModel ().getDb ().getString (
                         ModelHolder.getModel ()
-                                .select (nsi_338, "code")
-                                .where  (nsi_338.getLabelField ().getName (), s)
+                                .select (nsi_336, "code")
+                                .where  (nsi_336.getLabelField ().getName (), s)
                                 .and    ("is_actual", 1)
                     );
                     if (code == null) throw new XLException ("Код НСИ 338 не найден для указанной стадии жизненного цикла (столбец F)");
-                    r.put (c.CODE_VC_NSI_338.lc (), code);
+                    r.put (c.CODE_VC_NSI_336.lc (), code);
                 }
             }
         }
@@ -312,15 +312,14 @@ public class InXlHouse extends EnTable {
         }
         
         trigger ("BEFORE UPDATE", ""
-                + "DECLARE" 
+                + "DECLARE " 
                     + "PRAGMA AUTONOMOUS_TRANSACTION; "
                 + "BEGIN "
                 
                     + "IF :NEW.err IS NOT NULL THEN :NEW.is_deleted := 1; END IF; "
                     + "IF NOT (:OLD.is_deleted = 1 AND :NEW.is_deleted = 0) THEN RETURN; END IF; "
                 
-                    + "INSERT INTO tb_houses (uuid,is_deleted" + sb + ") VALUES (:NEW.uuid,0" + nsb + "); "
-                    + "UPDATE tb_houses SET is_deleted=1 WHERE uuid=:NEW.uuid; "
+                    + "INSERT INTO tb_houses (uuid" + sb + ") VALUES (:NEW.uuid" + nsb + "); "
                     + "COMMIT; "
 
                 + "END; "
