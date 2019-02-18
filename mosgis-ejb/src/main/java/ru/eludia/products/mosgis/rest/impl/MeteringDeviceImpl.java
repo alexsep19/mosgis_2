@@ -112,8 +112,8 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
 
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
             .get (getTable (), id, "AS root", "*")
-            .toOne (VocBuilding.class, "label AS address").on ()
-            .toOne (VocBuilding.class, "label AS address").on ()
+            .toMaybeOne (Premise.class, "AS premise", Premise.c.LABEL.lc ()).on ()
+            .toOne (VocBuilding.class, "AS building", "label AS address").on ("root.fiashouseguid=building.houseguid")
             .toMaybeOne (House.class, "AS house", "uuid").on ("root.fiashouseguid=house.fiashouseguid")
             .toMaybeOne (MeteringDeviceLog.class, "AS log").on ()
             .toMaybeOne (OutSoap.class, "err_text").on ("log.uuid_out_soap=out_soap.uuid")

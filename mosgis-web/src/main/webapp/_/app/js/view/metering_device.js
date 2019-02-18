@@ -40,6 +40,8 @@ define ([], function () {
 
         });
 
+        clickOn ($('#house_link'), function () { openTab ('/house/' + data.item ['house.uuid']) })
+            
     }
 
 })
