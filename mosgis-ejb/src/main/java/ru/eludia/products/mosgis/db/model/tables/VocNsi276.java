@@ -20,6 +20,7 @@ public class VocNsi276 extends Table {
     public enum c implements EnColEnum {
 
         CODE                  (STRING, 20, "Код элемента справочника, уникальный в пределах справочника"),
+	GUID                  (UUID, "Глобально-уникальный идентификатор элемента справочника"),
 
         F_29FD5CCB75          (STRING, null, "Наименование"),
         LABEL                 (STRING, new Virt("''||F_29FD5CCB75"), "Наименование (синоним)"),
@@ -60,7 +61,7 @@ public class VocNsi276 extends Table {
 
         cols  (c.class);
 
-        pk    (c.CODE);
+        pk    (c.GUID);
     }
 
     public static void addTo(DB db, JsonObjectBuilder job) throws SQLException {
