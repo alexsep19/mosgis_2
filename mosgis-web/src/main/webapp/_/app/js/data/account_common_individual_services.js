@@ -56,6 +56,7 @@ define ([], function () {
             case 40:
                 if (!confirm ('Вернуть на редактирование  информацию об услуге "' + r ['svc.label'] + '" с ' + dt_dmy (r.begindate) + ' по ' + dt_dmy (r.enddate) + '?')) return
             case 14:
+            case 104:
                 grid.lock ()
                 query ({type: 'account_individual_services', id: id, action: 'alter'}, {}, function () {
                     grid.unlock ()
@@ -75,11 +76,25 @@ define ([], function () {
 
         if (!confirm ('Удалить информацию об услуге "' + r ['svc.label'] + '" с ' + dt_dmy (r.begindate) + ' по ' + dt_dmy (r.enddate) + '?')) return
 
-        query ({type: 'account_individual_services', id: id, action: 'delete'}, {}, function (d) {
+        return query ({type: 'account_individual_services', id: id, action: 'delete'}, {}, function (d) {
             grid.reload (grid.refresh)
-        })
+        })        
 
     }
+    
+    $_DO.annul_account_common_individual_services = function (e) {
+
+        var grid = w2ui [grid_name]
+        var id = grid.getSelection () [0]
+        var r = grid.get (id)
+        
+        if (!confirm ('Удалить без возможности восстановления информацию об услуге "' + r ['svc.label'] + '" с ' + dt_dmy (r.begindate) + ' по ' + dt_dmy (r.enddate) + '?')) return
+            
+        return query ({type: 'account_individual_services', id: id, action: 'annul'}, {}, function (d) {
+            grid.reload (grid.refresh)
+        })        
+
+    }    
 
     return function (done) {        
 

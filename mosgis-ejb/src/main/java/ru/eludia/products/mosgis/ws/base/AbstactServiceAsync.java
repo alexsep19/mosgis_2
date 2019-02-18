@@ -16,6 +16,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPHeader;
 import javax.xml.soap.SOAPHeaderElement;
 import javax.xml.soap.SOAPMessage;
@@ -47,7 +48,10 @@ public abstract class AbstactServiceAsync {
                     ISRequestHeader.class, 
                     RequestHeader.class, 
                     ResultHeader.class, 
-                    ru.gosuslugi.dom.schema.integration.organizations_registry_common.GetStateResult.class
+                    ru.gosuslugi.dom.schema.integration.organizations_registry_common.GetStateResult.class,
+                    ru.mos.gkh.gis.schema.integration.base.ISRequestHeader.class,
+                    ru.mos.gkh.gis.schema.integration.base.RequestHeader.class,
+                    ru.mos.gkh.gis.schema.integration.base.ResultHeader.class
             );
         }
         catch (JAXBException ex) {
@@ -81,7 +85,7 @@ public abstract class AbstactServiceAsync {
 
     }
 
-    public static final Object getHeader (SOAPMessage msg, Class t) {
+    public static final <T> T getHeader (SOAPMessage msg, Class<T> t) {
         try {            
             
             Iterator it = msg.getSOAPHeader ().examineAllHeaderElements ();
@@ -92,7 +96,7 @@ public abstract class AbstactServiceAsync {
                     
                     Object o = jc.createUnmarshaller ().unmarshal ((SOAPHeaderElement) it.next ());
 
-                    if (t.isAssignableFrom (o.getClass ())) return o;
+                    if (t.isAssignableFrom(o.getClass ())) return (T)o;
                 
                 }
                 catch (Exception e) {
@@ -108,6 +112,17 @@ public abstract class AbstactServiceAsync {
             throw new IllegalStateException ("Cannot parse SOAP header", ex);
         }
         
+    }
+    
+    public static final <T> void addHeaderToResponse(SOAPMessage msg, T header) {
+        try {
+            SOAPHeader soapHeader = msg.getSOAPPart().getEnvelope().getHeader();
+            if (soapHeader == null)
+                soapHeader = msg.getSOAPPart().getEnvelope().addHeader();
+            jc.createMarshaller().marshal(header, soapHeader);
+        } catch (JAXBException | SOAPException ex) {
+            throw new IllegalStateException("Cannot create SOAP header", ex);
+        }
     }
     
     public static final ResultHeader getResultHeader (SOAPMessage msg) {

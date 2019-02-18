@@ -70,6 +70,7 @@ public final class MosGisModel extends ru.eludia.base.Model {
 */
             , "ru.eludia.products.mosgis.db.model.src"
             , "ru.eludia.products.mosgis.db.model.voc"
+            , "ru.eludia.products.mosgis.db.model.ws"
         );
         
         logger.log (Level.INFO, "PACKAGES LOADED");
@@ -86,7 +87,9 @@ public final class MosGisModel extends ru.eludia.base.Model {
 
                 , rs -> {
                     
-                    if (tables.containsKey (NsiTable.getName (rs.getInt (REGISTRYNUMBER)))) return;
+                    final String name = NsiTable.getName (rs.getInt (REGISTRYNUMBER));
+                    
+                    tables.remove (name);
 
                     try {
                         add (new NsiTable (db, rs));

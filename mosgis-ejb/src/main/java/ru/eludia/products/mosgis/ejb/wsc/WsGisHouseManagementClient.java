@@ -724,5 +724,9 @@ public class WsGisHouseManagementClient {
     public AckRequest.Ack importAccountIndividualServices (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
         return getPort(orgPPAGuid, messageGUID).importAccountIndividualServices (AccountIndividualServiceLog.toImportAccountIndividualServicesRequest (r)).getAck ();
     }
+    
+    public AckRequest.Ack deleteAccountIndividualServices (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort(orgPPAGuid, messageGUID).importAccountIndividualServices (AccountIndividualServiceLog.toDeleteAccountIndividualServicesRequest (r)).getAck ();
+    }
         
 }

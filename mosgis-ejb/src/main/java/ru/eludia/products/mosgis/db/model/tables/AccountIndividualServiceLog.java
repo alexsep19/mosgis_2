@@ -56,6 +56,12 @@ public class AccountIndividualServiceLog extends GisFileLogTable {
         return result;
     }
     
+    public static ImportAccountIndividualServicesRequest toDeleteAccountIndividualServicesRequest (Map<String, Object> r) {
+        final ImportAccountIndividualServicesRequest result = new ImportAccountIndividualServicesRequest ();
+        result.getDeleteIndividualService ().add (toDeleteIndividualService (r));
+        return result;
+    }    
+    
     private static ImportAccountIndividualServicesRequest.IndividualService toIndividualService (Map<String, Object> r) {
         final ImportAccountIndividualServicesRequest.IndividualService result = DB.to.javaBean (ImportAccountIndividualServicesRequest.IndividualService.class, r);
         if (result.getAccountIndividualServiceGUID () != null) result.setAccountGUID (null);
@@ -65,4 +71,10 @@ public class AccountIndividualServiceLog extends GisFileLogTable {
         return result;
     }
     
+    private static ImportAccountIndividualServicesRequest.DeleteIndividualService toDeleteIndividualService (Map<String, Object> r) {
+        final ImportAccountIndividualServicesRequest.DeleteIndividualService result = DB.to.javaBean (ImportAccountIndividualServicesRequest.DeleteIndividualService.class, r);
+        result.setTransportGUID (UUID.randomUUID ().toString ());
+        return result;
+    }
+
 }

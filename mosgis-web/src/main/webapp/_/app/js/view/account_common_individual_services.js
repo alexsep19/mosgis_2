@@ -22,7 +22,9 @@ define ([], function () {
         
         switch (id_status) {        
             case 10:
+            case 11:
             case 14:
+            case 34:
             case 40:
                 t.enable ('delete')
                 break
@@ -34,6 +36,7 @@ define ([], function () {
             case 10:
             case 11:
             case 14:
+            case 104:
                 t.enable ('edit')
                 break
             default:
@@ -48,7 +51,7 @@ define ([], function () {
 
         var it = data.item
 
-        var can_edit = it._can.edit
+        var can_edit = it._can.edit || it._can.alter
 
         $(w2ui ['passport_layout'].el ('main')).w2regrid ({ 
 
@@ -84,7 +87,7 @@ define ([], function () {
                     var id_status = r ? r.id_ctr_status : -1
                     var b = e.item
 
-                    if (id_status == 40) {
+                    if (id_status == 40 || id_status == 34 || id_status == 11) {
                         b.caption = 'Аннулировать'
                         b.onClick = $_DO.annul_account_common_individual_services
                     }

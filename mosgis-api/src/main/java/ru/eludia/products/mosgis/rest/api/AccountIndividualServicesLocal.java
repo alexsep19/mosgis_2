@@ -12,5 +12,6 @@ public interface AccountIndividualServicesLocal extends CRUDBackend, FileBackend
     JsonObject doEdit      (String id, JsonObject p, User user);
     JsonObject doApprove   (String id, User user);
     JsonObject doAlter     (String id, User user);
+    JsonObject doAnnul     (String id, User user);
     
 }

@@ -23,6 +23,24 @@ public class XmlUtils {
     }    
       
     public static final NsiRef createNsiRef(int regisryNumber, String code) throws SQLException {
+        Map<String, Object> nsiItem = getNsiItem(regisryNumber, code);
+        if (nsiItem == null)
+            return null;
+        return NsiTable.toDom(code, (UUID) nsiItem.get("guid"));
+    }
+    
+    public static final ru.mos.gkh.gis.schema.integration.nsi_base.NsiRef createWsNsiRef(int regisryNumber, String code) throws SQLException {
+        Map<String, Object> nsiItem = getNsiItem(regisryNumber, code);
+        if (nsiItem == null)
+            return null;
+        
+        ru.mos.gkh.gis.schema.integration.nsi_base.NsiRef nsiRef = new ru.mos.gkh.gis.schema.integration.nsi_base.NsiRef ();
+        nsiRef.setCode (code);
+        nsiRef.setGUID (nsiItem.get("guid").toString());
+        return nsiRef;
+    }
+    
+    private static Map<String, Object> getNsiItem(int regisryNumber, String code) throws SQLException {
         if (StringUtils.isBlank(code)) {
             return null;
         }
@@ -52,7 +70,7 @@ public class XmlUtils {
                 return null;
             }
 
-            return NsiTable.toDom(code, (UUID) nsiItem.get("guid"));
-        }
+            return nsiItem;
+        } 
     }
 }

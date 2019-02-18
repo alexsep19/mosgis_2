@@ -86,9 +86,21 @@
                 </excludes>
             </resource>
             <resource>
+                <targetPath>META-INF</targetPath>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>ws/wsdl/**/*.wsdl</include>
+                    <include>ws/wsdl/**/*.xsd</include>
+                </includes>
+                <excludes>
+                    <exclude>wsdl/*.txt</exclude>
+                </excludes>
+            </resource>
+            <resource>
                 <directory>src/main/resources</directory>
                 <excludes>
                     <exclude>gis_zhkh/**/**/**</exclude>
+                    <exclude>ws/**/**/**</exclude>
                 </excludes>
             </resource>
         </resources>
@@ -202,6 +214,26 @@
                             <staleFile>${project.build.directory}/jaxws/stale/rd.stale</staleFile>
                         </configuration>
                         <id>wsimport-generate-rd</id>
+                        <phase>generate-sources</phase>
+                    </execution>
+                    <execution>
+                        <goals>
+                            <goal>wsimport</goal>
+                        </goals>
+                        <configuration>
+                            <wsdlDirectory>src/main/resources/ws/wsdl</wsdlDirectory>
+                            <wsdlFiles>
+                                <wsdlFile>organizations-registry-common/hcs-organizations-registry-common-service-async.wsdl</wsdlFile>
+                            </wsdlFiles>
+                            <bindingDirectory>src/main/resources/ws</bindingDirectory>
+                            <bindingFiles>
+                                <bindingFile>bindings.xjb</bindingFile>
+                            </bindingFiles>
+                            <vmArgs>
+                                <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
+                            </vmArgs>
+                        </configuration>
+                        <id>wsimport-generate-web-services</id>
                         <phase>generate-sources</phase>
                     </execution>
                 </executions>

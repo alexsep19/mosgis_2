@@ -51,8 +51,8 @@ public class GisPollExportSettlementDocMDB  extends GisPollMDB {
                 , EnTable.c.UUID.lc ()
                 , SettlementDoc.c.ID_SD_STATUS.lc ()
             ).on ()
-                
-            .toMaybeOne (VocOrganization.class, "AS org", "orgppaguid AS orgppaguid").on ("r.uuid_org=org.uuid")
+
+            .toMaybeOne (VocOrganization.class, "AS org", "orgppaguid AS orgppaguid").on ("r.uuid_org_author=org.uuid")
                                                 
         ;
         

@@ -114,4 +114,10 @@ public interface ConfMBean {
     public int    getWsGisServicesRespTimeout ();     
     public void   setWsGisServicesRespTimeout (int i);     
 
+    public String getWsGisVolumeQualityUrl();
+    public void setWsGisVolumeQualityUrl(String s);
+    public int getWsGisVolumeQualityConnTimeout();
+    public void setWsGisVolumeQualityConnTimeout(int i);
+    public int getWsGisVolumeQualityRespTimeout();
+    public void setWsGisVolumeQualityRespTimeout(int i);
 }

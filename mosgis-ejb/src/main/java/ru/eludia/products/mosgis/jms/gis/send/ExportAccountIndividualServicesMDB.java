@@ -54,6 +54,8 @@ public class ExportAccountIndividualServicesMDB extends GisExportMDB<AccountIndi
             case PLACING:
             case EDITING:
                 return wsGisHouseManagementClient.importAccountIndividualServices (orgPPAGuid, messageGUID, r);
+            case ANNULMENT:
+                return wsGisHouseManagementClient.deleteAccountIndividualServices (orgPPAGuid, messageGUID, r);
             default: 
                 throw new IllegalArgumentException ("No action implemented for " + action.name ());
         }
@@ -72,9 +74,16 @@ public class ExportAccountIndividualServicesMDB extends GisExportMDB<AccountIndi
         }
                                         
         logger.info ("r=" + DB.to.json (r));
-       
-        sendFile (db, uuid, action, r);
         
+        switch (action) {
+            case ANNULMENT:
+                sendSoap (db, action, uuid, r);
+                break;
+            default:
+                sendFileThenSoap (db, uuid, action, r);
+                break;
+        }
+
     }
 
     private void sendSoap (DB db, AccountIndividualService.Action action, UUID uuid, Map<String, Object> r) throws SQLException {
@@ -116,7 +125,7 @@ public class ExportAccountIndividualServicesMDB extends GisExportMDB<AccountIndi
         return null;
     }
 
-    private void sendFile (DB db, UUID uuid, AccountIndividualService.Action action, Map<String, Object> r) throws SQLException {        
+    private void sendFileThenSoap (DB db, UUID uuid, AccountIndividualService.Action action, Map<String, Object> r) throws SQLException {        
         
         final UUID orgppaguid = (UUID) r.get ("orgppaguid");
         

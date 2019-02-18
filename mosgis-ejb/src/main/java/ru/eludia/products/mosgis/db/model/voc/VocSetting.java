@@ -106,6 +106,10 @@ public class VocSetting extends Table {
         WS_GIS_SERVICES_TMT_CONN ("ws.gis.services.timeout.connection", "Время ожидания подключения к сервису обмена сведениями об услугах ГИС ЖКХ (ServicesServiceAsync), мс", "10000"),
         WS_GIS_SERVICES_TMT_RESP ("ws.gis.services.timeout.response", "Время ожидания подключения к сервису обмена сведениями об услугах ГИС ЖКХ (ServicesServiceAsync), мс", "10000"),
 
+	WS_GIS_VOLUME_QUALITY_URL("ws.gis.volume.quality.url", "Endpoint URL сервиса обмена сведениями об объеме и качестве коммунальных услуг и коммунальных ресурсов ГИС ЖКХ (ServicesServiceAsync)", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-volume-quality-service/services/VolumeQualityAsync/"),
+	WS_GIS_VOLUME_QUALITY_TMT_CONN("ws.gis.volume.quality.timeout.connection", "Время ожидания подключения к сервису обмена сведениями об объеме и качестве коммунальных услуг и коммунальных ресурсов  ГИС ЖКХ (VolumeQualityServiceAsync), мс", "10000"),
+	WS_GIS_VOLUME_QUALITY_TMT_RESP("ws.gis.volume.quality.timeout.response", "Время ожидания подключения к сервису обмена сведениями об об объеме и качестве коммунальных услуг и коммунальных ресурсов ГИС ЖКХ (VolumeQualityServiceAsync), мс", "10000"),
+
         WS_RD_URL      ("ws.rd.url", "Endpoint URL сервиса ГИС РД (WS)", "http://37.230.149.85:8733/DMWS/"),
         WS_RD_TMT_CONN ("ws.rd.timeout.connection", "Время ожидания подключения к сервису ГИС РД (NsiCommonAsyncService), мс", "1000"),
         WS_RD_TMT_RESP ("ws.rd.timeout.response", "Время ожидания подключения к сервису ГИС РД (NsiCommonAsyncService), мс", "1000"),

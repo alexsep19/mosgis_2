@@ -47,6 +47,7 @@ import ru.eludia.products.mosgis.db.model.tables.Block;
 import ru.eludia.products.mosgis.db.model.tables.LivingRoom;
 import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
+import ru.eludia.products.mosgis.db.model.tables.VocNsi236;
 import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiList;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementFieldType;
@@ -254,7 +255,6 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
             nsiElement.forEach (collectRecord);
 
             if (collectRecord.isNested ()) {
-                
                 table.addParentCol ();
                 
                 Map<String, Object> record = db.getMap(VocNsiList.class, registryNumber);
@@ -332,8 +332,20 @@ public class GisPollExportNsiItem extends UUIDMDB<OutSoap> {
                     db.insert (sTable, m2m);
                     
                 }
-            
-                db.upsert (table, records);
+
+		ArrayList<String> key = new ArrayList<String>();
+
+		if (registryNumber == 236) { // HACK: 236 pkey
+		    key.add(VocNsi236.c.GUID.lc());
+		    key.add(VocNsi236.c.PARENT.lc());
+		    records.forEach(rec -> {
+			if (rec.get("parent") == null) {
+			    rec.put("parent", UUID.fromString("00000000-0000-0000-0000-000000000000"));
+			}
+		    });
+		}
+
+		db.upsert(table, records, key.toArray(new String[key.size()]));
                 
                 if (registryNumber == 197) {
                     

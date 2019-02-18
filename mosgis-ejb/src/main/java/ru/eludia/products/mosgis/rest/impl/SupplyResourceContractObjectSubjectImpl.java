@@ -13,6 +13,7 @@ import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
+import ru.eludia.products.mosgis.db.model.tables.VocNsi3;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi239;
 import ru.eludia.products.mosgis.db.model.tables.VocNsiMunicipalServiceResource;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -99,7 +100,7 @@ public class SupplyResourceContractObjectSubjectImpl extends BaseCRUD<SupplyReso
 	String uuid_sr_ctr = p.getString("uuid_sr_ctr");
 
 	db.addJsonArrays(job,
-	    NsiTable.getNsiTable(3).getVocSelect().where("code IN"
+	    VocNsi3.getVocSelect().where("code IN"
 		, m.select(SupplyResourceContractSubject.class, "code_vc_nsi_3")
 		    .where("uuid_sr_ctr", uuid_sr_ctr)
 		    .and("uuid_sr_ctr_obj IS NULL")
