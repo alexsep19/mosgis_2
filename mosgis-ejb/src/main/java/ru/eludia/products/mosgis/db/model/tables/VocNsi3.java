@@ -61,7 +61,7 @@ public class VocNsi3 extends Table {
 
         cols  (c.class);
 
-        pk    (c.CODE);
+        pk    (c.GUID);
     }
 
     public static Select getVocSelect() throws SQLException {

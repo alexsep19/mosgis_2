@@ -25,6 +25,7 @@ import ru.gosuslugi.dom.schema.integration.house_management.ImportSupplyResource
 import ru.gosuslugi.dom.schema.integration.house_management.SupplyResourceContractType;
 import ru.gosuslugi.dom.schema.integration.house_management.SupplyResourceContractType.ContractSubject;
 import ru.gosuslugi.dom.schema.integration.house_management.SupplyResourceContractType.ObjectAddress;
+import ru.gosuslugi.dom.schema.integration.house_management.SupplyResourceContractType.Quality;
 import ru.gosuslugi.dom.schema.integration.individual_registry_base.ID;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
 
@@ -224,12 +225,64 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 
 	}
 
-	// TODO: result.getQuality().add(quality)
+	toQuality(r, result);
+
 	// TODO: result.getOtherQualityIndicator().add(oquality)
 	// TODO: result.getTemperatureChart().add(tc)
 
 	return result;
 
+    }
+
+    private static void toQuality(Map<String, Object> r, SupplyResourceContractType result) {
+
+	List<Map<String, Object>> quality = (List<Map<String, Object>>) r.get("quality");
+	if (quality == null) {
+	    throw new IllegalStateException("No supply resource contract quality fetched: " + r);
+	}
+
+	result.getQuality().clear();
+
+	if (quality.isEmpty()) {
+	    return;
+	}
+
+	for (Map<String, Object> q : quality) {
+	    q.put("okei", q.get("code_vc_okei"));
+	    q.put("startrange", q.get("indicatorvalue_from"));
+	    q.put("endrange", q.get("indicatorvalue_to"));
+	    q.put("correspond", q.get("indicatorvalue_is"));
+	    q.put("number", q.get("indicatorvalue"));
+	    q.put("pairkey", q.get("pair.uuid"));
+	    q.put("addressobjectkey", q.get("addressobject.uuid"));
+
+	    Quality quality_item = DB.to.javaBean(Quality.class, q);
+
+	    quality_item.setQualityIndicator(NsiTable.toDom(q, "vc_nsi_276"));
+
+	    Quality.IndicatorValue i_value = DB.to.javaBean(Quality.IndicatorValue.class, q);
+
+	    switch (DB.to.String(q.get("vc_nsi_276.id_type"))) {
+		case "1":
+		    i_value.setNumber(null);
+		    i_value.setCorrespond(null);
+		    break;
+		case "2":
+		    i_value.setStartRange(null);
+		    i_value.setEndRange(null);
+		    i_value.setCorrespond(null);
+		    break;
+		case "3":
+		    i_value.setStartRange(null);
+		    i_value.setEndRange(null);
+		    i_value.setNumber(null);
+		    i_value.setCorrespond(DB.ok(q.get("indicatorvalue_is")));
+		    break;
+	    }
+	    quality_item.setIndicatorValue(i_value);
+
+	    result.getQuality().add(quality_item);
+	}
     }
 
     private static DRSOIndType toDRSOIndType(Map<String, Object> r){
@@ -512,6 +565,7 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 
 	final Model m = db.getModel();
 
+	// Предметы договора
 	r.put("subjects", db.getList(m
 	    .select(SupplyResourceContractSubject.class, "AS root", "*")
 	    .toOne(VocNsi3.class, "AS vc_nsi_3", "code", "guid").on("root.code_vc_nsi_3=vc_nsi_3.code AND vc_nsi_3.isactual = 1")
@@ -523,6 +577,7 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 
 	Map<UUID, Map<String, Object>> id2o = new HashMap<>();
 
+	// ОЖФ
 	Select objects = m
 	    .select(SupplyResourceContractObject.class, "AS root", "*")
 	    .toMaybeOne(Premise.class, "AS premise", "apartmentnumber", "roomnumber").on()
@@ -539,6 +594,7 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 
 	r.put("objects", new ArrayList<Map<String, Object>> (id2o.values()));
 
+	// Поставляемые ресурсы ОЖФ
 	db.forEach(m.select(SupplyResourceContractSubject.class, "AS root", "*")
 	    .where(SupplyResourceContractSubject.c.UUID_SR_CTR_OBJ.lc() + " IN"
 		, m.select(SupplyResourceContractObject.class, "uuid")
@@ -564,5 +620,27 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 		}
 	    }
 	);
+
+	// Показатели качества
+	boolean qty_by_house = VocGisContractDimension.i.BY_HOUSE == VocGisContractDimension.i.forId(r.get(SupplyResourceContract.c.SPECQTYINDS.lc()));
+
+	r.put("quality", db.getList(m
+	    .select(SupplyResourceContractQualityLevel.class, "AS root", "*")
+	    .toOne(VocNsi276.class, "AS vc_nsi_276", "code", "guid", "id_type")
+		.on("root.code_vc_nsi_276=vc_nsi_276.code AND vc_nsi_276.isactual = 1")
+	    .toOne(VocNsi239.class, "AS vc_nsi_239", "code").on("vc_nsi_276.guid_vc_nsi_239=vc_nsi_239.guid AND vc_nsi_239.isactual = 1")
+	    .toMaybeOne(SupplyResourceContractObject.class,  "AS addressobject", "uuid").on()
+	    .toMaybeOne(SupplyResourceContractSubject.class, "AS pair", "uuid")
+	    .on("pair.uuid_sr_ctr = root.uuid_sr_ctr "
+		+ " AND pair.is_deleted = 0 "
+		+ " AND pair.uuid_sr_ctr_obj IS NULL "
+		+ " AND vc_nsi_239.code=pair.code_vc_nsi_239 "
+		+ " AND (CURRENT_DATE <= pair.endsupplydate OR pair.endsupplydate IS NULL) "
+		+ " AND (CURRENT_DATE >= pair.startsupplydate) "
+	    )
+	    .where(SupplyResourceContractQualityLevel.c.UUID_SR_CTR, r.get("ctr.uuid"))
+	    .and(SupplyResourceContractQualityLevel.c.UUID_SR_CTR_OBJ.lc() + (qty_by_house? " IS NOT NULL" : " IS NULL"))
+	    .and("is_deleted", 0)
+	));
     }
 }
