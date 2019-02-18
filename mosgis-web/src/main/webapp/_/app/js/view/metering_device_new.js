@@ -16,21 +16,11 @@ define ([], function () {
                 
                     {name: 'id_type', type: 'list', options: {items: data.types}},
                     {name: 'mask_vc_nsi_2', type: 'list', options: {items: data.vc_nsi_2.items}},
-                
-/*                
-                    {name: 'begindate', type: 'date', options: {
-                        keyboard: false,
-                        start:    data.dt_from,
-                    }},
-                    {name: 'enddate',   type: 'date', options: {
-                        keyboard: false,
-                        end:      data.dt_to,
-                    }},
                     
+                    {name: 'meteringdevicenumber', type: 'text'},
+                    {name: 'meteringdevicestamp', type: 'text'},
+                    {name: 'meteringdevicemodel', type: 'text'},
                     
-
-                    {name: 'files', type: 'file', options: {max: 1}},                    
-*/                    
                 ],
                 
 //                focus: -1,
