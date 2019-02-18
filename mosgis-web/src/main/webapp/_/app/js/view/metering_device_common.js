@@ -51,6 +51,8 @@ define ([], function () {
         var $panel = $(w2ui ['passport_layout'].el ('top'))
                 
         fill (view, data.item, $panel)        
+        
+        var now = dt_dmy (new Date ().toJSON ())
 
         $panel.w2reform ({ 
         
@@ -63,8 +65,8 @@ define ([], function () {
                     {name: 'meteringdevicenumber', type: 'text'},
                     {name: 'meteringdevicestamp', type: 'text'},
                     {name: 'meteringdevicemodel', type: 'text'},
-                    {name: 'installationdate', type: 'date'},
-                    {name: 'commissioningdate', type: 'date'},                    
+                    {name: 'installationdate', type: 'date', options: {end: now}},
+                    {name: 'commissioningdate', type: 'date', options: {end: now}},
             
 /*            
                 {name: 'label_org_customer', type: 'text'},

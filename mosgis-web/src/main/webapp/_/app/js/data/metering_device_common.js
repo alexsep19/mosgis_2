@@ -52,8 +52,18 @@ define ([], function () {
     
         if (!confirm ('Сохранить изменения?')) return
         
+        var it = $('body').data ('data').item
+        
         var f = w2ui [form_name]
         var v = f.values ()
+        
+        if (!v.meteringdevicestamp) die ('meteringdevicestamp', 'Укажите, пожалуйста, марку прибора')
+        if (!v.meteringdevicemodel) die ('meteringdevicemodel', 'Укажите, пожалуйста, модель прибора')
+        if (!v.meteringdevicenumber) die ('meteringdevicenumber', 'Укажите, пожалуйста, серийный (заводской) номер прибора')
+        
+        if (it.code_vc_nsi_27 != 2 && !v.commissioningdate) die ('commissioningdate', 'Укажите, пожалуйста, дату ввода прибора в эксплуатацию')
+        
+        if (v.installationdate && v.commissioningdate && v.installationdate > v.commissioningdate) die ('commissioningdate', 'Дату ввода прибора в эксплуатацию не может предшествовать дате его установки')
         
         query ({type: 'metering_devices', action: 'update'}, {data: v}, reload_page)
         

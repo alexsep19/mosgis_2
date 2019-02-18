@@ -40,17 +40,9 @@ define ([], function () {
                 {field: 'meteringdevicestamp', caption: 'Марка', size: 10},
                 {field: 'meteringdevicemodel', caption: 'Модель', size: 10},
                 {field: 'mask_vc_nsi_2', caption: 'Ресурс', size: 10, voc: data.vc_nsi_2},
+                {field: 'commissioningdate', caption: 'Введён', tooltip: 'Дата ввода в эксплуатацию', size: 18, render: _dt},
                 {field: 'id_ctr_status', caption: 'Статус', size: 50, voc: data.vc_gis_status},
                 
-/*            
-                {field: 'owner_label', caption: 'Собственник', size: 30},
-                {field: 'totalarea', caption: 'Площадь, м2', size: 10},
-                {field: 'prc', caption: 'Доля, %', size: 10},
-                {field: 'id_type', caption: 'Документ', size: 25, voc: data.vc_prop_doc_types},
-                {field: 'no', caption: '№', size: 25},
-                {field: 'dt', caption: 'Дата', size: 18, render:_dt},
-                {field: 'author_label', caption: 'Поставщик информации', size: 30, off: is_author},
-*/                
             ].filter (not_off),
             
             postData: postData,
