@@ -13,7 +13,7 @@ define ([], function () {
                 record: data.record,
 
                 fields : [
-                    {name: 'outsidetemperature', type: 'float', options: {min: 0}},
+                    {name: 'outsidetemperature', type: 'float', options: {}},
                     {name: 'flowlinetemperature', type: 'float', options: {min: 0}},
                     {name: 'oppositelinetemperature', type: 'float', options: {min: 0}}
                 ],

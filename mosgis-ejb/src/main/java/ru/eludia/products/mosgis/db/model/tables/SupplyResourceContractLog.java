@@ -15,6 +15,7 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractDimension;
+import ru.eludia.products.mosgis.db.model.voc.VocGisContractQualityLevelType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustomerType;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
@@ -27,6 +28,7 @@ import ru.gosuslugi.dom.schema.integration.house_management.SupplyResourceContra
 import ru.gosuslugi.dom.schema.integration.house_management.SupplyResourceContractType.ObjectAddress;
 import ru.gosuslugi.dom.schema.integration.house_management.SupplyResourceContractType.Quality;
 import ru.gosuslugi.dom.schema.integration.house_management.SupplyResourceContractType.OtherQualityIndicator;
+import ru.gosuslugi.dom.schema.integration.house_management.SupplyResourceContractType.TemperatureChart;
 import ru.gosuslugi.dom.schema.integration.individual_registry_base.ID;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
 
@@ -227,8 +229,10 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	}
 
 	toQuality(r, result);
+
 	toOtherQuality(r, result);
-	// TODO: result.getTemperatureChart().add(tc)
+
+	toTemperatureChart(r, result);
 
 	return result;
 
@@ -246,6 +250,8 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	if (quality.isEmpty()) {
 	    return;
 	}
+	// Показатели качества
+	boolean qty_by_house = VocGisContractDimension.i.BY_HOUSE == VocGisContractDimension.i.forId(r.get(SupplyResourceContract.c.SPECQTYINDS.lc()));
 
 	for (Map<String, Object> q : quality) {
 	    q.put("okei", q.get("code_vc_okei"));
@@ -254,7 +260,7 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	    q.put("correspond", q.get("indicatorvalue_is"));
 	    q.put("number", q.get("indicatorvalue"));
 	    q.put("pairkey", q.get("pair.uuid"));
-	    q.put("addressobjectkey", q.get("addressobject.uuid"));
+	    q.put("addressobjectkey", qty_by_house? q.get("addressobject.uuid") : null);
 
 	    Quality quality_item = DB.to.javaBean(Quality.class, q);
 
@@ -262,23 +268,26 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 
 	    Quality.IndicatorValue i_value = DB.to.javaBean(Quality.IndicatorValue.class, q);
 
-	    switch (DB.to.String(q.get("vc_nsi_276.id_type"))) {
-		case "1":
-		    i_value.setNumber(null);
-		    i_value.setCorrespond(null);
-		    break;
-		case "2":
-		    i_value.setStartRange(null);
-		    i_value.setEndRange(null);
-		    i_value.setCorrespond(null);
-		    break;
-		case "3":
-		    i_value.setStartRange(null);
-		    i_value.setEndRange(null);
-		    i_value.setNumber(null);
-		    i_value.setCorrespond(DB.ok(q.get("indicatorvalue_is")));
-		    break;
+	    VocGisContractQualityLevelType.i id_type = VocGisContractQualityLevelType.i.forId(q.get("vc_nsi_276.id_type"));
+
+	    if (id_type == VocGisContractQualityLevelType.i.RANGE) {
+		i_value.setNumber(null);
+		i_value.setCorrespond(null);
 	    }
+
+	    if (id_type == VocGisContractQualityLevelType.i.NUMBER) {
+		i_value.setStartRange(null);
+		i_value.setEndRange(null);
+		i_value.setCorrespond(null);
+	    }
+
+	    if (id_type == VocGisContractQualityLevelType.i.CORRESPOND) {
+		i_value.setStartRange(null);
+		i_value.setEndRange(null);
+		i_value.setNumber(null);
+		i_value.setCorrespond(DB.ok(q.get("indicatorvalue_is")));
+	    }
+
 	    quality_item.setIndicatorValue(i_value);
 
 	    result.getQuality().add(quality_item);
@@ -297,6 +306,8 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	if (other_quality.isEmpty()) {
 	    return;
 	}
+	// Показатели качества
+	boolean qty_by_house = VocGisContractDimension.i.BY_HOUSE == VocGisContractDimension.i.forId(r.get(SupplyResourceContract.c.SPECQTYINDS.lc()));
 
 	for (Map<String, Object> q : other_quality) {
 	    q.put("okei", q.get("code_vc_okei"));
@@ -306,29 +317,54 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	    q.put("number", q.get("indicatorvalue"));
 	    q.put("indicatorname", q.get("label"));
 	    q.put("pairkey", q.get("pair.uuid"));
-	    q.put("addressobjectkey", q.get("addressobject.uuid"));
+	    q.put("addressobjectkey", qty_by_house? q.get("addressobject.uuid") : null);
 
 	    OtherQualityIndicator i_value = DB.to.javaBean(OtherQualityIndicator.class, q);
 
-	    switch (DB.to.String(q.get("id_type"))) {
-		case "1":
-		    i_value.setNumber(null);
-		    i_value.setCorrespond(null);
-		    break;
-		case "2":
-		    i_value.setStartRange(null);
-		    i_value.setEndRange(null);
-		    i_value.setCorrespond(null);
-		    break;
-		case "3":
-		    i_value.setStartRange(null);
-		    i_value.setEndRange(null);
-		    i_value.setNumber(null);
-		    i_value.setCorrespond(DB.ok(q.get("indicatorvalue_is")));
-		    break;
+	    VocGisContractQualityLevelType.i id_type = VocGisContractQualityLevelType.i.forId(q.get("id_type"));
+
+	    if (id_type == VocGisContractQualityLevelType.i.RANGE) {
+		i_value.setNumber(null);
+		i_value.setCorrespond(null);
+	    }
+
+	    if (id_type == VocGisContractQualityLevelType.i.NUMBER) {
+		i_value.setStartRange(null);
+		i_value.setEndRange(null);
+		i_value.setCorrespond(null);
+	    }
+
+	    if (id_type == VocGisContractQualityLevelType.i.CORRESPOND) {
+		i_value.setStartRange(null);
+		i_value.setEndRange(null);
+		i_value.setNumber(null);
+		i_value.setCorrespond(DB.ok(q.get("indicatorvalue_is")));
 	    }
 
 	    result.getOtherQualityIndicator().add(i_value);
+	}
+    }
+
+    private static void toTemperatureChart(Map<String, Object> r, SupplyResourceContractType result) {
+
+	List<Map<String, Object>> temperature_chart = (List<Map<String, Object>>) r.get("temperature_chart");
+	if (temperature_chart == null) {
+	    throw new IllegalStateException("No supply resource contract quality fetched: " + r);
+	}
+
+	result.getTemperatureChart().clear();
+
+	if (temperature_chart.isEmpty()) {
+	    return;
+	}
+
+	for (Map<String, Object> t : temperature_chart) {
+
+	    t.put("addressobjectkey", t.get("addressobject.uuid"));
+
+	    TemperatureChart temperature = DB.to.javaBean(TemperatureChart.class, t);
+
+	    result.getTemperatureChart().add(temperature);
 	}
     }
 
@@ -705,6 +741,15 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	    )
 	    .where(SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR, r.get("ctr.uuid"))
 	    .and(SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR_OBJ.lc() + (qty_by_house ? " IS NOT NULL" : " IS NULL"))
+	    .and("is_deleted", 0)
+	));
+
+	// Температурный график
+	r.put("temperature_chart", db.getList(m
+	    .select(SupplyResourceContractTemperatureChart.class, "AS root", "*")
+	    .toMaybeOne(SupplyResourceContractObject.class, "AS addressobject", "uuid").on()
+	    .where(SupplyResourceContractTemperatureChart.c.UUID_SR_CTR, r.get("ctr.uuid"))
+	    .and(SupplyResourceContractTemperatureChart.c.UUID_SR_CTR_OBJ.lc() + (qty_by_house ? " IS NOT NULL" : " IS NULL"))
 	    .and("is_deleted", 0)
 	));
     }
