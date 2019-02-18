@@ -14,6 +14,7 @@ import ru.eludia.products.mosgis.db.model.tables.MeteringDevice;
 import ru.eludia.products.mosgis.db.model.tables.MeteringDeviceLog;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceType;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -110,6 +111,7 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
 
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
             .get (getTable (), id, "AS root", "*")
+            .toOne (VocBuilding.class, "label AS address").on ()
             .toMaybeOne (Premise.class, "AS premise", Premise.c.LABEL.lc ()).on ()
             .toMaybeOne (MeteringDeviceLog.class, "AS log").on ()
             .toMaybeOne (OutSoap.class, "err_text").on ("log.uuid_out_soap=out_soap.uuid")
@@ -119,6 +121,7 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
         Nsi27.i.addTo (job);
         VocGisStatus.addTo (job);
         VocAction.addTo (job);
+        VocMeteringDeviceType.addTo (job);
 
     });}
 
