@@ -76,6 +76,8 @@ public class SupplyResourceContractOtherQualityLevel extends EnTable {
 
                     + "  IF :NEW.uuid_sr_ctr_subj IS NOT NULL THEN "
                     + "     SELECT uuid_sr_ctr INTO :NEW.uuid_sr_ctr FROM tb_sr_ctr_subj WHERE uuid=:NEW.uuid_sr_ctr_subj; "
+		    + "     SELECT code_vc_nsi_3   INTO :NEW.code_vc_nsi_3   FROM tb_sr_ctr_subj WHERE uuid=:NEW.uuid_sr_ctr_subj; "
+		    + "     SELECT code_vc_nsi_239 INTO :NEW.code_vc_nsi_239 FROM tb_sr_ctr_subj WHERE uuid=:NEW.uuid_sr_ctr_subj; "
                     + "  END IF;"
 
 		    + "  IF :NEW.uuid_sr_ctr_obj IS NOT NULL THEN "
@@ -86,9 +88,13 @@ public class SupplyResourceContractOtherQualityLevel extends EnTable {
 		    + "     raise_application_error (-20000, 'Показатель качества должен быть привязан к предмету договора или к ОЖФ. Операция отменена.'); "
 		    + "  END IF;"
 
-                    + "  IF :NEW.id_type = 1 AND :NEW.indicatorvalue_from IS NULL AND :NEW.indicatorvalue_to IS NULL THEN "
-                    + "     raise_application_error (-20000, 'Укажите диапазон иного показателя качества. Операция отменена.'); "
+                    + "  IF :NEW.id_type = 1 AND :NEW.indicatorvalue_from IS NULL THEN "
+                    + "     raise_application_error (-20000, 'Укажите начало диапазона иного показателя качества. Операция отменена.'); "
                     + "  END IF;"
+
+		    + "  IF :NEW.id_type = 1 AND :NEW.indicatorvalue_to IS NULL THEN "
+		    + "     raise_application_error (-20000, 'Укажите конец диапазона иного показателя качества. Операция отменена.'); "
+		    + "  END IF;"
 
                     + "  IF :NEW.id_type = 2 AND :NEW.indicatorvalue IS NULL THEN "
                     + "     raise_application_error (-20000, 'Укажите значение иного показателя качества. Операция отменена.'); "

@@ -19,6 +19,8 @@ define ([], function () {
                 die(this, 'Укажите, пожалуйста, меньшее значение')
         })
 
+        if (!v.code_vc_nsi_3) die('label', 'Укажите, пожалуйста, вид коммунальной услуги')
+        if (!v.code_vc_nsi_239) die('label', 'Укажите, пожалуйста, коммунальный ресурс')
 
         var tia = {type: 'supply_resource_contract_object_other_quality_levels'}
         tia.id = form.record.id
@@ -56,7 +58,25 @@ define ([], function () {
                 update: data.item._can.edit? true : false
             }
 
-            done(data)
+            query({type: 'supply_resource_contract_subjects', id: undefined}
+                , {limit: 10000, offset: 0, data: {uuid_sr_ctr: data.item['sr_ctr.uuid']}}
+                , function (d) {
+
+                data.service2resource = {}
+
+                $.each(d.tb_sr_ctr_subj, function () {
+                    data.service2resource[this.code_vc_nsi_3] = data.service2resource[this.code_vc_nsi_3] || []
+                    data.service2resource[this.code_vc_nsi_3].push({
+                        id: this.code_vc_nsi_239,
+                        text: data.vc_nsi_239[this.code_vc_nsi_239]
+                    })
+                })
+                data.vc_nsi_3.items = data.vc_nsi_3.items.filter(function (i) {
+                    return !!data.service2resource[i.id]
+                })
+
+                done(data)
+            })
         })
 
     }

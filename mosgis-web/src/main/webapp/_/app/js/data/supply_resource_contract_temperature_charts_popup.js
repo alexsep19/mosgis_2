@@ -15,13 +15,13 @@ define ([], function () {
             die ('flowlinetemperature', 'Укажите, пожалуйста, температуру теплоносителя в подающем трубопроводе')
 
         if (!v.oppositelinetemperature)
-	    die('oppositelinetemperature', 'Укажите, пожалуйста, температуру теплоносителя в обратном трубопроводе')
+            die('oppositelinetemperature', 'Укажите, пожалуйста, температуру теплоносителя в обратном трубопроводе')
 
         v.uuid_sr_ctr = it.uuid
 
         var tia = {type: 'supply_resource_contract_temperature_charts', action: 'create', id: undefined}
-	tia.id = form.record.id
-	tia.action = tia.id ? 'update' : 'create'
+        tia.id = form.record.id
+        tia.action = tia.id ? 'update' : 'create'
 
         query (tia, {data: v}, function (data) {
 
@@ -39,7 +39,7 @@ define ([], function () {
 
         data.record = $_SESSION.delete('record') || {}
 
-	done (data)
+        done (data)
 
     }
 

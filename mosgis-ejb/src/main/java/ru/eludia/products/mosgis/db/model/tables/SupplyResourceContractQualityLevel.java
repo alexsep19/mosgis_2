@@ -11,6 +11,7 @@ import static ru.eludia.base.model.def.Bool.FALSE;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.voc.VocGisContractQualityLevelType;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 
 public class SupplyResourceContractQualityLevel extends EnTable {
@@ -23,6 +24,7 @@ public class SupplyResourceContractQualityLevel extends EnTable {
 	UUID_SR_CTR_OBJ       (SupplyResourceContractObject.class, null, "Объект жилищного фонда (заполняется если показатель привязан к ОЖФ)"),
 
         CODE_VC_NSI_276       (STRING, 20, "Ссылка на НСИ \"Показатели качества коммунальных ресурсов\" (реестровый номер 276)"),
+	ID_TYPE               (VocGisContractQualityLevelType.class, "Тип иного показателя качества"),
 
         QUALITYINDICATORREF   (STRING, new Virt("(''||\"CODE_VC_NSI_276\")"), "Наименование"),
 
@@ -81,6 +83,17 @@ public class SupplyResourceContractQualityLevel extends EnTable {
 
 		    + "  IF :NEW.uuid_sr_ctr_obj IS NULL AND :NEW.uuid_sr_ctr_subj IS NULL THEN "
 		    + "     raise_application_error (-20000, 'Показатель качества должен быть привязан к предмету договора или к ОЖФ. Операция отменена.'); "
+		    + "  END IF;"
+
+
+		    + " SELECT id_type INTO :NEW.id_type FROM vc_nsi_276 WHERE code=:NEW.code_vc_nsi_276; "
+
+		    + "  IF :NEW.id_type = 1 AND :NEW.indicatorvalue_from IS NULL THEN "
+		    + "     raise_application_error (-20000, 'Укажите начало диапазона показателя качества. Операция отменена.'); "
+		    + "  END IF;"
+
+		    + "  IF :NEW.id_type = 1 AND :NEW.indicatorvalue_to IS NULL THEN "
+		    + "     raise_application_error (-20000, 'Укажите конец диапазона показателя качества. Операция отменена.'); "
 		    + "  END IF;"
 
                     + " FOR i IN ("
