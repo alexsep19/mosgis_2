@@ -8,6 +8,7 @@ import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import static ru.eludia.products.mosgis.db.model.tables.Charter.Action.PLACING;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
@@ -25,6 +26,9 @@ public class House extends Passport {
         super  (TABLE_NAME,             "МКД/ЖД");
         
         pk     ("uuid",                  Type.UUID,   NEW_UUID,            "Ключ");
+        
+        fk     ("uuid_xl",               InXlFile.class,        null,           "Источник импорта");
+        
         col    ("unom",                  Type.NUMERIC, 12, null,           "UNOM (код дома в московских ИС)");
         
         fk     ("fiashouseguid",         VocBuilding.class,  null,                     "Глобальный уникальный идентификатор дома по ФИАС");

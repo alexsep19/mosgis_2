@@ -18,6 +18,7 @@ public class InXlHouseInfo extends EnTable {
     public enum c implements ColEnum {
         
         UUID_XL                 (InXlFile.class, "Файл импорта"),
+        UUID_XL_HOUSE           (InXlHouse.class, "Строка импорта дома"),
         
         ORD                     (Type.NUMERIC, 5, "Номер строки"),
         
@@ -134,7 +135,10 @@ public class InXlHouseInfo extends EnTable {
                         + "IF cnt = 0 THEN "
                             + "raise_application_exception (-20000, 'По указанному адресу не найдено информации по импорту'); "
                         + "ELSEIF cnt > 1 THEN "
-                            + "raise_aaplication_exception (-20000, 'Для указанной информации нет соответствующего дома'); "
+                            + "raise_aaplication_exception (-20000, 'Для указанной информации нельзя однозначно определить дом'); "
+                        + "ELSE "
+                            + "SELECT uuid INTO :NEW.uuid_xl_house FROM in_xl_houses r WHERE r.uuid_xl = :NEW.uuid_xl AND r.address = :NEW.address;"
+                        + "END IF; "
                     + "END; "
                 + "END; "
         );
@@ -147,9 +151,17 @@ public class InXlHouseInfo extends EnTable {
                     + "IF :NEW.err IS NOT NULL THEN :NEW.is_deleted := 1; END IF; "
                     + "IF NOT (:OLD.is_deleted = 1 AND :NEW.is_deleted = 0) THEN RETURN; END IF; "
                 
-                    + "INSERT INTO tb_houses (uuid,is_deleted" + sb + ") VALUES (:NEW.uuid,0" + nsb + "); "
-                    + "UPDATE tb_houses SET is_deleted=1 WHERE uuid=:NEW.uuid; "
-                    + "COMMIT; "
+                    + "IF :NEW.residentscount IS NULL THEN "
+                        + "BEGIN "
+                            + "UPDATE tb_houses SET residentscount=:NEW.residentscount WHERE address=:NEW.address AND uuid_xl=:NEW.uuid_xl; "
+                            + "COMMIT; "
+                        + "END; "
+                    + "ELSE "
+                        + "BEGIN "
+                            + "UPDATE tb_houses SET hasundergroundparking=:NEW.hasundergroundparking WHERE address=:NEW.address AND uuid_xl=:NEW.uuid_xl; "
+                            + "COMMIT; "
+                        + "END; "
+                    + "END IF; "
 
                 + "END; "
         );
