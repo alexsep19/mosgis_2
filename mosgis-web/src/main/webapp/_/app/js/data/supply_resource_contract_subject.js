@@ -39,9 +39,25 @@ define ([], function () {
 
                     it._can = {
                         cancel: 1,
-                        update: 1,
-                        delete: it['sr_ctr.uuid_org'] == $_USER.uuid_org && !it.is_deleted,
-                        edit  : it['sr_ctr.uuid_org'] == $_USER.uuid_org && !it.is_deleted,
+                        update: 1
+                    }
+
+                    var is_locked = it.is_deleted || (it['sr_ctr.uuid_org'] != $_USER.uuid_org)
+
+                    if (!is_locked) {
+
+                        switch (it['sr_ctr.id_ctr_status']) {
+                            case 10:
+                            case 14:
+                                it._can.delete = 1
+                        }
+
+                        switch (it['sr_ctr.id_ctr_status']) {
+                            case 10:
+                            case 11:
+                                it._can.edit = 1
+                        }
+
                     }
 
                     for (voc in d) {

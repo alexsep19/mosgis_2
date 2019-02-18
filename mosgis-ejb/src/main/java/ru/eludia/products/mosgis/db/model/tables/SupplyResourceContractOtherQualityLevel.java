@@ -23,6 +23,9 @@ public class SupplyResourceContractOtherQualityLevel extends EnTable {
         UUID_SR_CTR_SUBJ      (SupplyResourceContractSubject.class, null, "Предмет договора (заполняется если показатель привязан к предмету договора)"),
 	UUID_SR_CTR_OBJ       (SupplyResourceContractObject.class, null, "Объект жилищного фонда (заполняется если показатель привязан к ОЖФ)"),
 
+	CODE_VC_NSI_3         (STRING, 20, null, "Ссылка на НСИ \"Вид коммунальной услуги\" (реестровый номер 3)"),
+	CODE_VC_NSI_239       (STRING, 20, null, "Ссылка на НСИ \"Вид коммунального ресурса\" (реестровый номер 239)"),
+
         LABEL                 (STRING, null, "Наименование иного показателя качества"),
         ID_TYPE               (VocGisContractQualityLevelType.class, "Тип иного показателя качества"),
 
@@ -90,6 +93,14 @@ public class SupplyResourceContractOtherQualityLevel extends EnTable {
                     + "  IF :NEW.id_type = 2 AND :NEW.indicatorvalue IS NULL THEN "
                     + "     raise_application_error (-20000, 'Укажите значение иного показателя качества. Операция отменена.'); "
                     + "  END IF;"
+
+		    + "  IF :NEW.code_vc_nsi_3 IS NULL THEN "
+		    + "     raise_application_error (-20000, 'Укажите вид коммунальной услуги.'); "
+		    + "  END IF;"
+
+		    + "  IF :NEW.code_vc_nsi_239 IS NULL THEN "
+		    + "     raise_application_error (-20000, 'Укажите коммунальный ресурс.'); "
+		    + "  END IF;"
 
                     + "  IF :NEW.id_type = 1 AND :NEW.code_vc_okei IS NULL THEN "
                     + "     raise_application_error (-20000, 'Укажите единицу измерения иного показателя качества. Операция отменена.'); "

@@ -22,8 +22,8 @@ public class SupplyResourceContractSubject extends EnTable {
         UUID_SR_CTR           (SupplyResourceContract.class, "Договор"),
 	UUID_SR_CTR_OBJ       (SupplyResourceContractObject.class, null, "Объект жилищного фонда (заполняется, если поставляемый ресурс привязан к ОЖФ)"),
 
-        CODE_VC_NSI_239       (STRING, 20, "Ссылка на НСИ \"Вид коммунальной услуги\" (реестровый номер 239)"),
-        CODE_VC_NSI_3         (STRING, 20, "Ссылка на НСИ \"Вид коммунального ресурса\" (реестровый номер 3)"),
+	CODE_VC_NSI_3         (STRING, 20, "Ссылка на НСИ \"Вид коммунальной услуги\" (реестровый номер 3)"),
+	CODE_VC_NSI_239       (STRING, 20, "Ссылка на НСИ \"Вид коммунального ресурса\" (реестровый номер 239)"),
 
         SERVICETYPEREF        (STRING, new Virt ("(''||\"CODE_VC_NSI_3\")"),  "Вид коммунальной услуги"),
         MUNICIPALRESOURCEREF  (STRING, new Virt ("(''||\"CODE_VC_NSI_239\")"),  "Тарифицируемый ресурс"),
