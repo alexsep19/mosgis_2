@@ -32,12 +32,12 @@ define ([], function () {
 
             columns: [
                 {field: 'building.label', caption: 'Адрес', size: 40, render: function(i) {
-			if (!i.uuid_premise) {
-			    return i['building.label']
-			}
+                    if (!i.uuid_premise) {
+                        return i['building.label']
+                    }
 
-			return i['building.label'] + ', ' + i['premise.label']
-		}},
+                    return i['building.label'] + ', ' + i['premise.label']
+                }},
                 {field: 'id_ctr_status', caption: 'Статус', size: 20, voc: data.vc_gis_status}
             ],
 

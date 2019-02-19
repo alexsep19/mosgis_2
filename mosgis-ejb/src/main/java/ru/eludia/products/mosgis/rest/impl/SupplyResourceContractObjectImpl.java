@@ -13,8 +13,10 @@ import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.House;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractObject;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi3;
@@ -141,7 +143,7 @@ public class SupplyResourceContractObjectImpl extends BaseCRUD<SupplyResourceCon
 	    m.select(VocOkei.class, "code AS id", "national AS label")
 	);
 
-        VocGisStatus.addTo(job);
+        VocGisStatus.addLiteTo(job);
         VocAction.addTo(job);
 	VocNsi276.addTo(db, job);
     });}
