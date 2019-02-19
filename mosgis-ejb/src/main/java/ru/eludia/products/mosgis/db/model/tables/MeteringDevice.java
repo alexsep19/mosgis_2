@@ -4,13 +4,12 @@ import java.math.BigInteger;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
-import static ru.eludia.base.model.Type.BOOLEAN;
-import static ru.eludia.base.model.def.Bool.FALSE;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceType;
+import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceInstallationPlace;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi16;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi27;
@@ -20,11 +19,12 @@ public class MeteringDevice extends EnTable {
     public enum c implements EnColEnum {
         
         ID_TYPE                (VocMeteringDeviceType.class,                    "Тип прибора учёта"),
-        
+        INSTALLATIONPLACE      (VocMeteringDeviceInstallationPlace.class, null, "Место установки"),
+
         UUID_ORG               (VocOrganization.class,                          "Организация, которая завела данный прибор в БД"),
         UUID_PREMISE           (Premise.class,       null,                      "Помещение"),
 	FIASHOUSEGUID          (VocBuilding.class,                              "Глобальный уникальный идентификатор дома по ФИАС"),
-        
+
         METERINGDEVICENUMBER   (Type.STRING,  50,                               "Заводской (серийный) номер ПУ"),
         METERINGDEVICESTAMP    (Type.STRING,  100,                              "Марка ПУ"),
         METERINGDEVICEMODEL    (Type.STRING,  100,                              "Модель ПУ"),
@@ -47,7 +47,9 @@ public class MeteringDevice extends EnTable {
         TEMPERATURESENSOR      (Type.BOOLEAN,  Boolean.FALSE,                   "Наличие датчиков температры"),
         PRESSURESENSOR         (Type.BOOLEAN,  Boolean.FALSE,                   "Наличие датчиков давления"),
         CONSUMEDVOLUME         (Type.BOOLEAN,  Boolean.FALSE,                   "ПУ предоставляет объем потребленного КР"),
-        
+
+        NOTLINKEDWITHMETERING  (Type.BOOLEAN,  Boolean.TRUE,                    "Объем ресурса(ов) определяется с помощью только этого прибора учёта"),
+
         TRANSFORMATIONRATIO    (Type.NUMERIC, 17, 2, null,                      "Коэффициент трансформации"),
         TARIFFCOUNT            (Type.NUMERIC, 1, 0, BigInteger.ONE,             "Количество тарифов"),
         

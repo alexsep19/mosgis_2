@@ -17,6 +17,7 @@ import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceInstallationPlace;
 import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceType;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi16;
@@ -110,8 +111,8 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
 
     @Override
     public JsonObject getItem (String id) {return fetchData ((db, job) -> {
-
-        job.add ("item", db.getJsonObject (ModelHolder.getModel ()
+        
+        final JsonObject item = db.getJsonObject (ModelHolder.getModel ()
             .get (getTable (), id, "AS root", "*")
             .toMaybeOne (Premise.class, "AS premise", Premise.c.LABEL.lc ()).on ()
             .toOne (VocBuilding.class, "AS building", "label AS address").on ("root.fiashouseguid=building.houseguid")
@@ -119,14 +120,17 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
             .toMaybeOne (MeteringDeviceLog.class, "AS log").on ()
             .toMaybeOne (OutSoap.class, "err_text").on ("log.uuid_out_soap=out_soap.uuid")
             .toOne (VocOrganization.class, "AS org", "label").on ("root.uuid_org=org.uuid")
-        ));
+        );
+
+        job.add ("item", item);
         
         Nsi2.i.addMeteringTo (job);
         Nsi27.i.addTo (job);
         VocGisStatus.addTo (job);
         VocAction.addTo (job);
         VocMeteringDeviceType.addTo (job);
-        
+        VocMeteringDeviceInstallationPlace.addTo (job, item.getInt (MeteringDevice.c.MASK_VC_NSI_2.lc ()) == Nsi2.i.POWER.getId ());
+
         db.addJsonArrays (job, 
            Nsi16.getVocSelect ()
         );

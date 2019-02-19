@@ -8,6 +8,7 @@ define ([], function () {
         var v = f.values ()
         
         $('#span_remote_metering').css ({visibility: v.remotemeteringmode ? 'visible' : 'hidden'})
+        $('#span_installationplace').css ({visibility: !v.notlinkedwithmetering ? 'visible' : 'hidden'})
 
     }
 
@@ -20,6 +21,8 @@ define ([], function () {
             data.item.__read_only = data.__read_only
             
             var r = clone (data.item)
+            
+            r.is_power = r.mask_vc_nsi_2 == 4
             
             if (!r.remotemeteringmode) r.remotemeteringmode = 0
 
@@ -41,7 +44,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 320},
+                {type: 'top', size: 350},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
@@ -77,6 +80,7 @@ define ([], function () {
                     {name: 'meteringdevicestamp', type: 'text'},
                     {name: 'meteringdevicemodel', type: 'text'},
                     {name: 'remotemeteringinfo', type: 'text'},
+                    {name: 'factorysealdate', type: 'date', options: {end: now}},
                     {name: 'installationdate', type: 'date', options: {end: now}},
                     {name: 'commissioningdate', type: 'date', options: {end: now}},
                     {name: 'firstverificationdate', type: 'date', options: {end: now}},
@@ -87,6 +91,11 @@ define ([], function () {
                     {name: 'tariffcount', type: 'int', options: {min:1, max: 3}},
                     {name: 'code_vc_nsi_16', type: 'list', options: {items: data.vc_nsi_16.items}},
                     {name: 'transformationratio', type: 'float', options: {min: 0, precision: 2}},
+                    {name: 'notlinkedwithmetering', type: 'list', options: {items: [
+                        {id: 1, text: 'нет'},
+                        {id: 0, text: 'да'},
+                    ]}},
+                    {name: 'installationplace', type: 'list', options: {items: data.vc_meter_places.items}},
 
             ],
 
@@ -103,6 +112,18 @@ define ([], function () {
                         recalc ()
                         
                         $('#remotemeteringinfo').focus ()
+                    
+                    })
+                
+                }
+                
+                if (e.target == "notlinkedwithmetering") {
+                
+                    e.done (function () {
+                    
+                        recalc ()
+                        
+                        $('#installationplace').focus ()
                     
                     })
                 

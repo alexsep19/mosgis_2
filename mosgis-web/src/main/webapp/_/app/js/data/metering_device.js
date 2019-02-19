@@ -25,14 +25,13 @@ define ([], function () {
                 vc_gis_status: 1,
                 vc_actions: 1,
                 vc_meter_types: 1,
+                vc_meter_places: 1,
                 vc_nsi_2: 1,
                 vc_nsi_16: 1,
             })
             
             var it = data.item
-            
-            it.is_power = it.mask_vc_nsi_2 == 4
-            
+
             it._can = {cancel: 1}
 
             if (!it.is_deleted && it.uuid_org == $_USER.uuid_org) {
