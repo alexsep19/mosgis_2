@@ -6,26 +6,6 @@ define ([], function () {
 
         $('title').text ('Объект жилищного фонда по адресу ' +  +it['building.label'] + ' ДРС №' + it['sr_ctr.label'])
 
-        if (it ['out_soap.err_text']) {
-
-            it.sync_label = 'Ошибка передачи в ГИС ЖКХ. Подробности на вкладке "История изменений"'
-
-        }
-        else if (it.id_ctr_status == 40) {
-
-            if (!it.uuid_out_soap) {
-
-                it.sync_label = 'Ожидание отправки в ГИС ЖКХ'
-
-            }
-            else if (!it.contractguid) {
-
-                it.sync_label = 'Ожидание ответа от ГИС ЖКХ'
-
-            }
-
-        }
-
         fill (view, it, $('#body'))
 
         $('#container').w2relayout ({

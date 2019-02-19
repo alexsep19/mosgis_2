@@ -9,18 +9,9 @@ define([], function () {
 
         w2ui ['topmost_layout'].unlock('main')
 
-        query({type: 'supply_resource_contract_objects', part: 'vocs', id: undefined}, {}, function (d) {
+        var data = clone($('body').data('data'))
 
-            add_vocabularies(d, d)
-
-            var data = clone($('body').data('data'))
-
-            for (k in d) {
-                data[k] = d[k]
-            }
-
-            done(data)
-        })
+        done(data)
 
     }
 

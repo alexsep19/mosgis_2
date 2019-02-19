@@ -287,7 +287,23 @@ public class SupplyResourceContract extends EnTable {
 			    + " END LOOP; "
 			+ " END IF; "
 		    + " END IF; " // IF :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING
-		+ " END IF; " // IF :NEW.is_deleted = 0
+
+		    + " IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.TERMINATED + " THEN "
+		    + "   UPDATE tb_sr_ctr_subj o "
+		    + "     SET o.endsupplydate = :NEW.terminate "
+		    + "   WHERE o.is_deleted = 0 "
+		    + "     AND o.uuid_sr_ctr = :NEW.uuid; "
+		    + " END IF; " // IF :NEW.ID_CTR_STATUS=" + VocGisStatus.i.TERMINATED
+
+		    + " IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS THEN "
+		    + "   UPDATE tb_sr_ctr_obj o "
+		    + "     SET o.id_ctr_status = :NEW.ID_CTR_STATUS "
+		    + "   WHERE o.is_deleted = 0 "
+		    + "     AND o.id_ctr_status <>  " + VocGisStatus.i.ANNUL
+		    + "     AND o.uuid_sr_ctr = :NEW.uuid; "
+		    + " END IF; " // IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS
+
+	    + " END IF; " // IF :NEW.is_deleted = 0
         + "END;");
     }
 
