@@ -25,17 +25,6 @@ public class SettlementDocLogTest extends BaseTest {
         
     }
 
-    @Test (expected = Test.None.class)
-    public void test () throws Exception {
-        
-        Map<String, Object> r = getData ();
-
-        dump (r);
-
-        validate (SettlementDocLog.toImportRSOSettlementsRequest(r));
-        
-    }
-
     private Map<String, Object> getData () throws SQLException {
         
         try (DB db = model.getDb ()) {
@@ -49,5 +38,37 @@ public class SettlementDocLogTest extends BaseTest {
         }
         
     }
-    
+
+    @Test(expected = Test.None.class)
+    public void testInsertRSO() throws SQLException {
+
+	Map<String, Object> r = getData();
+
+	r.put("settlementguid", null);
+	dump(r);
+	validate(SettlementDocLog.toImportRSOSettlementsRequest(r));
+
+    }
+
+    @Test(expected = Test.None.class)
+    public void testUpdateRSO() throws SQLException {
+
+	Map<String, Object> r = getData();
+
+	r.put("settlementguid", r.get("uuid"));
+	dump(r);
+	validate(SettlementDocLog.toImportRSOSettlementsRequest(r));
+
+    }
+
+    @Test(expected = Test.None.class)
+    public void testAnnulRSO() throws SQLException {
+
+	Map<String, Object> r = getData();
+
+	r.put("settlementguid", r.get("uuid"));
+	r.put("reasonofannulment", r.get("uuid"));
+	dump(r);
+	validate(SettlementDocLog.toAnnulRSOSettlementsRequest(r));
+    }
 }
