@@ -147,7 +147,29 @@ public class SupplyResourceContractImpl extends BaseCRUD<SupplyResourceContract>
 
 	    job.add("is_on_tab_temperature", is_on_tab_temperature != null);
 	}
-	
+
+	switch (VocGisStatus.i.forId(item.getInt(SupplyResourceContract.c.ID_CTR_STATUS.lc(), VocGisStatus.i.PROJECT.getId()))) {
+	    case ANNUL:
+	    case PENDING_RQ_ANNULMENT:
+	    case PENDING_RP_ANNULMENT:
+	    case FAILED_ANNULMENT:
+		JsonObject lastAnnul = db.getJsonObject(m
+		    .select(SupplyResourceContractLog.class, "AS root", "*")
+		    .and("uuid_object", id)
+		    .and("action", VocAction.i.ANNUL.getName())
+		    .orderBy("root.ts DESC")
+		    .toMaybeOne(OutSoap.class, "AS soap")
+		    .on()
+		);
+
+		if (lastAnnul != null) {
+		    job.add("last_annul", lastAnnul);
+		}
+
+		break;
+
+	    default:
+	}
 
 	VocGisStatus.addLiteTo (job);
         VocAction.addTo (job);
@@ -176,7 +198,7 @@ public class SupplyResourceContractImpl extends BaseCRUD<SupplyResourceContract>
 
         switch (action) {
             case APPROVE:
-//	    case ANNUL:
+	    case ANNUL:
                 super.publishMessage (action, id_log);
             default:
                 return;
