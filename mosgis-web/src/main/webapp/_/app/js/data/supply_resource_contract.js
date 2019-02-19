@@ -37,8 +37,10 @@ define ([], function () {
                 var it = data.item
 
                 it.last_annul = data.last_annul
-                it.last_termination = data.last_termination
-                it['last_termination.reason'] = data.vc_nsi_54[data.last_termination.code_vc_nsi_54]
+                if (data.last_termination) {
+                    it.last_termination = data.last_termination
+                    it['last_termination.reason'] = data.vc_nsi_54[data.last_termination.code_vc_nsi_54]
+                }
 
                 it._can = {cancel: 1}
 
