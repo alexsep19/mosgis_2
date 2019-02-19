@@ -20,6 +20,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustom
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.voc.VocSupplyResourceContractFileType;
+import ru.gosuslugi.dom.schema.integration.house_management.AnnulmentType;
 import ru.gosuslugi.dom.schema.integration.house_management.ContractSubjectType;
 import ru.gosuslugi.dom.schema.integration.house_management.DRSOIndType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportSupplyResourceContractRequest;
@@ -54,6 +55,20 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	}
 	createImportSupplyResourceContractRequest.getContract().add(contract);
 	return createImportSupplyResourceContractRequest;
+    }
+
+    public static ImportSupplyResourceContractRequest toAnnulSupplyResourceContractRequest(Map<String, Object> r) {
+	final ImportSupplyResourceContractRequest annulRequest = new ImportSupplyResourceContractRequest();
+	final ImportSupplyResourceContractRequest.Contract contract = new ImportSupplyResourceContractRequest.Contract();
+	final AnnulmentType annulmentContract = DB.to.javaBean(AnnulmentType.class, r);
+	contract.setAnnulmentContract(annulmentContract);
+	contract.setTransportGUID(UUID.randomUUID().toString());
+	final Object ver = r.get(SupplyResourceContract.c.CONTRACTGUID.lc());
+	if (ver != null) {
+	    contract.setContractGUID(ver.toString());
+	}
+	annulRequest.getContract().add(contract);
+	return annulRequest;
     }
 
     private static SupplyResourceContractType toContractSupplyResourceContract(Map<String, Object> r) {
@@ -270,22 +285,22 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 
 	    VocGisContractQualityLevelType.i id_type = VocGisContractQualityLevelType.i.forId(q.get("vc_nsi_276.id_type"));
 
-	    if (id_type == VocGisContractQualityLevelType.i.RANGE) {
-		i_value.setNumber(null);
-		i_value.setCorrespond(null);
-	    }
-
-	    if (id_type == VocGisContractQualityLevelType.i.NUMBER) {
-		i_value.setStartRange(null);
-		i_value.setEndRange(null);
-		i_value.setCorrespond(null);
-	    }
-
-	    if (id_type == VocGisContractQualityLevelType.i.CORRESPOND) {
-		i_value.setStartRange(null);
-		i_value.setEndRange(null);
-		i_value.setNumber(null);
-		i_value.setCorrespond(DB.ok(q.get("indicatorvalue_is")));
+	    switch (id_type) {
+		case RANGE:
+		    i_value.setNumber(null);
+		    i_value.setCorrespond(null);
+		    break;
+		case NUMBER:
+		    i_value.setStartRange(null);
+		    i_value.setEndRange(null);
+		    i_value.setCorrespond(null);
+		    break;
+		case CORRESPOND:
+		    i_value.setStartRange(null);
+		    i_value.setEndRange(null);
+		    i_value.setNumber(null);
+		    i_value.setCorrespond(DB.ok(q.get("indicatorvalue_is")));
+		break;
 	    }
 
 	    quality_item.setIndicatorValue(i_value);
@@ -323,22 +338,22 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 
 	    VocGisContractQualityLevelType.i id_type = VocGisContractQualityLevelType.i.forId(q.get("id_type"));
 
-	    if (id_type == VocGisContractQualityLevelType.i.RANGE) {
-		i_value.setNumber(null);
-		i_value.setCorrespond(null);
-	    }
-
-	    if (id_type == VocGisContractQualityLevelType.i.NUMBER) {
-		i_value.setStartRange(null);
-		i_value.setEndRange(null);
-		i_value.setCorrespond(null);
-	    }
-
-	    if (id_type == VocGisContractQualityLevelType.i.CORRESPOND) {
-		i_value.setStartRange(null);
-		i_value.setEndRange(null);
-		i_value.setNumber(null);
-		i_value.setCorrespond(DB.ok(q.get("indicatorvalue_is")));
+	    switch (id_type) {
+		case RANGE:
+		    i_value.setNumber(null);
+		    i_value.setCorrespond(null);
+		    break;
+		case NUMBER:
+		    i_value.setStartRange(null);
+		    i_value.setEndRange(null);
+		    i_value.setCorrespond(null);
+		    break;
+		case CORRESPOND:
+		    i_value.setStartRange(null);
+		    i_value.setEndRange(null);
+		    i_value.setNumber(null);
+		    i_value.setCorrespond(DB.ok(q.get("indicatorvalue_is")));
+		break;
 	    }
 
 	    result.getOtherQualityIndicator().add(i_value);
