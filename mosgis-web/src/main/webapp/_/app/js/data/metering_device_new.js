@@ -115,7 +115,7 @@ define ([], function () {
         
         var it = data.item
 
-        data.record = {}
+        data.record = {is_volume: 0}
 
         query ({type: 'metering_devices', id: null, part: 'vocs'}, {}, function (d) {
         

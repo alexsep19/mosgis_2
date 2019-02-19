@@ -14,6 +14,11 @@ define ([], function () {
 
                 fields : [                                
                 
+                    {name: 'is_volume', type: 'list', options: {items: [
+                        {id: 0, text: 'текущие показания'},
+                        {id: 1, text: 'потреблённый объём'},
+                    ]}},
+
                     {name: 'id_type', type: 'list', options: {items: data.types}},
                     {name: 'mask_vc_nsi_2', type: 'list', options: {items: data.vc_nsi_2.items}},
                     
