@@ -19,6 +19,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceType;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi16;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi27;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi2;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -125,22 +126,27 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
         VocGisStatus.addTo (job);
         VocAction.addTo (job);
         VocMeteringDeviceType.addTo (job);
+        
+        db.addJsonArrays (job, 
+           Nsi16.getVocSelect ()
+        );
 
     });}
 
     @Override
-    public JsonObject getVocs () {
-        
-        JsonObjectBuilder job = Json.createObjectBuilder ();
-        
+    public JsonObject getVocs () {return fetchData ((db, job) -> {
+
         Nsi27.i.addTo (job);
         Nsi2.i.addMeteringTo (job);
         VocAction.addTo (job);
         VocMeteringDeviceType.addTo (job);
         
-        return job.build ();
-        
-    }
+        db.addJsonArrays (job, 
+           Nsi16.getVocSelect ()
+        );
+
+    });}
+    
 /*    
     @Override
     public JsonObject doApprove (String id, User user) {return doAction ((db) -> {

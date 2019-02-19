@@ -79,10 +79,12 @@ define ([], function () {
                     {name: 'remotemeteringinfo', type: 'text'},
                     {name: 'installationdate', type: 'date', options: {end: now}},
                     {name: 'commissioningdate', type: 'date', options: {end: now}},
+                    {name: 'firstverificationdate', type: 'date', options: {end: now}},
                     {name: 'remotemeteringmode', type: 'list', options: {items: [
                         {id:  0, text: 'нет'},
                         {id:  1, text: 'возможно'},
                     ]}},
+                    {name: 'code_vc_nsi_16', type: 'list', options: {items: data.vc_nsi_16.items}},
             
 /*            
                 {name: 'label_org_customer', type: 'text'},

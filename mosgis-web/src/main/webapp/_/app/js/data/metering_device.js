@@ -26,6 +26,7 @@ define ([], function () {
                 vc_actions: 1,
                 vc_meter_types: 1,
                 vc_nsi_2: 1,
+                vc_nsi_16: 1,
             })
             
             var it = data.item
