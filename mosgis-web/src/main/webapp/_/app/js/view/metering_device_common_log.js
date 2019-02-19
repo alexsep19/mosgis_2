@@ -16,7 +16,7 @@ define ([], function () {
 
             columnGroups : [            
                 {span: 3, caption: 'Событие'},                
-                {span: 8, caption: 'Значения полей'},                    
+                {span: 10, caption: 'Значения полей'},                    
                 {span: 3, caption: 'Запрос в ГИС ЖКХ'},                
             ], 
             
@@ -33,6 +33,7 @@ define ([], function () {
                 {field: 'mask_vc_nsi_2', caption: 'Ресурс', size: 10, voc: data.vc_nsi_2},                
                 {field: 'installationdate', caption: 'Установлен', tooltip: 'Дата установки', size: 18, render: _dt},
                 {field: 'commissioningdate', caption: 'Введён', tooltip: 'Дата ввода в эксплуатацию', size: 18, render: _dt},
+                {field: 'remotemeteringinfo', caption: 'Дист.', tooltip: 'Система дистанционного снятия показаний', size: 10},
                 {field: 'id_ctr_status', caption: 'Статус', size: 50, voc: data.vc_gis_status},
                 
                 {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: 'data-ref=1'},

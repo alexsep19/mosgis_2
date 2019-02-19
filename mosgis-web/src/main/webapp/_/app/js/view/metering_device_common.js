@@ -1,6 +1,15 @@
 define ([], function () {
     
     var form_name = 'metering_device_common_form'
+    
+    function recalc () {
+    
+        var f = w2ui [form_name]
+        var v = f.values ()
+        
+        $('#span_remote_metering').css ({visibility: v.remotemeteringmode ? 'visible' : 'hidden'})
+    
+    }
 
     return function (data, view) {
     
@@ -11,6 +20,8 @@ define ([], function () {
             data.item.__read_only = data.__read_only
             
             var r = clone (data.item)
+            
+            if (!r.remotemeteringmode) r.remotemeteringmode = 0
 
             w2ui [form_name].record = r
             
@@ -30,7 +41,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 250},
+                {type: 'top', size: 310},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
@@ -65,8 +76,13 @@ define ([], function () {
                     {name: 'meteringdevicenumber', type: 'text'},
                     {name: 'meteringdevicestamp', type: 'text'},
                     {name: 'meteringdevicemodel', type: 'text'},
+                    {name: 'remotemeteringinfo', type: 'text'},
                     {name: 'installationdate', type: 'date', options: {end: now}},
                     {name: 'commissioningdate', type: 'date', options: {end: now}},
+                    {name: 'remotemeteringmode', type: 'list', options: {items: [
+                        {id:  0, text: 'нет'},
+                        {id:  1, text: 'возможно'},
+                    ]}},
             
 /*            
                 {name: 'label_org_customer', type: 'text'},
@@ -94,14 +110,25 @@ define ([], function () {
             ],
 
             focus: -1,
-/*            
-            onRefresh: function (e) {e.done (function () {
             
-                clickOff ($('#label_reason'))
-                clickOn ($('#label_reason'), function () {openTab (it.url_reason)})                
+            onRefresh: function (e) {e.done (recalc)},
+            
+            onChange: function (e) {
+            
+                if (e.target == "remotemeteringmode") {
                 
-            })}                
-*/            
+                    e.done (function () {
+                    
+                        recalc ()
+                        
+                        $('#remotemeteringinfo').focus ()
+                    
+                    })
+                
+                }
+            
+            },
+            
         })
 
         $_F5 (data)        

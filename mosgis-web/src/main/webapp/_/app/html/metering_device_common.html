@@ -7,7 +7,7 @@
         	<style>
 
         		.w2ui-field > label {
-        			width: 200px;
+        			width: 250px;
         			margin-right: 10px;
         		}
 
@@ -17,6 +17,10 @@
 
         		.w2ui-field input.dt {
         			width: 70px !important;
+        		}
+
+        		.w2ui-field input.short {
+        			width: 85px !important;
         		}
 
         	</style>
@@ -63,58 +67,16 @@
 							</div>
 
 
-
-
-<!--
-
-        INSTALLATIONDATE       (Type.DATE,           null,                      "Дата установки"),
-        COMMISSIONINGDATE      (Type.DATE,           null,                      "Дата ввода в эксплуатацию"),
-
-
-							<div class="w2ui-field" data-on=org_label>
-								<label>Организация</label>
-								<div class=name>
-									<span data-text=org_label/>
-								</div>
-							</div>
-
 							<div class="w2ui-field">
-								<label>Основание</label>
-								<div class=name id=label_reason>
-									<span data-text=label_reason/>
-								</div>
-							</div>
-
-							<div class="w2ui-field" data-off=is_customer_org>
-								<label>Плательщик</label>
+								<label>Дистанционное снятие показаний</label>
 								<div>
-				                	<input name=uuid_person_customer>
+									<input name=remotemeteringmode class=short>
+									<span id=span_remote_metering>
+									, система
+									<input name=remotemeteringinfo placeholder='наименование?'  class=short>
+									</span>
 								</div>
 							</div>
-
-							<div class="w2ui-field" data-on=is_customer_org>
-								<label>Плательщик</label>
-								<div>
-									<input name=uuid_org_customer type=hidden>
-									<input name=label_org_customer readonly>
-								</div>
-							</div>
-
-							<div class="w2ui-field">
-								<label>Является нанимателем?</label>
-								<div>
-									<input name=isrenter>
-								</div>
-							</div>
-
-							<div class="w2ui-field">
-								<label>Счета разделены?</label>
-								<div>
-									<input name=isaccountsdivided>
-								</div>
-							</div>
-
--->
 
 					</td>
 
