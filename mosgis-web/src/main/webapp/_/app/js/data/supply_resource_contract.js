@@ -27,15 +27,18 @@ define ([], function () {
                     vc_actions: 1,
                     vc_gis_status: 1,
                     vc_gis_ctr_dims: 1,
+                    vc_nsi_54: 1,
                     vc_nsi_58: 1,
                     vc_sr_ctr_file_types: 1,
                     vc_nsi_3: 1,
-                    vc_nsi_239: 1
+                    vc_nsi_239: 1,
                 })
 
                 var it = data.item
 
                 it.last_annul = data.last_annul
+                it.last_termination = data.last_termination
+                it['last_termination.reason'] = data.vc_nsi_54[data.last_termination.code_vc_nsi_54]
 
                 it._can = {cancel: 1}
 
@@ -72,6 +75,11 @@ define ([], function () {
                             it._can.create_payment = 1
                     }
 
+                    switch (it.id_ctr_status) {
+                        case 94:
+                        case 40:
+                            it._can.terminate = 1
+                    }
                 }
 
                 $('body').data ('data', data)

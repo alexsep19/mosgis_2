@@ -55,6 +55,8 @@ public class ExportSupplyResourceContractMDB extends GisExportMDB<SupplyResource
                 return wsGisHouseManagementClient.importSupplyResourceContract (orgPPAGuid, messageGUID, r);
             case ANNULMENT:
                 return wsGisHouseManagementClient.annulSupplyResourceContract  (orgPPAGuid, messageGUID, r);
+	case TERMINATION:
+		return wsGisHouseManagementClient.terminateSupplyResourceContract(orgPPAGuid, messageGUID, r);
             default: throw new IllegalArgumentException ("No action implemented for " + action);
         }
 

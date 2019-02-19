@@ -26,7 +26,7 @@ define ([], function () {
 
             columnGroups : [
                 {span: 4, caption: 'Событие'},
-                {span: 4, caption: 'Запрос в ГИС ЖКХ'},
+                {span: 3, caption: 'Запрос в ГИС ЖКХ'},
             ],
 
             columns: [
@@ -37,14 +37,7 @@ define ([], function () {
 
                 {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: 'data-ref=1'},
                 {field: 'soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: 'data-ref=1'},
-                {field: 'soap.id_status', caption: 'Статус',    size: 30, render: function (r, i, c, v) {return (
-                    r.action != 'approve' ? '' :
-                    r ['soap.ts_rp']      ? 'Обработано' :
-                    r ['soap.ts']         ? 'Ожидает ответа' :
-                                            'Ожидает отправки'
-                )}},
                 {field: 'soap.err_text', caption: 'Ошибка',    size: 30},
-
             ],
 
             url: '/mosgis/_rest/?type=settlement_docs&part=log&id=' + $_REQUEST.id,
