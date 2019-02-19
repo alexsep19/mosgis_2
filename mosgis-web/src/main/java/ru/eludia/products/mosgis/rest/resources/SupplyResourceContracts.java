@@ -169,4 +169,14 @@ public class SupplyResourceContracts extends EJBResource <SupplyResourceContract
 	checkOrg(item);
 	return back.doAnnul(id, p, getUser());
     }
+
+    @POST
+    @Path("{id}/terminate")
+    @Consumes(APPLICATION_JSON)
+    @Produces(APPLICATION_JSON)
+    public JsonObject doTerminate(@PathParam("id") String id, JsonObject p) {
+	final JsonObject item = getInnerItem(id);
+	checkOrg(item);
+	return back.doTerminate(id, p, getUser());
+    }
 }

@@ -721,6 +721,10 @@ public class WsGisHouseManagementClient {
 	return getPort(orgPPAGuid, messageGUID).importSupplyResourceContractData(SupplyResourceContractLog.toAnnulSupplyResourceContractRequest(r)).getAck();
     }
 
+    public AckRequest.Ack terminateSupplyResourceContract(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+	return getPort(orgPPAGuid, messageGUID).importSupplyResourceContractData(SupplyResourceContractLog.toTerminateSupplyResourceContractRequest(r)).getAck();
+    }
+
     public AckRequest.Ack importAccountData (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
         return getPort(orgPPAGuid, messageGUID).importAccountData (AccountLog.toImportAccountRequest (r)).getAck ();
     }

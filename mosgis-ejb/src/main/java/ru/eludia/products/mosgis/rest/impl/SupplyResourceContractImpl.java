@@ -151,7 +151,6 @@ public class SupplyResourceContractImpl extends BaseCRUD<SupplyResourceContract>
 	switch (VocGisStatus.i.forId(item.getInt(SupplyResourceContract.c.ID_CTR_STATUS.lc(), VocGisStatus.i.PROJECT.getId()))) {
 	    case ANNUL:
 	    case PENDING_RQ_ANNULMENT:
-	    case PENDING_RP_ANNULMENT:
 	    case FAILED_ANNULMENT:
 		JsonObject lastAnnul = db.getJsonObject(m
 		    .select(SupplyResourceContractLog.class, "AS root", "*")
@@ -168,6 +167,23 @@ public class SupplyResourceContractImpl extends BaseCRUD<SupplyResourceContract>
 
 		break;
 
+	    case APPROVAL_PROCESS:
+	    case PENDING_RQ_TERMINATE:
+	    case TERMINATED:
+
+		JsonObject lastTermination = db.getJsonObject(m
+		    .select(SupplyResourceContractLog.class, "AS root", "*")
+		    .and("uuid_object", id)
+		    .and("action", VocAction.i.TERMINATE.getName())
+		    .orderBy("root.ts DESC")
+		);
+
+		if (lastTermination != null) {
+		    job.add("last_termination", lastTermination);
+		}
+
+		break;
+
 	    default:
 	}
 
@@ -176,6 +192,7 @@ public class SupplyResourceContractImpl extends BaseCRUD<SupplyResourceContract>
         VocGisContractDimension.addTo(job);
         VocSupplyResourceContractFileType.addTo(job);
         db.addJsonArrays(job,
+	    NsiTable.getNsiTable(54).getVocSelect().where("isactual", 1),
 	    NsiTable.getNsiTable(58).getVocSelect().where(IS_RS_CTR_NSI_58, 1),
 	    VocNsi3.getVocSelect(),
 	    VocNsi239.getVocSelect()
@@ -199,6 +216,7 @@ public class SupplyResourceContractImpl extends BaseCRUD<SupplyResourceContract>
         switch (action) {
             case APPROVE:
 	    case ANNUL:
+	    case TERMINATE:
                 super.publishMessage (action, id_log);
             default:
                 return;
@@ -275,4 +293,19 @@ public class SupplyResourceContractImpl extends BaseCRUD<SupplyResourceContract>
 
 	});
     }
+
+    @Override
+    public JsonObject doTerminate(String id, JsonObject p, User user) {
+	return doAction((db) -> {
+
+	    db.update(getTable(), getData(p,
+		"uuid", id,
+		"id_ctr_status", VocGisStatus.i.PENDING_RQ_TERMINATE.getId()
+	    ));
+
+	    logAction(db, user, id, VocAction.i.TERMINATE);
+
+	});
+    }
+
 }

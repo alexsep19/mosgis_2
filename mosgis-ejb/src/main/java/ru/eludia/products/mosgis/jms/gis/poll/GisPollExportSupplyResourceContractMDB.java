@@ -54,11 +54,16 @@ public class GisPollExportSupplyResourceContractMDB  extends GisPollMDB {
         if (DB.ok (r.get ("is_failed"))) throw new IllegalStateException (r.get ("err_text").toString ());
         
         UUID orgPPAGuid          = (UUID) r.get ("org.orgppaguid");
-        
-        SupplyResourceContract.Action action = SupplyResourceContract.Action.forStatus (
-            VocGisStatus.i.forId (r.get ("ctr.id_ctr_status"))                
-        );
-                
+
+	VocGisStatus.i status = VocGisStatus.i.forId(r.get("ctr.id_ctr_status"));
+
+        SupplyResourceContract.Action action = SupplyResourceContract.Action.forStatus (status);
+
+	if (action == null) {
+	    logger.warning("No action is implemented for " + status);
+	    return;
+	}
+
         try {
             
             GetStateResult state = getState (orgPPAGuid, r);
