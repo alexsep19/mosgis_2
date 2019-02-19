@@ -31,6 +31,8 @@ define ([], function () {
             
             var it = data.item
             
+            it.is_power = it.mask_vc_nsi_2 == 4
+            
             it._can = {cancel: 1}
 
             if (!it.is_deleted && it.uuid_org == $_USER.uuid_org) {

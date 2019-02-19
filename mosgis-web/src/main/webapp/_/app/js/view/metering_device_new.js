@@ -14,7 +14,7 @@ define ([], function () {
 
                 fields : [                                
                 
-                    {name: 'is_volume', type: 'list', options: {items: [
+                    {name: 'consumedvolume', type: 'list', options: {items: [
                         {id: 0, text: 'текущие показания'},
                         {id: 1, text: 'потреблённый объём'},
                     ]}},

@@ -8,6 +8,7 @@ define ([], function () {
 
         if (!v.id_type) die ('id_type', 'Укажите, пожалуйста, какой прибор требуется зарегистрировать')
         if (!v.mask_vc_nsi_2) die ('mask_vc_nsi_2', 'Укажите, пожалуйста, тип измеряемого ресурса')
+        if (v.consumedvolume && v.mask_vc_nsi_2 | 4) die ('consumedvolume', 'Прибор учёта электроэнергии может поставлять только текущие показания, а не потреблённый объём')
         if (!v.meteringdevicestamp) die ('meteringdevicestamp', 'Укажите, пожалуйста, марку прибора')
         if (!v.meteringdevicemodel) die ('meteringdevicemodel', 'Укажите, пожалуйста, модель прибора')
         if (!v.meteringdevicenumber) die ('meteringdevicenumber', 'Укажите, пожалуйста, серийный (заводской) номер прибора')
@@ -115,7 +116,7 @@ define ([], function () {
         
         var it = data.item
 
-        data.record = {is_volume: 0}
+        data.record = {consumedvolume: 0}
 
         query ({type: 'metering_devices', id: null, part: 'vocs'}, {}, function (d) {
         

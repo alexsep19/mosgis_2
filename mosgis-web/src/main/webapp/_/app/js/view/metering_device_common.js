@@ -41,7 +41,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 310},
+                {type: 'top', size: 320},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
@@ -81,33 +81,12 @@ define ([], function () {
                     {name: 'commissioningdate', type: 'date', options: {end: now}},
                     {name: 'firstverificationdate', type: 'date', options: {end: now}},
                     {name: 'remotemeteringmode', type: 'list', options: {items: [
-                        {id:  0, text: 'нет'},
-                        {id:  1, text: 'возможно'},
+                        {id: 0, text: 'нет'},
+                        {id: 1, text: 'возможно'},
                     ]}},
+                    {name: 'tariffcount', type: 'int', options: {min:1, max: 3}},
                     {name: 'code_vc_nsi_16', type: 'list', options: {items: data.vc_nsi_16.items}},
-            
-/*            
-                {name: 'label_org_customer', type: 'text'},
-                {name: 'uuid_org_customer', type: 'hidden'},
-            
-                {name: 'ismetering_devicesdivided', type: 'list', options: {items: [
-                    {id: -1, text: '[нет данных]'},
-                    {id:  0, text: 'нет, не разделен(ы)'},
-                    {id:  1, text: 'да, разделен(ы)'},
-                ]}},
-                
-                {name: 'isrenter', type: 'list', options: {items: [
-                    {id: -1, text: '[нет данных]'},
-                    {id:  0, text: 'нет, не является нанимателем'},
-                    {id:  1, text: 'да, является нанимателем'},
-                ]}},
-                
-                {name: 'totalsquare', type: 'float', options: {min: 0, precision: 2}},
-                {name: 'residentialsquare', type: 'float', options: {min: 0, precision: 2}},
-                {name: 'heatedarea', type: 'float', options: {min: 0, precision: 2}},
-            
-                {name: 'livingpersonsnumber', type: 'int', options: {min: 0, max: 9999}},
-*/                    
+                    {name: 'transformationratio', type: 'float', options: {min: 0, precision: 2}},
 
             ],
 

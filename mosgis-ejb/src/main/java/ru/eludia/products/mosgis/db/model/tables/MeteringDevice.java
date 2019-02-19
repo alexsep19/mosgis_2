@@ -48,7 +48,6 @@ public class MeteringDevice extends EnTable {
         PRESSURESENSOR         (Type.BOOLEAN,  Boolean.FALSE,                   "Наличие датчиков давления"),
         CONSUMEDVOLUME         (Type.BOOLEAN,  Boolean.FALSE,                   "ПУ предоставляет объем потребленного КР"),
         
-        IS_VOLUME              (Type.BOOLEAN,  Boolean.FALSE,                   "1, если предоставляет объём потребленного КР; иначе (если предоставляет показания) — 0"),
         TRANSFORMATIONRATIO    (Type.NUMERIC, 17, 2, null,                      "Коэффициент трансформации"),
         TARIFFCOUNT            (Type.NUMERIC, 1, 0, BigInteger.ONE,             "Количество тарифов"),
         
