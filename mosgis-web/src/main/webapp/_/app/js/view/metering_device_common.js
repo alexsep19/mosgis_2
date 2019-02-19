@@ -8,7 +8,7 @@ define ([], function () {
         var v = f.values ()
         
         $('#span_remote_metering').css ({visibility: v.remotemeteringmode ? 'visible' : 'hidden'})
-    
+
     }
 
     return function (data, view) {

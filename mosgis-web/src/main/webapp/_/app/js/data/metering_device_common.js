@@ -61,7 +61,9 @@ define ([], function () {
         if (!v.meteringdevicemodel) die ('meteringdevicemodel', 'Укажите, пожалуйста, модель прибора')
         if (!v.meteringdevicenumber) die ('meteringdevicenumber', 'Укажите, пожалуйста, серийный (заводской) номер прибора')
         
-        if (it.code_vc_nsi_27 != 2 && !v.commissioningdate) die ('commissioningdate', 'Укажите, пожалуйста, дату ввода прибора в эксплуатацию')
+        var is_collective = (it.code_vc_nsi_27 == 2)
+        
+        if (!is_collective != 2 && !v.commissioningdate) die ('commissioningdate', 'Укажите, пожалуйста, дату ввода прибора в эксплуатацию')
         
         if (v.installationdate && v.commissioningdate && v.installationdate > v.commissioningdate) die ('commissioningdate', 'Дату ввода прибора в эксплуатацию не может предшествовать дате его установки')
         
@@ -84,7 +86,12 @@ define ([], function () {
             v.remotemeteringinfo = null
             
         }
-                       
+        
+        if (is_collective) {       
+            if (!v.code_vc_nsi_16) die ('code_vc_nsi_16', 'Укажите, пожалуйста, межповерочный интервал')
+            if (!v.firstverificationdate) die ('firstverificationdate', 'Укажите, пожалуйста, дату последней поверки')       
+        }
+                               
         query ({type: 'metering_devices', action: 'update'}, {data: v}, reload_page)
         
     }
