@@ -14,6 +14,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlHouse;
+import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlHouseInfo;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.jms.xl.base.XLException;
 import ru.eludia.products.mosgis.jms.xl.base.XLMDB;
@@ -38,6 +39,9 @@ public class ParseHousesMDB extends XLMDB {
         
         addHousesLines (sheetHouses, uuid, db);
         if (!checkHousesLines (sheetHouses, db, uuid)) isOk = false;
+        
+        addHousesInfoLines (sheetHousesInfo, uuid, db);
+        if (!checkHousesInfoLines (sheetHousesInfo, db, uuid)) isOk = false;
         
         if (!isOk) throw new XLException ();
         
@@ -76,6 +80,40 @@ public class ParseHousesMDB extends XLMDB {
         }
         
     }
+    
+    private void addHousesInfoLines(XSSFSheet sheet, UUID parent, DB db) throws SQLException {
+        
+        for (int i = 2; i <= sheet.getLastRowNum (); i ++) {
+            
+            UUID uuid = (UUID) db.insertId (InXlHouseInfo.class, InXlHouseInfo.toHash (parent, i, sheet.getRow (i)));
+            
+            try {
+                
+                db.update (InXlHouseInfo.class, DB.HASH (
+                    EnTable.c.UUID, uuid,
+                    EnTable.c.IS_DELETED, 0
+                ));
+                
+            }
+            catch (SQLException e) {
+
+                String s = e.getMessage ();
+
+                if (e.getErrorCode () == 20000) s =
+                    new StringTokenizer (e.getMessage (), "\n\r")
+                    .nextToken ()
+                    .replace ("ORA-20000: ", "");
+
+                db.update (InXlHouseInfo.class, DB.HASH (
+                    EnTable.c.UUID, uuid,
+                    InXlHouseInfo.c.ERR, s
+                ));
+                
+            }
+            
+        }
+        
+    }
 
     private boolean checkHousesLines(XSSFSheet sheet, DB db, UUID parent) throws SQLException {
         
@@ -95,6 +133,26 @@ public class ParseHousesMDB extends XLMDB {
 
         return false;
         
+    }
+    
+    private boolean checkHousesInfoLines(XSSFSheet sheet, DB db, UUID parent) throws SQLException {
+        
+        List<Map<String, Object>> brokenLines = db.getList (db.getModel ()
+            .select (InXlHouseInfo.class, "*")
+            .where (InXlHouseInfo.c.UUID_XL, parent)
+            .where (EnTable.c.IS_DELETED, 1)
+        );
+        
+        if (brokenLines.isEmpty ()) return true;            
+        
+        for (Map<String, Object> brokenLine: brokenLines) {
+            XSSFRow row = sheet.getRow ((int) DB.to.Long (brokenLine.get (InXlHouseInfo.c.ORD.lc ())));
+            XSSFCell cell = row.getLastCellNum () < 9 ? row.createCell (9) : row.getCell (9);
+            cell.setCellValue (brokenLine.get (InXlHouseInfo.c.ERR.lc ()).toString ());
+        }
+
+        return false;
+    
     }
     
     @Override
