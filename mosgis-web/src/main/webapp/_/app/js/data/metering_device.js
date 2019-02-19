@@ -22,12 +22,10 @@ define ([], function () {
         query ({type: 'metering_devices'}, {}, function (data) {        
 
             add_vocabularies (data, {
-                vc_meter_types: 1,
-                vc_nsi_2: 1,
-/*            
                 vc_gis_status: 1,
                 vc_actions: 1,
-*/                
+                vc_meter_types: 1,
+                vc_nsi_2: 1,
             })
             
             var it = data.item
