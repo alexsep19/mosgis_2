@@ -9,6 +9,7 @@ define ([], function () {
         
         $('#span_remote_metering').css ({visibility: v.remotemeteringmode ? 'visible' : 'hidden'})
         $('#span_installationplace').css ({visibility: !v.notlinkedwithmetering ? 'visible' : 'hidden'})
+        $('#span_temperaturesensor').css ({visibility: v.temperaturesensor ? 'visible' : 'hidden'})
 
     }
 
@@ -42,7 +43,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 247 + 30 * (it.is_power + it.is_for_building)},
+                {type: 'top', size: 247 + 30 * (it.is_power + it.is_for_building + 2 * it.is_collective)},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
@@ -94,6 +95,12 @@ define ([], function () {
                         {id: 0, text: 'да'},
                     ]}},
                     {name: 'installationplace', type: 'list', options: {items: data.vc_meter_places.items}},
+                    {name: 'temperaturesensor', type: 'list', options: {items: [
+                        {id: 0, text: 'нет'},
+                        {id: 1, text: 'есть'},
+                    ]}},
+                    {name: 'temperaturesensingelementinfo', type: 'text'},
+                    
 
             ],
 
@@ -104,27 +111,15 @@ define ([], function () {
             onChange: function (e) {
             
                 if (e.target == "remotemeteringmode") {
-                
-                    e.done (function () {
-                    
-                        recalc ()
-                        
-                        $('#remotemeteringinfo').focus ()
-                    
-                    })
-                
+                    e.done (function () {recalc (); $('#remotemeteringinfo').focus ()})
                 }
                 
                 if (e.target == "notlinkedwithmetering") {
+                    e.done (function () {recalc (); $('#installationplace').focus ()})
+                }
                 
-                    e.done (function () {
-                    
-                        recalc ()
-                        
-                        $('#installationplace').focus ()
-                    
-                    })
-                
+                if (e.target == "temperaturesensor") {
+                    e.done (function () {recalc (); $('#temperaturesensingelementinfo').focus ()})
                 }
             
             },

@@ -68,31 +68,39 @@ define ([], function () {
         
         if (v.installationdate && v.commissioningdate && v.installationdate > v.commissioningdate) die ('commissioningdate', 'Дату ввода прибора в эксплуатацию не может предшествовать дате его установки')
         
-        if (v.remotemeteringmode) {
-        
-            if (!v.remotemeteringinfo) {
+        if (is_collective) {       
+            if (!v.code_vc_nsi_16) die ('code_vc_nsi_16', 'Укажите, пожалуйста, межповерочный интервал')
+            if (!v.firstverificationdate) die ('firstverificationdate', 'Укажите, пожалуйста, дату последней поверки')       
+        }
 
+        if (v.remotemeteringmode) {       
+            if (!v.remotemeteringinfo) {
                 if (confirm ('Вы отметили возможность дистанционного снятия показаний, однако не указали наименование системы. Дистанционное снятие показаний всё-таки невозможно?')) {
                     v.remotemeteringmode = 0
                 }
                 else {
                     die ('remotemeteringinfo', 'Тогда необходимо указать наименование системы')
                 }
-
-            }
+            }        
+        }
+        else {        
+            v.remotemeteringinfo = null            
+        }
         
+        if (!v.notlinkedwithmetering) {       
+            if (!v.installationplace) die ('installationplace', 'Укажите, пожалуйста, место установки данного прибора')
         }
         else {
-        
-            v.remotemeteringinfo = null
-            
+            v.installationplace = null
         }
-        
-        if (is_collective) {       
-            if (!v.code_vc_nsi_16) die ('code_vc_nsi_16', 'Укажите, пожалуйста, межповерочный интервал')
-            if (!v.firstverificationdate) die ('firstverificationdate', 'Укажите, пожалуйста, дату последней поверки')       
+
+        if (v.temperaturesensor) {       
+            if (!v.temperaturesensingelementinfo) die ('temperaturesensingelementinfo', 'Укажите, пожалуйста, место установки датчика температуры')
         }
-                               
+        else {
+            v.temperaturesensingelementinfo = null
+        }
+                                               
         query ({type: 'metering_devices', action: 'update'}, {data: v}, reload_page)
         
     }
