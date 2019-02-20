@@ -23,15 +23,15 @@ define ([], function () {
 
                 add_vocabularies (d, d)
 
-		d.service2resource = {}
+                d.service2resource = {}
 
-		$.each(d.vw_ms_r.items, function () {
-		    d.service2resource[this.code_vc_nsi_3] = d.service2resource[this.code_vc_nsi_3] || {}
-		    d.service2resource[this.code_vc_nsi_3][this.code_vc_nsi_239] =
-			    d.service2resource[this.code_vc_nsi_3][this.code_vc_nsi_239] || []
-		    var voc_okei = {id: this.code_vc_okei, text: d.vc_okei[this.code_vc_okei]}
-		    d.service2resource[this.code_vc_nsi_3][this.code_vc_nsi_239].push(voc_okei)
-		})
+                $.each(d.vw_ms_r.items, function () {
+                    d.service2resource[this.code_vc_nsi_3] = d.service2resource[this.code_vc_nsi_3] || {}
+                    d.service2resource[this.code_vc_nsi_3][this.code_vc_nsi_239] =
+                        d.service2resource[this.code_vc_nsi_3][this.code_vc_nsi_239] || []
+                    var voc_okei = {id: this.code_vc_okei, text: d.vc_okei[this.code_vc_okei]}
+                    d.service2resource[this.code_vc_nsi_3][this.code_vc_nsi_239].push(voc_okei)
+                })
 
                 query ({type: 'supply_resource_contract_objects'}, {}, function (data) {
 

@@ -38,18 +38,18 @@ define ([], function () {
     }
 
     function recalc_ms_change() {
-	var data = $('body').data('data')
-	var form = w2ui[form_name]
-	var r = form.record
-	var service = r.code_vc_nsi_3.id
-	var resource = r.code_vc_nsi_239 ? r.code_vc_nsi_239.id : undefined
+        var data = $('body').data('data')
+        var form = w2ui[form_name]
+        var r = form.record
+        var service = r.code_vc_nsi_3 ? r.code_vc_nsi_3.id : undefined
+        var resource = r.code_vc_nsi_239 ? r.code_vc_nsi_239.id : undefined
 
-	form.get('code_vc_nsi_239').options.items = data.vc_nsi_239.items.filter(function (i) {
-	    return data.service2resource[service] && data.service2resource[service][i.id]
-	})
+        form.get('code_vc_nsi_239').options.items = data.vc_nsi_239.items.filter(function (i) {
+            return data.service2resource[service] && data.service2resource[service][i.id]
+        })
 
-	var unit = data.service2resource[service] ? data.service2resource[service][resource] : undefined
-	form.get('unit').options.items = unit || []
+        var unit = data.service2resource[service] ? data.service2resource[service][resource] : undefined
+        form.get('unit').options.items = unit || []
     }
 
     return function (data, view) {
@@ -71,10 +71,10 @@ define ([], function () {
                 fields : [
                     {name: 'code_vc_nsi_3', type: 'list', options: {items: data.vc_nsi_3.items}},
                     {name: 'code_vc_nsi_239', type: 'list', options: {
-			items: data.vc_nsi_239.items.filter(function (i) {
-			    return data.service2resource[data.record.code_vc_nsi_3] && data.service2resource[data.record.code_vc_nsi_3][i.id]
-			})
-		    }},
+                        items: data.vc_nsi_239.items.filter(function (i) {
+                            return data.service2resource[data.record.code_vc_nsi_3] && data.service2resource[data.record.code_vc_nsi_3][i.id]
+                        })
+                    }},
 
                     {name: 'startsupplydate', type: 'date', options: {
                         keyboard: false,
@@ -86,54 +86,52 @@ define ([], function () {
                         start:    dt_dmy (data.item.effectivedate),
                         end:      dt_dmy (data.item.completiondate),
                     }},
-		    {name: 'is_heat_open', type: 'list', options: {items: [
-			{id: 0, text: 'Закрытое'},
-			{id: 1, text: 'Открытое'},
-		    ]}},
-		    {name: 'is_heat_centralized', type: 'list', options: {items: [
-			{id: 0, text: 'Нецентрализованная'},
-			{id: 1, text: 'Централизованная'},
-		    ]}},
-		    {name: 'volume', type: 'float'},
-		    {name: 'unit', type: 'list', options: {
-			items: data.vc_nsi_239.items.filter(function (i) {
-			    return data.service2resource[data.record.code_vc_nsi_3]? data.service2resource[data.record.code_vc_nsi_3][data.record.code_vc_nsi_239] : undefined || []
-			})
-		    }},
+                    {name: 'is_heat_open', type: 'list', options: {items: [
+                        {id: 0, text: 'Закрытое'},
+                        {id: 1, text: 'Открытое'},
+                    ]}},
+                    {name: 'is_heat_centralized', type: 'list', options: {items: [
+                        {id: 0, text: 'Нецентрализованная'},
+                        {id: 1, text: 'Централизованная'},
+                    ]}},
+                    {name: 'volume', type: 'float'},
+                    {name: 'unit', type: 'list', options: {
+                        items: data.service2resource[data.record.code_vc_nsi_3]? data.service2resource[data.record.code_vc_nsi_3][data.record.code_vc_nsi_239] : undefined || []
+                    }},
 
-		    {name: 'feedingmode', type: 'text'},
+                    {name: 'feedingmode', type: 'text'},
                 ],
 
                 focus: data.record.id? -1 : 0,
 
-		onRefresh : function(e) {
-		    e.done(function(){
-			recalc()
-			recalc_ms_change()
-		    })
-		},
+                onRefresh : function(e) {
+                    e.done(function(){
+                        recalc()
+                        recalc_ms_change()
+                    })
+                },
 
-		onChange: function (e) {
-		    if (e.target == 'code_vc_nsi_3' && e.value_new.id) {
-			e.done(function () {
-			    var r = w2ui[form_name].record
-			    delete r.code_vc_nsi_239
-			    delete r.unit
-			    recalc_ms_change()
-			    $().w2overlay(); // HACK: lost focus, hide dropdown on Enter
-			    w2ui[form_name].refresh()
-			})
-		    }
+                onChange: function (e) {
+                    if (e.target == 'code_vc_nsi_3' && e.value_new.id) {
+                        e.done(function () {
+                            var r = w2ui[form_name].record
+                            delete r.code_vc_nsi_239
+                            delete r.unit
+                            recalc_ms_change()
+                            $().w2overlay(); // HACK: lost focus, hide dropdown on Enter
+                            w2ui[form_name].refresh()
+                        })
+                    }
 
-		    if (e.target == 'code_vc_nsi_239' && e.value_new.id) {
-			e.done(function () {
-			    var r = w2ui[form_name].record
-			    delete r.unit
-			    recalc_ms_change()
-			    $().w2overlay(); // HACK: lost focus, hide dropdown on Enter
-			    w2ui[form_name].refresh()
-			})
-		    }
+                    if (e.target == 'code_vc_nsi_239' && e.value_new.id) {
+                        e.done(function () {
+                            var r = w2ui[form_name].record
+                            delete r.unit
+                            recalc_ms_change()
+                            $().w2overlay(); // HACK: lost focus, hide dropdown on Enter
+                            w2ui[form_name].refresh()
+                        })
+                    }
                 },
 
             })

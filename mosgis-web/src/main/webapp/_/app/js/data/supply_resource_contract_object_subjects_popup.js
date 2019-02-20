@@ -33,10 +33,11 @@ define ([], function () {
 
         var data = clone ($('body').data ('data'))
 
+        var it = data.item
+
         data.record = $_SESSION.delete('record') || {}
 
-        query ({type: 'supply_resource_contract_object_subjects', part: 'vocs', id: undefined}
-	    , {uuid_sr_ctr: data.item['sr_ctr.uuid']}, function (d) {
+        query ({type: 'supply_resource_contract_object_subjects', part: 'vocs', id: undefined}, {}, function (d) {
 
             add_vocabularies (d, d)
 
@@ -44,7 +45,24 @@ define ([], function () {
                 data[k] = d[k]
             }
 
-            done (data)
+            query({type: 'supply_resource_contract_subjects', id: undefined}
+                , {limit: 10000, offset: 0, data: {uuid_sr_ctr: it.uuid_sr_ctr}}
+                , function (d) {
+                    var in_subj = d.tb_sr_ctr_subj.reduce(function(result, i, idx, array){
+                        result.code_vc_nsi_3[i.code_vc_nsi_3] = i
+                        result.code_vc_nsi_239[i.code_vc_nsi_239] = i
+                        return result
+                    }, {code_vc_nsi_3: {}, code_vc_nsi_239: {}})
+
+                    data.vc_nsi_3.items = data.vc_nsi_3.items.filter(function(i){
+                        return in_subj.code_vc_nsi_3[i.id]
+                    })
+                    data.vc_nsi_239.items = data.vc_nsi_239.items.filter(function (i) {
+                        return in_subj.code_vc_nsi_239[i.id]
+                    })
+
+                    done (data)
+            })
         })
 
     }
