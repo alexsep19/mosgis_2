@@ -44,7 +44,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 247 + 30 * (it.is_power + it.is_for_building + 2 * it.is_collective)},
+                {type: 'top', size: 250 + 30 * (it.is_power + it.is_for_building + 2 * it.is_collective)},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [

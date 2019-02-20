@@ -35,8 +35,19 @@ define ([], function () {
             it._can = {cancel: 1}
 
             if (!it.is_deleted && it.uuid_org == $_USER.uuid_org) {
-            
-                it._can.edit = 1                            
+                            
+                        switch (it.id_ctr_status) {
+                            case 10:
+                            case 11:
+                                it._can.edit = 1                            
+//                                it._can.approve = 1                            
+                        }
+                        
+                        switch (it.id_ctr_status) {
+                            case 10:
+                            case 14:
+                                it._can.delete = 1
+                        }                
 
 /*
 
