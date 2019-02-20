@@ -70,6 +70,19 @@ public class SupplyResourceContractLogTest extends BaseTest {
     }
 
     @Test(expected = Test.None.class)
+    public void testAnnul() throws SQLException {
+
+	Map<String, Object> r = getData();
+
+	r.put("contractrootguid", r.get("uuid"));
+	r.put("reasonofannulment", r.get("uuid"));
+	r.put("code_vc_nsi_54", "1");
+	dump(r);
+	validate(SupplyResourceContractLog.toAnnulSupplyResourceContractRequest(r));
+
+    }
+
+    @Test(expected = Test.None.class)
     public void testTerminate() throws SQLException {
 
 	Map<String, Object> r = getData();

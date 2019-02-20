@@ -131,7 +131,7 @@ public class SettlementDocImpl extends BaseCRUD<SettlementDoc> implements Settle
 
 	switch (action) {
 	case APPROVE:
-    //	    case ANNUL:
+    	    case ANNUL:
 	    super.publishMessage(action, id_log);
 	default:
 	    return;
