@@ -10,6 +10,10 @@ define ([], function () {
 
         var is_editable = data.item._can.edit
 
+        var search = [
+            {field: "uuid_sr_ctr", operator: "is", value: $_REQUEST.id},
+        ]
+
         $panel.w2regrid ({
 
             multiSelect: false,
@@ -21,12 +25,16 @@ define ([], function () {
                 toolbar: true,
                 toolbarColumns: false,
                 toolbarInput: false,
-                toolbarSearch: false,
+                toolbarSearch: true,
                 toolbarAdd: is_editable
             },
 
             searches: [
-            ],
+                {field: 'is_deleted', caption: 'Статус записи', type: 'enum', options: {items: [
+                    {id: "0", text: "Актуальные"},
+                    {id: "1", text: "Удалённые"},
+                ]}},
+            ].filter(not_off),
 
             textSearch: 'contains',
 
@@ -41,9 +49,11 @@ define ([], function () {
                 {field: 'id_ctr_status', caption: 'Статус', size: 20, voc: data.vc_gis_status}
             ],
 
-            postData: {search: [
-                {field: "uuid_sr_ctr", operator: "is", value: $_REQUEST.id},
-            ]},
+            postData: {search: search},
+
+            onSearch: function (e) {
+                this.postData['search'] = e.searchData.concat(search)
+            },
 
             url: '/mosgis/_rest/?type=supply_resource_contract_objects',
 
