@@ -93,7 +93,6 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 
     private static SupplyResourceContractType toContractSupplyResourceContract(Map<String, Object> r) {
 
-	r.put("automaticrolloveroneyear", r.get("autorollover"));
 	r.put("specifyingqualityindicators", r.get("specqtyinds"));
 	r.put("meteringdeviceinformation", r.get("mdinfo"));
 	r.put("comptetiondate", r.get("completiondate"));
@@ -102,6 +101,9 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	r.put("accrualprocedure", r.get("voc_accrualprocedure.name"));
 	if (r.get("countingresource") != null) {
 	    r.put("countingresource", DB.ok(r.get("countingresource")) ? "R" : "P");
+	}
+	if (DB.ok(r.get("autorollover"))) {
+	    r.put("automaticrolloveroneyear", r.get("autorollover"));
 	}
 
 	SupplyResourceContractType result = DB.to.javaBean(SupplyResourceContractType.class, r);
