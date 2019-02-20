@@ -93,6 +93,10 @@ public class SupplyResourceContractObjectImpl extends BaseCRUD<SupplyResourceCon
             .orderBy ("building.label")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
+	if (!s.getFilters().containsKey("is_deleted")) {
+	    filterOffDeleted(select);
+	}
+
         db.addJsonArrays(job, s.filter(select, ""));
     });}
 

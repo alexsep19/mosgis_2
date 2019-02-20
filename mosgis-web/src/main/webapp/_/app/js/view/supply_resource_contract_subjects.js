@@ -26,6 +26,10 @@ define ([], function () {
 
             searches: [
                 {field: 'code_vc_nsi_3', caption: 'Вид коммунальной услуги', type: 'enum', options: {items: data.vc_nsi_3.items}},
+                {field: 'is_deleted', caption: 'Статус записи', type: 'enum', options: {items: [
+                    {id: "0", text: "Актуальные"},
+                    {id: "1", text: "Удалённые"},
+                ]}},
             ],
 
             textSearch: 'contains',

@@ -61,26 +61,24 @@ define ([], function () {
                 {field: 'contractnumber', caption: 'Номер', type: 'text'},
                 {field: 'signingdate', caption: 'Дата заключения',  type: 'date', operator: 'between'},
                 {field: 'completiondate', caption: 'Дата окончания', type: 'date'},
-                {field: 'id_ctr_state_gis', caption: 'Состояние договора', type: 'enum'
-                    , options: {items: data.vc_gis_status.items.filter(function (i) {
-                    switch (i.id) {
-                        case 50:
-                        case 60:
-                        case 80:
-                            return false;
-                        default:
-                            return true;
-                    }
-                })}},
                 {field: 'id_ctr_status', caption: 'Статус договора', type: 'enum'
                     , options: {items: data.vc_gis_status.items.filter (function (i) {
                     switch (i.id) {
-                        case 50:
-                        case 60:
-                        case 80:
-                            return false;
-                        default:
+                        case 10:
+                        case 11:
+                        case 12:
+                        case 14:
+                        case 34:
+                        case 40:
+                        case 92:
+                        case 94:
+                        case 100:
+                        case 102:
+                        case 110:
+                        case 104:
                             return true;
+                        default:
+                            return false;
                     }
                 })}},
                 {field: 'id_customer_type', caption: 'Тип заказчика', type: 'enum', options: {
