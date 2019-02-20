@@ -6,6 +6,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.json.JsonObject;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.tables.Account;
 import ru.eludia.products.mosgis.db.model.tables.AccountItem;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
@@ -31,6 +32,7 @@ public class AccountItemImpl extends BaseCRUD<AccountItem> implements AccountIte
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
 //            .toMaybeOne (AccountItemLog.class               ).on ()
             .toOne (VocBuilding.class, "AS addr", "label").on ()
+            .toOne (Account.class, "AS acc", "*").on ()
             .toMaybeOne (Premise.class, "AS prem", "label", Premise.c.TOTALAREA.lc ()).on ()                
             .where (EnTable.c.IS_DELETED, 0)
             .orderBy ("addr.label")
@@ -39,6 +41,7 @@ public class AccountItemImpl extends BaseCRUD<AccountItem> implements AccountIte
         JsonObject data = p.getJsonObject ("data");
         
         checkFilter (data, AccountItem.c.UUID_ACCOUNT, select);
+        checkFilter (data, AccountItem.c.UUID_PREMISE, select);
 
         db.addJsonArrayCnt (job, select);
 

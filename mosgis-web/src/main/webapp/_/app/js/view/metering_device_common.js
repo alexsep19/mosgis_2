@@ -48,8 +48,9 @@ define ([], function () {
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
+                            {id: 'metering_device_common_accounts', caption: 'Лицевые счета', off: !it.uuid_premise},
                             {id: 'metering_device_common_log', caption: 'История изменений'},
-                        ],
+                        ].filter (not_off),
                         onClick: $_DO.choose_tab_metering_device_common
                     }                
                 },

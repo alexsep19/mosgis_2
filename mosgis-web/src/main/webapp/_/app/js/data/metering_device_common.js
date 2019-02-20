@@ -172,14 +172,12 @@ define ([], function () {
         
         var data = clone ($('body').data ('data'))
 
-        data.active_tab = localStorage.getItem ('metering_device_common.active_tab') || 'metering_device_common_log'
+        var it = data.item
+
+        data.active_tab = localStorage.getItem ('metering_device_common.active_tab') || (it.uuid_premise ? 'metering_device_common_accounts' : 'metering_device_common_log')
 
         data.__read_only = 1
-        
-        var it = data.item
-        
-//        fix (it)
-                
+                        
         done (data)
         
     }
