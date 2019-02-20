@@ -3,6 +3,7 @@ package ru.eludia.products.mosgis.db.model.tables;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
+import ru.eludia.base.model.def.Bool;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
@@ -35,7 +36,7 @@ public class SupplyResourceContract extends EnTable {
         COMPLETIONDATE       (Type.DATE, null, "Дата окончания действия"),
 	TERMINATE            (Type.DATE, null, "Дата расторжения"),
 	CODE_VC_NSI_54       (Type.STRING, 20, null, "Ссылка на НСИ \"Основание расторжения договора\" (реестровый номер 54)"),
-        AUTOROLLOVER         (Type.BOOLEAN, null, "1, если автопролонгация на год; иначе 0"),
+        AUTOROLLOVER         (Type.BOOLEAN, Bool.FALSE, "1, если автопролонгация на год; иначе 0"),
 
 	LABEL                (Type.STRING, new Virt("'№' || contractnumber || ' от ' || TO_CHAR (signingdate, 'DD.MM.YYYY')"), "№/дата"),
 
