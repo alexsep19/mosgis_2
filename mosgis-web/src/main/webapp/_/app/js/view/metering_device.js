@@ -17,27 +17,28 @@ define ([], function () {
         fill (view, it, $('#body'))
 
         $('#container').w2relayout ({
-        
+
             name: 'topmost_layout',
-            
+
             panels: [
-                
+
                 {type: 'main', size: 400,
-                
+
                     tabs: {
 
                         tabs: [
-                            {id: 'metering_device_common',   caption: 'Общие'},
+                            {id: 'metering_device_common', caption: 'Общие'},
+                            {id: 'metering_device_docs', caption: 'Документы'},
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_metering_device
 
                     }                
-                
+
                 },
-                
+
             ],
-            
+
             onRender: function (e) {
                 clickActiveTab (this.get ('main').tabs, 'metering_device.active_tab')
             },
