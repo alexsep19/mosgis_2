@@ -70,12 +70,18 @@ public class VocMeteringDeviceFileType extends Table {
             for (i value: i.values ()) builder.add (value.toJsonObject ());            
             return builder.build ();            
         }
+        
+        public static JsonArray toJsonSingletonArray () {            
+            return Json.createArrayBuilder ().add (i.CERTIFICATE.toJsonObject ()).build ();
+        }
 
     }
     
     private static JsonArray jsonArray = i.toJsonArray ();    
-    public  static final void addTo (JsonObjectBuilder job) {
-        job.add (TABLE_NAME, jsonArray);
+    private static JsonArray jsonSingletonArray = i.toJsonSingletonArray ();
+    
+    public static final void addTo (JsonObjectBuilder job, boolean isFull) {
+        job.add (TABLE_NAME, isFull ? jsonArray : jsonSingletonArray);
     }
     
 }

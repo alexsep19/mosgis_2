@@ -131,7 +131,7 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
         VocAction.addTo (job);
         VocMeteringDeviceType.addTo (job);
         VocMeteringDeviceInstallationPlace.addTo (job, item.getInt (MeteringDevice.c.MASK_VC_NSI_2.lc ()) == Nsi2.i.POWER.getId ());
-        VocMeteringDeviceFileType.addTo (job);
+        VocMeteringDeviceFileType.addTo          (job, item.getInt (MeteringDevice.c.ID_TYPE.lc ())       == VocMeteringDeviceType.i.COLLECTIVE.getId ());
 
         db.addJsonArrays (job, 
            Nsi16.getVocSelect ()
