@@ -1,11 +1,5 @@
 define ([], function () {
 
-    $_DO.edit_metering_device_docs = function (e) {
-            
-        use.block ('metering_device_doc_popup')
-    
-    }    
-    
     $_DO.create_metering_device_docs = function (e) {
             
         use.block ('metering_device_doc_new')

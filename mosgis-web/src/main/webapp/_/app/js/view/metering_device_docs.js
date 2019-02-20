@@ -28,17 +28,15 @@ define ([], function () {
                 toolbarInput: false,
                 toolbarAdd: is_editable,
                 toolbarDelete: is_editable,
-                toolbarEdit: is_editable,
             },            
 
             textSearch: 'contains',
 
             columns: [                               
-                {field: 'id_type', caption: 'Тип', size: 50, voc: data.vc_contract_doc_types},
+                {field: 'id_type', caption: 'Тип', size: 50, voc: data.vc_meter_file_types},
                 {field: 'label', caption: 'Наименование', size: 100},
                 {field: 'len', caption: 'Объём, Мб', size: 10, render: function (r) {return (r.len/1024/1024).toFixed(3)}},
                 {field: 'description', caption: 'Описание', size: 50},
-                {field: 'fias.label', caption: 'Объект', size: 50},
             ],
             
             postData: {search: [
@@ -52,9 +50,7 @@ define ([], function () {
             onDelete: $_DO.delete_metering_device_docs,
             
             onAdd: $_DO.create_metering_device_docs,
-            
-            onEdit: $_DO.edit_metering_device_docs,                        
-            
+                        
         })
 
     }

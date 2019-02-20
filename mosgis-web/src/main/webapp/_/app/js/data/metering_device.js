@@ -28,6 +28,7 @@ define ([], function () {
                 vc_meter_places: 1,
                 vc_nsi_2: 1,
                 vc_nsi_16: 1,
+                vc_meter_file_types: 1,
             })
             
             var it = data.item
