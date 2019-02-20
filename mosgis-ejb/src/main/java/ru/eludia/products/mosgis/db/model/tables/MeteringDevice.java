@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
+import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
@@ -57,6 +58,9 @@ public class MeteringDevice extends EnTable {
         ID_CTR_STATUS_GIS      (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения ГИС ЖКХ"),
 
         ID_LOG                 (MeteringDeviceLog.class,                        "Последнее событие редактирования"),
+        
+        IS_POWER               (Type.BOOLEAN, new Virt  ("DECODE(\"MASK_VC_NSI_2\", 4, 1, 0)"),  "1 для счётчиков электричества, 0 для прочих"),
+        IS_FOR_BUILDING        (Type.BOOLEAN, new Virt  ("DECODE(\"ID_TYPE\", 1, 1, 2, 1, 0)"),  "1 для приборов, устанавливаемых на МКД/ЖД в целом, 0 для приборов отдельных помещений"),
 
         ;
 
@@ -67,7 +71,6 @@ public class MeteringDevice extends EnTable {
                 case FIASHOUSEGUID:
                 case UUID_ORG:
                 case CODE_VC_NSI_27:
-                case ID_TYPE:
                 case ID_LOG:
                     return false;
                 default:

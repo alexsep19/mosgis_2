@@ -4,6 +4,8 @@ define ([], function () {
 
     return function (data, view) {
 
+        var now = dt_dmy (new Date ().toJSON ())
+
         $(fill (view, data.record)).w2uppop ({}, function () {
 
             $('#w2ui-popup .w2ui-form').w2reform ({
@@ -25,6 +27,7 @@ define ([], function () {
                     {name: 'meteringdevicenumber', type: 'text'},
                     {name: 'meteringdevicestamp', type: 'text'},
                     {name: 'meteringdevicemodel', type: 'text'},
+                    {name: 'factorysealdate', type: 'date', options: {end: now}},
                     
                 ],
                 

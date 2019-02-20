@@ -60,6 +60,7 @@ define ([], function () {
         if (!v.meteringdevicestamp) die ('meteringdevicestamp', 'Укажите, пожалуйста, марку прибора')
         if (!v.meteringdevicemodel) die ('meteringdevicemodel', 'Укажите, пожалуйста, модель прибора')
         if (!v.meteringdevicenumber) die ('meteringdevicenumber', 'Укажите, пожалуйста, серийный (заводской) номер прибора')
+        if (!v.factorysealdate) die ('factorysealdate', 'Укажите, пожалуйста, дата опломбирования прибора заводом-изготовителем')
         
         var is_collective = (it.code_vc_nsi_27 == 2)
         

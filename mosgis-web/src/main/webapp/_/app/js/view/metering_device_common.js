@@ -21,9 +21,7 @@ define ([], function () {
             data.item.__read_only = data.__read_only
             
             var r = clone (data.item)
-            
-            r.is_power = r.mask_vc_nsi_2 == 4
-            
+                        
             if (!r.remotemeteringmode) r.remotemeteringmode = 0
 
             w2ui [form_name].record = r
@@ -44,7 +42,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 350},
+                {type: 'top', size: 247 + 30 * (it.is_power + it.is_for_building)},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
