@@ -10,6 +10,7 @@ define ([], function () {
         $('#span_remote_metering').css ({visibility: v.remotemeteringmode ? 'visible' : 'hidden'})
         $('#span_installationplace').css ({visibility: !v.notlinkedwithmetering ? 'visible' : 'hidden'})
         $('#span_temperaturesensor').css ({visibility: v.temperaturesensor ? 'visible' : 'hidden'})
+        $('#span_pressuresensor').css ({visibility: v.pressuresensor ? 'visible' : 'hidden'})
 
     }
 
@@ -95,11 +96,18 @@ define ([], function () {
                         {id: 0, text: 'да'},
                     ]}},
                     {name: 'installationplace', type: 'list', options: {items: data.vc_meter_places.items}},
+
                     {name: 'temperaturesensor', type: 'list', options: {items: [
                         {id: 0, text: 'нет'},
                         {id: 1, text: 'есть'},
                     ]}},
                     {name: 'temperaturesensingelementinfo', type: 'text'},
+
+                    {name: 'pressuresensor', type: 'list', options: {items: [
+                        {id: 0, text: 'нет'},
+                        {id: 1, text: 'есть'},
+                    ]}},
+                    {name: 'pressuresensingelementinfo', type: 'text'},
                     
 
             ],
@@ -120,6 +128,10 @@ define ([], function () {
                 
                 if (e.target == "temperaturesensor") {
                     e.done (function () {recalc (); $('#temperaturesensingelementinfo').focus ()})
+                }
+
+                if (e.target == "pressuresensor") {
+                    e.done (function () {recalc (); $('#pressuresensingelementinfo').focus ()})
                 }
             
             },

@@ -87,18 +87,25 @@ define ([], function () {
             v.remotemeteringinfo = null            
         }
         
-        if (!v.notlinkedwithmetering) {       
-            if (!v.installationplace) die ('installationplace', 'Укажите, пожалуйста, место установки данного прибора')
-        }
-        else {
-            v.installationplace = null
-        }
-
         if (v.temperaturesensor) {       
             if (!v.temperaturesensingelementinfo) die ('temperaturesensingelementinfo', 'Укажите, пожалуйста, место установки датчика температуры')
         }
         else {
             v.temperaturesensingelementinfo = null
+        }
+
+        if (v.pressuresensor) {       
+            if (!v.pressuresensingelementinfo) die ('pressuresensingelementinfo', 'Укажите, пожалуйста, место установки датчика температуры')
+        }
+        else {
+            v.pressuresensingelementinfo = null
+        }
+
+        if (!v.notlinkedwithmetering) {       
+            if (!v.installationplace) die ('installationplace', 'Укажите, пожалуйста, место установки данного прибора')
+        }
+        else {
+            v.installationplace = null
         }
                                                
         query ({type: 'metering_devices', action: 'update'}, {data: v}, reload_page)
