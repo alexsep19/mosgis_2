@@ -44,11 +44,12 @@ define ([], function () {
                             {id: 'house_passport', caption: 'Общие'},   // sic
                             {id: 'house_common',   caption: 'Паспорт'}, // sic
                             {id: 'house_constr',   caption: 'Конструктивные элементы', off: !data.item.is_condo},
-                            {id: 'house_systems',  caption: 'Внутридомовые сети', off: !data.item.is_condo},
+                            {id: 'house_systems',  caption: 'Сети', tooltip: 'Внутридомовые сети', off: !data.item.is_condo},
                             {id: 'house_premises', caption: 'Помещения', off: !data.item.is_condo},
                             {id: 'house_living_rooms', caption: 'Комнаты', off: (data.item.is_condo && !data.has_shared_premises_res)},
+                            {id: 'house_metering_devices', caption: 'ПУ', tooltip: 'Приборы учёта'},
                             {id: 'house_property_documents', caption: 'Собственники'},
-                            {id: 'house_voting_protocols', caption: 'Общие собрания', off: !voting_protocols_view_permit()},
+                            {id: 'house_voting_protocols', caption: 'ОСС', tooltip: 'Общие собрания собственников', off: !voting_protocols_view_permit()},
                             {id: 'house_docs',     caption: 'Документы'},
                         ].filter (not_off),
 

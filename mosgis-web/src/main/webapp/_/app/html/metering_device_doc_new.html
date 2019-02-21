@@ -1,0 +1,54 @@
+<span
+	data-popup-width=480
+	data-popup-height=275
+	data-popup-title='Загрузка файла'
+>
+
+	<style>
+
+        label[data-block-name=metering_device_doc_new] {
+        	width: 120px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=metering_device_doc_new] {
+        	width: 300px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:230px ">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Тип</label>
+                <div>
+                    <input name=id_type />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Файл</label>
+                <div>
+                    <input name=files />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Описание</label>
+                <div>
+                    <textarea name=description style="width:304px;height:70px" /></textarea>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+        	<progress/>
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>

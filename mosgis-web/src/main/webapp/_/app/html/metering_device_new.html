@@ -1,0 +1,80 @@
+<span
+	data-popup-width=520
+	data-popup-height=280
+	data-popup-title='Новый прибор учёта'
+>
+
+	<style>
+
+        label[data-block-name=metering_device_new] {
+        	width: 150px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=metering_device_new] {
+        	width: 300px !important;
+        }
+
+        input[data-block-name=metering_device_new].short {
+        	width: 120px !important;
+        }
+
+        input[data-block-name=metering_device_new].dt {
+        	width: 70px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:235px ">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Зарегистрировать</label>
+                <div>
+                	<input name=id_type> ,
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>поставляющий</label>
+                <div>
+                	<input name=consumedvolume>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>коммунального ресурса</label>
+                <div>
+                	<input name=mask_vc_nsi_2>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Марка</label>
+                <div>
+                	<input name=meteringdevicestamp maxlength=100 class=short>
+                	, модель
+                	<input name=meteringdevicemodel maxlength=100 class=short style="margin-left:2px;">
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Заводской (серийный) №</label>
+                <div>
+                	<input name=meteringdevicenumber maxlength=50 class=short>
+					, опломбирован
+					<input name=factorysealdate class=dt placeholder='' style="margin-left:11px;">
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+        	<progress/>
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>

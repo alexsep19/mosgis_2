@@ -19,6 +19,7 @@ public class Premise extends View {
         TOTALAREA                 (Type.NUMERIC,  25, 4, null,    "Общая площадь жилого помещения"),
         PREMISESGUID              (Type.UUID,     null,           "Идентификатор помещения"),       
         LIVINGROOMGUID            (Type.UUID,     null,           "Идентификатор комнаты"),
+        CODE_VC_NSI_30            (Type.STRING,   null,           "Характеристика помещения"),
         CLASS                     (Type.STRING,   null,           "Класс")
         ;
         
@@ -40,11 +41,11 @@ public class Premise extends View {
     public final String getSQL () {
 
         return ""
-            + "SELECT uuid id, uuid_house, premisesnum label, premisesnum apartmentnumber, NULL roomnumber, cadastralnumber, totalarea, premisesguid, NULL livingroomguid, 'ResidentialPremise' class FROM " + getName (ResidentialPremise.class) + " WHERE is_deleted = 0 AND is_annuled = 0"
+            + "SELECT uuid id, uuid_house, premisesnum label, premisesnum apartmentnumber, NULL roomnumber, cadastralnumber, totalarea, premisesguid, NULL livingroomguid, code_vc_nsi_30, 'ResidentialPremise' class FROM " + getName (ResidentialPremise.class) + " WHERE is_deleted = 0 AND is_annuled = 0"
             + " UNION "
-            + "SELECT uuid id, uuid_house, premisesnum label,  premisesnum apartmentnumber, NULL roomnumber, cadastralnumber, totalarea, premisesguid, NULL livingroomguid, 'NonResidentialPremise' class FROM " + getName (NonResidentialPremise.class) + " WHERE is_deleted = 0 AND is_annuled = 0"
+            + "SELECT uuid id, uuid_house, premisesnum label,  premisesnum apartmentnumber, NULL roomnumber, cadastralnumber, totalarea, premisesguid, NULL livingroomguid, NULL code_vc_nsi_30, 'NonResidentialPremise' class FROM " + getName (NonResidentialPremise.class) + " WHERE is_deleted = 0 AND is_annuled = 0"
             + " UNION "
-            + "SELECT uuid id, uuid_house, 'блок ' || blocknum label,  blocknum apartmentnumber, NULL roomnumber, cadastralnumber, totalarea, blockguid premisesguid, NULL livingroomguid, 'Block' class FROM " + getName (Block.class) + " WHERE is_deleted = 0 AND is_annuled = 0"
+            + "SELECT uuid id, uuid_house, 'блок ' || blocknum label,  blocknum apartmentnumber, NULL roomnumber, cadastralnumber, totalarea, blockguid premisesguid, NULL livingroomguid, NULL code_vc_nsi_30, 'Block' class FROM " + getName (Block.class) + " WHERE is_deleted = 0 AND is_annuled = 0"
             + " UNION "
             + "SELECT r.uuid id, r.uuid_house, "
                 + "CASE "
@@ -56,7 +57,7 @@ public class Premise extends View {
 		+ " ELSE p.premisesnum "
 		+ "END apartmentnumber "
 		+ ", r.roomnumber "
-                + ", r.cadastralnumber, r.square totalarea, NULL premisesguid, livingroomguid, 'LivingRoom' class "
+                + ", r.cadastralnumber, r.square totalarea, NULL premisesguid, livingroomguid, NULL code_vc_nsi_30, 'LivingRoom' class "
                 + "FROM " + getName (LivingRoom.class) + " r "
                 + " LEFT JOIN " + getName (ResidentialPremise.class) + " p ON r.uuid_premise = p.uuid "
                 + " LEFT JOIN " + getName (Block.class)              + " b ON r.uuid_block = b.uuid "
