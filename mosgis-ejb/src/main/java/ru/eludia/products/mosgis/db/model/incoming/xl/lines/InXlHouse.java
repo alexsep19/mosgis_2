@@ -319,23 +319,34 @@ public class InXlHouse extends EnTable {
         
         StringBuilder sb = new StringBuilder ();
         StringBuilder nsb = new StringBuilder ();
+        StringBuilder usb = new StringBuilder ();
         
         for (c c: c.values ()) if (c.isToCopy ()) {
             sb.append (',');
             sb.append (c.lc ());
             nsb.append (",:NEW.");
             nsb.append (c.lc ());
+            usb.append ("," + c.lc () + " = :NEW." + c.lc ());
         }
         
         trigger ("BEFORE UPDATE", ""
                 + "DECLARE " 
+                    + "cnt NUMBER; "
                     + "PRAGMA AUTONOMOUS_TRANSACTION; "
                 + "BEGIN "
                 
                     + "IF :NEW.err IS NOT NULL THEN :NEW.is_deleted := 1; END IF; "
                     + "IF NOT (:OLD.is_deleted = 1 AND :NEW.is_deleted = 0) THEN RETURN; END IF; "
                 
-                    + "INSERT INTO tb_houses (uuid, is_condo" + sb + ") VALUES (:NEW.uuid, 0" + nsb + "); "
+                    + "SELECT COUNT (*) INTO cnt FROM tb_houses r WHERE r.unom = :NEW.unom; "
+                    + "IF cnt = 0 THEN "
+                        + "INSERT INTO tb_houses (uuid, is_condo" + sb + ") VALUES (:NEW.uuid, 0" + nsb + "); "
+                    + "ELSE "
+                        + "FOR i IN (SELECT uuid FROM tb_houses WHERE unom = :NEW.unom AND is_condo = 1) LOOP "
+                            + "raise_application_error (-20000, 'Существует МКД с таким же UNOM'); "
+                        + "END LOOP; "
+                        + "UPDATE tb_houses SET " + usb.substring(1) + " WHERE unom = :NEW.unom; "
+                    + "END IF; "
                     + "COMMIT; "
 
                 + "END; "
