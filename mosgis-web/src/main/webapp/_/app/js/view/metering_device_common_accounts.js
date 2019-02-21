@@ -11,6 +11,7 @@ define ([], function () {
             show: {
                 toolbar: true,
                 toolbarAdd: it._can.edit,
+                toolbarDelete: it._can.edit,
                 toolbarInput: false,
                 footer: true,
             },     
@@ -19,11 +20,13 @@ define ([], function () {
                 {field: 'acc.accountnumber', caption: '№ ЛС', size: 20},
                 {field: 'label', caption: 'Собственник', size: 50},
             ],
-            
+
             records: data.accs,
-            
+
             onAdd: $_DO.create_metering_device_common_accounts,
-            
+
+            onDelete: $_DO.delete_metering_device_common_accounts,
+
         }).refresh ();
 
     }

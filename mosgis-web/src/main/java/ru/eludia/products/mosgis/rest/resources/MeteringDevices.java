@@ -92,6 +92,16 @@ public class MeteringDevices extends EJBResource <MeteringDeviceLocal> {
     }
     
     @POST
+    @Path("{id}/unset_accounts")
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject doUnsetAccounts (@PathParam ("id") String id, JsonObject p) {
+//        final JsonObject item = getInnerItem (id);
+//        checkOrg (item);
+        return back.doUnsetAccounts (id, p, getUser ());
+    }
+    
+    @POST
     @Path("{id}/delete") 
     @Produces (APPLICATION_JSON)
     public JsonObject doDelete (@PathParam ("id") String id) { 

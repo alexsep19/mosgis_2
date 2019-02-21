@@ -1,5 +1,7 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
@@ -173,7 +175,7 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
     });}
 
     @Override
-    public JsonObject doSetAccounts (Object id, JsonObject p, User user) {return doAction ((db) -> {
+    public JsonObject doSetAccounts (String id, JsonObject p, User user) {return doAction ((db) -> {
 
         db.dupsert (
             MeteringDeviceAccount.class,
@@ -182,6 +184,33 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
             "uuid_account"
         );
 
+        logAction (db, user, id, VocAction.i.UPDATE);
+
+    });}    
+    
+    @Override
+    public JsonObject doUnsetAccounts (String id, JsonObject p, User user) {return doAction ((db) -> {
+        
+        Object [] ids = p
+            .getJsonObject ("data")
+            .getJsonArray ("uuid_account")
+            .stream ()
+            .map ((t) -> ((JsonString) t).getString ())
+            .toArray ();
+        
+        db.delete (db.getModel ().select (MeteringDeviceAccount.class, "*")
+            .where ("uuid", id)
+            .where ("uuid_account", ids)
+        );
+
+/*        
+        db.dupsert (
+            MeteringDeviceAccount.class,
+            HASH ("uuid", id),
+            p.getJsonObject ("data").getJsonArray ("uuid_account").stream ().map ((t) -> {return HASH ("uuid_account", ((JsonString) t).getString ());}).collect (Collectors.toList ()),
+            "uuid_account"
+        );
+*/
         logAction (db, user, id, VocAction.i.UPDATE);
 
     });}    
