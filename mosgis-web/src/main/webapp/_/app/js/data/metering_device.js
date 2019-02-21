@@ -31,6 +31,13 @@ define ([], function () {
                 vc_meter_file_types: 1,
             })
             
+            data.accs = dia2w2uiRecords (data.accs)
+
+            $.each (data.accs, function () {
+                this.recid = this.id = this ['acc.uuid']
+                this.label = this ['ind.label'] || this ['org.label']
+            })
+
             var it = data.item
 
             it._can = {cancel: 1}

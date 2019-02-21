@@ -19,7 +19,7 @@ define ([], function () {
             
             $('#required_services_container').w2regrid ({ 
             
-                name: 'code_vc_nsi_67_grid',
+                name: 'account_items_grid',
                 
                 show: {
                     toolbar: false,
@@ -28,23 +28,20 @@ define ([], function () {
                 },     
                 
                 columns: [
-                    {field: 'acc.accountnumber', caption: '№ ЛС', size: 20},
-                    {field: 'sharepercent', caption: '%', size: 10, render: 'float:2'},
+                    {field: 'no', caption: '№ ЛС', size: 20},
                     {field: 'label', caption: 'Собственник', size: 50},
                 ],
                 
                 records: data.account_items,
                 
-                onRefresh: function () {
-/*                
-                    if (!is_virgin) return
+                onRender: function (e) {
                     
                     var grid = this
-               
-                    $.each (data.record.codes_nsi_67, function () {grid.select ('' + this)})
-
-                    is_virgin = 0
-*/                
+                
+                    e.done (function () {
+                        $.each (data.accs, function () {grid.select (this.id)})                        
+                    })
+                
                 }                
             
             }).refresh ()
