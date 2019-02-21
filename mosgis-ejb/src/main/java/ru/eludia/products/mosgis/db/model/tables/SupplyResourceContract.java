@@ -3,6 +3,7 @@ package ru.eludia.products.mosgis.db.model.tables;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
+import ru.eludia.base.model.def.Bool;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
@@ -33,7 +34,9 @@ public class SupplyResourceContract extends EnTable {
         SIGNINGDATE          (Type.DATE, "Дата заключения"),
         EFFECTIVEDATE        (Type.DATE, "Дата вступления в силу"),
         COMPLETIONDATE       (Type.DATE, null, "Дата окончания действия"),
-        AUTOROLLOVER         (Type.BOOLEAN, null, "1, если автопролонгация на год; иначе 0"),
+	TERMINATE            (Type.DATE, null, "Дата расторжения"),
+	CODE_VC_NSI_54       (Type.STRING, 20, null, "Ссылка на НСИ \"Основание расторжения договора\" (реестровый номер 54)"),
+        AUTOROLLOVER         (Type.BOOLEAN, Bool.FALSE, "1, если автопролонгация на год; иначе 0"),
 
 	LABEL                (Type.STRING, new Virt("'№' || contractnumber || ' от ' || TO_CHAR (signingdate, 'DD.MM.YYYY')"), "№/дата"),
 
@@ -243,7 +246,9 @@ public class SupplyResourceContract extends EnTable {
 			+ "   IF (:NEW.volumedepends = 1 OR :NEW.mdinfo = 1) AND (:NEW.DDT_M_START IS NULL OR :NEW.DDT_M_END IS NULL) THEN "
 			+ "     raise_application_error (-20000, 'Необходимо заполнить поля \"периода ввода показаний ПУ\". Операция отменена.'); "
 			+ "   END IF; "
-			+ "   IF :NEW.DDT_I_START IS NULL THEN raise_application_error (-20000, 'Необходимо заполнить поля \"Срок внесения платы\", если заказчик - не исполнитель коммунальных услуг. Операция отменена.'); END IF; "
+			+ "   IF :NEW.DDT_I_START IS NULL AND :NEW.onetimepayment <> 1 AND :NEW.is_contract != 1 THEN "
+			+ "     raise_application_error (-20000, 'Необходимо заполнить поля \"Срок внесения платы\", если заказчик - не исполнитель коммунальных услуг. Операция отменена.'); "
+			+ "   END IF; "
 			+ " END IF; "
 
 			+ " FOR i IN ("
@@ -283,15 +288,32 @@ public class SupplyResourceContract extends EnTable {
 			    + " END LOOP; "
 			+ " END IF; "
 		    + " END IF; " // IF :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING
-		+ " END IF; " // IF :NEW.is_deleted = 0
+
+		    + " IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.TERMINATED + " THEN "
+		    + "   UPDATE tb_sr_ctr_subj o "
+		    + "     SET o.endsupplydate = :NEW.terminate "
+		    + "   WHERE o.is_deleted = 0 "
+		    + "     AND o.uuid_sr_ctr = :NEW.uuid; "
+		    + " END IF; " // IF :NEW.ID_CTR_STATUS=" + VocGisStatus.i.TERMINATED
+
+		    + " IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS THEN "
+		    + "   UPDATE tb_sr_ctr_obj o "
+		    + "     SET o.id_ctr_status = :NEW.ID_CTR_STATUS "
+		    + "   WHERE o.is_deleted = 0 "
+		    + "     AND o.id_ctr_status <>  " + VocGisStatus.i.ANNUL
+		    + "     AND o.uuid_sr_ctr = :NEW.uuid; "
+		    + " END IF; " // IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS
+
+	    + " END IF; " // IF :NEW.is_deleted = 0
         + "END;");
     }
 
     public enum Action {
 
-	PLACING      (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
-	EDITING      (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_STATE),
-	ANNULMENT    (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT);
+	PLACING      (VocGisStatus.i.PENDING_RQ_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
+	EDITING      (VocGisStatus.i.PENDING_RQ_EDIT,      VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_STATE),
+	TERMINATION  (VocGisStatus.i.PENDING_RQ_TERMINATE, VocGisStatus.i.TERMINATED, VocGisStatus.i.FAILED_TERMINATE),
+	ANNULMENT    (VocGisStatus.i.PENDING_RQ_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT);
 
 	VocGisStatus.i nextStatus;
 	VocGisStatus.i okStatus;
@@ -319,19 +341,10 @@ public class SupplyResourceContract extends EnTable {
 
 	    switch (status) {
 
-	    case PENDING_RQ_PLACING:
-		return PLACING;
-	    case PENDING_RQ_EDIT:
-		return EDITING;
-	    case PENDING_RQ_ANNULMENT:
-		return ANNULMENT;
-
-	    case PENDING_RP_PLACING:
-		return PLACING;
-	    case PENDING_RP_EDIT:
-		return EDITING;
-	    case PENDING_RP_ANNULMENT:
-		return ANNULMENT;
+	    case PENDING_RQ_PLACING: return PLACING;
+	    case PENDING_RQ_EDIT: return EDITING;
+	    case PENDING_RQ_ANNULMENT: return ANNULMENT;
+	    case PENDING_RQ_TERMINATE: return TERMINATION;
 
 	    default:
 		return null;

@@ -20,6 +20,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustom
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.voc.VocSupplyResourceContractFileType;
+import ru.gosuslugi.dom.schema.integration.house_management.AnnulmentType;
 import ru.gosuslugi.dom.schema.integration.house_management.ContractSubjectType;
 import ru.gosuslugi.dom.schema.integration.house_management.DRSOIndType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportSupplyResourceContractRequest;
@@ -29,6 +30,7 @@ import ru.gosuslugi.dom.schema.integration.house_management.SupplyResourceContra
 import ru.gosuslugi.dom.schema.integration.house_management.SupplyResourceContractType.Quality;
 import ru.gosuslugi.dom.schema.integration.house_management.SupplyResourceContractType.OtherQualityIndicator;
 import ru.gosuslugi.dom.schema.integration.house_management.SupplyResourceContractType.TemperatureChart;
+import ru.gosuslugi.dom.schema.integration.house_management.TerminateType;
 import ru.gosuslugi.dom.schema.integration.individual_registry_base.ID;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
 
@@ -48,17 +50,49 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	final SupplyResourceContractType supplyResourceContract = toContractSupplyResourceContract(r);
 	contract.setSupplyResourceContract(supplyResourceContract);
 	contract.setTransportGUID(UUID.randomUUID().toString());
-	final Object ver = r.get(SupplyResourceContract.c.CONTRACTGUID.lc());
+	final Object ver = r.get(SupplyResourceContract.c.CONTRACTROOTGUID.lc());
 	if (ver != null) {
-	    contract.setContractGUID(ver.toString());
+	    contract.setContractRootGUID(ver.toString());
 	}
 	createImportSupplyResourceContractRequest.getContract().add(contract);
 	return createImportSupplyResourceContractRequest;
     }
 
+    public static ImportSupplyResourceContractRequest toAnnulSupplyResourceContractRequest(Map<String, Object> r) {
+	final ImportSupplyResourceContractRequest annulRequest = new ImportSupplyResourceContractRequest();
+	final ImportSupplyResourceContractRequest.Contract contract = new ImportSupplyResourceContractRequest.Contract();
+	final AnnulmentType annulmentContract = DB.to.javaBean(AnnulmentType.class, r);
+	contract.setAnnulmentContract(annulmentContract);
+	contract.setTransportGUID(UUID.randomUUID().toString());
+	final Object ver = r.get(SupplyResourceContract.c.CONTRACTROOTGUID.lc());
+	if (ver != null) {
+	    contract.setContractRootGUID(ver.toString());
+	}
+	annulRequest.getContract().add(contract);
+	return annulRequest;
+    }
+
+    public static ImportSupplyResourceContractRequest toTerminateSupplyResourceContractRequest(Map<String, Object> r) {
+	final ImportSupplyResourceContractRequest terminateRequest = new ImportSupplyResourceContractRequest();
+	final ImportSupplyResourceContractRequest.Contract contract = new ImportSupplyResourceContractRequest.Contract();
+
+	final ImportSupplyResourceContractRequest.Contract.TerminateContract tc = DB.to.javaBean(ImportSupplyResourceContractRequest.Contract.TerminateContract.class, r);
+	tc.setReasonRef(NsiTable.toDom(r.get("code_vc_nsi_54").toString(), (UUID) r.get("vc_nsi_54.guid")));
+	contract.setTerminateContract(tc);
+
+	contract.setTransportGUID(UUID.randomUUID().toString());
+	final Object ver = r.get(SupplyResourceContract.c.CONTRACTROOTGUID.lc());
+	if (ver != null) {
+	    contract.setContractRootGUID(ver.toString());
+	}
+
+	terminateRequest.getContract().add(contract);
+
+	return terminateRequest;
+    }
+
     private static SupplyResourceContractType toContractSupplyResourceContract(Map<String, Object> r) {
 
-	r.put("automaticrolloveroneyear", r.get("autorollover"));
 	r.put("specifyingqualityindicators", r.get("specqtyinds"));
 	r.put("meteringdeviceinformation", r.get("mdinfo"));
 	r.put("comptetiondate", r.get("completiondate"));
@@ -67,6 +101,9 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	r.put("accrualprocedure", r.get("voc_accrualprocedure.name"));
 	if (r.get("countingresource") != null) {
 	    r.put("countingresource", DB.ok(r.get("countingresource")) ? "R" : "P");
+	}
+	if (DB.ok(r.get("autorollover"))) {
+	    r.put("automaticrolloveroneyear", r.get("autorollover"));
 	}
 
 	SupplyResourceContractType result = DB.to.javaBean(SupplyResourceContractType.class, r);
@@ -270,22 +307,22 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 
 	    VocGisContractQualityLevelType.i id_type = VocGisContractQualityLevelType.i.forId(q.get("vc_nsi_276.id_type"));
 
-	    if (id_type == VocGisContractQualityLevelType.i.RANGE) {
-		i_value.setNumber(null);
-		i_value.setCorrespond(null);
-	    }
-
-	    if (id_type == VocGisContractQualityLevelType.i.NUMBER) {
-		i_value.setStartRange(null);
-		i_value.setEndRange(null);
-		i_value.setCorrespond(null);
-	    }
-
-	    if (id_type == VocGisContractQualityLevelType.i.CORRESPOND) {
-		i_value.setStartRange(null);
-		i_value.setEndRange(null);
-		i_value.setNumber(null);
-		i_value.setCorrespond(DB.ok(q.get("indicatorvalue_is")));
+	    switch (id_type) {
+		case RANGE:
+		    i_value.setNumber(null);
+		    i_value.setCorrespond(null);
+		    break;
+		case NUMBER:
+		    i_value.setStartRange(null);
+		    i_value.setEndRange(null);
+		    i_value.setCorrespond(null);
+		    break;
+		case CORRESPOND:
+		    i_value.setStartRange(null);
+		    i_value.setEndRange(null);
+		    i_value.setNumber(null);
+		    i_value.setCorrespond(DB.ok(q.get("indicatorvalue_is")));
+		break;
 	    }
 
 	    quality_item.setIndicatorValue(i_value);
@@ -323,22 +360,22 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 
 	    VocGisContractQualityLevelType.i id_type = VocGisContractQualityLevelType.i.forId(q.get("id_type"));
 
-	    if (id_type == VocGisContractQualityLevelType.i.RANGE) {
-		i_value.setNumber(null);
-		i_value.setCorrespond(null);
-	    }
-
-	    if (id_type == VocGisContractQualityLevelType.i.NUMBER) {
-		i_value.setStartRange(null);
-		i_value.setEndRange(null);
-		i_value.setCorrespond(null);
-	    }
-
-	    if (id_type == VocGisContractQualityLevelType.i.CORRESPOND) {
-		i_value.setStartRange(null);
-		i_value.setEndRange(null);
-		i_value.setNumber(null);
-		i_value.setCorrespond(DB.ok(q.get("indicatorvalue_is")));
+	    switch (id_type) {
+		case RANGE:
+		    i_value.setNumber(null);
+		    i_value.setCorrespond(null);
+		    break;
+		case NUMBER:
+		    i_value.setStartRange(null);
+		    i_value.setEndRange(null);
+		    i_value.setCorrespond(null);
+		    break;
+		case CORRESPOND:
+		    i_value.setStartRange(null);
+		    i_value.setEndRange(null);
+		    i_value.setNumber(null);
+		    i_value.setCorrespond(DB.ok(q.get("indicatorvalue_is")));
+		break;
 	    }
 
 	    result.getOtherQualityIndicator().add(i_value);
@@ -609,7 +646,7 @@ public class SupplyResourceContractLog extends GisWsLogTable {
     }
 
     public Get getForExport(Object id) {
-
+	NsiTable nsi54 = NsiTable.getNsiTable(54);
 	NsiTable nsi58 = NsiTable.getNsiTable(58);
 	NsiTable nsi95 = NsiTable.getNsiTable(95);
 
@@ -622,6 +659,7 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 		SupplyResourceContract.c.ID_CTR_STATUS.lc(),
 		SupplyResourceContract.c.ID_CUSTOMER_TYPE.lc()
 	    ).on()
+	    .toMaybeOne(nsi54, "AS vc_nsi_54", "code", "guid").on("ctr.code_vc_nsi_54=vc_nsi_54.code AND vc_nsi_54.isactual = 1")
 	    .toMaybeOne(nsi58, "AS vc_nsi_58", "code", "guid").on("ctr.code_vc_nsi_58=vc_nsi_58.code AND vc_nsi_58.isactual = 1")
 	    .toMaybeOne(VocGisContractDimension.class, "AS voc_plannedvolumetype", "name").on("ctr.plannedvolumetype = voc_plannedvolumetype.id")
 	    .toMaybeOne(VocGisContractDimension.class, "AS voc_specqtyinds", "name").on("ctr.specqtyinds = voc_specqtyinds.id")

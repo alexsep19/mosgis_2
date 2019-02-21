@@ -58,6 +58,7 @@ define ([], function () {
 
                     switch (it.id_sd_status) {
                         case 40:
+                        case 104:
                             it._can.annul = 1
                     }
 

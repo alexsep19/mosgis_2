@@ -60,6 +60,16 @@ public class ExportSettlementDocMDB extends GisExportMDB<SettlementDocLog> {
 		}
 
 		throw new IllegalArgumentException("Unknown settlement doc type " + id_type);
+            case ANNULMENT:
+		if (id_type == VocSettlementDocType.i.RSO) {
+		    return wsGisBillsClient.annulSettlementDocRSO(orgPPAGuid, messageGUID, r);
+		}
+
+		if (id_type == VocSettlementDocType.i.UO) {
+		    return wsGisBillsClient.annulSettlementDocUO(orgPPAGuid, messageGUID, r);
+		}
+
+		throw new IllegalArgumentException("Unknown settlement doc type " + id_type);
             default: 
                 throw new IllegalArgumentException ("No action implemented for " + action);
         }

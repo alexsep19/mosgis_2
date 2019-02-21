@@ -21,6 +21,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustom
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.voc.VocSupplyResourceContractFileType;
+import ru.gosuslugi.dom.schema.integration.bills.AnnulmentType;
 import ru.gosuslugi.dom.schema.integration.bills.ImportIKUSettlementsRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ContractSubjectType;
 import ru.gosuslugi.dom.schema.integration.house_management.DRSOIndType;
@@ -157,6 +158,41 @@ public class SettlementDocLog extends GisWsLogTable {
 
 	return result;
 
+    }
+
+    public static ImportRSOSettlementsRequest toAnnulRSOSettlementsRequest(Map<String, Object> r) {
+	final ImportRSOSettlementsRequest rq = new ImportRSOSettlementsRequest();
+	final ImportRSOSettlementsRequest.ImportSettlement settlement = new ImportRSOSettlementsRequest.ImportSettlement ();
+
+	final AnnulmentType a = DB.to.javaBean(AnnulmentType.class, r);
+	settlement.setAnnulmentSettlement(a);
+	settlement.setTransportGUID(UUID.randomUUID().toString());
+
+	final Object ver = r.get(SettlementDoc.c.SETTLEMENTGUID.lc());
+	if (ver != null) {
+	    settlement.setSettlementGUID(ver.toString());
+	}
+	rq.getImportSettlement().add(settlement);
+
+	return rq;
+    }
+
+    public static ImportIKUSettlementsRequest toAnnulIKUSettlementsRequest(Map<String, Object> r) {
+	final ImportIKUSettlementsRequest rq = new ImportIKUSettlementsRequest();
+	final ImportIKUSettlementsRequest.ImportSettlement settlement = new ImportIKUSettlementsRequest.ImportSettlement();
+
+	final AnnulmentType a = DB.to.javaBean(AnnulmentType.class, r);
+	settlement.setAnnulmentSettlement(a);
+	settlement.setTransportGUID(UUID.randomUUID().toString());
+
+	rq.getImportSettlement().add(settlement);
+
+	final Object ver = r.get(SettlementDoc.c.SETTLEMENTGUID.lc());
+	if (ver != null) {
+	    settlement.setSettlementGUID(ver.toString());
+	}
+
+	return rq;
     }
 
     public Get getForExport(Object id) {

@@ -73,6 +73,10 @@ define ([], function () {
         use.block ('supply_resource_contract_annul_popup')
     }
 
+    $_DO.terminate_supply_resource_contract_common = function (e) {
+        use.block('supply_resource_contract_terminate_popup')
+    }
+
     $_DO.choose_tab_supply_resource_contract_common = function (e) {
 
         var name = e.tab.id

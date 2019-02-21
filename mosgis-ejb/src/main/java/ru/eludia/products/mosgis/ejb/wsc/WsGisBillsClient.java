@@ -106,4 +106,12 @@ public class WsGisBillsClient {
     public AckRequest.Ack importSettlementDocUO(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
 	return getPort(orgPPAGuid, messageGUID).importIKUSettlements(SettlementDocLog.toImportIKUSettlementsRequest(r)).getAck();
     }
+
+    public AckRequest.Ack annulSettlementDocRSO(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+	return getPort(orgPPAGuid, messageGUID).importRSOSettlements(SettlementDocLog.toAnnulRSOSettlementsRequest(r)).getAck();
+    }
+
+    public AckRequest.Ack annulSettlementDocUO(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+	return getPort(orgPPAGuid, messageGUID).importIKUSettlements(SettlementDocLog.toAnnulIKUSettlementsRequest(r)).getAck();
+    }
 }

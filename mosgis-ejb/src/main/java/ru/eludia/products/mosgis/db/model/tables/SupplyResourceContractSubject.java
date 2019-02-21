@@ -20,7 +20,7 @@ public class SupplyResourceContractSubject extends EnTable {
     public enum c implements EnColEnum {
 
         UUID_SR_CTR           (SupplyResourceContract.class, "Договор"),
-	UUID_SR_CTR_OBJ       (SupplyResourceContractObject.class, null, "Объект жилищного фонда (заполняется, если поставляемый ресурс привязан к ОЖФ)"),
+	UUID_SR_CTR_OBJ       (SupplyResourceContractObject.class, null, "Объект жилищного фонда (IS NULL, если предмет договора, заполняется, если поставляемый ресурс ОЖФ)"),
 
 	CODE_VC_NSI_3         (STRING, 20, "Ссылка на НСИ \"Вид коммунальной услуги\" (реестровый номер 3)"),
 	CODE_VC_NSI_239       (STRING, 20, "Ссылка на НСИ \"Вид коммунального ресурса\" (реестровый номер 239)"),
@@ -70,7 +70,7 @@ public class SupplyResourceContractSubject extends EnTable {
 
     public SupplyResourceContractSubject () {
 
-        super ("tb_sr_ctr_subj", "Предмет договора РСО");
+        super ("tb_sr_ctr_subj", "Предмет, поставляемый ресурс ОЖФ договора РСО");
 
         cols  (c.class);
 

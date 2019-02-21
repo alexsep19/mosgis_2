@@ -18,8 +18,6 @@ import ru.gosuslugi.dom.schema.integration.house_management.ImportSupplyResource
 
 public class SupplyResourceContractLogTest extends BaseTest {
 
-    private static final UUID uuid = UUID.fromString ("810c9deb-1b90-715c-e053-0100007fb180");
-
     private SupplyResourceContract table;
     private SupplyResourceContractLog logTable;
 
@@ -35,56 +33,64 @@ public class SupplyResourceContractLogTest extends BaseTest {
 
     }
 
-    @Before
-    @After
-    public void clean () throws SQLException {
+    private Map<String, Object> getData() throws SQLException {
 
-        try (DB db = model.getDb ()) {
-            String u = "'" + uuid.toString ().replaceAll ("-", "").toUpperCase () + "'";
-            db.d0 (new QP ("UPDATE tb_sr_ctr SET id_log=NULL WHERE uuid = " + u));
-            db.d0 (new QP ("DELETE FROM tb_sr_ctr__log WHERE uuid_object = " + u));
-        }
+	try (DB db = model.getDb()) {
+	    final Map<String, Object> r = db.getMap(logTable.getForExport("823e2617-bc36-4766-e053-0100007f0f12"));
+	    r.put("contractrootguid", r.get("uuid"));
+	    r.put("contractguid", "0000000000000000");
+	    SupplyResourceContractLog.addFilesForExport(db, r);
+	    SupplyResourceContractLog.addRefsForExport(db, r);
+	    return r;
+	}
+    }
+
+    @Test(expected = Test.None.class)
+    public void testInsert() throws SQLException {
+
+	Map<String, Object> r = getData();
+
+	r.put("contractrootguid", null);
+	r.put("contractguid", "0000000000000000");
+	dump(r);
+	validate(SupplyResourceContractLog.toImportSupplyResourceContractRequest(r));
 
     }
 
-    private String createData (final DB db) throws SQLException {
+    @Test(expected = Test.None.class)
+    public void testUpdate() throws SQLException {
 
-        String id = model.createIdLog (db, table, null, uuid, VocAction.i.APPROVE);
+	Map<String, Object> r = getData();
 
-        db.update (table, HASH (
-            EnTable.c.UUID, uuid,
-            SupplyResourceContract.c.ID_LOG, id
-        ));
-
-        return id;
-
-    }
-
-    Map<String, Object> getData () throws SQLException {
-
-        try (DB db = model.getDb ()) {
-
-            String idLog = createData (db);
-
-            Map<String, Object> r = db.getMap (logTable.getForExport (idLog));
-            SupplyResourceContractLog.addFilesForExport(db, r);
-            SupplyResourceContractLog.addRefsForExport(db, r);
-
-            return r;
-
-        }
+	r.put("contractrootguid", r.get("uuid"));
+	r.put("contractguid", "0000000000000000");
+	dump(r);
+	validate(SupplyResourceContractLog.toImportSupplyResourceContractRequest(r));
 
     }
 
-    @Test
-    public void test () throws SQLException {
+    @Test(expected = Test.None.class)
+    public void testAnnul() throws SQLException {
 
-        Map<String, Object> r = getData ();
+	Map<String, Object> r = getData();
 
-        dump (r);
-
-        validate (SupplyResourceContractLog.toImportSupplyResourceContractRequest(r));
+	r.put("contractrootguid", r.get("uuid"));
+	r.put("reasonofannulment", r.get("uuid"));
+	r.put("code_vc_nsi_54", "1");
+	dump(r);
+	validate(SupplyResourceContractLog.toAnnulSupplyResourceContractRequest(r));
 
     }
 
+    @Test(expected = Test.None.class)
+    public void testTerminate() throws SQLException {
+
+	Map<String, Object> r = getData();
+
+	r.put("contractrootguid", r.get("uuid"));
+	r.put("contractguid", "0000000000000000");
+	dump(r);
+	validate(SupplyResourceContractLog.toTerminateSupplyResourceContractRequest(r));
+
+    }
 }

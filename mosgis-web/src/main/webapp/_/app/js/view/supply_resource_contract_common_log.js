@@ -26,8 +26,8 @@ define ([], function () {
 
             columnGroups : [
                 {span: 5, caption: 'Событие'},
-                {span: 6, caption: 'Значения полей'},
-                {span: 4, caption: 'Запрос в ГИС ЖКХ'},
+                {span: 7, caption: 'Значения полей'},
+                {span: 3, caption: 'Запрос в ГИС ЖКХ'},
             ],
 
             columns: [
@@ -42,16 +42,11 @@ define ([], function () {
                 {field: 'effectivedate', caption: 'Дата вступления в силу', size: 18, render: _dt},
                 {field: 'completiondate', caption: 'Дата окончания действия', size: 18, render: _dt},
                 {field: 'code_vc_nsi_58',  caption: 'Основание заключения',     size: 30, voc: data.vc_nsi_58},
+                {field: 'code_vc_nsi_54', caption: 'Причина прекращения действия', size: 30, voc: data.vc_nsi_54},
                 {field: 'is_deleted',  caption: 'Статус',     size: 20, voc: {0: 'Актуально', 1: 'Удалено'}},
 
                 {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: 'data-ref=1'},
                 {field: 'soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: 'data-ref=1'},
-                {field: 'soap.id_status', caption: 'Статус',    size: 30, render: function (r, i, c, v) {return (
-                    r.action != 'approve' ? '' :
-                    r ['soap.ts_rp']      ? 'Обработано' :
-                    r ['soap.ts']         ? 'Ожидает ответа' :
-                                            'Ожидает отправки'
-                )}},
                 {field: 'soap.err_text', caption: 'Ошибка',    size: 30},
 
             ],

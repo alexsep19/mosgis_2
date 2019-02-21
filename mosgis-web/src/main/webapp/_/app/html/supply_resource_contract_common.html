@@ -52,6 +52,11 @@
                     line-height: 60px;
                 }
 
+                td:visible:odd > .w2ui-field > label {
+                    width: 250px;
+                    margin-right: 10px;
+                }
+
                 .w2ui-field div span[data-text] {
                     line-height: 19px
                 }
@@ -72,54 +77,63 @@
                     </td>
 
                 </tr>
+		<tr>
 
-                <tr>
-
-                    <td class="left-block" width=1 valign=top>
-
+		    <td class="left-block" width=1 valign=top>
                         <div class="w2ui-field">
                             <label>№ договора</label>
                             <div>
                                 <input name=contractnumber maxlength=255>
                             </div>
                         </div>
-                    </td>
-
-                    <td valign=top>
-                        <div class="w2ui-field">
-                            <label>Статус:</label>
-                            <div>
-                                <span data-text=status_label maxlength=255 />
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-
-                <tr>
-
-                    <td class="left-block" width=1 valign=top>
-
                         <div class="w2ui-field">
                             <label>Дата заключения</label>
                             <div>
                                 <input name=signingdate placeholder="" class=dt>
                             </div>
                         </div>
-
-                    </td>
-
-                    <td valign=top>
-
                         <div class="w2ui-field">
                             <label>Дата вступления в силу</label>
                             <div>
                                 <input name=effectivedate placeholder="" class=dt>
                             </div>
                         </div>
+		    </td>
 
-                    </td>
+		    <td valign=top>
 
-                </tr>
+			<table border=0 cellpadding=0 cellspacing=0 width=100% class=sync>
+
+			    <tr>
+				<td>Статус:</td>
+				<td data-text=status_label />
+			    </tr>
+
+			    <tr data-on=is_annuled>
+				<td>Причина аннулирования:</td>
+				<td>
+				    <span data-text=reasonofannulment />
+				    , дата: <span data-text=last_annul.ts data-ts />
+				</td>
+			    </tr>
+
+			    <tr data-on=last_termination>
+				<td>Дата расторжения:</td>
+				<td data-text=last_termination.terminate data-date/>
+			    </tr>
+
+			    <tr data-on=last_termination>
+				<td>Причина:</td>
+				<td data-text=last_termination.reason/>
+			    </tr>
+
+			    <tr>
+				<th colspan=2 data-text=err_text></th>
+			    </tr>
+
+			</table>
+		    </td>
+		</tr>
                 <tr>
 
                     <td class="left-block" width=1 valign=top>
@@ -202,7 +216,7 @@
                     <td valign=top>
 
                         <div class="w2ui-field">
-                            <label>Тип ведения планового объема и режима подачи</label>
+                            <label>Тип ведения планового объема<br/>и режима подачи</label>
                             <div>
                                 <input name=plannedvolumetype>
                             </div>
@@ -375,8 +389,8 @@
                 <button class=w2ui-btn name=delete  data-on=__read_only>Удалить</button>
                 <button class=w2ui-btn name=approve data-on=__read_only>Разместить</button>
                 <button class=w2ui-btn name=alter   data-on=__read_only>Изменить</button>
-                <!--<button class=w2ui-btn name=annul  data-on=__read_only>Аннулировать</button>-->
-
+                <button class=w2ui-btn name=annul  data-on=__read_only>Аннулировать</button>
+		<button class=w2ui-btn name=terminate  data-on=__read_only>Расторгнуть</button>
             </span>
         </div>
 
