@@ -63,16 +63,6 @@ define ([], function () {
                                 id: 'supply_resource_contract_object_subjects',
                                 caption: 'Поставляемые ресурсы'
                             },
-                            {
-                                id: 'supply_resource_contract_object_quality_levels',
-                                caption: 'Показатели качества коммунальных ресурсов',
-                                off: data.item['sr_ctr.specqtyinds'] != 20
-                            },
-                            {
-                                id: 'supply_resource_contract_object_other_quality_levels',
-                                caption: 'Иные показатели качества коммунальных ресурсов',
-                                off: data.item['sr_ctr.specqtyinds'] != 20
-                            },
                             {id: 'supply_resource_contract_object_temperature_charts', caption: 'Температурный график'
                                 , off: data.item['sr_ctr.specqtyinds'] != 20 || !data.is_on_tab_temperature
                             },

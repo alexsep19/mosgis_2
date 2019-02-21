@@ -4,7 +4,7 @@ define ([], function () {
 
         var it = data.item
 
-        $('title').text ('Объект жилищного фонда по адресу ' +  +it['building.label'] + ' ДРС №' + it['sr_ctr.label'])
+        $('title').text ('Объект жилищного фонда по адресу ' + it['building.label'] + ' ДРС ' + it['sr_ctr.label'])
 
         fill (view, it, $('#body'))
 

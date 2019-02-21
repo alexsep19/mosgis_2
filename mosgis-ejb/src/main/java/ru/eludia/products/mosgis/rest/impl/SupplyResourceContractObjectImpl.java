@@ -120,7 +120,7 @@ public class SupplyResourceContractObjectImpl extends BaseCRUD<SupplyResourceCon
 	    String is_on_tab_temperature = db.getString(m.select(SupplyResourceContractSubject.class, "AS root", "uuid")
 		.where(EnTable.c.IS_DELETED, 0)
 		.and(SupplyResourceContractSubject.c.UUID_SR_CTR_OBJ, id)
-		.and(SupplyResourceContractSubject.c.CODE_VC_NSI_239, VocNsi239.CODE_VC_NSI_239_HEAT_ENERGY)
+		.and(SupplyResourceContractSubject.c.CODE_VC_NSI_239, VocNsi239.CODE_HEAT_ENERGY)
 		.limit(0, 1)
 	    );
 

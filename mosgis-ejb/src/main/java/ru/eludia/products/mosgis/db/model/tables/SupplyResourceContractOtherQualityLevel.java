@@ -20,8 +20,7 @@ public class SupplyResourceContractOtherQualityLevel extends EnTable {
 
         UUID_SR_CTR           (SupplyResourceContract.class, null, "Договор ресурсоснабжения (заполняется всегда)"),
 
-        UUID_SR_CTR_SUBJ      (SupplyResourceContractSubject.class, null, "Предмет договора (заполняется если показатель привязан к предмету договора)"),
-	UUID_SR_CTR_OBJ       (SupplyResourceContractObject.class, null, "Объект жилищного фонда (заполняется если показатель привязан к ОЖФ)"),
+        UUID_SR_CTR_SUBJ      (SupplyResourceContractSubject.class, null, "Предмет договора, поставляемый ресурс ОЖФ"),
 
 	CODE_VC_NSI_3         (STRING, 20, null, "Ссылка на НСИ \"Вид коммунальной услуги\" (реестровый номер 3)"),
 	CODE_VC_NSI_239       (STRING, 20, null, "Ссылка на НСИ \"Вид коммунального ресурса\" (реестровый номер 239)"),
@@ -74,19 +73,13 @@ public class SupplyResourceContractOtherQualityLevel extends EnTable {
 
                 + "IF :NEW.is_deleted = 0 THEN BEGIN "
 
-                    + "  IF :NEW.uuid_sr_ctr_subj IS NOT NULL THEN "
-                    + "     SELECT uuid_sr_ctr INTO :NEW.uuid_sr_ctr FROM tb_sr_ctr_subj WHERE uuid=:NEW.uuid_sr_ctr_subj; "
-		    + "     SELECT code_vc_nsi_3   INTO :NEW.code_vc_nsi_3   FROM tb_sr_ctr_subj WHERE uuid=:NEW.uuid_sr_ctr_subj; "
-		    + "     SELECT code_vc_nsi_239 INTO :NEW.code_vc_nsi_239 FROM tb_sr_ctr_subj WHERE uuid=:NEW.uuid_sr_ctr_subj; "
-                    + "  END IF;"
-
-		    + "  IF :NEW.uuid_sr_ctr_obj IS NOT NULL THEN "
-		    + "     SELECT uuid_sr_ctr INTO :NEW.uuid_sr_ctr FROM tb_sr_ctr_obj WHERE uuid=:NEW.uuid_sr_ctr_obj; "
+		    + "  IF :NEW.uuid_sr_ctr_subj IS NULL THEN "
+		    + "     raise_application_error (-20000, 'Иной показатель качества должен быть привязан к предмету договора или к поставляемому ресурсу ОЖФ. Операция отменена.'); "
 		    + "  END IF;"
 
-		    + "  IF :NEW.uuid_sr_ctr_obj IS NULL AND :NEW.uuid_sr_ctr_subj IS NULL THEN "
-		    + "     raise_application_error (-20000, 'Показатель качества должен быть привязан к предмету договора или к ОЖФ. Операция отменена.'); "
-		    + "  END IF;"
+		    + "  SELECT uuid_sr_ctr INTO :NEW.uuid_sr_ctr FROM tb_sr_ctr_subj WHERE uuid=:NEW.uuid_sr_ctr_subj; "
+		    + "  SELECT code_vc_nsi_3   INTO :NEW.code_vc_nsi_3   FROM tb_sr_ctr_subj WHERE uuid=:NEW.uuid_sr_ctr_subj; "
+		    + "  SELECT code_vc_nsi_239 INTO :NEW.code_vc_nsi_239 FROM tb_sr_ctr_subj WHERE uuid=:NEW.uuid_sr_ctr_subj; "
 
                     + "  IF :NEW.id_type = 1 AND :NEW.indicatorvalue_from IS NULL THEN "
                     + "     raise_application_error (-20000, 'Укажите начало диапазона иного показателя качества. Операция отменена.'); "
@@ -116,7 +109,7 @@ public class SupplyResourceContractOtherQualityLevel extends EnTable {
                         + "SELECT "
                         + " o.uuid "
                         + " , o.label "
-			+ " , o.uuid_sr_ctr_subj "
+			+ " , subj.uuid_sr_ctr_obj "
                         + " , sr_ctr.label sr_ctr_label "
                         + "FROM "
                         + " tb_sr_ctr_other_qls o "
@@ -127,13 +120,12 @@ public class SupplyResourceContractOtherQualityLevel extends EnTable {
                         + " AND o.label = :NEW.label "
                         + " AND subj.is_deleted = 0 "
                         + " AND o.uuid <> :NEW.uuid "
-			+ " AND NVL(o.uuid_sr_ctr_subj, '00') = NVL(:NEW.uuid_sr_ctr_subj, '00')"
-			+ " AND NVL(o.uuid_sr_ctr_obj, '00')  = NVL(:NEW.uuid_sr_ctr_obj, '00')"
+			+ " AND o.uuid_sr_ctr_subj = :NEW.uuid_sr_ctr_subj"
                     + ") LOOP"
                         + " raise_application_error (-20000, "
                         + "'Иной показатель качества ' || i.label "
                         + "|| ' уже есть ' "
-			+ "|| CASE WHEN i.uuid_sr_ctr_subj IS NOT NULL THEN 'в предмете' ELSE 'в объекте жилищного фонда' END "
+			+ "|| CASE WHEN i.uuid_sr_ctr_obj IS NULL THEN 'в предмете' ELSE 'в поставляемом ресурсе объекта жилищного фонда' END "
 			+ "|| ' договора ' || i.sr_ctr_label"
                         + "|| '. Операция отменена.'); "
                     + " END LOOP; "
