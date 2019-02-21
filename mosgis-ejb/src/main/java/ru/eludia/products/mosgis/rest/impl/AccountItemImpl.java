@@ -10,6 +10,8 @@ import ru.eludia.products.mosgis.db.model.tables.Account;
 import ru.eludia.products.mosgis.db.model.tables.AccountItem;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.AccountItemLocal;
@@ -34,6 +36,8 @@ public class AccountItemImpl extends BaseCRUD<AccountItem> implements AccountIte
             .toOne (VocBuilding.class, "AS addr", "label").on ()
             .toOne (Account.class, "AS acc", "*").on ()
             .toMaybeOne (Premise.class, "AS prem", "label", Premise.c.TOTALAREA.lc ()).on ()                
+            .toMaybeOne (VocOrganization.class, "AS org", "label").on ("acc.uuid_org_customer=org.uuid")
+            .toMaybeOne (VocPerson.class,       "AS ind", "label").on ("acc.uuid_person_customer=ind.uuid")
             .where (EnTable.c.IS_DELETED, 0)
             .orderBy ("addr.label")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
@@ -41,6 +45,7 @@ public class AccountItemImpl extends BaseCRUD<AccountItem> implements AccountIte
         JsonObject data = p.getJsonObject ("data");
         
         checkFilter (data, AccountItem.c.UUID_ACCOUNT, select);
+        checkFilter (data, AccountItem.c.FIASHOUSEGUID, select);
         checkFilter (data, AccountItem.c.UUID_PREMISE, select);
 
         db.addJsonArrayCnt (job, select);

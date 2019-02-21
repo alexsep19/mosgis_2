@@ -46,9 +46,24 @@ define ([], function () {
 
         var data = clone ($('body').data ('data'))
         
-        data.record = {}
+        var it = data.item
+        
+        var v = {fiashouseguid: null, uuid_premise: null}
+        
+        for (k in v) v [k] = it [k]
                 
-        done (data)
+        query ({type: 'account_items', id: null}, {data: v, offset: 0, limit: 10000}, function (d) {
+                
+            data.account_items = dia2w2uiRecords (d.root)
+            
+            $.each (data.account_items, function () {this.label = this ['ind.label'] || this ['org.label']})
+            
+darn (data.account_items)                
+            data.record = {}
+
+            done (data)
+        
+        })        
 
     }
 

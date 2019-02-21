@@ -24,15 +24,16 @@ define ([], function () {
                 show: {
                     toolbar: false,
                     footer: false,
-                    columnHeaders: false,
                     selectColumn: true
                 },     
                 
                 columns: [
-                    {field: 'label', caption: 'Наименование', size: 50},
+                    {field: 'acc.accountnumber', caption: '№ ЛС', size: 20},
+                    {field: 'sharepercent', caption: '%', size: 10, render: 'float:2'},
+                    {field: 'label', caption: 'Собственник', size: 50},
                 ],
                 
-                records: [],
+                records: data.account_items,
                 
                 onRefresh: function () {
 /*                
