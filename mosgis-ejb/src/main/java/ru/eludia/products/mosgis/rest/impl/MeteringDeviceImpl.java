@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -8,10 +9,15 @@ import javax.jms.Queue;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonString;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.tables.Account;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.MeteringDevice;
+import ru.eludia.products.mosgis.db.model.tables.MeteringDeviceAccount;
 import ru.eludia.products.mosgis.db.model.tables.MeteringDeviceLog;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -21,6 +27,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceFileType;
 import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceInstallationPlace;
 import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceType;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi16;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi27;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi2;
@@ -113,7 +120,9 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
     @Override
     public JsonObject getItem (String id) {return fetchData ((db, job) -> {
         
-        final JsonObject item = db.getJsonObject (ModelHolder.getModel ()
+        final MosGisModel m = ModelHolder.getModel ();
+        
+        final JsonObject item = db.getJsonObject (m
             .get (getTable (), id, "AS root", "*")
             .toMaybeOne (Premise.class, "AS premise", Premise.c.LABEL.lc ()).on ()
             .toOne (VocBuilding.class, "AS building", "label AS address").on ("root.fiashouseguid=building.houseguid")
@@ -122,9 +131,23 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
             .toMaybeOne (OutSoap.class, "err_text").on ("log.uuid_out_soap=out_soap.uuid")
             .toOne (VocOrganization.class, "AS org", "label").on ("root.uuid_org=org.uuid")
         );
-
+        
         job.add ("item", item);
         
+        db.addJsonArrays (job, 
+                
+            Nsi16.getVocSelect (),
+           
+            m
+                .select (MeteringDeviceAccount.class, "AS accs")
+                .where ("uuid", id)
+                .toOne (Account.class, "AS acc", "*").on ()
+                .toMaybeOne (VocOrganization.class, "AS org", "label").on ("acc.uuid_org_customer=org.uuid")
+                .toMaybeOne (VocPerson.class,       "AS ind", "label").on ("acc.uuid_person_customer=ind.uuid")
+                .orderBy ("acc.accountnumber")
+                
+        );
+
         Nsi2.i.addMeteringTo (job);
         Nsi27.i.addTo (job);
         VocGisStatus.addTo (job);
@@ -132,10 +155,6 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
         VocMeteringDeviceType.addTo (job);
         VocMeteringDeviceInstallationPlace.addTo (job, item.getInt (MeteringDevice.c.MASK_VC_NSI_2.lc ()) == Nsi2.i.POWER.getId ());
         VocMeteringDeviceFileType.addTo          (job, item.getInt (MeteringDevice.c.ID_TYPE.lc ())       == VocMeteringDeviceType.i.COLLECTIVE.getId ());
-
-        db.addJsonArrays (job, 
-           Nsi16.getVocSelect ()
-        );
 
     });}
 
@@ -152,7 +171,21 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
         );
 
     });}
-    
+
+    @Override
+    public JsonObject doSetAccounts (Object id, JsonObject p, User user) {return doAction ((db) -> {
+
+        db.dupsert (
+            MeteringDeviceAccount.class,
+            HASH ("uuid", id),
+            p.getJsonObject ("data").getJsonArray ("uuid_account").stream ().map ((t) -> {return HASH ("uuid_account", ((JsonString) t).getString ());}).collect (Collectors.toList ()),
+            "uuid_account"
+        );
+
+        logAction (db, user, id, VocAction.i.UPDATE);
+
+    });}    
+
 /*    
     @Override
     public JsonObject doApprove (String id, User user) {return doAction ((db) -> {

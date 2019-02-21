@@ -9,6 +9,7 @@ import ru.eludia.products.mosgis.rest.api.base.CRUDBackend;
 public interface MeteringDeviceLocal extends CRUDBackend {    
         
     JsonObject getVocs ();
+    JsonObject doSetAccounts (Object id, JsonObject p, User user);
    
 //    JsonObject doApprove   (String id, User user);
 //    JsonObject doAlter     (String id, User user);
