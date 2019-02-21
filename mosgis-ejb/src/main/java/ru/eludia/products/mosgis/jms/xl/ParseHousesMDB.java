@@ -127,7 +127,7 @@ public class ParseHousesMDB extends XLMDB {
         
         for (Map<String, Object> brokenLine: brokenLines) {
             XSSFRow row = sheet.getRow ((int) DB.to.Long (brokenLine.get (InXlHouse.c.ORD.lc ())));
-            XSSFCell cell = row.getLastCellNum () < 9 ? row.createCell (9) : row.getCell (9);
+            XSSFCell cell = row.getLastCellNum () < 12 ? row.createCell (12) : row.getCell (12);
             cell.setCellValue (brokenLine.get (InXlHouse.c.ERR.lc ()).toString ());
         }
 
@@ -147,7 +147,7 @@ public class ParseHousesMDB extends XLMDB {
         
         for (Map<String, Object> brokenLine: brokenLines) {
             XSSFRow row = sheet.getRow ((int) DB.to.Long (brokenLine.get (InXlHouseInfo.c.ORD.lc ())));
-            XSSFCell cell = row.getLastCellNum () < 9 ? row.createCell (9) : row.getCell (9);
+            XSSFCell cell = row.getLastCellNum () < 3 ? row.createCell (3) : row.getCell (3);
             cell.setCellValue (brokenLine.get (InXlHouseInfo.c.ERR.lc ()).toString ());
         }
 

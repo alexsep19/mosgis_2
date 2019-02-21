@@ -2,6 +2,7 @@ package ru.eludia.products.mosgis.db.model.incoming.xl.lines;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Logger;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import ru.eludia.base.DB;
@@ -15,6 +16,8 @@ import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 
 public class InXlHouseInfo extends EnTable {
     
+    private static final Logger logger = Logger.getLogger(InXlHouseInfo.class.getName());
+    
     public enum c implements ColEnum {
         
         UUID_XL                 (InXlFile.class, "Файл импорта"),
@@ -22,7 +25,7 @@ public class InXlHouseInfo extends EnTable {
         
         ORD                     (Type.NUMERIC, 5, "Номер строки"),
         
-        ADDRESS                 (Type.STRING, "Адрес"),
+        ADDRESS                 (Type.STRING, null, "Адрес"),
 
         RESIDENTSCOUNT          (Type.INTEGER, null, "Количество проживающих"),
         HASUNDERGROUNDPARKING   (Type.BOOLEAN, null, "Наличие подземного паркинга"),
@@ -69,7 +72,9 @@ public class InXlHouseInfo extends EnTable {
         try {
             final XSSFCell cell = row.getCell (0);
             if (cell == null) throw new XLException ("Не указан адрес (столбец A)");
-            r.put (c.ADDRESS.lc (), cell.getStringCellValue ());
+            final String s = cell.getStringCellValue ();
+            if (!DB.ok (s)) throw new XLException ("Не указан адрес (столбец A)");
+            r.put (c.ADDRESS.lc (), s);
         }
         catch (Exception ex) {
             throw new XLException ("Некорректный тип ячейки адреса (столбец A)");

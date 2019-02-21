@@ -65,7 +65,7 @@ public class House extends Passport {
         col    ("annulmentinfo",         Type.STRING,         null,       "Причина аннулирования.Дополнительная информация");
         col    ("code_vc_nsi_241",       Type.STRING,  20,    null,       "Способ формирования фонда капитального ремонта (НСИ 241)");
         col    ("code_vc_nsi_25",        Type.STRING,  20,    null,       "Способ управления домом (НСИ 25)");
-        col    ("code_vc_nsi_336",       Type.STRING,  20,    null,       "Стадия жизненного цикла (НСИ 336)");
+        col    ("code_vc_nsi_338",       Type.STRING,  20,    null,       "Стадия жизненного цикла (НСИ 338)");
         
         col    ("ts",                    Type.TIMESTAMP,                  "Дата/время последнего изменения в БД");
 //        fk     ("uuid_in_open_data",     InOpenData.class,                 "Последний пакет импорта");
