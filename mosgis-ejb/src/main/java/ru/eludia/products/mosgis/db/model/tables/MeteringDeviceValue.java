@@ -1,0 +1,97 @@
+package ru.eludia.products.mosgis.db.model.tables;
+
+import ru.eludia.base.model.Col;
+import ru.eludia.base.model.Ref;
+import ru.eludia.base.model.Type;
+import ru.eludia.products.mosgis.db.model.EnColEnum;
+import ru.eludia.products.mosgis.db.model.EnTable;
+
+public class MeteringDeviceValue extends EnTable {
+    
+    public enum c implements EnColEnum {
+        
+        UUID_METER             (MeteringDevice.class,                           "Прибор учёта"),
+        
+        METERINGVALUET1        (Type.NUMERIC, 22, 7, null,                      "Объем по тарифу T1"),
+        METERINGVALUET2        (Type.NUMERIC, 22, 7, null,                      "Объем по тарифу T2"),
+        METERINGVALUET3        (Type.NUMERIC, 22, 7, null,                      "Объем по тарифу T3"),
+        
+        INSTALLATIONDATE       (Type.DATE,           null,                      "Дата установки"),
+
+/*        
+        ID_TYPE                (VocMeteringDeviceType.class,                    "Тип прибора учёта"),
+        INSTALLATIONPLACE      (VocMeteringDeviceInstallationPlace.class, null, "Место установки"),
+
+        UUID_ORG               (VocOrganization.class,                          "Организация, которая завела данный прибор в БД"),
+        UUID_PREMISE           (Premise.class,       null,                      "Помещение"),
+	FIASHOUSEGUID          (VocBuilding.class,                              "Глобальный уникальный идентификатор дома по ФИАС"),
+
+        METERINGDEVICENUMBER   (Type.STRING,  50,                               "Заводской (серийный) номер ПУ"),
+        METERINGDEVICESTAMP    (Type.STRING,  100,                              "Марка ПУ"),
+        METERINGDEVICEMODEL    (Type.STRING,  100,                              "Модель ПУ"),
+        
+        INSTALLATIONDATE       (Type.DATE,           null,                      "Дата установки"),
+        COMMISSIONINGDATE      (Type.DATE,           null,                      "Дата ввода в эксплуатацию"),
+        
+        REMOTEMETERINGMODE     (Type.BOOLEAN,  Boolean.FALSE,                   "Наличие возможности дистанционного снятия показаний"),
+        REMOTEMETERINGINFO     (Type.STRING,  2000,  null,                      "Информация о наличии возможности дистанционного снятия показаний ПУ указанием наименования установленной системы"),
+        
+        FIRSTVERIFICATIONDATE  (Type.DATE,           null,                      "Дата последней поверки"),
+
+        CODE_VC_NSI_27         (Nsi27.class,                                    "Тип прибора учета (НСИ 27)"),
+        CODE_VC_NSI_16         (Nsi16.class,         null,                      "Межповерочный интервал (НСИ 16)"),
+
+        MASK_VC_NSI_2          (Type.NUMERIC, 3, 0,  BigInteger.ZERO,           "Битовая маска типов коммунальных ресурсов"),
+
+        FACTORYSEALDATE        (Type.DATE,           null,                      "Дата опломбирования ПУ заводом-изготовителем"),
+
+        TEMPERATURESENSOR      (Type.BOOLEAN,  Boolean.FALSE,                   "Наличие датчиков температры"),
+        PRESSURESENSOR         (Type.BOOLEAN,  Boolean.FALSE,                   "Наличие датчиков давления"),
+        CONSUMEDVOLUME         (Type.BOOLEAN,  Boolean.FALSE,                   "ПУ предоставляет объем потребленного КР"),
+
+        NOTLINKEDWITHMETERING  (Type.BOOLEAN,  Boolean.TRUE,                    "Объем ресурса(ов) определяется с помощью только этого прибора учёта"),
+        
+        TEMPERATURESENSINGELEMENTINFO  (Type.STRING,  2000,  null,              "Информация о наличии датчиков температуры с указанием их местоположения на узле учета"),
+        PRESSURESENSINGELEMENTINFO     (Type.STRING,  2000,  null,              "Информация о наличии датчиков давления с указанием их местоположения на узле учета"),
+
+        TRANSFORMATIONRATIO    (Type.NUMERIC, 17, 2, null,                      "Коэффициент трансформации"),
+        TARIFFCOUNT            (Type.NUMERIC, 1, 0, BigInteger.ONE,             "Количество тарифов"),
+        
+        ID_CTR_STATUS          (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения mosgis"),
+        ID_CTR_STATUS_GIS      (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения ГИС ЖКХ"),
+
+        ID_LOG                 (MeteringDeviceLog.class,                        "Последнее событие редактирования"),
+        
+        IS_POWER               (Type.BOOLEAN, new Virt  ("DECODE(\"MASK_VC_NSI_2\", 4, 1, 0)"),  "1 для счётчиков электричества, 0 для прочих"),
+        IS_COLLECTIVE          (Type.BOOLEAN, new Virt  ("DECODE(\"ID_TYPE\", 2, 1, 0)"),  "1 для общедомовых (МКД) приборов, 0 для прочих"),
+        IS_FOR_BUILDING        (Type.BOOLEAN, new Virt  ("DECODE(\"ID_TYPE\", 1, 1, 2, 1, 0)"),  "1 для приборов, устанавливаемых на МКД/ЖД в целом, 0 для приборов отдельных помещений"),
+*/
+        ;
+
+        @Override public Col getCol () {return col;} private Col col; private c (Type type, Object... p) {col = new Col (this, type, p);} private c (Class c,   Object... p) {col = new Ref (this, c, p);}        
+        @Override
+        public boolean isLoggable () {
+            switch (this) {
+//                case ID_LOG:
+//                    return false;
+                default:
+                    return true;
+            }
+        }        
+
+    }
+
+    public MeteringDeviceValue () {
+        super  ("tb_meter_values", "Показания приборов учёта");
+        cols   (c.class);
+//        key    ("fiashouseguid", "fiashouseguid");
+/*        
+        trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
+
+            + "SELECT CODE_VC_NSI_27 INTO :NEW.CODE_VC_NSI_27 FROM vc_meter_types WHERE id = :NEW.ID_TYPE; "
+                    
+        + "END;");
+*/        
+    }
+
+}
