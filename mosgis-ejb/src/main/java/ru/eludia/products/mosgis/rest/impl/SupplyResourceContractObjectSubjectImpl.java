@@ -11,12 +11,16 @@ import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.House;
+import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractObject;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi3;
 import ru.eludia.products.mosgis.db.model.tables.VocNsi239;
 import ru.eludia.products.mosgis.db.model.tables.VocNsiMunicipalServiceResource;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -87,6 +91,9 @@ public class SupplyResourceContractObjectSubjectImpl extends BaseCRUD<SupplyReso
         final JsonObject item = db.getJsonObject (m
             .get (SupplyResourceContractSubject.class, id, "AS root", "*")
             .toOne(SupplyResourceContract.class, "AS sr_ctr", "*").on()
+	    .toOne(SupplyResourceContractObject.class, "AS sr_ctr", "*").on()
+	    .toOne(VocBuilding.class, "AS building", "label").on()
+	    .toMaybeOne(Premise.class, "AS premise", "label", "id").on()
         );
 
         job.add ("item", item);
@@ -97,21 +104,9 @@ public class SupplyResourceContractObjectSubjectImpl extends BaseCRUD<SupplyReso
 
 	final Model m = db.getModel();
 
-	String uuid_sr_ctr = p.getString("uuid_sr_ctr");
-
 	db.addJsonArrays(job,
-	    VocNsi3.getVocSelect().where("code IN"
-		, m.select(SupplyResourceContractSubject.class, "code_vc_nsi_3")
-		    .where("uuid_sr_ctr", uuid_sr_ctr)
-		    .and("uuid_sr_ctr_obj IS NULL")
-		    .and("is_deleted", 0)
-	    ),
-	    VocNsi239.getVocSelect().where("code IN"
-		 , m.select(SupplyResourceContractSubject.class, "code_vc_nsi_239")
-		    .where("uuid_sr_ctr", uuid_sr_ctr)
-		    .and("uuid_sr_ctr_obj IS NULL")
-		    .and("is_deleted", 0)
-	    ),
+	    VocNsi3.getVocSelect(),
+	    VocNsi239.getVocSelect(),
 	    m.select(VocNsiMunicipalServiceResource.class, "*"),
 	    m.select(VocOkei.class, "code AS id", "national AS label")
 	);

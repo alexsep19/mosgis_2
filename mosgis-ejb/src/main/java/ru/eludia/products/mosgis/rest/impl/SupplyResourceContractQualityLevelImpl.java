@@ -70,8 +70,7 @@ public class SupplyResourceContractQualityLevelImpl extends BaseCRUD<SupplyResou
         Select select = m.select (SupplyResourceContractQualityLevel.class, "*", "uuid AS id")
             .toOne(VocNsi276.class, "*").on("tb_sr_ctr_qls.code_vc_nsi_276 = vc_nsi_276.code")
             .toMaybeOne(VocOkei.class, "AS okei", "*").on()
-	    .where(SupplyResourceContractQualityLevel.c.UUID_SR_CTR_OBJ.lc() + " IS NULL")
-	    .and(SupplyResourceContractQualityLevel.c.UUID_SR_CTR_SUBJ, data.getString("uuid_sr_ctr_subj"))
+	    .where(SupplyResourceContractQualityLevel.c.UUID_SR_CTR_SUBJ, data.getString("uuid_sr_ctr_subj"))
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
         applySearch (Search.from (p), select);

@@ -33,7 +33,7 @@ define ([], function () {
                 {field: 'value', caption: 'Установленное значение показателя качества', size: 50, render: function(i){
                     switch (i['vc_nsi_276.id_type']) {
                         case '3':
-                            return i.indicatorvalue_is == 1 ? 'cоответствует' : 'не соответствует'
+                            return i.indicatorvalue_is == 1 ? 'cоответствует' : i.indicatorvalue_is == 0? 'не соответствует' : ''
                         case '2':
                             return i.indicatorvalue == null ? '' : w2utils.formatNumber(i.indicatorvalue)
                         case '1':

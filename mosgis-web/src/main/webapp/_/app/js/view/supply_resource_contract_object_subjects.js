@@ -46,16 +46,7 @@ define ([], function () {
             url: '/mosgis/_rest/?type=supply_resource_contract_object_subjects',
 
             onDblClick: function (e) {
-
-                var grid = w2ui [e.target]
-
-                var r = grid.get(e.recid)
-
-                r.uuid_sr_ctr_obj = $_REQUEST.id
-
-                $_SESSION.set('record', r)
-
-                use.block('supply_resource_contract_object_subjects_popup')
+                openTab ('/supply_resource_contract_object_subject/' + e.recid)
             },
 
             onAdd: $_DO.create_supply_resource_contract_object_subjects,

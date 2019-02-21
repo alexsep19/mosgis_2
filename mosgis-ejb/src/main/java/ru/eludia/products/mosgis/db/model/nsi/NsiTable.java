@@ -155,7 +155,22 @@ public class NsiTable extends Table {
     public Select getVocSelect () {
         
         final String label = getLabelField ().getfName ();
-        
+
+        if (model == null) { // ?!!
+
+            synchronized (this) {
+
+                try (DB db = ModelHolder.getModel ().getDb ()) {
+                    db.adjustTable (this);
+                }
+                catch (SQLException e) {
+                    throw new IllegalStateException (e);
+                }
+
+            }
+            
+        }
+            
         return model.select (this, "code AS id", label + " AS label")
             .where ("isactual", 1)
             .orderBy (label)

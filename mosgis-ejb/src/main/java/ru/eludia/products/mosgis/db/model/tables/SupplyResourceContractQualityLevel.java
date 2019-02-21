@@ -6,6 +6,7 @@ import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.Type.STRING;
 import static ru.eludia.base.model.Type.NUMERIC;
 import static ru.eludia.base.model.Type.INTEGER;
+
 import static ru.eludia.base.model.Type.BOOLEAN;
 import static ru.eludia.base.model.def.Bool.FALSE;
 import ru.eludia.base.model.def.Virt;
@@ -20,8 +21,7 @@ public class SupplyResourceContractQualityLevel extends EnTable {
 
         UUID_SR_CTR           (SupplyResourceContract.class, null, "Договор ресурсоснабжения (заполняется всегда)"),
 
-        UUID_SR_CTR_SUBJ      (SupplyResourceContractSubject.class, null, "Предмет договора (заполняется если показатель привязан к предмету договора)"),
-	UUID_SR_CTR_OBJ       (SupplyResourceContractObject.class, null, "Объект жилищного фонда (заполняется если показатель привязан к ОЖФ)"),
+        UUID_SR_CTR_SUBJ      (SupplyResourceContractSubject.class, null, "Предмет договора, поставляемый ресурс ОЖФ"),
 
         CODE_VC_NSI_276       (STRING, 20, "Ссылка на НСИ \"Показатели качества коммунальных ресурсов\" (реестровый номер 276)"),
 	ID_TYPE               (VocGisContractQualityLevelType.class, "Тип иного показателя качества"),
@@ -73,17 +73,10 @@ public class SupplyResourceContractQualityLevel extends EnTable {
 
                 + "IF :NEW.is_deleted = 0 THEN BEGIN "
 
-                    + "  IF :NEW.uuid_sr_ctr_subj IS NOT NULL THEN "
-                    + "     SELECT uuid_sr_ctr INTO :NEW.uuid_sr_ctr FROM tb_sr_ctr_subj WHERE uuid=:NEW.uuid_sr_ctr_subj; "
-                    + "  END IF;"
-
-		    + "  IF :NEW.uuid_sr_ctr_obj IS NOT NULL THEN "
-		    + "     SELECT uuid_sr_ctr INTO :NEW.uuid_sr_ctr FROM tb_sr_ctr_obj WHERE uuid=:NEW.uuid_sr_ctr_obj; "
+		    + "  IF :NEW.uuid_sr_ctr_subj IS NULL THEN "
+		    + "     raise_application_error (-20000, 'Показатель качества должен быть привязан к предмету договора или к поставляемому ресурсу ОЖФ. Операция отменена.'); "
 		    + "  END IF;"
-
-		    + "  IF :NEW.uuid_sr_ctr_obj IS NULL AND :NEW.uuid_sr_ctr_subj IS NULL THEN "
-		    + "     raise_application_error (-20000, 'Показатель качества должен быть привязан к предмету договора или к ОЖФ. Операция отменена.'); "
-		    + "  END IF;"
+		    + "  SELECT uuid_sr_ctr INTO :NEW.uuid_sr_ctr FROM tb_sr_ctr_subj WHERE uuid=:NEW.uuid_sr_ctr_subj; "
 
 
 		    + " SELECT id_type INTO :NEW.id_type FROM vc_nsi_276 WHERE code=:NEW.code_vc_nsi_276; "
@@ -99,21 +92,21 @@ public class SupplyResourceContractQualityLevel extends EnTable {
                     + " FOR i IN ("
                         + "SELECT "
                         + " o.uuid "
-			+ " , o.uuid_sr_ctr_subj "
+			+ " , subj.uuid_sr_ctr_obj "
 			+ " , sr_ctr.label sr_ctr_label "
                         + "FROM "
                         + " tb_sr_ctr_qls o "
 			+ " LEFT JOIN tb_sr_ctr      sr_ctr  ON sr_ctr.uuid = o.uuid_sr_ctr "
+			+ " LEFT JOIN tb_sr_ctr_subj subj    ON subj.uuid = o.uuid_sr_ctr_subj "
                         + "WHERE o.is_deleted = 0 "
                         + " AND o.uuid_sr_ctr = :NEW.uuid_sr_ctr "
                         + " AND o.code_vc_nsi_276 = :NEW.code_vc_nsi_276 "
                         + " AND o.uuid <> :NEW.uuid "
-			+ " AND NVL(o.uuid_sr_ctr_subj, '00') = NVL(:NEW.uuid_sr_ctr_subj, '00')"
-			+ " AND NVL(o.uuid_sr_ctr_obj, '00')  = NVL(:NEW.uuid_sr_ctr_obj, '00')"
+			+ " AND o.uuid_sr_ctr_subj = :NEW.uuid_sr_ctr_subj"
                     + ") LOOP"
                         + " raise_application_error (-20000, "
 			+ "'Показатель качества ' "
-			+ "|| ' уже есть ' || CASE WHEN i.uuid_sr_ctr_subj IS NOT NULL THEN 'в предмете' ELSE 'в объекте жилищного фонда' END "
+			+ "|| ' уже есть ' || CASE WHEN i.uuid_sr_ctr_obj IS NULL THEN 'в предмете' ELSE 'в поставляемом ресурсе объекта жилищного фонда' END "
 			+ "|| ' договора ' || i.sr_ctr_label "
 			+ "|| '. Операция отменена.'); "
                     + " END LOOP; "

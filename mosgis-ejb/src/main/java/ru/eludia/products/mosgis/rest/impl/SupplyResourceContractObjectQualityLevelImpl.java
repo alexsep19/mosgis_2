@@ -68,12 +68,10 @@ public class SupplyResourceContractObjectQualityLevelImpl extends BaseCRUD<Suppl
 
 	JsonObject data = p.getJsonObject("data");
 
-	String uuid_sr_ctr_obj = data.getString("uuid_sr_ctr_obj");
-
-        Select select = m.select (SupplyResourceContractQualityLevel.class, "*", "uuid AS id")
+	Select select = m.select (SupplyResourceContractQualityLevel.class, "*", "uuid AS id")
 	    .toOne(VocNsi276.class, "*").on("tb_sr_ctr_qls.code_vc_nsi_276 = vc_nsi_276.code")
             .toMaybeOne(VocOkei.class, "AS okei", "*").on()
-	    .where(SupplyResourceContractQualityLevel.c.UUID_SR_CTR_OBJ, uuid_sr_ctr_obj)
+	    .where(SupplyResourceContractQualityLevel.c.UUID_SR_CTR_SUBJ, data.getString("uuid_sr_ctr_subj"))
 	    .limit (p.getInt ("offset"), p.getInt ("limit"));
 
         applySearch (Search.from (p), select);

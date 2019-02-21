@@ -296,7 +296,7 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	    q.put("endrange", q.get("indicatorvalue_to"));
 	    q.put("correspond", q.get("indicatorvalue_is"));
 	    q.put("number", q.get("indicatorvalue"));
-	    q.put("pairkey", q.get("pair.uuid"));
+	    q.put("pairkey", qty_by_house ? q.get("pair.uuid") : q.get("subj.uuid"));
 	    q.put("addressobjectkey", qty_by_house? q.get("addressobject.uuid") : null);
 
 	    Quality quality_item = DB.to.javaBean(Quality.class, q);
@@ -353,7 +353,7 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	    q.put("correspond", q.get("indicatorvalue_is"));
 	    q.put("number", q.get("indicatorvalue"));
 	    q.put("indicatorname", q.get("label"));
-	    q.put("pairkey", q.get("pair.uuid"));
+	    q.put("pairkey", qty_by_house ? q.get("pair.uuid") : q.get("subj.uuid"));
 	    q.put("addressobjectkey", qty_by_house? q.get("addressobject.uuid") : null);
 
 	    OtherQualityIndicator i_value = DB.to.javaBean(OtherQualityIndicator.class, q);
@@ -750,35 +750,36 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	    .toOne(VocNsi276.class, "AS vc_nsi_276", "code", "guid", "id_type")
 		.on("root.code_vc_nsi_276=vc_nsi_276.code AND vc_nsi_276.isactual = 1")
 	    .toOne(VocNsi239.class, "AS vc_nsi_239", "code").on("vc_nsi_276.guid_vc_nsi_239=vc_nsi_239.guid AND vc_nsi_239.isactual = 1")
-	    .toMaybeOne(SupplyResourceContractObject.class,  "AS addressobject", "uuid").on()
+	    .toOne(SupplyResourceContractSubject.class, "AS subj", "uuid").on()
+	    .toMaybeOne(SupplyResourceContractObject.class,  "AS addressobject", "uuid").on("addressobject.uuid = subj.uuid_sr_ctr_obj")
 	    .toMaybeOne(SupplyResourceContractSubject.class, "AS pair", "uuid")
 	    .on("pair.uuid_sr_ctr = root.uuid_sr_ctr "
 		+ " AND pair.is_deleted = 0 "
 		+ " AND pair.uuid_sr_ctr_obj IS NULL "
-		+ " AND vc_nsi_239.code=pair.code_vc_nsi_239 "
-		+ " AND (CURRENT_DATE <= pair.endsupplydate OR pair.endsupplydate IS NULL) "
-		+ " AND (CURRENT_DATE >= pair.startsupplydate) "
+		+ " AND subj.code_vc_nsi_239 = pair.code_vc_nsi_239 "
+		+ " AND subj.code_vc_nsi_3   = pair.code_vc_nsi_3 "
+		+ " AND (subj.endsupplydate <= pair.endsupplydate OR pair.endsupplydate IS NULL) "
+		+ " AND (subj.startsupplydate >= pair.startsupplydate) "
 	    )
 	    .where(SupplyResourceContractQualityLevel.c.UUID_SR_CTR, r.get("ctr.uuid"))
-	    .and(SupplyResourceContractQualityLevel.c.UUID_SR_CTR_OBJ.lc() + (qty_by_house? " IS NOT NULL" : " IS NULL"))
 	    .and("is_deleted", 0)
 	));
 
 	// Иные показатели качества
 	r.put("other_quality", db.getList(m
 	    .select(SupplyResourceContractOtherQualityLevel.class, "AS root", "*")
-	    .toMaybeOne(SupplyResourceContractObject.class, "AS addressobject", "uuid").on()
+	    .toOne(SupplyResourceContractSubject.class, "AS subj", "uuid").on()
+	    .toMaybeOne(SupplyResourceContractObject.class, "AS addressobject", "uuid").on("addressobject.uuid = subj.uuid_sr_ctr_obj")
 	    .toMaybeOne(SupplyResourceContractSubject.class, "AS pair", "uuid")
 	    .on("pair.uuid_sr_ctr = root.uuid_sr_ctr "
 		+ " AND pair.is_deleted = 0 "
 		+ " AND pair.uuid_sr_ctr_obj IS NULL "
-		+ " AND root.code_vc_nsi_239 = pair.code_vc_nsi_239 "
-		+ " AND root.code_vc_nsi_3   = pair.code_vc_nsi_3 "
-		+ " AND (CURRENT_DATE <= pair.endsupplydate OR pair.endsupplydate IS NULL) "
-		+ " AND (CURRENT_DATE >= pair.startsupplydate) "
+		+ " AND subj.code_vc_nsi_239 = pair.code_vc_nsi_239 "
+		+ " AND subj.code_vc_nsi_3   = pair.code_vc_nsi_3 "
+		+ " AND (subj.endsupplydate <= pair.endsupplydate OR pair.endsupplydate IS NULL) "
+		+ " AND (subj.startsupplydate >= pair.startsupplydate) "
 	    )
 	    .where(SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR, r.get("ctr.uuid"))
-	    .and(SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR_OBJ.lc() + (qty_by_house ? " IS NOT NULL" : " IS NULL"))
 	    .and("is_deleted", 0)
 	));
 

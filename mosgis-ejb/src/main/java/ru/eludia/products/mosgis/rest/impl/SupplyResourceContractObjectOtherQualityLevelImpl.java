@@ -68,7 +68,7 @@ public class SupplyResourceContractObjectOtherQualityLevelImpl extends BaseCRUD<
 
         Select select = m.select (SupplyResourceContractOtherQualityLevel.class, "*", "uuid AS id")
             .toMaybeOne(VocOkei.class, "AS okei", "*").on()
-	    .and (SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR_OBJ, data.getString("uuid_sr_ctr_obj"))
+	    .and (SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR_SUBJ, data.getString("uuid_sr_ctr_subj"))
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
         applySearch (Search.from (p), select);

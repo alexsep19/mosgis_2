@@ -141,7 +141,7 @@ public class SupplyResourceContractImpl extends BaseCRUD<SupplyResourceContract>
 		.where(EnTable.c.IS_DELETED, 0)
 		.and(SupplyResourceContractSubject.c.UUID_SR_CTR, id)
 		.and(SupplyResourceContractSubject.c.UUID_SR_CTR_OBJ.lc() + " IS NULL")
-		.and(SupplyResourceContractSubject.c.CODE_VC_NSI_239, VocNsi239.CODE_VC_NSI_239_HEAT_ENERGY)
+		.and(SupplyResourceContractSubject.c.CODE_VC_NSI_239, VocNsi239.CODE_HEAT_ENERGY)
 		.limit(0, 1)
 	    );
 
