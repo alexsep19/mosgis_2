@@ -23,7 +23,7 @@ public class CharterObjectServicesImpl extends BaseCRUD<CharterObjectService> im
     private static final Logger logger = Logger.getLogger (CharterObjectServicesImpl.class.getName ());    
 
     @Override
-    public JsonObject getItem (String id) {return fetchData ((db, job) -> {
+    public JsonObject getItem (String id, User user) {return fetchData ((db, job) -> {
         
         final Model m = db.getModel ();
 

@@ -55,7 +55,7 @@ public class SupplyResourceContractObjectSubjects extends EJBResource <SupplyRes
     @Path("{id}")
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) {
-        return back.getItem(id);
+        return back.getItem(id, getUser ());
     }
 
     @POST

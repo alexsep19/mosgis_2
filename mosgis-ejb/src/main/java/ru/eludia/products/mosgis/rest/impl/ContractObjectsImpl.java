@@ -32,7 +32,7 @@ public class ContractObjectsImpl extends BaseCRUD<ContractObject> implements Con
     private static final Logger logger = Logger.getLogger (ContractObjectsImpl.class.getName ());    
 
     @Override
-    public JsonObject getItem (String id) {return fetchData ((db, job) -> {
+    public JsonObject getItem (String id, User user) {return fetchData ((db, job) -> {
         
         final Model m = db.getModel ();
         

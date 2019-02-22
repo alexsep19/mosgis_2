@@ -50,7 +50,7 @@ public class ReportingPeriods extends EJBResource <ReportingPeriodLocal> {
     @Path("{id}") 
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) { 
-        final JsonObject item = back.getItem (id);
+        final JsonObject item = back.getItem (id, getUser ());
         return item;
     }
     

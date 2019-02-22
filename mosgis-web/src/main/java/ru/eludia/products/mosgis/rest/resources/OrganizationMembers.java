@@ -16,7 +16,7 @@ import ru.eludia.products.mosgis.rest.api.OrganizationMemberLocal;
 public class OrganizationMembers extends EJBResource <OrganizationMemberLocal> {
 
     private JsonObject getInnerItem (String id) {
-        final JsonObject data = back.getItem (id);
+        final JsonObject data = back.getItem (id, getUser ());
         final JsonObject item = data.getJsonObject ("item");
         if (item == null) throw new InternalServerErrorException ("Wrong data from back.getItem (" + id + "), no item: " + data);
         return item;
@@ -105,7 +105,7 @@ public class OrganizationMembers extends EJBResource <OrganizationMemberLocal> {
     @Path("{id}")
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) {
-        return back.getItem (id);
+        return back.getItem (id, getUser ());
     }
 
     @POST

@@ -134,7 +134,7 @@ public class CharterImpl extends BaseCRUD<Charter> implements CharterLocal {
     });}
 
     @Override
-    public JsonObject getItem (String id) {return fetchData ((db, job) -> {
+    public JsonObject getItem (String id, User user) {return fetchData ((db, job) -> {
         
         Model m = ModelHolder.getModel ();
         

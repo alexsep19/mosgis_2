@@ -55,7 +55,7 @@ public class SettlementDocs extends EJBResource <SettlementDocLocal> {
     @Path("{id}")
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) {
-        return back.getItem(id);
+        return back.getItem(id, getUser ());
     }
 
     @POST

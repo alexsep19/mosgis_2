@@ -268,11 +268,6 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
     private static final int NSI_VOC_CONDITION = 24;
     
     @Override
-    public JsonObject getItem(String id) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
     public JsonObject getItem (String id, User user) {
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();

@@ -34,7 +34,7 @@ import ru.eludia.products.mosgis.web.base.ComplexSearch;
 public class LicenseImpl extends BaseCRUD<License> implements LicenseLocal {
 
     @Override
-    public JsonObject getItem(String id) {
+    public JsonObject getItem(String id, User user) {
         return fetchData((db, job) -> {
 
             Model m = ModelHolder.getModel();

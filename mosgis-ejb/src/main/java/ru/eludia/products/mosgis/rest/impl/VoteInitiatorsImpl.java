@@ -154,7 +154,7 @@ public class VoteInitiatorsImpl extends BaseCRUD<VoteInitiator> implements VoteI
     });}
 
     @Override
-    public JsonObject getItem (String id) {return fetchData ((db, job) -> {
+    public JsonObject getItem (String id, User user) {return fetchData ((db, job) -> {
 
         JsonObject item = db.getJsonObject (ModelHolder.getModel ()
             .get (getTable (), id, "*")

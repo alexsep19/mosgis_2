@@ -32,7 +32,7 @@ import ru.eludia.products.mosgis.web.base.Search;
 public class NonResidentialPremisesImpl extends BasePassport<NonResidentialPremise> implements NonResidentialPremisesLocal {
     
     @Override
-    public JsonObject getItem (String id) {return fetchData ((db, job) -> {
+    public JsonObject getItem (String id, User user) {return fetchData ((db, job) -> {
         
         final Passport table = (Passport) getTable ();
 

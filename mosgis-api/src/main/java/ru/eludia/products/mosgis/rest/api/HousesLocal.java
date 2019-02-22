@@ -12,7 +12,6 @@ public interface HousesLocal extends CRUDBackend {
     JsonObject selectOktmo (JsonObject p, String uuid_org);
     
     JsonObject select (JsonObject p, User user);
-    JsonObject getItem (String id, User user);
     JsonObject doUpdate (String id, JsonObject p);
     JsonObject doPatch  (String id, JsonObject p);
     JsonObject getVocs ();

@@ -46,7 +46,7 @@ public class WorkingListItemImpl extends BaseCRUD<WorkingListItem> implements Wo
     });}
 
     @Override
-    public JsonObject getItem (String id) {
+    public JsonObject getItem (String id, User user) {
         return EMPTY_JSON_OBJECT;
     }
 

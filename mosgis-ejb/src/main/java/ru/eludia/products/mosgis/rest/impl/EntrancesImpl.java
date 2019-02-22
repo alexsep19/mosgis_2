@@ -99,7 +99,7 @@ public class EntrancesImpl extends BasePassport<Entrance> implements EntrancesLo
     });}
 
     @Override
-    public JsonObject getItem (String id) {return fetchData ((db, job) -> {
+    public JsonObject getItem (String id, User user) {return fetchData ((db, job) -> {
         
         job.add ("item", db.getJsonObject (ModelHolder.getModel ().get (getTable (), id, "*")));
         

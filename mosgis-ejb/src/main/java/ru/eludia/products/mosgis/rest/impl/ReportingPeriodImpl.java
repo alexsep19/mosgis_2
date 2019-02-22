@@ -61,7 +61,7 @@ public class ReportingPeriodImpl extends BaseCRUD<ReportingPeriod> implements Re
     }
 
     @Override
-    public JsonObject getItem (String id) {return fetchData ((db, job) -> {
+    public JsonObject getItem (String id, User user) {return fetchData ((db, job) -> {
 
         final String fhg = WorkingList.c.FIASHOUSEGUID.lc ();
         

@@ -94,7 +94,7 @@ public class PersonImpl extends BaseCRUD<VocPerson> implements PersonLocal {
     });}
     
     @Override
-    public JsonObject getItem (String id) {return fetchData ((db, job) -> {
+    public JsonObject getItem (String id, User user) {return fetchData ((db, job) -> {
 
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
             .get (getTable (), id, "*")

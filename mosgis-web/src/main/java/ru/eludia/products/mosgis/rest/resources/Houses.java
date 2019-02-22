@@ -103,7 +103,7 @@ public class Houses extends EJBResource <HousesLocal> {
     }
     
     private JsonObject getInnerItem (String id) {
-        final JsonObject data = back.getItem (id);        
+        final JsonObject data = back.getItem (id, getUser ());        
         final JsonObject item = data.getJsonObject ("item");
         if (item == null) throw new InternalServerErrorException ("Wrong data from back.getItem (" + id + "), no item: " + data);
         return item;
@@ -426,7 +426,7 @@ public class Houses extends EJBResource <HousesLocal> {
     @Path("{id}/reload") 
     @Produces (APPLICATION_JSON)
     public JsonObject doReload (@PathParam ("id") String id) { 
-        final JsonObject item = back.getItem (id);
+        final JsonObject item = back.getItem (id, getUser ());
         checkOrg (item);
         
         String orgUuid = null;
@@ -440,7 +440,7 @@ public class Houses extends EJBResource <HousesLocal> {
     @Path("{id}/send") 
     @Produces (APPLICATION_JSON)
     public JsonObject doApprove (@PathParam ("id") String id) { 
-        final JsonObject item = back.getItem (id);
+        final JsonObject item = back.getItem (id, getUser ());
         checkOrg (item);
         
         String orgUuid = null;

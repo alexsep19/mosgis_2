@@ -149,7 +149,7 @@ public class OrganizationWorkImpl extends BaseCRUD<OrganizationWork> implements 
     });}
 
     @Override
-    public JsonObject getItem (String id) {return fetchData ((DB db, JsonObjectBuilder job) -> {
+    public JsonObject getItem (String id, User user) {return fetchData ((DB db, JsonObjectBuilder job) -> {
 
         final MosGisModel model = ModelHolder.getModel ();
         

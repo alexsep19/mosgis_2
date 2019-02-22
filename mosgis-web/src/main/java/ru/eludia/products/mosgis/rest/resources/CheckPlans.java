@@ -51,7 +51,7 @@ public class CheckPlans extends EJBResource <CheckPlansLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) {
         check ();
-        return back.getItem (id);
+        return back.getItem (id, getUser ());
     }
     
     @POST

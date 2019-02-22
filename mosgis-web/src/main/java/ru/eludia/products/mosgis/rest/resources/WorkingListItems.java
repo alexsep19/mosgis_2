@@ -14,7 +14,7 @@ import ru.eludia.products.mosgis.rest.api.WorkingListItemLocal;
 public class WorkingListItems extends EJBResource <WorkingListItemLocal> {
     
     private JsonObject getData (String id) {
-        return back.getItem (id);
+        return back.getItem (id, getUser ());
     }
 /*    
     private String getUserOrg () {

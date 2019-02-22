@@ -48,7 +48,7 @@ public class WorkingPlanItemImpl extends BaseCRUD<WorkingPlanItem> implements Wo
     });}
 
     @Override
-    public JsonObject getItem (String id) {
+    public JsonObject getItem (String id, User user) {
         throw new UnsupportedOperationException ("Not supported yet.");
     }
 

@@ -29,7 +29,7 @@ public class InfrastructureResourcesImpl extends BaseCRUD<InfrastructureResource
     });}
 
     @Override
-    public JsonObject getItem(String id) {
+    public JsonObject getItem(String id, User user) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

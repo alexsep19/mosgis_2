@@ -70,7 +70,7 @@ public class InXlFiles extends EJBResource <InXlFilesLocal> {
     @Path("{id}/download") 
     @Produces(APPLICATION_OCTET_STREAM)
     public Response download (@PathParam ("id") String id) {
-        JsonObject item = back.getItem (id);
+        JsonObject item = back.getItem (id, getUser ());
         return createFileDownloadResponse (id, item.getString ("label"), item.getInt ("len"));
     }
     
@@ -78,7 +78,7 @@ public class InXlFiles extends EJBResource <InXlFilesLocal> {
     @Path("{id}/download_errors") 
     @Produces(APPLICATION_OCTET_STREAM)
     public Response download_errors (@PathParam ("id") String id) {
-        JsonObject item = back.getItem (id);
+        JsonObject item = back.getItem (id, getUser ());
         return createErrDownloadResponse (id, item.getString ("label"), item.getInt ("errr_len"));
     }
     

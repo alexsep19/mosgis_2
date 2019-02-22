@@ -34,7 +34,7 @@ import ru.eludia.products.mosgis.rest.api.LivingRoomsLocal;
 public class LivingRoomsImpl extends BasePassport<LivingRoom> implements LivingRoomsLocal {
     
     @Override
-    public JsonObject getItem (String id) {return fetchData ((db, job) -> {
+    public JsonObject getItem (String id, User user) {return fetchData ((db, job) -> {
         
         final Passport table = (Passport) getTable ();
 

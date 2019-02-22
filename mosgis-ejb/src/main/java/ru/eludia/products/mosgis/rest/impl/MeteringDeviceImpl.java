@@ -121,7 +121,7 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
     });}
 
     @Override
-    public JsonObject getItem (String id) {return fetchData ((db, job) -> {
+    public JsonObject getItem (String id, User user) {return fetchData ((db, job) -> {
         
         final MosGisModel m = ModelHolder.getModel ();
         

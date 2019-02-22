@@ -54,7 +54,7 @@ public class LiftsImpl extends BasePassport<Lift> implements LiftsLocal {
     });}
 
     @Override
-    public JsonObject getItem (String id) {
+    public JsonObject getItem (String id, User user) {
 
         JsonObjectBuilder jb = Json.createObjectBuilder ();
 

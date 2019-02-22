@@ -16,7 +16,7 @@ import ru.eludia.products.mosgis.rest.api.PropertyDocumentLocal;
 public class PropertyDocuments extends EJBResource <PropertyDocumentLocal> {
     
     private JsonObject getInnerItem (String id) {
-        final JsonObject data = back.getItem (id);        
+        final JsonObject data = back.getItem (id, getUser ());        
         final JsonObject item = data.getJsonObject ("item");
         if (item == null) throw new InternalServerErrorException ("Wrong data from back.getItem (" + id + "), no item: " + data);
         return item;
@@ -96,7 +96,7 @@ public class PropertyDocuments extends EJBResource <PropertyDocumentLocal> {
     @Path("{id}") 
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) { 
-        final JsonObject item = back.getItem (id);
+        final JsonObject item = back.getItem (id, getUser ());
         if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
         return item;
     }
@@ -106,7 +106,7 @@ public class PropertyDocuments extends EJBResource <PropertyDocumentLocal> {
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
-        final JsonObject item = back.getItem (id);
+        final JsonObject item = back.getItem (id, getUser ());
         if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
         return back.getLog (id, p, getUser ());
     }

@@ -148,7 +148,7 @@ public class VotingProtocolsImpl extends BaseCRUD<VotingProtocol> implements Vot
     }
 
     @Override
-    public JsonObject getItem (String id) {return fetchData ((db, job) -> {
+    public JsonObject getItem (String id, User user) {return fetchData ((db, job) -> {
 
         JsonObject item = db.getJsonObject (ModelHolder.getModel ()
             .get (VotingProtocol.class, id, "AS root", "*")

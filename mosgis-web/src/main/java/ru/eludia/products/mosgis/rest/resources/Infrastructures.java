@@ -45,7 +45,7 @@ public class Infrastructures extends EJBResource<InfrastructuresLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) { 
         check ();
-        return back.getItem (id);
+        return back.getItem (id, getUser ());
     }
     
     @POST

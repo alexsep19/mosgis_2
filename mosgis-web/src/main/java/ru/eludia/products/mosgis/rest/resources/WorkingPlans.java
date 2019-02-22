@@ -51,7 +51,7 @@ public class WorkingPlans extends EJBResource <WorkingPlanLocal> {
     @Path("{id}") 
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) { 
-        final JsonObject item = back.getItem (id);
+        final JsonObject item = back.getItem (id, getUser ());
         return item;
     }
 

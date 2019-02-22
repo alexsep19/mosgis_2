@@ -106,7 +106,7 @@ public class InsuranceProductImpl extends BaseCRUD<InsuranceProduct> implements 
     });}
 
     @Override
-    public JsonObject getItem (String id) {return fetchData ((db, job) -> {
+    public JsonObject getItem (String id, User user) {return fetchData ((db, job) -> {
 
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
             .get (InsuranceProduct.class, id, "*")

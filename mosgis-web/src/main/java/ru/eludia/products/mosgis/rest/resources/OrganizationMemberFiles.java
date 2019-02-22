@@ -57,7 +57,7 @@ public class OrganizationMemberFiles extends EJBResource <OrganizationMemberFile
     @Path("{id}/download")
     @Produces(APPLICATION_OCTET_STREAM)
     public Response download (@PathParam ("id") String id) {
-        JsonObject item = back.getItem (id);
+        JsonObject item = back.getItem (id, getUser ());
         return createFileDownloadResponse (id, item.getString ("label"), item.getInt ("len"));
     }
 

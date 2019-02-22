@@ -149,7 +149,7 @@ public class VoteInitiators extends EJBResource<VoteInitiatorsLocal> {
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject doUpdate (@PathParam ("id") String id, JsonObject p) {
-        final JsonObject item = back.getItem (id);
+        final JsonObject item = back.getItem (id, getUser ());
         checkMod (item);
         return back.doUpdate (id, p, getUser ());
     }
@@ -158,7 +158,7 @@ public class VoteInitiators extends EJBResource<VoteInitiatorsLocal> {
     @Path("{id}/delete") 
     @Produces (APPLICATION_JSON)
     public JsonObject doDelete (@PathParam ("id") String id) { 
-        final JsonObject item = back.getItem (id);
+        final JsonObject item = back.getItem (id, getUser ());
         checkMod (item);
         return back.doDelete (id, getUser ());
     }
@@ -167,7 +167,7 @@ public class VoteInitiators extends EJBResource<VoteInitiatorsLocal> {
     @Path("{id}/undelete") 
     @Produces (APPLICATION_JSON)
     public JsonObject doUndelete (@PathParam ("id") String id) { 
-        final JsonObject item = back.getItem (id);
+        final JsonObject item = back.getItem (id, getUser ());
         checkMod (item);
         return back.doUndelete (id, getUser ());
     }
@@ -176,7 +176,7 @@ public class VoteInitiators extends EJBResource<VoteInitiatorsLocal> {
     @Path("{id}") 
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) { 
-        final JsonObject item = back.getItem (id);
+        final JsonObject item = back.getItem (id, getUser ());
         checkGet (item);
         return item;
     }
@@ -186,7 +186,7 @@ public class VoteInitiators extends EJBResource<VoteInitiatorsLocal> {
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
-        final JsonObject item = back.getItem (id);
+        final JsonObject item = back.getItem (id, getUser ());
         checkGet (item);
         return back.getLog (id, p, getUser ());
     }

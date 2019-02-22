@@ -163,7 +163,7 @@ public class VocOrganizationProposalsImpl extends BaseCRUD<VocOrganizationPropos
     }
 
     @Override
-    public JsonObject getItem (String id) {
+    public JsonObject getItem (String id, User user) {
 
         JsonObjectBuilder jb = Json.createObjectBuilder ();
 

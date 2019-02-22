@@ -142,7 +142,7 @@ public class PublicPropertyContractDocsImpl extends BaseCRUD<PublicPropertyContr
     });}
 
     @Override
-    public JsonObject getItem (String id) {
+    public JsonObject getItem (String id, User user) {
 
         try (DB db = ModelHolder.getModel ().getDb ()) {            
             return db.getJsonObject (ModelHolder.getModel ().get (getTable (), id, "*"));

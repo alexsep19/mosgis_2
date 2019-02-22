@@ -15,7 +15,7 @@ import ru.eludia.products.mosgis.rest.api.WorkingListLocal;
 public class WorkingLists extends EJBResource <WorkingListLocal> {
     
     private JsonObject getData (String id) {
-        return back.getItem (id);
+        return back.getItem (id, getUser ());
     }
     
     private String getUserOrg () {
@@ -85,7 +85,7 @@ public class WorkingLists extends EJBResource <WorkingListLocal> {
     @Path("{id}") 
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) { 
-        final JsonObject item = back.getItem (id);
+        final JsonObject item = back.getItem (id, getUser ());
         return item;
     }
     
@@ -94,7 +94,7 @@ public class WorkingLists extends EJBResource <WorkingListLocal> {
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
-        final JsonObject item = back.getItem (id);
+        final JsonObject item = back.getItem (id, getUser ());
         if (!securityContext.isUserInRole ("admin")) checkOrg (item);
         return back.getLog (id, p, getUser ());
     }

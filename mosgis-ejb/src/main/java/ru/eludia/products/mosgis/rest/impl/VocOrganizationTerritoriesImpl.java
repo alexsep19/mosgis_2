@@ -18,7 +18,7 @@ import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 public class VocOrganizationTerritoriesImpl extends BaseCRUD<VocOrganizationTerritory> implements VocOrganizationTerritoriesLocal {
 
     @Override
-    public JsonObject getItem(String id) {
+    public JsonObject getItem(String id, User user) {
         throw new UnsupportedOperationException("Not supported yet.");
     }    
     

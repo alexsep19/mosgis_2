@@ -6,7 +6,7 @@ import ru.eludia.products.mosgis.rest.User;
 public interface CRUDBackend {
     
     JsonObject select     (JsonObject p, User user);
-    JsonObject getItem    (String id);
+    JsonObject getItem    (String id, User user);
     JsonObject doCreate   (JsonObject p, User user);
     JsonObject doUpdate   (String id, JsonObject p, User user);
     JsonObject doDelete   (String id, User user);

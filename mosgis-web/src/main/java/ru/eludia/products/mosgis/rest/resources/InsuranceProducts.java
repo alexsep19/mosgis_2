@@ -21,7 +21,7 @@ import ru.eludia.products.mosgis.rest.api.InsuranceProductLocal;
 public class InsuranceProducts extends EJBResource <InsuranceProductLocal> {
     
     private JsonObject getInnerItem (String id) {
-        final JsonObject data = back.getItem (id);        
+        final JsonObject data = back.getItem (id, getUser ());        
         final JsonObject item = data.getJsonObject ("item");
         if (item == null) throw new InternalServerErrorException ("Wrong data from back.getItem (" + id + "), no item: " + data);
         return item;
@@ -119,7 +119,7 @@ public class InsuranceProducts extends EJBResource <InsuranceProductLocal> {
     @Path("{id}") 
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) { 
-        final JsonObject item = back.getItem (id);
+        final JsonObject item = back.getItem (id, getUser ());
         if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
         return item;
     }
@@ -129,7 +129,7 @@ public class InsuranceProducts extends EJBResource <InsuranceProductLocal> {
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
-        final JsonObject item = back.getItem (id);
+        final JsonObject item = back.getItem (id, getUser ());
         if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
         return back.getLog (id, p, getUser ());
     }
@@ -138,7 +138,7 @@ public class InsuranceProducts extends EJBResource <InsuranceProductLocal> {
     @Path("{id}/download") 
     @Produces(APPLICATION_OCTET_STREAM)
     public Response download (@PathParam ("id") String id) {
-        JsonObject item = back.getItem (id).getJsonObject ("item");
+        JsonObject item = back.getItem (id, getUser ()).getJsonObject ("item");
         if (!securityContext.isUserInRole ("admin")) checkOrg (item);
         return createFileDownloadResponse (id, item.getString ("name"), item.getInt ("len"));
     }

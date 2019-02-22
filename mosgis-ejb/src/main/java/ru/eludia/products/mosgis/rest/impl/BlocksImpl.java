@@ -32,7 +32,7 @@ import ru.eludia.products.mosgis.web.base.Search;
 public class BlocksImpl extends BasePassport<Block> implements BlocksLocal {
     
     @Override
-    public JsonObject getItem (String id) {return fetchData ((db, job) -> {
+    public JsonObject getItem (String id, User user) {return fetchData ((db, job) -> {
         
         final Passport table = (Passport) getTable ();
 

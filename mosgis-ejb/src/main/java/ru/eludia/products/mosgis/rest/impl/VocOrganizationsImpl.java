@@ -226,7 +226,7 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
     }
 
     @Override
-    public JsonObject getItem (String id) {
+    public JsonObject getItem (String id, User user) {
 
         JsonObjectBuilder jb = Json.createObjectBuilder ();
         
@@ -355,7 +355,7 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
     });}
 
     @Override
-    public JsonObject doPatch(String id, JsonObject p, User user) {
+    public JsonObject doPatch (String id, JsonObject p, User user) {
 
         JsonObject data = p.getJsonObject("data");
 
@@ -372,7 +372,7 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
             throw new InternalServerErrorException(ex);
         }
 
-        return this.getItem (id);
+        return this.getItem (id, user);
     }
 
     @Override

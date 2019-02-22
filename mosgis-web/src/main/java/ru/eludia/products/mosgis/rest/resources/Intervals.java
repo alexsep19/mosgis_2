@@ -103,7 +103,7 @@ public class Intervals extends EJBResource <IntervalLocal> {
     @Path("{id}") 
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) { 
-        final JsonObject item = back.getItem (id);
+        final JsonObject item = back.getItem (id, getUser ());
 //        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
         return item;
     }

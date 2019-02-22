@@ -159,7 +159,7 @@ public class InXlFilesImpl extends BaseCRUD<InXlFile> implements InXlFilesLocal 
     });}    
 
     @Override
-    public JsonObject getItem (String id) {
+    public JsonObject getItem (String id, User user) {
 
         try (DB db = ModelHolder.getModel ().getDb ()) {            
             return db.getJsonObject (ModelHolder.getModel ().get (getTable (), id, "*"));

@@ -90,7 +90,7 @@ public class CheckPlansImpl extends BaseCRUD<CheckPlan> implements CheckPlansLoc
     });}
 
     @Override
-    public JsonObject getItem (String id) {return fetchData ((db, job) -> {
+    public JsonObject getItem (String id, User user) {return fetchData ((db, job) -> {
         
         JsonObject item = db.getJsonObject(ModelHolder.getModel ().get (CheckPlan.class, id, "AS root", "*"));
         
