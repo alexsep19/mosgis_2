@@ -174,7 +174,7 @@ define ([], function () {
 
         var it = data.item
 
-        data.active_tab = localStorage.getItem ('metering_device_common.active_tab') || (it.uuid_premise ? 'metering_device_common_accounts' : 'metering_device_common_log')
+        data.active_tab = localStorage.getItem ('metering_device_common.active_tab') || 'metering_device_common_metering_values'
 
         data.__read_only = 1
                         
