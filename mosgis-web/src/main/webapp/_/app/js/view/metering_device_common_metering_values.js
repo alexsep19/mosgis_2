@@ -25,6 +25,7 @@ define ([], function () {
             show: {
                 toolbar: true,
                 toolbarDelete: it._can.edit,
+                toolbarEdit: it._can.edit,
                 toolbarInput: false,
                 footer: true,
             },     
@@ -34,7 +35,7 @@ define ([], function () {
                 {field: 'datevalue', caption: 'Дата', size: 18, render: _dt},
 
                 {field: 'id_type', caption: 'Тип', size: 18},
-                {field: 'code_vc_nsi_2', caption: 'Ресурс', size: 18, off: it.mask_vc_nsi_2 < 17},
+                {field: 'code_vc_nsi_2', caption: 'Ресурс', size: 18, off: it.mask_vc_nsi_2 < 17, voc: data.resources},
 
                 {field: 'meteringvaluet1', caption: it.tariffcount > 1 ? 'Показание T1' : 'Показание', size: 50, render: 'float:7'},
                 {field: 'meteringvaluet2', caption: 'Показание T2', size: 50, render: 'float:7', off: it.tariffcount < 2},

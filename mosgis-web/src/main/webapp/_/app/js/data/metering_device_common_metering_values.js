@@ -1,5 +1,24 @@
 define ([], function () {
 
+    $_DO.create_metering_device_common_metering_values = function (e) {
+
+        $_SESSION.set ('record', {
+            uuid_meter: $_REQUEST.id,
+            code_vc_nsi_2: e.target.split ('_') [1]
+        })
+
+        use.block ('metering_value_popup')
+
+    }
+
+    $_DO.edit_metering_device_common_metering_values = function (e) {
+
+        $_SESSION.set ('record', w2ui ['metering_device_common_metering_values_grid'].get (e.recid))
+
+        use.block ('metering_value_popup')
+
+    }
+
     return function (done) {        
 
         var layout = w2ui ['passport_layout']
