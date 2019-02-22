@@ -18,6 +18,7 @@ public class Houses extends EJBResource <HousesLocal> {
     private JsonObject selectWrapper (JsonObject p) {
         
         if (securityContext.isUserInRole ("admin")    ||
+            securityContext.isUserInRole ("nsi_20_2") ||
             securityContext.isUserInRole ("nsi_20_4") ||
             securityContext.isUserInRole ("nsi_20_7"))
             return back.selectAll(p);
@@ -48,6 +49,9 @@ public class Houses extends EJBResource <HousesLocal> {
             securityContext.isUserInRole ("nsi_20_4") ||
             securityContext.isUserInRole ("nsi_20_7"))
             return true;
+        
+        if (securityContext.isUserInRole ("nsi_20_2"))
+            return item.containsKey ("srca") && getUserOrg ().equals (item.getJsonObject ("srca").getString ("org.uuid"));
         
         if (securityContext.isUserInRole ("nsi_20_1")  ||
             securityContext.isUserInRole ("nsi_20_19") ||

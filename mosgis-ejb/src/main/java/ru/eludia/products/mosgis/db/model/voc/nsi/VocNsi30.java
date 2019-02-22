@@ -22,6 +22,7 @@ public class VocNsi30 extends Table {
     public VocNsi30 () {    
         super ("vc_nsi_30", "Характеристика помещения");
         cols  (c.class);        
+        pk    (c.GUID);
     }
 
 }

@@ -11,7 +11,9 @@ import ru.eludia.base.model.def.Bool;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.incoming.InFias;
 import ru.eludia.products.mosgis.db.model.tables.ActualCaChObject;
+import ru.eludia.products.mosgis.db.model.tables.ActualSupplyResourceContractObject;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 
 public class VocBuilding extends Table {
     
@@ -101,6 +103,20 @@ public class VocBuilding extends Table {
         );
 
         if (caCh != null) jb.add ("cach", caCh);
+        
+    }
+    
+    public static void addSRCa (DB db, JsonObjectBuilder jb, Object fiashouseguid) throws SQLException {
+        
+        JsonObject srCa = db.getJsonObject (db.getModel ()
+            .select     (ActualSupplyResourceContractObject.class, "AS root", "*")
+            .toOne      (VocOrganization.class, "AS org", "uuid", "label").on ()
+            .toMaybeOne (SupplyResourceContract.class, "AS ctr", "uuid", "contractnumber", "signingdate").on ()
+            .where      ("fiashouseguid", fiashouseguid)
+            .orderBy    ("root.id_ctr_status")
+        );
+        
+        if (srCa != null) jb.add ("srca", srCa);
         
     }
 
