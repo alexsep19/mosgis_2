@@ -22,6 +22,7 @@ public class VocNsi2 extends Table {
     public VocNsi2 () {    
         super ("vc_nsi_2", "Вид коммунального ресурса");
         cols  (c.class);        
+        pk    (c.GUID);
     }
 
 }

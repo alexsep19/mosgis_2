@@ -22,6 +22,7 @@ public class VocNsi27 extends Table {
     public VocNsi27 () {    
         super ("vc_nsi_27", "Тип прибора учета");
         cols  (c.class);        
+        pk    (c.GUID);
     }
 
 }
