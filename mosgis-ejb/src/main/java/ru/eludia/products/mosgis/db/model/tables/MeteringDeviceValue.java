@@ -25,12 +25,15 @@ public class MeteringDeviceValue extends EnTable {
         ID_CTR_STATUS          (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения mosgis"),
         ID_CTR_STATUS_GIS      (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения ГИС ЖКХ"),
 
+        ID_LOG                 (MeteringDeviceValueLog.class,                   "Последнее событие редактирования"),
+
         ;
 
         @Override public Col getCol () {return col;} private Col col; private c (Type type, Object... p) {col = new Col (this, type, p);} private c (Class c,   Object... p) {col = new Ref (this, c, p);}        
         @Override
         public boolean isLoggable () {
             switch (this) {
+                case ID_LOG:
                 case UUID_METER:
                 case ID_TYPE:
                 case CODE_VC_NSI_2:

@@ -7,7 +7,7 @@ public class MeteringDeviceLog extends GisWsLogTable {
 
     public MeteringDeviceLog () {
 
-        super ("tb_meters__log", "История редактирования лицевых счетов", MeteringDevice.class
+        super ("tb_meters__log", "История редактирования приборов учёта", MeteringDevice.class
             , EnTable.c.class
             , MeteringDevice.c.class
         );
