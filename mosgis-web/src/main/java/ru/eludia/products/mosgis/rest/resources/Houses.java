@@ -120,7 +120,7 @@ public class Houses extends EJBResource <HousesLocal> {
     @Path("{id}") 
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) { 
-        final JsonObject item = back.getItem (id);
+        final JsonObject item = back.getItem (id, getUser ());
         checkGet (item);
         return item;
     }
@@ -417,7 +417,7 @@ public class Houses extends EJBResource <HousesLocal> {
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
-        final JsonObject item = back.getItem (id);
+        final JsonObject item = back.getItem (id, getUser ());
         checkGet (item);
         return back.getLog (id, p, getUser ());
     }
