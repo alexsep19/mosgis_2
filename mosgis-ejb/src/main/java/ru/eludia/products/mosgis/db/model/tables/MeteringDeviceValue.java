@@ -6,31 +6,35 @@ import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceValueType;
 
 public class MeteringDeviceValue extends EnTable {
 
     public enum c implements EnColEnum {
 
         UUID_METER             (MeteringDevice.class,                           "Прибор учёта"),
+        ID_TYPE                (VocMeteringDeviceValueType.class,               "Тип показания"),        
+        CODE_VC_NSI_2          (Type.STRING,  20,                               "Коммунальный ресурс (НСИ 2)"),
+
+        DATEVALUE              (Type.DATE,                                      "Дата снятия показания"),
 
         METERINGVALUET1        (Type.NUMERIC, 22, 7, null,                      "Объем по тарифу T1"),
         METERINGVALUET2        (Type.NUMERIC, 22, 7, null,                      "Объем по тарифу T2"),
         METERINGVALUET3        (Type.NUMERIC, 22, 7, null,                      "Объем по тарифу T3"),
 
-        DATEVALUE              (Type.DATE,                                      "Дата снятия показания"),
-        CODE_VC_NSI_2          (Type.STRING,  20,                               "Коммунальный ресурс (НСИ 2)"),
-
         ID_CTR_STATUS          (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения mosgis"),
         ID_CTR_STATUS_GIS      (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения ГИС ЖКХ"),
-        
+
         ;
 
         @Override public Col getCol () {return col;} private Col col; private c (Type type, Object... p) {col = new Col (this, type, p);} private c (Class c,   Object... p) {col = new Ref (this, c, p);}        
         @Override
         public boolean isLoggable () {
             switch (this) {
-//                case ID_LOG:
-//                    return false;
+                case UUID_METER:
+                case ID_TYPE:
+                case CODE_VC_NSI_2:
+                    return false;
                 default:
                     return true;
             }
