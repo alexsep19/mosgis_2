@@ -330,6 +330,7 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
             final String fiashouseguid = item.getString ("fiashouseguid");
             
             VocBuilding.addCaCh (db, jb, fiashouseguid);
+            VocBuilding.addSRCa (db, jb, fiashouseguid);
             
             db.addJsonArrays (jb,
                 m
