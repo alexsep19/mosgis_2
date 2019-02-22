@@ -43,12 +43,6 @@ define ([], function () {
         if (layout) layout.unlock ('main')
 
         var data = $('body').data ('data')
-
-        var it = data.item
-                
-        add_vocabularies (data, {
-            resources: 1,
-        })        
         
         done (data)
 

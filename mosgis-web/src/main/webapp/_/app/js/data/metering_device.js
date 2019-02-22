@@ -121,6 +121,10 @@ define ([], function () {
 
             if (data.resources.length == 1) data.resources [0].label = 'Внести показания'            
             
+            add_vocabularies (data, {
+                resources: 1,
+            })        
+
             $('body').data ('data', data)
     
             done (data)
