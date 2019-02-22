@@ -29,6 +29,7 @@ define ([], function () {
                 vc_nsi_2: 1,
                 vc_nsi_16: 1,
                 vc_meter_file_types: 1,
+                vc_meter_value_types: 1,
             })
             
             data.accs = dia2w2uiRecords (data.accs)
@@ -98,6 +99,27 @@ define ([], function () {
                 it._can.update = it._can.edit
 
             }            
+            
+            data.resources = []
+
+            if (it._can.edit) {
+
+                var m = 1
+
+                for (var i = 1; i < 6; i ++) {
+
+                    if (m & it.mask_vc_nsi_2) data.resources.push ({
+                        id: i,
+                        label: data.vc_nsi_2 [m]
+                    })
+
+                    m = m << 1
+
+                }
+
+            }    
+
+            if (data.resources.length == 1) data.resources [0].label = 'Внести показания'            
             
             $('body').data ('data', data)
     

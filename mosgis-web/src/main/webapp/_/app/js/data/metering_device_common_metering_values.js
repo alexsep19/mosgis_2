@@ -3,7 +3,8 @@ define ([], function () {
     $_DO.create_metering_device_common_metering_values = function (e) {
 
         $_SESSION.set ('record', {
-            uuid_meter: $_REQUEST.id,
+            id_type: 1,
+            datevalue: new Date ().toJSON ().slice (0, 10),
             code_vc_nsi_2: e.target.split ('_') [1]
         })
 
@@ -28,28 +29,7 @@ define ([], function () {
         var data = $('body').data ('data')
 
         var it = data.item
-        
-        data.resources = []
                 
-        if (it._can.edit) {
-        
-            var m = 1
-
-            for (var i = 1; i < 6; i ++) {
-                
-                if (m & it.mask_vc_nsi_2) data.resources.push ({
-                    id: i,
-                    label: data.vc_nsi_2 [m]
-                })
-
-                m = m << 1
-
-            }
-
-        }    
-        
-        if (data.resources.length == 1) data.resources [0].label = 'Внести показания'
-        
         add_vocabularies (data, {
             resources: 1,
         })        

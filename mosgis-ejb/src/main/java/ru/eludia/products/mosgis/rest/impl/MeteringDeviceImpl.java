@@ -28,6 +28,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceFileType;
 import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceInstallationPlace;
 import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceType;
+import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceValueType;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi16;
@@ -155,6 +156,7 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
         VocGisStatus.addTo (job);
         VocAction.addTo (job);
         VocMeteringDeviceType.addTo (job);
+        VocMeteringDeviceValueType.addTo (job);
         VocMeteringDeviceInstallationPlace.addTo (job, item.getInt (MeteringDevice.c.MASK_VC_NSI_2.lc ()) == Nsi2.i.POWER.getId ());
         VocMeteringDeviceFileType.addTo          (job, item.getInt (MeteringDevice.c.ID_TYPE.lc ())       == VocMeteringDeviceType.i.COLLECTIVE.getId ());
 
