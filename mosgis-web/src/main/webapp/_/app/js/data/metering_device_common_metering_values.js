@@ -19,6 +19,22 @@ define ([], function () {
         use.block ('metering_value_popup')
 
     }
+    
+    $_DO.delete_metering_device_common_metering_values = function (e) {
+
+        if (!e.force) return
+
+        $('.w2ui-message').remove ()
+
+        e.preventDefault ()
+
+        var grid = w2ui ['metering_device_common_metering_values_grid']
+
+        query ({type: 'metering_device_values', id: grid.getSelection () [0], action: 'delete'}, {}, function (d) {
+            grid.reload (grid.refresh)
+        })
+
+    }
 
     return function (done) {        
 

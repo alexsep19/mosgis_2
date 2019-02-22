@@ -8,6 +8,8 @@ define ([], function () {
 
             name: 'metering_device_common_metering_values_grid',
             
+            multiSelect: false,
+            
             toolbar: {
             
                 items: data.resources.items.map (function (i) {
@@ -34,7 +36,7 @@ define ([], function () {
 
                 {field: 'datevalue', caption: 'Дата', size: 18, render: _dt},
 
-                {field: 'id_type', caption: 'Тип', size: 18},
+                {field: 'id_type', caption: 'Тип', size: 18, voc: data.vc_meter_value_types},
                 {field: 'code_vc_nsi_2', caption: 'Ресурс', size: 18, off: it.mask_vc_nsi_2 < 17, voc: data.resources},
 
                 {field: 'meteringvaluet1', caption: it.tariffcount > 1 ? 'Показание T1' : 'Показание', size: 50, render: 'float:7'},

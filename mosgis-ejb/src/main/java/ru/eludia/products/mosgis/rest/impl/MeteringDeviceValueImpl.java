@@ -5,6 +5,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.json.JsonObject;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.MeteringDeviceValue;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -83,6 +84,7 @@ public class MeteringDeviceValueImpl extends BaseCRUD<MeteringDeviceValue> imple
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
 //            .toMaybeOne (MeteringDeviceValueLog.class               ).on ()
 //            .toMaybeOne (OutSoap.class,       "err_text").on ()
+            .where (EnTable.c.IS_DELETED, 0)
             .orderBy ("root.datevalue DESC")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
