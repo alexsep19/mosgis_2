@@ -266,9 +266,14 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
     }
 
     private static final int NSI_VOC_CONDITION = 24;
+    
+    @Override
+    public JsonObject getItem(String id) {
+        throw new UnsupportedOperationException("Not supported.");
+    }
 
     @Override
-    public JsonObject getItem (String id) {
+    public JsonObject getItem (String id, User user) {
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();
         
@@ -330,7 +335,7 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
             final String fiashouseguid = item.getString ("fiashouseguid");
             
             VocBuilding.addCaCh (db, jb, fiashouseguid);
-            VocBuilding.addSRCa (db, jb, fiashouseguid);
+            VocBuilding.addSRCa (db, jb, fiashouseguid, user.getUuidOrg ());
             
             db.addJsonArrays (jb,
                 m

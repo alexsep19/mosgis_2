@@ -106,13 +106,14 @@ public class VocBuilding extends Table {
         
     }
     
-    public static void addSRCa (DB db, JsonObjectBuilder jb, Object fiashouseguid) throws SQLException {
+    public static void addSRCa (DB db, JsonObjectBuilder jb, Object fiashouseguid, Object userOrgUuid) throws SQLException {
         
         JsonObject srCa = db.getJsonObject (db.getModel ()
             .select     (ActualSupplyResourceContractObject.class, "AS root", "*")
             .toOne      (VocOrganization.class, "AS org", "uuid", "label").on ()
             .toMaybeOne (SupplyResourceContract.class, "AS ctr", "uuid", "contractnumber", "signingdate").on ()
             .where      ("fiashouseguid", fiashouseguid)
+            .and        ("uuid_org", userOrgUuid)
             .orderBy    ("root.id_ctr_status")
         );
         

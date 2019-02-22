@@ -15,7 +15,7 @@ public class ActualSupplyResourceContractObject extends View {
         
         UUID                      (Type.UUID,     null,           "Ключ"),
         UUID_SR_CTR               (SupplyResourceContract.class,  "Ссылка на договор"),
-        FIASHOUSEGUID             (VocBuilding.class,                   "Глобальный уникальный идентификатор дома по ФИАС"),
+        FIASHOUSEGUID             (VocBuilding.class,             "Глобальный уникальный идентификатор дома по ФИАС"),
         UUID_ORG                  (VocOrganization.class,         "Исполнитель/Организация"),
         ID_CTR_STATUS             (VocGisStatus.class,            "Статус объекта с точки зрения mosgis")
         
