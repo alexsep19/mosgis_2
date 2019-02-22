@@ -46,16 +46,33 @@ public class MeteringDeviceValue extends EnTable {
     }
 
     public MeteringDeviceValue () {
+        
         super  ("tb_meter_values", "Показания приборов учёта");
         cols   (c.class);
-//        key    ("fiashouseguid", "fiashouseguid");
-/*        
-        trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
+        key    ("uuid_meter", "uuid_meter");
 
-            + "SELECT CODE_VC_NSI_27 INTO :NEW.CODE_VC_NSI_27 FROM vc_meter_types WHERE id = :NEW.ID_TYPE; "
-                    
+        trigger ("BEFORE INSERT OR UPDATE", ""
+                
+            + "DECLARE" 
+            + " PRAGMA AUTONOMOUS_TRANSACTION; "
+            + "BEGIN "
+                
+            + "IF :NEW.is_deleted = 0 AND :NEW.id_type = " + VocMeteringDeviceValueType.i.BASE + " THEN "
+            + " FOR i IN ("
+                + "SELECT "
+                + " o.uuid "
+                + "FROM "
+                + " tb_meter_values o "
+                + "WHERE o.is_deleted = 0 "
+                + " AND o.id_type = :NEW.id_type "
+                + " AND o.code_vc_nsi_2 = :NEW.code_vc_nsi_2 "
+                + ") LOOP"
+            + " raise_application_error (-20000, 'Базовые показания для данного прибора учёта уже введены. Операция отменена.'); "
+            + " END LOOP; "
+            + "END IF; "
+
         + "END;");
-*/        
+
     }
 
 }

@@ -56,6 +56,11 @@ public class VocMeteringDeviceValueType extends Table {
             this.id = id;
             this.label = label;                    
         }
+
+        @Override
+        public String toString () {
+            return Integer.toString (id);
+        }
         
         private JsonObject toJsonObject () {
 
