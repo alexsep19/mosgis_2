@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi236;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;

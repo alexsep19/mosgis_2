@@ -32,7 +32,7 @@ import ru.eludia.products.mosgis.db.model.tables.CharterLog;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.CharterObjectService;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
-import ru.eludia.products.mosgis.db.model.tables.VocNsi3;
+import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi3;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;

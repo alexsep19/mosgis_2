@@ -1,4 +1,4 @@
-package ru.eludia.products.mosgis.db.model.tables;
+package ru.eludia.products.mosgis.db.model.voc.nsi;
 
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;

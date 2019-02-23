@@ -1,5 +1,8 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi40;
+import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi33;
+import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi38;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;

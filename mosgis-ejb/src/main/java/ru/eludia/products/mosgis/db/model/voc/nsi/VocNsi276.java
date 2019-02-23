@@ -1,4 +1,4 @@
-package ru.eludia.products.mosgis.db.model.tables;
+package ru.eludia.products.mosgis.db.model.voc.nsi;
 
 import java.sql.SQLException;
 import javax.json.JsonObjectBuilder;

@@ -47,7 +47,7 @@ import ru.eludia.products.mosgis.db.model.tables.Block;
 import ru.eludia.products.mosgis.db.model.tables.LivingRoom;
 import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
-import ru.eludia.products.mosgis.db.model.tables.VocNsi236;
+import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi236;
 import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiList;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementFieldType;

@@ -4,8 +4,8 @@ import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
-import ru.eludia.products.mosgis.db.model.tables.VocNsi3;
-import ru.eludia.products.mosgis.db.model.tables.VocNsi33;
+import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi3;
+import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi33;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 
 public class VocNsi33Ref3 extends Table {

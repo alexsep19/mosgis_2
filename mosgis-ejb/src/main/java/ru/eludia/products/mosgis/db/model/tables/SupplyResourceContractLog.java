@@ -1,5 +1,8 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi3;
+import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi276;
+import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi239;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;

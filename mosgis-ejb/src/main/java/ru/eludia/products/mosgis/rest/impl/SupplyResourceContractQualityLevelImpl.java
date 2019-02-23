@@ -13,7 +13,7 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractOtherQualityLevel;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractQualityLevel;
-import ru.eludia.products.mosgis.db.model.tables.VocNsi276;
+import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi276;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
