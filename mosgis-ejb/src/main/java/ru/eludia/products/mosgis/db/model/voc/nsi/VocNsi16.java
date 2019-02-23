@@ -23,6 +23,7 @@ public class VocNsi16 extends Table {
     public VocNsi16 () {
         super ("vc_nsi_16", "Межповерочный интервал");
         cols  (c.class);        
+        pk (c.GUID);
     }
 
 }
