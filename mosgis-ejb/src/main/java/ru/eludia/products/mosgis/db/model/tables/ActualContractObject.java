@@ -16,7 +16,8 @@ public class ActualContractObject extends View {
 
         return "SELECT "
             + " o.uuid"
-            + " , o.uuid_contract"
+            + " , uuid_contract"
+            + " , NULL uuid_charter"
             + " , o.fiashouseguid"
             + " , o.id_ctr_status_gis"
             + " , c.uuid_org"

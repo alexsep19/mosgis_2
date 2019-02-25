@@ -39,14 +39,16 @@ public class CharterObjectServicesImpl extends BaseCRUD<CharterObjectService> im
         ComplexSearch s = new ComplexSearch (p.getJsonArray ("search"));
         
         if (!s.getFilters ().containsKey ("uuid_charter_object")) throw new IllegalStateException ("uuid_charter_object filter is not set");
-        
-        final NsiTable nsiTable = NsiTable.getNsiTable (3);
-                
+                        
+        final NsiTable nsi2 = NsiTable.getNsiTable (2);
+        final NsiTable nsi3 = NsiTable.getNsiTable (3);
+
         Select select = db.getModel ()
             .select     (getTable (),              "AS root", "*", "uuid AS id")
             .toMaybeOne (CharterFile.class,        "AS proto", "label").on ()
             .toMaybeOne (AdditionalService.class,  "AS adds", "label").on ()
-            .toMaybeOne (nsiTable, nsiTable.getLabelField ().getfName () + " AS nsi_label").on ("(root.code_vc_nsi_3=vc_nsi_3.code AND vc_nsi_3.isactual=1)")
+            .toMaybeOne (nsi3, nsi3.getLabelField ().getfName () + " AS nsi_label").on ("(root.code_vc_nsi_3=vc_nsi_3.code AND vc_nsi_3.isactual=1)")
+            .toMaybeOne (nsi2, "code AS code_vc_nsi_2").on ("(vc_nsi_2.guid=vc_nsi_3.f_1587117ecc)")
             .where      ("is_deleted", 0)
             .orderBy    ("\"nsi_label\"")
             .orderBy    ("adds.label")

@@ -12,6 +12,7 @@ import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.incoming.InFias;
 import ru.eludia.products.mosgis.db.model.tables.ActualCaChObject;
 import ru.eludia.products.mosgis.db.model.tables.ActualSupplyResourceContractObject;
+import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 
@@ -97,6 +98,7 @@ public class VocBuilding extends Table {
             .select (ActualCaChObject.class, "AS root", "uuid", "id_ctr_status_gis", "is_own")
             .toOne (VocOrganization.class, "AS org", "uuid", "label").on ()
             .toMaybeOne (Contract.class, "AS ctr", "uuid", "docnum", "signingdate").on ()
+            .toMaybeOne (Charter.class, "AS ca", "uuid").on ()
             .where ("fiashouseguid", fiashouseguid)
             .orderBy ("root.is_own DESC")
             .orderBy ("root.id_ctr_status_gis")

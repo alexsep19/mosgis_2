@@ -17,6 +17,7 @@ public class ActualCharterObject extends View {
         return "SELECT "
             + " o.uuid"
             + " , NULL uuid_contract"
+            + " , uuid_charter"
             + " , o.fiashouseguid"
             + " , o.id_ctr_status_gis"
             + " , c.uuid_org"

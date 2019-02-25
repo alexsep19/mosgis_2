@@ -15,6 +15,7 @@ public class ActualCaChObject extends View {
         
         UUID                      (Type.UUID,     null,           "Ключ"),        
         UUID_CONTRACT             (Contract.class,                "Ссылка на договор (NULL для объекта устава)"),
+        UUID_CHARTER              (Charter.class,                 "Ссылка на устав (NULL для объекта договора)"),
         FIASHOUSEGUID             (House.class,                   "Глобальный уникальный идентификатор дома по ФИАС"),
         UUID_ORG                  (VocOrganization.class,         "Исполнитель/Организация"),
         ID_CTR_STATUS_GIS         (VocGisStatus.class,            "Статус объекта с точки зрения ГИС ЖКХ"),
@@ -40,9 +41,9 @@ public class ActualCaChObject extends View {
     public final String getSQL () {
 
         return ""
-            + "SELECT uuid, fiashouseguid, uuid_org, id_ctr_status_gis, uuid_contract, is_own FROM " + getName (ActualContractObject.class)
+            + "SELECT uuid, fiashouseguid, uuid_org, id_ctr_status_gis, uuid_contract, uuid_charter, is_own FROM " + getName (ActualContractObject.class)
             + " UNION "
-            + "SELECT uuid, fiashouseguid, uuid_org, id_ctr_status_gis, uuid_contract, is_own FROM " + getName (ActualCharterObject.class)
+            + "SELECT uuid, fiashouseguid, uuid_org, id_ctr_status_gis, uuid_contract, uuid_charter, is_own FROM " + getName (ActualCharterObject.class)
         ;
 
     }
