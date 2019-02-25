@@ -21,6 +21,7 @@ import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.MeteringDevice;
 import ru.eludia.products.mosgis.db.model.tables.MeteringDeviceAccount;
 import ru.eludia.products.mosgis.db.model.tables.MeteringDeviceLog;
+import ru.eludia.products.mosgis.db.model.tables.MeteringDeviceMeteringDevice;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
@@ -134,21 +135,31 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
             .toMaybeOne (OutSoap.class, "err_text").on ("log.uuid_out_soap=out_soap.uuid")
             .toOne (VocOrganization.class, "AS org", "label").on ("root.uuid_org=org.uuid")
         );
-        
+
         job.add ("item", item);
-        
+
         db.addJsonArrays (job, 
-                
+
             Nsi16.getVocSelect (),
-           
+
             m
                 .select (MeteringDeviceAccount.class, "AS accs")
                 .where ("uuid", id)
                 .toOne (Account.class, "AS acc", "*").on ()
                 .toMaybeOne (VocOrganization.class, "AS org", "label").on ("acc.uuid_org_customer=org.uuid")
                 .toMaybeOne (VocPerson.class,       "AS ind", "label").on ("acc.uuid_person_customer=ind.uuid")
-                .orderBy ("acc.accountnumber")
-                
+                .orderBy ("acc.accountnumber"),
+
+            m
+                .select (MeteringDeviceMeteringDevice.class, "AS meters")
+                .where ("uuid", id)
+                .toOne (MeteringDevice.class, "AS meter"
+                    , MeteringDevice.c.METERINGDEVICENUMBER.lc ()
+                    , MeteringDevice.c.METERINGDEVICESTAMP.lc ()
+                    , MeteringDevice.c.METERINGDEVICEMODEL.lc ()
+                ).on ("meters.uuid_meter=meter.uuid")
+                .orderBy ("meter.meteringdevicenumber")
+
         );
 
         Nsi2.i.addMeteringTo (job);
@@ -205,18 +216,45 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
             .where ("uuid_account", ids)
         );
 
-/*        
-        db.dupsert (
-            MeteringDeviceAccount.class,
-            HASH ("uuid", id),
-            p.getJsonObject ("data").getJsonArray ("uuid_account").stream ().map ((t) -> {return HASH ("uuid_account", ((JsonString) t).getString ());}).collect (Collectors.toList ()),
-            "uuid_account"
-        );
-*/
         logAction (db, user, id, VocAction.i.UPDATE);
 
     });}    
 
+    
+    @Override
+    public JsonObject doSetMeters (String id, JsonObject p, User user) {return doAction ((db) -> {
+
+        db.dupsert (
+            MeteringDeviceMeteringDevice.class,
+            HASH ("uuid", id),
+            p.getJsonObject ("data").getJsonArray ("uuid_account").stream ().map ((t) -> {return HASH ("uuid_account", ((JsonString) t).getString ());}).collect (Collectors.toList ()),
+            "uuid_account"
+        );
+
+        logAction (db, user, id, VocAction.i.UPDATE);
+
+    });}    
+    
+    @Override
+    public JsonObject doUnsetMeters (String id, JsonObject p, User user) {return doAction ((db) -> {
+        
+        Object [] ids = p
+            .getJsonObject ("data")
+            .getJsonArray ("uuid_meter")
+            .stream ()
+            .map ((t) -> ((JsonString) t).getString ())
+            .toArray ();
+        
+        db.delete (db.getModel ().select (MeteringDeviceMeteringDevice.class, "*")
+            .where ("uuid", id)
+            .where ("uuid_meter", ids)
+        );
+
+        logAction (db, user, id, VocAction.i.UPDATE);
+
+    });}    
+    
+    
 /*    
     @Override
     public JsonObject doApprove (String id, User user) {return doAction ((db) -> {

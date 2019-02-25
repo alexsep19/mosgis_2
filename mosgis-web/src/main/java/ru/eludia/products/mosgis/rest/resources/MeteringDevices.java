@@ -100,6 +100,26 @@ public class MeteringDevices extends EJBResource <MeteringDeviceLocal> {
 //        checkOrg (item);
         return back.doUnsetAccounts (id, p, getUser ());
     }
+
+    @POST
+    @Path("{id}/set_meters")
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject doSetMeters (@PathParam ("id") String id, JsonObject p) {
+//        final JsonObject item = getInnerItem (id);
+//        checkOrg (item);
+        return back.doSetMeters (id, p, getUser ());
+    }
+    
+    @POST
+    @Path("{id}/unset_meters")
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject doUnsetMeters (@PathParam ("id") String id, JsonObject p) {
+//        final JsonObject item = getInnerItem (id);
+//        checkOrg (item);
+        return back.doUnsetMeters (id, p, getUser ());
+    }
     
     @POST
     @Path("{id}/delete") 
