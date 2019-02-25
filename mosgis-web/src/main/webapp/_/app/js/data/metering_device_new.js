@@ -93,6 +93,34 @@ define ([], function () {
 
     }
     
+    function load_nsi2_by_srca_and_show_popup (data, done) {
+    
+        var srca = data.srca
+        
+        if (srca ['org.uuid'] != $_USER.uuid_org) srca = null
+        
+        if (!srca) die ('foo', 'Не найден объект договора для данного дома')
+        
+        query ({type: 'supply_resource_contract_object_subjects', id: null}, {limit: 10000, offset:0, data: {uuid_sr_ctr_obj: srca.uuid}}, function (d) {        
+
+            var mask = 0
+        
+            $.each (d.tb_sr_ctr_subj, function () {
+                mask |= [1 << (this.code_vc_nsi_2 - 1)]
+            })
+            
+            data.vc_nsi_2.items = data.vc_nsi_2.items.filter (function (i) {return i.id & mask})
+            
+            if (!data.vc_nsi_2.items.length) die ('foo', 'Ваша организация не поставляет в этот дом ни одного ресурса, для которого предусмотрена установка приборов учёта. Проверьте, пожалуйста, полностью ли оформлен ваш договор ресурсоснабжения.')
+            
+            data.record.mask_vc_nsi_2 = data.vc_nsi_2.items [0].id
+
+            done (data)
+        
+        })
+
+    }
+    
     function load_nsi2_by_cach_and_show_popup (data, done) {
         
         var cach = data.cach
@@ -115,7 +143,16 @@ define ([], function () {
                 
         if (data.types.length) data.record.id_type = data.types [0].id
         
-        load_nsi2_by_cach_and_show_popup (data, done)
+        if ($_USER.role.nsi_20_2) {
+        
+            load_nsi2_by_srca_and_show_popup (data, done)
+            
+        }
+        else {
+        
+            load_nsi2_by_cach_and_show_popup (data, done)
+            
+        }        
 
     }
 

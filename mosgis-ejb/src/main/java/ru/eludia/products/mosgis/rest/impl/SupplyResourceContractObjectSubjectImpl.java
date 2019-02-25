@@ -72,8 +72,13 @@ public class SupplyResourceContractObjectSubjectImpl extends BaseCRUD<SupplyReso
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
 
         final Model m = ModelHolder.getModel ();
+        
+        final NsiTable nsi2 = NsiTable.getNsiTable (2);
+        final NsiTable nsi3 = NsiTable.getNsiTable (3);
 
-        Select select = m.select (SupplyResourceContractSubject.class, "*", "uuid AS id")
+        Select select = m.select (SupplyResourceContractSubject.class, "AS tb_sr_ctr_subj", "*", "uuid AS id")
+            .toMaybeOne (nsi3).on ("(tb_sr_ctr_subj.code_vc_nsi_3=vc_nsi_3.code AND vc_nsi_3.isactual=1)")
+            .toMaybeOne (nsi2, "code AS code_vc_nsi_2").on ("(vc_nsi_2.guid=vc_nsi_3.f_1587117ecc)")
             .where("uuid_sr_ctr_obj", p.getJsonObject("data").getString("uuid_sr_ctr_obj"))
             .orderBy ("startsupplydate")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
