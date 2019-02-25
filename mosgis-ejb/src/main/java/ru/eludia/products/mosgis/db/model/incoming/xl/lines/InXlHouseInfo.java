@@ -21,7 +21,6 @@ public class InXlHouseInfo extends EnTable {
     public enum c implements ColEnum {
         
         UUID_XL                 (InXlFile.class, "Файл импорта"),
-        UUID_XL_HOUSE           (InXlHouse.class, "Строка импорта дома"),
         
         ORD                     (Type.NUMERIC, 5, "Номер строки"),
         
@@ -67,7 +66,7 @@ public class InXlHouseInfo extends EnTable {
         
     }
     
-    private static void setFields (Map<String, Object> r, XSSFRow row) throws InXlHouseInfo.XLException {
+    private static void setFields (Map<String, Object> r, XSSFRow row) throws XLException {
         
         try {
             final XSSFCell cell = row.getCell (0);
@@ -77,7 +76,7 @@ public class InXlHouseInfo extends EnTable {
             r.put (c.ADDRESS.lc (), s);
         }
         catch (Exception ex) {
-            throw new XLException ("Некорректный тип ячейки адреса (столбец A)");
+            throw new XLException (ex.getMessage ());
         }
         
         try {
@@ -89,21 +88,21 @@ public class InXlHouseInfo extends EnTable {
                 case "Количество проживающих (целое)":
                     final XSSFCell countCell = row.getCell (2);
                     if (countCell == null) throw new XLException ("Не указан параметр (столбец C)");
-                    final String countS = cell.getStringCellValue ();
+                    final int count = (int) countCell.getNumericCellValue ();
                     if (!DB.ok (s)) throw new XLException ("Не указан параметр (столбец C)");
-                    r.put (c.RESIDENTSCOUNT.lc (), countS);
+                    r.put (c.RESIDENTSCOUNT.lc (), count);
                     break;
                 case "Наличие подземного паркинга (логическое)":
                     final XSSFCell parkingCell = row.getCell (2);
                     if (parkingCell == null) throw new XLException ("Не указан параметр (столбец C)");
-                    final String parkingS = cell.getStringCellValue ();
+                    final String parkingS = parkingCell.getStringCellValue ();
                     if (!DB.ok (s)) throw new XLException ("Не указан параметр (столбец C)");
                     switch (parkingS) {
                         case "Да":
-                            r.put (c.HASUNDERGROUNDPARKING.lc (), Bool.TRUE);
+                            r.put (c.HASUNDERGROUNDPARKING.lc (), 1);
                             break;
                         case "Нет":
-                            r.put (c.HASUNDERGROUNDPARKING.lc (), Bool.FALSE);
+                            r.put (c.HASUNDERGROUNDPARKING.lc (), 0);
                             break;
                         default:
                             throw new XLException ("Указан неверный параметр (столбец C): " + parkingS);
@@ -113,11 +112,8 @@ public class InXlHouseInfo extends EnTable {
                     throw new XLException ("Указан неверный параметр (столбец B): " + s);
             }
         }
-        catch (XLException ex) {
-            throw ex;
-        }
         catch (Exception ex) {
-            throw new XLException ("Некорректный тип ячейки параметра (столбец B или C)");
+            throw new XLException (ex.getMessage ());
         }
         
     }
@@ -129,45 +125,6 @@ public class InXlHouseInfo extends EnTable {
         cols  (c.class);
         
         key   ("uuid_xl", c.UUID_XL);
-        
-        trigger ("BEFORE INSERT", ""
-                + "DECLARE "
-                    + "cnt NUMBER; "
-                + "BEGIN "
-                    + "IF :NEW.err IS NOT NULL THEN RETURN; END IF; "
-                    + "SELECT COUNT (*) INTO cnt FROM in_xl_houses r WHERE r.uuid_xl = :NEW.uuid_xl AND r.address = :NEW.address; "
-                    + "IF cnt = 0 THEN "
-                        + "raise_application_error (-20000, 'По указанному адресу не найдено информации по импорту'); "
-                    + "ELSIF cnt > 1 THEN "
-                        + "raise_application_error (-20000, 'Для указанной информации нельзя однозначно определить дом'); "
-                    + "ELSE "
-                        + "SELECT uuid INTO :NEW.uuid_xl_house FROM in_xl_houses r WHERE r.uuid_xl = :NEW.uuid_xl AND r.address = :NEW.address; "
-                    + "END IF; "
-                + "END; "
-        );
-        
-        trigger ("BEFORE UPDATE", ""
-                + "DECLARE " 
-                    + "PRAGMA AUTONOMOUS_TRANSACTION; "
-                + "BEGIN "
-                
-                    + "IF :NEW.err IS NOT NULL THEN :NEW.is_deleted := 1; END IF; "
-                    + "IF NOT (:OLD.is_deleted = 1 AND :NEW.is_deleted = 0) THEN RETURN; END IF; "
-                
-                    + "IF :NEW.residentscount IS NULL THEN "
-                        + "BEGIN "
-                            + "UPDATE tb_houses SET residentscount=:NEW.residentscount WHERE address=:NEW.address AND uuid_xl=:NEW.uuid_xl; "
-                            + "COMMIT; "
-                        + "END; "
-                    + "ELSE "
-                        + "BEGIN "
-                            + "UPDATE tb_houses SET hasundergroundparking=:NEW.hasundergroundparking WHERE address=:NEW.address AND uuid_xl=:NEW.uuid_xl; "
-                            + "COMMIT; "
-                        + "END; "
-                    + "END IF; "
-
-                + "END; "
-        );
         
     }
     

@@ -10,7 +10,6 @@ import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
-import ru.eludia.base.model.def.Bool;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
@@ -30,7 +29,7 @@ public class InXlHouse extends EnTable {
         ADDRESS                         (Type.STRING, null,       "Адрес"),
         UNOM                            (Type.NUMERIC, 12, null,  "UNOM"),
         FIASHOUSEGUID                   (VocBuilding.class,         "Код ФИАС"),
-        HASBLOCKS                       (Type.BOOLEAN, Bool.FALSE, "Блокированная застройка"),
+        HASBLOCKS                       (Type.BOOLEAN, null, "Блокированная застройка"),
         HASMULTIPLEHOUSESWITHSAMEADRES  (Type.BOOLEAN, null,       "Несколько ЖД с одинаковым адресом"),
         OKTMO                           (Type.INTEGER, 11, null,    "ОКТМО"),
         
@@ -40,8 +39,11 @@ public class InXlHouse extends EnTable {
         TOTALSQUARE                     (Type.NUMERIC, 25, 4, null, "Общая площадь"),
         USEDYEAR                        (Type.NUMERIC,  4, null,    "Год ввода в эксплуатацию"),
         FLOORCOUNT                      (Type.NUMERIC,  3, null,    "Количество этажей"),
-        CULTURALHERITAGE                (Type.BOOLEAN, Bool.FALSE, "Наличие у дома статуса объекта культурного наследия"),
+        CULTURALHERITAGE                (Type.BOOLEAN, null, "Наличие у дома статуса объекта культурного наследия"),
         KAD_N                           (Type.STRING, null, "Кадастровый номер"),
+        
+        RESIDENTSCOUNT                  (Type.INTEGER, null, "Количество проживающих"),
+        HASUNDERGROUNDPARKING           (Type.BOOLEAN, null, "Наличие подземного паркинга"),
         
         ERR                             (Type.STRING,  null,  "Ошибка")
         
@@ -68,6 +70,8 @@ public class InXlHouse extends EnTable {
                 case FLOORCOUNT:
                 case CULTURALHERITAGE:
                 case KAD_N:
+                case RESIDENTSCOUNT:
+                case HASUNDERGROUNDPARKING:
                     return true;
                 default:
                     return false;
@@ -82,7 +86,7 @@ public class InXlHouse extends EnTable {
         Map<String, Object> r = DB.HASH (
             EnTable.c.IS_DELETED, 1,
             c.UUID_XL, uuid,
-            c.ORD, ord    
+            c.ORD, ord
         );
         
         try {
@@ -102,7 +106,7 @@ public class InXlHouse extends EnTable {
         }        
     }
     
-    private static void setFields (Map<String, Object> r, XSSFRow row) throws InXlHouse.XLException {
+    private static void setFields (Map<String, Object> r, XSSFRow row) throws XLException {
         
         NsiTable nsi_24 = NsiTable.getNsiTable (24);
         NsiTable nsi_338 = NsiTable.getNsiTable (338);
@@ -115,7 +119,7 @@ public class InXlHouse extends EnTable {
             r.put (c.ADDRESS.lc (), s);
         }
         catch (Exception ex) {
-            throw new XLException ("Некорректный тип ячейки адреса (столбец A)");
+            throw new XLException (ex.getMessage ());
         }
         
         try {
@@ -126,7 +130,7 @@ public class InXlHouse extends EnTable {
             r.put (c.UNOM.lc (), s);
         }
         catch (Exception ex) {
-            throw new XLException ("Некорректный тип ячейки UNOM (столбец B)");
+            throw new XLException (ex.getMessage ());
         }
         
         try {
@@ -145,11 +149,8 @@ public class InXlHouse extends EnTable {
                     throw new XLException ("Указан неверный признак блокированной застройки (столбец C): " + s);
             }
         }
-        catch (XLException ex) {
-            throw ex;
-        }
         catch (Exception ex) {
-            throw new XLException ("Некорректный тип ячейки признака блокированной застройки (столбец C)");
+            throw new XLException (ex.getMessage ());
         }
         
         try {
@@ -169,11 +170,8 @@ public class InXlHouse extends EnTable {
                     }
             }
         }
-        catch (XLException ex) {
-            throw ex;
-        }
         catch (Exception ex) {
-            throw new XLException ("Некорректный тип ячейки признака нескольких домов с одинаковым адресом (столбец D)");
+            throw new XLException (ex.getMessage ());
         }
         
         try {
@@ -184,7 +182,7 @@ public class InXlHouse extends EnTable {
             r.put (c.OKTMO.lc (), cell.getStringCellValue ());
         }
         catch (Exception ex) {
-            throw new XLException ("Некорректный тип ячейки кода ОКТМО (столбец E)");
+            throw new XLException (ex.getMessage ());
         }
         
         try {
@@ -202,7 +200,7 @@ public class InXlHouse extends EnTable {
             r.put (c.CODE_VC_NSI_24.lc (), code);
         }
         catch (Exception ex) {
-            throw new XLException ("Некорректный тип ячейки состояния дома (столбец F)");
+            throw new XLException (ex.getMessage ());
         }
         
         try {
@@ -222,7 +220,7 @@ public class InXlHouse extends EnTable {
             }
         }
         catch (Exception ex) {
-            throw new XLException ("Некорректный тип ячейки стадии жизненного цикла (столбец G)");
+            throw new XLException (ex.getMessage ());
         }
         
         try {
@@ -233,7 +231,7 @@ public class InXlHouse extends EnTable {
             r.put (c.TOTALSQUARE.lc (), cell.getStringCellValue ());
         }
         catch (Exception ex) {
-            throw new XLException ("Некорректный тип ячейки общей площади здания (столбец H)");
+            throw new XLException (ex.getMessage ());
         }
         
         try {
@@ -244,7 +242,7 @@ public class InXlHouse extends EnTable {
             r.put (c.USEDYEAR.lc (), cell.getStringCellValue ());
         }
         catch (Exception ex) {
-            throw new XLException ("Некорректный тип ячейки года ввода в эксплуатацию (столбец I)");
+            throw new XLException (ex.getMessage ());
         }
         
         try {
@@ -255,7 +253,7 @@ public class InXlHouse extends EnTable {
             r.put (c.FLOORCOUNT.lc (), cell.getStringCellValue ());
         }
         catch (Exception ex) {
-            throw new XLException ("Некорректный тип ячейки количества этажей (столбец J)");
+            throw new XLException (ex.getMessage ());
         }
         
         try {
@@ -265,20 +263,17 @@ public class InXlHouse extends EnTable {
             if (!DB.ok (s)) throw new XLException ("Не указано наличие статуса объекта культурного наследия (столбец K)");
             switch (s) {
                 case "Да":
-                    r.put (c.CULTURALHERITAGE.lc (), Bool.TRUE);
+                    r.put (c.CULTURALHERITAGE.lc (), 1);
                     break;
                 case "Нет":
-                    r.put (c.CULTURALHERITAGE.lc (), Bool.FALSE);
+                    r.put (c.CULTURALHERITAGE.lc (), 0);
                     break;
                 default:
                     throw new XLException ("Указан неверный признак наличия статуса объекта культурного наследия (столбец K): " + s);
             }
         }
-        catch (XLException ex) {
-            throw ex;
-        }
         catch (Exception ex) {
-            throw new XLException ("Некорректный тип ячейки признака наличия статуса объекта культурного наследия (столбец K)");
+            throw new XLException (ex.getMessage ());
         }
         
         try {
@@ -290,7 +285,7 @@ public class InXlHouse extends EnTable {
                 r.put (c.KAD_N.lc (), "нет");
         }
         catch (Exception ex) {
-            throw new XLException ("Некорректный тип ячейки кадастрового номера (столбец L)");
+            throw new XLException (ex.getMessage ());
         }
         
     }
@@ -347,6 +342,7 @@ public class InXlHouse extends EnTable {
                         + "END LOOP; "
                         + "UPDATE tb_houses SET " + usb.substring(1) + " WHERE unom = :NEW.unom; "
                     + "END IF; "
+                    + "UPDATE vc_buildings SET oktmo = :NEW.oktmo WHERE houseguid = :NEW.fiashouseguid; "
                     + "COMMIT; "
 
                 + "END; "

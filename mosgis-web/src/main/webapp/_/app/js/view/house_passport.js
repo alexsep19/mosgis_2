@@ -31,6 +31,8 @@ define ([], function () {
     }
 
     return function (data, view) {
+
+        console.log (data)
     
         var it = data.item
         
