@@ -54,7 +54,7 @@ define ([], function () {
 
                 result.push ({
                     id: t.id + '_' + this.id,
-                    label: t.label + ' ' + this.label
+                    label: t.label + ' №' + this.label
                 })
 
             })          
@@ -146,7 +146,7 @@ darn (333)
         if (!cach) die ('foo', 'Не найден объект управления для данного дома')
         
         if (cach ['ctr.uuid']) return load_ctr_nsi2_and_show_popup (data, done)
-darn (cach)
+
         if (cach ['ca.uuid']) return load_ca_nsi2_and_show_popup (data, done)
         
         if (!cach) die ('foo', 'Не опознан объект управления для данного дома')

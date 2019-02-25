@@ -21,7 +21,7 @@ define ([], function () {
                         {id: 1, text: 'потреблённый объём'},
                     ]}},
 
-                    {name: 'id_type', type: 'list', options: {items: data.types}},
+                    {name: 'id_type', type: 'list', options: {items: data.types, match: 'contains', markSearch: true}},
                     {name: 'mask_vc_nsi_2', type: 'list', options: {items: data.vc_nsi_2.items}},
                     
                     {name: 'meteringdevicenumber', type: 'text'},
