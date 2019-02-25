@@ -93,13 +93,11 @@ define ([], function () {
 
     }
     
-    function load_nsi2_and_show_popup (data, done) {
-
-        $.each (data.types, function () {this.text = this.label})
-                
-        if (data.types.length) data.record.id_type = data.types [0].id
+    function load_nsi2_by_cach_and_show_popup (data, done) {
         
         var cach = data.cach
+        
+        if (cach ['org.uuid'] != $_USER.uuid_org) cach = null
         
         if (!cach) die ('foo', 'Не найден объект управления для данного дома')
         
@@ -109,6 +107,16 @@ define ([], function () {
         
         if (!cach) die ('foo', 'Не опознан объект управления для данного дома')
                             
+    }
+
+    function load_nsi2_and_show_popup (data, done) {
+
+        $.each (data.types, function () {this.text = this.label})
+                
+        if (data.types.length) data.record.id_type = data.types [0].id
+        
+        load_nsi2_by_cach_and_show_popup (data, done)
+
     }
 
     return function (done) {
