@@ -1,7 +1,7 @@
 define ([], function () {
 
-    return function (data, view) {
-    
+    return function (data, view) {    
+
         var it = data.item       
             
         $(w2ui ['passport_layout'].el ('main')).w2regrid ({ 
@@ -20,7 +20,7 @@ define ([], function () {
                 {field: 'meter.meteringdevicenumber', caption: '№ ПУ', size: 20},
             ],
 
-            records: darn (data.meters),
+            records: data.meters,
 
             onAdd: $_DO.create_metering_device_metering_devices,
 

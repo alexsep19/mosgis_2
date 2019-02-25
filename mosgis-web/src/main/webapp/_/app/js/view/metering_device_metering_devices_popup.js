@@ -35,14 +35,14 @@ define ([], function () {
                     {field: 'installationplace', caption: 'Установлен', size: 15, voc: {in: 'на входе', out: 'на выходе'}},
                 ],
                 
-                records: data.meters,
+                records: data.metering_devices,
                 
                 onRender: function (e) {
                     
                     var grid = this
                 
                     e.done (function () {
-//                        $.each (data.accs, function () {grid.select (this.id)})                        
+                        $.each (data.meters, function () {grid.select (this.id)})                        
                     })
                 
                 }                

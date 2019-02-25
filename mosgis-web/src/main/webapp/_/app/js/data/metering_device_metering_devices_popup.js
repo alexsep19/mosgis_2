@@ -26,7 +26,7 @@ define ([], function () {
                 
         query ({type: 'metering_devices', id: null}, {data: v, offset: 0, limit: 1000000}, function (d) {
         
-            data.meters = []
+            data.metering_devices = []
             
             $.each (d.root, function () {
             
@@ -36,7 +36,7 @@ define ([], function () {
             
                 this.recid = this.id
                             
-                data.meters.push (this)
+                data.metering_devices.push (this)
                 
             })
 
