@@ -16,7 +16,17 @@ define ([], function () {
         
         if (!it._can) it._can = {}
         
-        it._can.add_metering_devices = 1
+        if (data.cach && data.cach ['org.uuid'] == $_USER.uuid_org) {
+        
+            it._can.add_metering_devices = 1
+            
+        }
+
+        if (data.srca && data.srca ['org.uuid'] == $_USER.uuid_org) {
+        
+            it._can.add_metering_devices = 1
+            
+        }
         
         query ({type: 'metering_devices', id: null, part: 'vocs'}, {}, function (d) {
         
