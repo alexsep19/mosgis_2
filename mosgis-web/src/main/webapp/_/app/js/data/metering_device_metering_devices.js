@@ -2,7 +2,7 @@ define ([], function () {
 
     $_DO.create_metering_device_metering_devices = function (e) {
 
-        use.block ('metering_device_accounts_popup')
+        use.block ('metering_device_metering_devices_popup')
 
     }
     
@@ -16,9 +16,9 @@ define ([], function () {
 
         query (
 
-            {type: 'metering_devices', id: $_REQUEST.id, action: 'unset_accounts'},
+            {type: 'metering_devices', id: $_REQUEST.id, action: 'unset_meters'},
 
-            {data: {uuid_account: w2ui ['metering_device_metering_devices_grid'].getSelection ()}},
+            {data: {uuid_meter: w2ui ['metering_device_metering_devices_grid'].getSelection ()}},
 
             reload_page
 

@@ -151,7 +151,7 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
                 .orderBy ("acc.accountnumber"),
 
             m
-                .select (MeteringDeviceMeteringDevice.class, "AS meters")
+                .select (MeteringDeviceMeteringDevice.class, "AS meters", "uuid_meter")
                 .where ("uuid", id)
                 .toOne (MeteringDevice.class, "AS meter"
                     , MeteringDevice.c.METERINGDEVICENUMBER.lc ()
@@ -227,8 +227,8 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
         db.dupsert (
             MeteringDeviceMeteringDevice.class,
             HASH ("uuid", id),
-            p.getJsonObject ("data").getJsonArray ("uuid_account").stream ().map ((t) -> {return HASH ("uuid_account", ((JsonString) t).getString ());}).collect (Collectors.toList ()),
-            "uuid_account"
+            p.getJsonObject ("data").getJsonArray ("uuid_meter").stream ().map ((t) -> {return HASH ("uuid_meter", ((JsonString) t).getString ());}).collect (Collectors.toList ()),
+            "uuid_meter"
         );
 
         logAction (db, user, id, VocAction.i.UPDATE);

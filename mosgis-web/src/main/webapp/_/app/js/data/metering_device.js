@@ -39,6 +39,13 @@ define ([], function () {
                 this.label = this ['ind.label'] || this ['org.label']
             })
 
+
+            data.meters = dia2w2uiRecords (data.meters)
+
+            $.each (data.meters, function () {
+                this.recid = this.id = this.uuid_meter
+            })
+
             var it = data.item
 
             it._can = {cancel: 1}

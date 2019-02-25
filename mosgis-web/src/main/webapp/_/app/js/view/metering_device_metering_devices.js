@@ -20,7 +20,7 @@ define ([], function () {
                 {field: 'meter.meteringdevicenumber', caption: '№ ПУ', size: 20},
             ],
 
-            records: data.meters,
+            records: darn (data.meters),
 
             onAdd: $_DO.create_metering_device_metering_devices,
 
