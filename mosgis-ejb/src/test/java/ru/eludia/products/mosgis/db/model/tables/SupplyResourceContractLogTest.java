@@ -36,7 +36,7 @@ public class SupplyResourceContractLogTest extends BaseTest {
     private Map<String, Object> getData() throws SQLException {
 
 	try (DB db = model.getDb()) {
-	    final Map<String, Object> r = db.getMap(logTable.getForExport("82660010-d6b8-2f79-e053-0100007fb541"));
+	    final Map<String, Object> r = db.getMap(logTable.getForExport("82dd17c7-bcc8-58ce-e053-0100007f0ff2"));
 	    r.put("contractrootguid", r.get("uuid"));
 	    r.put("contractguid", "0000000000000000");
 	    SupplyResourceContractLog.addFilesForExport(db, r);
