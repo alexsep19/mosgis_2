@@ -1,12 +1,12 @@
 package ru.eludia.products.mosgis.db.model.voc;
 
-import java.math.BigDecimal;
 import javax.json.Json;
 import ru.eludia.base.model.Type;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
@@ -98,6 +98,12 @@ public class VocMeteringDeviceType extends Table {
         private i (int id, int is_condo, Nsi27.i nsi27, Class clazz, Nsi30.i nsi30, String label) {
             this (id, is_condo, nsi27, clazz, label);
             this.code_vc_nsi_30 = nsi30.getId ();
+        }
+        
+        public static i forId (Object id) {
+            int iid = (int) DB.to.Long (id);
+            for (i i: values ()) if (i.id == iid) return i;
+            throw new IllegalArgumentException ("Unknown type id: " + id);
         }
 
         private JsonObject toJsonObject () {
