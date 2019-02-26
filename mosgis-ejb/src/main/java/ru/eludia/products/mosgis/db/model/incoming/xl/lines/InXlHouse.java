@@ -13,6 +13,7 @@ import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 
@@ -58,6 +59,7 @@ public class InXlHouse extends EnTable {
         boolean isToCopy () {
             
             switch (this) {
+                case UUID_XL:
                 case ADDRESS:
                 case UNOM:
                 case FIASHOUSEGUID:
@@ -325,7 +327,11 @@ public class InXlHouse extends EnTable {
         }
         
         trigger ("BEFORE UPDATE", ""
-                + "DECLARE " 
+                + "DECLARE "
+                    + "house_id RAW (16); "
+                    + "usr RAW (16); "
+                    + "org RAW (16); "
+                    + "log RAW (16); "
                     + "cnt NUMBER; "
                     + "PRAGMA AUTONOMOUS_TRANSACTION; "
                 + "BEGIN "
@@ -335,14 +341,24 @@ public class InXlHouse extends EnTable {
                 
                     + "SELECT COUNT (*) INTO cnt FROM tb_houses r WHERE r.unom = :NEW.unom; "
                     + "IF cnt = 0 THEN "
-                        + "INSERT INTO tb_houses (uuid, is_condo" + sb + ") VALUES (:NEW.uuid, 0" + nsb + "); "
+                        + "INSERT INTO tb_houses (uuid, is_condo" + sb + ") "
+                                       + "VALUES (:NEW.uuid, 0" + nsb + ") "
+                                       + "RETURNING uuid INTO house_id; "
                     + "ELSE "
                         + "FOR i IN (SELECT uuid FROM tb_houses WHERE unom = :NEW.unom AND is_condo = 1) LOOP "
                             + "raise_application_error (-20000, 'Существует МКД с таким же UNOM'); "
                         + "END LOOP; "
-                        + "UPDATE tb_houses SET " + usb.substring(1) + " WHERE unom = :NEW.unom; "
+                        + "UPDATE tb_houses SET " + usb.substring(1) + " WHERE unom = :NEW.unom RETURNING uuid INTO house_id; "
                     + "END IF; "
                     + "UPDATE vc_buildings SET oktmo = :NEW.oktmo WHERE houseguid = :NEW.fiashouseguid; "
+                    
+                    + "SELECT f.uuid_user, f.uuid_org INTO usr, org FROM in_xl_files f WHERE f.uuid = :NEW.uuid_xl; "
+                    + "INSERT INTO tb_houses__log (action, uuid_object, uuid_user, uuid_org) "
+                    + "VALUES ('" + VocAction.i.IMPORT_FROM_FILE.getName () + "', house_id, usr, org) "
+                    + "RETURNING uuid INTO log; "
+                            
+                    + "UPDATE tb_houses SET id_log = log WHERE uuid = house_id; "
+                                
                     + "COMMIT; "
 
                 + "END; "

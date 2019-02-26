@@ -9,9 +9,7 @@ import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
-import static ru.eludia.products.mosgis.db.model.tables.Charter.Action.PLACING;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
-import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
@@ -77,7 +75,7 @@ public class House extends Passport {
 
         trigger ("BEFORE INSERT OR UPDATE", ""
                 + "BEGIN "
-                + ":NEW.ts := CURRENT_TIMESTAMP(); "
+                    + ":NEW.ts := CURRENT_TIMESTAMP(); "                                    
                 + "END; ");
 
     }
