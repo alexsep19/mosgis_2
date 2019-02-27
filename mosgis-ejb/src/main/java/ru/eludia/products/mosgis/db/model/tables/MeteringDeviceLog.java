@@ -8,9 +8,11 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceType;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi2;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportMeteringDeviceDataRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.MeteringDeviceBasicCharacteristicsType;
 import ru.gosuslugi.dom.schema.integration.house_management.MeteringDeviceFullInformationType;
+import ru.gosuslugi.dom.schema.integration.house_management.MunicipalResourceElectricBaseType;
 
 public class MeteringDeviceLog extends GisWsLogTable {
 
@@ -65,9 +67,29 @@ public class MeteringDeviceLog extends GisWsLogTable {
             result.setLinkedWithMetering (toLinkedWithMetering (r));
         }
         
+        if (DB.ok (r.get (MeteringDevice.c.CONSUMEDVOLUME.lc ()))) {            // MunicipalResources 
+        }
+        else {
+
+            if (DB.eq (
+                r.get (MeteringDevice.c.MASK_VC_NSI_2.lc ())
+                , Nsi2.i.POWER.getId ()
+            )) {                                                                // MunicipalResourceEnergy
+                result.setMunicipalResourceEnergy (toMunicipalResourceElectricBaseType (r));
+            }
+            else {                                                              // MunicipalResourceNotEnergy
+            }
+
+        }
+        
         return result;
         
     }
+    
+    private static MunicipalResourceElectricBaseType toMunicipalResourceElectricBaseType (Map<String, Object> r) {
+        final MunicipalResourceElectricBaseType result = DB.to.javaBean (MunicipalResourceElectricBaseType.class, r);
+        return result;
+    }    
     
     private static MeteringDeviceFullInformationType.LinkedWithMetering toLinkedWithMetering (Map<String, Object> r) {
         final MeteringDeviceFullInformationType.LinkedWithMetering result = DB.to.javaBean (MeteringDeviceFullInformationType.LinkedWithMetering.class, r);
@@ -98,7 +120,7 @@ public class MeteringDeviceLog extends GisWsLogTable {
                 result.setResidentialPremiseDevice (toResidentialPremiseDevice (r));
                 break;
         }
-        
+                
         return result;
         
     }
