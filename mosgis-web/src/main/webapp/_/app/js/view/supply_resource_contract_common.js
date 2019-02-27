@@ -39,7 +39,7 @@ define ([], function () {
             'input[name=volumedepends]': !is_customer_executor && !onetimepayment,
 
             'input[name=accrualprocedure]': is_customer_executor,
-            'input[name=countingresource]': is_customer_executor && v.accrualprocedure == 10,
+            'input[name=countingresource]': is_customer_executor,
             'input[name=mdinfo]': is_customer_executor && v.countingresource == 1
         }
 
@@ -100,11 +100,10 @@ define ([], function () {
 
         var ddt_30 = [];
         for (var i = 1; i <= 30; i ++) ddt_30.push ({id: i, text: i + '-е число'});
-        var ddt_31 = ddt_30.concat ([{id: 31, text: '31-е число'}]);
         var last = {id: 99, text: 'последнее число'}
         ddt_30.push (last)
-        ddt_31.push (last)
-        var ddt_31_from = ddt_31.map (function (i) {return {id: i.id, text: i.text.replace ('е число', 'го числа')}})
+        var ddt_30_from = ddt_30.map (function (i) {return {id: i.id, text: i.text.replace ('е число', 'го числа')}})
+
 
         data.voc_bool = [
             {id: "0", text: "Нет"},
@@ -154,18 +153,18 @@ define ([], function () {
 
                 {name: 'volumedepends', type: 'list', options: {items: data.voc_bool}},
 
-                {name: 'ddt_m_start', type: 'list', options: {items: ddt_31_from}},
-                {name: 'ddt_m_end',   type: 'list', options: {items: ddt_31}},
+                {name: 'ddt_m_start', type: 'list', options: {items: ddt_30_from}},
+                {name: 'ddt_m_end',   type: 'list', options: {items: ddt_30}},
                 {name: 'ddt_m_start_nxt', type: 'list', options: {items: nxt}},
                 {name: 'ddt_m_end_nxt',   type: 'list', options: {items: nxt}},
 
-                {name: 'ddt_d_start', type: 'list', options: {items: ddt_31_from}},
+                {name: 'ddt_d_start', type: 'list', options: {items: ddt_30_from}},
                 {name: 'ddt_d_start_nxt', type: 'list', options: {items: nxt}},
 
-                {name: 'ddt_i_start', type: 'list', options: {items: ddt_31_from}},
+                {name: 'ddt_i_start', type: 'list', options: {items: ddt_30_from}},
                 {name: 'ddt_i_start_nxt', type: 'list', options: {items: nxt}},
 
-                {name: 'ddt_n_start', type: 'list', options: {items: ddt_31_from}},
+                {name: 'ddt_n_start', type: 'list', options: {items: ddt_30_from}},
                 {name: 'ddt_n_start_nxt', type: 'list', options: {items: nxt}},
             ],
 

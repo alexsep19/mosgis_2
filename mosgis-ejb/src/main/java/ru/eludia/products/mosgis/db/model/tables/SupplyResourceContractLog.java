@@ -240,6 +240,10 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 
 		oa.setTransportGUID(o.get("uuid").toString());
 
+		if (VocGisContractDimension.i.BY_HOUSE == VocGisContractDimension.i.forName(DB.to.String(r.get("accrualprocedure")))) {
+		    oa.setCountingResource(DB.to.String(r.get("countingresource")));
+		}
+
 		List<Map<String, Object>> services = (List<Map<String, Object>>) o.get("services");
 
 		for (Map<String, Object> service : services) {
@@ -264,6 +268,10 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 		}
 
 		result.getObjectAddress().add(oa);
+	    }
+
+	    if (VocGisContractDimension.i.BY_CONTRACT != VocGisContractDimension.i.forName(DB.to.String(r.get("accrualprocedure")))) {
+		result.setCountingResource(null);
 	    }
 
 	}
@@ -544,13 +552,13 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	    return null;
 	}
 	byte d = Byte.parseByte(DB.to.String(r.get(f)));
-	if (d == 32) {
-	    start.setNextMonth(true);
-	} else {
-	    start.setNextMonth(null);
-	    start.setStartDate(d);
+
+	if (d == 99) {
+	    d = -1;
 	}
-	start.setNextMonth(DB.ok(r.get(f + "_nxt")));
+
+	start.setStartDate(d);
+	start.setNextMonth(DB.ok(r.get(f + "_nxt"))? true : null);
 
 	final SupplyResourceContractType.Period.End   end = new SupplyResourceContractType.Period.End();
 	f = SupplyResourceContract.c.DDT_M_END.lc();
@@ -558,14 +566,13 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	    return null;
 	}
 	d = Byte.parseByte(DB.to.String(r.get(f)));
-	if (d == 32) {
-	    end.setNextMonth(true);
-	} else {
-	    end.setNextMonth(null);
-	    end.setEndDate(d);
-	}
-	end.setNextMonth(DB.ok(r.get(f + "_nxt")));
 
+	if (d == 99) {
+	    d = -1;
+	}
+
+	end.setEndDate(d);
+	end.setNextMonth(DB.ok(r.get(f + "_nxt"))? true : null);
 
 	result.setStart(start);
 	result.setEnd(end);
@@ -584,6 +591,7 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	}
 
 	byte d = Byte.parseByte(DB.to.String(r.get(f)));
+
 	if (d == 99) {
 	    d = -1;
 	}

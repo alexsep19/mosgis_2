@@ -89,6 +89,10 @@ public class SupplyResourceContractQualityLevel extends EnTable {
 		    + "     raise_application_error (-20000, 'Укажите конец диапазона показателя качества. Операция отменена.'); "
 		    + "  END IF;"
 
+		    + "  IF :NEW.id_type = 1 AND :NEW.indicatorvalue_to <= :NEW.indicatorvalue_from THEN "
+		    + "     raise_application_error (-20000, 'Укажите конец диапазона строго больше начала диапазона иного показателя качества. Операция отменена.'); "
+		    + "  END IF;"
+
                     + " FOR i IN ("
                         + "SELECT "
                         + " o.uuid "

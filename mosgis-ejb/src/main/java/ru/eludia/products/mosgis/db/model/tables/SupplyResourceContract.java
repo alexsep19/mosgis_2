@@ -65,9 +65,9 @@ public class SupplyResourceContract extends EnTable {
         MDINFO               (Type.BOOLEAN, null, "1, если РСО размещает информацию об индивидуальных приборах учета и их показаниях; иначе 0"),
 
 
-        DDT_M_START          (Type.NUMERIC, 2, null, "Начало периода ввода показаний ПУ (1..31 — конкретное число, 99 — последнее число)"),
+        DDT_M_START          (Type.NUMERIC, 2, null, "Начало периода ввода показаний ПУ (1..30 — конкретное число, 99 — последнее число)"),
         DDT_M_START_NXT      (Type.BOOLEAN,    null, "1, если начало периода ввода показаний ПУ в следующем месяце; иначе 0"),
-        DDT_M_END            (Type.NUMERIC, 2, null, "Окончание периода ввода показаний ПУ (1..31 — конкретное число; 99 — последнее число)"),
+        DDT_M_END            (Type.NUMERIC, 2, null, "Окончание периода ввода показаний ПУ (1..30 — конкретное число; 99 — последнее число)"),
         DDT_M_END_NXT        (Type.BOOLEAN,    null, "1, если окончание периода ввода показаний ПУ в следующем месяце; иначе 0"),
 
         DDT_D_START          (Type.NUMERIC, 2, null, "Срок представления (выставления) платежных документов для внесения платы за жилое помещение и (или) коммунальные услуги (1..30 — конкретное число; 99 — последнее число)"),
@@ -154,10 +154,6 @@ public class SupplyResourceContract extends EnTable {
 		    + "   :NEW.ddt_i_start_nxt:= NULL; "
 		    + " END IF; "
 
-		    + " IF :NEW.accrualprocedure <> " + VocGisContractDimension.i.BY_CONTRACT.getId() + " THEN "
-		    + "   :NEW.countingresource:= NULL; "
-		    + " END IF; "
-
 		    + " IF :NEW.countingresource <> 1 THEN "
 		    + "   :NEW.mdinfo:= NULL; "
 		    + " END IF; "
@@ -165,6 +161,27 @@ public class SupplyResourceContract extends EnTable {
                     + " IF :NEW.completiondate IS NULL AND :NEW.autorollover = 1 THEN "
                     + "   raise_application_error (-20000, 'Укажите дату окончания или Автопролонгация нет. Операция отменена.'); "
                     + " END IF; "
+
+
+		    + " IF NOT(1 <= :NEW.DDT_M_START AND :NEW.DDT_M_START <= 30) AND :NEW.DDT_M_START <> 99 THEN "
+		    + "   raise_application_error (-20000, 'Укажите начало периода ввода показаний ПУ 1..30 число. Операция отменена.'); "
+		    + " END IF; "
+
+		    + " IF NOT(1 <= :NEW.DDT_M_END AND :NEW.DDT_M_END <= 30) AND :NEW.DDT_M_END <> 99 THEN "
+		    + "   raise_application_error (-20000, 'Укажите окончание периода ввода показаний ПУ 1..30 число. Операция отменена.'); "
+		    + " END IF; "
+
+		    + " IF NOT(1 <= :NEW.DDT_D_START AND :NEW.DDT_D_START <= 30) AND :NEW.DDT_D_START <> 99 THEN "
+		    + "   raise_application_error (-20000, 'Укажите срок выставления платежных документов 1..30 число. Операция отменена.'); "
+		    + " END IF; "
+
+		    + " IF NOT(1 <= :NEW.DDT_I_START AND :NEW.DDT_I_START <= 30) AND :NEW.DDT_I_START <> 99 THEN "
+		    + "   raise_application_error (-20000, 'Укажите Срок внесения платы 1..30. Операция отменена.'); "
+		    + " END IF; "
+
+		    + " IF NOT(1 <= :NEW.DDT_N_START AND :NEW.DDT_N_START <= 30) AND :NEW.DDT_N_START <> 99 THEN "
+		    + "   raise_application_error (-20000, 'Укажите Срок предоставления информации о поступивших платежах 1..30 число. Операция отменена.'); "
+		    + " END IF; "
 
                     + " IF :NEW.DDT_D_START > :NEW.DDT_I_START AND :NEW.DDT_D_START_NXT = :NEW.DDT_I_START_NXT"
                     + "   OR :NEW.DDT_D_START_NXT > :NEW.DDT_I_START_NXT "
@@ -292,7 +309,7 @@ public class SupplyResourceContract extends EnTable {
 			+ "   IF :NEW.accrualprocedure IS NULL THEN "
 			+ "     raise_application_error (-20000, 'Необходимо заполнить поле \"Порядок размещения начислений за услуги\". Операция отменена.'); "
 			+ "   END IF; "
-			+ "   IF :NEW.accrualprocedure = " + VocGisContractDimension.i.BY_CONTRACT + " AND :NEW.countingresource IS NULL THEN "
+			+ "   IF :NEW.accrualprocedure IS NOT NULL AND :NEW.countingresource IS NULL THEN "
 			+ "     raise_application_error (-20000, 'Необходимо заполнить поле \"Размещает начисления за услуги\". Операция отменена.'); "
 			+ "   END IF; "
 			+ "   IF :NEW.DDT_N_START IS NULL AND :NEW.countingresource = 1 THEN raise_application_error (-20000, 'Необходимо заполнить поля \"Срок предоставления информации о поступивших платежах\". Операция отменена.'); END IF; "
@@ -316,6 +333,19 @@ public class SupplyResourceContract extends EnTable {
 			+ " IF :NEW.id_customer_type = " + VocGisSupplyResourceContractCustomerType.i.OWNER + " THEN "
 			+ "   FOR i IN ("
 			+ "     SELECT "
+			+ "       o.uuid "
+			+ "     FROM "
+			+ "       tb_sr_ctr_obj o "
+			+ "     WHERE o.is_deleted = 0 "
+			+ "       AND o.uuid_sr_ctr  = :NEW.uuid "
+			+ "       AND o.uuid_premise IS NULL "
+			+ "      ) LOOP "
+			+ "        raise_application_error (-20000, "
+			+ "          'Вторая сторона договора Собственник (пользователь) помещений МКД: укажите номер помещения' "
+			+ "          || '. Операция отменена.'); "
+			+ "   END LOOP; "
+			+ "   FOR i IN ("
+			+ "     SELECT "
 			+ "       b.label "
 			+ "     FROM "
 			+ "       tb_sr_ctr_obj o "
@@ -325,7 +355,7 @@ public class SupplyResourceContract extends EnTable {
 			+ "       AND b.is_condo = 0 "
 			+ "      ) LOOP "
 			+ "        raise_application_error (-20000, "
-			+ "          'Вторая сторона договора Собственник (пользователь) помещений МКД, а объект жилищного фонда ' || i.label || ' ЖД' "
+			+ "          'Вторая сторона договора Собственник (пользователь) помещений МКД, а объект жилищного фонда ' || i.label || ' адрес ЖД' "
 			+ "          || '. Операция отменена.'); "
 			+ "   END LOOP; "
 			+ " END IF; "
@@ -337,12 +367,29 @@ public class SupplyResourceContract extends EnTable {
 			+ "     FROM "
 			+ "       tb_sr_ctr_obj o "
 			+ "     INNER JOIN vc_build_addresses b ON b.houseguid = o.fiashouseguid "
+			+ "     INNER JOIN tb_houses h          ON b.uuid_house = h.uuid  "
+			+ "     WHERE o.is_deleted = 0 "
+			+ "       AND o.uuid_sr_ctr  = :NEW.uuid "
+			+ "       AND o.uuid_premise IS NULL "
+			+ "       AND h.hasblocks = 1 "
+			+ "       AND h.is_condo = 0 "
+			+ "      ) LOOP "
+			+ "        raise_application_error (-20000, "
+			+ "          'Объект жилищного фонда ' || i.label || ' жилой дом блокированной застройки: укажите номер помещения' "
+			+ "          || '. Операция отменена.'); "
+			+ "   END LOOP; "
+			+ "   FOR i IN ("
+			+ "     SELECT "
+			+ "       b.label "
+			+ "     FROM "
+			+ "       tb_sr_ctr_obj o "
+			+ "     INNER JOIN vc_build_addresses b ON b.houseguid = o.fiashouseguid "
 			+ "     WHERE o.is_deleted = 0 "
 			+ "       AND o.uuid_sr_ctr  = :NEW.uuid "
 			+ "       AND b.is_condo = 1 "
 			+ "      ) LOOP "
 			+ "        raise_application_error (-20000, "
-			+ "          'Вторая сторона договора Собственник (пользователь) помещений ЖД, а объект жилищного фонда ' || i.label || ' МКД' "
+			+ "          'Вторая сторона договора Собственник (пользователь) помещений ЖД, а объект жилищного фонда ' || i.label || ' адрес МКД' "
 			+ "          || '. Операция отменена.'); "
 			+ "   END LOOP; "
 			+ " END IF; "
@@ -376,7 +423,7 @@ public class SupplyResourceContract extends EnTable {
 			    + "WHERE o.is_deleted = 0 "
 			    + " AND o.uuid_sr_ctr_obj IS NULL "
 			    + " AND o.uuid_sr_ctr     = :NEW.uuid "
-			    + " AND o.volume IS NULL "
+			    + " AND (o.volume IS NULL OR o.feedingmode IS NULL)"
 			    + ") LOOP "
 			    + " raise_application_error (-20000, "
 			    + "'В каждом предмете договора должен быть указан плановый объем и режим подачи' "
@@ -392,7 +439,7 @@ public class SupplyResourceContract extends EnTable {
 			    + "WHERE o.is_deleted = 0 "
 			    + " AND o.uuid_sr_ctr_obj IS NOT NULL "
 			    + " AND o.uuid_sr_ctr     = :NEW.uuid "
-			    + " AND o.volume IS NULL "
+			    + " AND (o.volume IS NULL OR o.feedingmode IS NULL) "
 			    + ") LOOP "
 			    + " raise_application_error (-20000, "
 			    + "'В каждом поставляемом ресурсе объекта жилищного фонда договора должен быть указан плановый объем и режим подачи' "
