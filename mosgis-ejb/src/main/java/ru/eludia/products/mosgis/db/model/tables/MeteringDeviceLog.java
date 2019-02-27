@@ -3,6 +3,7 @@ package ru.eludia.products.mosgis.db.model.tables;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import ru.eludia.base.DB;
 import ru.eludia.base.Model;
 import ru.eludia.products.mosgis.db.model.EnTable;
@@ -48,7 +49,7 @@ public class MeteringDeviceLog extends GisWsLogTable {
             ).on ()
         );
 
-        r.put ("tb_meter_values", db.getList (m                
+        r.put ("values", db.getList (m
             .select (MeteringDeviceValue.class, "AS root", "*")
             .where (EnTable.c.IS_DELETED, 0)
             .where (MeteringDeviceValue.c.UUID_METER, r.get ("r.uuid"))
@@ -56,9 +57,17 @@ public class MeteringDeviceLog extends GisWsLogTable {
             .toOne (VocNsi2.class, "code", "guid").on ("root.code_vc_nsi_2=vc_nsi_2.code AND vc_nsi_2.isactual=1")
         ));
 
+        r.put ("accountguid", db.getList (m
+            .select (MeteringDeviceAccount.class, "AS root")
+            .where (EnTable.c.UUID, r.get ("r.uuid"))
+            .toOne (Account.class
+                , Account.c.ACCOUNTGUID.lc () + " AS accountguid"
+            ).on ()
+        ).stream ().map (t -> t.get ("accountguid").toString ()).collect (Collectors.toList ()));
+
         return r;
 
-    }    
+    }
 
     public static ImportMeteringDeviceDataRequest toImportMeteringDeviceData (Map<String, Object> r) {
         final ImportMeteringDeviceDataRequest result = DB.to.javaBean (ImportMeteringDeviceDataRequest.class, r);
