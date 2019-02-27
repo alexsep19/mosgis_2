@@ -157,13 +157,15 @@ public class MeteringDevices extends EJBResource <MeteringDeviceLocal> {
 //        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
         return back.getLog (id, p, getUser ());
     }
-/*    
+
     @POST
     @Path("{id}/approve") 
     @Produces (APPLICATION_JSON)
     public JsonObject doApprove (@PathParam ("id") String id) { 
         return back.doApprove (id, getUser ());
     }
+    
+/*    
     
     @POST
     @Path("{id}/alter") 

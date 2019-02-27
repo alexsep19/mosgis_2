@@ -1,20 +1,17 @@
 package ru.eludia.products.mosgis.rest.impl;
 
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.jms.Queue;
-import javax.json.Json;
 import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.Account;
 import ru.eludia.products.mosgis.db.model.tables.House;
@@ -47,15 +44,18 @@ import ru.eludia.products.mosgis.web.base.SimpleSearch;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements MeteringDeviceLocal {
-/*
-    @Resource (mappedName = "mosgis.inMeteringDevicesQueue")
+
+    @Resource (mappedName = "mosgis.inExportMeteringDevicesQueue")
     Queue queue;
 
     @Override
-    public Queue getQueue () {
-        return queue;
+    protected Queue getQueue (VocAction.i action) {        
+        switch (action) {
+            case APPROVE: return queue;
+            default: return null;
+        }        
     }
-*/
+
     private void filterOffDeleted (Select select) {
         select.and ("is_deleted", 0);
     }
@@ -256,7 +256,6 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
     });}    
     
     
-/*    
     @Override
     public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
 
@@ -267,6 +266,8 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
         logAction (db, user, id, VocAction.i.APPROVE);
 
     });}
+
+/*    
     
     @Override
     public JsonObject doAlter (String id, User user) {return doAction ((db) -> {

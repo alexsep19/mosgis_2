@@ -12,9 +12,8 @@ public interface MeteringDeviceLocal extends CRUDBackend {
     JsonObject doSetAccounts (String id, JsonObject p, User user);
     JsonObject doUnsetAccounts (String id, JsonObject p, User user);
     JsonObject doSetMeters   (String id, JsonObject p, User user);
-    JsonObject doUnsetMeters (String id, JsonObject p, User user);
-   
-//    JsonObject doApprove   (String id, User user);
+    JsonObject doUnsetMeters (String id, JsonObject p, User user);   
+    JsonObject doApprove     (String id, User user);
 //    JsonObject doAlter     (String id, User user);
 
         
