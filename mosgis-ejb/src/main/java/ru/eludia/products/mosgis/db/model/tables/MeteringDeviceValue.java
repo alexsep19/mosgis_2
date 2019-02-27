@@ -3,6 +3,7 @@ package ru.eludia.products.mosgis.db.model.tables;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
+import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -21,6 +22,8 @@ public class MeteringDeviceValue extends EnTable {
         METERINGVALUET1        (Type.NUMERIC, 22, 7, null,                      "Объем по тарифу T1"),
         METERINGVALUET2        (Type.NUMERIC, 22, 7, null,                      "Объем по тарифу T2"),
         METERINGVALUET3        (Type.NUMERIC, 22, 7, null,                      "Объем по тарифу T3"),
+        
+        METERINGVALUE          (Type.NUMERIC, 22, 7, new Virt ("0+METERINGVALUET1"), "Объем"),
 
         ID_CTR_STATUS          (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения mosgis"),
         ID_CTR_STATUS_GIS      (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения ГИС ЖКХ"),

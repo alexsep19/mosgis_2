@@ -19,7 +19,9 @@ public class MeteringDeviceLogTest extends BaseTest {
 
     @Test (expected = Test.None.class)
     public void test () throws Exception {
-        Map<String, Object> r = getData ("e24236c7-70a0-465c-addc-809c0bb4ba3f");
+//        Map<String, Object> r = getData ("e24236c7-70a0-465c-addc-809c0bb4ba3f");
+        Map<String, Object> r = getData ("3925017a-09a2-4fbf-96a8-54080db0275d");
+
 //        r.put (MeteringDevice.c., null);        
         dump (r);
         validate (MeteringDeviceLog.toImportMeteringDeviceData (r));
