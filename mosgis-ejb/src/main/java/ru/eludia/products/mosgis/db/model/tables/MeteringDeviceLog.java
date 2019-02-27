@@ -65,8 +65,18 @@ public class MeteringDeviceLog extends GisWsLogTable {
             
             r.put ("values", Collections.EMPTY_LIST);
             
+            r.put ("nsi_2", db.getList (m
+                .select (Nsi2.class
+                    , Nsi2.c.CODE.lc () + " AS vc_nsi_2.code"
+                    , Nsi2.c.GUID.lc () + " AS vc_nsi_2.guid"
+                )
+                .where (Nsi2.c.CODE.lc () + " IN", Nsi2.i.forId (r.get (MeteringDevice.c.MASK_VC_NSI_2.lc ())).getCodes ())
+            ));
+            
         }
         else {
+            
+            r.put ("nsi_2", Collections.EMPTY_LIST);
             
             r.put ("values", db.getList (m
                 .select (MeteringDeviceValue.class, "AS root"
@@ -126,7 +136,13 @@ public class MeteringDeviceLog extends GisWsLogTable {
         }
         
         if (DB.ok (r.get (MeteringDevice.c.CONSUMEDVOLUME.lc ()))) {            // MunicipalResources 
-//            for (Object i: (List) r.get ("values")) result.getMunicipalResources ().add (toDeviceMunicipalResourceType (i));
+            
+            for (Object i: (List) r.get ("nsi_2")) {
+                Map<String, Object> n = (Map<String, Object>) i;
+                n.putAll (r);
+                result.getMunicipalResources ().add (toDeviceMunicipalResourceType (n));
+            }
+            
         }
         else {
 
@@ -248,11 +264,22 @@ public class MeteringDeviceLog extends GisWsLogTable {
         return result;
     }    
     
-    private static DeviceMunicipalResourceType toDeviceMunicipalResourceType (Object i) {
-        final Map<String, Object> r = (Map<String, Object>) i;
+    private static DeviceMunicipalResourceType toDeviceMunicipalResourceType (Map<String, Object> r) {
+        
         final DeviceMunicipalResourceType result = DB.to.javaBean (DeviceMunicipalResourceType.class, r);
+        
         result.setMunicipalResource (NsiTable.toDom (r, "vc_nsi_2"));
+        
+        if (!DB.eq (
+            result.getMunicipalResource ().getCode (),
+            Nsi2.i.POWER.getCode ()
+        )) {
+            result.setTariffCount (null);
+            result.setTransformationRatio (null);
+        }
+        
         return result;
+        
     }
         
 }

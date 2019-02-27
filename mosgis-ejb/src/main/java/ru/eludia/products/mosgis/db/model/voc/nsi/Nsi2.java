@@ -1,10 +1,14 @@
 package ru.eludia.products.mosgis.db.model.voc.nsi;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
@@ -70,6 +74,21 @@ public class Nsi2 extends View {
         int    id;
         int    code;
         String label;
+        Object [] codes;
+
+        public Object [] getCodes () {
+            return codes;
+        }
+        
+        private static List <Object> toCodeList (int mask) {            
+            List result = new ArrayList (3);            
+            int m = 1;
+            for (int code = 1; code <= 5; code ++) {
+                if ((m & mask) == m) result.add (code);
+                m = m << 1;                
+            }
+            return result;
+        }        
 
         public int getCode () {
             return code;
@@ -87,7 +106,13 @@ public class Nsi2 extends View {
             this.code  = code;
             this.id    = id;
             this.label = label;            
+            codes = (code == 0 ? toCodeList (id) : Collections.singletonList (code)).toArray ();
         }
+
+        public static i forId (Object id) {
+            for (i i: values ()) if (DB.eq (id, i.id)) return i;
+            throw new IllegalArgumentException ("Unknown NSI 2 bit mask: " + id);
+        }        
         
         private JsonObject toJsonObject () {
             return Json.createObjectBuilder ()
