@@ -21,7 +21,7 @@ public class MeteringDeviceLogTest extends BaseTest {
     public void test () throws Exception {
 //        Map<String, Object> r = getData ("e24236c7-70a0-465c-addc-809c0bb4ba3f");
 //        Map<String, Object> r = getData ("3925017a-09a2-4fbf-96a8-54080db0275d");
-        Map<String, Object> r = getData ("867b6921-a4d6-401d-af9e-4638db879643");
+        Map<String, Object> r = getData ("2857b1e5-f0ab-4285-aabc-ee15deb1f9d3");
 
 //        r.put (MeteringDevice.c., null);        
         dump (r);

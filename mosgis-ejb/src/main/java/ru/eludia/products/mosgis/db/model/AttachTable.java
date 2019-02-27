@@ -55,10 +55,10 @@ public abstract class AttachTable extends EnTable {
         final AttachmentType a = new AttachmentType ();
         a.setName (name.toString ());
         a.setDescription (DB.ok (description) ? description.toString () : name.toString ());
-        a.setAttachmentHASH (hash.toString ());
+        a.setAttachmentHASH (DB.to.String (hash));
         final Attachment aa = new Attachment ();
         a.setAttachment (aa);
-        aa.setAttachmentGUID (guid.toString ());
+        aa.setAttachmentGUID (DB.to.String (guid));
         return a;
     }
     

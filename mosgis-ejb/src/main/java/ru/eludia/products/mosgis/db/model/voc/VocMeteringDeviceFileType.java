@@ -6,6 +6,7 @@ import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
@@ -52,6 +53,11 @@ public class VocMeteringDeviceFileType extends Table {
         private i (int id, String label) {
             this.id = id;
             this.label = label;                    
+        }
+        
+        public static i forId (Object id) {
+            for (i i: values ()) if (DB.eq (i.id, id)) return i;
+            throw new IllegalArgumentException ("Unknown file type id: " + id);
         }
         
         private JsonObject toJsonObject () {
