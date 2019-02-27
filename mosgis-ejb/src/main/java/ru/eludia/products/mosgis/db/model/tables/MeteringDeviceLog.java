@@ -103,6 +103,7 @@ public class MeteringDeviceLog extends GisWsLogTable {
 
         r.put ("files", db.getList (m
             .select (MeteringDeviceFile.class, "*")
+            .toOne  (MeteringDeviceFileLog.class, "AS log", "ts_start_sending", "err_text").on ()
             .where (MeteringDeviceFile.c.UUID_METER, uuidMeter)
             .where (AttachTable.c.ID_STATUS, VocFileStatus.i.LOADED.getId ())
         ));
