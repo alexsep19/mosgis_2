@@ -1,6 +1,7 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -59,19 +60,28 @@ public class MeteringDeviceLog extends GisWsLogTable {
         );
         
         final Object uuidMeter = r.get ("r.uuid");
-
-        r.put ("values", db.getList (m
-            .select (MeteringDeviceValue.class, "AS root"
-                , MeteringDeviceValue.c.METERINGVALUE.lc ()
-                , MeteringDeviceValue.c.METERINGVALUET1.lc ()
-                , MeteringDeviceValue.c.METERINGVALUET2.lc ()
-                , MeteringDeviceValue.c.METERINGVALUET3.lc ()
-            )
-            .where (EnTable.c.IS_DELETED, 0)
-            .where (MeteringDeviceValue.c.UUID_METER, uuidMeter)
-            .where (MeteringDeviceValue.c.ID_TYPE, VocMeteringDeviceValueType.i.BASE.getId ())
-            .toOne (VocNsi2.class, "code", "guid").on ("root.code_vc_nsi_2=vc_nsi_2.code AND vc_nsi_2.isactual=1")
-        ));
+        
+        if (DB.ok (r.get (MeteringDevice.c.CONSUMEDVOLUME.lc ()))) {
+            
+            r.put ("values", Collections.EMPTY_LIST);
+            
+        }
+        else {
+            
+            r.put ("values", db.getList (m
+                .select (MeteringDeviceValue.class, "AS root"
+                    , MeteringDeviceValue.c.METERINGVALUE.lc ()
+                    , MeteringDeviceValue.c.METERINGVALUET1.lc ()
+                    , MeteringDeviceValue.c.METERINGVALUET2.lc ()
+                    , MeteringDeviceValue.c.METERINGVALUET3.lc ()
+                )
+                .where (EnTable.c.IS_DELETED, 0)
+                .where (MeteringDeviceValue.c.UUID_METER, uuidMeter)
+                .where (MeteringDeviceValue.c.ID_TYPE, VocMeteringDeviceValueType.i.BASE.getId ())
+                .toOne (VocNsi2.class, "code", "guid").on ("root.code_vc_nsi_2=vc_nsi_2.code AND vc_nsi_2.isactual=1")
+            ));
+            
+        }
 
         r.put ("accountguid", db.getList (m
             .select (MeteringDeviceAccount.class, "AS root")
@@ -116,7 +126,7 @@ public class MeteringDeviceLog extends GisWsLogTable {
         }
         
         if (DB.ok (r.get (MeteringDevice.c.CONSUMEDVOLUME.lc ()))) {            // MunicipalResources 
-            for (Object i: (List) r.get ("values")) result.getMunicipalResources ().add (toDeviceMunicipalResourceType (i));
+//            for (Object i: (List) r.get ("values")) result.getMunicipalResources ().add (toDeviceMunicipalResourceType (i));
         }
         else {
 

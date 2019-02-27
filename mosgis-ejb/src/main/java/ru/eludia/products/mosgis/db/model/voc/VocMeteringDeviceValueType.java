@@ -79,12 +79,19 @@ public class VocMeteringDeviceValueType extends Table {
             return builder.build ();            
         }
         
+        public static JsonArray toJsonArrayVolume () {            
+            JsonArrayBuilder builder = Json.createArrayBuilder ();                    
+            for (i i: i.values ()) if (i != i.BASE) builder.add (i.toJsonObject ());            
+            return builder.build ();
+        }
+        
     }
     
     private static JsonArray jsonArray = i.toJsonArray ();    
+    private static JsonArray jsonArrayVolume = i.toJsonArrayVolume ();    
     
-    public static final void addTo (JsonObjectBuilder job) {
-        job.add (TABLE_NAME, jsonArray);
+    public static final void addTo (JsonObjectBuilder job, boolean isVolume) {
+        job.add (TABLE_NAME, isVolume ? jsonArrayVolume : jsonArray);
     }
     
 }

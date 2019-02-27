@@ -18,6 +18,7 @@ public class Nsi2 extends View {
         CODE   (Type.STRING, 20, null, "Код"),
         ID     (Type.NUMERIC,    null, "Битовая маска"),
         LABEL  (Type.STRING,     null, "Наименование"),
+        GUID   (Type.UUID,       null, "Глобально-уникальный идентификатор элемента справочника"),        
         ;
         
         @Override
@@ -40,7 +41,8 @@ public class Nsi2 extends View {
         return "SELECT "
             + " code, "
             + " POWER (2, code - 1) id, "
-            + VocNsi2.c.F_C8D77DDAD5.name () + " label "
+            + VocNsi2.c.F_C8D77DDAD5.name () + " label, "
+            + " guid "
             + "FROM "
             + " vc_nsi_2 "
             + "WHERE"

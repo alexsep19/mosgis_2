@@ -12,6 +12,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
+import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
@@ -167,7 +168,7 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
         VocGisStatus.addTo (job);
         VocAction.addTo (job);
         VocMeteringDeviceType.addTo (job);
-        VocMeteringDeviceValueType.addTo (job);
+        VocMeteringDeviceValueType.addTo (job, DB.ok (item.getInt (MeteringDevice.c.CONSUMEDVOLUME.lc ())));
         VocMeteringDeviceInstallationPlace.addTo (job, item.getInt (MeteringDevice.c.MASK_VC_NSI_2.lc ()) == Nsi2.i.POWER.getId ());
         VocMeteringDeviceFileType.addTo          (job, item.getInt (MeteringDevice.c.ID_TYPE.lc ())       == VocMeteringDeviceType.i.COLLECTIVE.getId ());
 
