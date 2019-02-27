@@ -65,6 +65,12 @@
     </module>
     
     <module>
+	<type>JMS</type>
+	<name>Workflow-metering-devices</name>
+	<path>META-INF/mosgismodule-metering-devices-jms.xml</path>
+    </module>
+    
+    <module>
         <type>JMS</type>
         <name>WS-RegOrgServiceAsync</name>
         <path>META-INF/ws-jms/mosgismodule-ws-reg-org-service-async-jms.xml</path>
