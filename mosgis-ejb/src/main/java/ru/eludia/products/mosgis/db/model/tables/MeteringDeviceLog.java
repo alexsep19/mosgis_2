@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import ru.eludia.base.DB;
 import ru.eludia.base.Model;
 import ru.eludia.products.mosgis.db.model.EnTable;
@@ -16,6 +15,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceValueType;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi2;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi2;
+import ru.gosuslugi.dom.schema.integration.house_management.DeviceMunicipalResourceType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportMeteringDeviceDataRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.MeteringDeviceBasicCharacteristicsType;
 import ru.gosuslugi.dom.schema.integration.house_management.MeteringDeviceFullInformationType;
@@ -50,6 +50,7 @@ public class MeteringDeviceLog extends GisWsLogTable {
             ).on ("r.uuid_org=org.uuid")
             .toMaybeOne (Premise.class
                 , Premise.c.PREMISESGUID.lc () + " AS premiseguid"
+                , Premise.c.LIVINGROOMGUID.lc () + " AS livingroomguid"
             ).on ()
         );
 
@@ -103,6 +104,7 @@ public class MeteringDeviceLog extends GisWsLogTable {
         }
         
         if (DB.ok (r.get (MeteringDevice.c.CONSUMEDVOLUME.lc ()))) {            // MunicipalResources 
+            for (Object i: (List) r.get ("values")) result.getMunicipalResources ().add (toDeviceMunicipalResourceType (i));
         }
         else {
 
@@ -113,8 +115,7 @@ public class MeteringDeviceLog extends GisWsLogTable {
                 result.setMunicipalResourceEnergy (toMunicipalResourceElectricBaseType (r));
             }
             else {                                                              // MunicipalResourceNotEnergy
-                for (Object i: (List) r.get ("values")) 
-                    result.getMunicipalResourceNotEnergy ().add (to (i));
+                for (Object i: (List) r.get ("values")) result.getMunicipalResourceNotEnergy ().add (toMunicipalResourceNotElectricBaseType (i));
             }
 
         }
@@ -179,9 +180,10 @@ public class MeteringDeviceLog extends GisWsLogTable {
 
     private static MeteringDeviceBasicCharacteristicsType.LivingRoomDevice toLivingRoomDevice (Map<String, Object> r) {
         final MeteringDeviceBasicCharacteristicsType.LivingRoomDevice result = DB.to.javaBean (MeteringDeviceBasicCharacteristicsType.LivingRoomDevice.class, r);
+        result.getLivingRoomGUID ().add (DB.to.String (r.get ("livingroomguid")));
         return result;
     }
-    
+
     private static MeteringDeviceBasicCharacteristicsType.ResidentialPremiseDevice toResidentialPremiseDevice (Map<String, Object> r) {
         r.putAll ((Map) ((List) r.get ("values")).get (0));
         final MeteringDeviceBasicCharacteristicsType.ResidentialPremiseDevice result = DB.to.javaBean (MeteringDeviceBasicCharacteristicsType.ResidentialPremiseDevice.class, r);
@@ -196,11 +198,18 @@ public class MeteringDeviceLog extends GisWsLogTable {
         return result;
     }
     
-    private static MunicipalResourceNotElectricBaseType to (Object i) {
+    private static MunicipalResourceNotElectricBaseType toMunicipalResourceNotElectricBaseType (Object i) {
         final Map<String, Object> r = (Map<String, Object>) i;
         final MunicipalResourceNotElectricBaseType result = DB.to.javaBean (MunicipalResourceNotElectricBaseType.class, r);
         result.setMunicipalResource (NsiTable.toDom (r, "vc_nsi_2"));
         return result;
     }    
+    
+    private static DeviceMunicipalResourceType toDeviceMunicipalResourceType (Object i) {
+        final Map<String, Object> r = (Map<String, Object>) i;
+        final DeviceMunicipalResourceType result = DB.to.javaBean (DeviceMunicipalResourceType.class, r);
+        result.setMunicipalResource (NsiTable.toDom (r, "vc_nsi_2"));
+        return result;
+    }
         
 }
