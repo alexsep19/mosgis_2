@@ -19,15 +19,15 @@ public class MeteringDeviceLogTest extends BaseTest {
 
     @Test (expected = Test.None.class)
     public void test () throws Exception {
-        Map<String, Object> r = getData ();
+        Map<String, Object> r = getData ("e24236c7-70a0-465c-addc-809c0bb4ba3f");
 //        r.put (MeteringDevice.c., null);        
         dump (r);
         validate (MeteringDeviceLog.toImportMeteringDeviceData (r));
     }
 
-    private Map<String, Object> getData () throws SQLException {
+    private Map<String, Object> getData (String uuid) throws SQLException {
         try (DB db = model.getDb ()) {
-            return MeteringDeviceLog.getForExport (db, "1ffa17df-4fb4-4fde-a250-39d075f61548");
+            return MeteringDeviceLog.getForExport (db, uuid);
         }
     }
 

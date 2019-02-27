@@ -4,11 +4,14 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
 import ru.eludia.base.DB;
+import ru.eludia.base.Model;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceType;
+import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceValueType;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi2;
+import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi2;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportMeteringDeviceDataRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.MeteringDeviceBasicCharacteristicsType;
 import ru.gosuslugi.dom.schema.integration.house_management.MeteringDeviceFullInformationType;
@@ -27,20 +30,34 @@ public class MeteringDeviceLog extends GisWsLogTable {
     
     public static Map<String, Object> getForExport (DB db, String id) throws SQLException {
         
-        return db.getMap (db.getModel ()
-                
+        final Model m = db.getModel ();
+        
+        final Map<String, Object> r = db.getMap (m                
             .get (MeteringDeviceLog.class, id, "*")
-                
             .toOne (MeteringDevice.class, "AS r"
+                , EnTable.c.UUID.lc ()
                 , MeteringDevice.c.FIASHOUSEGUID.lc () + " AS fiashouseguid"
                 , MeteringDevice.c.ID_CTR_STATUS.lc ()
                 , MeteringDevice.c.ID_TYPE.lc ()
             ).on ()
-                
-            .toMaybeOne (VocOrganization.class, "AS org", "orgppaguid AS orgppaguid").on ("r.uuid_org=org.uuid")
-                                
+            .toMaybeOne (VocOrganization.class, "AS org", 
+                "orgppaguid AS orgppaguid"
+            ).on ("r.uuid_org=org.uuid")
+            .toMaybeOne (Premise.class
+                , Premise.c.PREMISESGUID.lc () + " AS premiseguid"
+            ).on ()
         );
-        
+
+        r.put ("tb_meter_values", db.getList (m                
+            .select (MeteringDeviceValue.class, "AS root", "*")
+            .where (EnTable.c.IS_DELETED, 0)
+            .where (MeteringDeviceValue.c.UUID_METER, r.get ("r.uuid"))
+            .where (MeteringDeviceValue.c.ID_TYPE, VocMeteringDeviceValueType.i.BASE.getId ())
+            .toOne (VocNsi2.class, "code", "guid").on ("root.code_vc_nsi_2=vc_nsi_2.code AND vc_nsi_2.isactual=1")
+        ));
+
+        return r;
+
     }    
 
     public static ImportMeteringDeviceDataRequest toImportMeteringDeviceData (Map<String, Object> r) {
@@ -147,11 +164,13 @@ public class MeteringDeviceLog extends GisWsLogTable {
     
     private static MeteringDeviceBasicCharacteristicsType.ResidentialPremiseDevice toResidentialPremiseDevice (Map<String, Object> r) {
         final MeteringDeviceBasicCharacteristicsType.ResidentialPremiseDevice result = DB.to.javaBean (MeteringDeviceBasicCharacteristicsType.ResidentialPremiseDevice.class, r);
+        result.getPremiseGUID ().add (DB.to.String (r.get ("premiseguid")));
         return result;
     }
     
     private static MeteringDeviceBasicCharacteristicsType.NonResidentialPremiseDevice toNonResidentialPremiseDevice (Map<String, Object> r) {
         final MeteringDeviceBasicCharacteristicsType.NonResidentialPremiseDevice result = DB.to.javaBean (MeteringDeviceBasicCharacteristicsType.NonResidentialPremiseDevice.class, r);
+        result.getPremiseGUID ().add (DB.to.String (r.get ("premiseguid")));
         return result;
     }
         

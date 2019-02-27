@@ -64,6 +64,7 @@ public class MeteringDeviceValue extends EnTable {
                 + "FROM "
                 + " tb_meter_values o "
                 + "WHERE o.is_deleted = 0 "
+                + " AND o.uuid <> NVL (:NEW.uuid, '00') "
                 + " AND o.uuid_meter = :NEW.uuid_meter "
                 + " AND o.id_type = :NEW.id_type "
                 + " AND o.code_vc_nsi_2 = :NEW.code_vc_nsi_2 "
