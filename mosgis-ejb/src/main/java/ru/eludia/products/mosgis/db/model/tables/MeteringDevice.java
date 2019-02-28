@@ -65,7 +65,8 @@ public class MeteringDevice extends EnTable {
         IS_POWER               (Type.BOOLEAN, new Virt  ("DECODE(\"MASK_VC_NSI_2\", 4, 1, 0)"),  "1 для счётчиков электричества, 0 для прочих"),
         IS_COLLECTIVE          (Type.BOOLEAN, new Virt  ("DECODE(\"ID_TYPE\", 2, 1, 0)"),  "1 для общедомовых (МКД) приборов, 0 для прочих"),
         IS_FOR_BUILDING        (Type.BOOLEAN, new Virt  ("DECODE(\"ID_TYPE\", 1, 1, 2, 1, 0)"),  "1 для приборов, устанавливаемых на МКД/ЖД в целом, 0 для приборов отдельных помещений"),
-        
+               
+        METERINGDEVICEGUID            (Type.UUID,       null,                   "Идентификатор ПУ"),
         METERINGDEVICEVERSIONGUID     (Type.UUID,       null,                   "Идентификатор версии ПУ"),
 
         ;
