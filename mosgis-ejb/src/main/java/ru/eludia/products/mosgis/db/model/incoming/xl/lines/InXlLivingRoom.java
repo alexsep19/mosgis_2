@@ -12,12 +12,11 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
-import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.db.model.tables.Block;
 
-public class InXlBlock extends EnTable {
+public class InXlLivingRoom extends EnTable {
     
-    private static final Logger logger = Logger.getLogger(InXlBlock.class.getName());
+    private static final Logger logger = Logger.getLogger(InXlLivingRoom.class.getName());
     
     public enum c implements ColEnum {
         
@@ -26,24 +25,21 @@ public class InXlBlock extends EnTable {
         ORD                     (Type.NUMERIC, 5,           "Номер строки"),
         
         HOUSE_UNOM              (Type.NUMERIC, 12, null, "UNOM дома"),
+        UUID_BLOCK              (Block.class,      null, "Ссылка на блок"),
         
-        ADDRESS                 (Type.STRING, null, "Адрес"),
+        ADDRESS                 (Type.STRING,      null, "Адрес"),
         BLOCKNUM                (Type.STRING, 255, null, "Номер блока"),
-        IS_NRS                  (Type.BOOLEAN, null, "Категория помещения (жилой/нежилой блок)"),
-        CODE_VC_NSI_30          (Type.STRING, 20, null, "Характеристика помещения"),
-        TOTALAREA               (Type.NUMERIC, 25, 4, null, "Общая площадь помещения"),
-        GROSSAREA               (Type.NUMERIC, 25, 4, null, "Жилая площадь помещения"),
-        CADASTRALNUMBER         (Type.STRING, null, "Кадастровый номер"),
-        INFORMATIONCONFIRMED    (Type.BOOLEAN, null, "Информация подтверждена поставщиком"),
+        ROOMNUMBER              (Type.STRING, 255, null, "Номер комнаты"),
         
-        F_20002                 (Type.NUMERIC, 10, null, "Количество комнат (НСИ 14)"),
-        F_20125                 (Type.NUMERIC, 10, null, "Количество проживающих"),
-        F_20003                 (Type.NUMERIC, 10, null, "Назначение помещения, относящегося к общему долевому имуществу собственников помещений (НСИ 17)"),
+        SQUARE                  (Type.NUMERIC, 25, 4, null, "Площадь"),
+        CADASTRALNUMBER         (Type.STRING,         null, "Кадастровый номер"),
+        
+        INFORMATIONCONFIRMED    (Type.BOOLEAN, null, "Информация подтверждена поставщиком"),
         
         ERR                     (Type.STRING,  null,  "Ошибка")
         
         ;
-        
+            
         @Override
         public Col getCol () {return col;}
         private Col col;        
@@ -54,16 +50,11 @@ public class InXlBlock extends EnTable {
             
             switch (this) {
                 case UUID_XL:
-                case BLOCKNUM:
-                case IS_NRS:
-                case CODE_VC_NSI_30:
-                case TOTALAREA:
-                case GROSSAREA:
+                case UUID_BLOCK:
+                case ROOMNUMBER:
+                case SQUARE:
                 case CADASTRALNUMBER:
                 case INFORMATIONCONFIRMED:
-                case F_20002:
-                case F_20125:
-                case F_20003:
                     return true;
                 default:
                     return false;
@@ -100,8 +91,6 @@ public class InXlBlock extends EnTable {
     
     private static void setFields (Map<String, Object> r, XSSFRow row) throws XLException {
         
-        NsiTable nsi_30 = NsiTable.getNsiTable (30);
-        
         try {
             final XSSFCell cell = row.getCell (0);
             if (cell == null) throw new XLException ("Не указан адрес (столбец A)");
@@ -115,10 +104,10 @@ public class InXlBlock extends EnTable {
         
         try {
             final XSSFCell cell = row.getCell (1);
-            if (cell == null) throw new XLException ("Не указан номер блока (столбец B)");
-            final String s = cell.getStringCellValue ();
-            if (!DB.ok (s)) throw new XLException ("Не указан номер блока (столбец B)");
-            r.put (c.BLOCKNUM.lc (), s);
+            if (cell != null) {
+                final String s = cell.getStringCellValue ();
+                if (DB.ok (s)) r.put (c.BLOCKNUM.lc (), s);
+            }
         }
         catch (Exception ex) {
             throw new XLException (ex.getMessage ());
@@ -126,19 +115,10 @@ public class InXlBlock extends EnTable {
         
         try {
             final XSSFCell cell = row.getCell (2);
-            if (cell == null) throw new XLException ("Не указана категория помещения (столбец C)");
+            if (cell == null) throw new XLException ("Не указан номер комнаты (столбец B)");
             final String s = cell.getStringCellValue ();
-            if (!DB.ok (s)) throw new XLException ("Не указана категория помещения (столбец C)");
-            switch (s) {
-                case "Жилое":
-                    r.put (c.IS_NRS.lc (), 0);
-                    break;
-                case "Нежилое":
-                    r.put (c.IS_NRS.lc (), 1);
-                    break;
-                default:
-                    throw new XLException ("Указана неверная категория помещения (столбец C): " + s);
-            }
+            if (!DB.ok (s)) throw new XLException ("Не указан номер комнаты (столбец B)");
+            r.put (c.ROOMNUMBER.lc (), s);
         }
         catch (Exception ex) {
             throw new XLException (ex.getMessage ());
@@ -148,16 +128,7 @@ public class InXlBlock extends EnTable {
             final XSSFCell cell = row.getCell (3);
             if (cell != null) {
                 final String s = cell.getStringCellValue ();
-                if (DB.ok (s)) {
-                    final String code = ModelHolder.getModel ().getDb ().getString (
-                        ModelHolder.getModel ()
-                                .select (nsi_30, "code")
-                                .where  ("f_" + nsi_30.getLabelField ().getName (), s)
-                                .and    ("is_actual", 1)
-                    );
-                    if (code == null) throw new XLException ("Код НСИ 30 не найден для указанной характеристики помещения (столбец D)");
-                    r.put (c.CODE_VC_NSI_30.lc (), code);
-                }
+                if (DB.ok (s)) r.put (c.SQUARE.lc (), s);
             }
         }
         catch (Exception ex) {
@@ -166,31 +137,9 @@ public class InXlBlock extends EnTable {
         
         try {
             final XSSFCell cell = row.getCell (4);
-            if (cell != null) {
-                final double area = cell.getNumericCellValue ();
-                if (DB.ok (area)) r.put (c.TOTALAREA.lc (), area);
-            }
-        }
-        catch (Exception ex) {
-            throw new XLException (ex.getMessage ());
-        }
-        
-        try {
-            final XSSFCell cell = row.getCell (5);
-            if (cell != null) {
-                final double area = cell.getNumericCellValue ();
-                if (DB.ok (area)) r.put (c.GROSSAREA.lc (), area);
-            }
-        }
-        catch (Exception ex) {
-            throw new XLException (ex.getMessage ());
-        }
-        
-        try {
-            final XSSFCell cell = row.getCell (6);
-            if (cell == null) throw new XLException ("Не указан кадастровый номер (столбец G)");
+            if (cell == null) throw new XLException ("Не указан номер комнаты (столбец E)");
             final String s = cell.getStringCellValue ();
-            if (!DB.ok (s)) throw new XLException ("Не указан кадастровый номер (столбец G)");
+            if (!DB.ok (s)) throw new XLException ("Не указан номер комнаты (столбец E)");
             r.put (c.CADASTRALNUMBER.lc (), s);
         }
         catch (Exception ex) {
@@ -198,10 +147,10 @@ public class InXlBlock extends EnTable {
         }
         
         try {
-            final XSSFCell cell = row.getCell (7);
-            if (cell == null) throw new XLException ("Не указан признак подтверждения поставщика (столбец H)");
+            final XSSFCell cell = row.getCell (5);
+            if (cell == null) throw new XLException ("Не указан признак подтверждения поставщика (столбец F)");
             final String s = cell.getStringCellValue ();
-            if (!DB.ok (s)) throw new XLException ("Не указан признак подтверждения поставщика (столбец H)");
+            if (!DB.ok (s)) throw new XLException ("Не указан признак подтверждения поставщика (столбец F)");
             switch (s) {
                 case "Да":
                     r.put (c.INFORMATIONCONFIRMED.lc (), 1);
@@ -210,7 +159,7 @@ public class InXlBlock extends EnTable {
                     r.put (c.INFORMATIONCONFIRMED.lc (), 0);
                     break;
                 default:
-                    throw new XLException ("Указан неверный признак подтверждения поставщика (столбец H): " + s);
+                    throw new XLException ("Указан неверный признак подтверждения поставщика (столбец F): " + s);
             }
         }
         catch (Exception ex) {
@@ -219,9 +168,9 @@ public class InXlBlock extends EnTable {
         
     }
     
-    public InXlBlock () {
+    public InXlLivingRoom () {
         
-        super ("in_xl_blocks", "Строки импорта блоков ЖД");
+        super ("in_xl_living_rooms", "Строки импорта комнат");
         
         cols  (c.class);
         
@@ -261,14 +210,18 @@ public class InXlBlock extends EnTable {
                             + "raise_application_error (-20000, 'ЖД по заданным UNOM и адресу не найден'); "
                         + "END; "
                 
+                        + "IF :NEW.blocknum IS NOT NULL THEN "
+                            + "SELECT uuid INTO :NEW.uuid_block FROM tb_blocks b WHERE b.uuid_house = house_id AND b.blocknum = :NEW.blocknum; "
+                        + "END IF; "
+                
                         + "SELECT COUNT (*) INTO cnt "
-                            + "FROM tb_blocks b INNER JOIN tb_houses h ON b.uuid_house = h.uuid "
-                            + "WHERE b.blocknum = :NEW.blocknum AND h.uuid = house_id; "
+                            + "FROM tb_living_rooms r INNER JOIN tb_houses h ON r.uuid_house = h.uuid "
+                            + "WHERE r.roomnumber = :NEW.roomnumber AND h.uuid = house_id; "
                         + "IF cnt = 0 THEN "
-                            + "INSERT INTO tb_blocks (uuid_house" + sb + ") "
+                            + "INSERT INTO tb_living_rooms (uuid_house" + sb + ") "
                                            + "VALUES (house_id" + nsb + "); "
                         + "ELSE "
-                            + "UPDATE tb_blocks SET " + usb.substring(1) + " WHERE uuid_house = house_id AND blocknum = :NEW.blocknum; "
+                            + "UPDATE tb_living_rooms SET " + usb.substring(1) + " WHERE uuid_house = house_id AND roomnumber = :NEW.roomnumber; "
                         + "END IF; "
                         + "COMMIT; "
                     + "EXCEPTION WHEN NO_DATA_FOUND THEN "

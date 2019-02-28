@@ -17,6 +17,7 @@ import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlBlock;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlBlockInfo;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlHouse;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlHouseInfo;
+import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlLivingRoom;
 import ru.eludia.products.mosgis.jms.xl.base.XLException;
 import ru.eludia.products.mosgis.jms.xl.base.XLMDB;
 
@@ -33,28 +34,25 @@ public class ParseHousesMDB extends XLMDB {
     private final int BLOCK_CELL_COUNT = 8;
     private final int BLOCK_INFO_CELL_COUNT = 4;
     
+    private final int ROOM_CELL_COUNT = 6;
+    private final int ROOM_INFO_CELL_COUNT = 6;
+    
     protected void processLines (XSSFWorkbook wb, UUID uuid, DB db) throws Exception {
         
         final XSSFSheet sheetHouses = wb.getSheetAt (0);
         final XSSFSheet sheetHousesInfo = wb.getSheetAt (1);
         final XSSFSheet sheetBlocks = wb.getSheetAt (2);
         final XSSFSheet sheetBlocksInfo = wb.getSheetAt (3);
-        final XSSFSheet sheetRooms = wb.getSheetAt (4);
-        final XSSFSheet sheetRoomsInfo = wb.getSheetAt (5);
+        final XSSFSheet sheetLivingRooms = wb.getSheetAt (4);
+        final XSSFSheet sheetLivingRoomsInfo = wb.getSheetAt (5);
         
         List <Map <String, Object>> houses = processHouses (sheetHouses, sheetHousesInfo, uuid, db);
         List <Map <String, Object>> blocks = processBlocks (sheetBlocks, sheetBlocksInfo, houses, uuid, db);
+        List <Map <String, Object>> rooms  = processRooms  (sheetLivingRooms, sheetLivingRoomsInfo, houses, blocks, uuid, db);
         
         db.update (InXlHouse.class, houses);
         db.update (InXlBlock.class, blocks);
-        
-        //addHousesLines (sheetHouses, uuid, db);
-        //if (!checkHousesLines (sheetHouses, db, uuid)) isOk = false;
-        
-        //addHousesInfoLines (sheetHousesInfo, uuid, db);
-        //if (!checkHousesInfoLines (sheetHousesInfo, db, uuid)) isOk = false;
-        
-        //if (!isOk) throw new XLException ();
+        db.update (InXlLivingRoom.class, rooms);
         
     }
     
@@ -68,7 +66,6 @@ public class ParseHousesMDB extends XLMDB {
         for (int i = 2; i <= sheetHouses.getLastRowNum (); i++) {
             XSSFRow row = sheetHouses.getRow (i);
             Map<String, Object> record = InXlHouse.toHash(uuid, i, row);
-            logger.info ("<HOUSE IMPORT> ROW: " + record.toString ());
             
             if (record.containsKey("err")) {
                 XSSFCell errCell = row.getLastCellNum () <= HOUSE_CELL_COUNT ? row.createCell (HOUSE_CELL_COUNT) : row.getCell (HOUSE_CELL_COUNT);
@@ -80,7 +77,7 @@ public class ParseHousesMDB extends XLMDB {
                 record.put ("err", "Документ уже содержит ЖД с данным UNOM");
                 XSSFCell errCell = row.getLastCellNum () <= HOUSE_CELL_COUNT ? row.createCell (HOUSE_CELL_COUNT) : row.getCell (HOUSE_CELL_COUNT);
                 errCell.setCellValue (record.get ("err").toString ());
-                isOk = false;                
+                isOk = false;
             }
             
             record.put ("uuid", db.insertId (InXlHouse.class, record));
@@ -90,6 +87,8 @@ public class ParseHousesMDB extends XLMDB {
             housesAddressList.add (record.get ("address").toString ());
             housesList.add (record);
             
+            logger.info ("<HOUSE IMPORT> ROW: " + record.toString ());
+            
             if (!isOk) throw new XLException ();
             
         }
@@ -98,7 +97,6 @@ public class ParseHousesMDB extends XLMDB {
         for (int i = 2; i <= sheetHousesInfo.getLastRowNum (); i++) {
             XSSFRow row = sheetHousesInfo.getRow (i);
             Map<String, Object> record = InXlHouseInfo.toHash(uuid, i, row);
-            logger.info ("<HOUSE INFO IMPORT> ROW: " + record.toString ());
             
             if (record.containsKey("err")) {
                 XSSFCell errCell = row.getLastCellNum () <= HOUSE_INFO_CELL_COUNT ? row.createCell (HOUSE_INFO_CELL_COUNT) : row.getCell (HOUSE_INFO_CELL_COUNT);
@@ -117,6 +115,8 @@ public class ParseHousesMDB extends XLMDB {
             
             record.put ("is_deleted", 0);
             housesInfoList.add (record);
+            
+            logger.info ("<HOUSE INFO IMPORT> ROW: " + record.toString ());
             
             if (!isOk) throw new XLException ();
             
@@ -144,7 +144,6 @@ public class ParseHousesMDB extends XLMDB {
         for (int i = 2; i <= sheetBlocks.getLastRowNum () ; i++) {
             XSSFRow row = sheetBlocks.getRow (i);
             Map<String, Object> record = InXlBlock.toHash(uuid, i, row);
-            logger.info ("<BLOCK IMPORT> ROW: " + record.toString ());
             
             if (record.containsKey("err")) {
                 XSSFCell errCell = row.getLastCellNum () <= BLOCK_CELL_COUNT ? row.createCell (BLOCK_CELL_COUNT) : row.getCell (BLOCK_CELL_COUNT);
@@ -186,6 +185,8 @@ public class ParseHousesMDB extends XLMDB {
             blocksList.add (record);
             
             if (!isOk) throw new XLException ();
+            
+            logger.info ("<BLOCK IMPORT> ROW: " + record.toString ());
                                                
         }
         
@@ -193,7 +194,6 @@ public class ParseHousesMDB extends XLMDB {
         for (int i = 2; i <= sheetBlocksInfo.getLastRowNum () ; i++) {
             XSSFRow row = sheetBlocksInfo.getRow (i);
             Map<String, Object> record = InXlBlockInfo.toHash(uuid, i, row);
-            logger.info ("<BLOCK INFO IMPORT> ROW: " + record.toString ());
             
             if (record.containsKey("err")) {
                 XSSFCell errCell = row.getLastCellNum () <= BLOCK_INFO_CELL_COUNT ? row.createCell (BLOCK_INFO_CELL_COUNT) : row.getCell (BLOCK_INFO_CELL_COUNT);
@@ -218,6 +218,8 @@ public class ParseHousesMDB extends XLMDB {
             record.put ("is_deleted", 0);
             blocksInfoList.add (record);
             
+            logger.info ("<BLOCK INFO IMPORT> ROW: " + record.toString ());
+            
             if (!isOk) throw new XLException ();
         }
         
@@ -235,6 +237,74 @@ public class ParseHousesMDB extends XLMDB {
                                    blockInfo.get (InXlBlockInfo.c.F_20125.lc ()));
         
         return blocksList;
+        
+    }
+
+    private List<Map<String, Object>> processRooms(XSSFSheet sheetLivingRooms, XSSFSheet sheetLivingRoomsInfo, List<Map<String, Object>> houses, List<Map<String, Object>> blocks, UUID uuid, DB db) throws XLException, SQLException {
+        
+        boolean isOk = true;
+        
+        List <Map <String, Object>> roomsList = new ArrayList <> ();
+        for (int i = 2; i <= sheetLivingRooms.getLastRowNum () ; i++) {
+            XSSFRow row = sheetLivingRooms.getRow (i);
+            Map<String, Object> record = InXlLivingRoom.toHash(uuid, i, row);
+            
+            if (record.containsKey("err")) {
+                XSSFCell errCell = row.getLastCellNum () <= ROOM_CELL_COUNT ? row.createCell (ROOM_CELL_COUNT) : row.getCell (ROOM_CELL_COUNT);
+                errCell.setCellValue (record.get ("err").toString ());
+                isOk = false;
+            }
+            
+            final Optional <Map <String, Object>> houseMap = houses.stream ()
+                                                                   .filter ((map) -> map.get ("address").equals (record.get ("address")))
+                                                                   .findFirst ();
+            
+            final Optional <Map <String, Object>> blockMap = blocks.stream ()
+                                                                   .filter ((map) -> map.get ("address").equals (record.get ("address")) &&
+                                                                                     map.get ("blocknum").equals (record.get ("blocknum")))
+                                                                   .findFirst ();
+            
+            if (!houseMap.isPresent ()) {
+                record.put ("err", "Документ не содержит информации о ЖД с заданным адресом");
+                XSSFCell errCell = row.getLastCellNum () <= ROOM_CELL_COUNT ? row.createCell (ROOM_CELL_COUNT) : row.getCell (ROOM_CELL_COUNT);
+                errCell.setCellValue (record.get ("err").toString ());
+                isOk = false;
+            }
+            else if ((int) houseMap.get ().get ("hasblocks") == 1) {
+                if (!blockMap.isPresent ()) {
+                    record.put ("err", "Документ не содержит информации о блоке с заданным номером по заданному адресу ЖД");
+                    XSSFCell errCell = row.getLastCellNum () <= ROOM_CELL_COUNT ? row.createCell (ROOM_CELL_COUNT) : row.getCell (ROOM_CELL_COUNT);
+                    errCell.setCellValue (record.get ("err").toString ());
+                    isOk = false;
+                }
+            }
+            else record.remove ("blocknum");
+            
+            record.put ("house_unom", houseMap.get ().get ("unom"));
+            
+            final long roomsCount = roomsList.stream ()
+                                             .filter ((map) -> map.get ("address").equals (record.get ("address")) &&
+                                                               map.getOrDefault ("blocknum", null).equals (record.getOrDefault ("blocknum", null)) &&
+                                                               map.get ("roomnumber").equals (record.get ("roomnumber")))
+                                             .count ();
+            if (roomsCount != 0) {
+                record.put ("err", "Документ уже содержит информации о комнате по заданному адресу и номеру (и номеру блока)");
+                XSSFCell errCell = row.getLastCellNum () <= ROOM_CELL_COUNT ? row.createCell (ROOM_CELL_COUNT) : row.getCell (ROOM_CELL_COUNT);
+                errCell.setCellValue (record.get ("err").toString ());
+                isOk = false;
+            }
+            
+            record.put ("uuid", db.insertId (InXlLivingRoom.class, record));
+            
+            record.put ("is_deleted", 0);
+            roomsList.add (record);
+            
+            logger.info ("<LIVING ROOM IMPORT> ROW: " + record.toString ());
+            
+            if (!isOk) throw new XLException ();
+        }
+        
+        return roomsList;
         
     }
     

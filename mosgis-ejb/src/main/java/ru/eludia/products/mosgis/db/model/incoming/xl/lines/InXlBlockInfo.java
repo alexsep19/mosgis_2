@@ -17,7 +17,7 @@ import ru.eludia.products.mosgis.ejb.ModelHolder;
 
 public class InXlBlockInfo extends EnTable {
     
-    private static final Logger logger = Logger.getLogger(InXlHouse.class.getName());
+    private static final Logger logger = Logger.getLogger(InXlBlockInfo.class.getName());
     
     public enum c implements ColEnum {
         
