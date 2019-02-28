@@ -17,7 +17,9 @@ import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceFileType;
 import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceType;
 import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceValueType;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi16;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi2;
+import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi16;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi2;
 import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
 import ru.gosuslugi.dom.schema.integration.house_management.DeviceMunicipalResourceType;
@@ -57,6 +59,8 @@ public class MeteringDeviceLog extends GisWsLogTable {
                 , Premise.c.PREMISESGUID.lc () + " AS premiseguid"
                 , Premise.c.LIVINGROOMGUID.lc () + " AS livingroomguid"
             ).on ()
+            .toMaybeOne (VocNsi16.class, "code", "guid").on ("r.code_vc_nsi_16=vc_nsi_16.code AND vc_nsi_16.isactual=1")
+                
         );
         
         final Object uuidMeter = r.get ("r.uuid");
@@ -176,6 +180,8 @@ public class MeteringDeviceLog extends GisWsLogTable {
     private static MeteringDeviceBasicCharacteristicsType toMeteringDeviceBasicCharacteristicsType (Map<String, Object> r) {
         
         final MeteringDeviceBasicCharacteristicsType result = DB.to.javaBean (MeteringDeviceBasicCharacteristicsType.class, r);
+        
+        if (DB.ok (r.get ("code_vc_nsi_16"))) result.setVerificationInterval (NsiTable.toDom (r, "vc_nsi_16"));
         
         switch (VocMeteringDeviceType.i.forId (r.get ("r.id_type"))) {
             case APARTMENT_HOUSE:
