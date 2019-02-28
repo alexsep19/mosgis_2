@@ -21,7 +21,7 @@ define ([], function () {
                         caption: 'Импорт паспорта ЖД', 
                         icon: 'w2ui-icon-plus', 
                         onClick: $_DO.import_houses, 
-                        //off: !$_USER.role.nsi_20_1
+                        off: !$_USER.role.nsi_20_1
                     },
                     
                 ].filter (not_off),
