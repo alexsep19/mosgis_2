@@ -88,7 +88,7 @@ public class InXlHouseInfo extends EnTable {
                 case "Количество проживающих (целое)":
                     final XSSFCell countCell = row.getCell (2);
                     if (countCell == null) throw new XLException ("Не указан параметр (столбец C)");
-                    final int count = (int) countCell.getNumericCellValue ();
+                    final String count = countCell.getStringCellValue ();
                     if (!DB.ok (s)) throw new XLException ("Не указан параметр (столбец C)");
                     r.put (c.RESIDENTSCOUNT.lc (), count);
                     break;

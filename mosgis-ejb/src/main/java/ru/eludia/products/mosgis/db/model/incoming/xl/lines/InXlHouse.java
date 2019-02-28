@@ -15,6 +15,7 @@ import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 
 public class InXlHouse extends EnTable {
@@ -156,21 +157,24 @@ public class InXlHouse extends EnTable {
         }
         
         try {
-            final XSSFCell cell = row.getCell (3);
-            if (cell != null) {
-                final String s = cell.getStringCellValue ();
-                if (DB.ok (s))
-                    switch (s) {
-                        case "Да":
-                            r.put (c.HASMULTIPLEHOUSESWITHSAMEADRES.lc (), 1);
-                            break;
-                        case "Нет":
-                            r.put (c.HASMULTIPLEHOUSESWITHSAMEADRES.lc (), 0);
-                            break;
-                        default:
-                            throw new XLException ("Указан неверный признак нескольких домов с одинаковым адресом (столбец D): " + s);
-                    }
+            if ((int) r.get (c.HASBLOCKS.lc ()) == 1) {
+                final XSSFCell cell = row.getCell (3);
+                if (cell != null) {
+                    final String s = cell.getStringCellValue ();
+                    if (DB.ok (s))
+                        switch (s) {
+                            case "Да":
+                                r.put (c.HASMULTIPLEHOUSESWITHSAMEADRES.lc (), 1);
+                                break;
+                            case "Нет":
+                                r.put (c.HASMULTIPLEHOUSESWITHSAMEADRES.lc (), 0);
+                                break;
+                            default:
+                                throw new XLException ("Указан неверный признак нескольких домов с одинаковым адресом (столбец D): " + s);
+                        }
+                }
             }
+            else r.put (c.HASMULTIPLEHOUSESWITHSAMEADRES.lc (), 0);
         }
         catch (Exception ex) {
             throw new XLException (ex.getMessage ());
@@ -178,10 +182,10 @@ public class InXlHouse extends EnTable {
         
         try {
             final XSSFCell cell = row.getCell (4);
-            if (cell == null) throw new XLException ("Не указан код ОКТМО (столбец E)");
-            final String s = cell.getStringCellValue ();
-            if (!DB.ok (s)) throw new XLException ("Не указан код ОКТМО (столбец E)");
-            r.put (c.OKTMO.lc (), cell.getStringCellValue ());
+            if (cell != null) {
+                final String s = cell.getStringCellValue ();
+                if (DB.ok (s)) r.put (c.OKTMO.lc (), cell.getStringCellValue ());
+            }
         }
         catch (Exception ex) {
             throw new XLException (ex.getMessage ());
@@ -329,6 +333,8 @@ public class InXlHouse extends EnTable {
         trigger ("BEFORE UPDATE", ""
                 + "DECLARE "
                     + "house_id RAW (16); "
+                    + "house_status INTEGER; "
+                    + "house_hasblocks NUMBER (1); "
                     + "usr RAW (16); "
                     + "org RAW (16); "
                     + "log RAW (16); "
@@ -348,9 +354,16 @@ public class InXlHouse extends EnTable {
                         + "FOR i IN (SELECT uuid FROM tb_houses WHERE unom = :NEW.unom AND is_condo = 1) LOOP "
                             + "raise_application_error (-20000, 'Существует МКД с таким же UNOM'); "
                         + "END LOOP; "
-                        + "UPDATE tb_houses SET " + usb.substring(1) + " WHERE unom = :NEW.unom RETURNING uuid INTO house_id; "
+                        + "UPDATE tb_houses SET " + usb.substring(1) + " WHERE unom = :NEW.unom RETURNING uuid, hasblocks, id_status INTO house_id, house_hasblocks, house_status; "
+                        + "IF house_status = " + VocHouseStatus.i.PUBLISHED.getId () + " AND house_hasblocks <> :NEW.hasblocks THEN "
+                            + "ROLLBACK; "
+                            + "raise_application_error (-20000, 'ЖД с данным UNOM и иным признаком блокированной застройки уже опубликован'); "
+                        + "END IF; "
                     + "END IF; "
-                    + "UPDATE vc_buildings SET oktmo = :NEW.oktmo WHERE houseguid = :NEW.fiashouseguid; "
+                    
+                    + "IF :NEW.oktmo IS NOT NULL THEN "
+                        + "UPDATE vc_buildings SET oktmo = :NEW.oktmo WHERE houseguid = :NEW.fiashouseguid; "
+                    + "END IF; "
                     
                     + "SELECT f.uuid_user, f.uuid_org INTO usr, org FROM in_xl_files f WHERE f.uuid = :NEW.uuid_xl; "
                     + "INSERT INTO tb_houses__log (action, uuid_object, uuid_user, uuid_org) "

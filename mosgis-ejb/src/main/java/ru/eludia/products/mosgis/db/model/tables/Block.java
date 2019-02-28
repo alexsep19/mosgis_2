@@ -10,6 +10,7 @@ import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
 import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
@@ -26,6 +27,8 @@ public class Block extends Passport {
         
         pk     ("uuid",               Type.UUID,           NEW_UUID,   "Ключ");
         col    ("is_deleted",         Type.BOOLEAN,        Bool.FALSE, "1, если запись удалена; иначе 0");
+        
+        fk     ("uuid_xl",            InXlFile.class,      null,       "Источник импорта");
 
         col    ("terminationdate",    Type.DATE,           null,       "Дата прекращения существования объекта");
         col    ("code_vc_nsi_330",    Type.STRING,  20,    null,       "Причина аннулирования");
