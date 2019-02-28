@@ -238,6 +238,7 @@ public class MeteringDeviceLog extends GisWsLogTable {
     private static MeteringDeviceBasicCharacteristicsType.CollectiveApartmentDevice toCollectiveApartmentDevice (Map<String, Object> r) {
         final MeteringDeviceBasicCharacteristicsType.CollectiveApartmentDevice result = DB.to.javaBean (MeteringDeviceBasicCharacteristicsType.CollectiveApartmentDevice.class, r);
         for (Object i: (List) r.get ("files")) result.getCertificate ().add (AttachTable.toAttachmentType ((Map<String, Object>) i)); 
+        result.getPremiseGUID ().add (DB.to.String (r.get ("premiseguid")));
         return result;
     }
 
