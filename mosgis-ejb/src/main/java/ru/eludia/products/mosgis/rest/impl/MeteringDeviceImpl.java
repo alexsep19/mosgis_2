@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
@@ -266,8 +267,6 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
         logAction (db, user, id, VocAction.i.APPROVE);
 
     });}
-
-/*    
     
     @Override
     public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
@@ -282,5 +281,5 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
         logAction (db, user, id, VocAction.i.ALTER);
         
     });}    
-*/    
+
 }

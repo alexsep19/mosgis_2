@@ -1,17 +1,16 @@
 define ([], function () {
 
     var form_name = 'metering_device_common_form'
-/*    
+
     $_DO.approve_metering_device_common = function (e) {
         if (!confirm ('Разместить эти данные в ГИС ЖКХ?')) return
         query ({type: 'metering_devices', action: 'approve'}, {}, reload_page)
     }
-        
+
     $_DO.alter_metering_device_common = function (e) {
         if (!confirm ('Открыть эту карточку на редактирование?')) return
         query ({type: 'metering_devices', action: 'alter'}, {}, reload_page)
     }    
-*/
 
     $_DO.cancel_metering_device_common = function (e) {
         

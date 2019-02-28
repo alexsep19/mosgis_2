@@ -98,6 +98,17 @@ public class MeteringDevice extends EnTable {
                     
         + "END;");
         
+        trigger ("BEFORE UPDATE", "BEGIN "
+
+            + "IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS "
+                + " AND :OLD.ID_CTR_STATUS <> " + VocGisStatus.i.FAILED_PLACING
+                + " AND :NEW.ID_CTR_STATUS =  " + VocGisStatus.i.PROJECT
+            + " THEN "
+                + " :NEW.ID_CTR_STATUS := " + VocGisStatus.i.MUTATING
+            + "; END IF; "
+                    
+        + "END;");        
+        
     }
     
     public enum Action {

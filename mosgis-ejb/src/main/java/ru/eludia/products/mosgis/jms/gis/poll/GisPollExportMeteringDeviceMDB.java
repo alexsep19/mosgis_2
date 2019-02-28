@@ -28,7 +28,7 @@ import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 import ru.eludia.products.mosgis.db.model.tables.MeteringDevice.c;
 
 @MessageDriven(activationConfig = {
- @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outExportHouseMeteringDevicesQueue")
+ @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outExportMeteringDevicesQueue")
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
