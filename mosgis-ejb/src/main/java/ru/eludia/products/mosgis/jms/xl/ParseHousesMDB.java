@@ -14,6 +14,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlBlock;
+import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlBlockInfo;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlHouse;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlHouseInfo;
 import ru.eludia.products.mosgis.jms.xl.base.XLException;
@@ -187,6 +188,51 @@ public class ParseHousesMDB extends XLMDB {
             if (!isOk) throw new XLException ();
                                                
         }
+        
+        List <Map <String, Object>> blocksInfoList = new ArrayList <> ();
+        for (int i = 2; i <= sheetBlocksInfo.getLastRowNum () ; i++) {
+            XSSFRow row = sheetBlocksInfo.getRow (i);
+            Map<String, Object> record = InXlBlockInfo.toHash(uuid, i, row);
+            logger.info ("<BLOCK INFO IMPORT> ROW: " + record.toString ());
+            
+            if (record.containsKey("err")) {
+                XSSFCell errCell = row.getLastCellNum () <= BLOCK_INFO_CELL_COUNT ? row.createCell (BLOCK_INFO_CELL_COUNT) : row.getCell (BLOCK_INFO_CELL_COUNT);
+                errCell.setCellValue (record.get ("err").toString ());
+                isOk = false;
+            }
+            
+            final Optional <Map <String, Object>> blockMap = blocksList.stream ()
+                                                                       .filter ((map) -> map.get ("address").equals (record.get ("address")) &&
+                                                                                         map.get ("blocknum").equals (record.get ("blocknum")))
+                                                                       .findFirst ();
+            
+            if (!blockMap.isPresent ()) {
+                record.put ("err", "Документ не содержит информации о блоке с заданным адресом и номером");
+                XSSFCell errCell = row.getLastCellNum () <= HOUSE_INFO_CELL_COUNT ? row.createCell (HOUSE_INFO_CELL_COUNT) : row.getCell (HOUSE_INFO_CELL_COUNT);
+                errCell.setCellValue (record.get ("err").toString ());
+                isOk = false;
+            }
+            
+            record.put ("uuid", db.insertId (InXlBlockInfo.class, record));
+            
+            record.put ("is_deleted", 0);
+            blocksInfoList.add (record);
+            
+            if (!isOk) throw new XLException ();
+        }
+        
+        for (Map <String, Object> block: blocksList)
+            for (Map <String, Object> blockInfo: blocksInfoList)
+                if (block.get ("address").equals (blockInfo.get ("address")) && block.get ("blocknum").equals (blockInfo.get ("blocknum")))
+                    if (blockInfo.containsKey (InXlBlockInfo.c.F_20002.lc ()))
+                        block.put (InXlBlockInfo.c.F_20002.lc (), 
+                                   blockInfo.get (InXlBlockInfo.c.F_20002.lc ()));
+                    else if (blockInfo.containsKey (InXlBlockInfo.c.F_20003.lc ()))
+                        block.put (InXlBlockInfo.c.F_20003.lc (),
+                                   blockInfo.get (InXlBlockInfo.c.F_20003.lc ()));
+                    else
+                        block.put (InXlBlockInfo.c.F_20125.lc (),
+                                   blockInfo.get (InXlBlockInfo.c.F_20125.lc ()));
         
         return blocksList;
         

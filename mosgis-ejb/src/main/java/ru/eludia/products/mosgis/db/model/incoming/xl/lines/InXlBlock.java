@@ -36,6 +36,10 @@ public class InXlBlock extends EnTable {
         CADASTRALNUMBER         (Type.STRING, null, "Кадастровый номер"),
         INFORMATIONCONFIRMED    (Type.BOOLEAN, null, "Информация подтверждена поставщиком"),
         
+        F_20002                 (Type.NUMERIC, 10, null, "Количество комнат (НСИ 14)"),
+        F_20125                 (Type.NUMERIC, 10, null, "Количество проживающих"),
+        F_20003                 (Type.NUMERIC, 10, null, "Назначение помещения, относящегося к общему долевому имуществу собственников помещений (НСИ 17)"),
+        
         ERR                     (Type.STRING,  null,  "Ошибка")
         
         ;
@@ -57,6 +61,9 @@ public class InXlBlock extends EnTable {
                 case GROSSAREA:
                 case CADASTRALNUMBER:
                 case INFORMATIONCONFIRMED:
+                case F_20002:
+                case F_20125:
+                case F_20003:
                     return true;
                 default:
                     return false;
