@@ -17,7 +17,6 @@ import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceFileType;
 import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceType;
 import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceValueType;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
-import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi16;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi2;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi16;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi2;
@@ -168,6 +167,7 @@ public class MeteringDeviceLog extends GisWsLogTable {
     }
     
     private static MunicipalResourceElectricBaseType toMunicipalResourceElectricBaseType (Map<String, Object> r) {
+        r.putAll ((Map) ((List) r.get ("values")).get (0));
         final MunicipalResourceElectricBaseType result = DB.to.javaBean (MunicipalResourceElectricBaseType.class, r);
         return result;
     }    
