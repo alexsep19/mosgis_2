@@ -106,6 +106,11 @@ public class VocMeteringDeviceType extends Table {
             throw new IllegalArgumentException ("Unknown type id: " + id);
         }
 
+        @Override
+        public String toString () {
+            return Integer.toString (id);
+        }
+
         private JsonObject toJsonObject () {
 
             final JsonObjectBuilder job = Json.createObjectBuilder ()

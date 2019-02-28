@@ -48,7 +48,7 @@ public class ExportMeteringDeviceMDB extends GisExportMDB<MeteringDeviceLog> {
         
     AckRequest.Ack invoke (DB db, MeteringDevice.Action action, UUID messageGUID,  Map<String, Object> r) throws Fault, SQLException {
             
-        UUID orgPPAGuid = (UUID) r.get ("org.orgppaguid");
+        UUID orgPPAGuid = (UUID) r.get ("orgppaguid");
             
         switch (action) {
             case PLACING:     return wsGisHouseManagementClient.importMeteringDeviceData (orgPPAGuid, messageGUID, r);

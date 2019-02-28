@@ -11,6 +11,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceType;
 import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceInstallationPlace;
+import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceValueType;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi16;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi27;
@@ -68,6 +69,7 @@ public class MeteringDevice extends EnTable {
                
         METERINGDEVICEGUID            (Type.UUID,       null,                   "Идентификатор ПУ"),
         METERINGDEVICEVERSIONGUID     (Type.UUID,       null,                   "Идентификатор версии ПУ"),
+        UNIQUENUMBER                  (Type.STRING,     null,                   "Уникальный номер"),
 
         ;
 
@@ -98,14 +100,52 @@ public class MeteringDevice extends EnTable {
                     
         + "END;");
         
-        trigger ("BEFORE UPDATE", "BEGIN "
+        trigger ("BEFORE UPDATE", 
 
+            "DECLARE "
+            + " cnt NUMBER; "
+            + " code NUMBER; "
+
+            + "BEGIN "
+                
             + "IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS "
                 + " AND :OLD.ID_CTR_STATUS <> " + VocGisStatus.i.FAILED_PLACING
                 + " AND :NEW.ID_CTR_STATUS =  " + VocGisStatus.i.PROJECT
             + " THEN "
                 + " :NEW.ID_CTR_STATUS := " + VocGisStatus.i.MUTATING
             + "; END IF; "
+                    
+            + "IF :NEW.is_deleted=0 AND :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING.getId () + " THEN BEGIN "
+                    
+                + "IF :NEW.COMMISSIONINGDATE IS NULL THEN raise_application_error (-20000, 'Дата ввода в эксплуатацию должна быть определена до отправки в ГИС ЖКХ.'); END IF; "
+                
+                + "IF :NEW.CONSUMEDVOLUME=0 THEN BEGIN "
+                    + "FOR code in 1 .. 5 LOOP "
+                        + "IF BITAND (:NEW.MASK_VC_NSI_2, POWER (2, code-1)) <> 0 THEN BEGIN "
+                            + " SELECT COUNT(*) INTO cnt FROM tb_meter_values WHERE is_deleted=0 AND CODE_VC_NSI_2=code AND id_type= " + VocMeteringDeviceValueType.i.BASE + " AND UUID_METER=:NEW.uuid; "
+                            + " IF cnt=0 THEN raise_application_error (-20000, 'До отправки в ГИС должны быть внесены базовые показания. Операция отменена.'); END IF; "
+                        + "END; END IF; "
+                    + "END LOOP;"
+                + "END; END IF; "                    
+                                    
+                + "IF :NEW.ID_TYPE<>"  + VocMeteringDeviceType.i.COLLECTIVE + " THEN BEGIN "
+                    + " SELECT COUNT(*) INTO cnt FROM tb_meter_acc WHERE UUID=:NEW.uuid; "
+                    + " IF cnt=0 THEN raise_application_error (-20000, 'Не указан ни один лицевой счёт. Операция отменена.'); END IF; "                        
+                    + " FOR i IN ("
+                        + "SELECT "
+                        + " a.accountnumber "
+                        + "FROM "
+                        + " tb_meter_acc o "
+                        + " INNER JOIN tb_accounts a ON o.uuid_account = a.uuid "
+                        + "WHERE a.accountguid IS NULL"
+                        + ") LOOP"
+                    + " raise_application_error (-20000, "
+                        + "'Лицевой счёт №' || i.accountnumber || ' не отправлен в ГИС ЖКХ. Операция отменена.'); "
+                    + " END LOOP; "
+                        
+                + "END; END IF; "                                                        
+                                    
+            + "END; END IF; "
                     
         + "END;");        
         

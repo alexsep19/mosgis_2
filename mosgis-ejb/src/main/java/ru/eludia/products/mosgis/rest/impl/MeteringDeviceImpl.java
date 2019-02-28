@@ -166,7 +166,7 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
 
         Nsi2.i.addMeteringTo (job);
         Nsi27.i.addTo (job);
-        VocGisStatus.addTo (job);
+        VocGisStatus.addLiteTo (job);
         VocAction.addTo (job);
         VocMeteringDeviceType.addTo (job);
         VocMeteringDeviceValueType.addTo (job, DB.ok (item.getInt (MeteringDevice.c.CONSUMEDVOLUME.lc ())));

@@ -67,9 +67,11 @@ public class GisPollExportMeteringDeviceMDB  extends GisPollMDB {
             
             if (commonResult == null || commonResult.isEmpty ()) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
             
-            for (CommonResultType.Error err: commonResult.get (0).getError ()) throw new GisPollException (err);
+            final ImportResult.CommonResult cr = commonResult.get (0);
             
-            ImportResult.CommonResult.ImportMeteringDevice importMeteringDevice = commonResult.get (0).getImportMeteringDevice ();
+            for (CommonResultType.Error err: cr.getError ()) throw new GisPollException (err);
+            
+            ImportResult.CommonResult.ImportMeteringDevice importMeteringDevice = cr.getImportMeteringDevice ();
 
             if (importMeteringDevice == null) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат (без importMeteringDevice)");
             
@@ -85,6 +87,8 @@ public class GisPollExportMeteringDeviceMDB  extends GisPollMDB {
             final Map<String, Object> h = statusHash (action.getOkStatus ());
 
             h.put (c.METERINGDEVICEGUID.lc (), meteringDeviceGUID);
+            h.put (c.METERINGDEVICEVERSIONGUID.lc (), cr.getGUID ());
+            h.put (c.UNIQUENUMBER.lc (), cr.getUniqueNumber ());
 
             update (db, uuid, r, h);
 
