@@ -89,14 +89,14 @@ public class InXlHouseInfo extends EnTable {
                     final XSSFCell countCell = row.getCell (2);
                     if (countCell == null) throw new XLException ("Не указан параметр (столбец C)");
                     final String count = countCell.getStringCellValue ();
-                    if (!DB.ok (s)) throw new XLException ("Не указан параметр (столбец C)");
+                    if (!DB.ok (count)) throw new XLException ("Не указан параметр (столбец C)");
                     r.put (c.RESIDENTSCOUNT.lc (), count);
                     break;
                 case "Наличие подземного паркинга (логическое)":
                     final XSSFCell parkingCell = row.getCell (2);
                     if (parkingCell == null) throw new XLException ("Не указан параметр (столбец C)");
                     final String parkingS = parkingCell.getStringCellValue ();
-                    if (!DB.ok (s)) throw new XLException ("Не указан параметр (столбец C)");
+                    if (!DB.ok (parkingS)) throw new XLException ("Не указан параметр (столбец C)");
                     switch (parkingS) {
                         case "Да":
                             r.put (c.HASUNDERGROUNDPARKING.lc (), 1);

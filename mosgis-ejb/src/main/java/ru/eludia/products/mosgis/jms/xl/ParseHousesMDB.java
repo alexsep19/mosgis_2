@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import javax.ejb.ActivationConfigProperty;
@@ -18,6 +19,7 @@ import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlBlockInfo;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlHouse;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlHouseInfo;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlLivingRoom;
+import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlLivingRoomInfo;
 import ru.eludia.products.mosgis.jms.xl.base.XLException;
 import ru.eludia.products.mosgis.jms.xl.base.XLMDB;
 
@@ -35,7 +37,7 @@ public class ParseHousesMDB extends XLMDB {
     private final int BLOCK_INFO_CELL_COUNT = 4;
     
     private final int ROOM_CELL_COUNT = 6;
-    private final int ROOM_INFO_CELL_COUNT = 6;
+    private final int ROOM_INFO_CELL_COUNT = 5;
     
     protected void processLines (XSSFWorkbook wb, UUID uuid, DB db) throws Exception {
         
@@ -303,6 +305,52 @@ public class ParseHousesMDB extends XLMDB {
             
             if (!isOk) throw new XLException ();
         }
+        
+        List <Map <String, Object>> roomsInfoList = new ArrayList <> ();
+        for (int i = 2; i <= sheetLivingRoomsInfo.getLastRowNum () ; i++) {
+            XSSFRow row = sheetLivingRoomsInfo.getRow (i);
+            Map<String, Object> record = InXlLivingRoomInfo.toHash(uuid, i, row);
+            
+            if (record.containsKey("err")) {
+                XSSFCell errCell = row.getLastCellNum () <= ROOM_INFO_CELL_COUNT ? row.createCell (ROOM_INFO_CELL_COUNT) : row.getCell (ROOM_INFO_CELL_COUNT);
+                errCell.setCellValue (record.get ("err").toString ());
+                isOk = false;
+            }
+            
+            final Optional <Map <String, Object>> roomMap = roomsList.stream ()
+                                                                     .filter ((map) -> map.get ("address").equals (record.get ("address")) &&
+                                                                                       Objects.equals(map.getOrDefault ("blocknum", null), record.getOrDefault ("blocknum", null)) &&
+                                                                                       map.get ("roomnumber").equals (record.get ("roomnumber")))
+                                                                     .findFirst ();
+
+            if (!roomMap.isPresent ()) {
+                record.put ("err", "Документ не содержит информации о комнате");
+                XSSFCell errCell = row.getLastCellNum () <= ROOM_INFO_CELL_COUNT ? row.createCell (ROOM_INFO_CELL_COUNT) : row.getCell (ROOM_INFO_CELL_COUNT);
+                errCell.setCellValue (record.get ("err").toString ());
+                isOk = false;
+            }
+            
+            record.put ("uuid", db.insertId (InXlLivingRoomInfo.class, record));
+            
+            record.put ("is_deleted", 0);
+            roomsInfoList.add (record);
+            
+            logger.info ("<LIVING ROOM INFO IMPORT> ROW: " + record.toString ());
+            
+            if (!isOk) throw new XLException ();
+        }
+        
+        for (Map <String, Object> room: roomsList)
+            for (Map <String, Object> roomInfo: roomsInfoList)
+                if (room.get ("address").equals (roomInfo.get ("address")) &&
+                    Objects.equals (room.get ("blocknum"), roomInfo.get ("blocknum")) &&
+                    room.get ("roomnumber").equals (roomInfo.get ("roomnumber")))
+                    if (roomInfo.containsKey (InXlLivingRoomInfo.c.F_20130.lc ()))
+                        room.put (InXlLivingRoomInfo.c.F_20130.lc (), 
+                                   roomInfo.get (InXlLivingRoomInfo.c.F_20130.lc ()));
+                    else
+                        room.put (InXlLivingRoomInfo.c.F_21821.lc (),
+                                   roomInfo.get (InXlLivingRoomInfo.c.F_21821.lc ()));
         
         return roomsList;
         

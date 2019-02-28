@@ -36,6 +36,9 @@ public class InXlLivingRoom extends EnTable {
         
         INFORMATIONCONFIRMED    (Type.BOOLEAN, null, "Информация подтверждена поставщиком"),
         
+        F_20130                 (Type.NUMERIC, 10, null, "Количество граждан, проживающих в комнате в коммунальной квартире"),
+        F_21821                 (Type.NUMERIC, 19,4, null, "Площадь общего имущества в коммунальной квартире"),
+        
         ERR                     (Type.STRING,  null,  "Ошибка")
         
         ;
@@ -55,6 +58,8 @@ public class InXlLivingRoom extends EnTable {
                 case SQUARE:
                 case CADASTRALNUMBER:
                 case INFORMATIONCONFIRMED:
+                case F_20130:
+                case F_21821:
                     return true;
                 default:
                     return false;
@@ -115,9 +120,9 @@ public class InXlLivingRoom extends EnTable {
         
         try {
             final XSSFCell cell = row.getCell (2);
-            if (cell == null) throw new XLException ("Не указан номер комнаты (столбец B)");
+            if (cell == null) throw new XLException ("Не указан номер комнаты (столбец C)");
             final String s = cell.getStringCellValue ();
-            if (!DB.ok (s)) throw new XLException ("Не указан номер комнаты (столбец B)");
+            if (!DB.ok (s)) throw new XLException ("Не указан номер комнаты (столбец C)");
             r.put (c.ROOMNUMBER.lc (), s);
         }
         catch (Exception ex) {
@@ -170,7 +175,7 @@ public class InXlLivingRoom extends EnTable {
     
     public InXlLivingRoom () {
         
-        super ("in_xl_living_rooms", "Строки импорта комнат");
+        super ("in_xl_rooms", "Строки импорта комнат");
         
         cols  (c.class);
         
