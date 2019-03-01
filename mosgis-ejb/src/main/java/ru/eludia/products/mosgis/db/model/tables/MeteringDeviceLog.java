@@ -99,10 +99,10 @@ public class MeteringDeviceLog extends GisWsLogTable {
         r.put ("accountguid", db.getList (m
             .select (MeteringDeviceAccount.class, "AS root")
             .where (EnTable.c.UUID, uuidMeter)
-            .toOne (Account.class
-                , Account.c.ACCOUNTGUID.lc () + " AS accountguid"
+            .toOne (Account.class, "AS o"
+                , Account.c.ACCOUNTGUID.lc () + " AS v" 
             ).on ()
-        ).stream ().map (t -> t.get ("accountguid").toString ()).collect (Collectors.toList ()));
+        ).stream ().map (t -> DB.to.String (t.get ("v"))).collect (Collectors.toList ()));
 
         r.put ("files", db.getList (m
             .select (MeteringDeviceFile.class, "*")
@@ -110,14 +110,15 @@ public class MeteringDeviceLog extends GisWsLogTable {
             .where (MeteringDeviceFile.c.UUID_METER, uuidMeter)
             .where (AttachTable.c.ID_STATUS, VocFileStatus.i.LOADED.getId ())
         ));
-/*        
-        r.put ("meter", db.getList (m
-            .select (MeteringDeviceFile.class, "*")
-            .toOne  (MeteringDeviceFileLog.class, "AS log", "ts_start_sending", "err_text").on ()
-            .where (MeteringDeviceFile.c.UUID_METER, uuidMeter)
-            .where (AttachTable.c.ID_STATUS, VocFileStatus.i.LOADED.getId ())
-        ));
-*/
+
+        r.put ("linkedmeteringdeviceversionguid", db.getList (m
+            .select (MeteringDeviceMeteringDevice.class, "AS root")
+            .toOne  (MeteringDevice.class, "AS o",
+                MeteringDevice.c.METERINGDEVICEVERSIONGUID.lc () + " AS v"
+            ).on ("root.uuid_meter=o.uuid")
+            .where ("uuid", uuidMeter)
+        ).stream ().map (t -> DB.to.String (t.get ("v"))).collect (Collectors.toList ()));
+
         return r;
 
     }
