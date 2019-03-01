@@ -67,8 +67,8 @@ define ([], function () {
                 
                 switch (it.id_ctr_status) {
                     case 14:
-//                    case 34:
-//                    case 40:
+                    case 34:
+                    case 40:
                         it._can.alter = 1
                 }
 
