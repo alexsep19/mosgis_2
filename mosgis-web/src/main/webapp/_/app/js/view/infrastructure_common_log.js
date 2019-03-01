@@ -41,6 +41,10 @@ define ([], function () {
                 {field: 'comissioningyear', caption: 'Год ввода в эксплуатацию', size: 10, hidden: true},
                 {field: 'countaccidents', caption: 'Число аварий на 100 км сетей', size: 10, hidden: true},
                 {field: 'deterioration', caption: 'Уровень износа (%)', size: 10, hidden: true},
+
+                {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: 'data-ref=1'},
+                {field: 'soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: 'data-ref=1'},
+                {field: 'soap.err_text', caption: 'Ошибка',    size: 30},
             ],
             
             url: '/mosgis/_rest/?type=infrastructures&part=log&id=' + $_REQUEST.id,        
