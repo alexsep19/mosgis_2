@@ -108,6 +108,7 @@ define ([], function () {
                     switch (data.item.id_is_status) {
                         case 14:
                         case 34:
+                        case 40:
                             it._can.alter = 1
                     } 
 
