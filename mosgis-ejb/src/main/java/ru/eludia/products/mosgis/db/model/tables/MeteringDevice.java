@@ -93,28 +93,29 @@ public class MeteringDevice extends EnTable {
         super  ("tb_meters", "Приборы учёта");
         cols   (c.class);
         key    ("fiashouseguid", "fiashouseguid");
-        
+
         trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
 
             + "SELECT CODE_VC_NSI_27 INTO :NEW.CODE_VC_NSI_27 FROM vc_meter_types WHERE id = :NEW.ID_TYPE; "
-                    
-        + "END;");
-        
-        trigger ("BEFORE UPDATE", 
 
-            "DECLARE "
-            + " cnt NUMBER; "
-            + " code NUMBER; "
-
-            + "BEGIN "
-                
-            + "IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS "
+            + "IF UPDATING AND :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS "
                 + " AND :OLD.ID_CTR_STATUS <> " + VocGisStatus.i.FAILED_PLACING
                 + " AND :NEW.ID_CTR_STATUS =  " + VocGisStatus.i.PROJECT
             + " THEN "
                 + " :NEW.ID_CTR_STATUS := " + VocGisStatus.i.MUTATING
             + "; END IF; "
-                    
+
+        + "END;");
+
+        trigger ("BEFORE UPDATE", 
+
+            "DECLARE "
+            + " PRAGMA AUTONOMOUS_TRANSACTION; "
+            + " cnt NUMBER; "
+            + " code NUMBER; "
+
+            + "BEGIN "
+                                    
             + "IF :NEW.is_deleted=0 AND :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING.getId () + " THEN BEGIN "
                     
                 + "IF :NEW.COMMISSIONINGDATE IS NULL THEN raise_application_error (-20000, 'Дата ввода в эксплуатацию должна быть определена до отправки в ГИС ЖКХ.'); END IF; "
@@ -136,16 +137,26 @@ public class MeteringDevice extends EnTable {
                         + " a.accountnumber "
                         + "FROM "
                         + " tb_meter_acc o "
-                        + " INNER JOIN tb_accounts a ON o.uuid_account = a.uuid "
-                        + "WHERE a.uuid = :NEW.uuid"
-                        + " AND a.accountguid IS NULL"
+                        + " INNER JOIN tb_accounts a ON o.uuid_account = a.uuid AND a.accountguid IS NULL "
+                        + "WHERE o.uuid = :NEW.uuid"
                         + ") LOOP"
                     + " raise_application_error (-20000, "
                         + "'Лицевой счёт №' || i.accountnumber || ' не отправлен в ГИС ЖКХ. Операция отменена.'); "
                     + " END LOOP; "
-                        
                 + "END; END IF; "                                                        
-                                    
+
+                    + " FOR i IN ("
+                        + "SELECT "
+                        + " m.meteringdevicenumber "
+                        + "FROM "
+                        + " tb_meter_meters o "
+                        + " INNER JOIN tb_meters m ON o.uuid_meter = m.uuid AND m.meteringdeviceversionguid IS NULL "
+                        + "WHERE o.uuid = :NEW.uuid"
+                        + ") LOOP"
+                    + " raise_application_error (-20000, "
+                        + "'Связанный прибор учёта с заводским (серийным) №' || i.meteringdevicenumber || ' не опубликован в ГИС ЖКХ. Операция отменена.'); "
+                    + " END LOOP; "
+
             + "END; END IF; "
                     
         + "END;");        
