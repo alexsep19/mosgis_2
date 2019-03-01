@@ -132,7 +132,12 @@ public class MeteringDeviceLog extends GisWsLogTable {
     private static ImportMeteringDeviceDataRequest.MeteringDevice toMeteringDevice (Map<String, Object> r) {
         final ImportMeteringDeviceDataRequest.MeteringDevice result = DB.to.javaBean (ImportMeteringDeviceDataRequest.MeteringDevice.class, r);
         result.setTransportGUID (UUID.randomUUID ().toString ());
-        result.setDeviceDataToCreate (toMeteringDeviceFullInformationType (r));
+        if (DB.ok (r.get (MeteringDevice.c.METERINGDEVICEVERSIONGUID.lc ()))) {
+            result.setDeviceDataToUpdate (toDeviceDataToUpdate (r));
+        }
+        else {
+            result.setDeviceDataToCreate (toMeteringDeviceFullInformationType (r));
+        }
         return result;
     }
     
@@ -297,5 +302,11 @@ public class MeteringDeviceLog extends GisWsLogTable {
         return result;
         
     }
-        
+    
+    private static ImportMeteringDeviceDataRequest.MeteringDevice.DeviceDataToUpdate toDeviceDataToUpdate (Map<String, Object> r) {
+        final ImportMeteringDeviceDataRequest.MeteringDevice.DeviceDataToUpdate result = DB.to.javaBean (ImportMeteringDeviceDataRequest.MeteringDevice.DeviceDataToUpdate.class, r);
+        result.setUpdateBeforeDevicesValues (toMeteringDeviceFullInformationType (r));
+        return result;
+    }
+
 }
