@@ -55,6 +55,9 @@ public class MeteringDevice extends EnTable {
         TEMPERATURESENSINGELEMENTINFO  (Type.STRING,  2000,  null,              "Информация о наличии датчиков температуры с указанием их местоположения на узле учета"),
         PRESSURESENSINGELEMENTINFO     (Type.STRING,  2000,  null,              "Информация о наличии датчиков давления с указанием их местоположения на узле учета"),
 
+        TEMPERATURESENSORINFORMATION   (Type.STRING, new Virt  ("NVL(TEMPERATURESENSINGELEMENTINFO,NULL)"),  "Информация о наличии датчиков температуры"),
+        PRESSURESENSORINFORMATION      (Type.STRING, new Virt  ("NVL(PRESSURESENSINGELEMENTINFO,NULL)"),  "Информация о наличии датчиков температуры"),
+
         TRANSFORMATIONRATIO    (Type.NUMERIC, 17, 2, null,                      "Коэффициент трансформации"),
         TARIFFCOUNT            (Type.NUMERIC, 1, 0, BigInteger.ONE,             "Количество тарифов"),
         

@@ -25,6 +25,7 @@ import ru.gosuslugi.dom.schema.integration.house_management.DeviceMunicipalResou
 import ru.gosuslugi.dom.schema.integration.house_management.ImportMeteringDeviceDataRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.MeteringDeviceBasicCharacteristicsType;
 import ru.gosuslugi.dom.schema.integration.house_management.MeteringDeviceFullInformationType;
+import ru.gosuslugi.dom.schema.integration.house_management.MeteringDeviceToUpdateAfterDevicesValuesType;
 import ru.gosuslugi.dom.schema.integration.house_management.MunicipalResourceElectricBaseType;
 import ru.gosuslugi.dom.schema.integration.house_management.MunicipalResourceNotElectricBaseType;
 
@@ -95,6 +96,13 @@ public class MeteringDeviceLog extends GisWsLogTable {
             ));
             
         }
+        
+        r.put ("some_value", db.getString (m
+            .select (MeteringDeviceValue.class, "uuid")
+            .where (EnTable.c.IS_DELETED, 0)
+            .where (MeteringDeviceValue.c.UUID_METER, uuidMeter)
+            .where (MeteringDeviceValue.c.ID_TYPE.lc () + " <>", VocMeteringDeviceValueType.i.BASE.getId ())
+        ));
 
         r.put ("accountguid", db.getList (m
             .select (MeteringDeviceAccount.class, "AS root")
@@ -187,6 +195,11 @@ public class MeteringDeviceLog extends GisWsLogTable {
     
     private static MeteringDeviceFullInformationType.LinkedWithMetering toLinkedWithMetering (Map<String, Object> r) {
         final MeteringDeviceFullInformationType.LinkedWithMetering result = DB.to.javaBean (MeteringDeviceFullInformationType.LinkedWithMetering.class, r);
+        return result;
+    }
+    
+    private static MeteringDeviceToUpdateAfterDevicesValuesType.LinkedWithMetering tooLinkedWithMetering (Map<String, Object> r) {
+        final MeteringDeviceToUpdateAfterDevicesValuesType.LinkedWithMetering result = DB.to.javaBean (MeteringDeviceToUpdateAfterDevicesValuesType.LinkedWithMetering.class, r);
         return result;
     }
     
@@ -304,8 +317,41 @@ public class MeteringDeviceLog extends GisWsLogTable {
     }
     
     private static ImportMeteringDeviceDataRequest.MeteringDevice.DeviceDataToUpdate toDeviceDataToUpdate (Map<String, Object> r) {
+        
         final ImportMeteringDeviceDataRequest.MeteringDevice.DeviceDataToUpdate result = DB.to.javaBean (ImportMeteringDeviceDataRequest.MeteringDevice.DeviceDataToUpdate.class, r);
-        result.setUpdateBeforeDevicesValues (toMeteringDeviceFullInformationType (r));
+        
+        if (DB.ok (r.get ("some_value"))) {
+            result.setUpdateAfterDevicesValues (toMeteringDeviceToUpdateAfterDevicesValuesType (r));
+        }
+        else {
+            result.setUpdateBeforeDevicesValues (toMeteringDeviceFullInformationType (r));
+        }
+        
+        return result;
+        
+    }
+
+    private static MeteringDeviceToUpdateAfterDevicesValuesType toMeteringDeviceToUpdateAfterDevicesValuesType (Map<String, Object> r) {
+
+        final MeteringDeviceToUpdateAfterDevicesValuesType result = DB.to.javaBean (MeteringDeviceToUpdateAfterDevicesValuesType.class, r);
+
+        if (!Boolean.TRUE.equals (result.isNotLinkedWithMetering ())) {
+            result.setNotLinkedWithMetering (null);
+            result.setLinkedWithMetering (tooLinkedWithMetering (r));
+        }
+        
+        switch (VocMeteringDeviceType.i.forId (r.get ("r.id_type"))) {
+            case COLLECTIVE:
+                result.setCollectiveDevice (tooCollectiveDevice (r));
+                break;
+        }
+
+        return result;
+
+    }
+    
+    private static MeteringDeviceToUpdateAfterDevicesValuesType.CollectiveDevice tooCollectiveDevice (Map<String, Object> r) {
+        final MeteringDeviceToUpdateAfterDevicesValuesType.CollectiveDevice result = DB.to.javaBean (MeteringDeviceToUpdateAfterDevicesValuesType.CollectiveDevice.class, r);
         return result;
     }
 
