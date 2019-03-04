@@ -29,6 +29,7 @@ public class MeteringDeviceValue extends EnTable {
         ID_CTR_STATUS_GIS      (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения ГИС ЖКХ"),
 
         ID_LOG                 (MeteringDeviceValueLog.class,                   "Последнее событие редактирования"),
+        GIS_GUID               (Type.UUID,           null,                      "уникальный номер на стороне ГИС ЖКХ"),
 
         ;
 
@@ -79,5 +80,42 @@ public class MeteringDeviceValue extends EnTable {
         + "END;");
 
     }
+    
+    public enum Action {
+        
+        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
+        ;
+        
+        VocGisStatus.i nextStatus;
+        VocGisStatus.i okStatus;
+        VocGisStatus.i failStatus;
+
+        private Action (VocGisStatus.i nextStatus, VocGisStatus.i okStatus, VocGisStatus.i failStatus) {
+            this.nextStatus = nextStatus;
+            this.okStatus = okStatus;
+            this.failStatus = failStatus;
+        }
+
+        public VocGisStatus.i getNextStatus () {
+            return nextStatus;
+        }
+
+        public VocGisStatus.i getFailStatus () {
+            return failStatus;
+        }
+
+        public VocGisStatus.i getOkStatus () {
+            return okStatus;
+        }
+        
+        public static Action forStatus (VocGisStatus.i status) {
+            switch (status) {
+                case PENDING_RQ_PLACING:   return PLACING;
+                case PENDING_RP_PLACING:   return PLACING;
+                default: return null;
+            }            
+        }
+                                
+    };    
 
 }

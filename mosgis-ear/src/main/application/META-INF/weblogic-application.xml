@@ -63,13 +63,19 @@
 	<name>Workflow-intervals</name>
 	<path>META-INF/mosgismodule-intervals-jms.xml</path>
     </module>
-    
+
     <module>
 	<type>JMS</type>
 	<name>Workflow-metering-devices</name>
 	<path>META-INF/mosgismodule-metering-devices-jms.xml</path>
     </module>
-    
+
+    <module>
+	<type>JMS</type>
+	<name>Workflow-metering-device-values</name>
+	<path>META-INF/mosgismodule-metering-device-values-jms.xml</path>
+    </module>
+
     <module>
         <type>JMS</type>
         <name>WS-RegOrgServiceAsync</name>

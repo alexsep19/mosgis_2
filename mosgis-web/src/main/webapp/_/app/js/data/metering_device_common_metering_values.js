@@ -1,5 +1,27 @@
 define ([], function () {
 
+    var grid_name = 'metering_device_common_metering_values_grid'
+
+    $_DO.approve_metering_device_common_metering_values = function (e) {
+    
+        var data = clone ($('body').data ('data'))
+        
+        if (!data.item.meteringdeviceversionguid) die ('foo', 'Прибор учёта не опубликован в ГИС ЖКХ. Операция отменена.')
+               
+        var grid = w2ui [grid_name]
+        var id = grid.getSelection () [0]
+        var r = grid.get (id)
+        
+        if (!confirm ('Отправить в ГИС ЖКХ показания за "' + dt_dmy (r.datevalue) + '?')) return
+        
+        grid.lock ()
+
+        query ({type: 'metering_device_values', id: id, action: 'approve'}, {}, function () {
+            grid.reload (grid.refresh)
+        })
+
+    }
+
     $_DO.create_metering_device_common_metering_values = function (e) {
 
         $_SESSION.set ('record', {
@@ -22,13 +44,13 @@ define ([], function () {
     
     $_DO.delete_metering_device_common_metering_values = function (e) {
 
-        if (!e.force) return
-
-        $('.w2ui-message').remove ()
-
-        e.preventDefault ()
-
-        var grid = w2ui ['metering_device_common_metering_values_grid']
+        var grid = w2ui [grid_name]
+        var id = grid.getSelection () [0]
+        var r = grid.get (id)
+        
+        if (!confirm ('Удалить показания за "' + dt_dmy (r.datevalue) + '?')) return
+        
+        grid.lock ()
 
         query ({type: 'metering_device_values', id: grid.getSelection () [0], action: 'delete'}, {}, function (d) {
             grid.reload (grid.refresh)
@@ -42,7 +64,7 @@ define ([], function () {
 
         if (layout) layout.unlock ('main')
 
-        var data = $('body').data ('data')
+        var data = clone ($('body').data ('data'))
         
         done (data)
 

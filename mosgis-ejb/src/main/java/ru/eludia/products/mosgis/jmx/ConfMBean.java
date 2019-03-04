@@ -120,4 +120,12 @@ public interface ConfMBean {
     public void setWsGisVolumeQualityConnTimeout(int i);
     public int getWsGisVolumeQualityRespTimeout();
     public void setWsGisVolumeQualityRespTimeout(int i);
+    
+    public String getWsGisMeteringUrl ();
+    public void   setWsGisMeteringUrl (String s);    
+    public int    getWsGisMeteringConnTimeout ();     
+    public void   setWsGisMeteringConnTimeout (int i);
+    public int    getWsGisMeteringRespTimeout ();     
+    public void   setWsGisMeteringRespTimeout (int i);     
+    
 }

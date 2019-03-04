@@ -47,7 +47,7 @@ public class Conf implements ConfMBean, ConfLocal {
     
     @PostConstruct
     public void registerInJMX () {
-        
+
         reload ();
 
         try {
@@ -58,6 +58,8 @@ public class Conf implements ConfMBean, ConfLocal {
         catch (Exception e) {
             throw new IllegalStateException ("Problem during registration of Monitoring into JMX:" + e);
         }
+
+        String wsGisUrlRoot = getWsGisUrlRoot (); if (DB.ok (wsGisUrlRoot)) setWsGisUrlRoot (wsGisUrlRoot); // Generate endpoint URLs for new WS
 
     }
 
@@ -623,5 +625,36 @@ public class Conf implements ConfMBean, ConfLocal {
     public void setWsGisVolumeQualityRespTimeout(int i) {
 	setInt(VocSetting.i.WS_GIS_VOLUME_QUALITY_TMT_RESP, i);
     }
+    
+    @Override
+    public String getWsGisMeteringUrl() {
+       return get (VocSetting.i.WS_GIS_METERING_URL);
+    }
 
+    @Override
+    public void setWsGisMeteringUrl(String s) {
+        set (VocSetting.i.WS_GIS_METERING_URL, s);
+        set (VocSetting.i.WS_GIS_URL_ROOT, "");
+    }
+
+    @Override
+    public int getWsGisMeteringConnTimeout() {
+        return getInt (VocSetting.i.WS_GIS_METERING_TMT_CONN);
+    }
+
+    @Override
+    public void setWsGisMeteringConnTimeout(int i) {
+        setInt (VocSetting.i.WS_GIS_METERING_TMT_CONN, i);
+    }
+
+    @Override
+    public int getWsGisMeteringRespTimeout() {
+        return getInt (VocSetting.i.WS_GIS_METERING_TMT_RESP);
+    }
+
+    @Override
+    public void setWsGisMeteringRespTimeout(int i) {
+        setInt (VocSetting.i.WS_GIS_METERING_TMT_RESP, i);
+    }
+    
 }

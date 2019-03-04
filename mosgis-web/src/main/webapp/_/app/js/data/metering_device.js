@@ -51,6 +51,8 @@ define ([], function () {
             it._can = {cancel: 1}
 
             if (!it.is_deleted && it.uuid_org == $_USER.uuid_org) {
+            
+                it._can.edit_values = 1
 
                 switch (it.id_ctr_status) {
                     case 10:
@@ -78,7 +80,7 @@ define ([], function () {
 
             data.resources = []
 
-            if (it._can.edit) {
+            if (it._can.edit_values) {
 
                 var m = 1
 

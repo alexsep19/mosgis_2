@@ -1,14 +1,21 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.util.Map;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.jms.Queue;
 import javax.json.JsonObject;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.MeteringDeviceValue;
+import ru.eludia.products.mosgis.db.model.tables.MeteringDeviceValueLog;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceValueType;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi27;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi2;
@@ -20,15 +27,19 @@ import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class MeteringDeviceValueImpl extends BaseCRUD<MeteringDeviceValue> implements MeteringDeviceValueLocal {
-/*
-    @Resource (mappedName = "mosgis.inMeteringDeviceValuesQueue")
+
+    @Resource (mappedName = "mosgis.inExportMeteringDeviceValuesQueue")
     Queue queue;
 
     @Override
-    public Queue getQueue () {
-        return queue;
+    protected Queue getQueue (VocAction.i action) {
+        switch (action) {
+            case APPROVE:
+                return queue;
+            default:
+                return null;
+        }
     }
-*/
     
 /*    
     private void filterOffDeleted (Select select) {
@@ -82,8 +93,8 @@ public class MeteringDeviceValueImpl extends BaseCRUD<MeteringDeviceValue> imple
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {                
 
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
-//            .toMaybeOne (MeteringDeviceValueLog.class               ).on ()
-//            .toMaybeOne (OutSoap.class,       "err_text").on ()
+            .toMaybeOne (MeteringDeviceValueLog.class).on ()
+            .toMaybeOne (OutSoap.class, "ts", "ts_rp", "err_text", "uuid_ack").on ()
             .where (EnTable.c.IS_DELETED, 0)
             .orderBy ("root.datevalue DESC")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
@@ -121,23 +132,23 @@ public class MeteringDeviceValueImpl extends BaseCRUD<MeteringDeviceValue> imple
 
     });}
 
-/*    
     @Override
     public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
 
-        db.update (getTable (), HASH (EnTable.c.UUID,               id,
+        db.update (getTable (), HASH (
+            EnTable.c.UUID,                      id,
             MeteringDeviceValue.c.ID_CTR_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId ()
         ));
 
         logAction (db, user, id, VocAction.i.APPROVE);
 
     });}
-    
+/*    
     @Override
     public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
                 
         final Map<String, Object> r = HASH (
-            EnTable.c.UUID,               id,
+            EnTable.c.UUID,                       id,
             MeteringDeviceValue.c.ID_CTR_STATUS,  VocGisStatus.i.PROJECT.getId ()
         );
                 
@@ -146,5 +157,5 @@ public class MeteringDeviceValueImpl extends BaseCRUD<MeteringDeviceValue> imple
         logAction (db, user, id, VocAction.i.ALTER);
         
     });}    
-*/    
+*/
 }
