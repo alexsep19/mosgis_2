@@ -184,7 +184,7 @@
                                 <wsdlFile>tariff/hcs-tariff-service-async.wsdl</wsdlFile>
                                 <wsdlFile>uk/hcs-uk-service-async.wsdl</wsdlFile>
                                 <wsdlFile>volume-quality/hcs-volume-quality-service-async.wsdl</wsdlFile>
-                                <wsdlFile>device-metering/hcs-device-metering-service.wsdl</wsdlFile>
+                                <wsdlFile>device-metering/hcs-device-metering-service-async.wsdl</wsdlFile>
                             </wsdlFiles>
                             <bindingDirectory>src/main/resources/gis_zhkh</bindingDirectory>
                             <bindingFiles>
