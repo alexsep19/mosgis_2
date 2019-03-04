@@ -1,5 +1,9 @@
 define ([], function () {
 
+	$_DO.import_houses = function (e) {
+        use.block ('houses_import_popup')
+    }
+
     return function (done) {        
         
         var layout = w2ui ['rosters_layout']
