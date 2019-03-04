@@ -1,5 +1,12 @@
 package ru.eludia.products.mosgis.db.model.voc;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Table;
@@ -33,5 +40,49 @@ public class VocBic extends Table {
         cols  (c.class);        
         pk    (c.BIC);
     }
+    
+    public static class SAXHandler extends DefaultHandler {
+        
+        List<Map<String, Object>> bics = new ArrayList<> ();
+        
+        Map<String, Object> r = null;
+
+        @Override
+        public void startElement (String uri, String localName, String qName, Attributes attributes) throws SAXException {
+            
+            switch (localName) {
+                
+                case "BICDirectoryEntry":
+                    r = DB.HASH (c.BIC, attributes.getValue ("BIC"));
+                    break;
+                    
+                case "ParticipantInfo":
+                    parseParticipantInfo (attributes);
+                    break;
+                    
+                case "Accounts":
+                    parseAccounts (attributes);
+            }
+
+        }
+
+        private void parseParticipantInfo (Attributes attributes) {
+            
+            switch (attributes.getValue ("PtType")) {
+                case "20":
+                case "30":
+                    
+                    break;
+                default:
+                    r = null;
+            }
+            
+        }
+
+        private void parseAccounts (Attributes attributes) {
+            if (r == null) return;
+        }
+        
+    }    
 
 }
