@@ -47,7 +47,19 @@ define ([], function () {
                 {field: 'soap.err_text', caption: 'Ошибка',    size: 30},
             ],
             
-            url: '/mosgis/_rest/?type=infrastructures&part=log&id=' + $_REQUEST.id,        
+            url: '/mosgis/_rest/?type=infrastructures&part=log&id=' + $_REQUEST.id,
+
+            onClick: function (e) {
+            
+                var c = this.columns [e.column]
+                var r = this.get (e.recid)
+                
+                switch (c.field) {
+                    case 'soap.ts':    if (r.uuid_out_soap) return openTab ('/out_soap_rq/' + r.uuid_out_soap)
+                    case 'soap.ts_rp': if (r.uuid_message) return openTab ('/out_soap_rp/' + r.uuid_message)
+                }
+            
+            },    
 
         }).refresh ();
 
