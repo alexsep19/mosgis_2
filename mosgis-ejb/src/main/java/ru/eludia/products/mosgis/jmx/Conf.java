@@ -47,7 +47,7 @@ public class Conf implements ConfMBean, ConfLocal {
     
     @PostConstruct
     public void registerInJMX () {
-        
+
         reload ();
 
         try {
@@ -58,6 +58,8 @@ public class Conf implements ConfMBean, ConfLocal {
         catch (Exception e) {
             throw new IllegalStateException ("Problem during registration of Monitoring into JMX:" + e);
         }
+
+        String wsGisUrlRoot = getWsGisUrlRoot (); if (DB.ok (wsGisUrlRoot)) setWsGisUrlRoot (wsGisUrlRoot); // Generate endpoint URLs for new WS
 
     }
 
