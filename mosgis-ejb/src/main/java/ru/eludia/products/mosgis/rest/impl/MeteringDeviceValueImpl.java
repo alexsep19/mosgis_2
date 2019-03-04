@@ -12,6 +12,8 @@ import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.MeteringDeviceValue;
+import ru.eludia.products.mosgis.db.model.tables.MeteringDeviceValueLog;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceValueType;
@@ -91,8 +93,8 @@ public class MeteringDeviceValueImpl extends BaseCRUD<MeteringDeviceValue> imple
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {                
 
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
-//            .toMaybeOne (MeteringDeviceValueLog.class               ).on ()
-//            .toMaybeOne (OutSoap.class,       "err_text").on ()
+            .toMaybeOne (MeteringDeviceValueLog.class).on ()
+            .toMaybeOne (OutSoap.class, "ts", "ts_rp", "err_text", "uuid_ack").on ()
             .where (EnTable.c.IS_DELETED, 0)
             .orderBy ("root.datevalue DESC")
             .limit (p.getInt ("offset"), p.getInt ("limit"));

@@ -10,6 +10,7 @@ import javax.ejb.MessageDriven;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
+import ru.eludia.products.mosgis.db.model.tables.MeteringDevice;
 import ru.eludia.products.mosgis.db.model.tables.MeteringDeviceValue;
 import ru.eludia.products.mosgis.db.model.tables.MeteringDeviceValueLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
@@ -41,8 +42,9 @@ public class GisPollExportMeteringDeviceValueMDB  extends GisPollMDB {
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
             .toOne (MeteringDeviceValueLog.class,     "AS log", "uuid", "action", "id_ctr_status").on ("log.uuid_out_soap=root.uuid")
-            .toOne (MeteringDeviceValue.class,        "AS ctr", "uuid").on ()
-            .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("ctr.uuid_org=org.uuid")
+            .toOne (MeteringDeviceValue.class,        "AS r", "uuid").on ()
+            .toOne (MeteringDevice.class,             "AS ctr", "uuid").on ()
+            .toOne (VocOrganization.class,            "AS org", "orgppaguid").on ("ctr.uuid_org=org.uuid")
         ;
     }
 
@@ -104,7 +106,7 @@ public class GisPollExportMeteringDeviceValueMDB  extends GisPollMDB {
         
 logger.info ("h=" + h);
         
-        h.put ("uuid", r.get ("ctr.uuid"));
+        h.put ("uuid", r.get ("r.uuid"));
         db.update (MeteringDeviceValue.class, h);
         
         h.put ("uuid", uuid);

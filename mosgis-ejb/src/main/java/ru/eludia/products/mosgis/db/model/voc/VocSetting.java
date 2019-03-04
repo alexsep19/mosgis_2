@@ -106,7 +106,7 @@ public class VocSetting extends Table {
         WS_GIS_SERVICES_TMT_CONN ("ws.gis.services.timeout.connection", "Время ожидания подключения к сервису обмена сведениями об услугах ГИС ЖКХ (ServicesServiceAsync), мс", "10000"),
         WS_GIS_SERVICES_TMT_RESP ("ws.gis.services.timeout.response", "Время ожидания подключения к сервису обмена сведениями об услугах ГИС ЖКХ (ServicesServiceAsync), мс", "10000"),
 
-        WS_GIS_METERING_URL      ("ws.gis.metering.url", "Endpoint URL сервиса обмена сведениями об услугах ГИС ЖКХ (DeviceMetering)", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-device-metering-service/services/DeviceMetering"),
+        WS_GIS_METERING_URL      ("ws.gis.metering.url", "Endpoint URL сервиса обмена сведениями об услугах ГИС ЖКХ (DeviceMetering)", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-device-metering-service/services/DeviceMeteringAsync"),
         WS_GIS_METERING_TMT_CONN ("ws.gis.metering.timeout.connection", "Время ожидания подключения к сервису обмена сведениями об услугах ГИС ЖКХ (DeviceMetering), мс", "10000"),
         WS_GIS_METERING_TMT_RESP ("ws.gis.metering.timeout.response", "Время ожидания подключения к сервису обмена сведениями об услугах ГИС ЖКХ (DeviceMetering), мс", "10000"),
 

@@ -46,7 +46,7 @@ public class ExportMeteringDeviceValueMDB extends GisExportMDB<MeteringDeviceVal
         UUID orgPPAGuid = (UUID) r.get ("orgppaguid");
             
         switch (action) {
-            case PLACING:     return wsGisMeteringClient.importMeteringDeviceValues (orgPPAGuid, messageGUID, r);
+            case PLACING: return wsGisMeteringClient.importMeteringDeviceValues (orgPPAGuid, messageGUID, r);
             default: throw new IllegalArgumentException ("No action implemented for " + action);
         }
 
