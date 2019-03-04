@@ -1,15 +1,39 @@
 package ru.eludia.products.mosgis.db.model.voc;
 
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.Table;
-import static ru.eludia.products.mosgis.db.model.voc.VocHouseStatus.i.forId;
-import static ru.eludia.products.mosgis.db.model.voc.VocHouseStatus.i.values;
 
 public class VocAsyncRequestState extends Table {
 
+    private static JsonArray jsonArray;
+    
+    private static final String TABLE_NAME = "vc_async_request_states";
+    
+    public static final void addTo (JsonObjectBuilder job) {
+        job.add (TABLE_NAME, jsonArray);
+    }     
+    
+    static {
+        
+        JsonArrayBuilder builder = Json.createArrayBuilder ();
+        
+        for (VocAsyncRequestState.i value: VocAsyncRequestState.i.values ()) builder.add (Json.createObjectBuilder ()
+            .add ("id",    value.id)
+            .add ("label", value.label)
+        );
+                    
+        jsonArray = builder.build ();
+        
+    }
+    
+    
     public VocAsyncRequestState () {
         
-        super ("vc_async_request_states", "Статусы обработки запросов");
+        super (TABLE_NAME, "Статусы обработки запросов");
         
         pk    ("id",           Type.INTEGER, "Ключ");        
         col   ("label",        Type.STRING,  "Наименование");

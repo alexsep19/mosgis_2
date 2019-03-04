@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.web;
 
+import com.sun.xml.ws.developer.SchemaValidation;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -22,6 +23,7 @@ import ru.mos.gkh.gis.schema.integration.organizations_registry_common.GetStateR
  * @author Aleksei
  */
 @HandlerChain (file="handler-chain.xml")
+@SchemaValidation(outbound = false)
 @WebService(
         serviceName = "RegOrgServiceAsync", 
         portName = "RegOrgAsyncPort", 

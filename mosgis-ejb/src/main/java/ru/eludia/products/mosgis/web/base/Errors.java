@@ -10,6 +10,7 @@ package ru.eludia.products.mosgis.web.base;
  * @author Aleksei
  */
 public enum Errors {
+    AUT011002 ("Организация не найдена"),
     INT002012("Нет объектов для экспорта"),
     INT002013("Запрос не найден");
 

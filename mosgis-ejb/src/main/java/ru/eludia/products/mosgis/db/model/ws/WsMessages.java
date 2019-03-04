@@ -5,9 +5,11 @@ import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
+import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import static ru.eludia.base.model.def.Def.NOW;
 import ru.eludia.base.model.def.Num;
+import ru.eludia.products.mosgis.db.model.tables.Sender;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 
@@ -26,9 +28,11 @@ public class WsMessages extends Table {
         REQUEST_TIME  (Type.TIMESTAMP,             NOW,  "Дата/время записи запроса в БД"),
         RESPONSE_TIME (Type.TIMESTAMP,             null, "Дата/время генерации ответа БД"),
         ID_STATUS     (VocAsyncRequestState.class, new Num(VocAsyncRequestState.i.ACCEPTED.getId()), "Статус"),
-        SERVICE       (Type.STRING,                "Имя сервиса"),
-        OPERATION     (Type.STRING,                "Имя метода");
-
+        SERVICE       (Type.STRING,                 "Имя сервиса"),
+        OPERATION     (Type.STRING,                 "Имя метода"),
+        UUID_SENDER   (Sender.class,         null,  "Поставщик информации"),
+        HAS_ERROR     (Type.BOOLEAN,         Bool.FALSE, "Наличие ошибки");
+        
         @Override
         public Col getCol() {
             return col;

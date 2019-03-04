@@ -31,6 +31,7 @@ import org.xml.sax.SAXException;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState;
 import ru.eludia.products.mosgis.db.model.ws.WsMessages;
+import ru.eludia.products.mosgis.util.StringUtils;
 import ru.eludia.products.mosgis.web.base.Fault;
 import ru.eludia.products.mosgis.ws.base.AbstactServiceAsync;
 import ru.mos.gkh.gis.schema.integration.base.BaseAsyncResponseType;
@@ -93,7 +94,7 @@ public abstract class WsMDB extends UUIDMDB<WsMessages>{
             try {
                 SOAPMessage soapMessage = MessageFactory.newInstance().createMessage();
                 SOAPBody soapBody = soapMessage.getSOAPBody();
-                soapBody.addFault(SOAP_SERVER_FAULT, ex.getCause().getMessage());
+                soapBody.addFault(SOAP_SERVER_FAULT, ex.getClass().getName() + (StringUtils.isNotBlank(ex.getMessage()) ? ": " + ex.getMessage() : ""));
                 
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 soapMessage.writeTo(out);
@@ -101,6 +102,7 @@ public abstract class WsMDB extends UUIDMDB<WsMessages>{
             
                 r.put(WsMessages.c.RESPONSE_TIME.lc(), LocalDateTime.now());
                 r.put(WsMessages.c.RESPONSE.lc(), responseStr);
+                r.put(WsMessages.c.HAS_ERROR.lc(), true);
                 
             } catch (SOAPException | IOException e){
                 logger.log (Level.SEVERE, "Cannot create SOAP fault", e);

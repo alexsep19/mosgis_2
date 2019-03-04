@@ -28,6 +28,7 @@ import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import ru.eludia.products.mosgis.ws.base.AbstactServiceAsync;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
+import ru.gosuslugi.dom.schema.integration.organizations_registry_base.SubsidiaryType;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_common.ExportOrgRegistryResultType;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_common.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_common_service_async.Fault;
@@ -124,10 +125,21 @@ public class GisPollExportOrgByGuid extends UUIDMDB<OutSoap> {
     private boolean handleOrgRegistryResult (ExportOrgRegistryResultType.OrgVersion orgVersion, GetStateResult rp, ExportOrgRegistryResultType i, DB db, UUID logUuid) throws SQLException {
         
         Object o = null;
+        String parentOrgGuid = null;
+        SubsidiaryType.SourceName source = null;
         
         if (orgVersion.getLegal () != null) o = orgVersion.getLegal ();
         if (orgVersion.getEntrp () != null) o = orgVersion.getEntrp ();
-        if (orgVersion.getSubsidiary () != null) o = orgVersion.getSubsidiary ();
+        if (orgVersion.getSubsidiary () != null) {
+            o = orgVersion.getSubsidiary ();
+            
+            source = orgVersion.getSubsidiary().getSourceName();
+            
+            String parentOrgVersionGuid = orgVersion.getSubsidiary().getParentOrg().getRegOrgVersion().getOrgVersionGUID();
+            parentOrgGuid = db.getString(db.getModel()
+                    .select(VocOrganization.class, "uuid")
+                    .where(VocOrganization.c.ORGVERSIONGUID, parentOrgVersionGuid));
+        }
         if (orgVersion.getForeignBranch () != null) o = orgVersion.getForeignBranch ();
         
         if (o == null) {
@@ -144,19 +156,27 @@ logger.info ("" + jo);
         final String uuid = i.getOrgRootEntityGUID ();
         
         Map<String, Object> record = DB.HASH (
-            "id_type",           VocOrganizationTypes.i.valueOf (o).getId (),
-            "orgrootentityguid", uuid,
-            "orgppaguid",        i.getOrgPPAGUID ()
+            VocOrganization.c.ID_TYPE,           VocOrganizationTypes.i.valueOf (o).getId (),
+            VocOrganization.c.ORGROOTENTITYGUID, uuid,
+            VocOrganization.c.ORGVERSIONGUID,    orgVersion.getOrgVersionGUID(),
+            VocOrganization.c.ORGPPAGUID,        i.getOrgPPAGUID (),
+            VocOrganization.c.LASTEDITINGDATE,   orgVersion.getLastEditingDate(),
+            VocOrganization.c.ISACTUAL,          orgVersion.isIsActual(),
+            VocOrganization.c.PARENT,            parentOrgGuid,
+            VocOrganization.c.ISREGISTERED,      i.isIsRegistered() != null ? i.isIsRegistered() : false
         );
+        
+        if (source != null) {
+            record.put(VocOrganization.c.SOURCENAME.lc(), source.getValue());
+            record.put(VocOrganization.c.SOURCEDATE.lc(), source.getDate());
+        }
         
         jo.forEach ((k, v) -> {
             if (!(v instanceof JsonString)) return;
             String f = k.toLowerCase ();
-            if ("ogrnip".equals (f)) f = "ogrn";
+            if ("ogrnip".equals (f) || "nza".equals (f)) f = "ogrn";
             record.put (f, ((JsonString) v).getString ());
         });
-        
-        record.put (VocOrganization.c.ORGVERSIONGUID.lc (), orgVersion.getOrgVersionGUID ());
 
         db.update (VocOrganization.class, record);
         

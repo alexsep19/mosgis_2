@@ -224,33 +224,9 @@
 			<xs:element ref="tns:orgRootEntityGUID"/>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:element name="RegOrgVersion" type="tns:RegOrgVersionType">
-		<xs:annotation>
-			<xs:documentation>Версия организации в реестре организаций</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:complexType name="RegOrgVersionType">
-		<xs:sequence>
-			<xs:element ref="tns:orgVersionGUID"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="RegOrgRootAndVersionType">
-		<xs:annotation>
-			<xs:documentation>Организация и версия организации в реестре организаций</xs:documentation>
-		</xs:annotation>
-		<xs:choice>
-			<xs:element ref="tns:orgVersionGUID"/>
-			<xs:element ref="tns:orgRootEntityGUID"/>
-		</xs:choice>
-	</xs:complexType>
 	<xs:element name="orgRootEntityGUID" type="base:GUIDType">
 		<xs:annotation>
 			<xs:documentation>Идентификатор корневой сущности организации в реестре организаций</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="orgVersionGUID" type="base:GUIDType">
-		<xs:annotation>
-			<xs:documentation>Идентификатор версии записи в реестре организаций</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="ShortName">

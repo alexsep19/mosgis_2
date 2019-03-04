@@ -10,11 +10,13 @@ define ([], function () {
     }
 
     return function (data, view) {
-
+        
         var it = data.item
         
         it.label_delegated = data.is_delegated ? 'Да' : 'Нет'        
-
+        it.label_registered = it.isregistered ? 'Да' : 'Нет'
+        it.label_actual = it.isactual ? 'Да' : 'Нет'
+        
         it.vc_nsi_20 = data.vc_orgs_nsi_20
             .map (function (r) {return data.vc_nsi_20 [r.code]})
             .sort ()
@@ -35,7 +37,12 @@ define ([], function () {
                 if (data.is_delegated && is_own) clickOn ($('#delegated'), function () {
                     w2ui ['topmost_layout'].get ('main').tabs.click ('voc_organization_legal_access_requests')
                 })
+                
+                if (it['parent']) clickOn ($('#org'), function () {
+                    openTab ('/voc_organization_legal/' + it['parent.uuid'])
+                })
             }
+            
         })
         
         var is_own = $_USER.role.admin || $_USER.uuid_org == $_REQUEST.id
