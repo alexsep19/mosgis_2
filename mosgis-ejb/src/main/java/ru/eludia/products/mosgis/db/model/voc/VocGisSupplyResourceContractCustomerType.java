@@ -33,7 +33,6 @@ public class VocGisSupplyResourceContractCustomerType extends Table {
         OFFER               (6, "Offer",                                "Договор оферта")
         ;
 
-
         byte id;
         String name;
         String label;
@@ -50,9 +49,29 @@ public class VocGisSupplyResourceContractCustomerType extends Table {
             return label;
         }
 
+	public boolean getIsJur() { // TODO: as is_jur, is_phy
+	    return this.id != VocGisSupplyResourceContractCustomerType.i.OFFER.getId();
+	}
+
+	public boolean getIsPhy() {
+	    return this.id == VocGisSupplyResourceContractCustomerType.i.OWNER.getId()
+		|| this.id == VocGisSupplyResourceContractCustomerType.i.REPRESENTATIVEOWNER.getId()
+		|| this.id == VocGisSupplyResourceContractCustomerType.i.LIVINGHOUSEOWNER.getId()
+	    ;
+	}
+
 	public static i forName(String name) {
 	    for (i i : values()) {
 		if (i.name.equals(name)) {
+		    return i;
+		}
+	    }
+	    return null;
+	}
+
+	public static i forLabel(String label) {
+	    for (i i : values()) {
+		if (i.label.equals(label)) {
 		    return i;
 		}
 	    }

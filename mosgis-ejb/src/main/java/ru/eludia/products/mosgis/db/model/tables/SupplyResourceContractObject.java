@@ -12,6 +12,7 @@ import ru.eludia.base.model.def.Num;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustomerType;
@@ -20,8 +21,9 @@ import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 public class SupplyResourceContractObject extends EnTable {
 
     public enum c implements EnColEnum {
+	UUID_XL               (InXlFile.class, "Файл импорта"),
 
-        UUID_SR_CTR           (SupplyResourceContract.class, "Договор"),
+	UUID_SR_CTR           (SupplyResourceContract.class, "Договор"),
 
         ID_CTR_STATUS         (VocGisStatus.class, new Num(VocGisStatus.i.PROJECT.getId()), "Статус объекта жилищного фонда с точки зрения mosgis"),
 
@@ -55,6 +57,19 @@ public class SupplyResourceContractObject extends EnTable {
                     return true;
             }
         }
+
+	public boolean isToXlImport() {
+
+	    switch (this) {
+		case UUID_XL:
+		case FIASHOUSEGUID:
+		case UUID_PREMISE:
+		    return true;
+	    default:
+		return false;
+	    }
+
+	}
     }
 
     public SupplyResourceContractObject () {

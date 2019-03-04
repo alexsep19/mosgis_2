@@ -71,8 +71,17 @@ public class VocNsi58 extends Table{
         public boolean getIsactual () {
             return isactual;
         }
-        
-        private i (String code, String guid, String description, boolean isManagement, boolean isResourceSupply, boolean isActual) {
+
+	public static i forLabel(String label) {
+	    for (i i : values()) {
+		if (i.f_a175d0edd2.equals(label)) {
+		    return i;
+		}
+	    }
+	    return null;
+	}
+
+	private i (String code, String guid, String description, boolean isManagement, boolean isResourceSupply, boolean isActual) {
             this.code = code;
             this.guid = guid;
             this.f_a175d0edd2 = description;

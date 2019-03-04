@@ -46,6 +46,14 @@ define ([], function () {
                         off: !is_owner
                     },
                     {
+                        type: 'button',
+                        id: 'import_objects',
+                        caption: 'Импорт договоров ресурсоснабжения...',
+                        icon: 'w2ui-icon-plus',
+                        onClick: $_DO.import_supply_resource_contracts,
+                        off: !$_USER.role.nsi_20_2
+                    },
+                    {
                         id: 'settlement_docs',
                         type: 'button',
                         text: 'Информация о состоянии расчетов',

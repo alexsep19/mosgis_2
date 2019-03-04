@@ -8,6 +8,7 @@ import ru.eludia.base.model.def.Bool;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
@@ -19,6 +20,8 @@ import ru.eludia.products.mosgis.db.model.voc.VocSupplyResourceContractFileType;
 public class SupplyResourceContract extends EnTable {
 
     public enum c implements EnColEnum {
+
+	UUID_XL              (InXlFile.class, null, "Источник импорта"),
 
         UUID_ORG             (VocOrganization.class,     "Организация-исполнитель"),
         UUID_ORG_CUSTOMER    (VocOrganization.class,     "Организация-заказчик"),
@@ -105,6 +108,45 @@ public class SupplyResourceContract extends EnTable {
             }
         }
 
+	public boolean isToXlImport() {
+
+	    switch (this) {
+		case UUID_XL:
+		case UUID_ORG:
+		case IS_CONTRACT:
+		case CONTRACTNUMBER:
+		case SIGNINGDATE:
+		case EFFECTIVEDATE:
+		case AUTOROLLOVER:
+		case COMPLETIONDATE:
+		case ID_CUSTOMER_TYPE:
+		case UUID_ORG_CUSTOMER:
+		case UUID_PERSON_CUSTOMER:
+		case ONETIMEPAYMENT:
+		case VOLUMEDEPENDS:
+		case DDT_D_START:
+		case DDT_D_START_NXT:
+		case DDT_I_START:
+		case DDT_I_START_NXT:
+		case DDT_N_START:
+		case DDT_N_START_NXT:
+		case DDT_M_START:
+		case DDT_M_START_NXT:
+		case DDT_M_END:
+		case DDT_M_END_NXT:
+		case CODE_VC_NSI_58:
+		case ACCRUALPROCEDURE:
+		case COUNTINGRESOURCE:
+		case MDINFO:
+		case SPECQTYINDS:
+		case ISPLANNEDVOLUME:
+		case PLANNEDVOLUMETYPE:
+		    return true;
+	    default:
+		return false;
+	    }
+
+	}
     }
 
     public SupplyResourceContract () {

@@ -13,11 +13,13 @@ import ru.eludia.base.model.def.Num;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 
 public class SupplyResourceContractSubject extends EnTable {
 
     public enum c implements EnColEnum {
+        UUID_XL               (InXlFile.class, "Файл импорта"),
 
         UUID_SR_CTR           (SupplyResourceContract.class, "Договор"),
 	UUID_SR_CTR_OBJ       (SupplyResourceContractObject.class, null, "Объект жилищного фонда (IS NULL, если предмет договора, заполняется, если поставляемый ресурс ОЖФ)"),
@@ -66,6 +68,26 @@ public class SupplyResourceContractSubject extends EnTable {
                     return true;
             }
         }
+
+	public boolean isToXlImport() {
+
+	    switch (this) {
+		case UUID_XL:
+		case CODE_VC_NSI_3:
+		case CODE_VC_NSI_239:
+		case STARTSUPPLYDATE:
+		case ENDSUPPLYDATE:
+		case IS_HEAT_OPEN:
+		case IS_HEAT_CENTRALIZED:
+		case VOLUME:
+		case UNIT:
+		case FEEDINGMODE:
+		    return true;
+	    default:
+		return false;
+	    }
+
+	}
     }
 
     public SupplyResourceContractSubject () {
@@ -85,6 +107,10 @@ public class SupplyResourceContractSubject extends EnTable {
                 + "BEGIN "
 
                 + " IF :NEW.is_deleted = 0 THEN BEGIN "
+
+		    + " IF :NEW.uuid_sr_ctr IS NULL THEN "
+		    + "   raise_application_error (-20000, 'Не удалось определить договор'); "
+		    + " END IF; "
 
                     + " IF :NEW.startsupplydate > :NEW.endsupplydate "
                     + " THEN "
