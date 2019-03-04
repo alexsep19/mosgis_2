@@ -102,6 +102,7 @@ public abstract class WsMDB extends UUIDMDB<WsMessages>{
             
                 r.put(WsMessages.c.RESPONSE_TIME.lc(), LocalDateTime.now());
                 r.put(WsMessages.c.RESPONSE.lc(), responseStr);
+                r.put(WsMessages.c.HAS_ERROR.lc(), true);
                 
             } catch (SOAPException | IOException e){
                 logger.log (Level.SEVERE, "Cannot create SOAP fault", e);
