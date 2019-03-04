@@ -33,7 +33,6 @@ public class MeteringDeviceValueImpl extends BaseCRUD<MeteringDeviceValue> imple
     protected Queue getQueue (VocAction.i action) {
         switch (action) {
             case APPROVE:
-            case ALTER:
                 return queue;
             default:
                 return null;
@@ -142,7 +141,7 @@ public class MeteringDeviceValueImpl extends BaseCRUD<MeteringDeviceValue> imple
         logAction (db, user, id, VocAction.i.APPROVE);
 
     });}
-    
+/*    
     @Override
     public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
                 
@@ -156,5 +155,5 @@ public class MeteringDeviceValueImpl extends BaseCRUD<MeteringDeviceValue> imple
         logAction (db, user, id, VocAction.i.ALTER);
         
     });}    
-
+*/
 }

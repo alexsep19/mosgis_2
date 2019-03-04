@@ -13,7 +13,7 @@
  
  <!-- очередь опроса статуса исходящих запросов на экспорт приборов учёта -->
  <uniform-distributed-queue name="outExportMeteringDeviceValuesQueue">
-   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>    
+   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name> 
    <jndi-name>mosgis.outExportMeteringDeviceValuesQueue</jndi-name>
    <delivery-params-overrides>
        <time-to-deliver>2000</time-to-deliver>
