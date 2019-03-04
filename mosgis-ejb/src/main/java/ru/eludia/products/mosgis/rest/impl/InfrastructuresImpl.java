@@ -159,6 +159,7 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
         
         VocAction.addTo (jb);
         VocInfrastructureFileType.addTo (jb);
+        VocGisStatus.addLiteTo(jb);
         
         final MosGisModel model = ModelHolder.getModel ();
         
@@ -202,10 +203,6 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
                     .toOne   (nsi_2, "code AS nsi_2").on (nsi_3.getName () + "." + NSI_2_REF_FIELD_NAME_NSI_3 + "=" + nsi_2.getName () + ".guid")
                     .where   ("is_actual", 1)
                     .orderBy (nsi_3.getName () + ".code"),
-                    
-                model
-                    .select  (VocGisStatus.class, "id", "label")
-                    .orderBy ("id"),
                 
                 VocNsi33Ref3.getRefs ()
 
@@ -275,11 +272,32 @@ public class InfrastructuresImpl extends BaseCRUD<Infrastructure> implements Inf
     
     @Override
     public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
-                
-        final Map<String, Object> r = HASH (
-            EnTable.c.UUID,               id,
-            Infrastructure.c.ID_IS_STATUS,  VocGisStatus.i.PROJECT.getId ()
+        
+        VocGisStatus.i currentStatus = VocGisStatus.i.forId(
+                db.getString(
+                    ModelHolder.getModel ().get(getTable (), id, Infrastructure.c.ID_IS_STATUS.lc ())
+                )
         );
+        
+        final Map<String, Object> r;
+        
+        switch (currentStatus) {
+            case FAILED_PLACING:
+                r = HASH (
+                    EnTable.c.UUID,               id,
+                    Infrastructure.c.ID_IS_STATUS,  VocGisStatus.i.PROJECT.getId ()
+                );
+                break;
+            case FAILED_STATE:
+            case APPROVED:
+                r = HASH (
+                    EnTable.c.UUID,               id,
+                    Infrastructure.c.ID_IS_STATUS,  VocGisStatus.i.MUTATING.getId ()
+                );
+                break;
+            default:
+                throw new InternalServerErrorException ("Uncompatible OKI status for altering");
+        }
                 
         db.update (getTable (), r);
         
