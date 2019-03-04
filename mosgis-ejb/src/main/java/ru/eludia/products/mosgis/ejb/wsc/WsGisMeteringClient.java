@@ -9,6 +9,7 @@ import javax.jws.HandlerChain;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
+import ru.eludia.products.mosgis.db.model.tables.MeteringDeviceValueLog;
 import ru.eludia.products.mosgis.ws.base.LoggingOutMessageHandler;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.base.GetStateRequest;
@@ -41,7 +42,7 @@ public class WsGisMeteringClient {
     }
 
     public AckRequest.Ack importMeteringDeviceValues (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
-        return getPort (orgPPAGuid, messageGUID).importMeteringDeviceValues (null).getAck ();
+        return getPort (orgPPAGuid, messageGUID).importMeteringDeviceValues (MeteringDeviceValueLog.toImportMeteringDeviceValuesRequest (r)).getAck ();
     }
     
 }
