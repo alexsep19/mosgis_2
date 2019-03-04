@@ -117,7 +117,7 @@ public class MeteringDeviceValues extends EJBResource <MeteringDeviceValueLocal>
 //        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
         return back.getLog (id, p, getUser ());
     }
-/*    
+
     @POST
     @Path("{id}/approve") 
     @Produces (APPLICATION_JSON)
@@ -131,5 +131,5 @@ public class MeteringDeviceValues extends EJBResource <MeteringDeviceValueLocal>
     public JsonObject doAlter (@PathParam ("id") String id) { 
         return back.doAlter (id, getUser ());
     }
-*/
+
 }
