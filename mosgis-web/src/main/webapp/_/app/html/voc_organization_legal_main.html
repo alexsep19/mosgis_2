@@ -13,7 +13,7 @@
                     }
                     #the_form {
                         position: relative;
-                        height: 390px;
+                        height: 450px;
                     }
                     #the_form .w2ui-page.page-0 {
                         top: 0;
@@ -23,61 +23,99 @@
 
 
                 <div id=the_form>
-
                     <div class="w2ui-page page-0">
+                        <table cellpadding=0 cellspacing=0>
+                            <tr>
+                                <td valign=top width=1 style="min-width:600px;">
+                                    
+                                    <div class="w2ui-field">
+                                        <label>Тип:</label>
+                                        <div data-text="vc_organization_types_label" />
+                                    </div>
+                                    
+                                    <div class="w2ui-field" data-on=parent>
+                                        <label>Головная организация:</label>
+                                        <div id="org" data-text="parent.label" />
+                                    </div>
 
-                        <div class="w2ui-field">
-                            <label>Тип:</label>
-                            <div data-text="vc_organization_types_label" />
-                        </div>
+                                    <div class="w2ui-field">
+                                        <label>Адрес:</label>
+                                        <div data-text="address" />
+                                    </div>
 
-                        <div class="w2ui-field">
-                            <label>Адрес:</label>
-                            <div data-text="address" />
-                        </div>
+                                    <div class="w2ui-field">
+                                        <label>Полное наименование:</label>
+                                        <div data-text="fullname" />
+                                    </div>
 
-                        <div class="w2ui-field">
-                            <label>Полное наименование:</label>
-                            <div data-text="fullname" />
-                        </div>
+                                    <div class="w2ui-field">
+                                        <label>ОГРН:</label>
+                                        <div data-text="ogrn" />
+                                    </div>
+                                    <div class="w2ui-field">
+                                        <label>ИНН:</label>
+                                        <div data-text="inn" />
+                                    </div>
+                                    <div class="w2ui-field">
+                                        <label>КПП:</label>
+                                        <div data-text="kpp" />
+                                    </div>
+                                    <div class="w2ui-field">
+                                        <label>ОКОПФ:</label>
+                                        <div data-text="okopf" />
+                                    </div>
 
-                        <div class="w2ui-field">
-                            <label>ОГРН:</label>
-                            <div data-text="ogrn" />
-                        </div>
-                        <div class="w2ui-field">
-                            <label>ИНН:</label>
-                            <div data-text="inn" />
-                        </div>
-                        <div class="w2ui-field">
-                            <label>КПП:</label>
-                            <div data-text="kpp" />
-                        </div>
-                        <div class="w2ui-field">
-                            <label>ОКОПФ:</label>
-                            <div data-text="okopf" />
-                        </div>
+                                    <div class="w2ui-field" data-on=stateregistrationdate>
+                                        <label>Дата государственной регистрации:</label>
+                                        <div data-text="stateregistrationdate" data-date />
+                                    </div>
 
-                        <div class="w2ui-field" data-on=stateregistrationdate>
-                            <label>Дата государственной регистрации:</label>
-                            <div data-text="stateregistrationdate" data-date />
-                        </div>
+                                    <div class="w2ui-field" data-on=activityenddate>
+                                        <label>Дата прекращения деятельности:</label>
+                                        <div data-text=activityenddate data-date />
+                                    </div>
+                                        
+                                    <div class="w2ui-field" data-on=sourcename>
+                                        <label>Источник информации:</label>
+                                        <div style="word-wrap: break-word;"><span data-text=sourcename/> от <span data-text=sourcedate data-date/></div>
+                                    </div>
 
-                        <div class="w2ui-field" data-on=activityenddate>
-                            <label>Дата прекращения деятельности:</label>
-                            <div data-text=activityenddate data-date />
-                        </div>
+                                    <div class="w2ui-field">
+                                        <label>Полномочия:</label>
+                                        <div data-html=vc_nsi_20 style="padding-top:8px;margin-left:300px;" />
+                                    </div>
+                                        
+                                    <div class="w2ui-field">
+                                        <label>Зарегистрирована в ГИС ЖКХ:</label>
+                                        <div data-text=label_registered style="padding-top:8px;"/>
+                                    </div>
 
-                        <div class="w2ui-field">
-                            <label>Полномочия:</label>
-                            <div data-html=vc_nsi_20 style="padding-top:8px;margin-left:300px;" />
-                        </div>
+                                    <div class="w2ui-field">
+                                        <label>Делегированы права:</label>
+                                        <div id=delegated data-html=label_delegated style="padding-top:8px;"/>
+                                    </div>
+                                        
+                                </td>
+                                <td valign=top style="min-width:400px;">
+                                    
+                                    <div class="w2ui-field">
+                                        <label>Время последнего изменения:</label>
+                                        <div data-text=lasteditingdate data-date  />
+                                    </div>
 
-                        <div class="w2ui-field">
-                            <label>Делегированы права:</label>
-                            <div id=delegated data-html=label_delegated style="padding-top:8px;"/>
-                        </div>
+                                    <div class="w2ui-field">
+                                        <label>Актуальна:</label>
+                                        <div data-text="label_actual" />
+                                    </div>
 
+                                    <div class="w2ui-field" data-on=statusversion>
+                                        <label>Статус версии:</label>
+                                        <div data-text="statusversion" />
+                                    </div>
+ 
+                                </td>
+                            </tr>
+                        </table>
                     </div>
                     <div class="w2ui-buttons">
                         <span>

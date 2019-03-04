@@ -6,10 +6,13 @@ import java.util.Map;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.util.TypeConverter;
 import ru.eludia.base.model.Col;
+import ru.eludia.base.model.ColEnum;
+import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
 import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
@@ -20,37 +23,79 @@ import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseUORequest
 
 public class Block extends Passport {
     
+    public enum c implements ColEnum {
+        
+        UUID        (Type.UUID,           NEW_UUID,   "Ключ"),
+        IS_DELETED  (Type.BOOLEAN,        Bool.FALSE, "1, если запись удалена; иначе 0"),
+        UUID_XL     (InXlFile.class,      null,       "Источник импорта"),
+
+        TERMINATIONDATE (Type.DATE,           null,       "Дата прекращения существования объекта"),
+        CODE_VC_NSI_330 (Type.STRING,  20,    null,       "Причина аннулирования"),
+        ANNULMENTINFO   (Type.STRING,         null,       "Причина аннулирования. Дополнительная информация"),
+        
+        ANNULMENTREASON (Type.STRING,         new Virt ("''||\"CODE_VC_NSI_330\""),  "Причина аннулирования"),
+        IS_ANNULED      (Type.BOOLEAN,        new Virt ("DECODE(\"CODE_VC_NSI_330\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0"),
+
+        IS_NRS          (Type.BOOLEAN,        Bool.FALSE, "1, если блок нежилой; иначе 0"),
+
+        UUID_HOUSE      (House.class,                     "Дом"),
+        BLOCKNUM        (Type.STRING, 255,    null,       "Номер блока"),
+
+        CADASTRALNUMBER (Type.STRING,         null,       "Кадастровый номер"),
+        CODE_VC_NSI_30  (Type.STRING,  20,    null,       "Характеристика помещения"),
+        TOTALAREA       (Type.NUMERIC, 25, 4, null,       "Общая площадь помещения"),
+        GROSSAREA       (Type.NUMERIC, 25, 4, null,       "Жилая площадь помещения"),
+        
+        F_20002               (Type.NUMERIC, 10, null, "Количество комнат (НСИ 14)"),
+        F_20125               (Type.NUMERIC, 10, null, "Количество проживающих"),
+        F_20003               (Type.NUMERIC, 10, null, "Назначение помещения, относящегося к общему долевому имуществу собственников помещений (НСИ 17)"),
+        
+        GIS_UNIQUE_NUMBER     (Type.STRING,      null,       "Уникальный номер"),
+        GIS_MODIFICATION_DATE (Type.TIMESTAMP,   null,       "Дата модификации данных в ГИС ЖКХ"),
+        INFORMATIONCONFIRMED  (Type.BOOLEAN,     Bool.TRUE,  "Информация подтверждена поставщиком"),
+        BLOCKGUID             (Type.UUID,        null,       "Идентификатор в ГИС ЖКХ"),
+        IS_ANNULED_IN_GIS     (Type.BOOLEAN,     Bool.FALSE, "1, если запись аннулирована в ГИС ЖКХ; иначе 0"),
+        
+        ID_STATUS             (VocHouseStatus.class, new Virt("DECODE(\"BLOCKGUID\",NULL," + VocHouseStatus.i.MISSING.getId() + "," + VocHouseStatus.i.PUBLISHED.getId() + ")"), "Статус размещения в ГИС ЖКХ")
+        
+        ;
+        
+        @Override
+        public Col getCol () {return col;}
+        private Col col;        
+        private c (Type type, Object... p) {col = new Col (this, type, p);}
+        private c (Class c,   Object... p) {col = new Ref (this, c, p);}
+        
+        public boolean isToXlImport () {
+            
+            switch (this) {
+                case UUID_XL:
+                case BLOCKNUM:
+                case IS_NRS:
+                case CODE_VC_NSI_30:
+                case TOTALAREA:
+                case GROSSAREA:
+                case CADASTRALNUMBER:
+                case INFORMATIONCONFIRMED:
+                case F_20002:
+                case F_20125:
+                case F_20003:
+                    return true;
+                default:
+                    return false;
+            }
+            
+        }
+        
+    }
+    
     public Block () {
         
         super  ("tb_blocks", "Блоки (для жилого дома блокированной застройки)");
         
-        pk     ("uuid",               Type.UUID,           NEW_UUID,   "Ключ");
-        col    ("is_deleted",         Type.BOOLEAN,        Bool.FALSE, "1, если запись удалена; иначе 0");
-
-        col    ("terminationdate",    Type.DATE,           null,       "Дата прекращения существования объекта");
-        col    ("code_vc_nsi_330",    Type.STRING,  20,    null,       "Причина аннулирования");
-        col    ("annulmentinfo",      Type.STRING,         null,       "Причина аннулирования. Дополнительная информация");
+        cols   (c.class);
         
-        col    ("annulmentreason",    Type.STRING,         new Virt ("''||\"CODE_VC_NSI_330\""),  "Причина аннулирования");
-        col    ("is_annuled",         Type.BOOLEAN,        new Virt ("DECODE(\"CODE_VC_NSI_330\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0");
-
-        col    ("is_nrs",             Type.BOOLEAN,        Bool.FALSE, "1, если блок нежилой; иначе 0");
-
-        ref    ("uuid_house",         House.class,                     "Дом");
-        col    ("blocknum",           Type.STRING, 255,    null,       "Номер блока");
-
-        col    ("cadastralnumber",    Type.STRING,         null,       "Кадастровый номер");
-        col    ("code_vc_nsi_30",     Type.STRING,  20,    null,       "Характеристика помещения");
-        col    ("totalarea",          Type.NUMERIC, 25, 4, null,       "Общая площадь помещения");
-        col    ("grossarea",          Type.NUMERIC, 25, 4, null,       "Жилая площадь помещения");
-        
-        col    ("gis_unique_number",     Type.STRING,      null,       "Уникальный номер");
-        col    ("gis_modification_date", Type.TIMESTAMP,   null,       "Дата модификации данных в ГИС ЖКХ");
-        col    ("informationconfirmed",  Type.BOOLEAN,     Bool.TRUE,  "Информация подтверждена поставщиком");
-        col    ("blockguid",             Type.UUID,        null,       "Идентификатор в ГИС ЖКХ");
-        col    ("is_annuled_in_gis",     Type.BOOLEAN,     Bool.FALSE, "1, если запись аннулирована в ГИС ЖКХ; иначе 0");
-        
-        fk     ("id_status", VocHouseStatus.class, new Virt("DECODE(\"BLOCKGUID\",NULL," + VocHouseStatus.i.MISSING.getId() + "," + VocHouseStatus.i.PUBLISHED.getId() + ")"), "Статус размещения в ГИС ЖКХ");
+        pk     (c.UUID);
         
         trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
                 

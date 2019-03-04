@@ -51,6 +51,18 @@ public class VocOrganization extends Table {
         STATEREGISTRATIONDATE (DATE, null,           "Дата государственной регистрации"),
         ACTIVITYENDDATE (DATE,       null,           "Дата прекращения деятельности"),
 
+        LASTEDITINGDATE (DATE,        null,          "Дата последнего изменения"),
+        ISACTUAL        (BOOLEAN,     FALSE,         "Признак актуальности записи"),
+        ISREGISTERED    (BOOLEAN,     FALSE,         "Зарегистрирована в ГИС ЖКХ"),
+        SOURCENAME      (STRING, 255, null,          "Источник информации для обособленных подразделений"),
+        SOURCEDATE      (DATE,        null,          "Источник информации для обособленных подразделений (Дата от)"),
+        STATUSVERSION   (STRING, 255, null,          "Статус версии для обособленных подразделений"),
+        PARENT          (VocOrganization.class, null,"Информация о головной организации"),
+        
+        ACCREDITATIONSTARTDATE (DATE,          null, "Дата внесения записи в реестр аккредитованных"), 
+        ACCREDITATIONENDDATE   (DATE,          null, "Дата прекращения действия аккредитации"),
+        REGISTRATIONCOUNTRY    (VocOksm.class, null, "Страна регистрации иностранного ЮЛ"),
+        
         UUID           (Type.UUID,    new Virt ("HEXTORAW(''||RAWTOHEX(\"ORGROOTENTITYGUID\"))"),  "uuid"),
         LABEL          (STRING,        new Virt ("NVL(NVL(\"SHORTNAME\",\"FULLNAME\"), \"SURNAME\"||' '||\"FIRSTNAME\"||' '||\"PATRONYMIC\")"),  "Наименование"),
         LABEL_UC       (STRING,  new Virt ("UPPER(NVL(NVL(\"SHORTNAME\",\"FULLNAME\"), \"SURNAME\"||' '||\"FIRSTNAME\"||' '||\"PATRONYMIC\"))"),  "НАИМЕНОВАНИЕ В ВЕРХНЕМ РЕГИСТРЕ"),

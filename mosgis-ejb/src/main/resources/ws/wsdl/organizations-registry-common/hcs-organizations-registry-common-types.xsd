@@ -18,39 +18,26 @@
 								<xs:documentation>Критерий поиска организаций.</xs:documentation>
 							</xs:annotation>
 							<xs:complexType>
-								<xs:sequence>
-									<xs:choice>
-										<xs:choice>
-											<xs:annotation>
-												<xs:documentation>Поиск по реквизитам.</xs:documentation>
-											</xs:annotation>
-											<xs:element ref="organizations-base:OGRNIP"/>
-											<xs:sequence>
-												<xs:element ref="organizations-base:OGRN"/>
-												<xs:element ref="organizations-base:KPP" minOccurs="0"/>
-											</xs:sequence>
-											<xs:element ref="organizations-base:NZA"/>
-										</xs:choice>
-										<xs:element ref="organizations-registry-base:orgVersionGUID"/>
-										<xs:element ref="organizations-registry-base:orgRootEntityGUID"/>
-										<xs:element name="orgPPAGUID" type="base:GUIDType">
-											<xs:annotation>
-												<xs:documentation>Идентификатор зарегистрированной организации</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-									</xs:choice>
-									<xs:element name="isRegistered" type="xs:boolean" fixed="true" minOccurs="0">
+                                                                <xs:choice>
+                                                                        <xs:choice>
 										<xs:annotation>
-											<xs:documentation>Поиск среди организаций, имеющих личных кабинет</xs:documentation>
+											<xs:documentation>Поиск по реквизитам.</xs:documentation>
+										</xs:annotation>
+										<xs:element ref="organizations-base:OGRNIP"/>
+										<xs:sequence>
+											<xs:element ref="organizations-base:OGRN"/>
+											<xs:element ref="organizations-base:KPP" minOccurs="0"/>
+										</xs:sequence>
+										<xs:element ref="organizations-base:NZA"/>
+									</xs:choice>
+									<xs:element ref="organizations-registry-base:orgRootEntityGUID"/>
+									<xs:element name="orgPPAGUID" type="base:GUIDType">
+										<xs:annotation>
+											<xs:documentation>Идентификатор зарегистрированной организации</xs:documentation>
 										</xs:annotation>
 									</xs:element>
-								</xs:sequence>
+								</xs:choice>
 							</xs:complexType>
-						</xs:element>
-						<xs:element name="lastEditingDateFrom" type="xs:date" minOccurs="0">
-							<xs:annotation>
-								<xs:documentation>Время последнего изменения (от)</xs:documentation>
-							</xs:annotation>
 						</xs:element>
 					</xs:sequence>
 					<xs:attribute ref="base:version" use="required" fixed="10.0.2.1"/>
@@ -61,13 +48,12 @@
 	<xs:complexType name="exportOrgRegistryResultType">
 		<xs:sequence>
 			<xs:element ref="organizations-registry-base:orgRootEntityGUID"/>
-			<xs:element name="OrgVersion">
+			<xs:element name="Org">
 				<xs:annotation>
-					<xs:documentation>Версия организации в реестре организаций</xs:documentation>
+					<xs:documentation>Организация в реестре организаций</xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element ref="organizations-registry-base:orgVersionGUID"/>
 						<xs:element name="lastEditingDate" type="xs:date">
 							<xs:annotation>
 								<xs:documentation>Время последнего изменения</xs:documentation>
@@ -92,21 +78,13 @@
 									<xs:complexContent>
 										<xs:extension base="organizations-registry-base:SubsidiaryType">
 											<xs:sequence>
-												<xs:element name="StatusVersion">
-													<xs:annotation>
-														<xs:documentation>Статус версии </xs:documentation>
-													</xs:annotation>
-													<xs:simpleType>
-														<xs:restriction base="xs:string"/>
-													</xs:simpleType>
-												</xs:element>
 												<xs:element name="ParentOrg">
 													<xs:annotation>
 														<xs:documentation>Информация о головной организации</xs:documentation>
 													</xs:annotation>
 													<xs:complexType>
 														<xs:sequence>
-															<xs:element ref="organizations-registry-base:RegOrgVersion"/>
+															<xs:element ref="organizations-registry-base:RegOrg"/>
 														</xs:sequence>
 													</xs:complexType>
 												</xs:element>
@@ -126,17 +104,6 @@
 								</xs:annotation>
 							</xs:element>
 						</xs:choice>
-						<xs:element name="registryOrganizationStatus" minOccurs="0">
-							<xs:annotation>
-								<xs:documentation>Статус:
-(P)UBLISHED - опубликована в одном из документов в рамках раскрытия</xs:documentation>
-							</xs:annotation>
-							<xs:simpleType>
-								<xs:restriction base="xs:string">
-									<xs:enumeration value="P"/>
-								</xs:restriction>
-							</xs:simpleType>
-						</xs:element>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>

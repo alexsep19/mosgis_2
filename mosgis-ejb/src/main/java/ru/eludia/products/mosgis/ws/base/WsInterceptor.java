@@ -41,9 +41,13 @@ public class WsInterceptor {
 
         try (DB db = ModelHolder.getModel().getDb()) {
             MessageContext msgContext = wsContext.getMessageContext();
-
+            
+            Map sender = (Map)msgContext.get("sender");
+            
             String requestMsgGuid = ((GetStateRequest) context.getParameters()[0]).getMessageGUID();
-            Map<String, Object> wsMsg = db.getMap(WsMessages.class, requestMsgGuid);
+            Map<String, Object> wsMsg = db.getMap(db.getModel().select(WsMessages.class, "*")
+                    .where(WsMessages.c.UUID,requestMsgGuid)
+                    .and(WsMessages.c.UUID_SENDER, sender.get("uuid")));
 
             if (wsMsg == null || wsMsg.isEmpty())
                 throw new Fault(Errors.INT002013);

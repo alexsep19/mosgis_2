@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -17,7 +16,6 @@ import javax.json.JsonString;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
-import ru.eludia.base.db.util.TypeConverter;
 import ru.eludia.products.mosgis.db.model.incoming.InLicenses;
 import ru.eludia.products.mosgis.db.model.incoming.InVocOrganization;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
@@ -34,6 +32,7 @@ import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import ru.eludia.products.mosgis.ws.base.AbstactServiceAsync;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
+import ru.gosuslugi.dom.schema.integration.organizations_registry_base.SubsidiaryType;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_common.ExportOrgRegistryResultType;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_common.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_common_service_async.Fault;
@@ -125,10 +124,21 @@ public class GisPollExportOrg extends UUIDMDB<OutSoap> {
     private boolean handleOrgRegistryResult (ExportOrgRegistryResultType.OrgVersion orgVersion, GetStateResult rp, ExportOrgRegistryResultType i, DB db, UUID uuidOutSoap, UUID uuidUser) throws SQLException {
         
         Object o = null;
+        String parentOrgGuid = null;
+        SubsidiaryType.SourceName source = null;
         
         if (orgVersion.getLegal () != null) o = orgVersion.getLegal ();
         if (orgVersion.getEntrp () != null) o = orgVersion.getEntrp ();
-        if (orgVersion.getSubsidiary () != null) o = orgVersion.getSubsidiary ();
+        if (orgVersion.getSubsidiary () != null) {
+            o = orgVersion.getSubsidiary ();
+            
+            source = orgVersion.getSubsidiary().getSourceName();
+            
+            String parentOrgVersionGuid = orgVersion.getSubsidiary().getParentOrg().getRegOrgVersion().getOrgVersionGUID();
+            parentOrgGuid = db.getString(db.getModel()
+                    .select(VocOrganization.class, "uuid")
+                    .where(VocOrganization.c.ORGVERSIONGUID, parentOrgVersionGuid));
+        }
         if (orgVersion.getForeignBranch () != null) o = orgVersion.getForeignBranch ();
                 
         if (o == null) {
@@ -141,10 +151,20 @@ public class GisPollExportOrg extends UUIDMDB<OutSoap> {
         final String uuid = i.getOrgRootEntityGUID ();
         
         Map<String, Object> record = DB.HASH (
-            "id_type",           VocOrganizationTypes.i.valueOf (o).getId (),
-            "orgrootentityguid", uuid,
-            "orgppaguid",        i.getOrgPPAGUID ()
+            VocOrganization.c.ID_TYPE,           VocOrganizationTypes.i.valueOf (o).getId (),
+            VocOrganization.c.ORGROOTENTITYGUID, uuid,
+            VocOrganization.c.ORGVERSIONGUID,    orgVersion.getOrgVersionGUID(),
+            VocOrganization.c.ORGPPAGUID,        i.getOrgPPAGUID (),
+            VocOrganization.c.LASTEDITINGDATE,   orgVersion.getLastEditingDate(),
+            VocOrganization.c.ISACTUAL,          orgVersion.isIsActual(),
+            VocOrganization.c.PARENT,            parentOrgGuid,
+            VocOrganization.c.ISREGISTERED,      i.isIsRegistered() != null ? i.isIsRegistered() : false
         );
+        
+        if (source != null) {
+            record.put(VocOrganization.c.SOURCENAME.lc(), source.getValue());
+            record.put(VocOrganization.c.SOURCEDATE.lc(), source.getDate());
+        }
         
         jo.forEach ((k, v) -> {
             
@@ -152,13 +172,11 @@ public class GisPollExportOrg extends UUIDMDB<OutSoap> {
             
             String f = k.toLowerCase ();
             
-            if ("ogrnip".equals (f)) f = "ogrn";
+            if ("ogrnip".equals (f) || "nza".equals (f)) f = "ogrn";
             
             record.put (f, ((JsonString) v).getString ());
             
         });
-        
-        record.put (VocOrganization.c.ORGVERSIONGUID.lc (), orgVersion.getOrgVersionGUID ());
                 
         db.upsert (VocOrganization.class, record);
         
