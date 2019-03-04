@@ -42,7 +42,6 @@ public class HouseLog extends Passport {
         col    ("usedyear",              Type.NUMERIC,      4,     null, "Год ввода в эксплуатацию");
         col    ("culturalheritage",      Type.BOOLEAN,             null, "Наличие у дома статуса объекта культурного наследия");
         col    ("floorcount",            Type.NUMERIC,      3,     null, "Количество этажей");
-        col    ("residentscount",        Type.INTEGER, null,               "Количество проживающих");
         col    ("minfloorcount",         Type.NUMERIC,      3,     null, "Количество этажей, наименьшее");
         col    ("undergroundfloorcount", Type.NUMERIC,      3,     null, "Количество подземных этажей");
         col    ("is_condo",              Type.BOOLEAN,             null, "1 для МКД, 0 для ЖД");
@@ -57,7 +56,10 @@ public class HouseLog extends Passport {
         col    ("code_vc_nsi_25",        Type.STRING,       20,    null, "Способ управления домом (НСИ 25)");
         col    ("code_vc_nsi_338",       Type.STRING,       20,    null, "Стадия жизненного цикла (НСИ 336)");
         col    ("hasmultiplehouseswithsameadres", Type.BOOLEAN, Bool.FALSE, "1, если есть несколько жилых домов с одинаковым адресом, иначе 0");
-        col    ("hasundergroundparking",          Type.BOOLEAN, null,       "1, если есть подзменая парковка, иначе 0");
+        
+        col    ("f_20819",               Type.BOOLEAN, null,       "Наличие подземного паркинга");
+        col    ("f_20140",               Type.NUMERIC, 10, null,   "Количество проживающих");
+        
 
         trigger ("BEFORE INSERT", "BEGIN "
 
@@ -71,7 +73,6 @@ public class HouseLog extends Passport {
             + "    , usedyear"
             + "    , culturalheritage"
             + "    , floorcount"
-            + "    , residentscount"
             + "    , minfloorcount"
             + "    , undergroundfloorcount"
             + "    , is_condo"
@@ -86,7 +87,8 @@ public class HouseLog extends Passport {
             + "    , code_vc_nsi_25"
             + "    , code_vc_nsi_338"
             + "    , hasmultiplehouseswithsameadres"
-            + "    , hasundergroundparking"
+            + "    , f_20819"
+            + "    , f_20140"
             + " INTO"
             + "    :NEW.unom"
             + "    , :NEW.fiashouseguid"
@@ -97,7 +99,6 @@ public class HouseLog extends Passport {
             + "    , :NEW.usedyear"
             + "    , :NEW.culturalheritage"
             + "    , :NEW.floorcount"
-            + "    , :NEW.residentscount"
             + "    , :NEW.minfloorcount"
             + "    , :NEW.undergroundfloorcount"
             + "    , :NEW.is_condo"
@@ -112,7 +113,8 @@ public class HouseLog extends Passport {
             + "    , :NEW.code_vc_nsi_25"
             + "    , :NEW.code_vc_nsi_338"
             + "    , :NEW.hasmultiplehouseswithsameadres"
-            + "    , :NEW.hasundergroundparking"
+            + "    , :NEW.f_20819"
+            + "    , :NEW.f_20140"
             + " FROM tb_houses WHERE uuid=:NEW.uuid_object; "
 
        + "END;");   

@@ -10,9 +10,10 @@ import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
+import ru.eludia.base.model.def.Def;
+import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
-import ru.eludia.products.mosgis.db.model.tables.Block;
+import ru.eludia.products.mosgis.db.model.tables.LivingRoom;
 
 public class InXlLivingRoom extends EnTable {
     
@@ -20,24 +21,11 @@ public class InXlLivingRoom extends EnTable {
     
     public enum c implements ColEnum {
         
-        UUID_XL                 (InXlFile.class,            "Файл импорта"),
-        
         ORD                     (Type.NUMERIC, 5,           "Номер строки"),
         
         HOUSE_UNOM              (Type.NUMERIC, 12, null, "UNOM дома"),
-        UUID_BLOCK              (Block.class,      null, "Ссылка на блок"),
-        
         ADDRESS                 (Type.STRING,      null, "Адрес"),
         BLOCKNUM                (Type.STRING, 255, null, "Номер блока"),
-        ROOMNUMBER              (Type.STRING, 255, null, "Номер комнаты"),
-        
-        SQUARE                  (Type.NUMERIC, 25, 4, null, "Площадь"),
-        CADASTRALNUMBER         (Type.STRING,         null, "Кадастровый номер"),
-        
-        INFORMATIONCONFIRMED    (Type.BOOLEAN, null, "Информация подтверждена поставщиком"),
-        
-        F_20130                 (Type.NUMERIC, 10, null, "Количество граждан, проживающих в комнате в коммунальной квартире"),
-        F_21821                 (Type.NUMERIC, 19,4, null, "Площадь общего имущества в коммунальной квартире"),
         
         ERR                     (Type.STRING,  null,  "Ошибка")
         
@@ -49,31 +37,13 @@ public class InXlLivingRoom extends EnTable {
         private c (Type type, Object... p) {col = new Col (this, type, p);}
         private c (Class c,   Object... p) {col = new Ref (this, c, p);}
         
-        boolean isToCopy () {
-            
-            switch (this) {
-                case UUID_XL:
-                case UUID_BLOCK:
-                case ROOMNUMBER:
-                case SQUARE:
-                case CADASTRALNUMBER:
-                case INFORMATIONCONFIRMED:
-                case F_20130:
-                case F_21821:
-                    return true;
-                default:
-                    return false;
-            }
-            
-        }
-        
     }
     
     public static Map<String, Object> toHash (UUID uuid, int ord, XSSFRow row) {
         
         Map<String, Object> r = DB.HASH (
             EnTable.c.IS_DELETED, 1,
-            c.UUID_XL, uuid,
+            LivingRoom.c.UUID_XL, uuid,
             c.ORD, ord
         );
         
@@ -123,7 +93,7 @@ public class InXlLivingRoom extends EnTable {
             if (cell == null) throw new XLException ("Не указан номер комнаты (столбец C)");
             final String s = cell.getStringCellValue ();
             if (!DB.ok (s)) throw new XLException ("Не указан номер комнаты (столбец C)");
-            r.put (c.ROOMNUMBER.lc (), s);
+            r.put (LivingRoom.c.ROOMNUMBER.lc (), s);
         }
         catch (Exception ex) {
             throw new XLException (ex.getMessage ());
@@ -133,7 +103,7 @@ public class InXlLivingRoom extends EnTable {
             final XSSFCell cell = row.getCell (3);
             if (cell != null) {
                 final String s = cell.getStringCellValue ();
-                if (DB.ok (s)) r.put (c.SQUARE.lc (), s);
+                if (DB.ok (s)) r.put (LivingRoom.c.SQUARE.lc (), s);
             }
         }
         catch (Exception ex) {
@@ -145,7 +115,7 @@ public class InXlLivingRoom extends EnTable {
             if (cell == null) throw new XLException ("Не указан номер комнаты (столбец E)");
             final String s = cell.getStringCellValue ();
             if (!DB.ok (s)) throw new XLException ("Не указан номер комнаты (столбец E)");
-            r.put (c.CADASTRALNUMBER.lc (), s);
+            r.put (LivingRoom.c.CADASTRALNUMBER.lc (), s);
         }
         catch (Exception ex) {
             throw new XLException (ex.getMessage ());
@@ -158,10 +128,10 @@ public class InXlLivingRoom extends EnTable {
             if (!DB.ok (s)) throw new XLException ("Не указан признак подтверждения поставщика (столбец F)");
             switch (s) {
                 case "Да":
-                    r.put (c.INFORMATIONCONFIRMED.lc (), 1);
+                    r.put (LivingRoom.c.INFORMATIONCONFIRMED.lc (), 1);
                     break;
                 case "Нет":
-                    r.put (c.INFORMATIONCONFIRMED.lc (), 0);
+                    r.put (LivingRoom.c.INFORMATIONCONFIRMED.lc (), 0);
                     break;
                 default:
                     throw new XLException ("Указан неверный признак подтверждения поставщика (столбец F): " + s);
@@ -179,13 +149,33 @@ public class InXlLivingRoom extends EnTable {
         
         cols  (c.class);
         
-        key   ("uuid_xl", c.UUID_XL);
+        for (ColEnum o: LivingRoom.c.values ()) {
+            
+            LivingRoom.c c = (LivingRoom.c) o;
+                
+            if (!c.isToXlImport ()) continue;
+            
+            Col col = c.getCol ().clone ();
+                
+                Def def = col.getDef ();
+                boolean isVirtual = def != null && def instanceof Virt;
+                
+                if (!isVirtual) {
+                    col.setDef (null);
+                    col.setNullable (true);
+                }
+                
+                add (col);
+            
+        }
+        
+        key   ("uuid_xl", LivingRoom.c.UUID_XL);
         
         StringBuilder sb = new StringBuilder ();
         StringBuilder nsb = new StringBuilder ();
         StringBuilder usb = new StringBuilder ();
         
-        for (c c: c.values ()) if (c.isToCopy ()) {
+        for (LivingRoom.c c: LivingRoom.c.values ()) if (c.isToXlImport ()) {
             sb.append (',');
             sb.append (c.lc ());
             nsb.append (",:NEW.");

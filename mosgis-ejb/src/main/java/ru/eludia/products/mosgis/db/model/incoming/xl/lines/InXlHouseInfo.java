@@ -10,7 +10,6 @@ import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
-import ru.eludia.base.model.def.Bool;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 
@@ -26,8 +25,8 @@ public class InXlHouseInfo extends EnTable {
         
         ADDRESS                 (Type.STRING, null, "Адрес"),
 
-        RESIDENTSCOUNT          (Type.INTEGER, null, "Количество проживающих"),
-        HASUNDERGROUNDPARKING   (Type.BOOLEAN, null, "Наличие подземного паркинга"),
+        F_20140                 (Type.NUMERIC, 10, null, "Количество проживающих"),
+        F_20819                 (Type.BOOLEAN, null, "Наличие подземного паркинга"),
         
         ERR                     (Type.STRING,  null,  "Ошибка")
         
@@ -90,7 +89,7 @@ public class InXlHouseInfo extends EnTable {
                     if (countCell == null) throw new XLException ("Не указан параметр (столбец C)");
                     final String count = countCell.getStringCellValue ();
                     if (!DB.ok (count)) throw new XLException ("Не указан параметр (столбец C)");
-                    r.put (c.RESIDENTSCOUNT.lc (), count);
+                    r.put (c.F_20140.lc (), count);
                     break;
                 case "Наличие подземного паркинга (логическое)":
                     final XSSFCell parkingCell = row.getCell (2);
@@ -99,10 +98,10 @@ public class InXlHouseInfo extends EnTable {
                     if (!DB.ok (parkingS)) throw new XLException ("Не указан параметр (столбец C)");
                     switch (parkingS) {
                         case "Да":
-                            r.put (c.HASUNDERGROUNDPARKING.lc (), 1);
+                            r.put (c.F_20819.lc (), 1);
                             break;
                         case "Нет":
-                            r.put (c.HASUNDERGROUNDPARKING.lc (), 0);
+                            r.put (c.F_20819.lc (), 0);
                             break;
                         default:
                             throw new XLException ("Указан неверный параметр (столбец C): " + parkingS);

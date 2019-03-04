@@ -127,12 +127,12 @@ public class ParseHousesMDB extends XLMDB {
         for (Map <String, Object> house: housesList)
             for (Map <String, Object> houseInfo: housesInfoList)
                 if (house.get ("address").equals (houseInfo.get ("address")))
-                    if (houseInfo.containsKey (InXlHouseInfo.c.RESIDENTSCOUNT.lc ()))
-                        house.put (InXlHouseInfo.c.RESIDENTSCOUNT.lc (), 
-                                   houseInfo.get (InXlHouseInfo.c.RESIDENTSCOUNT.lc ()));
+                    if (houseInfo.containsKey (InXlHouseInfo.c.F_20140.lc ()))
+                        house.put (InXlHouseInfo.c.F_20140.lc (), 
+                                   houseInfo.get (InXlHouseInfo.c.F_20140.lc ()));
                     else
-                        house.put (InXlHouseInfo.c.HASUNDERGROUNDPARKING.lc (),
-                                   houseInfo.get (InXlHouseInfo.c.HASUNDERGROUNDPARKING.lc ()));
+                        house.put (InXlHouseInfo.c.F_20819.lc (),
+                                   houseInfo.get (InXlHouseInfo.c.F_20819.lc ()));
         
         return housesList;
         

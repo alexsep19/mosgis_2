@@ -10,9 +10,11 @@ import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
+import ru.eludia.base.model.def.Def;
+import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.Block;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 
 public class InXlBlock extends EnTable {
@@ -21,24 +23,10 @@ public class InXlBlock extends EnTable {
     
     public enum c implements ColEnum {
         
-        UUID_XL                 (InXlFile.class,            "Файл импорта"),
-        
         ORD                     (Type.NUMERIC, 5,           "Номер строки"),
         
         HOUSE_UNOM              (Type.NUMERIC, 12, null, "UNOM дома"),
-        
         ADDRESS                 (Type.STRING, null, "Адрес"),
-        BLOCKNUM                (Type.STRING, 255, null, "Номер блока"),
-        IS_NRS                  (Type.BOOLEAN, null, "Категория помещения (жилой/нежилой блок)"),
-        CODE_VC_NSI_30          (Type.STRING, 20, null, "Характеристика помещения"),
-        TOTALAREA               (Type.NUMERIC, 25, 4, null, "Общая площадь помещения"),
-        GROSSAREA               (Type.NUMERIC, 25, 4, null, "Жилая площадь помещения"),
-        CADASTRALNUMBER         (Type.STRING, null, "Кадастровый номер"),
-        INFORMATIONCONFIRMED    (Type.BOOLEAN, null, "Информация подтверждена поставщиком"),
-        
-        F_20002                 (Type.NUMERIC, 10, null, "Количество комнат (НСИ 14)"),
-        F_20125                 (Type.NUMERIC, 10, null, "Количество проживающих"),
-        F_20003                 (Type.NUMERIC, 10, null, "Назначение помещения, относящегося к общему долевому имуществу собственников помещений (НСИ 17)"),
         
         ERR                     (Type.STRING,  null,  "Ошибка")
         
@@ -50,34 +38,13 @@ public class InXlBlock extends EnTable {
         private c (Type type, Object... p) {col = new Col (this, type, p);}
         private c (Class c,   Object... p) {col = new Ref (this, c, p);}
         
-        boolean isToCopy () {
-            
-            switch (this) {
-                case UUID_XL:
-                case BLOCKNUM:
-                case IS_NRS:
-                case CODE_VC_NSI_30:
-                case TOTALAREA:
-                case GROSSAREA:
-                case CADASTRALNUMBER:
-                case INFORMATIONCONFIRMED:
-                case F_20002:
-                case F_20125:
-                case F_20003:
-                    return true;
-                default:
-                    return false;
-            }
-            
-        }
-        
     }
     
     public static Map<String, Object> toHash (UUID uuid, int ord, XSSFRow row) {
         
         Map<String, Object> r = DB.HASH (
             EnTable.c.IS_DELETED, 1,
-            c.UUID_XL, uuid,
+            Block.c.UUID_XL, uuid,
             c.ORD, ord
         );
         
@@ -118,7 +85,7 @@ public class InXlBlock extends EnTable {
             if (cell == null) throw new XLException ("Не указан номер блока (столбец B)");
             final String s = cell.getStringCellValue ();
             if (!DB.ok (s)) throw new XLException ("Не указан номер блока (столбец B)");
-            r.put (c.BLOCKNUM.lc (), s);
+            r.put (Block.c.BLOCKNUM.lc (), s);
         }
         catch (Exception ex) {
             throw new XLException (ex.getMessage ());
@@ -131,10 +98,10 @@ public class InXlBlock extends EnTable {
             if (!DB.ok (s)) throw new XLException ("Не указана категория помещения (столбец C)");
             switch (s) {
                 case "Жилое":
-                    r.put (c.IS_NRS.lc (), 0);
+                    r.put (Block.c.IS_NRS.lc (), 0);
                     break;
                 case "Нежилое":
-                    r.put (c.IS_NRS.lc (), 1);
+                    r.put (Block.c.IS_NRS.lc (), 1);
                     break;
                 default:
                     throw new XLException ("Указана неверная категория помещения (столбец C): " + s);
@@ -156,7 +123,7 @@ public class InXlBlock extends EnTable {
                                 .and    ("is_actual", 1)
                     );
                     if (code == null) throw new XLException ("Код НСИ 30 не найден для указанной характеристики помещения (столбец D)");
-                    r.put (c.CODE_VC_NSI_30.lc (), code);
+                    r.put (Block.c.CODE_VC_NSI_30.lc (), code);
                 }
             }
         }
@@ -168,7 +135,7 @@ public class InXlBlock extends EnTable {
             final XSSFCell cell = row.getCell (4);
             if (cell != null) {
                 final double area = cell.getNumericCellValue ();
-                if (DB.ok (area)) r.put (c.TOTALAREA.lc (), area);
+                if (DB.ok (area)) r.put (Block.c.TOTALAREA.lc (), area);
             }
         }
         catch (Exception ex) {
@@ -179,7 +146,7 @@ public class InXlBlock extends EnTable {
             final XSSFCell cell = row.getCell (5);
             if (cell != null) {
                 final double area = cell.getNumericCellValue ();
-                if (DB.ok (area)) r.put (c.GROSSAREA.lc (), area);
+                if (DB.ok (area)) r.put (Block.c.GROSSAREA.lc (), area);
             }
         }
         catch (Exception ex) {
@@ -191,7 +158,7 @@ public class InXlBlock extends EnTable {
             if (cell == null) throw new XLException ("Не указан кадастровый номер (столбец G)");
             final String s = cell.getStringCellValue ();
             if (!DB.ok (s)) throw new XLException ("Не указан кадастровый номер (столбец G)");
-            r.put (c.CADASTRALNUMBER.lc (), s);
+            r.put (Block.c.CADASTRALNUMBER.lc (), s);
         }
         catch (Exception ex) {
             throw new XLException (ex.getMessage ());
@@ -204,10 +171,10 @@ public class InXlBlock extends EnTable {
             if (!DB.ok (s)) throw new XLException ("Не указан признак подтверждения поставщика (столбец H)");
             switch (s) {
                 case "Да":
-                    r.put (c.INFORMATIONCONFIRMED.lc (), 1);
+                    r.put (Block.c.INFORMATIONCONFIRMED.lc (), 1);
                     break;
                 case "Нет":
-                    r.put (c.INFORMATIONCONFIRMED.lc (), 0);
+                    r.put (Block.c.INFORMATIONCONFIRMED.lc (), 0);
                     break;
                 default:
                     throw new XLException ("Указан неверный признак подтверждения поставщика (столбец H): " + s);
@@ -225,13 +192,33 @@ public class InXlBlock extends EnTable {
         
         cols  (c.class);
         
-        key   ("uuid_xl", c.UUID_XL);
+        for (ColEnum o: Block.c.values ()) {
+            
+            Block.c c = (Block.c) o;
+                
+            if (!c.isToXlImport ()) continue;
+            
+            Col col = c.getCol ().clone ();
+                
+                Def def = col.getDef ();
+                boolean isVirtual = def != null && def instanceof Virt;
+                
+                if (!isVirtual) {
+                    col.setDef (null);
+                    col.setNullable (true);
+                }
+                
+                add (col);
+            
+        }
+        
+        key   ("uuid_xl", Block.c.UUID_XL);
         
         StringBuilder sb = new StringBuilder ();
         StringBuilder nsb = new StringBuilder ();
         StringBuilder usb = new StringBuilder ();
         
-        for (c c: c.values ()) if (c.isToCopy ()) {
+        for (Block.c c: Block.c.values ()) if (c.isToXlImport ()) {
             sb.append (',');
             sb.append (c.lc ());
             nsb.append (",:NEW.");
