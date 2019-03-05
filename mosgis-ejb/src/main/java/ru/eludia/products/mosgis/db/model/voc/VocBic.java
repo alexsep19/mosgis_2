@@ -3,6 +3,9 @@ package ru.eludia.products.mosgis.db.model.voc;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipInputStream;
+import java.io.InputStream;
+import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -49,7 +52,7 @@ public class VocBic extends Table {
         pk    (c.BIC);
     }
     
-    public static class SAXHandler extends DefaultHandler {
+    private static class SAXHandler extends DefaultHandler {
         
         List<Map<String, Object>> corrAccounts = new ArrayList<> ();
         
@@ -223,7 +226,20 @@ public class VocBic extends Table {
             corrAccounts.add (r);
             r = null;
         }
-        
-    }    
+                
+    }   
+    
+    private static List<Map<String, Object>> parseRawInputStream (InputStream is) throws Exception {
+        SAXHandler h = new SAXHandler ();
+        SAXParserFactory.newInstance ().newSAXParser ().parse (is, h);
+        return h.getCorrAccounts ();
+    }
+    
+    public static List<Map<String, Object>> parseZipInputStream (InputStream is) throws Exception {
+        try (ZipInputStream zis = new ZipInputStream (is)) {
+            zis.getNextEntry ();
+            return parseRawInputStream (zis);
+        }        
+    }
 
 }
