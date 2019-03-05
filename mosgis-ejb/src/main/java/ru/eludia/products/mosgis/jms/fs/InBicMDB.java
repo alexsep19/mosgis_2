@@ -34,6 +34,11 @@ public class InBicMDB extends UUIDMDB<InVocBic> {
                 i.put (VocBic.c.UUID_IMPORT.lc (), uuid);
                 db.upsert (VocBic.class, i);
             }
+            
+            db.update (InVocBic.class, DB.HASH (
+                InVocBic.c.UUID,    uuid,
+                InVocBic.c.IS_OVER, 1
+            ));
 
         }
 
