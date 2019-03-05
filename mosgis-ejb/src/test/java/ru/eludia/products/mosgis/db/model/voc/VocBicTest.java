@@ -37,8 +37,9 @@ public class VocBicTest {
     @Test (expected = Test.None.class)
     public void testZip () throws Exception {  
         
-        URL url = new URL ("http://cbr.ru/s/newbik");
-        
+//        URL url = new URL ("http://cbr.ru/s/newbik");
+        URL url = new URL ("file:///C:/buf/___/20190304ED01OSBR.zip");
+
         try (InputStream is = url.openStream ()) {
             for (Map<String, Object> i: VocBic.parseZipInputStream (is)) System.out.println (i.toString ());
         }

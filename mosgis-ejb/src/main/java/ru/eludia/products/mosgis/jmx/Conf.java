@@ -210,6 +210,16 @@ public class Conf implements ConfMBean, ConfLocal {
     public void setPathOkei (String s) {
         set (VocSetting.i.PATH_OKEI, s);
     }
+
+    @Override
+    public String getUrlBic () {
+        return get (VocSetting.i.URL_BIC);
+    }
+
+    @Override
+    public void setUrlBic (String s) {
+        set (VocSetting.i.URL_BIC, s);
+    }
     
     @Override
     public String getPathOksm() {

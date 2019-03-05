@@ -5,6 +5,9 @@ import javax.ejb.Local;
 @Local
 public interface ConfMBean {
     
+    public String getUrlBic ();
+    public void   setUrlBic (String s);
+    
     public String getPathOkei ();
     public void   setPathOkei (String s);
     
