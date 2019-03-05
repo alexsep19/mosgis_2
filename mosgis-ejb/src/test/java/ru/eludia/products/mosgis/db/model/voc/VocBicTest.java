@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -23,6 +25,7 @@ public class VocBicTest {
         }        
     }
 */    
+/*    
     @Test (expected = Test.None.class)
     public void testZip () throws Exception {        
         File file = new java.io.File ("c:/buf/___/20190304ED01OSBR.zip");        
@@ -30,5 +33,16 @@ public class VocBicTest {
             for (Map<String, Object> i: VocBic.parseZipInputStream (fis)) System.out.println (i.toString ());
         }
     }
+*/    
+    @Test (expected = Test.None.class)
+    public void testZip () throws Exception {  
+        
+        URL url = new URL ("http://cbr.ru/s/newbik");
+        
+        try (InputStream is = url.openStream ()) {
+            for (Map<String, Object> i: VocBic.parseZipInputStream (is)) System.out.println (i.toString ());
+        }
+        
+    }    
     
 }
