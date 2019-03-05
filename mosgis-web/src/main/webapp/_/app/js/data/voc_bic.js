@@ -10,7 +10,27 @@ define ([], function () {
         
         query ({type: 'voc_bic', id: null, action: 'import'}, {}, function () {
 
+            grid.unlock ()
             grid.reload (grid.refresh)
+
+        })
+
+    }
+
+    $_DO.check_voc_bic = function () {
+
+        var grid = w2ui ['voc_bic_grid']
+
+        query ({type: 'voc_bic', id: null, part: 'log'}, {}, function (d) {
+        
+            if (d.log.is_over) {
+                if (grid) grid.unlock ()
+                return
+            }
+                        
+            setTimeout (function () {w2ui ['voc_bic_grid'].lock ('Импорт данных...', 1)}, 10)
+
+            setTimeout ($_DO.check_voc_bic, 1000)
 
         })
 

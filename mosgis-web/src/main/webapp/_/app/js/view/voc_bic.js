@@ -3,7 +3,7 @@ define ([], function () {
     return function (data, view) {
     
         data = $('body').data ('data')
-darn (data)        
+
         $(w2ui ['vocs_layout'].el ('main')).w2regrid ({
 
             name: 'voc_bic_grid',
@@ -44,7 +44,10 @@ darn (data)
             
             url: '/mosgis/_rest/?type=voc_bic',
 
-            onDblClick: function (e) {
+            onRequest: function (e) {
+            
+                e.done ($_DO.check_voc_bic)
+                
             }
 
         }).refresh ();

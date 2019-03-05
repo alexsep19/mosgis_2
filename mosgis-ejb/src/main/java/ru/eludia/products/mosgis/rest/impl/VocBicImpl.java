@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.rest.impl;
 
+import java.math.BigDecimal;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,6 +10,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.json.JsonObject;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.products.mosgis.db.model.incoming.InVocBic;
 import ru.eludia.products.mosgis.db.model.voc.VocBic;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi237;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
@@ -95,6 +97,16 @@ public class VocBicImpl extends Base<VocBic> implements VocBicLocal {
                 
         );
         
+    });}
+
+    @Override
+    public JsonObject getLog () {return fetchData ((db, job) -> {
+        
+        job.add ("log", db.getJsonObject (db.getModel ()
+            .select  (InVocBic.class, "*")
+            .orderBy (InVocBic.c.TS.lc () + " DESC")
+        ));
+
     });}
 
 }

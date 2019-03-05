@@ -12,5 +12,6 @@ public interface VocBicLocal {
 //    JsonObject getLines (String id, JsonObject p);
     JsonObject getVocs  (JsonObject p);
     JsonObject doImport (User user);
+    JsonObject getLog   ();
 
 }

@@ -21,7 +21,7 @@ public class VocBic extends EJBResource <VocBicLocal> {
     }
 
     @POST
-    @Path("/import")
+    @Path("import")
     @Produces (APPLICATION_JSON)
     public JsonObject doImport () {
         return back.doImport (getUser ());
@@ -33,6 +33,13 @@ public class VocBic extends EJBResource <VocBicLocal> {
     @Produces (APPLICATION_JSON)
     public JsonObject getVocs (JsonObject p) { 
         return back.getVocs (p);
+    }
+
+    @POST
+    @Path("log") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject getLog () { 
+        return back.getLog (); 
     }
 
 }
