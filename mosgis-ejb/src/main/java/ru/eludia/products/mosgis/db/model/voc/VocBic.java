@@ -27,10 +27,18 @@ public class VocBic extends Table {
         ADR            (Type.STRING,            "Адрес"),
         DATEIN         (Type.DATE,              "Дата регистрации Банком России"),
         ACCOUNT        (Type.NUMERIC, 20,       "Номер корреспондентскиого счёта"),
+        ACCOUNTCBRBIC  (Type.NUMERIC, 9,        "БИК ПБР, обслуживающего счет участника перевода"),
         CODE_VC_NSI_95 (Type.STRING,  20, null, "Код региона РФ (НСИ 237)"),
         IS_DELETED     (Type.BOOLEAN,  FALSE,   "1, если запись не актуальна; иначе 0")
         ;        
                                                                                     @Override public Col getCol () {return col;} private Col col; private c (Type type, Object... p) {col = new Col (this, type, p);}
+    
+        static c forName (String s) {
+            String u = s.toUpperCase ();
+            for (c i: values ()) if (u.equals (i.name ())) return i;
+            return null;
+        }
+    
     }
 
 //Адрес - Tnp+Nnp+Adr -
@@ -43,14 +51,18 @@ public class VocBic extends Table {
     
     public static class SAXHandler extends DefaultHandler {
         
-        List<Map<String, Object>> bics = new ArrayList<> ();
+        List<Map<String, Object>> corrAccounts = new ArrayList<> ();
         
         Map<String, Object> r = null;
 
+        public List<Map<String, Object>> getCorrAccounts () {
+            return corrAccounts;
+        }
+
         @Override
         public void startElement (String uri, String localName, String qName, Attributes attributes) throws SAXException {
-            
-            switch (localName) {
+
+            switch (qName) {
                 
                 case "BICDirectoryEntry":
                     r = DB.HASH (c.BIC, attributes.getValue ("BIC"));
@@ -66,21 +78,33 @@ public class VocBic extends Table {
 
         }
 
+        private void copy (Attributes attributes) {
+            for (int i = 0; i < attributes.getLength (); i ++) {
+                c k = c.forName (attributes.getLocalName (i));
+                if (k != null) r.put (k.lc (), attributes.getValue (i));
+            }
+        }
+        
         private void parseParticipantInfo (Attributes attributes) {
             
             switch (attributes.getValue ("PtType")) {
                 case "20":
                 case "30":
-                    
+                    copy (attributes);
                     break;
                 default:
                     r = null;
+                    return;
             }
             
         }
 
         private void parseAccounts (Attributes attributes) {
             if (r == null) return;
+            if (!"CRSA".equals (attributes.getValue ("RegulationAccountType"))) return;
+            copy (attributes);
+            corrAccounts.add (r);
+            r = null;
         }
         
     }    
