@@ -24,7 +24,12 @@ darn (data)
             },
 
             searches: [
-                {field: 'code', caption: 'Код', type: 'text'},
+                {field: 'bic', caption: 'БИК', type: 'text'},
+                {field: 'account', caption: '№ корреспондентского счёта', type: 'text'},
+                {field: 'namep', caption: 'Наименование', type: 'text'},
+                {field: 'regn', caption: 'Рег. №', type: 'text'},
+                {field: 'datein', caption: 'от', type: 'text'},
+                {field: 'code_vc_nsi_237', caption: 'Регион', type: 'enum', options: {items: data.vc_nsi_237.items}},
             ],
 
             columns: [                
@@ -35,20 +40,6 @@ darn (data)
                 {field: 'datein', caption: 'от', size: 10, render: _dt},
                 {field: 'label_address', caption: 'Адрес', size: 30},
                 {field: 'code_vc_nsi_237', caption: 'Регион', size: 30, voc: data.vc_nsi_237},
-                
-                
-/*                
-
-Регистрационный номер - RegN
-Наименование - NameP - обязательное поле.
-Дата регистрации Банком России - DateIn
-
-                {field: 'site_name', caption: 'Наименование территории', size: 50},
-                {field: 'add_info', caption: 'Дополнительная информация', size: 10, hidden: 1},
-                {field: 'description', caption: 'Описание', size: 10, hidden: 1},
-                {field: 'appr_date', caption: 'Дата утверждения', size: 10, render: _dt, hidden: 1},
-                {field: 'adop_date', caption: 'Дата принятия', size: 10, render: _dt, hidden: 1},
-*/                
             ],
             
             url: '/mosgis/_rest/?type=voc_bic',

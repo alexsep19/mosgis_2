@@ -1,6 +1,8 @@
 package ru.eludia.products.mosgis.rest.impl;
 
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -14,6 +16,9 @@ import ru.eludia.products.mosgis.jmx.BicLocal;
 import ru.eludia.products.mosgis.rest.api.VocBicLocal;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.impl.base.Base;
+import ru.eludia.products.mosgis.web.base.ComplexSearch;
+import ru.eludia.products.mosgis.web.base.Search;
+import ru.eludia.products.mosgis.web.base.SimpleSearch;
 
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
@@ -23,21 +28,51 @@ public class VocBicImpl extends Base<VocBic> implements VocBicLocal {
     BicLocal back;
 
     private static final Logger logger = Logger.getLogger (VocBicImpl.class.getName ());
+
+    private static final Pattern RE_BIC = Pattern.compile ("\\d{9}");
+
+    private void applyComplexSearch (final ComplexSearch search, Select select) {
+        search.filter (select, "");
+    }
+    
+    private void applySimpleSearch (final SimpleSearch search, Select select) {
+
+        final String searchString = search.getSearchString ();
+
+        Matcher matcher = RE_BIC.matcher (searchString);
+
+        if (matcher.matches ()) {
+            select.and (VocBic.c.BIC, search.getSearchString ());
+        }
+        else {
+            select.and (VocBic.c.NAMEP.lc () + "LIKE %?%", search.getSearchString ().toUpperCase ());
+        }
+
+    }    
+    
+    private void applySearch (final Search search, Select select) {        
+
+        if (search == null) {
+//            do nothing
+        }
+        else if (search instanceof ComplexSearch) {
+            applyComplexSearch ((ComplexSearch) search, select);
+        }
+        else if (search instanceof SimpleSearch) {
+            applySimpleSearch  ((SimpleSearch) search, select);
+        }
         
+    }
+
     @Override
     public JsonObject select (JsonObject p) {return fetchData ((db, job) -> {                
 
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*")
             .orderBy (VocBic.c.NAMEP)
             .limit (p.getInt ("offset"), p.getInt ("limit"));
-/*
-        JsonObject data = p.getJsonObject ("data");
-
-        checkFilter (data, MeteringDevice.c.FIASHOUSEGUID, select);
-        checkFilter (data, MeteringDevice.c.UUID_ORG, select);
 
         applySearch (Search.from (p), select);
-*/
+
         db.addJsonArrayCnt (job, select);
 
     });}

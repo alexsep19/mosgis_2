@@ -23,8 +23,9 @@ public class VocBic extends Table {
     
     public static final String TABLE_NAME = "vc_bic";    
     
-    public enum c implements ColEnum {        
-        BIC             (Type.NUMERIC, 9,        "БИК"),
+    public enum c implements ColEnum {
+
+        BIC             (Type.STRING,  9,        "БИК"),
         REGN            (Type.STRING,            "Регистрационный номер (№ банковской лицензии + возможно, постфикс)"),
         NAMEP           (Type.STRING,            "Наименование банка (филиала)"),
         IND             (Type.NUMERIC, 6,        "Индекс отделения почтовой связи"),
@@ -41,7 +42,7 @@ public class VocBic extends Table {
         LABEL_ADDRESS   (Type.STRING,            new Virt ("\"TNP\"||' '||\"NNP\"||', '||\"ADR\""), "Адрес"),
         
         UUID_IMPORT     (InVocBic.class,         "Последнее событие импорта"),
-        ;        
+        ;
                                                                                     @Override public Col getCol () {return col;} private Col col; private c (Type type, Object... p) {col = new Col (this, type, p);} private c(Class c, Object... p) {col = new Ref(this, c, p);}    
         static c forName (String s) {
             String u = s.toUpperCase ();
