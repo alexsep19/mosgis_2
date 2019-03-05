@@ -211,6 +211,7 @@ public class VocBic extends Table {
                 case "20":
                 case "30":
                     copy (attributes);
+                    if (!DB.ok (r.get (c.REGN.lc ()))) r = null;
                     break;
                 default:
                     r = null;
