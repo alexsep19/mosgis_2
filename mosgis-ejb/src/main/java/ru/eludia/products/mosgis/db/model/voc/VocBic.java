@@ -183,14 +183,19 @@ public class VocBic extends Table {
                 String value = attributes.getValue (i);
                 c k;
                 
-                if ("Rgn".equals (name)) {
-                    k = c.CODE_VC_NSI_237;
-                    value = toNsi237 (value);
+                switch (name) {
+                    case "Rgn":
+                        k = c.CODE_VC_NSI_237;
+                        value = toNsi237 (value);
+                        break;
+                    case "AccountStatus":
+                        k = c.IS_DELETED;
+                        value = "ACAC".equals (value) ? "0" : "1";
+                        break;
+                    default:
+                        k = c.forName (name);
                 }
-                else {
-                    k = c.forName (name);
-                }
-                
+                                                
                 if (k != null) r.put (k.lc (), value);                
                                 
             }
