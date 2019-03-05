@@ -26,7 +26,8 @@ define ([], function () {
 
         })
 
-        w2ui['sidebar'].add ({id: 'voc_oktmo', text: 'ОКТМО', img: 'icon-page'})
+        if ($_USER.role.admin) w2ui ['sidebar'].add ({id: 'voc_bic', text: 'Банки (БИК)', img: 'icon-page'})
+        w2ui ['sidebar'].add ({id: 'voc_oktmo', text: 'ОКТМО', img: 'icon-page'})
 
     }
 
