@@ -1,22 +1,21 @@
 define ([], function () {
-/*
-    $_DO.choose_tab_voc_oktmo = function (e) {
 
-        var name = e.tab.id
-                
-        var layout = w2ui ['topmost_layout']
-            
-        if (layout) {                
-            layout.content ('main', '');
-            layout.lock ('main', 'Загрузка...', true);
-        }
-            
-        localStorage.setItem ('voc_oktmo.active_tab', name)
-            
-        use.block (name)
-            
-    }            
-*/
+    $_DO.import_voc_bic = function (e) {
+
+        if (!confirm ('Обновить справочник?')) return
+        
+        var grid = w2ui ['voc_bic_grid']
+        
+        grid.lock ()
+        
+        query ({type: 'voc_bic', id: null, action: 'import'}, {}, function () {
+
+            grid.reload (grid.refresh)
+
+        })
+
+    }
+
     return function (done) {        
 
         query ({type: 'voc_bic', id: null, part: 'vocs'}, {}, function (data) {

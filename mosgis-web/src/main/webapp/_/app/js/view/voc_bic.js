@@ -14,6 +14,14 @@ darn (data)
                 toolbar: true,
                 toolbarSearch: true,
             },
+            
+            toolbar: {
+
+                items: [
+                    {type: 'button', id: 'edit', caption: 'Обновить', onClick: $_DO.import_voc_bic, icon: 'w2ui-icon-pencil'},
+                ],
+            
+            },
 
             searches: [
                 {field: 'code', caption: 'Код', type: 'text'},

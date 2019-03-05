@@ -7,8 +7,8 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.json.JsonObject;
 import ru.eludia.base.db.sql.gen.Select;
-import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.voc.VocBic;
+import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi237;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.jmx.BicLocal;
 import ru.eludia.products.mosgis.rest.api.VocBicLocal;
@@ -45,14 +45,19 @@ public class VocBicImpl extends Base<VocBic> implements VocBicLocal {
     @Override
     public JsonObject doImport (User user) {
         back.importBic (user);
-        return EMPTY_JSON_OBJECT;
+        return EMPTY_JSON_OBJECT; 
     }
 
     @Override
     public JsonObject getVocs (JsonObject p) {return fetchData ((db, job) -> {
         
         db.addJsonArrays (job,
-            NsiTable.getNsiTable (237).getVocSelect ()
+                
+            db.getModel ().select (Nsi237.class, "AS vc_nsi_237"
+                , Nsi237.c.ID.lc ()
+                , Nsi237.c.LABEL.lc ()
+            ).orderBy (Nsi237.c.LABEL)
+                
         );
         
     });}

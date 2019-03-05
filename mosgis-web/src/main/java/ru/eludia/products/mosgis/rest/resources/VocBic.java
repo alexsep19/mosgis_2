@@ -21,9 +21,9 @@ public class VocBic extends EJBResource <VocBicLocal> {
     }
 
     @POST
-    @Path("{id}/import") 
+    @Path("/import")
     @Produces (APPLICATION_JSON)
-    public JsonObject doImport (@PathParam ("id") String id) { 
+    public JsonObject doImport () {
         return back.doImport (getUser ());
     }
 
