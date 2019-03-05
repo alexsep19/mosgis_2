@@ -1,7 +1,6 @@
 package ru.eludia.products.mosgis.jmx;
 
 import java.lang.management.ManagementFactory;
-import java.sql.SQLException;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,11 +20,12 @@ import static ru.eludia.base.DB.HASH;
 import ru.eludia.products.mosgis.db.model.incoming.InVocBic;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
+import ru.eludia.products.mosgis.rest.User;
 
 @Startup
 @Singleton
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-public class Bic implements BicMBean {
+public class Bic implements BicMBean, BicLocal {
 
     private ObjectName objectName = null;
     private MBeanServer platformMBeanServer;
@@ -59,17 +59,22 @@ public class Bic implements BicMBean {
     }
 
     @Override
-    public void importBic () {
+    public void importBic (User user) {
         
         try (DB db = ModelHolder.getModel ().getDb ()) {                                    
             UUIDPublisher.publish (inBicQueue, (UUID) db.insertId (InVocBic.class, HASH (
-                InVocBic.c.UUID_USER, null
+                InVocBic.c.UUID_USER, user == null ?  null : user.getId ()
             )));
         }
         catch (Exception ex) {
             Logger.getLogger (Bic.class.getName()).log (Level.SEVERE, null, ex);
         }
 
+    }
+
+    @Override
+    public void importBic () {
+        importBic (null);
     }
 
 }
