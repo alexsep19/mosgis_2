@@ -7,6 +7,7 @@ import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import static ru.eludia.base.model.def.Def.NOW;
+import ru.eludia.products.mosgis.db.model.voc.VocBic;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
 
 public class InVocBic extends Table {
@@ -23,7 +24,7 @@ public class InVocBic extends Table {
     }
 
     public InVocBic () {        
-        super ("in_vc_orgs", "Запросы на импорт справочника БИК / корреспондентских счетов банков РФ");
+        super ("in_" + VocBic.TABLE_NAME, "Запросы на импорт справочника БИК / корреспондентских счетов банков РФ");
         cols  (InVocBic.c.class);        
         pk    (c.UUID);                        
     }

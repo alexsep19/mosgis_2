@@ -12,13 +12,16 @@ import org.xml.sax.helpers.DefaultHandler;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
+import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.def.Bool.FALSE;
+import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.model.incoming.InVocBic;
 
 public class VocBic extends Table {
     
-    private static final String TABLE_NAME = "vc_bic";    
+    public static final String TABLE_NAME = "vc_bic";    
     
     public enum c implements ColEnum {        
         BIC             (Type.NUMERIC, 9,        "БИК"),
@@ -32,10 +35,14 @@ public class VocBic extends Table {
         ACCOUNT         (Type.NUMERIC, 20,       "Номер корреспондентскиого счёта"),
         ACCOUNTCBRBIC   (Type.NUMERIC, 9,        "БИК ПБР, обслуживающего счет участника перевода"),
         CODE_VC_NSI_237 (Type.STRING,  20, null, "Код региона РФ (НСИ 237)"),
-        IS_DELETED      (Type.BOOLEAN,  FALSE,   "1, если запись не актуальна; иначе 0")
+        IS_DELETED      (Type.BOOLEAN,  FALSE,   "1, если запись не актуальна; иначе 0"),
+        
+        LABEL_CITY      (Type.STRING,            new Virt ("\"TNP\"||' '||\"NNP\""), "Город"),
+        LABEL_ADDRESS   (Type.STRING,            new Virt ("\"TNP\"||' '||\"NNP\"||', '||\"ADR\""), "Адрес"),
+        
+        UUID_IMPORT     (InVocBic.class,         "Последнее событие импорта"),
         ;        
-                                                                                    @Override public Col getCol () {return col;} private Col col; private c (Type type, Object... p) {col = new Col (this, type, p);}
-    
+                                                                                    @Override public Col getCol () {return col;} private Col col; private c (Type type, Object... p) {col = new Col (this, type, p);} private c(Class c, Object... p) {col = new Ref(this, c, p);}    
         static c forName (String s) {
             String u = s.toUpperCase ();
             for (c i: values ()) if (u.equals (i.name ())) return i;
@@ -44,12 +51,11 @@ public class VocBic extends Table {
     
     }
 
-//Адрес - Tnp+Nnp+Adr -
-
     public VocBic () {
         super (TABLE_NAME, "Справочник БИК / корреспондентских счетов банков РФ");
         cols  (c.class);        
-        pk    (c.BIC);
+        pk    (c.BIC);        
+        key   (c.NAMEP.lc (), c.NAMEP.lc ());
     }
     
     private static class SAXHandler extends DefaultHandler {

@@ -31,12 +31,10 @@ public class InBicMDB extends UUIDMDB<InVocBic> {
             final List<Map<String, Object>> records = VocBic.parseZipInputStream (is);
             
             for (Map<String, Object> i: records) {
+                i.put (VocBic.c.UUID_IMPORT.lc (), uuid);
                 db.upsert (VocBic.class, i);
-//                logger.info ("BIC record: " + i);
             }
-            
-//            db.upsert (VocBic.class, records);
-            
+
         }
 
     }
