@@ -34,6 +34,7 @@ public class VocBicTest {
         }
     }
 */    
+/*    
     @Test (expected = Test.None.class)
     public void testZip () throws Exception {  
         
@@ -45,5 +46,5 @@ public class VocBicTest {
         }
         
     }    
-    
+*/    
 }
