@@ -17,8 +17,10 @@ public class BankAccount extends EnTable {
         
         ACCOUNTNUMBER          (Type.STRING,  20,      null, "Номер счёта"),
         
-        OPENDATE               (Type.DATE,             null,  "Дата открытия/изменения реквизитов"),
-        CLOSEDATE              (Type.DATE,             null,  "Дата закрытия"),
+        OPENDATE               (Type.DATE,             null, "Дата открытия/изменения реквизитов"),
+        CLOSEDATE              (Type.DATE,             null, "Дата закрытия"),
+        
+        ID_LOG                 (BankAccountLog.class,  null, "Последнее обытие редактирования"),
         
         ;
 
@@ -27,8 +29,8 @@ public class BankAccount extends EnTable {
         @Override
         public boolean isLoggable () {            
             switch (this) {
-//                case ID_LOG:
-//                    return false;
+                case ID_LOG:
+                    return false;
                 default:
                     return true;
             }
