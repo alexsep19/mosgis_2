@@ -14,7 +14,6 @@ define ([], function () {
 
                 fields : [
                     {name: 'accountnumber', type: 'text'},
-//                    {name: 'bikcredorg', type: 'text'},
                     {name: 'closedate', type: 'date', options: {end: now}},
                     {name: 'opendate', type: 'date', options: {end: now}},
                     {name: 'bikcredorg', type: 'list', hint: 'Адрес', options: {
@@ -28,7 +27,8 @@ define ([], function () {
                         postData: {offset: 0, limit: 50},
                         
                         onSearch: function (e) {
-                            this.options.postData['search'] = [{'value': e.search}]
+                            this.options.postData.search = [{'value': e.search}]
+                            this.options.postData.searchLogic = "OR"
                         },
                         
                         onLoad: function (e) {
@@ -46,17 +46,7 @@ define ([], function () {
                     }},
                     
                 ],
-/*                
-                onChange: function (e) {                
-                    if (e.target == 'fiashouseguid') e.done ($_DO.load_premises_for_bank_account_popup)
-                },
-                
-                onRender: function (e) {                
-                    if (!is_virgin) return
-                    is_virgin = false                
-                    if (data.record.fiashouseguid) e.done ($_DO.load_premises_for_bank_account_popup)
-                }
-*/
+
             })
 
        })
