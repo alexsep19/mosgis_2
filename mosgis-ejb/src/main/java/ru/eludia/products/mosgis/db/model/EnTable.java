@@ -7,6 +7,10 @@ import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.Type.BOOLEAN;
 import static ru.eludia.base.model.def.Bool.FALSE;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
+import ru.eludia.products.mosgis.jms.xl.base.XLException;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import ru.eludia.base.DB;
 
 public abstract class EnTable extends Table {
 
@@ -40,4 +44,38 @@ public abstract class EnTable extends Table {
         pk    (c.UUID);
     }
 
+    public static Object toNumeric(XSSFRow row, int col, Object error) throws XLException {
+
+	Object result = toNumeric(row, col);
+
+	if (result == null) {
+	    throw new XLException(error.toString());
+	}
+
+	return result;
+    }
+
+    public static Object toNumeric(XSSFRow row, int col) throws XLException {
+
+	String s;
+
+	try {
+	    final XSSFCell cell = row.getCell(col);
+	    if (cell == null) {
+		return null;
+	    }
+
+	    s = cell.getStringCellValue();
+
+	    s = s.trim().replaceAll("\\D", "");
+
+	    if (!DB.ok(s)) {
+		return null;
+	    }
+	} catch (Exception ex) {
+	    throw new XLException(ex.getMessage());
+	}
+
+	return DB.to.Long(s);
+    }
 }
