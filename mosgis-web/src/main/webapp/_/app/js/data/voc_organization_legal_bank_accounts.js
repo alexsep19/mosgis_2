@@ -10,7 +10,11 @@ define ([], function () {
     
         var grid = w2ui ['voc_organization_legal_bank_accounts_grid']
         
-        $_SESSION.set ('record', grid.get (e.recid))
+        var r = grid.get (e.recid)
+        
+        if (r.uuid_org != $_REQUEST.id) die ('foo', 'Владельцем данного счёта является ' + r ['org.label'] + '. Он указан как платёжный реквизит ' + $('body').data ('data').item.label + ' на основании договора услуг РЦ. Редактирование отменено.')
+        
+        $_SESSION.set ('record', r)
 
         use.block ('bank_account_popup')
 
@@ -18,7 +22,19 @@ define ([], function () {
 
     $_DO.delete_voc_organization_legal_bank_accounts = function (e) {    
     
-        if (!e.force) return
+        var id = w2ui [e.target].getSelection () [0]
+    
+        var grid = w2ui ['voc_organization_legal_bank_accounts_grid']
+        
+        var r = grid.get (id)
+
+        if (!e.force) {
+        
+            if (r.uuid_org != $_REQUEST.id) die ('foo', 'Владельцем данного счёта является ' + r ['org.label'] + '. Он указан как платёжный реквизит ' + $('body').data ('data').item.label + ' на основании договора услуг РЦ. Удаление отменено.')
+        
+            return        
+            
+        }
     
         $('.w2ui-message').remove ()
 
@@ -27,7 +43,7 @@ define ([], function () {
         query ({
         
             type:   'bank_accounts', 
-            id:     w2ui [e.target].getSelection () [0],
+            id:     id,
             action: 'delete',
             
         }, {}, reload_page)

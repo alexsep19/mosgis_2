@@ -16,6 +16,8 @@ define ([], function () {
         if (!v.opendate) die ('opendate', 'Укажите, пожалуйста, дату открытия счёта')
 
         if (v.closedate && v.closedate < v.opendate) die ('closedate', 'Дата закрытия не может быть ранее даты открытия')
+        
+        if ($_USER.role.admin) v.uuid_org = $_REQUEST.id
 
         var tia = {type: 'bank_accounts', id: form.record.uuid}
         
