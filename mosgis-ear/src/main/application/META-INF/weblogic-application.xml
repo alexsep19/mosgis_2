@@ -82,4 +82,10 @@
         <path>META-INF/ws-jms/mosgismodule-ws-reg-org-service-async-jms.xml</path>
     </module>
     
+    <module>
+        <type>JMS</type>
+        <name>Workflow-overhaul-work-types</name>
+        <path>META-INF/mosgismodule-overhaul-work-types-jms.xml</path>
+    </module>
+    
 </weblogic-application>

@@ -59,6 +59,11 @@ define ([], function () {
                 text: 'Физические лица',
             })
 
+            if (one_of_roles (7)) org_vocs.push ({
+                id: 'vc_oh_wk_types',
+                text: 'Вид работ капитального ремонта',
+            })
+
             if (org_vocs.length) data.vc_nsi_list_group.unshift ({
                 name: '_ORG',
                 label: 'Справочники организаций',
