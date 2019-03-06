@@ -102,10 +102,12 @@ public class VocBicImpl extends Base<VocBic> implements VocBicLocal {
     @Override
     public JsonObject getLog () {return fetchData ((db, job) -> {
         
-        job.add ("log", db.getJsonObject (db.getModel ()
+        final JsonObject log = db.getJsonObject (db.getModel ()
             .select  (InVocBic.class, "*")
             .orderBy (InVocBic.c.TS.lc () + " DESC")
-        ));
+        );
+        
+        job.add ("log", log == null ? EMPTY_JSON_OBJECT : log);
 
     });}
 

@@ -2,18 +2,14 @@ define ([], function () {
 
     $_DO.import_voc_bic = function (e) {
 
-        if (!confirm ('Обновить справочник?')) return
+        if (!confirm ('Импортировать справочник?')) return
         
         var grid = w2ui ['voc_bic_grid']
         
-        grid.lock ()
+        grid.lock ()        
+        $_SESSION.set ('voc_bic_importing', 1)
         
-        query ({type: 'voc_bic', id: null, action: 'import'}, {}, function () {
-
-            grid.unlock ()
-            grid.reload (grid.refresh)
-
-        })
+        query ({type: 'voc_bic', id: null, action: 'import'}, {}, $_DO.check_voc_bic)
 
     }
 
@@ -23,14 +19,19 @@ define ([], function () {
 
         query ({type: 'voc_bic', id: null, part: 'log'}, {}, function (d) {
         
-            if (d.log.is_over) {
-                if (grid) grid.unlock ()
+            var is_importing = $_SESSION.get ('voc_bic_importing')
+
+            if (!d.log.uuid) return is_importing ? null : $_DO.import_voc_bic ()
+        
+            if (d.log.is_over) {            
+                $_SESSION.delete ('voc_bic_importing')
+                if (is_importing && grid) grid.reload (grid.refresh)
                 return
             }
                         
             setTimeout (function () {w2ui ['voc_bic_grid'].lock ('Импорт данных...', 1)}, 10)
 
-            setTimeout ($_DO.check_voc_bic, 1000)
+            setTimeout ($_DO.check_voc_bic, 2000)
 
         })
 
