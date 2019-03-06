@@ -41,6 +41,7 @@ define ([], function () {
                         tabs: [
                             {id: 'voc_organization_legal_main', caption: 'Юридическое лицо'},
                             {id: 'voc_organization_legal_info', caption: 'Информация'},
+                            {id: 'voc_organization_legal_bank_accounts', caption: 'Платёжные реквизиты'},
                             {id: 'voc_organization_legal_hours', caption: 'Режим работы'},
                             {id: 'voc_organization_legal_territories', caption: 'Территории', off: !has_territories ()},
                             {id: 'voc_organization_legal_members', caption: 'Члены ТСЖ/кооператива', off: !has_coop_members()},
