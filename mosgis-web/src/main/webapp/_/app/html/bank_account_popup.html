@@ -1,0 +1,59 @@
+<span
+	data-popup-width=540
+	data-popup-height=225
+	data-popup-title='Платёжные реквизиты'
+>
+
+	<style>
+
+        label[data-block-name=bank_account_popup] {
+        	width: 120px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=bank_account_popup] {
+        	width: 320px !important;
+        }
+
+        input.dt[data-block-name=bank_account_popup] {
+        	width: 80px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>№ лицевого счёта</label>
+                <div>
+                	<input name=accountnumber maxlength=20>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>БИК / банк</label>
+                <div>
+                	<input name=bikcredorg>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Дата открытия</label>
+                <div>
+                	<input name=opendate class=dt placeholder="">
+                	закрытия:
+                	<input name=closedate class=dt placeholder="">
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>
