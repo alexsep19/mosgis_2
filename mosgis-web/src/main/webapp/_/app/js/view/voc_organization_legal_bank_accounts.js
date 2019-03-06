@@ -28,10 +28,20 @@ define ([], function () {
             textSearch: 'contains',
 
             columns: [
-                {field: 'accountnumber', caption: '№ счёта', size: 15},
+                {field: 'accountnumber', caption: 'Л/сч. №', size: 20},
+                {field: 'bank.namep', caption: 'Банк', size: 30},
+                {field: 'bank.bic', caption: 'БИК', size: 10},
+                {field: 'bank.account', caption: 'Кор. сч. №', size: 10},
+                {field: 'org.label', caption: 'Владелец счёта', size: 15},
+                {field: 'opendate', caption: 'Открыт', size: 15, render: _dt},
+                {field: 'close', caption: 'Закрыт', size: 15, render: _dt},
             ],
 
-            records: data.records,
+            url: '/mosgis/_rest/?type=bank_accounts',
+            
+            postData: {
+                data: {uuid_org: $_REQUEST.id}
+            },
 
             onDblClick: null,
             

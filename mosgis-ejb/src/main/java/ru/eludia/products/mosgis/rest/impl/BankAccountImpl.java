@@ -11,6 +11,7 @@ import ru.eludia.products.mosgis.db.model.tables.BankAccount;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBic;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.BankAccountLocal;
@@ -19,14 +20,6 @@ import ru.eludia.products.mosgis.rest.impl.base.BaseCRUD;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class BankAccountImpl extends BaseCRUD<BankAccount> implements BankAccountLocal {
-
-    @Resource (mappedName = "mosgis.inBankAccountsQueue")
-    Queue queue;
-
-    @Override
-    public Queue getQueue () {
-        return queue;
-    }
 
     private void filterOffDeleted (Select select) {
         select.and ("is_deleted", 0);
@@ -77,6 +70,7 @@ public class BankAccountImpl extends BaseCRUD<BankAccount> implements BankAccoun
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {                
 
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
+            .toOne (VocOrganization.class, "AS org", VocOrganization.c.LABEL.lc ()).on ()
             .toMaybeOne (VocBic.class, "AS bank", "*").on ()
             .orderBy ("root.accountnumber")
             .limit (p.getInt ("offset"), p.getInt ("limit"));

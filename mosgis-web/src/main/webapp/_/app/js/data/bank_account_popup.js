@@ -3,22 +3,27 @@ define ([], function () {
     var form_name = 'bank_account_popup_form'
 
     $_DO.update_bank_account_popup = function (e) {
-/*
+
         var form = w2ui [form_name]
 
         var v = form.values ()
         
-        if (!v.fiashouseguid) die ('fiashouseguid', 'Укажите, пожалуйста, адрес')
-        if (!(v.sharepercent >= 0.01)) die ('sharepercent', 'Укажите, пожалуйста, корректное значение доли в процентах')
-                
-        var tia = {type: 'account_items', id: form.record.uuid}
+        if (!v.accountnumber) die ('accountnumber', 'Укажите, пожалуйста, номер лицевого счёта')
+        if (!/^\d{20}$/.test (v.accountnumber)) die ('accountnumber', 'Номер лицевого счёта должен состоять ровно из 20 арабских цифр')
+        
+        if (!v.bikcredorg) die ('bikcredorg', 'Укажите, пожалуйста, БИК банка (филиала), в котором открыт счёт')
+
+        if (!v.opendate) die ('opendate', 'Укажите, пожалуйста, дату открытия счёта')
+
+        if (v.closdate && v.closdate < v.opendate) die ('closdate', 'Дата закрытия не может быть ранее даты открытия')
+
+        var tia = {type: 'bank_accounts', id: form.record.uuid}
         
         if (tia.id) {
             tia.action = 'update'
         }
         else {
             tia.action = 'create'
-            v.uuid_account = $_REQUEST.id
         }
 
         query (tia, {data: v}, function (data) {
@@ -26,17 +31,17 @@ define ([], function () {
             var grid = w2ui ['account_common_items_grid']
             grid.reload (grid.refresh)
         })
-*/
+
     }
 
     return function (done) {
 
         var data = clone ($('body').data ('data'))
-        
-        data.record = $_SESSION.delete ('record') || {
 
+        data.record = $_SESSION.delete ('record') || {
+            opendate: dt_dmy (new Date ().toJSON ())
         }
-                
+
         done (data)
 
     }

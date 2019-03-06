@@ -2,7 +2,7 @@ define ([], function () {
 
     return function (data, view) {    
         
-        var now = dt_dmy (new Date ().toJSON ())        
+        var now = dt_dmy (new Date ().toJSON ())
 
         $(fill (view, data.record)).w2uppop ({}, function () {
 
