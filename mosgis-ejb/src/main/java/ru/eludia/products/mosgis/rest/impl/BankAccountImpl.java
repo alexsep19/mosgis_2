@@ -1,22 +1,20 @@
 package ru.eludia.products.mosgis.rest.impl;
 
-import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.jms.Queue;
 import javax.json.JsonObject;
 import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.tables.ActualRcContract;
 import ru.eludia.products.mosgis.db.model.tables.BankAccount;
 import ru.eludia.products.mosgis.db.model.tables.RcContract;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBic;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
-import ru.eludia.products.mosgis.db.model.voc.VocRcContractServiceTypes;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.BankAccountLocal;
@@ -95,11 +93,8 @@ public class BankAccountImpl extends BaseCRUD<BankAccount> implements BankAccoun
         select
             .andEither (kUuidOrg, uuidOrg)
             .or (kUuidOrg, m
-                .select (RcContract.class, RcContract.c.UUID_ORG.lc ())
-                .where (EnTable.c.IS_DELETED, 0)
-                .and (RcContract.c.UUID_ORG_CUSTOMER, uuidOrg)
-                .and (RcContract.c.ID_CTR_STATUS,     VocGisStatus.i.APPROVED.getId ())
-                .and (RcContract.c.ID_SERVICE_TYPE,   VocRcContractServiceTypes.i.BILLING.getId ())
+                .select (ActualRcContract.class, RcContract.c.UUID_ORG.lc ())
+                .where (RcContract.c.UUID_ORG_CUSTOMER, uuidOrg)
             );
 
         db.addJsonArrayCnt (job, select);
