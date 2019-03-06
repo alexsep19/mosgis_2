@@ -98,7 +98,18 @@ public class VocGisContractDimension extends Table {
             return null;
         }
 
-        public static i forId (int id) {
+	public static i forLabel(String label) {
+	    label = label.toLowerCase().replace(" ожф", " объектов жилищного фонда");
+
+	    for (i i : values()) {
+		if (i.label.equals(label)) {
+		    return i;
+		}
+	    }
+	    return null;
+	}
+
+	public static i forId (int id) {
             for (i i: values ()) if (i.id == id) return i;
             return null;
         }

@@ -41,11 +41,12 @@
   </uniform-distributed-queue>  
 
   <!-- очередь обработки выгрузок портала открытых данных -->
+  <!-- -->
   <uniform-distributed-queue name="inOpenDataQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
     <jndi-name>mosgis.inOpenDataQueue</jndi-name>
   </uniform-distributed-queue>  
-
+  <!-- -->
 
   <!-- очередь обработки запросов на импорт (списков) групп справочников НСИ -->
   <uniform-distributed-queue name="inNsiQueue">
@@ -505,5 +506,15 @@
   </uniform-distributed-queue>
 
 
+
+
+  <!-- очередь запросов на импорт справочника БИК / корреспондентских счетов банков РФ -->
+  <uniform-distributed-queue name="inBicQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.inBicQueue</jndi-name>
+  </uniform-distributed-queue>
+
+  
+  
 
 </weblogic-jms>

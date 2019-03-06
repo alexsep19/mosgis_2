@@ -29,8 +29,9 @@ public class VocXLFileType extends Table {
     
     public enum i {
         
-        CTR_OBJECTS     (1, "Объекты договоров управления"),
-        HOUSE_PASSPORTS (2, "Паспорта ЖД")
+	CTR_OBJECTS     (1, "Объекты договоров управления"),
+	HOUSE_PASSPORTS (2, "Паспорта ЖД"),
+	SR_CTR          (3, "Договоры ресурсоснабжения")
         ;
                 
         int    id;

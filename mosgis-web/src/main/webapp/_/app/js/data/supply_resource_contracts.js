@@ -10,6 +10,9 @@ define ([], function () {
         use.block ('supply_resource_contract_org_new')
 
     }
+    $_DO.import_supply_resource_contracts = function (e) {
+        use.block('supply_resource_contract_import_popup')
+    }
 
     return function (done) {
 

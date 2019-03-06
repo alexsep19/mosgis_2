@@ -117,7 +117,7 @@ define ([], function () {
                 data.item.okitype = data.vc_nsi_33[data.item.code_vc_nsi_33]
                 data.item.is_object = data.vc_nsi_33.items.find (x => x.id == data.item.code_vc_nsi_33).is_object
 
-                data.item.status_label = data.vc_gis_status[data.item.id_is_status_gis]
+                data.item.status_label = data.vc_gis_status[data.item.id_is_status]
                 data.item.err_text = data.item['out_soap.err_text']
 
                 done (data)

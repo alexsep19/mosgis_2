@@ -75,7 +75,7 @@
 	<name>Workflow-metering-device-values</name>
 	<path>META-INF/mosgismodule-metering-device-values-jms.xml</path>
     </module>
-
+    
     <module>
         <type>JMS</type>
         <name>WS-RegOrgServiceAsync</name>
