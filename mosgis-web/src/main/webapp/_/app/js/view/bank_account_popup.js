@@ -2,6 +2,13 @@ define ([], function () {
 
     return function (data, view) {    
         
+        var r = data.record
+
+        var bank = {
+            id: r ['bank.bic'],
+            text: r ['bank.namep'],
+        }
+
         var now = dt_dmy (new Date ().toJSON ())
 
         $(fill (view, data.record)).w2uppop ({}, function () {
@@ -23,6 +30,8 @@ define ([], function () {
                         filter: false,
                         
                         cacheMax: 50,
+                        selected: bank,
+                        items: [bank],  
                         
                         postData: {offset: 0, limit: 50},
                         

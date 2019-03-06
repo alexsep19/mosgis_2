@@ -15,7 +15,7 @@ define ([], function () {
 
         if (!v.opendate) die ('opendate', 'Укажите, пожалуйста, дату открытия счёта')
 
-        if (v.closdate && v.closdate < v.opendate) die ('closdate', 'Дата закрытия не может быть ранее даты открытия')
+        if (v.closedate && v.closedate < v.opendate) die ('closedate', 'Дата закрытия не может быть ранее даты открытия')
 
         var tia = {type: 'bank_accounts', id: form.record.uuid}
         
@@ -28,7 +28,7 @@ define ([], function () {
 
         query (tia, {data: v}, function (data) {
             w2popup.close ()
-            var grid = w2ui ['account_common_items_grid']
+            var grid = w2ui ['voc_organization_legal_bank_accounts_grid']
             grid.reload (grid.refresh)
         })
 

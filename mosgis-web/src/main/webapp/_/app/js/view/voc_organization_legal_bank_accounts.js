@@ -19,6 +19,7 @@ define ([], function () {
             show: {
                 toolbar: data._can.edit,
                 toolbarAdd: data._can.edit,
+                toolbarEdit: data._can.edit,
                 footer: true,
                 toolbarInput: false,
                 toolbarReload: false,
@@ -34,7 +35,7 @@ define ([], function () {
                 {field: 'bank.account', caption: 'Кор. сч. №', size: 10},
                 {field: 'org.label', caption: 'Владелец счёта', size: 15},
                 {field: 'opendate', caption: 'Открыт', size: 15, render: _dt},
-                {field: 'close', caption: 'Закрыт', size: 15, render: _dt},
+                {field: 'closedate', caption: 'Закрыт', size: 15, render: _dt},
             ],
 
             url: '/mosgis/_rest/?type=bank_accounts',
@@ -43,9 +44,11 @@ define ([], function () {
                 data: {uuid_org: $_REQUEST.id}
             },
 
-            onDblClick: null,
+            onDblClick: $_DO.edit_voc_organization_legal_bank_accounts,
             
             onAdd: $_DO.create_voc_organization_legal_bank_accounts,
+
+            onEdit: $_DO.edit_voc_organization_legal_bank_accounts,
 
         }).refresh ()
 
