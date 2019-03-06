@@ -14,9 +14,37 @@ define ([], function () {
 
                 fields : [
                     {name: 'accountnumber', type: 'text'},
-                    {name: 'bikcredorg', type: 'text'},
+//                    {name: 'bikcredorg', type: 'text'},
                     {name: 'closedate', type: 'date', options: {end: now}},
-                    {name: 'opendate', type: 'date', options: {end: now}},                                                        
+                    {name: 'opendate', type: 'date', options: {end: now}},
+                    {name: 'bikcredorg', type: 'list', hint: 'Адрес', options: {
+                        
+                        url: '/mosgis/_rest/?type=voc_bic',
+                        
+                        filter: false,
+                        
+                        cacheMax: 50,
+                        
+                        postData: {offset: 0, limit: 50},
+                        
+                        onSearch: function (e) {
+                            this.options.postData['search'] = [{'value': e.search}]
+                        },
+                        
+                        onLoad: function (e) {
+                            e.data = {
+                                status: "success",
+                                records: e.data.content.root.map(function (i) {
+                                    return {
+                                        id: i.id,
+                                        text: i.bic + ' ' + i.namep
+                                    }
+                                })
+                            }
+                        }
+                        
+                    }},
+                    
                 ],
 /*                
                 onChange: function (e) {                
