@@ -8,7 +8,7 @@ import ru.eludia.base.model.View;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 
-public class ActualRcContract extends View {
+public class AnyRcContract extends View {
 
     public enum c implements ColEnum {
         ID                   (Type.UUID,   "id"),
@@ -26,7 +26,7 @@ public class ActualRcContract extends View {
 
     }
 
-    public ActualRcContract () {
+    public AnyRcContract () {
         super  ("vw_rc_ctr", "Список договоров РЦ");
         cols   (EnTable.c.class);
         cols   (RcContract.c.class);

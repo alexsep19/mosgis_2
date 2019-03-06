@@ -11,7 +11,7 @@ import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
-import ru.eludia.products.mosgis.db.model.tables.ActualRcContract;
+import ru.eludia.products.mosgis.db.model.tables.AnyRcContract;
 import ru.eludia.products.mosgis.db.model.tables.RcContract;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -67,7 +67,7 @@ public class RcContractImpl extends BaseCRUD<RcContract> implements RcContractLo
 
         final Model m = ModelHolder.getModel ();
 
-        Select select = m.select (ActualRcContract.class, "*")
+        Select select = m.select (AnyRcContract.class, "*")
             .orderBy (RcContract.c.SIGNINGDATE.lc() + " DESC")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
