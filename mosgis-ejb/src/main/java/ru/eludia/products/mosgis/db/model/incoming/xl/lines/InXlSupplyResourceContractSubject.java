@@ -16,6 +16,7 @@ import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.jms.xl.base.XLException;
 
 public class InXlSupplyResourceContractSubject extends EnTable {
 
@@ -156,17 +157,13 @@ public class InXlSupplyResourceContractSubject extends EnTable {
         catch (XLException ex) {
             r.put (c.ERR.lc (), ex.getMessage ());
         }
-        
+
+	logger.info("InXlSupplyResourceContractSubject.r=" + DB.to.json(r));
+
         return r;
         
     }
     
-    private static class XLException extends Exception {
-        public XLException (String s) {
-            super (s);
-        }        
-    }
-
     private static void setFields (Map<String, Object> r, XSSFRow row, Map<String, Map<String, Object>> vocs) throws XLException {
 	try {
 	    final XSSFCell cell = row.getCell(0);
@@ -249,20 +246,7 @@ public class InXlSupplyResourceContractSubject extends EnTable {
 	    throw new XLException(ex.getMessage());
 	}
 
-	try {
-	    final XSSFCell cell = row.getCell(5);
-	    if (cell == null) {
-		throw new XLException("Не указан Плановый объем(столбец F)");
-	    }
-	    final double n = cell.getNumericCellValue();
-	    if (!DB.ok(n)) {
-		throw new XLException("Не указан Плановый объем(столбец F)");
-	    }
-	    r.put(SupplyResourceContractSubject.c.VOLUME.lc(), n);
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
+	r.put(SupplyResourceContractSubject.c.VOLUME.lc(), toNumeric(row, 5));
 
 	try {
 	    final XSSFCell cell = row.getCell(6);

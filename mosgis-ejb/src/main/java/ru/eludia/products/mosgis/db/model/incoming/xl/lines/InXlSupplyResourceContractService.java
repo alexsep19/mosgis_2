@@ -16,6 +16,7 @@ import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.jms.xl.base.XLException;
 
 public class InXlSupplyResourceContractService extends EnTable {
 
@@ -63,12 +64,6 @@ public class InXlSupplyResourceContractService extends EnTable {
 
         return r;
         
-    }
-    
-    private static class XLException extends Exception {
-        public XLException (String s) {
-            super (s);
-        }        
     }
 
     private static void setFields (Map<String, Object> r, XSSFRow row, Map<String, Map<String, Object>> vocs) throws XLException {

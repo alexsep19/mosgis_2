@@ -21,6 +21,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractDimension;
 import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustomerType;
 import ru.eludia.products.mosgis.db.model.voc.nsi58.VocNsi58;
+import ru.eludia.products.mosgis.jms.xl.base.XLException;
 
 public class InXlSupplyResourceContract extends EnTable {
 
@@ -78,15 +79,10 @@ public class InXlSupplyResourceContract extends EnTable {
         catch (XLException ex) {
             r.put (c.ERR.lc (), ex.getMessage ());
         }
-        
-        return r;
-        
-    }
-    
-    private static class XLException extends Exception {
-        public XLException (String s) {
-            super (s);
-        }        
+
+	logger.info("InXlSupplyResourceContract.r=" + DB.to.json(r));
+
+	return r;
     }
 
     private static void setFields (Map<String, Object> r, XSSFRow row, Map<String, Map<String, Object>> vocs) throws XLException {
@@ -578,20 +574,7 @@ public class InXlSupplyResourceContract extends EnTable {
 	    throw new XLException(ex.getMessage());
 	}
 
-	try {
-	    final XSSFCell cell = row.getCell(14);
-	    if (cell == null) {
-		throw new XLException("Не указан СНИЛС (столбец O)");
-	    }
-	    final String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указан СНИЛС (столбец O)");
-	    }
-	    r.put(c.SNILS.lc(), s);
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
+	r.put(c.SNILS.lc(), toNumeric(row, 14, "Не указан СНИЛС (столбец O)"));
 
 	try {
 	    final XSSFCell cell = row.getCell(15);
@@ -671,50 +654,11 @@ public class InXlSupplyResourceContract extends EnTable {
 
 	logger.log(Level.INFO, "InXlSupplyResourceContract.setFieldsCustomerOrg start");
 
-	try {
-	    final XSSFCell cell = row.getCell(19);
-	    if (cell == null) {
-		throw new XLException("Не указан ОГРН (столбец T)");
-	    }
-	    final String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указан ОГРН (столбец T)");
-	    }
-	    r.put(c.OGRN.lc(), s);
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
+	r.put(c.OGRN.lc(), toNumeric(row, 19, "Не указан ОГРН (столбец T)"));
 
-	try {
-	    final XSSFCell cell = row.getCell(20);
-	    if (cell == null) {
-		throw new XLException("Не указан ИНН (столбец U)");
-	    }
-	    final String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указан ИНН (столбец U)");
-	    }
-	    r.put(c.INN.lc(), s);
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
+	r.put(c.INN.lc(), toNumeric(row, 14));
 
-	try {
-	    final XSSFCell cell = row.getCell(21);
-	    if (cell == null) {
-		throw new XLException("Не указан КПП (столбец V)");
-	    }
-	    final String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указан КПП (столбец V)");
-	    }
-	    r.put(c.KPP.lc(), s);
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
+	r.put(c.KPP.lc(), toNumeric(row, 21, "Не указан КПП (столбец V)"));
 
 	logger.log(Level.INFO, "InXlSupplyResourceContract.setFieldsCustomerOrg end");
     }
