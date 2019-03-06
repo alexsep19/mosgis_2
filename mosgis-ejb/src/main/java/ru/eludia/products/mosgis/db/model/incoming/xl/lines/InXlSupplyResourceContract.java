@@ -326,6 +326,7 @@ public class InXlSupplyResourceContract extends EnTable {
 	    r.put(c.CONTRACTBASE.lc(), s);
 
 	    r.put(SupplyResourceContract.c.CODE_VC_NSI_58.lc(), vocs.get("vc_nsi_58").get(s));
+
 	} catch (XLException ex) {
 	    throw ex;
 	} catch (Exception ex) {
@@ -951,11 +952,6 @@ public class InXlSupplyResourceContract extends EnTable {
 	    + " IF :NEW.customer_type = 3 THEN BEGIN "
 	    + "   SELECT uuid INTO :NEW.uuid_org_customer FROM vc_orgs WHERE is_deleted = 0 AND id_type = -1 AND ogrn = :NEW.ogrn AND kpp = :NEW.kpp; "
 	    + "   EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Не удалось определить заказчика ЮЛ ИП по ОГРН ' || :NEW.ogrn || ' и КПП ' || :NEW.kpp); "
-	    + " END; END IF; "
-
-	    + " IF :NEW.code_vc_nsi_58 IS NULL THEN BEGIN "
-	    + "  SELECT code INTO :NEW.code_vc_nsi_58 FROM vc_nsi_58 WHERE isactual=1 AND f_a175d0edd2 = :NEW.contractbase; "
-	    + "  EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Не найдено основание заключения договора ' || :NEW.contractbase); "
 	    + " END; END IF; "
 
 	    + " EXCEPTION WHEN OTHERS THEN "
