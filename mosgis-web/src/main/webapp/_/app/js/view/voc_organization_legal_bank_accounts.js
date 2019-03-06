@@ -15,11 +15,14 @@ define ([], function () {
         $panel.w2regrid ({
 
             name: grid_name,
+            
+            multiSelect: false,
 
             show: {
                 toolbar: data._can.edit,
                 toolbarAdd: data._can.edit,
                 toolbarEdit: data._can.edit,
+                toolbarDelete: data._can.edit,
                 footer: true,
                 toolbarInput: false,
                 toolbarReload: false,
@@ -43,12 +46,13 @@ define ([], function () {
             postData: {
                 data: {uuid_org: $_REQUEST.id}
             },
+            
+            onAdd:      $_DO.create_voc_organization_legal_bank_accounts,
 
+            onEdit:     $_DO.edit_voc_organization_legal_bank_accounts,
             onDblClick: $_DO.edit_voc_organization_legal_bank_accounts,
             
-            onAdd: $_DO.create_voc_organization_legal_bank_accounts,
-
-            onEdit: $_DO.edit_voc_organization_legal_bank_accounts,
+            onDelete:   $_DO.delete_voc_organization_legal_bank_accounts
 
         }).refresh ()
 
