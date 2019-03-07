@@ -100,7 +100,7 @@ public final class MosGisModel extends ru.eludia.base.Model {
                     }
                     
                 });
-                
+
             }
             catch (Exception ex) {
                 logger.log (Level.WARNING, "Exception occured while adding NSI tables: " + ex.getLocalizedMessage ());

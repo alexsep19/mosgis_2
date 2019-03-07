@@ -6,28 +6,28 @@
 
         	<style>
 
-        		.w2ui-field > label {
+        		.w2ui-field[data-block-name=mgmt_contract_common] > label {
         			width: 330px;
         			margin-right: 10px;
         		}
 
-        		.w2ui-field > label.short {
+        		.w2ui-field[data-block-name=mgmt_contract_common] > label.short {
         			width: 10px;
         		}
 
-        		.w2ui-field > label.short+div {
+        		.w2ui-field[data-block-name=mgmt_contract_common] > label.short+div {
         			margin-left: 10px;
         		}
 
-        		.w2ui-field input {
+        		.w2ui-field[data-block-name=mgmt_contract_common] input {
         			width: 270px !important;
         		}
 
-				.w2ui-field input.dt {
+				.w2ui-field[data-block-name=mgmt_contract_common] input.dt {
 					width: 70px !important;
 				}
 
-				.w2ui-field input.long {
+				.w2ui-field[data-block-name=mgmt_contract_common] input.long {
 					width: 600px !important;
 				}
 
@@ -248,6 +248,7 @@
 				<button class=w2ui-btn name=terminate  data-on=__read_only>Расторгнуть</button>
 				<button class=w2ui-btn name=annul  data-on=__read_only>Аннулировать</button>
 				<button class=w2ui-btn name=delete  data-on=__read_only>Удалить</button>
+
 <!--
 				<button class=w2ui-btn name=undelete data-on=__read_only>Восстановить</button>
 -->

@@ -175,7 +175,7 @@ define ([], function () {
         use.block ('mgmt_contract_rollover_popup')
     }
     
-    $_DO.set_bank_acct_contract_common = function (e) {
+    $_DO.set_bank_acct_mgmt_contract_common = function (e) {   
         use.block ('bank_acct_select_popup')
     }
     

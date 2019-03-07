@@ -21,20 +21,10 @@ define ([], function () {
         var it = data.item
     
         vc_gis_customer_type = data.vc_gis_customer_type
-        
-
-        var bnk_accts_actual = data.tb_bnk_accts.map (function (i) {return {
-            id: i.uuid,
-            text: 'Р/сч. ' + i.accountnumber + ', ' + i ['bank.namep'] +
-                (i.uuid_org == it.uuid_org ? '' : ', владелец: ' + i ['org.label'])
-        }})
-        
-        var bnk_accts_set = !it.uuid_bnk_acct ? [] : [{
-            id: it.uuid_bnk_acct,
-            text: 'Р/сч. ' + it ['bank_acct.accountnumber'] + ', ' + it ['vc_bic.namep'] +
-                (it ['bank_acct.uuid_org'] == it.uuid_org ? '' : ', владелец: ' + it ['org_bank_acct.label'])
-        }]
-        
+                
+        function bnk_accts (__read_only) {
+            return __read_only ? data.bnk_accts_set : data.bnk_accts_actual
+        }
     
         $_F5 = function (data) {        
         
@@ -46,9 +36,7 @@ define ([], function () {
             
             var f = w2ui [form_name]
             
-            f.set ('uuid_bnk_acct', {options: {items:
-                data.__read_only ? bnk_accts_set : bnk_accts_actual
-            }})
+            f.set ('uuid_bnk_acct', {options: {items: bnk_accts (data.__read_only)}})
             
             $.each (f.fields, function () {
             
@@ -135,7 +123,7 @@ define ([], function () {
                     {name: 'ddt_d_start_nxt', type: 'list', options: {items: nxt}},
                     {name: 'ddt_i_start_nxt', type: 'list', options: {items: nxt}},
                     
-                    {name: 'uuid_bnk_acct', type: 'list', options: {items: bnk_accts_actual}},
+                    {name: 'uuid_bnk_acct', type: 'list', options: {items: data.bnk_accts_actual}},
 
             ],
 
@@ -149,10 +137,15 @@ define ([], function () {
                 
                 clickOn ($('#termination_file'), $_DO.download_mgmt_contract_common)
                 
-                if (data.item.id_ctr_status > 11) clickOn ($('#uuid_bnk_acct_div *')
-                    .css  ({cursor: 'pointer'})
-                    .attr ({title: 'Сменить платёжные реквизиты для данного договора'})
-                , $_DO.set_bank_acct_contract_common)
+                if (it._can.set_bank_acct) {
+
+                    $('#uuid_bnk_acct_div *')
+                        .css  ({cursor: 'pointer'})
+                        .attr ({title: 'Сменить платёжные реквизиты для данного договора'})
+
+                    clickOn ($('#uuid_bnk_acct_div input'), $_DO.set_bank_acct_mgmt_contract_common)
+
+                }                
                 
             })}
 
