@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.db.model;
 
+import java.util.Date;
 import java.util.logging.Logger;
 import org.apache.poi.ss.usermodel.CellType;
 import ru.eludia.base.model.Col;
@@ -156,5 +157,38 @@ public abstract class EnTable extends Table {
 	}
 
 	return s.toLowerCase().equals("да") ? 1 : s.toLowerCase().equals("нет") ? 0 : null;
+    }
+
+    public static Object toDate(XSSFRow row, int col, Object error) throws XLException {
+
+	Object result = toDate(row, col);
+
+	if (result == null) {
+	    throw new XLException(error.toString());
+	}
+
+	return result;
+    }
+
+    public static Object toDate(XSSFRow row, int col) throws XLException {
+
+	Date d;
+
+	try {
+	    final XSSFCell cell = row.getCell(col);
+	    if (cell == null) {
+		return null;
+	    }
+
+	    d = cell.getDateCellValue();
+
+	    if (!DB.ok(d)) {
+		return null;
+	    }
+	} catch (Exception ex) {
+	    throw new XLException("col: " + col + " " + ex.getMessage());
+	}
+
+	return d;
     }
 }
