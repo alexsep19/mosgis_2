@@ -114,6 +114,10 @@ define ([], function () {
         use.block ('charter_rollover_popup')
     }
     
+    $_DO.set_bank_acct_charter_common = function (e) {   
+        use.block ('bank_acct_select_popup')
+    }
+    
     $_DO.choose_tab_charter_common = function (e) {
     
         var name = e.tab.id
