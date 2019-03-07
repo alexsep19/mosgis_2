@@ -71,8 +71,16 @@ define ([], function () {
     }
 
     return function (data, view) {
+    
+        var it = data.item
+        
+        it.is_bnk_acct_visible = it.is_billing
 
         $_F5 = function (data) {
+
+            var it = data.item
+
+            it.is_bnk_acct_visible = it.is_billing
 
             data.item.__read_only = data.__read_only
 
@@ -103,7 +111,7 @@ define ([], function () {
             panels: [
 
                 {type: 'top', size: 400},
-                {type: 'main', size: 200,
+                {type: 'main', size: 300,
                     tabs: {
                         tabs:    [
                             {id: 'rc_contract_common_log', caption: 'История изменений'},
@@ -167,6 +175,9 @@ define ([], function () {
 
                 {name: 'ddt_d_start', type: 'list', options: {items: ddt_31_from}},
                 {name: 'ddt_d_start_nxt', type: 'list', options: {items: nxt}},
+
+                {name: 'uuid_bnk_acct', type: 'list', options: {items: data.bnk_accts_actual}},
+
             ],
 
             focus: -1,

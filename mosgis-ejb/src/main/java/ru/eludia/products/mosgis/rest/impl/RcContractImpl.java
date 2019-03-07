@@ -108,9 +108,11 @@ public class RcContractImpl extends BaseCRUD<RcContract> implements RcContractLo
         );
 
         job.add ("item", item);
-
+        
+        final int is_billing = item.getInt (RcContract.c.IS_BILLING.lc ());        
+        final boolean ok_is_billing = DB.ok (is_billing);
         ActualBankAccount.addTo (job, db,
-            item.getString ((DB.ok (item.getInt (RcContract.c.IS_BILLING.lc ())) ?
+            item.getString ((ok_is_billing ?
                 RcContract.c.UUID_ORG_CUSTOMER :
                 RcContract.c.UUID_ORG
             ).lc ())
