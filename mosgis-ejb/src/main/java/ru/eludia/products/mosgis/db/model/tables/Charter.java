@@ -186,6 +186,11 @@ public class Charter extends EnTable {
         + " cnt INTEGER := 0;"
                 
         + "BEGIN "
+                
+            + "IF INSERTING THEN BEGIN "
+                + " SELECT COUNT(*), MIN(uuid) INTO cnt, :NEW.uuid_bnk_acct FROM vw_bnk_accts WHERE uuid_org_customer = :NEW.uuid_org;"
+                + " IF cnt<>1 THEN :NEW.uuid_bnk_acct := NULL; END IF; "
+            + "END; END IF; "
 
             + "IF UPDATING "                
             + " AND :NEW.id_ctr_status = " + VocGisStatus.i.PENDING_RQ_PLACING.getId ()
