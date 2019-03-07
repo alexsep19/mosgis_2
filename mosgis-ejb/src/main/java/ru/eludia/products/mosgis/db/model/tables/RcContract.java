@@ -44,7 +44,10 @@ public class RcContract extends EnTable {
 	IS_ALL_HOUSE         (Type.BOOLEAN, Bool.FALSE, "1, если РЦ доступны все объекты жилищного фонда; иначе 0"),
 
 	DDT_D_START          (Type.NUMERIC, 2, null, "Дата выставления платежных документов до (1..30 — конкретное число; 99 — последнее число)"),
-	DDT_D_START_NXT      (Type.BOOLEAN,    null, "1, если Дата выставления платежных документов до в следующем месяце; иначе 0")
+	DDT_D_START_NXT      (Type.BOOLEAN,    null, "1, если Дата выставления платежных документов до в следующем месяце; иначе 0"),
+
+        UUID_BNK_ACCT        (BankAccount.class,     "Платёжные реквизиты"),
+
         ;
 
         @Override
