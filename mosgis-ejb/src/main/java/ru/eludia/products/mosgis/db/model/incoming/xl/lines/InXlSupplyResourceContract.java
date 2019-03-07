@@ -196,43 +196,7 @@ public class InXlSupplyResourceContract extends EnTable {
 	    throw new XLException(ex.getMessage());
 	}
 
-	try {
-	    final XSSFCell cell = row.getCell(8);
-	    if (cell == null) {
-		throw new XLException("Не указан Тип лица/организации (столбец I)");
-	    }
-	    final String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указан Тип лица/организации (столбец I)");
-	    }
-
-	    String lower_s = s.toLowerCase();
-
-	    int customer_type = lower_s.startsWith("физическое ") ? 1
-		: lower_s.startsWith("юридическое ") ? 2
-		: lower_s.startsWith("индивидуальный ")? 3
-		: lower_s.startsWith("не указывать ") ? 4
-		: 0
-	    ;
-
-	    r.put(c.CUSTOMER_TYPE.lc(), customer_type);
-
-	    VocGisSupplyResourceContractCustomerType.i id_customer_type = VocGisSupplyResourceContractCustomerType.i.forId(r.get(SupplyResourceContract.c.ID_CUSTOMER_TYPE.lc()));
-
-	    if (customer_type == 0 && !VocGisSupplyResourceContractCustomerType.i.OFFER.equals(id_customer_type)) {
-		throw new XLException("Неизвестный Тип лица/организации (столбец I): " + s);
-	    }
-
-	    if (id_customer_type.getIsPhy() && customer_type == 1) {
-		setFieldsCustomerPerson(r, row, vocs);
-	    } else if (id_customer_type.getIsJur() && (customer_type == 2 || customer_type == 3)) {
-		setFieldsCustomerOrg(r, row, vocs);
-	    };
-	} catch (XLException ex) {
-	    throw ex;
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
+	setFieldsCustomer(r, row, vocs);
 
 	r.put(SupplyResourceContract.c.ONETIMEPAYMENT.lc(), toBool(row, 22));
 
@@ -377,6 +341,49 @@ public class InXlSupplyResourceContract extends EnTable {
 	    throw ex;
 	} catch (Exception ex) {
 	    throw new XLException(ex.getMessage());
+	}
+    }
+
+    private static int toCustomerType(XSSFRow row, int col) throws XLException {
+
+	String s = DB.to.String(toString(row, col));
+
+	String lower_s = s.toLowerCase();
+
+	return lower_s.startsWith("физическое ") ? 1
+	    : lower_s.startsWith("юридическое ") ? 2
+	    : lower_s.startsWith("индивидуальный ") ? 3
+	    : lower_s.startsWith("не указывать ") ? 4
+	    : 0
+	;
+    }
+
+    private static void setFieldsCustomer(Map<String, Object> r, XSSFRow row, Map<String, Map<String, Object>> vocs) throws XLException {
+
+	VocGisSupplyResourceContractCustomerType.i id_customer_type
+	    = VocGisSupplyResourceContractCustomerType.i.forId(r.get(SupplyResourceContract.c.ID_CUSTOMER_TYPE.lc()))
+	;
+
+	int customer_type = toCustomerType(row, 8);
+
+	r.put(c.CUSTOMER_TYPE.lc(), customer_type);
+
+	if (customer_type == 0 && !VocGisSupplyResourceContractCustomerType.i.OFFER.equals(id_customer_type)) {
+	    throw new XLException("Не указан Тип лица/организации (столбец I)");
+	}
+
+	if (customer_type == 1) {
+	    if (!id_customer_type.getIsPhy()) {
+		throw new XLException("ФЛ не может быть заказчиком в договоре " + id_customer_type.getLabel());
+	    }
+	    setFieldsCustomerPerson(r, row, vocs);
+	}
+
+	if (customer_type == 2 || customer_type == 3) {
+	    if (!id_customer_type.getIsJur()) {
+		throw new XLException("ЮЛ не может быть заказчиком в договоре " +  id_customer_type.getLabel());
+	    }
+	    setFieldsCustomerOrg(r, row, vocs);
 	}
     }
 
