@@ -18,7 +18,7 @@ define ([], function () {
                         caption: 'Импорт справочника из ГИС ЖКХ', 
                         icon: 'w2ui-icon-plus', 
                         onClick: $_DO.import_vc_oh_wk_types, 
-                        //off: !$_USER.role.nsi_20_7
+                        off: !$_USER.role.nsi_20_7
                     },
                     
                 ].filter (not_off),
@@ -35,7 +35,7 @@ define ([], function () {
             columns: [
                 {field: 'code', caption: 'Код', size: 10},
                 {field: 'servicename', caption: 'Наименование', size: 10},
-                {field: 'code_vc_nsi_218', caption: 'Группа работ', size: 10},
+                {field: 'code_vc_nsi_218', caption: 'Группа работ', size: 10, voc: data.vc_nsi_218},
             ],
             
             url: '/mosgis/_rest/?type=voc_overhaul_work_types',

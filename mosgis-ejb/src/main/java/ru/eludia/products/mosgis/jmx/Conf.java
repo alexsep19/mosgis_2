@@ -363,7 +363,7 @@ public class Conf implements ConfMBean, ConfLocal {
     public void setWsGisNsiRespTimeout (int i) {
         setInt (VocSetting.i.WS_GIS_NSI_TMT_RESP, i);
     }
-
+    
     @Override
     public String getWsGisBillsUrl () {
         return get (VocSetting.i.WS_GIS_BILLS_URL);

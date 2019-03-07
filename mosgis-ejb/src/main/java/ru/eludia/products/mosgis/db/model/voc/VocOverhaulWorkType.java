@@ -9,7 +9,10 @@ import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Num;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementFiasAddressRefFieldType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementFieldType;
+import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementNsiRefFieldType;
+import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementStringFieldType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementType;
 
 public class VocOverhaulWorkType extends EnTable {
@@ -65,23 +68,27 @@ public class VocOverhaulWorkType extends EnTable {
     public static Map<String, Object> toHASH (NsiElementType t) {
         
         final Map<String, Object> result = DB.HASH (
-            "is_deleted",   t.isIsActual () ? 0 : 1,
+            "isactual",   t.isIsActual () ? 0 : 1,
             "code", t.getCode (),
             "guid",  t.getGUID ()
         );
 
         for (NsiElementFieldType f: t.getNsiElementField ()) {
             
-            logger.info ("<OVERHAUL WORK TYPE NSI FIELD> " + f.getName ());
-            
-//            if (f instanceof NsiElementOkeiRefFieldType) {
-//                result.put ("okei", ((NsiElementOkeiRefFieldType) f).getCode ());
-//            }
-//            else if (f instanceof NsiElementStringFieldType && "Вид дополнительной услуги".equals (f.getName ())) {
-//                result.put ("additionalservicetypename", ((NsiElementStringFieldType) f).getValue ());
-//            }
+            if (f instanceof NsiElementStringFieldType) {
+                result.put ("servicename", ((NsiElementStringFieldType) f).getValue ());
+            }
+            else if (f instanceof NsiElementNsiRefFieldType) {
+                result.put ("code_vc_nsi_218", ((NsiElementNsiRefFieldType) f).getNsiRef ().getRef ().getCode ());
+            }
+            else if (f instanceof NsiElementFiasAddressRefFieldType) {
+                result.put ("fias_address_guid", ((NsiElementFiasAddressRefFieldType) f).getNsiRef ().getGuid ());
+                result.put ("fias_address_aoguid", ((NsiElementFiasAddressRefFieldType) f).getNsiRef ().getAoGuid ());
+            }
             
         }
+        
+        logger.info ("IMPORT RESULT: " + result.toString ());
 
         return result;
         

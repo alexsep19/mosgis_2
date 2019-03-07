@@ -14,8 +14,7 @@ import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.incoming.InOverhaulWorkType;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
-import ru.eludia.products.mosgis.db.model.voc.VocOverhaulWorkType;
-import ru.eludia.products.mosgis.db.model.voc.VocOverhaulWorkTypeLog;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.ejb.UUIDPublisher;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisNsiClient;
@@ -40,13 +39,19 @@ public class ExportOverhaulWorkTypesMDB extends UUIDMDB<InOverhaulWorkType> {
     Queue q; 
     
     @Override
+    protected Get get (UUID uuid) {
+        return (Get) ModelHolder.getModel ().get   (getTable (), uuid, "*")
+                                            .toOne (VocOrganization.class, "orgppaguid AS ppa").on ();
+    }
+    
+    @Override
     protected void handleRecord (DB db, UUID uuid, Map r) throws SQLException {
                 
         try {
 
             db.update (OutSoap.class, DB.HASH (
                 "uuid",     uuid,
-                "uuid_ack", wsGisNsiClient.exportDataProviderNsiItem ((UUID) r.get ("uuid_org"), uuid, 219L).getMessageGUID ()
+                "uuid_ack", wsGisNsiClient.exportDataProviderNsiItem ((UUID) r.get ("ppa"), uuid, 219).getMessageGUID ()
             ));
             
             db.update (getTable (), DB.HASH (
