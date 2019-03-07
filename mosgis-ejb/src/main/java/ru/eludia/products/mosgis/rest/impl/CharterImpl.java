@@ -22,14 +22,18 @@ import ru.eludia.base.model.phys.PhysicalCol;
 import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.ActualBankAccount;
+import ru.eludia.products.mosgis.db.model.tables.BankAccount;
 import ru.eludia.products.mosgis.db.model.tables.CharterLog;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.CharterFile;
 import ru.eludia.products.mosgis.db.model.tables.CharterFileLog;
+import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState;
+import ru.eludia.products.mosgis.db.model.voc.VocBic;
 import ru.eludia.products.mosgis.db.model.voc.VocCharterObjectReason;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisCustomerType;
@@ -143,9 +147,13 @@ public class CharterImpl extends BaseCRUD<Charter> implements CharterLocal {
             .toOne      (VocOrganization.class, "label", "stateregistrationdate").on ("uuid_org")
             .toMaybeOne (CharterLog.class                                       ).on ()
             .toMaybeOne (OutSoap.class,                               "err_text").on ()
+            .toMaybeOne (BankAccount.class,     "AS bank_acct",        "*").on ()
+            .toMaybeOne (VocBic.class,                                 "*").on ()
+            .toMaybeOne (VocOrganization.class, "AS org_bank_acct","label").on ("bank_acct.uuid_org=org_bank_acct.uuid")
         ); 
 
         job.add ("item", item);
+        ActualBankAccount.addTo (job, db, item.getString (Charter.c.UUID_ORG.lc ()));
 
         JsonObject lastApprove = db.getJsonObject (m
             .select  (CharterLog.class, "AS root", "*")

@@ -67,8 +67,10 @@ public class Charter extends EnTable {
         ROLLTODATE                (DATE,         null,    "Пролонгировать до даты"),
 
         REASONOFANNULMENT         (STRING, 1000, null,    "Причина аннулирования"),
-        IS_ANNULED                (BOOLEAN,      new Virt ("DECODE(\"REASONOFANNULMENT\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0")
+        IS_ANNULED                (BOOLEAN,      new Virt ("DECODE(\"REASONOFANNULMENT\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0"),
         
+        UUID_BNK_ACCT             (BankAccount.class,     "Платёжные реквизиты"),
+
         ;
         
         @Override
