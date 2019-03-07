@@ -411,11 +411,17 @@ public class InXlSupplyResourceContract extends EnTable {
 
 	if (!DB.ok(r.get(c.SNILS.lc()))) {
 
-	    final Object label_vc_nsi_95 = toString (row, 15,"Не указан Вид документа (столбец P)");
+	    final Object label_vc_nsi_95 = toString (row, 15, "Не указан Вид документа (столбец P)");
 
 	    r.put(c.LABEL_VC_NSI_95.lc(), label_vc_nsi_95);
 
-	    r.put(SupplyResourceContract.c.CODE_VC_NSI_58.lc(), vocs.get("vc_nsi_95").get(label_vc_nsi_95));
+	    final Object code = vocs.get("vc_nsi_95").get(label_vc_nsi_95);
+
+	    if (!DB.ok(code)) {
+		throw new XLException("Не удалось определить Вид документа (столбец P) по справочнику");
+	    }
+
+	    r.put(c.CODE_VC_NSI_95.lc(), code);
 
 	    r.put(c.SERIES.lc(), toString(row, 17));
 
