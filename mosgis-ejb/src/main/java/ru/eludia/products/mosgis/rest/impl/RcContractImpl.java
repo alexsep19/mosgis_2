@@ -11,9 +11,13 @@ import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.tables.ActualBankAccount;
 import ru.eludia.products.mosgis.db.model.tables.AnyRcContract;
+import ru.eludia.products.mosgis.db.model.tables.BankAccount;
+import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.RcContract;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.voc.VocBic;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocRcContractServiceTypes;
@@ -98,9 +102,20 @@ public class RcContractImpl extends BaseCRUD<RcContract> implements RcContractLo
             .get (RcContract.class, id, "*")
             .toOne(VocOrganization.class, "AS org_customer", "label").on("uuid_org_customer")
             .toOne(VocOrganization.class, "AS org", "label").on("uuid_org")
+            .toMaybeOne (BankAccount.class,     "AS bank_acct",        "*").on ()
+            .toMaybeOne (VocBic.class,                                 "*").on ()
+            .toMaybeOne (VocOrganization.class, "AS org_bank_acct","label").on ("bank_acct.uuid_org=org_bank_acct.uuid")
         );
 
         job.add ("item", item);
+
+        ActualBankAccount.addTo (job, db,
+            item.getString ((DB.ok (item.getInt (RcContract.c.IS_BILLING.lc ())) ?
+                RcContract.c.UUID_ORG_CUSTOMER :
+                RcContract.c.UUID_ORG
+            ).lc ())
+        );
+
     });}
 
     @Override
