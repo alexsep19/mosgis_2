@@ -8,6 +8,7 @@ import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.tables.ActualBankAccount;
 import ru.eludia.products.mosgis.db.model.tables.ActualRcContract;
 import ru.eludia.products.mosgis.db.model.tables.BankAccount;
 import ru.eludia.products.mosgis.db.model.tables.RcContract;
@@ -72,32 +73,19 @@ public class BankAccountImpl extends BaseCRUD<BankAccount> implements BankAccoun
 */
     @Override
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {                
-        
-        final MosGisModel m = ModelHolder.getModel ();
 
-        Select select = m.select (getTable (), "AS root", "*", "uuid AS id")
-            .toOne (VocOrganization.class, "AS org", VocOrganization.c.LABEL.lc ()).on ()
-            .toMaybeOne (VocBic.class, "AS bank", "*").on ()
-            .orderBy ("root.accountnumber")
-            .and (EnTable.c.IS_DELETED, 0)
-            .limit (p.getInt ("offset"), p.getInt ("limit"));
-        
         JsonObject data = p.getJsonObject ("data");
         if (data == null) throw new InternalServerErrorException ("JSON data not set");
                         
         final String kUuidOrg = BankAccount.c.UUID_ORG.lc ();                
         
         String uuidOrg = data.getString (kUuidOrg, null);
-        if (data == null) throw new InternalServerErrorException ("uuidOrg data not set");
-        
-        select
-            .andEither (kUuidOrg, uuidOrg)
-            .or (kUuidOrg, m
-                .select (ActualRcContract.class, RcContract.c.UUID_ORG.lc ())
-                .where (RcContract.c.UUID_ORG_CUSTOMER, uuidOrg)
-            );
+        if (data == null) throw new InternalServerErrorException ("uuid_org data not set");
 
-        db.addJsonArrayCnt (job, select);
+        db.addJsonArrayCnt (job,
+            ActualBankAccount.select (uuidOrg)
+            .limit (p.getInt ("offset"), p.getInt ("limit"))
+        );
 
     });}
 

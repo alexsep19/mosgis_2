@@ -1,12 +1,16 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.View;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.voc.VocBic;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.ejb.ModelHolder;
 
 public class ActualBankAccount extends View {
     
@@ -21,6 +25,7 @@ public class ActualBankAccount extends View {
 
     public ActualBankAccount () {
         super  ("vw_bnk_accts", "Список действующих платёжных реквизитов");
+        cols   (c.class);
         cols   (EnTable.c.class);
         cols   (BankAccount.c.class);
         pk     (EnTable.c.UUID);
@@ -66,9 +71,23 @@ public class ActualBankAccount extends View {
                 + " FROM " + getName (BankAccount.class) + " o"
                 + " INNER JOIN " + getName (ActualRcContract.class) + " c ON "
                     + "c." + RcContract.c.UUID_ORG.lc () + "=o." + BankAccount.c.UUID_ORG.lc ()
+                    + " AND o." + EnTable.c.IS_DELETED.lc () + "=0"
             + ")"
 
         ;
+        
+    }
+    
+    public static Select select (Object uuidOrg) {
+        
+        final MosGisModel m = ModelHolder.getModel ();
+        
+        return m.select (ActualBankAccount.class, "AS root", "*", "uuid AS id")
+            .toOne (VocOrganization.class, "AS org", VocOrganization.c.LABEL.lc ()).on ("root.uuid_org=org.uuid")
+            .toMaybeOne (VocBic.class, "AS bank", "*").on ()
+            .orderBy ("root.accountnumber")
+            .and (c.UUID_ORG_CUSTOMER, uuidOrg)
+        ;        
         
     }
 
