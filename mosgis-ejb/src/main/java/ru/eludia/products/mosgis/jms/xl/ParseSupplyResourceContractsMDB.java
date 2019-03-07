@@ -29,6 +29,7 @@ import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractObjectLog
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubjectLog;
 import ru.eludia.products.mosgis.jms.xl.base.XLMDB;
+import ru.eludia.products.mosgis.jms.xl.base.XLException;
 
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inXlSupplyResourceContractsQueue")
@@ -38,15 +39,6 @@ import ru.eludia.products.mosgis.jms.xl.base.XLMDB;
 public class ParseSupplyResourceContractsMDB extends XLMDB {
 
     private static final Logger logger = Logger.getLogger(ParseSupplyResourceContractsMDB.class.getName());
-
-    private static class XLException extends Exception {
-	public XLException(String s) {
-	    super(s);
-	}
-	public XLException() {
-	    super();
-	}
-    }
 
     protected void addContractLines (XSSFSheet sheet, UUID parent, DB db, Map<String, Map<String, Object>> vocs) throws SQLException {
 
@@ -293,279 +285,70 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 
     protected Map<String, Object> processVocNsi58Lines(XSSFSheet sheet) throws XLException {
 
-	logger.info("processVocNsi58Lines start");
-
 	final Map<String, Object> r = DB.HASH();
 
 	for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-
 	    XSSFRow row = sheet.getRow(i);
-	    String label;
-	    String code;
-	    try {
-		final XSSFCell cell = row.getCell(0);
-		if (cell == null) {
-		    throw new XLException("Не указано Название(столбец A)");
-		}
-		final String s = cell.getStringCellValue();
-		if (!DB.ok(s)) {
-		    throw new XLException("Не указан Название(столбец A)");
-		}
-		label = s;
-	    } catch (XLException ex) {
-		throw ex;
-	    } catch (Exception ex) {
-		throw new XLException(ex.getMessage());
-	    }
-
-	    try {
-		final XSSFCell cell = row.getCell(1);
-		if (cell == null) {
-		    throw new XLException("Не указан Код(столбец B)");
-		}
-		final double n = cell.getNumericCellValue();
-		if (!DB.ok(n)) {
-		    throw new XLException("Не указан Код(столбец B)");
-		}
-		code = DB.to.String((int)n);
-	    } catch (XLException ex) {
-		throw ex;
-	    } catch (Exception ex) {
-		throw new XLException(ex.getMessage());
-	    }
-
-	    r.put(label, code);
+	    Object label = EnTable.toString(row, 0, "Не указано Название(столбец A)");
+	    Object code = EnTable.toString(row, 1, "Не указан Код(столбец B)");
+	    r.put(label.toString(), code.toString());
 	}
-
-	logger.info("processVocNsi58Lines finish");
 
 	return r;
     }
 
     protected Map<String, Object> processIDLines(XSSFSheet sheet) throws XLException {
 
-	logger.info("processIDLines start");
-
 	final Map<String, Object> r = DB.HASH();
 
-	for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-
+	for (int i = 0; i <= sheet.getLastRowNum(); i++) {
 	    XSSFRow row = sheet.getRow(i);
-	    String label;
-	    String code;
-	    try {
-		final XSSFCell cell = row.getCell(0);
-		if (cell == null) {
-		    throw new XLException("Не указано Название(столбец A)");
-		}
-		final String s = cell.getStringCellValue();
-		if (!DB.ok(s)) {
-		    throw new XLException("Не указан Название(столбец A)");
-		}
-		label = s;
-	    } catch (XLException ex) {
-		throw ex;
-	    } catch (Exception ex) {
-		throw new XLException(ex.getMessage());
-	    }
-
-	    if (label == null) {
-		break;
-	    }
-
-	    try {
-		final XSSFCell cell = row.getCell(1);
-		if (cell == null) {
-		    throw new XLException("Не указан Код(столбец B)");
-		}
-
-		final double n = cell.getNumericCellValue();
-
-		if (!DB.ok(n)) {
-		    throw new XLException("Не указан Код(столбец B)");
-		}
-		code = DB.to.String((int)n);
-	    } catch (XLException ex) {
-		throw ex;
-	    } catch (Exception ex) {
-		throw new XLException(ex.getMessage());
-	    }
-
-	    r.put(label, code);
+	    Object label = EnTable.toString(row, 0, "Не указано Название(столбец A)");
+	    Object code = EnTable.toString(row, 1, "Не указан Код(столбец B)");
+	    r.put(label.toString(), code.toString());
 	}
-
-	logger.info("processIDLines finish");
 
 	return r;
     }
 
     protected Map<String, Object> processVocNsi3Lines(XSSFSheet sheet) throws XLException {
 
-	logger.info("processVocNsi3Lines start");
-
 	final Map<String, Object> r = DB.HASH();
 
-	for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-
+	for (int i = 0; i <= sheet.getLastRowNum(); i++) {
 	    XSSFRow row = sheet.getRow(i);
-	    String label;
-	    String code;
-	    try {
-		final XSSFCell cell = row.getCell(0);
-		if (cell == null) {
-		    throw new XLException("Не указано Название(столбец A)");
-		}
-		final String s = cell.getStringCellValue();
-		if (!DB.ok(s)) {
-		    throw new XLException("Не указан Название(столбец A)");
-		}
-		label = s;
-	    } catch (XLException ex) {
-		throw ex;
-	    } catch (Exception ex) {
-		throw new XLException(ex.getMessage());
-	    }
-
-	    if (label == null) {
-		break;
-	    }
-
-	    try {
-		final XSSFCell cell = row.getCell(1);
-		if (cell == null) {
-		    throw new XLException("Не указан Код(столбец B)");
-		}
-
-		final double n = cell.getNumericCellValue();
-
-		if (!DB.ok(n)) {
-		    throw new XLException("Не указан Код(столбец B)");
-		}
-		code = DB.to.String((int)n);
-	    } catch (XLException ex) {
-		throw ex;
-	    } catch (Exception ex) {
-		throw new XLException(ex.getMessage());
-	    }
-
-	    r.put(label, code);
+	    Object label = EnTable.toString(row, 0, "Не указано Название(столбец A)");
+	    Object code = EnTable.toString(row, 1, "Не указан Код(столбец B)");
+	    r.put(label.toString(), code.toString());
 	}
-
-	logger.info("processVocNsi3Lines finish");
 
 	return r;
     }
 
     protected Map<String, Object> processVocNsi236Lines(XSSFSheet sheet) throws XLException {
 
-	logger.info("processVocNsi236Lines start");
-
 	final Map<String, Object> r = DB.HASH();
 
 	for (int i = 2; i <= sheet.getLastRowNum(); i++) {
-
 	    XSSFRow row = sheet.getRow(i);
-	    String label;
-	    String code;
-	    try {
-		final XSSFCell cell = row.getCell(0);
-		if (cell == null) {
-		    throw new XLException("Не указано Название(столбец A)");
-		}
-		final String s = cell.getStringCellValue();
-		if (!DB.ok(s)) {
-		    throw new XLException("Не указан Название(столбец A)");
-		}
-		label = s;
-	    } catch (XLException ex) {
-		throw ex;
-	    } catch (Exception ex) {
-		throw new XLException(ex.getMessage());
-	    }
-
-	    if (label == null) {
-		break;
-	    }
-
-	    try {
-		final XSSFCell cell = row.getCell(1);
-		if (cell == null) {
-		    throw new XLException("Не указан Код(столбец B)");
-		}
-
-		final double n = cell.getNumericCellValue();
-
-		if (!DB.ok(n)) {
-		    throw new XLException("Не указан Код(столбец B)");
-		}
-		code = DB.to.String((int)n);
-	    } catch (XLException ex) {
-		throw ex;
-	    } catch (Exception ex) {
-		throw new XLException(ex.getMessage());
-	    }
-
-	    r.put(label, code);
+	    Object label = EnTable.toString(row, 0, "Не указано Название(столбец A)");
+	    Object code = EnTable.toString(row, 1, "Не указан Код(столбец B)");
+	    r.put(label.toString(), code.toString());
 	}
-
-	logger.info("processVocNsi236Lines finish");
 
 	return r;
     }
 
     protected Map<String, Object> processVocNsi276Lines(XSSFSheet sheet) throws XLException {
 
-	logger.info("processVocNsi276Lines start");
-
 	final Map<String, Object> r = DB.HASH();
 
 	for (int i = 2; i <= sheet.getLastRowNum(); i++) {
-
 	    XSSFRow row = sheet.getRow(i);
-	    String label;
-	    String code;
-	    try {
-		final XSSFCell cell = row.getCell(0);
-		if (cell == null) {
-		    throw new XLException("Не указано Название(столбец A)");
-		}
-		final String s = cell.getStringCellValue();
-		if (!DB.ok(s)) {
-		    throw new XLException("Не указан Название(столбец A)");
-		}
-		label = s;
-	    } catch (XLException ex) {
-		throw ex;
-	    } catch (Exception ex) {
-		throw new XLException(ex.getMessage());
-	    }
-
-	    if (label == null) {
-		break;
-	    }
-
-	    try {
-		final XSSFCell cell = row.getCell(1);
-		if (cell == null) {
-		    throw new XLException("Не указан Код(столбец B)");
-		}
-
-		final double n = cell.getNumericCellValue();
-
-		if (!DB.ok(n)) {
-		    throw new XLException("Не указан Код(столбец B)");
-		}
-		code = DB.to.String((int)n);
-	    } catch (XLException ex) {
-		throw ex;
-	    } catch (Exception ex) {
-		throw new XLException(ex.getMessage());
-	    }
-
-	    r.put(label, code);
+	    Object label = EnTable.toString(row, 0, "Не указано Название(столбец A)");
+	    Object code = EnTable.toString(row, 1, "Не указан Код(столбец B)");
+	    r.put(label.toString(), code.toString());
 	}
-
-	logger.info("processVocNsi276Lines finish");
 
 	return r;
     }
