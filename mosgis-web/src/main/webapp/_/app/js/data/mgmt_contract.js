@@ -24,6 +24,8 @@ define ([], function () {
             add_vocabularies (data, data)
 
             query ({type: 'mgmt_contracts'}, {}, function (d) {
+            
+                data.tb_bnk_accts = d.tb_bnk_accts
 
                 var it = data.item = d.item
                 

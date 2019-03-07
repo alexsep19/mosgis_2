@@ -18,9 +18,25 @@ define ([], function () {
 
     return function (data, view) {
     
-        vc_gis_customer_type = data.vc_gis_customer_type
+        var it = data.item
     
-        $_F5 = function (data) {
+        vc_gis_customer_type = data.vc_gis_customer_type
+        
+
+        var bnk_accts_actual = data.tb_bnk_accts.map (function (i) {return {
+            id: i.uuid,
+            text: 'Р/сч. ' + i.accountnumber + ', ' + i ['bank.namep'] +
+                (i.uuid_org == it.uuid_org ? '' : ', владелец: ' + i ['org.label'])
+        }})
+        
+        var bnk_accts_set = !it.uuid_bnk_acct ? [] : [{
+            id: it.uuid_bnk_acct,
+            text: 'Р/сч. ' + it ['tb_bnk_accts.accountnumber'] + ', ' + it ['vc_bic.namep'] +
+                (it ['tb_bnk_accts.uuid_org'] == it.uuid_org ? '' : ', владелец: ' + it ['org.label'])
+        }]
+        
+    
+        $_F5 = function (data) {        
         
             data.item.__read_only = data.__read_only
             
@@ -29,6 +45,10 @@ define ([], function () {
             r.label_org_customer = customer_label (vc_gis_customer_type [r.id_customer_type], r ['org_customer.label'])
             
             var f = w2ui [form_name]
+            
+            f.set ('uuid_bnk_acct', {options: {items:
+                data.__read_only ? bnk_accts_set : bnk_accts_actual
+            }})
             
             $.each (f.fields, function () {
             
@@ -58,8 +78,8 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 460},
-                {type: 'main', size: 400, 
+                {type: 'top', size: 495},
+                {type: 'main', size: 350, 
                     tabs: {
                         tabs:    [
                             {id: 'mgmt_contract_common_log', caption: 'История изменений'},
@@ -114,6 +134,8 @@ define ([], function () {
                     {name: 'ddt_m_end_nxt',   type: 'list', options: {items: nxt}},
                     {name: 'ddt_d_start_nxt', type: 'list', options: {items: nxt}},
                     {name: 'ddt_i_start_nxt', type: 'list', options: {items: nxt}},
+                    
+                    {name: 'uuid_bnk_acct', type: 'list', options: {items: bnk_accts_actual}},
 
             ],
 
