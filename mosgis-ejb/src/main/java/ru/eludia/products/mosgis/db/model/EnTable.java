@@ -110,7 +110,10 @@ public abstract class EnTable extends Table {
 	    if (cell.getCellTypeEnum() == CellType.NUMERIC) {
 		s = DB.to.String((long) cell.getNumericCellValue());
 	    } else {
-		s = cell.getStringCellValue().trim();
+		s = cell.getStringCellValue();
+		if (DB.ok(s)) {
+		    s = s.trim();
+		}
 	    }
 
 	    if (!DB.ok(s)) {
