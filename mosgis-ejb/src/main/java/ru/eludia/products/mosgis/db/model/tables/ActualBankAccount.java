@@ -1,5 +1,8 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.sql.SQLException;
+import javax.json.JsonObjectBuilder;
+import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
@@ -89,6 +92,10 @@ public class ActualBankAccount extends View {
             .and (c.UUID_ORG_CUSTOMER, uuidOrg)
         ;        
         
+    }
+    
+    public static void addTo (JsonObjectBuilder job, DB db, Object uuidOrg) throws SQLException {       
+        job.add (BankAccount.TABLE_NAME, db.getJsonArray (select (uuidOrg)));
     }
 
 }

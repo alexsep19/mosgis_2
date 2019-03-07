@@ -183,10 +183,8 @@ logger.info ("data=" + data);
 
         job.add ("item", item);
         
-        db.addJsonArrays (job,
-            ActualBankAccount.select (item.getString (Contract.c.UUID_ORG.lc ()))
-        );
-
+        ActualBankAccount.addTo (job, db, item.getString (Contract.c.UUID_ORG.lc ()));
+        
         JsonObject lastApprove = db.getJsonObject (m
             .select  (ContractLog.class, "AS root", "*")
             .and    ("uuid_object", id)
