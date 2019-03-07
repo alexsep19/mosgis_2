@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import ru.eludia.base.DB;
@@ -103,21 +104,7 @@ public class InXlSupplyResourceContract extends EnTable {
 	    throw new XLException(ex.getMessage());
 	}
 
-	try {
-	    final XSSFCell cell = row.getCell(1);
-	    if (cell == null) {
-		throw new XLException("Не указан Является публичным договор (столбец B)");
-	    }
-	    final String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указан Является публичным договор (столбец B)");
-	    }
-	    r.put(SupplyResourceContract.c.IS_CONTRACT.lc(), toBool(s));
-	} catch (XLException ex) {
-	    throw ex;
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
+	r.put(SupplyResourceContract.c.IS_CONTRACT.lc(), toBool(row, 1, "Не указан Является публичным договор (столбец B)"));
 
         try {
             final XSSFCell cell = row.getCell (2);
@@ -163,20 +150,7 @@ public class InXlSupplyResourceContract extends EnTable {
 	    throw new XLException(ex.getMessage());
 	}
 
-	try {
-	    final XSSFCell cell = row.getCell(5);
-	    if (cell == null) {
-		throw new XLException("Не указано Автоматически пролонгировать (столбец F)");
-	    }
-	    final String b = cell.getStringCellValue();
-	    if (b == null) {
-		throw new XLException("Не указано Автоматически пролонгировать (столбец F)");
-	    }
-	    r.put(SupplyResourceContract.c.AUTOROLLOVER.lc(), toBool(b));
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
+	r.put(SupplyResourceContract.c.AUTOROLLOVER.lc(), toBool(row, 5));
 
 	try {
 	    final XSSFCell cell = row.getCell(6);
@@ -273,38 +247,11 @@ public class InXlSupplyResourceContract extends EnTable {
 	    throw new XLException(ex.getMessage());
 	}
 
-
-	try {
-	    final XSSFCell cell = row.getCell(22);
-	    if (cell == null) {
-		throw new XLException("Не указан Оплата предоставленных услуг осуществляется единоразово при отгрузке указанных ресурсов без заведения лицевых счетов для потребителей (столбец W)");
-	    }
-	    final String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указан Оплата предоставленных услуг осуществляется единоразово при отгрузке указанных ресурсов без заведения лицевых счетов для потребителей (столбец W)");
-	    }
-	    r.put(SupplyResourceContract.c.ONETIMEPAYMENT.lc(), toBool(s));
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
+	r.put(SupplyResourceContract.c.ONETIMEPAYMENT.lc(), toBool(row, 22));
 
 	setFieldsDeadlines(r, row);
 
-	try {
-	    final XSSFCell cell = row.getCell(29);
-	    if (cell == null) {
-		throw new XLException("Не указан Объем поставки ресурса(ов) определяется на основании (столбец AD)");
-	    }
-	    final String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указан Объем поставки ресурса(ов) определяется на основании (столбец AD)");
-	    }
-	    r.put(SupplyResourceContract.c.VOLUMEDEPENDS.lc(), toBool(s));
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
+	r.put(SupplyResourceContract.c.VOLUMEDEPENDS.lc(), toBool(row, 29));
 
 	setFieldsMdPeriod(r, row);
 
@@ -363,26 +310,13 @@ public class InXlSupplyResourceContract extends EnTable {
 		throw new XLException("Не указан Размещение информации о начислениях за коммунальные услуги осуществляет (столбец AK)");
 	    }
 
-	    r.put(SupplyResourceContract.c.COUNTINGRESOURCE.lc(), toBool(s.toLowerCase().contains("рсо")? "да" : "нет"));
+	    r.put(SupplyResourceContract.c.COUNTINGRESOURCE.lc(), s.toLowerCase().contains("рсо")? 1 : 0);
 	} catch (XLException ex) {
 	} catch (Exception ex) {
 	    throw new XLException(ex.getMessage());
 	}
 
-	try {
-	    final XSSFCell cell = row.getCell(37);
-	    if (cell == null) {
-		throw new XLException("Не указан Размещение информации об индивидуальных приборах учета и их показаниях осуществляет ресурсоснабжающая организация (столбец AL)");
-	    }
-	    final String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указан Размещение информации об индивидуальных приборах учета и их показаниях осуществляет ресурсоснабжающая организация (столбец AL)");
-	    }
-	    r.put(SupplyResourceContract.c.MDINFO.lc(), toBool(s));
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
+	r.put(SupplyResourceContract.c.MDINFO.lc(), toBool(row, 37));
 
 	try {
 	    final XSSFCell cell = row.getCell(38);
@@ -421,12 +355,6 @@ public class InXlSupplyResourceContract extends EnTable {
 	logger.log(Level.INFO, "InXlSupplyResourceContract.setFields end");
     }
 
-    private static Object toBool(String s) {
-	if (s == null) {
-	    return null;
-	}
-	return s.toLowerCase().equals("да")? 1 : s.toLowerCase().equals("нет")? 0 : null;
-    }
 
     private static Object toIsFemale(String s) {
 	if (s == null) {
@@ -435,37 +363,9 @@ public class InXlSupplyResourceContract extends EnTable {
 	return s.equals("ж") ? 1 : s.equals("м") ? 0 : null;
     }
 
-    private static Object toDeadlineNum(String s) {
-	if (s == null) {
-	    return null;
-	}
-	return (int) DB.to.Long(s);
-    }
-
-    private static Object toDeadlineNumNxt(String s) {
-	if (s == null) {
-	    return null;
-	}
-	return s.contains("текущ")? 0 : s.contains("следующ")? 1 : null;
-    }
-
     private static void setFieldsPlannedVolume(Map<String, Object> r, XSSFRow row) throws XLException {
 
-	try {
-	    final XSSFCell cell = row.getCell(39);
-	    if (cell == null) {
-		throw new XLException("Не указано Наличие в договоре планового объема (столбец AN)");
-	    }
-	    final String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указано Наличие в договоре планового объема (столбец AN)");
-	    }
-	    r.put(SupplyResourceContract.c.ISPLANNEDVOLUME.lc(), toBool(s));
-	} catch (XLException ex) {
-	    throw ex;
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
+	r.put(SupplyResourceContract.c.ISPLANNEDVOLUME.lc(), toBool(row, 39,"Не указано Наличие в договоре планового объема (столбец AN)"));
 
 	if (!DB.ok(r.get(SupplyResourceContract.c.ISPLANNEDVOLUME.lc()))) {
 	    return;
@@ -652,178 +552,66 @@ public class InXlSupplyResourceContract extends EnTable {
 
     private static void setFieldsCustomerOrg(Map<String, Object> r, XSSFRow row, Map<String, Map<String, Object>> vocs) throws XLException {
 
-	logger.log(Level.INFO, "InXlSupplyResourceContract.setFieldsCustomerOrg start");
-
 	r.put(c.OGRN.lc(), toNumeric(row, 19, "Не указан ОГРН (столбец T)"));
 
-	r.put(c.INN.lc(), toNumeric(row, 14));
+	r.put(c.INN.lc(), toNumeric(row, 20));
 
 	r.put(c.KPP.lc(), toNumeric(row, 21, "Не указан КПП (столбец V)"));
+    }
 
-	logger.log(Level.INFO, "InXlSupplyResourceContract.setFieldsCustomerOrg end");
+    public static Object toDeadlineNumNxt(XSSFRow row, int col) throws XLException {
+
+	String s;
+
+	try {
+	    final XSSFCell cell = row.getCell(col);
+	    if (cell == null) {
+		return null;
+	    }
+
+	    s = cell.getCellTypeEnum() == CellType.NUMERIC ? DB.to.String(cell.getNumericCellValue())
+		: cell.getStringCellValue().trim();
+
+	    if (!DB.ok(s)) {
+		return null;
+	    }
+	} catch (Exception ex) {
+	    throw new XLException("col: " + col + " " + ex.getMessage());
+	}
+
+	return s.contains("текущ") ? 0 : s.contains("следующ") ? 1 : null;
+    }
+
+    public static Object toDeadlineNum(XSSFRow row, int col) throws XLException {
+
+	Object result = toNumeric(row, col);
+
+	if (DB.to.Long(result) == -1) {
+	    return 99;
+	}
+
+	return result;
     }
 
     private static void setFieldsDeadlines(Map<String, Object> r, XSSFRow row) throws XLException {
 
-	logger.log(Level.INFO, "InXlSupplyResourceContract.setFieldsDeadlines start");
+	r.put(SupplyResourceContract.c.DDT_D_START.lc(), toDeadlineNum(row, 23));
+	r.put(SupplyResourceContract.c.DDT_D_START_NXT.lc(), toDeadlineNumNxt(row, 24));
 
-	try {
-	    final XSSFCell cell = row.getCell(23);
-	    if (cell == null) {
-		throw new XLException("Не указан Срок предоставления платежных документов (столбец X)");
-	    }
-	    final double n = cell.getNumericCellValue();
-	    if (!DB.ok(n)) {
-		throw new XLException("Не указан Срок предоставления платежных документов (столбец X)");
-	    }
-	    r.put(SupplyResourceContract.c.DDT_D_START.lc(), n);
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
+	r.put(SupplyResourceContract.c.DDT_I_START.lc(), toDeadlineNum(row, 25));
+	r.put(SupplyResourceContract.c.DDT_I_START_NXT.lc(), toDeadlineNumNxt(row, 26));
 
-	try {
-	    final XSSFCell cell = row.getCell(24);
-	    if (cell == null) {
-		throw new XLException("Не указан Срок предоставления платежных документов (столбец Y)");
-	    }
-	    final String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указан Срок предоставления платежных документов (столбец Y)");
-	    }
-	    r.put(SupplyResourceContract.c.DDT_D_START_NXT.lc(), toDeadlineNumNxt(s));
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
-
-	try {
-	    final XSSFCell cell = row.getCell(25);
-	    if (cell == null) {
-		throw new XLException("Не указан Срок внесения платы (столбец Z)");
-	    }
-	    final double n = cell.getNumericCellValue();
-	    if (!DB.ok(n)) {
-		throw new XLException("Не указан Срок внесения платы (столбец Z)");
-	    }
-	    r.put(SupplyResourceContract.c.DDT_I_START.lc(), n);
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
-
-	try {
-	    final XSSFCell cell = row.getCell(26);
-	    if (cell == null) {
-		throw new XLException("Не указан Срок внесения платы (столбец AA)");
-	    }
-	    final String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указан Срок внесения платы (столбец AA)");
-	    }
-	    r.put(SupplyResourceContract.c.DDT_I_START_NXT.lc(), toDeadlineNumNxt(s));
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
-
-	try {
-	    final XSSFCell cell = row.getCell(27);
-	    if (cell == null) {
-		throw new XLException("Не указан Срок внесения информации о поступивших платежах (столбец AB)");
-	    }
-	    final double n = cell.getNumericCellValue();
-	    if (!DB.ok(n)) {
-		throw new XLException("Не указан Срок внесения информации о поступивших платежах (столбец AB)");
-	    }
-	    r.put(SupplyResourceContract.c.DDT_N_START.lc(), n);
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
-
-	try {
-	    final XSSFCell cell = row.getCell(28);
-	    if (cell == null) {
-		throw new XLException("Не указан Срок внесения информации о поступивших платежах (столбец AC)");
-	    }
-	    final String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указан Срок внесения информации о поступивших платежах (столбец AC)");
-	    }
-	    r.put(SupplyResourceContract.c.DDT_N_START_NXT.lc(), toDeadlineNumNxt(s));
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
-
-	logger.log(Level.INFO, "InXlSupplyResourceContract.setFieldsDeadlines end");
+	r.put(SupplyResourceContract.c.DDT_N_START.lc(), toDeadlineNum(row, 27));
+	r.put(SupplyResourceContract.c.DDT_N_START_NXT.lc(), toDeadlineNumNxt(row, 28));
     }
 
     private static void setFieldsMdPeriod(Map<String, Object> r, XSSFRow row) throws XLException {
 
-	logger.log(Level.INFO, "InXlSupplyResourceContract.setFieldsMdPeriod start");
-	try {
-	    final XSSFCell cell = row.getCell(30);
-	    if (cell == null) {
-		throw new XLException("Не указан Период передачи показаний ПУ (столбец AE)");
-	    }
-	    final double n = cell.getNumericCellValue();
-	    if (!DB.ok(n)) {
-		throw new XLException("Не указан Период передачи показаний ПУ (столбец AE)");
-	    }
-	    r.put(SupplyResourceContract.c.DDT_M_START.lc(), n);
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
+	r.put(SupplyResourceContract.c.DDT_M_START.lc(), toDeadlineNum(row, 30));
+	r.put(SupplyResourceContract.c.DDT_M_START_NXT.lc(), toBool(row, 31));
 
-	try {
-	    final XSSFCell cell = row.getCell(31);
-	    if (cell == null) {
-		throw new XLException("Не указан Период передачи показаний ПУ (столбец AF)");
-	    }
-	    final String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указан Период передачи показаний ПУ (столбец AF)");
-	    }
-	    r.put(SupplyResourceContract.c.DDT_M_START_NXT.lc(), toBool(s));
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
-
-	try {
-	    final XSSFCell cell = row.getCell(32);
-	    if (cell == null) {
-		throw new XLException("Не указан Период передачи показаний ПУ (столбец AG)");
-	    }
-	    final double n = cell.getNumericCellValue();
-	    if (!DB.ok(n)) {
-		throw new XLException("Не указан Период передачи показаний ПУ (столбец AG)");
-	    }
-	    r.put(SupplyResourceContract.c.DDT_M_END.lc(), n);
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
-
-	try {
-	    final XSSFCell cell = row.getCell(33);
-	    if (cell == null) {
-		throw new XLException("Не указан Период передачи показаний ПУ (столбец AH)");
-	    }
-	    final String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указан Период передачи показаний ПУ (столбец AH)");
-	    }
-	    r.put(SupplyResourceContract.c.DDT_M_END_NXT.lc(), toBool(s));
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
-
-	logger.log(Level.INFO, "InXlSupplyResourceContract.setFieldsMdPeriod end");
+	r.put(SupplyResourceContract.c.DDT_M_END.lc(), toDeadlineNum(row, 32));
+	r.put(SupplyResourceContract.c.DDT_M_START_NXT.lc(), toBool(row, 33));
     }
 
     public InXlSupplyResourceContract () {
