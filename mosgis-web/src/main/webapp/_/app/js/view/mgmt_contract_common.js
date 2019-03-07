@@ -147,7 +147,12 @@ define ([], function () {
                 
                 if (data.item.id_ctr_status == 10 && !$('#docnum').prop ('disabled')) clickOn ($('#label_org_customer'), $_DO.open_orgs_mgmt_contract_common)
                 
-                clickOn ($('#termination_file'), $_DO.download_mgmt_contract_common)                
+                clickOn ($('#termination_file'), $_DO.download_mgmt_contract_common)
+                
+                if (data.item.id_ctr_status > 11) clickOn ($('#uuid_bnk_acct_div *')
+                    .css  ({cursor: 'pointer'})
+                    .attr ({title: 'Сменить платёжные реквизиты для данного договора'})
+                , $_DO.set_bank_acct_contract_common)
                 
             })}
 
