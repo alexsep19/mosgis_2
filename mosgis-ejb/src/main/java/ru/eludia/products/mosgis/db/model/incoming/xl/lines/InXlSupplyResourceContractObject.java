@@ -72,20 +72,8 @@ public class InXlSupplyResourceContractObject extends EnTable {
     }
 
     private static void setFields (Map<String, Object> r, XSSFRow row) throws XLException {
-        
-        try {
-            final XSSFCell cell = row.getCell (0);
-            if (cell == null) throw new XLException ("Не указан иной код договора (столбец A)");
-            final String s = cell.getStringCellValue ();
-            if (!DB.ok (s)) throw new XLException ("Не указан иной код договора (столбец A)");
-            r.put (c.CODE_SR_CTR.lc (), s);
-        }
-        catch (XLException ex) {
-            throw ex;
-        }
-        catch (Exception ex) {
-            throw new XLException (ex.getMessage());
-        }
+
+	r.put(c.CODE_SR_CTR.lc(), toString(row, 0, "Не указан Иной код договора (столбец A)"));
 
         try {
             final XSSFCell cell = row.getCell (2);

@@ -86,6 +86,42 @@ public abstract class EnTable extends Table {
 	return DB.to.Long(s);
     }
 
+    public static Object toString(XSSFRow row, int col, Object error) throws XLException {
+
+	Object result = toString(row, col);
+
+	if (result == null) {
+	    throw new XLException(error.toString());
+	}
+
+	return result;
+    }
+
+    public static Object toString(XSSFRow row, int col) throws XLException {
+
+	String s;
+
+	try {
+	    final XSSFCell cell = row.getCell(col);
+	    if (cell == null) {
+		return null;
+	    }
+
+	    if (cell.getCellTypeEnum() == CellType.NUMERIC) {
+		s = DB.to.String((long) cell.getNumericCellValue());
+	    } else {
+		s = cell.getStringCellValue().trim();
+	    }
+
+	    if (!DB.ok(s)) {
+		return null;
+	    }
+	} catch (Exception ex) {
+	    throw new XLException("col: " + col + " " + ex.getMessage());
+	}
+
+	return DB.to.String(s);
+    }
     public static Object toBool(XSSFRow row, int col, Object error) throws XLException {
 
 	Object result = toBool(row, col);
