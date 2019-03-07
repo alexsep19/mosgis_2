@@ -42,8 +42,6 @@ public class ParseSupplyResourceContractsMDBTest extends BaseTest {
     public void clean() throws SQLException {
 
 	try (DB db = model.getDb()) {
-
-	    db.d0(new QP("DELETE FROM in_xl_sr_ctr_vc_nsi_58 WHERE uuid_xl = ?", uuid));
 	    db.d0(new QP("DELETE FROM in_xl_sr_ctr_svc WHERE uuid_xl = ?", uuid));
 	    db.d0(new QP("DELETE FROM in_xl_sr_ctr_obj WHERE uuid_xl = ?", uuid));
 	    db.d0(new QP("DELETE FROM in_xl_sr_ctr_subj WHERE uuid_xl = ?", uuid));

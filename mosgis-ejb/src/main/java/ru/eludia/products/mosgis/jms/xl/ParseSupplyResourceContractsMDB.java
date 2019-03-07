@@ -15,10 +15,9 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import ru.eludia.base.DB;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
-import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.LogTable;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceContractObject;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceContractService;
@@ -574,8 +573,6 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
     @Override
     protected void completeOK (DB db, UUID parent) throws SQLException {
 
-	logger.log(Level.INFO, "ParseSupplyResourceContractsMDB.completeOK start");
-
 	super.completeOK (db, parent);
         
         db.update (SupplyResourceContract.class, DB.HASH (
@@ -592,52 +589,57 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 	    SupplyResourceContractSubject.c.UUID_XL, parent,
 	    EnTable.c.IS_DELETED, 0
 	), SupplyResourceContractSubject.c.UUID_XL.lc());
-
-	logger.log(Level.INFO, "ParseSupplyResourceContractsMDB.completeOK end");
     }
 
     @Override
     protected void completeFail (DB db, UUID parent, XSSFWorkbook wb) throws SQLException {
 
-	logger.log(Level.INFO, "ParseSupplyResourceContractsMDB.completeFail start");
-
         super.completeFail (db, parent, wb);
 
 	final Model m = db.getModel();
 
+	db.update(SupplyResourceContractSubject.class, HASH(
+	    SupplyResourceContractSubject.c.ID_LOG, null,
+	    SupplyResourceContractSubject.c.UUID_XL, parent
+	), SupplyResourceContractSubject.c.UUID_XL.lc());
+	db.delete(m
+	    .select(SupplyResourceContractSubjectLog.class, "uuid")
+	    .where(SupplyResourceContractSubject.c.UUID_XL, parent)
+	);
 	db.delete(m
 	    .select(SupplyResourceContractSubject.class, "uuid")
 	    .where(SupplyResourceContractSubject.c.UUID_XL, parent)
 	);
 
+
+
+	db.update(SupplyResourceContractObject.class, HASH(
+	    SupplyResourceContractObject.c.ID_LOG, null,
+	    SupplyResourceContractObject.c.UUID_XL, parent
+	), SupplyResourceContractObject.c.UUID_XL.lc());
 	db.delete(m
-	    .select(SupplyResourceContractSubjectLog.class, "uuid")
-	    .where(SupplyResourceContractSubject.c.UUID_XL, parent)
+	    .select(SupplyResourceContractObjectLog.class, "uuid")
+	    .where(SupplyResourceContractObject.c.UUID_XL, parent)
 	);
-
-
 	db.delete(m
 	    .select(SupplyResourceContractObject.class, "uuid")
 	    .where(SupplyResourceContractObject.c.UUID_XL, parent)
 	);
 
-	db.delete(m
-	    .select(SupplyResourceContractObjectLog.class, "uuid")
-	    .where(SupplyResourceContractObject.c.UUID_XL, parent)
-	);
 
 
-        db.delete (m
-            .select (SupplyResourceContract.class, "uuid")
-            .where (SupplyResourceContract.c.UUID_XL, parent)
-        );
-
+	db.update(SupplyResourceContract.class, HASH(
+	    SupplyResourceContract.c.ID_LOG, null,
+	    SupplyResourceContract.c.UUID_XL, parent
+	), SupplyResourceContract.c.UUID_XL.lc());
 	db.delete(m
 	    .select(SupplyResourceContractLog.class, "uuid")
 	    .where(SupplyResourceContract.c.UUID_XL, parent)
 	);
-
-	logger.log(Level.INFO, "ParseSupplyResourceContractsMDB.completeFail end");
+        db.delete (m
+            .select (SupplyResourceContract.class, "uuid")
+            .where (SupplyResourceContract.c.UUID_XL, parent)
+        );
     }
 
     protected Map<String, Map<String, Object>> processVocLines(XSSFWorkbook wb, UUID uuid, DB db) throws XLException {
