@@ -31,8 +31,8 @@ define ([], function () {
         
         var bnk_accts_set = !it.uuid_bnk_acct ? [] : [{
             id: it.uuid_bnk_acct,
-            text: 'Р/сч. ' + it ['tb_bnk_accts.accountnumber'] + ', ' + it ['vc_bic.namep'] +
-                (it ['tb_bnk_accts.uuid_org'] == it.uuid_org ? '' : ', владелец: ' + it ['org.label'])
+            text: 'Р/сч. ' + it ['bank_acct.accountnumber'] + ', ' + it ['vc_bic.namep'] +
+                (it ['bank_acct.uuid_org'] == it.uuid_org ? '' : ', владелец: ' + it ['org_bank_acct.label'])
         }]
         
     
