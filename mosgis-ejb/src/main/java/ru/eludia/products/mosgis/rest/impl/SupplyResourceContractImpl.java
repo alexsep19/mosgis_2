@@ -20,7 +20,10 @@ import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.ActualBankAccount;
 import ru.eludia.products.mosgis.db.model.tables.ActualSupplyResourceContract;
+import ru.eludia.products.mosgis.db.model.tables.BankAccount;
+import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractFile;
@@ -30,6 +33,7 @@ import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi3;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi239;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.voc.VocBic;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustomerType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractDimension;
@@ -131,9 +135,13 @@ public class SupplyResourceContractImpl extends BaseCRUD<SupplyResourceContract>
             .toMaybeOne(VocOrganization.class, "AS org", "label").on("uuid_org")
 	    .toMaybeOne(SupplyResourceContractLog.class, "AS cpl").on()
 	    .toMaybeOne(OutSoap.class, "uuid", "err_text").on("cpl.uuid_out_soap=out_soap.uuid")
+            .toMaybeOne(BankAccount.class,     "AS bank_acct",        "*").on ()
+            .toMaybeOne(VocBic.class,                                 "*").on ()
+            .toMaybeOne(VocOrganization.class, "AS org_bank_acct","label").on ("bank_acct.uuid_org=org_bank_acct.uuid")
         );
 
         job.add ("item", item);
+        ActualBankAccount.addTo (job, db, item.getString (SupplyResourceContract.c.UUID_ORG.lc ()));
 
 	if (item.getInt(SupplyResourceContract.c.SPECQTYINDS.lc()) == VocGisContractDimension.i.BY_CONTRACT.getId()) {
 
