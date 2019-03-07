@@ -137,7 +137,7 @@ public class InXlSupplyResourceContract extends EnTable {
 	    throw new XLException(ex.getMessage());
 	}
 
-	r.put(SupplyResourceContract.c.AUTOROLLOVER.lc(), toBool(row, 5));
+	r.put(SupplyResourceContract.c.AUTOROLLOVER.lc(), DB.ok(toBool(row, 5))? 1 : 0);
 
 	try {
 	    final XSSFCell cell = row.getCell(6);
@@ -307,10 +307,16 @@ public class InXlSupplyResourceContract extends EnTable {
     }
 
 
-    private static Object toIsFemale(String s) {
-	if (s == null) {
+    private static Object toIsFemale(XSSFRow row, int col) throws XLException {
+
+	Object f = DB.to.String(toString(row, col));
+
+	if (f == null) {
 	    return null;
 	}
+
+	String s = DB.to.String(f);
+
 	return s.equals("ж") ? 1 : s.equals("м") ? 0 : null;
     }
 
@@ -389,159 +395,34 @@ public class InXlSupplyResourceContract extends EnTable {
 
     private static void setFieldsCustomerPerson(Map<String, Object> r, XSSFRow row, Map<String, Map<String, Object>> vocs) throws XLException {
 
-	logger.log(Level.INFO, "InXlSupplyResourceContract.setFieldsCustomerPerson start");
-	try {
-	    final XSSFCell cell = row.getCell(9);
-	    if (cell == null) {
-		throw new XLException("Не указано Фамилия (столбец J)");
-	    }
-	    final String b = cell.getStringCellValue();
-	    if (b == null) {
-		throw new XLException("Не указано Фамилия (столбец J)");
-	    }
-	    r.put(c.SURNAME.lc(), b);
-	} catch (XLException ex) {
-	    throw ex;
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
+	r.put(c.SURNAME.lc(), toString(row, 9, "Не указано Фамилия (столбец J)"));
+
+	r.put(c.FIRSTNAME.lc(), toString(row, 10, "Не указано Имя (столбец K)"));
+
+	r.put(c.PATRONYMIC.lc(), toString(row, 11));
+
+
+	r.put(c.IS_FEMALE.lc(), toIsFemale(row, 12));
+
+	r.put(c.BIRTHDATE.lc(), toDate(row, 13));
+
+	r.put(c.SNILS.lc(), toNumeric(row, 14));
+
+
+	if (!DB.ok(r.get(c.SNILS.lc()))) {
+
+	    final Object label_vc_nsi_95 = toString (row, 15,"Не указан Вид документа (столбец P)");
+
+	    r.put(c.LABEL_VC_NSI_95.lc(), label_vc_nsi_95);
+
+	    r.put(SupplyResourceContract.c.CODE_VC_NSI_58.lc(), vocs.get("vc_nsi_95").get(label_vc_nsi_95));
+
+	    r.put(c.SERIES.lc(), toString(row, 17));
+
+	    r.put(c.NUMBER_.lc(), toString(row, 16, "Не указан Номер документа (столбец Q)"));
+
+	    r.put(c.ISSUEDATE.lc(), toDate(row, 18, "Не указана Дата выдачи документа (столбец S)"));
 	}
-
-	try {
-	    final XSSFCell cell = row.getCell(10);
-	    if (cell == null) {
-		throw new XLException("Не указано Имя (столбец K)");
-	    }
-	    final String b = cell.getStringCellValue();
-	    if (b == null) {
-		throw new XLException("Не указано Имя (столбец K)");
-	    }
-	    r.put(c.FIRSTNAME.lc(), b);
-	} catch (XLException ex) {
-	    throw ex;
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
-
-	try {
-	    final XSSFCell cell = row.getCell(11);
-	    if (cell == null) {
-		throw new XLException("Не указано Отчество (столбец L)");
-	    }
-	    final String b = cell.getStringCellValue();
-	    if (b == null) {
-		throw new XLException("Не указано Отчество (столбец L)");
-	    }
-	    r.put(c.PATRONYMIC.lc(), b);
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
-
-	try {
-	    final XSSFCell cell = row.getCell(12);
-	    if (cell == null) {
-		throw new XLException("Не указано Пол (столбец M)");
-	    }
-	    final String b = cell.getStringCellValue();
-	    if (b == null) {
-		throw new XLException("Не указано Пол (столбец M)");
-	    }
-
-	    r.put(c.IS_FEMALE.lc(), toIsFemale(b));
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
-
-	try {
-	    final XSSFCell cell = row.getCell(13);
-	    if (cell == null) {
-		throw new XLException("Не указана Дата рождения (столбец N)");
-	    }
-	    final Date d = cell.getDateCellValue();
-	    if (d == null) {
-		throw new XLException("Не указана Дата рождения (столбец N)");
-	    }
-	    r.put(c.BIRTHDATE.lc(), d);
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
-
-	r.put(c.SNILS.lc(), toNumeric(row, 14, "Не указан СНИЛС (столбец O)"));
-
-	try {
-	    final XSSFCell cell = row.getCell(15);
-	    if (cell == null) {
-		throw new XLException("Не указан Вид документа (столбец P)");
-	    }
-	    final String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указан Вид документа (столбец P)");
-	    }
-	    r.put(c.LABEL_VC_NSI_95.lc(), s);
-
-	    r.put(SupplyResourceContract.c.CODE_VC_NSI_58.lc(), vocs.get("vc_nsi_95").get(s));
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
-
-	try {
-	    final XSSFCell cell = row.getCell(16);
-	    if (cell == null) {
-		throw new XLException("Не указан Номер документа (столбец Q)");
-	    }
-	    final String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указан Номер документа (столбец Q)");
-	    }
-	    r.put(c.NUMBER_.lc(), s);
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
-
-	try {
-	    final XSSFCell cell = row.getCell(17);
-	    if (cell == null) {
-		throw new XLException("Не указан Серия документа (столбец R)");
-	    }
-	    final String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указан Серия документа (столбец R)");
-	    }
-	    r.put(c.SERIES.lc(), s);
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
-
-	try {
-	    final XSSFCell cell = row.getCell(18);
-	    if (cell == null) {
-		throw new XLException("Не указана Дата выдачи документа (столбец S)");
-	    }
-	    final Date d = cell.getDateCellValue();
-	    if (d == null) {
-		throw new XLException("Не указана Дата выдачи документа (столбец S)");
-	    }
-	    r.put(c.ISSUEDATE.lc(), d);
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
-
-	if (r.get(c.SNILS.lc()) == null
-	    && (r.get(c.LABEL_VC_NSI_95.lc()) == null
-		|| r.get(c.NUMBER_.lc()) == null
-		|| r.get(c.ISSUEDATE.lc()) == null
-	    )
-	) {
-	    throw new XLException("Укажите либо СНИЛС, либо реквизиты документа");
-	};
-
-	logger.log(Level.INFO, "InXlSupplyResourceContract.setFieldsCustomerPerson end");
     }
 
     private static void setFieldsCustomerOrg(Map<String, Object> r, XSSFRow row, Map<String, Map<String, Object>> vocs) throws XLException {
