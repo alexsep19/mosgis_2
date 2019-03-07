@@ -24,10 +24,10 @@ define ([], function () {
             add_vocabularies (data, data)
 
             query ({type: 'mgmt_contracts'}, {}, function (d) {
-            
-                data.tb_bnk_accts = d.tb_bnk_accts
-                
+                            
                 var it = data.item = d.item
+
+                data.tb_bnk_accts = d.tb_bnk_accts
 
                 data.bnk_accts_actual = data.tb_bnk_accts.map (function (i) {return {
                     id: i.uuid,
