@@ -2,6 +2,10 @@ define ([], function () {
 
     var form_name = 'rc_contract_common_form'
 
+    function check_is_bnk_acct_visible (it) {
+        it.is_bnk_acct_visible = it.is_billing || it.id_ctr_status > 10
+    }
+
     function recalc () {
 
         var f = w2ui [form_name]
@@ -10,6 +14,7 @@ define ([], function () {
         var data = $('body').data('data')
         var __read_only =  $('body').data('__read_only')
         var it = data.item
+        check_is_bnk_acct_visible (it)
 
         var id_service_type = v.id_service_type? (v.id_service_type.id || v.id_service_type) : null
         var is_customer_oms = it['org_customer.is_oms'] || false
@@ -61,26 +66,38 @@ define ([], function () {
             }
         }
 
-        var s = 410 - Object.keys(hidden).length * 30
+        var s = 380 + (it.is_bnk_acct_visible - Object.keys(hidden).length) * 30
         var l = w2ui ['passport_layout']
         var t = l.get('top')
         if (t.size != s)
             l.set('top', {size: s})
 
         clickOn($('#label_org'), $_DO.open_orgs_rc_contract_common)
-    }
 
+        if (it._can.set_bank_acct) {
+
+            $('#uuid_bnk_acct_div *')
+                .css  ({cursor: 'pointer'})
+                .attr ({title: 'Сменить платёжные реквизиты для данного договора'})
+
+            clickOff ($('#uuid_bnk_acct_div input'))
+            clickOn ($('#uuid_bnk_acct_div input'), $_DO.set_bank_acct_rc_contract_common)
+
+        }                
+        
+    }
+    
     return function (data, view) {
     
         var it = data.item
         
-        it.is_bnk_acct_visible = it.is_billing
+        check_is_bnk_acct_visible (it)
 
         $_F5 = function (data) {
 
             var it = data.item
 
-            it.is_bnk_acct_visible = it.is_billing
+            check_is_bnk_acct_visible (it)
 
             data.item.__read_only = data.__read_only
 
@@ -163,8 +180,6 @@ define ([], function () {
                 {name: 'completiondate', type: 'date'},
                 {name: 'uuid_org', type: 'text', hidden: true},
                 {name: 'label_org', type: 'text'},
-
-                {name: 'id_service_type', type: 'list', options: {items: data.vc_rc_ctr_service_types.items}},
 
                 {name: 'is_accounts', type: 'list', options: {items: data.voc_bool}},
                 {name: 'is_invoices', type: 'list', options: {items: data.voc_bool}},
