@@ -22,6 +22,8 @@ import ru.eludia.base.model.Table;
 import ru.eludia.base.model.phys.PhysicalCol;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.ActualBankAccount;
+import ru.eludia.products.mosgis.db.model.tables.BankAccount;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractFile;
@@ -32,6 +34,7 @@ import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState;
+import ru.eludia.products.mosgis.db.model.voc.VocBic;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocContractPaymentType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractType;
@@ -174,9 +177,15 @@ logger.info ("data=" + data);
             .toMaybeOne (Charter.class,         "AS ch",            "uuid").on ("org_customer.uuid=ch.uuid_org")
             .toMaybeOne (ContractLog.class                                ).on ()
             .toMaybeOne (OutSoap.class,                         "err_text").on ()
+            .toMaybeOne (BankAccount.class,                            "*").on ()
+            .toMaybeOne (VocBic.class,                                 "*").on ()
         );
 
         job.add ("item", item);
+        
+        db.addJsonArrays (job,
+            ActualBankAccount.select (item.getString (Contract.c.UUID_ORG.lc ()))
+        );
 
         JsonObject lastApprove = db.getJsonObject (m
             .select  (ContractLog.class, "AS root", "*")

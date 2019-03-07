@@ -74,6 +74,8 @@ public class Contract extends EnTable {
         REASONOFANNULMENT        (Type.STRING,         1000, null,    "Причина аннулирования"),
         IS_ANNULED               (Type.BOOLEAN,          new Virt ("DECODE(\"REASONOFANNULMENT\",NULL,0,1)"),  "1, если запись аннулирована, иначе 0"),
 
+        UUID_BNK_ACCT            (BankAccount.class,                  "Платёжные реквизиты"),
+
         ;
 
         @Override
@@ -83,7 +85,7 @@ public class Contract extends EnTable {
         
     public Contract () {
 
-        super ("tb_contracts", "Договоры");
+        super ("tb_contracts", "Договоры управления");
         cols   (c.class);        
 
         key   ("org_docnum", "uuid_org", "docnum");
