@@ -21,14 +21,14 @@ public class VocOverhaulWorkType extends EnTable {
     
     public enum c implements EnColEnum {
         
-        GUID            (Type.UUID,             "Глобально-уникальный идентификатор элемента справочника"),
+        GUID            (Type.UUID, null,        "Глобально-уникальный идентификатор элемента справочника"),
         
-        UUID_ORG        (VocOrganization.class, "Организация"),
+        UUID_ORG        (VocOrganization.class,  "Организация"),
         
-        CODE            (Type.STRING,  20,      "Код элемента справочника, уникальный в пределах справочника"),
-        SERVICENAME     (Type.STRING, 500,      "Наименование вида работ"),
-        ISACTUAL        (Type.BOOLEAN,          "Признак актуальности элемента справочника"),
-        CODE_VC_NSI_218 (Type.STRING,  20,      "Группа работ (НСИ 218)"),
+        CODE            (Type.STRING,  20, null, "Код элемента справочника, уникальный в пределах справочника"),
+        SERVICENAME     (Type.STRING, 500,       "Наименование вида работ"),
+        ISACTUAL        (Type.BOOLEAN,     null, "Признак актуальности элемента справочника"),
+        CODE_VC_NSI_218 (Type.STRING,  20,       "Группа работ (НСИ 218)"),
         
         ID_STATUS       (VocAsyncEntityState.class, new Num (VocAsyncEntityState.i.PENDING.getId ()), "Статус синхронизации"),
         
@@ -68,7 +68,7 @@ public class VocOverhaulWorkType extends EnTable {
     public static Map<String, Object> toHASH (NsiElementType t) {
         
         final Map<String, Object> result = DB.HASH (
-            "isactual",   t.isIsActual () ? 0 : 1,
+            "isactual",   t.isIsActual () ? 1 : 0,
             "code", t.getCode (),
             "guid",  t.getGUID ()
         );

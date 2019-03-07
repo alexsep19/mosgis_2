@@ -1,6 +1,8 @@
 package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -10,6 +12,7 @@ import javax.ejb.MessageDriven;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.incoming.InOverhaulWorkType;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
@@ -17,8 +20,10 @@ import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.gosuslugi.dom.schema.integration.nsi_service_async.Fault;
 import ru.eludia.products.mosgis.db.model.voc.VocOverhaulWorkType;
+import ru.eludia.products.mosgis.db.model.voc.VocOverhaulWorkTypeLog;
 import ru.eludia.products.mosgis.ejb.wsc.WsGisNsiClient;
 import ru.gosuslugi.dom.schema.integration.nsi.GetStateResult;
+import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiItemType;
 
 @MessageDriven(activationConfig = {
@@ -50,15 +55,36 @@ public class GisPollExportOverhaulWorkTypes extends GisPollMDB {
             
             if (nsiItem == null) throw new GisPollException ("0", "Сервис ГИС вернул пустой результат");
             
-            db.upsert (VocOverhaulWorkType.class, 
-                    
-                nsiItem.getNsiElement ().stream ().map ((t) -> {
-                    final Map<String, Object> h = VocOverhaulWorkType.toHASH (t); 
-                    h.put ("uuid_org", r.get ("uuid_org"));
-                    return h;
-                }).collect (Collectors.toList ()),
-
-            "guid");
+            List <String> guids = new ArrayList <> ();
+            List <Map <String, Object>> items = new ArrayList <> ();
+            
+            for (NsiElementType nsiElement: nsiItem.getNsiElement ()) {
+                final Map<String, Object> h = VocOverhaulWorkType.toHASH (nsiElement); 
+                h.put ("uuid_org", r.get ("uuid_org"));
+                items.add (h);
+                guids.add (h.get ("guid").toString ());
+            }
+            
+            db.upsert (VocOverhaulWorkType.class, items, "guid");
+            
+            Map <Object, Map <String, Object>> idxs = db.getIdx(
+                    ModelHolder.getModel ().select (VocOverhaulWorkType.class, "uuid")
+                                           .where  ("guid IN", guids.toArray ())
+            );
+            
+            for (Object uuid_object: idxs.keySet ()) {
+                
+                String id_log = db.insertId(VocOverhaulWorkTypeLog.class, DB.HASH(
+                        "action", VocAction.i.IMPORT_OVERHAUL_WORK_TYPES.getName (),
+                        "uuid_object", uuid_object
+                )).toString ();
+                
+                db.update (VocOverhaulWorkType.class, DB.HASH (
+                        "uuid", uuid_object,
+                        "id_log", id_log
+                ));
+                
+            }
 
         }
         catch (GisPollRetryException ex) {
