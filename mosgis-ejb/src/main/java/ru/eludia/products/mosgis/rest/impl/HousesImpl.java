@@ -31,6 +31,7 @@ import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.rest.api.HousesLocal;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.ActualCaChObject;
+import ru.eludia.products.mosgis.db.model.tables.ActualSomeContractObject;
 import ru.eludia.products.mosgis.db.model.tables.ActualSupplyResourceContractObject;
 import ru.eludia.products.mosgis.db.model.tables.Block;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
@@ -248,19 +249,11 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
 
         String uuidOrg = user.getUuidOrg ();
         
-        if (DB.ok (uuidOrg)) select
-                
-            .andEither (c.FIASHOUSEGUID.lc (), m
-                .select (ActualCaChObject.class, "fiashouseguid")
-                .where (ActualCaChObject.c.UUID_ORG, uuidOrg)
-            )
-            .or (c.FIASHOUSEGUID.lc (), m
-                .select (ActualSupplyResourceContractObject.class, "fiashouseguid")
-                .where (ActualSupplyResourceContractObject.c.UUID_ORG, uuidOrg
-            )
-                    
+        if (DB.ok (uuidOrg)) select.and (c.FIASHOUSEGUID.lc (), m
+            .select (ActualSomeContractObject.class, ActualSomeContractObject.c.FIASHOUSEGUID.lc ())
+            .where  (ActualSomeContractObject.c.UUID_ORG, uuidOrg)
         );
-            
+
         applySearch (Search.from (p), select);
 
         JsonObjectBuilder jb = Json.createObjectBuilder ();
