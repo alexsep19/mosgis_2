@@ -1,6 +1,7 @@
 package ru.eludia.products.mosgis.rest.impl;
 
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.UUID;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
@@ -31,6 +32,9 @@ import ru.eludia.products.mosgis.rest.api.VocOverhaulWorkTypesLocal;
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class VocOverhaulWorkTypesImpl extends BaseCRUD<VocOverhaulWorkType> implements VocOverhaulWorkTypesLocal {
     
+    @Resource (mappedName = "mosgis.inImportOverhaulWorkTypesQueue")
+    Queue inImportOverhaulWorkTypesQueue;
+    
     @Resource (mappedName = "mosgis.inExportOverhaulWorkTypesQueue")
     Queue inExportOverhaulWorkTypesQueue;
 
@@ -38,8 +42,9 @@ public class VocOverhaulWorkTypesImpl extends BaseCRUD<VocOverhaulWorkType> impl
     protected Queue getQueue (VocAction.i action) {
 
         switch (action) {
-            case IMPORT_OVERHAUL_WORK_TYPES:   return inExportOverhaulWorkTypesQueue;
-            default: return null;
+            case IMPORT_OVERHAUL_WORK_TYPES: return inImportOverhaulWorkTypesQueue;
+            case APPROVE:                    return inExportOverhaulWorkTypesQueue;
+            default:                         return null;
         }
 
     }
@@ -93,7 +98,7 @@ public class VocOverhaulWorkTypesImpl extends BaseCRUD<VocOverhaulWorkType> impl
     }
     
     @Override
-    public JsonObject doImport (User user) {return doAction ((db) -> {
+    public JsonObject doImport (User user) {
         
         String userOrg = user.getUuidOrg ();
         
@@ -103,14 +108,44 @@ public class VocOverhaulWorkTypesImpl extends BaseCRUD<VocOverhaulWorkType> impl
         }
         
         UUID uuid = UUID.randomUUID ();
+        
+        try {
 
-        db.insert (InOverhaulWorkType.class, HASH (
-            "uuid", uuid,
-            "uuid_org", userOrg
-        ));
+            ModelHolder.getModel ().getDb ().insert (InOverhaulWorkType.class, HASH (
+                "uuid", uuid,
+                "uuid_org", userOrg
+            ));
+            
+        }
+        catch (SQLException ex) {
+            ValidationException vex = ValidationException.wrap (ex);            
+            throw vex == null ? new InternalServerErrorException (ex) : vex;                
+        }
 
         publishMessage (VocAction.i.IMPORT_OVERHAUL_WORK_TYPES, uuid.toString ());
         
+        return Json.createObjectBuilder ().add ("id", uuid.toString ()).build ();
+        
+    }
+    
+    @Override
+    public JsonObject doCreate (JsonObject p, User user) {return doAction ((db, job) -> {
+        
+        String userOrg = user.getUuidOrg ();
+        
+        if (userOrg == null) {
+            logger.warning ("User has no org set, access prohibited");
+            throw new ValidationException ("foo", "Отсутствует организация пользователя, доступ запрещен");
+        }
+
+        final Table table = getTable ();
+        Map<String, Object> data = getData (p);
+        Object insertId = db.insertId (table, data);
+        job.add ("id", insertId.toString ());
+        
+        logAction (db, user, insertId, VocAction.i.CREATE);
+        logAction (db, user, insertId, VocAction.i.APPROVE);
+
     });}
     
 }

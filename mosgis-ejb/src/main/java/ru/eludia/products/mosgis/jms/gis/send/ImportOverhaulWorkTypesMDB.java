@@ -21,13 +21,13 @@ import ru.eludia.products.mosgis.ejb.wsc.WsGisNsiClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 
 @MessageDriven(activationConfig = {
-    @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inExportOverhaulWorkTypesQueue")
+    @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inImportOverhaulWorkTypesQueue")
     , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
     , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class ExportOverhaulWorkTypesMDB extends UUIDMDB<InOverhaulWorkType> {
+public class ImportOverhaulWorkTypesMDB extends UUIDMDB<InOverhaulWorkType> {
     
-    private static final Logger logger = Logger.getLogger (ExportOverhaulWorkTypesMDB.class.getName ());
+    private static final Logger logger = Logger.getLogger (ImportOverhaulWorkTypesMDB.class.getName ());
 
     @EJB
     protected UUIDPublisher UUIDPublisher;
@@ -35,8 +35,8 @@ public class ExportOverhaulWorkTypesMDB extends UUIDMDB<InOverhaulWorkType> {
     @EJB
     WsGisNsiClient wsGisNsiClient;
 
-    @Resource (mappedName = "mosgis.outExportOverhaulWorkTypesQueue")
-    Queue q; 
+    @Resource (mappedName = "mosgis.outImportOverhaulWorkTypesQueue")
+    Queue q;
     
     @Override
     protected Get get (UUID uuid) {

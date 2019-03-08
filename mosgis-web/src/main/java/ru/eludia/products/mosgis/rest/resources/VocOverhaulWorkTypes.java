@@ -55,4 +55,12 @@ public class VocOverhaulWorkTypes extends EJBResource <VocOverhaulWorkTypesLocal
         return back.getVocs ();
     }
     
+    @POST
+    @Path("create") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject doCreate (JsonObject p) {
+        checkPost ();
+        return back.doCreate (p, getUser ());
+    }
+    
 }
