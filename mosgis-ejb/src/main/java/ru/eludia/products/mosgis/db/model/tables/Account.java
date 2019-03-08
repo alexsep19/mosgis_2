@@ -18,9 +18,10 @@ public class Account extends EnTable {
         UUID_ORG               (VocOrganization.class, null, "Организация, которая создала данный счёт"),
         ID_TYPE                (VocAccountType.class,       "Тип ЛС"),
         
-	UUID_CONTRACT          (Contract.class,      null,  "Ссылка на договор"),
-        UUID_CHARTER           (Charter.class,       null,  "Ссылка на устав"),
-        
+	UUID_CONTRACT          (Contract.class,               null, "Ссылка на договор"),
+        UUID_CHARTER           (Charter.class,                null, "Ссылка на устав"),
+        UUID_SR_CONTRACT       (SupplyResourceContract.class, null, "Ссылка на договор поставки ресурсов"),
+
         ACCOUNTNUMBER          (Type.STRING,  30,    null,  "Причина закрытия (НСИ 22)"),
         
         LIVINGPERSONSNUMBER    (Type.NUMERIC, 4,     null,  "Количество проживающих"),
@@ -77,9 +78,10 @@ public class Account extends EnTable {
         
         cols   (c.class);        
         
-        key ("uuid_contract", "uuid_contract");
-        key ("uuid_charter", "uuid_charter");
-        
+        key (c.UUID_CONTRACT);
+        key (c.UUID_CHARTER);
+        key (c.UUID_SR_CONTRACT);
+               
         trigger ("BEFORE UPDATE", 
                 
             "DECLARE "
