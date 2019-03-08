@@ -17,6 +17,7 @@ import ru.eludia.products.mosgis.db.model.tables.Account;
 import ru.eludia.products.mosgis.db.model.tables.AccountLog;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.voc.VocAccountType;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -102,6 +103,7 @@ public class AccountImpl extends BaseCRUD<Account> implements AccountLocal {
         
         checkFilter (data, Account.c.UUID_CONTRACT, select);
         checkFilter (data, Account.c.UUID_CHARTER, select);
+        checkFilter (data, Account.c.UUID_SR_CONTRACT, select);
 
         applySearch (Search.from (p), select);
 
@@ -116,9 +118,10 @@ public class AccountImpl extends BaseCRUD<Account> implements AccountLocal {
             .get (getTable (), id, "AS root", "*")
             .toMaybeOne (Contract.class, "AS ca", "*").on ()
             .toMaybeOne (Charter.class, "AS ch", "*").on ()
+            .toMaybeOne (SupplyResourceContract.class, "AS sr_ctr", "*").on ()
             .toMaybeOne (AccountLog.class, "AS log").on ()
             .toMaybeOne (OutSoap.class, "err_text").on ("log.uuid_out_soap=out_soap.uuid")
-            .toOne (VocOrganization.class, "AS org", "label").on ("root.uuid_org=org.uuid")
+            .toOne      (VocOrganization.class, "AS org", "label").on ("root.uuid_org=org.uuid")
             .toMaybeOne (VocOrganization.class, "AS org_customer", "label").on ("root.uuid_org_customer=org_customer.uuid")
             .toMaybeOne (VocPerson.class,       "AS ind_customer", "label").on ("root.uuid_person_customer=ind_customer.uuid")
         ));
