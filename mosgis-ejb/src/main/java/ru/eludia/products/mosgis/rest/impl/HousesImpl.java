@@ -31,6 +31,7 @@ import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.rest.api.HousesLocal;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.ActualCaChObject;
+import ru.eludia.products.mosgis.db.model.tables.ActualSupplyResourceContractObject;
 import ru.eludia.products.mosgis.db.model.tables.Block;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
@@ -38,6 +39,7 @@ import ru.eludia.products.mosgis.db.model.tables.Entrance;
 import ru.eludia.products.mosgis.db.model.tables.Lift;
 import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.House;
+import ru.eludia.products.mosgis.db.model.tables.House.c;
 import ru.eludia.products.mosgis.db.model.tables.HouseLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
@@ -231,23 +233,32 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
         
         Model m = ModelHolder.getModel ();
         
-        Select select = m.select (House.class, "uuid AS id", 
-                                               "address", 
-                                               "is_condo", 
-                                               "fiashouseguid", 
-                                               "unom",
-                                               "id_status_gis",
-                                               "id_status",
-                                               "code_vc_nsi_24")
+        Select select = m.select (House.class, "uuid AS id"
+                , c.ADDRESS.lc ()
+                , c.IS_CONDO.lc ()
+                , c.FIASHOUSEGUID.lc ()
+                , c.UNOM.lc ()
+                , c.ID_STATUS_GIS.lc ()
+                , c.ID_STATUS.lc ()
+                , c.CODE_VC_NSI_24.lc ()
+            )
             .toOne (VocBuilding.class, "AS building", "oktmo AS oktmo").on()
             .orderBy ("address")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
-        
+
         String uuidOrg = user.getUuidOrg ();
         
-        if (DB.ok (uuidOrg)) select.and ("fiashouseguid", m
-            .select (ActualCaChObject.class, "fiashouseguid")
-            .where ("uuid_org", uuidOrg)
+        if (DB.ok (uuidOrg)) select
+                
+            .andEither (c.FIASHOUSEGUID.lc (), m
+                .select (ActualCaChObject.class, "fiashouseguid")
+                .where (ActualCaChObject.c.UUID_ORG, uuidOrg)
+            )
+            .or (c.FIASHOUSEGUID.lc (), m
+                .select (ActualSupplyResourceContractObject.class, "fiashouseguid")
+                .where (ActualSupplyResourceContractObject.c.UUID_ORG, uuidOrg
+            )
+                    
         );
             
         applySearch (Search.from (p), select);
