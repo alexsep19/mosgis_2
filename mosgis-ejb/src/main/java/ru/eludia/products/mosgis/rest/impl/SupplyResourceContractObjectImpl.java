@@ -87,7 +87,11 @@ public class SupplyResourceContractObjectImpl extends BaseCRUD<SupplyResourceCon
 
         Select select = m.select (SupplyResourceContractObject.class, "AS root", "*", "uuid AS id")
             .toOne(VocBuilding.class, "AS building", "houseguid", "label").on()
-            .toMaybeOne(Premise.class, "AS premise", "id", "label").on()
+            .toMaybeOne(Premise.class, "AS premise"
+                , Premise.c.ID.lc ()
+                , Premise.c.LABEL.lc ()
+                , Premise.c.TOTALAREA.lc ()
+            ).on()
 	    .toOne(VocBuildingAddress.class, "AS fias", "label").on("root.fiashouseguid=fias.houseguid")
 	    .toMaybeOne(House.class, "AS house", "uuid").on("root.fiashouseguid=house.fiashouseguid")
             .orderBy ("building.label")
