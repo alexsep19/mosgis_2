@@ -92,7 +92,8 @@ define ([], function () {
                 value:    it.uuid_contract
             })
             
-        }               
+        }
+        
         if (it.uuid_charter) {
         
             tia.type = 'charter_objects'
@@ -104,6 +105,19 @@ define ([], function () {
             })
             
         }   
+
+        if (it.uuid_sr_contract) {
+        
+            tia.type = 'supply_resource_contract_objects'
+            
+            p.search.push ({
+                field:    "uuid_sr_ctr",
+                operator: "is",
+                value:    it.uuid_sr_contract
+            })
+            
+        }                   
+        
         
         data.fias = []
         
