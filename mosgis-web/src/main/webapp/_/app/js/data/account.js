@@ -33,7 +33,7 @@ define ([], function () {
 
             if (!it.is_deleted && it.uuid_org == $_USER.uuid_org) {
 
-                switch (it ['ca.id_ctr_status'] || it ['ch.id_ctr_status']) {
+                switch (it ['ca.id_ctr_status'] || it ['ch.id_ctr_status'] || it ['sr_ctr.id_ctr_status']) {
 
                         case 40:
                         case 42:
