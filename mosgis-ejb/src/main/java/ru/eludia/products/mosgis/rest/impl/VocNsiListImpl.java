@@ -31,9 +31,7 @@ import ru.eludia.products.mosgis.db.model.nsi.fields.NsiStringField;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiList;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiListGroup;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
-import ru.eludia.products.mosgis.db.model.voc.VocRdCol;
 import static ru.eludia.products.mosgis.db.model.voc.VocRdColType.i.REF;
-import ru.eludia.products.mosgis.db.model.voc.VocRdList;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.jmx.NsiLocal;
 
@@ -54,20 +52,6 @@ public class VocNsiListImpl implements VocNsiListLocal {
         try (DB db = ModelHolder.getModel ().getDb ()) {
             
             db.addJsonArrays (jb,
-
-                ModelHolder.getModel ()
-                    .select (VocRdList.class,
-                        "modelid AS id", 
-                        "name AS text", 
-                        "parent")
-                    .orderBy ("name"),
-
-                ModelHolder.getModel ()
-                    .select (VocRdCol.class,
-                        "link_dictionary AS id", 
-                        "name AS text")
-                    .where ("property_value_type", REF.getId ())
-                    .orderBy ("name"),
 
                 ModelHolder.getModel ()
                     .select (VocNsiListGroup.class, "*")

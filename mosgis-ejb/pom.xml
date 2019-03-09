@@ -204,24 +204,6 @@
                             <goal>wsimport</goal>
                         </goals>
                         <configuration>
-                            <wsdlFiles>
-                                <wsdlFile>rd.wsdl</wsdlFile>
-                            </wsdlFiles>
-                            <packageName></packageName>
-                            <vmArgs>
-                                <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
-                            </vmArgs>
-                            <wsdlLocation>file:/C:/buf/___/soap/rd.wsdl</wsdlLocation>
-                            <staleFile>${project.build.directory}/jaxws/stale/rd.stale</staleFile>
-                        </configuration>
-                        <id>wsimport-generate-rd</id>
-                        <phase>generate-sources</phase>
-                    </execution>
-                    <execution>
-                        <goals>
-                            <goal>wsimport</goal>
-                        </goals>
-                        <configuration>
                             <wsdlDirectory>src/main/resources/ws/wsdl</wsdlDirectory>
                             <wsdlFiles>
                                 <wsdlFile>organizations-registry-common/hcs-organizations-registry-common-service-async.wsdl</wsdlFile>
