@@ -23,7 +23,7 @@ import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
@@ -31,7 +31,7 @@ import ru.gosuslugi.dom.schema.integration.base.CommonResultType;
 import ru.gosuslugi.dom.schema.integration.services_service_async.Fault;
 import ru.eludia.products.mosgis.db.model.tables.WorkingList.c;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
-import ru.eludia.products.mosgis.ejb.wsc.WsGisServicesClient;
+import ru.eludia.products.mosgis.ws.soap.clients.WsGisServicesClient;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.services.GetStateResult;
 

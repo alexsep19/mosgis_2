@@ -15,7 +15,7 @@ import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.base.BaseTest;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationProposal.c;
-import ru.eludia.products.mosgis.ws.base.AbstactServiceAsync;
+import ru.eludia.products.mosgis.ws.soap.impl.base.AbstactServiceAsync;
 import ru.gosuslugi.dom.schema.integration.organizations_registry.ImportSubsidiaryRequest;
 import ru.gosuslugi.dom.schema.integration.organizations_registry.ImportForeignBranchRequest;
 

@@ -40,7 +40,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocStreet;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingEstate;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingStructure;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.db.ModelHolder;
 import com.github.junrar.Archive;
 import javax.ejb.EJB;
 import ru.eludia.products.mosgis.jmx.Fias;

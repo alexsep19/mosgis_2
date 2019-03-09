@@ -1,6 +1,6 @@
 package ru.eludia.products.mosgis.jms.gis.send;
 
-import ru.eludia.products.mosgis.ejb.wsc.GisRestStream;
+import ru.eludia.products.mosgis.ws.rest.clients.tools.GisRestStream;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
@@ -15,11 +15,11 @@ import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.tables.InsuranceProduct;
 import ru.eludia.products.mosgis.db.model.tables.InsuranceProductLog;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
-import ru.eludia.products.mosgis.ejb.UUIDPublisher;
-import ru.eludia.products.mosgis.ejb.wsc.RestGisFilesClient;
-import ru.eludia.products.mosgis.ejb.wsc.RestGisFilesClient.Context;
-import ru.eludia.products.mosgis.ejb.wsc.WsGisBillsClient;
+import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.jms.UUIDPublisher;
+import ru.eludia.products.mosgis.ws.rest.clients.RestGisFilesClient;
+import ru.eludia.products.mosgis.ws.rest.clients.RestGisFilesClient.Context;
+import ru.eludia.products.mosgis.ws.soap.clients.WsGisBillsClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.bills_service_async.Fault;

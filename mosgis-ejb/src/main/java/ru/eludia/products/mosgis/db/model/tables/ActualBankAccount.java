@@ -13,7 +13,7 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.voc.VocBic;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.db.ModelHolder;
 
 public class ActualBankAccount extends View {
     

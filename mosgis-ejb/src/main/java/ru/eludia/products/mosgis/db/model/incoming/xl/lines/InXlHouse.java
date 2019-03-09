@@ -19,7 +19,7 @@ import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.db.ModelHolder;
 
 public class InXlHouse extends EnTable {
     

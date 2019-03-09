@@ -26,7 +26,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocUnom;
 import ru.eludia.products.mosgis.db.model.voc.VocUnomBuf;
 import ru.eludia.products.mosgis.db.model.voc.VocUnom.c;
 import ru.eludia.products.mosgis.db.model.voc.VocUnomStatus;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.db.ModelHolder;
 
 @Startup
 @Singleton

@@ -15,7 +15,7 @@ import static ru.eludia.base.model.def.Def.NEW_UUID;
 import static ru.eludia.base.model.def.Num.ZERO;
 import ru.eludia.products.mosgis.db.model.voc.VocCharterObjectReason;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
-import ru.eludia.products.mosgis.ejb.wsc.RestGisFilesClient;
+import ru.eludia.products.mosgis.ws.rest.clients.RestGisFilesClient;
 import ru.eludia.products.mosgis.jms.gis.poll.GisPollExportCharterDataMDB;
 import ru.gosuslugi.dom.schema.integration.base.Attachment;
 import ru.gosuslugi.dom.schema.integration.base.AttachmentType;

@@ -30,8 +30,8 @@ import ru.eludia.base.model.Table;
 import static ru.eludia.products.mosgis.db.model.tables.Lock.i.STUCK_GIS_REQUESTS;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
-import ru.eludia.products.mosgis.ejb.UUIDPublisher;
+import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.jms.UUIDPublisher;
 
 @Startup
 @Singleton

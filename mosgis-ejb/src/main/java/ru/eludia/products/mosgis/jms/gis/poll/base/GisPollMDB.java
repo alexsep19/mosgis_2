@@ -7,7 +7,7 @@ import javax.ejb.EJB;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
-import ru.eludia.products.mosgis.ejb.UUIDPublisher;
+import ru.eludia.products.mosgis.jms.UUIDPublisher;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import ru.gosuslugi.dom.schema.integration.base.BaseAsyncResponseType;
 

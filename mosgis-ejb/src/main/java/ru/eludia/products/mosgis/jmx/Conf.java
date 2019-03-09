@@ -23,8 +23,8 @@ import static ru.eludia.base.DB.HASH;
 import ru.eludia.products.mosgis.db.model.tables.Setting;
 import ru.eludia.products.mosgis.db.model.tables.SettingValue;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
-import ru.eludia.products.mosgis.ejb.UUIDPublisher;
+import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.jms.UUIDPublisher;
 
 @Startup
 @Singleton

@@ -16,9 +16,9 @@ import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
-import ru.eludia.products.mosgis.ejb.UUIDPublisher;
-import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
+import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.jms.UUIDPublisher;
+import ru.eludia.products.mosgis.ws.soap.clients.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 
 @MessageDriven(activationConfig = {

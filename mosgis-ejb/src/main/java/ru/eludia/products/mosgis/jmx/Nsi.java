@@ -27,8 +27,8 @@ import ru.eludia.products.mosgis.db.model.incoming.nsi.InNsiItemStatsOverview;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiListGroup;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
-import ru.eludia.products.mosgis.ejb.UUIDPublisher;
+import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.jms.UUIDPublisher;
 import ru.eludia.products.mosgis.rest.ValidationException;
 
 @Startup

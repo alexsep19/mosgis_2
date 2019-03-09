@@ -12,13 +12,13 @@ import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.tables.AdditionalService;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.gosuslugi.dom.schema.integration.nsi_service_async.Fault;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
-import ru.eludia.products.mosgis.ejb.wsc.WsGisNsiClient;
+import ru.eludia.products.mosgis.ws.soap.clients.WsGisNsiClient;
 import ru.gosuslugi.dom.schema.integration.nsi.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiItemType;
 

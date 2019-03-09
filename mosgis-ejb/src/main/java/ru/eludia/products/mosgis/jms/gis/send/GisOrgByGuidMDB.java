@@ -13,8 +13,8 @@ import javax.jms.Queue;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
-import ru.eludia.products.mosgis.ejb.UUIDPublisher;
-import ru.eludia.products.mosgis.ejb.wsc.WsGisOrgCommonClient;
+import ru.eludia.products.mosgis.jms.UUIDPublisher;
+import ru.eludia.products.mosgis.ws.soap.clients.WsGisOrgCommonClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 
 @MessageDriven(activationConfig = {

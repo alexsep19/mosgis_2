@@ -21,8 +21,8 @@ import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.CharterFile;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
-import ru.eludia.products.mosgis.ejb.wsc.RestGisFilesClient;
+import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.ws.rest.clients.RestGisFilesClient;
 
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outExportHouseCharterFilesQueue")

@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.db.sql.gen.Get;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.db.ModelHolder;
 
 public abstract class UUIDMDB<T extends Table> extends TextMDB {
     

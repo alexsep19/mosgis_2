@@ -15,10 +15,10 @@ import ru.eludia.products.mosgis.db.model.tables.VotingProtocol;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocolFile;
 import ru.eludia.products.mosgis.db.model.tables.VotingProtocolFileLog;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
-import ru.eludia.products.mosgis.ejb.wsc.GisRestStream;
-import ru.eludia.products.mosgis.ejb.wsc.RestGisFilesClient;
-import ru.eludia.products.mosgis.ejb.wsc.RestGisFilesClient.Context;
+import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.ws.rest.clients.tools.GisRestStream;
+import ru.eludia.products.mosgis.ws.rest.clients.RestGisFilesClient;
+import ru.eludia.products.mosgis.ws.rest.clients.RestGisFilesClient.Context;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 
 @MessageDriven(activationConfig = {

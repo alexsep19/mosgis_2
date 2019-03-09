@@ -37,10 +37,10 @@ import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
-import ru.eludia.products.mosgis.ejb.UUIDPublisher;
-import ru.eludia.products.mosgis.ejb.wsc.RestGisFilesClient;
-import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
+import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.jms.UUIDPublisher;
+import ru.eludia.products.mosgis.ws.rest.clients.RestGisFilesClient;
+import ru.eludia.products.mosgis.ws.soap.clients.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.GisPollExportCharterStatusMDB;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
