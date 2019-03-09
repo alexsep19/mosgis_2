@@ -156,7 +156,7 @@
             <plugin>
                 <groupId>org.jvnet.jax-ws-commons</groupId>
                 <artifactId>jaxws-maven-plugin</artifactId>
-                <version>2.3</version>
+                <version>2.3</version>                                            
                 <executions>
                     <execution>
                         <goals>
@@ -190,7 +190,11 @@
                             <bindingFiles>
                                 <bindingFile>bindings.xjb</bindingFile>
                                 <bindingFile>wsdl/lib/hcs-bills-base.xsd</bindingFile>
+                                <bindingFile>wsdl/lib/hcs-nsi-base.xsd</bindingFile>
                             </bindingFiles>
+                            <xjcArgs>
+                              <xjcArg>-Xannotate</xjcArg>
+                            </xjcArgs>
                             <vmArgs>
                                 <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
                             </vmArgs>
@@ -226,6 +230,11 @@
                         <artifactId>webservices-api</artifactId>
                         <version>2.0</version>
                     </dependency>
+                    <dependency>
+                        <groupId>org.jvnet.jaxb2_commons</groupId>
+                        <artifactId>jaxb2-basics-annotate</artifactId>
+                        <version>1.0.2</version>
+                    </dependency>
                 </dependencies>
                 <configuration>
                     <sourceDestDir>${project.build.directory}/generated-sources/jaxws-wsimport</sourceDestDir>
@@ -249,26 +258,7 @@
       </systemPropertyVariables>
     </configuration>
 </plugin>
-            
-<plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-antrun-plugin</artifactId>
-    <version>1.8</version>
-    <executions>
-        <execution>
-            <phase>generate-sources</phase>
-            <goals>
-                <goal>run</goal>
-            </goals>
-            <configuration>
-                <tasks>
-                    <delete file="${project.build.directory}/generated-sources/jaxws-wsimport/ru/gosuslugi/dom/schema/integration/nsi_base/NsiElementFieldType.java" />
-                </tasks>
-            </configuration>
-        </execution>
-    </executions>
-</plugin>            
-            
+          
         </plugins>
     </build>
 
