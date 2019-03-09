@@ -35,7 +35,8 @@ public class RcContract extends EnTable {
 	LABEL                (Type.STRING, new Virt("'№' || contractnumber || ' от ' || TO_CHAR (signingdate, 'DD.MM.YYYY')"), "№/дата"),
 
 	ID_SERVICE_TYPE      (VocRcContractServiceTypes.class, VocRcContractServiceTypes.i.BILLING.asDef(), "Вид услуг"),
-
+        IS_BILLING           (Type.BOOLEAN, new Virt ("DECODE(\"ID_SERVICE_TYPE\", " + VocRcContractServiceTypes.i.BILLING.getId () + ",1,0)"),  "1, если РКО, иначе 0"),
+        
 	IS_ACCOUNTS          (Type.BOOLEAN, Bool.FALSE, "1, если Ведение лицевых счетов; иначе 0"),
 	IS_INVOICES          (Type.BOOLEAN, Bool.TRUE,  "1, если РЦ осуществляет формирование квитанций на оплату (ПД); иначе 0"),
 	IS_PROC_PAY          (Type.BOOLEAN, Bool.FALSE, "1, если РЦ осуществляет обработку поступивших платежей; иначе 0"),
@@ -44,7 +45,10 @@ public class RcContract extends EnTable {
 	IS_ALL_HOUSE         (Type.BOOLEAN, Bool.FALSE, "1, если РЦ доступны все объекты жилищного фонда; иначе 0"),
 
 	DDT_D_START          (Type.NUMERIC, 2, null, "Дата выставления платежных документов до (1..30 — конкретное число; 99 — последнее число)"),
-	DDT_D_START_NXT      (Type.BOOLEAN,    null, "1, если Дата выставления платежных документов до в следующем месяце; иначе 0")
+	DDT_D_START_NXT      (Type.BOOLEAN,    null, "1, если Дата выставления платежных документов до в следующем месяце; иначе 0"),
+
+        UUID_BNK_ACCT        (BankAccount.class,     "Платёжные реквизиты"),
+
         ;
 
         @Override

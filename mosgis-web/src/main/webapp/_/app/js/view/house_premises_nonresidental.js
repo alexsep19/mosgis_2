@@ -39,7 +39,7 @@ define ([], function () {
             },
 
             show: {
-                toolbar: data.is_passport_editable,
+                toolbar: data.is_premise_editable,
                 footer: true,
                 toolbarAdd: true,
                 toolbarEdit: false,

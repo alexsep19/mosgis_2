@@ -53,26 +53,34 @@ define ([], function () {
                 cach.label = 'уставе'
             }
             
-            switch (cach.id_ctr_status_gis) {
-                case 40:
-                    it._can.edit = 1
-                    cach.label = null
-                    break;
-                case 10:
-                case 20:
-                    cach.label = 'Управление домом не утверждено в ' + cach.label
-                    break;
-                case 70:
-                    cach.label = 'Управление домом заблокировано в ' + cach.label
-                    break;
-                case 90:
-                    cach.label = 'Управление домом отклонено в ' + cach.label
-                    break;
-                default:
-                    cach.label = null
-            }            
+            if (cach ['org.uuid'] == $_USER.uuid_org) {
+            
+                switch (cach.id_ctr_status_gis) {
+                    case 40:
+                        it._can.edit = 1
+                        cach.label = null
+                        break;
+                    case 10:
+                    case 20:
+                        cach.label = 'Управление домом не утверждено в ' + cach.label
+                        break;
+                    case 70:
+                        cach.label = 'Управление домом заблокировано в ' + cach.label
+                        break;
+                    case 90:
+                        cach.label = 'Управление домом отклонено в ' + cach.label
+                        break;
+                    default:
+                        cach.label = null
+                }
+                
+            }
+            else {
+                cach.label = null
+            }
 
             cach.click = function () {openTab ('/' + cach.type + '/' + cach.uuid)}
+        
         }
         
         if ($_USER.role.nsi_20_8 || data.is_under_nsi_20_8)

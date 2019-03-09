@@ -11,7 +11,7 @@ import static ru.eludia.base.model.Type.BOOLEAN;
 import static ru.eludia.base.model.Type.UUID;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.db.ModelHolder;
 
 public class VocNsi3 extends Table {
 

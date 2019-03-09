@@ -10,7 +10,7 @@ import javax.ejb.MessageDriven;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
 import ru.eludia.products.mosgis.jmx.NsiLocal;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.jms.base.TextMDB;
 
 @MessageDriven(activationConfig = {

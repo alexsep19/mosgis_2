@@ -25,7 +25,7 @@ import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.db.ModelHolder;
 
 @Startup
 @Singleton

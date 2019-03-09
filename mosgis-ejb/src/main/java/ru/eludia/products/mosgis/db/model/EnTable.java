@@ -1,5 +1,8 @@
 package ru.eludia.products.mosgis.db.model;
 
+import java.util.Date;
+import java.util.logging.Logger;
+import org.apache.poi.ss.usermodel.CellType;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
@@ -65,17 +68,127 @@ public abstract class EnTable extends Table {
 		return null;
 	    }
 
-	    s = cell.getStringCellValue();
-
-	    s = s.trim().replaceAll("\\D", "");
+	    if (cell.getCellTypeEnum() == CellType.NUMERIC) {
+		s = DB.to.String((long)cell.getNumericCellValue());
+	    } else {
+		s = cell.getStringCellValue();
+		if (DB.ok(s)) {
+		    s = s.trim().replaceAll("\\D", "");
+		}
+	    }
 
 	    if (!DB.ok(s)) {
 		return null;
 	    }
 	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
+	    throw new XLException("col: " + col + " " + ex.getMessage());
 	}
 
 	return DB.to.Long(s);
+    }
+
+    public static Object toString(XSSFRow row, int col, Object error) throws XLException {
+
+	Object result = toString(row, col);
+
+	if (result == null) {
+	    throw new XLException(error.toString());
+	}
+
+	return result;
+    }
+
+    public static Object toString(XSSFRow row, int col) throws XLException {
+
+	String s;
+
+	try {
+	    final XSSFCell cell = row.getCell(col);
+	    if (cell == null) {
+		return null;
+	    }
+
+	    if (cell.getCellTypeEnum() == CellType.NUMERIC) {
+		s = DB.to.String((long) cell.getNumericCellValue());
+	    } else {
+		s = cell.getStringCellValue();
+		if (DB.ok(s)) {
+		    s = s.trim();
+		}
+	    }
+
+	    if (!DB.ok(s)) {
+		return null;
+	    }
+	} catch (Exception ex) {
+	    throw new XLException("col: " + col + " " + ex.getMessage());
+	}
+
+	return DB.to.String(s);
+    }
+    public static Object toBool(XSSFRow row, int col, Object error) throws XLException {
+
+	Object result = toBool(row, col);
+
+	if (result == null) {
+	    throw new XLException(error.toString());
+	}
+
+	return result;
+    }
+
+    public static Object toBool(XSSFRow row, int col) throws XLException {
+
+	String s;
+
+	try {
+	    final XSSFCell cell = row.getCell(col);
+	    if (cell == null) {
+		return null;
+	    }
+
+	    s = cell.getStringCellValue().trim();
+
+	    if (!DB.ok(s)) {
+		return null;
+	    }
+	} catch (Exception ex) {
+	    throw new XLException("col: " + col + " " + ex.getMessage());
+	}
+
+	return s.toLowerCase().equals("да") ? 1 : s.toLowerCase().equals("нет") ? 0 : null;
+    }
+
+    public static Object toDate(XSSFRow row, int col, Object error) throws XLException {
+
+	Object result = toDate(row, col);
+
+	if (result == null) {
+	    throw new XLException(error.toString());
+	}
+
+	return result;
+    }
+
+    public static Object toDate(XSSFRow row, int col) throws XLException {
+
+	Date d;
+
+	try {
+	    final XSSFCell cell = row.getCell(col);
+	    if (cell == null) {
+		return null;
+	    }
+
+	    d = cell.getDateCellValue();
+
+	    if (!DB.ok(d)) {
+		return null;
+	    }
+	} catch (Exception ex) {
+	    throw new XLException("col: " + col + " " + ex.getMessage());
+	}
+
+	return d;
     }
 }

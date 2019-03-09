@@ -137,6 +137,11 @@ define ([], function () {
             it.url_reason = '/charter/' + it.uuid_charter
         } 
         
+        if (it.uuid_sr_contract) {
+            it.label_reason = 'Договор ресурсоснабжения ' + it ['sr_ctr.label']
+            it.url_reason = '/supply_resource_contract/' + it.uuid_sr_contract
+        } 
+
         it.persons = []
         if (it.uuid_person_customer) {        
             it.persons.push ({

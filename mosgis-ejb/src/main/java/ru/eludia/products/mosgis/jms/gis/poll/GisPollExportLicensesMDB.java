@@ -31,8 +31,8 @@ import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE
 import ru.eludia.products.mosgis.db.model.voc.VocDocumentStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocLicenseStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
-import ru.eludia.products.mosgis.ejb.UUIDPublisher;
-import ru.eludia.products.mosgis.ejb.wsc.WsGisLicenseClient;
+import ru.eludia.products.mosgis.jms.UUIDPublisher;
+import ru.eludia.products.mosgis.ws.soap.clients.WsGisLicenseClient;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;

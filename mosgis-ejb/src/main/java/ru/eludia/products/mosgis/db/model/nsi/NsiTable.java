@@ -30,7 +30,7 @@ import ru.eludia.products.mosgis.db.model.nsi.fields.NsiStringField;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi236;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiList;
 import static ru.eludia.products.mosgis.db.model.voc.VocPassportFields.PASSPORT_FIELDS_LIST_NSI_REGISTRY_NUMBER;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementFieldType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;

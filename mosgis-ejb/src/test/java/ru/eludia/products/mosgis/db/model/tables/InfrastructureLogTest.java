@@ -8,7 +8,7 @@ import org.junit.Test;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.products.mosgis.db.model.tables.base.BaseTest;
-import ru.eludia.products.mosgis.ws.base.AbstactServiceAsync;
+import ru.eludia.products.mosgis.ws.soap.impl.base.AbstactServiceAsync;
 import ru.gosuslugi.dom.schema.integration.infrastructure.ImportOKIRequest;
 import ru.gosuslugi.dom.schema.integration.infrastructure.ExportOKIRequest;
 

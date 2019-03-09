@@ -22,9 +22,6 @@ public interface ConfMBean {
 
     public String getPathFias ();
     public void   setPathFias (String s);
-
-    public String getPathOpenData ();
-    public void   setPathOpenData (String s);
     
     public String getWsGisFilesUrl ();
     public void   setWsGisFilesUrl (String s);    

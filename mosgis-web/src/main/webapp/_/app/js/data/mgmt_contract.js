@@ -24,8 +24,22 @@ define ([], function () {
             add_vocabularies (data, data)
 
             query ({type: 'mgmt_contracts'}, {}, function (d) {
-
+                            
                 var it = data.item = d.item
+
+                data.tb_bnk_accts = d.tb_bnk_accts
+
+                data.bnk_accts_actual = data.tb_bnk_accts.map (function (i) {return {
+                    id: i.uuid,
+                    text: 'Р/сч. ' + i.accountnumber + ', ' + i ['bank.namep'] +
+                        (i.uuid_org == it.uuid_org ? '' : ', владелец: ' + i ['org.label'])
+                }})
+
+                data.bnk_accts_set = !it.uuid_bnk_acct ? [] : [{
+                    id: it.uuid_bnk_acct,
+                    text: 'Р/сч. ' + it ['bank_acct.accountnumber'] + ', ' + it ['vc_bic.namep'] +
+                        (it ['bank_acct.uuid_org'] == it.uuid_org ? '' : ', владелец: ' + it ['org_bank_acct.label'])
+                }]              
                 
                 it.last_approve = d.last_approve
                 
@@ -107,6 +121,8 @@ define ([], function () {
                     }
 
                     it._can.update = it._can.cancel = it._can.edit
+                    
+                    it._can.set_bank_acct = it.id_ctr_status > 11
 
                 }
 

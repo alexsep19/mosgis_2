@@ -3,8 +3,10 @@ define ([], function () {
     return function (data, view) {
 
         var it = data.item
+        
+        it.service_type_label = data.vc_rc_ctr_service_types [it.id_service_type]
 
-        $('title').text ('Договор РЦ' + it.label)
+        $('title').text ('Договор РЦ ' + it.label)
 
         if (it ['out_soap.err_text']) {
 
@@ -34,7 +36,7 @@ define ([], function () {
 
             panels: [
 
-                {type: 'main', size: 400,
+                {type: 'main', size: 380,
 
                     tabs: {
 

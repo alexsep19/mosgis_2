@@ -68,6 +68,10 @@ define ([], function () {
     $_DO.annul_rc_contract_common = function (e) {
         use.block ('supply_resource_contract_annul_popup')
     }
+    
+    $_DO.set_bank_acct_rc_contract_common = function (e) {   
+        use.block ('bank_acct_select_popup')
+    }
 
     $_DO.choose_tab_rc_contract_common = function (e) {
 

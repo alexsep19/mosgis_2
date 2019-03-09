@@ -76,9 +76,10 @@ public class InXlSupplyResourceContractSubject extends EnTable {
             + " IF :NEW.err IS NOT NULL THEN RETURN; END IF; "
 
 	    + " BEGIN "
-	    + "  SELECT * INTO in_ctr FROM in_xl_sr_ctr WHERE uuid_xl = :NEW.uuid_xl AND err IS NULL AND code = :NEW.code_sr_ctr; "
-	    + "  EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Не удалось определить договор по иному коду ' || :NEW.code_sr_ctr);"
+	    + "  SELECT * INTO in_ctr FROM in_xl_sr_ctr WHERE uuid_xl = :NEW.uuid_xl AND code = :NEW.code_sr_ctr; "
+	    + "  EXCEPTION WHEN NO_DATA_FOUND THEN raise_application_error (-20000, 'Отсутствуют сведения по иному коду на вкладке \"Договоры ресурсоснабжения\"'); "
 	    + " END; "
+	    + " IF in_ctr.err IS NOT NULL THEN  raise_application_error (-20000, 'Некорректное значение на вкладке \"Договоры ресурсоснабжения\"'); END IF; "
 
 	    + " :NEW.uuid_sr_ctr := in_ctr.uuid; "
 
@@ -165,21 +166,8 @@ public class InXlSupplyResourceContractSubject extends EnTable {
     }
     
     private static void setFields (Map<String, Object> r, XSSFRow row, Map<String, Map<String, Object>> vocs) throws XLException {
-	try {
-	    final XSSFCell cell = row.getCell(0);
-	    if (cell == null) {
-		throw new XLException("Не указан Иной код договора (столбец A)");
-	    }
-	    final String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указан Иной код договора (столбец A)");
-	    }
-	    r.put(c.CODE_SR_CTR.lc(), s);
-	} catch (XLException ex) {
-	    throw ex;
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
+
+	r.put(c.CODE_SR_CTR.lc(), toString(row, 0, "Не указан Иной код договора (столбец A)"));
 
 	try {
 	    final XSSFCell cell = row.getCell(1);

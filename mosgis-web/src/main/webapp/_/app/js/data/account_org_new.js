@@ -55,14 +55,25 @@ define ([], function () {
         function get_ref () {
         
             switch ($_REQUEST.type) {
-                case 'mgmt_contract': return 'uuid_contract'
-                case 'charter':       return 'uuid_charter'
+                case 'mgmt_contract':            return 'uuid_contract'
+                case 'charter':                  return 'uuid_charter'
+                case 'supply_resource_contract': return 'uuid_sr_contract'
             }
-            
+
+        }
+        
+        function get_id_type () {
+        
+            switch ($_REQUEST.type) {
+                case 'mgmt_contract':            return 1
+                case 'charter':                  return 1
+                case 'supply_resource_contract': return 2
+            }
+
         }
         
         v [get_ref ()] = $_REQUEST.id
-        v.id_type = 1
+        v.id_type = get_id_type ()
         v.is_customer_org = 1
         
         query ({type: 'accounts', id: undefined, action: 'create'}, {data: v}, function (data) {

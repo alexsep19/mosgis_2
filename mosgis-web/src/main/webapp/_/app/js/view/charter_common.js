@@ -18,6 +18,8 @@ define ([], function () {
 
     return function (data, view) {
     
+        var it = data.item
+    
         vc_gis_customer_type = data.vc_gis_customer_type
     
         $_F5 = function (data) {
@@ -60,7 +62,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: data.item.last_termination ? 330 : 290},
+                {type: 'top', size: data.item.last_termination ? 360 : 310},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
@@ -110,6 +112,8 @@ define ([], function () {
                     {name: 'ddt_d_start_nxt', type: 'list', options: {items: nxt}},
                     {name: 'ddt_i_start_nxt', type: 'list', options: {items: nxt}},
 
+                    {name: 'uuid_bnk_acct', type: 'list', options: {items: data.bnk_accts_actual}},
+                    
             ],
 
             focus: -1,
@@ -119,6 +123,16 @@ define ([], function () {
                 clickOff ($('#label_org_customer'))
                 
                 if (data.item.id_ctr_status == 10 && !$('#docnum').prop ('disabled')) clickOn ($('#label_org_customer'), $_DO.open_orgs_charter_common)
+                
+                if (it._can.set_bank_acct) {
+
+                    $('#uuid_bnk_acct_div *')
+                        .css  ({cursor: 'pointer'})
+                        .attr ({title: 'Сменить платёжные реквизиты для данного договора'})
+
+                    clickOn ($('#uuid_bnk_acct_div input'), $_DO.set_bank_acct_charter_common)
+
+                }                                
                 
             })}
 

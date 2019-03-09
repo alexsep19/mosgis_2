@@ -13,7 +13,7 @@ import static ru.eludia.base.model.def.Blob.EMPTY_BLOB;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import static ru.eludia.base.model.def.Num.ZERO;
 import ru.eludia.products.mosgis.db.model.voc.VocContractDocType;
-import ru.eludia.products.mosgis.ejb.wsc.RestGisFilesClient;
+import ru.eludia.products.mosgis.ws.rest.clients.RestGisFilesClient;
 import ru.gosuslugi.dom.schema.integration.base.Attachment;
 import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
 import ru.gosuslugi.dom.schema.integration.house_management.BaseServiceType;

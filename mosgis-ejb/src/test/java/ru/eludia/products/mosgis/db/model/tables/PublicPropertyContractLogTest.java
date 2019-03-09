@@ -16,7 +16,7 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.base.BaseTest;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocPublicPropertyContractFileType;
-import ru.eludia.products.mosgis.ws.base.AbstactServiceAsync;
+import ru.eludia.products.mosgis.ws.soap.impl.base.AbstactServiceAsync;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportPublicPropertyContractRequest;
 
 public class PublicPropertyContractLogTest extends BaseTest {

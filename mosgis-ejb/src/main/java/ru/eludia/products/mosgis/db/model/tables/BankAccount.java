@@ -40,7 +40,7 @@ public class BankAccount extends EnTable {
 
     public BankAccount () {
         
-        super  ("tb_bnk_accts", "Платёжные реквизиты (расчётные счета)");
+        super  (TABLE_NAME, "Платёжные реквизиты (расчётные счета)");
         
         cols   (c.class);        
         
@@ -109,5 +109,6 @@ public class BankAccount extends EnTable {
         );
 */
     }
+    public static final String TABLE_NAME = "tb_bnk_accts";
 
 }

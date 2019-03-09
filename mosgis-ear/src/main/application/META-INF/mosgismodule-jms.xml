@@ -40,14 +40,6 @@
     <jndi-name>mosgis.inFiasQueue</jndi-name>
   </uniform-distributed-queue>  
 
-  <!-- очередь обработки выгрузок портала открытых данных -->
-  <!-- -->
-  <uniform-distributed-queue name="inOpenDataQueue">
-    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-    <jndi-name>mosgis.inOpenDataQueue</jndi-name>
-  </uniform-distributed-queue>  
-  <!-- -->
-
   <!-- очередь обработки запросов на импорт (списков) групп справочников НСИ -->
   <uniform-distributed-queue name="inNsiQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
@@ -83,19 +75,6 @@
     </delivery-params-overrides>
   </uniform-distributed-queue>    
   
-<!-- Импорт МКД из ГИС РД -->
-  <!-- Очередь запросов на запуск процесса в целом -->
-  <uniform-distributed-queue name="inRdHousesQueue">
-    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-    <jndi-name>mosgis.inRdHousesQueue</jndi-name>
-  </uniform-distributed-queue>
-  
-  <!-- Очередь запросов на импорт отдельного дома -->
-  <uniform-distributed-queue name="inRdHouseQueue">
-    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-    <jndi-name>mosgis.inRdHouseQueue</jndi-name>
-  </uniform-distributed-queue>
-
   <!-- очередь обработки запросов на импорт делегированных прав -->
   <uniform-distributed-queue name="inAccessRequestQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>

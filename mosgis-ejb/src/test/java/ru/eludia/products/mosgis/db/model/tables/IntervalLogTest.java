@@ -7,7 +7,7 @@ import javax.xml.bind.JAXBContext;
 import org.junit.Test;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.tables.base.BaseTest;
-import ru.eludia.products.mosgis.ws.base.AbstactServiceAsync;
+import ru.eludia.products.mosgis.ws.soap.impl.base.AbstactServiceAsync;
 import ru.gosuslugi.dom.schema.integration.volume_quality.ImportIntervalRequest;
 
 public class IntervalLogTest extends BaseTest {

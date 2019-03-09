@@ -19,7 +19,7 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import ru.eludia.products.mosgis.ejb.UUIDPublisher;
+import ru.eludia.products.mosgis.jms.UUIDPublisher;
 
 @Startup
 @Singleton

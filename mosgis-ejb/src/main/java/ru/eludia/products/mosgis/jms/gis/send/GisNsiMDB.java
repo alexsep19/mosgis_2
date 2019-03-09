@@ -14,8 +14,8 @@ import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.incoming.nsi.InNsiGroup;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiListGroup;
-import ru.eludia.products.mosgis.ejb.UUIDPublisher;
-import ru.eludia.products.mosgis.ejb.wsc.WsGisNsiCommonClient;
+import ru.eludia.products.mosgis.jms.UUIDPublisher;
+import ru.eludia.products.mosgis.ws.soap.clients.WsGisNsiCommonClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 

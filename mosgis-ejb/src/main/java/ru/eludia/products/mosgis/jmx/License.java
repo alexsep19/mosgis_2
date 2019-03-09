@@ -22,8 +22,8 @@ import ru.eludia.base.db.util.TypeConverter;
 import ru.eludia.products.mosgis.db.model.incoming.InLicenses;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
-import ru.eludia.products.mosgis.ejb.UUIDPublisher;
+import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.jms.UUIDPublisher;
 
 @Startup
 @Singleton

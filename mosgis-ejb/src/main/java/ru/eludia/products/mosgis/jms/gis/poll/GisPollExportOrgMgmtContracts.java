@@ -22,15 +22,15 @@ import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTypes;
-import ru.eludia.products.mosgis.ejb.wsc.RestGisFilesClient;
-import ru.eludia.products.mosgis.ejb.wsc.WsGisHouseManagementClient;
+import ru.eludia.products.mosgis.ws.rest.clients.RestGisFilesClient;
+import ru.eludia.products.mosgis.ws.soap.clients.WsGisHouseManagementClient;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 

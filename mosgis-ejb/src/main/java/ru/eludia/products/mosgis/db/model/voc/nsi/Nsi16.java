@@ -6,7 +6,7 @@ import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.View;
 import ru.eludia.base.model.Type;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.db.ModelHolder;
 
 public class Nsi16 extends View {
     

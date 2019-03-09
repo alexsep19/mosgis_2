@@ -86,7 +86,10 @@ public class SupplyResourceContract extends EnTable {
 	IS_ANNULED           (Type.BOOLEAN, new Virt("DECODE(\"REASONOFANNULMENT\",NULL,0,1)"), "1, если запись аннулирована; иначе 0"),
 
 	CONTRACTGUID         (Type.UUID, null, "Идентификатор версии ДРСО в ГИС ЖКХ"),
-	CONTRACTROOTGUID     (Type.UUID, null, "Идентификатор ДРСО в ГИС ЖКХ")
+	CONTRACTROOTGUID     (Type.UUID, null, "Идентификатор ДРСО в ГИС ЖКХ"),
+        
+        UUID_BNK_ACCT        (BankAccount.class, "Платёжные реквизиты"),
+        
         ;
 
         @Override
@@ -161,6 +164,11 @@ public class SupplyResourceContract extends EnTable {
                 + "DECLARE"
                 + " cnt NUMBER; "
                 + "BEGIN "
+                
+                + "IF INSERTING THEN BEGIN "
+                    + " SELECT COUNT(*), MIN(uuid) INTO cnt, :NEW.uuid_bnk_acct FROM vw_bnk_accts WHERE uuid_org_customer = :NEW.uuid_org;"
+                    + " IF cnt<>1 THEN :NEW.uuid_bnk_acct := NULL; END IF; "
+                + "END; END IF; "
 
                 + " IF :NEW.is_deleted = 0 THEN "
 

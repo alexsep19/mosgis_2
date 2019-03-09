@@ -9,7 +9,7 @@ import ru.eludia.base.DB;
 import ru.eludia.base.Model;
 import ru.eludia.base.model.def.Bool;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
 
 public class XmlUtils {

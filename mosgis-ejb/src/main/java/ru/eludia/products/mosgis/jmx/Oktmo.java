@@ -26,7 +26,7 @@ import javax.management.ObjectName;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.db.ModelHolder;
 
 @Startup
 @Singleton

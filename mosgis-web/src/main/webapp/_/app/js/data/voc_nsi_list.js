@@ -6,8 +6,6 @@ define ([], function () {
         
         var type = 
             parseInt (id) > 0 ? 'voc_nsi' : 
-//            /^rd_cols_\d+$/.test (id) ? 'voc_rd' : 
-//            /^rd_voc_\d+$/.test (id) ? 'voc_rd_voc' : 
             id
         
         if (!type || /[A-Z]$/.test (type)) return
@@ -69,43 +67,6 @@ define ([], function () {
                 label: 'Справочники организаций',
                 nodes: org_vocs
             })
-
-/*            
-            data.vc_nsi_list_group.unshift ({
-                name: '_RD',
-                label: 'Справочники ГИС РД',
-            })
-
-            var rdx = {};
-
-            $.each (data.vc_rd_list, function () { 
-                var  id  = this.id
-                this.id  = 'rd_cols_' + id
-                rdx [id] = this 
-            })
-            
-            $.each (data.vc_rd_list, function () { 
-                if (!this.parent) return
-                var p = rdx [this.parent]
-                if (!p.nodes) p.nodes = []
-                p.nodes.push (this)
-            })
-
-            data.vc_nsi_list.unshift ({
-                listgroup: '_RD',
-                id: 'rd_cols_1',
-                text: 'Список атрибутов МКД в ГИС РД',
-                nodes: rdx [1].nodes
-            })
-*/            
-            
-            
-            
-            
-            
-            
-            
-            
                                     
             var idx = {}; 
 
@@ -126,13 +87,7 @@ define ([], function () {
                 vc_nsi_list [this.id] = this.text
                 idx [this.listgroup].nodes.push (this)
             })
-/*            
-            $.each (data.vc_rd_cols, function () { 
-                var  id  = this.id
-                this.id  = 'rd_voc_' + id
-                data.vc_nsi_list_group [0].nodes.push (this)
-            })            
-*/            
+
             $('body').data ('vc_nsi_list', vc_nsi_list)
             
             done (data)

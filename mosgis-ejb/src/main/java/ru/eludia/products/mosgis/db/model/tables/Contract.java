@@ -74,6 +74,8 @@ public class Contract extends EnTable {
         REASONOFANNULMENT        (Type.STRING,         1000, null,    "Причина аннулирования"),
         IS_ANNULED               (Type.BOOLEAN,          new Virt ("DECODE(\"REASONOFANNULMENT\",NULL,0,1)"),  "1, если запись аннулирована, иначе 0"),
 
+        UUID_BNK_ACCT            (BankAccount.class,                  "Платёжные реквизиты"),
+
         ;
 
         @Override
@@ -83,7 +85,7 @@ public class Contract extends EnTable {
         
     public Contract () {
 
-        super ("tb_contracts", "Договоры");
+        super ("tb_contracts", "Договоры управления");
         cols   (c.class);        
 
         key   ("org_docnum", "uuid_org", "docnum");
@@ -171,6 +173,11 @@ public class Contract extends EnTable {
         + " cnt INTEGER := 0;"
                 
         + "BEGIN "
+                
+            + "IF INSERTING THEN BEGIN "
+                + " SELECT COUNT(*), MIN(uuid) INTO cnt, :NEW.uuid_bnk_acct FROM vw_bnk_accts WHERE uuid_org_customer = :NEW.uuid_org;"
+                + " IF cnt<>1 THEN :NEW.uuid_bnk_acct := NULL; END IF; "
+            + "END; END IF; "
 
             + "IF UPDATING "
             + " AND :NEW.id_ctr_status = " + VocGisStatus.i.PENDING_RQ_PLACING.getId ()
@@ -184,7 +191,8 @@ public class Contract extends EnTable {
             + " AND :OLD.id_ctr_status = :NEW.id_ctr_status "
             + " AND NVL (:OLD.id_log, '00')        = NVL (:NEW.id_log, '00') "
             + " AND NVL (:OLD.uuid_out_soap, '00') = NVL (:NEW.uuid_out_soap, '00') "
-            + " AND NVL (:OLD.contractguid, '00')  = NVL (:NEW.contractguid, '00') "                                        
+            + " AND NVL (:OLD.contractguid, '00')  = NVL (:NEW.contractguid, '00') "
+            + " AND NVL (:OLD.uuid_bnk_acct, '00') = NVL (:NEW.uuid_bnk_acct, '00') "
             + " AND NVL (:OLD.contractversionguid, '00') = NVL (:NEW.contractversionguid, '01') "
             + " AND NVL (:OLD.code_vc_nsi_54, '00') = NVL (:NEW.code_vc_nsi_54, '00') "
             + "THEN "

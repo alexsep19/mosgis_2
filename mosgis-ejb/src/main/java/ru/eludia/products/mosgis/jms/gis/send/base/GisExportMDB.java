@@ -13,8 +13,8 @@ import ru.eludia.base.model.Table;
 import static ru.eludia.base.model.def.Def.NOW;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
-import ru.eludia.products.mosgis.ejb.UUIDPublisher;
+import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.jms.UUIDPublisher;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 

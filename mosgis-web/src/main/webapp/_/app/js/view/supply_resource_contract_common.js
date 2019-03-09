@@ -28,7 +28,7 @@ define ([], function () {
         var is_on_ddt_header = hidden != Object.keys(is_on).length
         $('#tr_ddt_header').css({display: is_on_ddt_header ? 'table-row' : 'none'})
 
-        var s = 640 - hidden * 30 - (is_on_ddt_header? 0 : 60)
+        var s = 680 - hidden * 30 - (is_on_ddt_header? 0 : 60)
         var l = w2ui ['passport_layout']
         var t = l.get ('top')
         if (t.size != s) l.set ('top', {size: s})
@@ -46,6 +46,18 @@ define ([], function () {
         for (var s in is_active_input) {
             $(s).closest('td').toggle(is_active_input [s])
         }
+        
+        if (it._can.set_bank_acct) {
+
+            $('#uuid_bnk_acct_div *')
+                .css  ({cursor: 'pointer'})
+                .attr ({title: 'Сменить платёжные реквизиты для данного договора'})
+
+            clickOff ($('#uuid_bnk_acct_div input'))
+            clickOn ($('#uuid_bnk_acct_div input'), $_DO.set_bank_acct_supply_resource_contract_common)
+
+        }                
+        
     }
 
     return function (data, view) {
@@ -166,6 +178,9 @@ define ([], function () {
 
                 {name: 'ddt_n_start', type: 'list', options: {items: ddt_30_from}},
                 {name: 'ddt_n_start_nxt', type: 'list', options: {items: nxt}},
+
+                {name: 'uuid_bnk_acct', type: 'list', options: {items: data.bnk_accts_actual || []}},
+                
             ],
 
             focus: -1,

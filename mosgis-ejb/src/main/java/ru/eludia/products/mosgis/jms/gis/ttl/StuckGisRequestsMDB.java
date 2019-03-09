@@ -17,7 +17,7 @@ import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
-import ru.eludia.products.mosgis.ejb.ModelHolder;
+import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.jms.base.TextMDB;
 import ru.eludia.products.mosgis.jmx.TTLWatch;
 

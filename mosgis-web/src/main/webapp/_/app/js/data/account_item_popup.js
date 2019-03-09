@@ -1,6 +1,17 @@
 define ([], function () {
 
     var form_name = 'account_item_popup_form'
+    
+    function is_sr_ctr_premise (it) {
+    
+        if (!it.uuid_sr_contract) return false
+        
+        switch (it ['sr_ctr.id_customer_type']) {
+            case 1: case 4: return true
+            default:        return false
+        }
+    
+    }
 
     $_DO.load_premises_for_account_item_popup = function (e) {
 
@@ -25,17 +36,37 @@ define ([], function () {
 
         if (!uuid_house) return done ()
         
-        query ({type: 'premises', id: undefined}, {data: {uuid_house: uuid_house}}, function (d) {
+        var it = $('body').data ('data').item
+
+        if (is_sr_ctr_premise (it)) {
+
+            query ({type: 'supply_resource_contract_objects', id: undefined}, {limit: 100000, offset: 0, search: [{field: "uuid_sr_ctr", operator: "is", value: it.uuid_sr_contract}]}, function (d) {
+
+                for (k in d) premises = d [k].map (function (i) {return {
+                    id: i ['premise.id'],
+                    text: i ['premise.label'] + ' (' + i ['premise.totalarea'] + ' м\xB2)',
+                }})
+
+                done ()
+
+            })
+
+        }
+        else {
+
+            query ({type: 'premises', id: undefined}, {data: {uuid_house: uuid_house}}, function (d) {
+
+                for (k in d) premises = d [k].map (function (i) {return {
+                    id: i.id,
+                    text: i.label + ' (' + i.totalarea + ' м\xB2)',
+                }})
+
+                done ()
+
+            })
+
+        }
         
-            for (k in d) premises = d [k].map (function (i) {return {
-                id: i.id,
-                text: i.label + ' (' + i.totalarea + ' м\xB2)',
-            }})
-            
-            done ()
-
-        })
-
     }
 
     $_DO.update_account_item_popup = function (e) {
@@ -92,7 +123,8 @@ define ([], function () {
                 value:    it.uuid_contract
             })
             
-        }               
+        }
+        
         if (it.uuid_charter) {
         
             tia.type = 'charter_objects'
@@ -104,6 +136,19 @@ define ([], function () {
             })
             
         }   
+
+        if (it.uuid_sr_contract) {
+        
+            tia.type = 'supply_resource_contract_objects'
+            
+            p.search.push ({
+                field:    "uuid_sr_ctr",
+                operator: "is",
+                value:    it.uuid_sr_contract
+            })
+            
+        }                   
+        
         
         data.fias = []
         

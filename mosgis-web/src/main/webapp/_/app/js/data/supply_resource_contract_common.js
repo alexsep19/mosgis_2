@@ -76,6 +76,10 @@ define ([], function () {
     $_DO.terminate_supply_resource_contract_common = function (e) {
         use.block('supply_resource_contract_terminate_popup')
     }
+    
+    $_DO.set_bank_acct_supply_resource_contract_common = function (e) {
+        use.block ('bank_acct_select_popup')
+    }
 
     $_DO.choose_tab_supply_resource_contract_common = function (e) {
 

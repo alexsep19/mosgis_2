@@ -18,9 +18,15 @@ define ([], function () {
 
     return function (data, view) {
     
-        vc_gis_customer_type = data.vc_gis_customer_type
+        var it = data.item
     
-        $_F5 = function (data) {
+        vc_gis_customer_type = data.vc_gis_customer_type
+                
+        function bnk_accts (__read_only) {
+            return __read_only ? data.bnk_accts_set : data.bnk_accts_actual
+        }
+    
+        $_F5 = function (data) {        
         
             data.item.__read_only = data.__read_only
             
@@ -29,6 +35,8 @@ define ([], function () {
             r.label_org_customer = customer_label (vc_gis_customer_type [r.id_customer_type], r ['org_customer.label'])
             
             var f = w2ui [form_name]
+            
+            f.set ('uuid_bnk_acct', {options: {items: bnk_accts (data.__read_only)}})
             
             $.each (f.fields, function () {
             
@@ -58,8 +66,8 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 460},
-                {type: 'main', size: 400, 
+                {type: 'top', size: 495},
+                {type: 'main', size: 350, 
                     tabs: {
                         tabs:    [
                             {id: 'mgmt_contract_common_log', caption: 'История изменений'},
@@ -114,6 +122,8 @@ define ([], function () {
                     {name: 'ddt_m_end_nxt',   type: 'list', options: {items: nxt}},
                     {name: 'ddt_d_start_nxt', type: 'list', options: {items: nxt}},
                     {name: 'ddt_i_start_nxt', type: 'list', options: {items: nxt}},
+                    
+                    {name: 'uuid_bnk_acct', type: 'list', options: {items: data.bnk_accts_actual}},
 
             ],
 
@@ -125,7 +135,17 @@ define ([], function () {
                 
                 if (data.item.id_ctr_status == 10 && !$('#docnum').prop ('disabled')) clickOn ($('#label_org_customer'), $_DO.open_orgs_mgmt_contract_common)
                 
-                clickOn ($('#termination_file'), $_DO.download_mgmt_contract_common)                
+                clickOn ($('#termination_file'), $_DO.download_mgmt_contract_common)
+                
+                if (it._can.set_bank_acct) {
+
+                    $('#uuid_bnk_acct_div *')
+                        .css  ({cursor: 'pointer'})
+                        .attr ({title: 'Сменить платёжные реквизиты для данного договора'})
+
+                    clickOn ($('#uuid_bnk_acct_div input'), $_DO.set_bank_acct_mgmt_contract_common)
+
+                }                
                 
             })}
 
