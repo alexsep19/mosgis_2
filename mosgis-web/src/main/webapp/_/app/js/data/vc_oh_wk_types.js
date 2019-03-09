@@ -21,6 +21,11 @@ define ([], function () {
 
     }
 
+    $_DO.create_vc_oh_wk_types = function (e) {
+        $_SESSION.set ('record', {})
+        use.block ('vc_oh_wk_types_popup')
+    }
+
     return function (done) {
     
         var layout = w2ui ['vocs_layout']

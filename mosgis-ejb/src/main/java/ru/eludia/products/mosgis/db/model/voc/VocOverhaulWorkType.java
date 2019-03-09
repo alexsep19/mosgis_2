@@ -6,6 +6,7 @@ import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
+import static ru.eludia.base.model.Type.STRING;
 import ru.eludia.base.model.def.Num;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
@@ -21,18 +22,22 @@ public class VocOverhaulWorkType extends EnTable {
     
     public enum c implements EnColEnum {
         
-        GUID            (Type.UUID, null,        "Глобально-уникальный идентификатор элемента справочника"),
+        GUID                (Type.UUID,   null,      "Глобально-уникальный идентификатор элемента справочника"),
+        UNIQUENUMBER        (Type.STRING, null,      "Уникальный реестровый номер в ГИС"),
         
-        UUID_ORG        (VocOrganization.class,  "Организация"),
+        UUID_ORG            (VocOrganization.class,  "Организация"),
         
-        CODE            (Type.STRING,  20, null, "Код элемента справочника, уникальный в пределах справочника"),
-        SERVICENAME     (Type.STRING, 500,       "Наименование вида работ"),
-        ISACTUAL        (Type.BOOLEAN,     null, "Признак актуальности элемента справочника"),
-        CODE_VC_NSI_218 (Type.STRING,  20,       "Группа работ (НСИ 218)"),
+        CODE                (Type.STRING,  20, null, "Код элемента справочника, уникальный в пределах справочника"),
+        SERVICENAME         (Type.STRING, 500,       "Наименование вида работ"),
+        ISACTUAL            (Type.BOOLEAN,     null, "Признак актуальности элемента справочника"),
+        CODE_VC_NSI_218     (Type.STRING,  20,       "Группа работ (НСИ 218)"),
         
-        ID_STATUS       (VocAsyncEntityState.class, new Num (VocAsyncEntityState.i.PENDING.getId ()), "Статус синхронизации"),
+        ID_STATUS           (VocAsyncEntityState.class, new Num (VocAsyncEntityState.i.PENDING.getId ()), "Статус синхронизации"),
         
-        ID_LOG          (VocOverhaulWorkTypeLog.class, "Последнее событие редактирования")
+        ID_OWT_STATUS       (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус вида работ капитального ремонта с точки зрения mosgis"),
+        ID_OWT_STATUS_GIS   (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус вида работ капитального ремонта с точки зрения ГИС ЖКХ"),
+        
+        ID_LOG              (VocOverhaulWorkTypeLog.class, "Последнее событие редактирования")
         
         ;
         
@@ -95,46 +100,46 @@ public class VocOverhaulWorkType extends EnTable {
     }
     
     public enum Action {
+        
+        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING)
+        ;
+        
+        VocGisStatus.i nextStatus;
+        VocGisStatus.i okStatus;
+        VocGisStatus.i failStatus;
 
-	PLACING (VocGisStatus.i.PENDING_RP_PLACING, VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
-	EDITING (VocGisStatus.i.PENDING_RP_EDIT, VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_STATE),;
+        private Action (VocGisStatus.i nextStatus, VocGisStatus.i okStatus, VocGisStatus.i failStatus) {
+            this.nextStatus = nextStatus;
+            this.okStatus = okStatus;
+            this.failStatus = failStatus;
+        }
 
-	VocGisStatus.i nextStatus;
-	VocGisStatus.i okStatus;
-	VocGisStatus.i failStatus;
+        public VocGisStatus.i getNextStatus () {
+            return nextStatus;
+        }
 
-	private Action(VocGisStatus.i nextStatus, VocGisStatus.i okStatus, VocGisStatus.i failStatus) {
-	    this.nextStatus = nextStatus;
-	    this.okStatus = okStatus;
-	    this.failStatus = failStatus;
-	}
+        public VocGisStatus.i getFailStatus () {
+            return failStatus;
+        }
 
-	public VocGisStatus.i getNextStatus() {
-	    return nextStatus;
-	}
+        public VocGisStatus.i getOkStatus () {
+            return okStatus;
+        }
 
-	public VocGisStatus.i getFailStatus() {
-	    return failStatus;
-	}
+        public static Action forStatus (VocGisStatus.i status) {
+            switch (status) {
+                case PENDING_RQ_PLACING:   return PLACING;
+                default: return null;
+            }            
+        }
 
-	public VocGisStatus.i getOkStatus() {
-	    return okStatus;
-	}
+        public static Action forLogAction (VocAction.i a) {
+            switch (a) {
+                case APPROVE: return PLACING;
+                default: return null;
+            }
+        }
 
-	public static Action forStatus(VocGisStatus.i status) {
-	    switch (status) {
-	    case PENDING_RQ_PLACING:
-		return PLACING;
-	    case PENDING_RQ_EDIT:
-		return EDITING;
-	    case PENDING_RP_PLACING:
-		return PLACING;
-	    case PENDING_RP_EDIT:
-		return EDITING;
-	    default:
-		return null;
-	    }
-	}
     };
     
 }

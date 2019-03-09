@@ -28,7 +28,7 @@ define ([], function () {
             show: {
                 toolbar: true,
                 toolbarInput: false,
-                //toolbarAdd: !$_USER.role.admin,
+                toolbarAdd: $_USER.role.nsi_20_7,
                 footer: true,
             },
 
@@ -39,6 +39,8 @@ define ([], function () {
             ],
             
             url: '/mosgis/_rest/?type=voc_overhaul_work_types',
+
+            onAdd: $_DO.create_vc_oh_wk_types,
             
             //onDblClick: function (e) {
             //    openTab ('/vc_oh_wk_types/' + e.recid)

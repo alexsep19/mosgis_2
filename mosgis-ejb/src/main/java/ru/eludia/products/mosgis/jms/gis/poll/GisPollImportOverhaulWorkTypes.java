@@ -29,7 +29,7 @@ import ru.gosuslugi.dom.schema.integration.nsi_base.NsiItemType;
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class GisPollExportOverhaulWorkTypes extends GisPollMDB {
+public class GisPollImportOverhaulWorkTypes extends GisPollMDB {
 
     @EJB
     WsGisNsiClient wsGisNsiClient;
