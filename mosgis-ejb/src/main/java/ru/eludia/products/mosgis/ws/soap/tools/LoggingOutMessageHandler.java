@@ -85,8 +85,10 @@ public abstract class LoggingOutMessageHandler extends BaseLoggingMessageHandler
 
         SOAPMessage msg = messageContext.getMessage ();
         
-        MessageInfo messageInfo = new MessageInfo (messageContext);                        
-        
+        MessageInfo messageInfo = new MessageInfo (messageContext);        
+        byte [] bytes = toBytes (msg);
+        String s = getLoggedMessge (messageInfo, bytes, getCharSetName (msg));
+            
         if (messageInfo.isOut) {
             
             HeaderType rh = createRequestHeader (messageContext);
@@ -94,39 +96,26 @@ public abstract class LoggingOutMessageHandler extends BaseLoggingMessageHandler
             rh.setMessageGUID (getMessageGUID (messageContext).toString ());
             
             try {
-
                 AbstactServiceAsync.setRequestHeader (msg, rh);
-                                
             }
             catch (Exception ex) {
                 Logger.getLogger (LoggingOutMessageHandler.class.getName()).log (Level.SEVERE, null, ex);
             }
             
-            byte [] bytes = toBytes (msg);
-        
-            String s = getLoggedMessge (messageInfo, bytes, getCharSetName (msg));
-
             if (!"getState".equals (messageInfo.operation)) store (messageInfo, rh, s);
 
         }
         else {
             
-            if ("getState".equals (messageInfo.operation)) {
-                
-                byte [] bytes = toBytes (msg);
-
-                String s = getLoggedMessge (messageInfo, bytes, getCharSetName (msg));
-
-                ResultHeader resultHeader = AbstactServiceAsync.getResultHeader (msg);
-                
-                update (resultHeader, s);
-            
+            if ("getState".equals (messageInfo.operation)) {                
+                ResultHeader resultHeader = AbstactServiceAsync.getResultHeader (msg);                
+                update (resultHeader, s);            
             }            
             
         }
 
         return true;
-        
+
     }
-        
+
 }
