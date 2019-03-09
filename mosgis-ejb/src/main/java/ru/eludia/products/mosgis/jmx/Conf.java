@@ -159,16 +159,6 @@ public class Conf implements ConfMBean, ConfLocal {
 //        ch.check();
         set (VocSetting.i.PATH_FIAS, s);
     }
-
-    @Override
-    public String getPathOpenData () {
-        return get (VocSetting.i.PATH_OPENDATA);
-    }
-
-    @Override
-    public void setPathOpenData (String s) {
-        set (VocSetting.i.PATH_OPENDATA, s);
-    }
    
     @Override
     public String getWsGisNsiCommonUrl () {
