@@ -36,15 +36,17 @@ define ([], function () {
                 {field: 'code', caption: 'Код', size: 10},
                 {field: 'servicename', caption: 'Наименование', size: 10},
                 {field: 'code_vc_nsi_218', caption: 'Группа работ', size: 10, voc: data.vc_nsi_218},
+                {field: 'id_owt_status', caption: 'Статус', size: 10, voc: data.vc_gis_status},
+                {field: 'err_text', caption: 'Ошибка', size: 10}
             ],
             
             url: '/mosgis/_rest/?type=voc_overhaul_work_types',
 
             onAdd: $_DO.create_vc_oh_wk_types,
             
-            //onDblClick: function (e) {
-            //    openTab ('/vc_oh_wk_types/' + e.recid)
-            //},
+            onDblClick: function (e) {
+                //openTab ('/vc_oh_wk_types/' + e.recid)
+            },
 
         }).refresh ();
 

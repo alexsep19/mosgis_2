@@ -6,12 +6,15 @@ import java.util.UUID;
 import java.util.logging.Level;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
+import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import javax.jms.Queue;
 import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Table;
+import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOverhaulWorkType;
 import ru.eludia.products.mosgis.db.model.voc.VocOverhaulWorkTypeLog;
@@ -28,6 +31,7 @@ import ru.gosuslugi.dom.schema.integration.nsi_service_async.Fault;
 })
 public class ExportOverhaulWorkTypesMDB extends GisExportMDB <VocOverhaulWorkTypeLog> {
 
+    @EJB
     WsGisNsiClient wsGisNsiClient;
     
     @Resource (mappedName = "mosgis.outExportOverhaulWorkTypesQueue")
@@ -79,6 +83,10 @@ public class ExportOverhaulWorkTypesMDB extends GisExportMDB <VocOverhaulWorkTyp
         catch (Exception ex) {            
             logger.log (Level.SEVERE, "Cannot invoke WS", ex);            
             fail (db, action.toString (), action.getFailStatus (), ex, r);
+            db.update (VocOverhaulWorkType.class, HASH (
+                    "uuid", uuid,
+                    "id_status", VocAsyncEntityState.i.FAIL.getId ()
+            ));
             return;            
         }
         

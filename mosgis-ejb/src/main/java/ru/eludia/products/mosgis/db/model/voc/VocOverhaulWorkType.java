@@ -51,7 +51,6 @@ public class VocOverhaulWorkType extends EnTable {
         public boolean isLoggable () {
 
             switch (this) {
-                case UUID_ORG:
                 case ID_LOG:
                     return false;
                 default:

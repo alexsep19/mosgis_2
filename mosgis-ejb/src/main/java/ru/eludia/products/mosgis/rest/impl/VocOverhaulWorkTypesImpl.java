@@ -16,12 +16,16 @@ import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.InOverhaulWorkType;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocOverhaulWorkType;
+import ru.eludia.products.mosgis.db.model.voc.VocOverhaulWorkTypeLog;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.ValidationException;
@@ -53,9 +57,11 @@ public class VocOverhaulWorkTypesImpl extends BaseCRUD<VocOverhaulWorkType> impl
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
         
         Select select = ModelHolder.getModel ().select (VocOverhaulWorkType.class, "AS root", "*")
-                .toOne   (VocOrganization.class, "AS org", "label").on ()
-                .orderBy (VocOverhaulWorkType.c.CODE)
-                .limit   (p.getInt ("offset"), p.getInt ("limit"));
+                .toOne      (VocOrganization.class, "AS org", "label").on ()
+                .toMaybeOne (VocOverhaulWorkTypeLog.class, "AS log").on ()
+                .toMaybeOne (OutSoap.class, "err_text AS err_text").on ()
+                .orderBy    ("root.code")
+                .limit      (p.getInt ("offset"), p.getInt ("limit"));
         
         db.addJsonArrayCnt (job, select);
         
@@ -75,6 +81,8 @@ public class VocOverhaulWorkTypesImpl extends BaseCRUD<VocOverhaulWorkType> impl
     public JsonObject getVocs() {
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();
+        
+        VocGisStatus.addLiteTo(jb);
         
         try (DB db = ModelHolder.getModel ().getDb ()) {
             
@@ -144,6 +152,12 @@ public class VocOverhaulWorkTypesImpl extends BaseCRUD<VocOverhaulWorkType> impl
         job.add ("id", insertId.toString ());
         
         logAction (db, user, insertId, VocAction.i.CREATE);
+        
+        db.update (table, HASH (
+                EnTable.c.UUID, insertId,
+                VocOverhaulWorkType.c.ID_OWT_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+        ));
+        
         logAction (db, user, insertId, VocAction.i.APPROVE);
 
     });}

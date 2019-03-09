@@ -11,6 +11,8 @@ import javax.ejb.MessageDriven;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.ejb.ModelHolder;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
@@ -59,6 +61,9 @@ public class GisPollImportOverhaulWorkTypes extends GisPollMDB {
             for (NsiElementType nsiElement: nsiItem.getNsiElement ()) {
                 final Map<String, Object> h = VocOverhaulWorkType.toHASH (nsiElement); 
                 h.put ("uuid_org", r.get ("uuid_org"));
+                h.put ("id_status", VocAsyncEntityState.i.OK.getId ());
+                h.put ("id_owt_status", VocGisStatus.i.APPROVED.getId ());
+                h.put ("id_owt_status_gis", VocGisStatus.i.APPROVED.getId ());
                 items.add (h);
                 guids.add (h.get ("guid").toString ());
             }
