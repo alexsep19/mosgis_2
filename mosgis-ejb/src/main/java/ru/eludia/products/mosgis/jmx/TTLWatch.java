@@ -189,6 +189,9 @@ public class TTLWatch implements TTLWatchMBean {
             if (allTimers != null) for (Timer t: allTimers) if (t != null) t.cancel ();
             
         }
+        catch (NullPointerException ex) {
+            logger.log (Level.WARNING, "An obscure NPE during timerService.getAllTimers ()");
+        }
         catch (Exception ex) {
             logger.log (Level.SEVERE, "Cannot cancel timer", ex);
         }        
