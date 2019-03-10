@@ -14,13 +14,16 @@ public class FileSvcServlet extends HttpServlet {
     
     private class RestFileException extends Exception {}
     private class FieldValidationException extends RestFileException {}
-        
+    private class InvalidSizeException extends RestFileException {}
+    private class ExtensionException extends RestFileException {}
+         
     @Override
     protected void doPut (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        try {
+        try {            
+            if (request.getContentLengthLong () <= 0) throw new InvalidSizeException ();
             String fn = request.getHeader ("X-Upload-Filename");
-            if (fn == null || fn.isEmpty ()) throw new FieldValidationException ();
+            checkFileName (fn);
             response.setStatus (200);
             response.setHeader ("Location", "homemanagement/dc9441c7-312a-4210-b77f-ea368359795f");
             response.setHeader ("X-Upload-UploadID", "dc9441c7-312a-4210-b77f-ea368359795f");
@@ -31,6 +34,39 @@ public class FileSvcServlet extends HttpServlet {
             response.setHeader ("X-Upload-Error", ex.getClass ().getSimpleName ());
         }
 
+    }
+
+    public void checkFileName (String fn) throws FieldValidationException, ExtensionException {
+        logger.info ("fn=" + fn);
+        if (fn == null) throw new FieldValidationException ();
+        int pos = fn.lastIndexOf ('.');
+        if (pos < 1) throw new FieldValidationException ();
+        checkFileExt (fn.substring (pos + 1));
+    }
+
+    private void checkFileExt (String ext) throws ExtensionException {
+        ext = ext.toLowerCase ();
+        logger.info ("ext=" + ext);
+        switch (ext) {
+            case "pdf":
+            case "xls":
+            case "xlsx":
+            case "doc":
+            case "docx":
+            case "rtf":
+            case "jpg":
+            case "jpeg":
+            case "tif":
+            case "tiff":
+            case "zip":
+            case "xml":
+            case "rptdesign":
+            case "crt":
+            case "cer":
+                return;
+            default:
+                throw new ExtensionException ();
+        }
     }
 
     @Override
