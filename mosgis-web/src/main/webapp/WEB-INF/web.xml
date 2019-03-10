@@ -24,6 +24,16 @@
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
+
+    <servlet>
+        <servlet-name>FileSvcServlet</servlet-name>
+        <servlet-class>ru.eludia.products.mosgis.web.FileSvcServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FileSvcServlet</servlet-name>
+        <url-pattern>/ext-bus-file-store-service/rest/*</url-pattern>
+    </servlet-mapping>
+
     <servlet>
         <servlet-name>SvcServlet</servlet-name>
         <servlet-class>ru.eludia.products.mosgis.web.SvcServlet</servlet-class>
@@ -32,6 +42,7 @@
         <servlet-name>SvcServlet</servlet-name>
         <url-pattern>/svc/*</url-pattern>
     </servlet-mapping>
+    
     <session-config>
         <session-timeout>
             30
