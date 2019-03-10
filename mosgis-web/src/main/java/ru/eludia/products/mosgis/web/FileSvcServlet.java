@@ -6,9 +6,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.UUID;
 import java.util.logging.Level;
+import javax.ejb.EJB;
+import ru.eludia.products.mosgis.filestore.FileStoreLocal;
 
 public class FileSvcServlet extends HttpServlet {
+    
+    @EJB
+    FileStoreLocal back;
     
     private static final Logger logger = Logger.getLogger (FileSvcServlet.class.getName ());
     
@@ -24,9 +30,10 @@ public class FileSvcServlet extends HttpServlet {
             if (request.getContentLengthLong () <= 0) throw new InvalidSizeException ();
             String fn = request.getHeader ("X-Upload-Filename");
             checkFileName (fn);
+            UUID uuid = back.store (fn, request.getInputStream ());
             response.setStatus (200);
-            response.setHeader ("Location", "homemanagement/dc9441c7-312a-4210-b77f-ea368359795f");
-            response.setHeader ("X-Upload-UploadID", "dc9441c7-312a-4210-b77f-ea368359795f");
+            response.setHeader ("Location", "homemanagement/" + uuid);
+            response.setHeader ("X-Upload-UploadID", uuid.toString ());
         }
         catch (RestFileException ex) {
             logger.log (Level.WARNING, "Futile try to upload some file", ex);
