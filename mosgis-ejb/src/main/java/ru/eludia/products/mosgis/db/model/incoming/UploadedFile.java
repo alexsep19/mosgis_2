@@ -6,6 +6,7 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import static ru.eludia.base.model.def.Blob.EMPTY_BLOB;
+import ru.eludia.products.mosgis.db.model.tables.Sender;
 
 public class UploadedFile extends EnTable {
     
@@ -13,6 +14,7 @@ public class UploadedFile extends EnTable {
 
         LABEL          (Type.STRING, 1024,                  "Имя файла"),
 //        LEN            (Type.INTEGER,                       "Размер"),
+        UUID_SENDER    (Sender.class,           null,       "Поставщик информации"),
         BODY           (Type.BLOB,              EMPTY_BLOB, "Содержимое"),
         ;
 

@@ -7,6 +7,7 @@ import javax.ejb.Local;
 @Local
 public interface FileStoreLocal {
     
-    UUID store (String name, InputStream is);
-    
+    UUID getSenderUuid (String login, String password);
+    UUID store (UUID senderUuid, String name, InputStream is);
+
 }
