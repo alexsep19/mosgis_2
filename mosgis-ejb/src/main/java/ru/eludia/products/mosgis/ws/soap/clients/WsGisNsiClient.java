@@ -13,6 +13,7 @@ import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.voc.VocOverhaulWorkTypeLog;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ws.soap.tools.LoggingOutMessageHandler;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
@@ -20,6 +21,8 @@ import ru.gosuslugi.dom.schema.integration.base.GetStateRequest;
 import ru.gosuslugi.dom.schema.integration.nsi.ExportDataProviderNsiItemRequest;
 import ru.gosuslugi.dom.schema.integration.nsi.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.nsi.ImportAdditionalServicesRequest;
+import ru.gosuslugi.dom.schema.integration.nsi.ImportCapitalRepairWorkRequest;
+import ru.gosuslugi.dom.schema.integration.nsi.ImportCapitalRepairWorkType;
 import ru.gosuslugi.dom.schema.integration.nsi.ImportMunicipalServicesRequest;
 import ru.gosuslugi.dom.schema.integration.nsi.ImportOrganizationWorkType;
 import ru.gosuslugi.dom.schema.integration.nsi.ImportOrganizationWorksRequest;
@@ -168,6 +171,10 @@ logger.info ("rq = " + rq);
 
         return getPort (orgPPAGuid).importAdditionalServices (rq).getAck ();
         
+    }
+    
+    public AckRequest.Ack importCapitalRepairWork (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importCapitalRepairWork(VocOverhaulWorkTypeLog.toImportCapitalRepairWorRequest (r)).getAck ();
     }
     
 }
