@@ -493,6 +493,11 @@
     <jndi-name>mosgis.inBicQueue</jndi-name>
   </uniform-distributed-queue>
 
+  <!-- очередь запросов на импорт справочника критериев дифференциации -->
+  <uniform-distributed-queue name="inDiffQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.inDiffQueue</jndi-name>
+  </uniform-distributed-queue>
   
   
 
