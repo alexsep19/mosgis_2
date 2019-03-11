@@ -67,6 +67,17 @@ define ([], function () {
                 label: 'Справочники организаций',
                 nodes: org_vocs
             })
+            
+            var tariff_vocs = []            
+            if (one_of_roles (8, 10)) tariff_vocs.push ({
+                id: 'voc_differentiation',
+                text: 'Критерии дифференциации',
+            })            
+            if (tariff_vocs.length) data.vc_nsi_list_group.push ({
+                name: '_TARIFF',
+                label: 'Тарифы',
+                nodes: tariff_vocs
+            })                        
                                     
             var idx = {}; 
 

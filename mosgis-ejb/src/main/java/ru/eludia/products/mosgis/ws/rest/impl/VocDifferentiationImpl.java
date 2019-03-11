@@ -13,6 +13,8 @@ import ru.eludia.products.mosgis.db.model.voc.VocDifferentiationUsedFor;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.voc.VocDifferentiationValueKindType;
+import ru.eludia.products.mosgis.db.model.voc.VocNsiList;
 import ru.eludia.products.mosgis.db.model.voc.VocTariffCaseType;
 import ru.eludia.products.mosgis.jmx.DiffLocal;
 import ru.eludia.products.mosgis.rest.api.VocDifferentiationLocal;
@@ -35,7 +37,8 @@ public class VocDifferentiationImpl extends Base<VocDifferentiation> implements 
 
         db.addJsonArrays (job
                 
-            , m.select (VocDifferentiation.class, "AS root", "*")
+            , m.select (VocDifferentiation.class, "AS root", "*", VocDifferentiation.c.DIFFERENTIATIONCODE.lc () + " AS id")
+                .toMaybeOne (VocNsiList.class, "name").on ()
                 .orderBy (VocDifferentiation.c.DIFFERENTIATIONNAME)
                 
             , m.select (VocDifferentiationNsi268.class, "*")
@@ -47,6 +50,7 @@ public class VocDifferentiationImpl extends Base<VocDifferentiation> implements 
         );
         
         VocTariffCaseType.addTo (job);
+        VocDifferentiationValueKindType.addTo (job);
 
     });}
         
