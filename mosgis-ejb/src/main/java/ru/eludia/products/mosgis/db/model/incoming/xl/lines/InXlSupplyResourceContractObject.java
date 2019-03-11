@@ -75,48 +75,24 @@ public class InXlSupplyResourceContractObject extends EnTable {
 
 	r.put(c.CODE_SR_CTR.lc(), toString(row, 0, "Не указан Иной код договора (столбец A)"));
 
-        try {
-            final XSSFCell cell = row.getCell (2);
-            if (cell == null) throw new XLException ("Не указан адрес (столбец B)");
-            r.put (c.ADDRESS.lc (), cell.getStringCellValue ());
-        }
-        catch (Exception ex) {
-            throw new XLException(ex.getMessage());
-        }
+	r.put(c.ADDRESS.lc(), toString(row, 2, "Не указан Адрес (столбец C)"));
 
-        try {
-            final XSSFCell cell = row.getCell (3);
-            if (cell == null) throw new XLException ("Не указан UNOM (столбец D)");
-            r.put (c.UNOM.lc (), cell.getStringCellValue());
-        }
-        catch (XLException ex) {
-            throw ex;
-        }
-        catch (Exception ex) {
-            throw new XLException(ex.getMessage());
-        }
+
+	Object guid_or_unom = toString(row, 3, "Не указан UNOM (столбец D)");
 
 	try {
-	    final XSSFCell cell = row.getCell(4);
-	    if (cell == null) {
-		throw new XLException("Не указан Номер квартиры (помещения) / номер блока (столбец E)");
-	    }
-	    r.put(c.APARTMENTNUMBER.lc(), cell.getStringCellValue());
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
+	    UUID guid = UUID.fromString(guid_or_unom.toString());
+	    r.put(SupplyResourceContractObject.c.FIASHOUSEGUID.lc(), guid);
+	    r.put(c.UNOM.lc(), null);
+	} catch (IllegalArgumentException ex) {
+	    r.put(c.UNOM.lc(), guid_or_unom);
 	}
 
-	try {
-	    final XSSFCell cell = row.getCell(5);
-	    if (cell == null) {
-		throw new XLException("Не указан Номер комнаты(столбец F)");
-	    }
-	    r.put(c.ROOMNUMBER.lc(), cell.getStringCellValue());
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
+
+	r.put(c.APARTMENTNUMBER.lc(), toString(row, 4));
+
+	r.put(c.ROOMNUMBER.lc(), toString(row, 5));
+
     }
 
     public InXlSupplyResourceContractObject () {
@@ -164,10 +140,15 @@ public class InXlSupplyResourceContractObject extends EnTable {
 
 	    + " :NEW.uuid_sr_ctr := in_ctr.uuid; "
 
-            + "BEGIN "
-            + " SELECT fiashouseguid INTO :NEW.fiashouseguid FROM vc_unom WHERE unom=:NEW.unom; "
-            + " EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Не удалось однозначно определить GUID ФИАС по UNOM');"
-            + "END;"
+	    + " IF :NEW.fiashouseguid IS NOT NULL THEN BEGIN "
+	    + "   SELECT houseguid INTO :NEW.fiashouseguid FROM vc_buildings WHERE houseguid = :NEW.fiashouseguid; "
+	    + "   EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Не нашелся GUID ФИАС'); "
+	    + " END; END IF; "
+
+            + " IF :NEW.unom IS NOT NULL THEN BEGIN "
+            + "   SELECT fiashouseguid INTO :NEW.fiashouseguid FROM vc_unom WHERE unom = :NEW.unom; "
+            + "   EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Не удалось однозначно определить GUID ФИАС по UNOM');"
+            + " END; END IF; "
 
             + " EXCEPTION WHEN OTHERS THEN "
             + " :NEW.err := REPLACE(SUBSTR(SQLERRM, 1, 1000), 'ORA-20000: ', ''); "
