@@ -10,11 +10,11 @@
   <!-- очередь опроса статуса исходящих запросов на импорт юрлиц по ОГРН-->
   <uniform-distributed-queue name="outExportOrgQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-    <jndi-name>mosgis.outExportOrgQueue</jndi-name>
     <delivery-params-overrides>
         <time-to-deliver>2000</time-to-deliver>
         <redelivery-delay>10000</redelivery-delay>
     </delivery-params-overrides>
+    <jndi-name>mosgis.outExportOrgQueue</jndi-name>
   </uniform-distributed-queue>
   
   
@@ -29,11 +29,11 @@
   <!-- очередь опроса статуса исходящих запросов на импорт юрлиц по OrgRootEntityGUID -->
   <uniform-distributed-queue name="outExportOrgByGUIDQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-    <jndi-name>mosgis.outExportOrgByGUIDQueue</jndi-name>
     <delivery-params-overrides>
         <time-to-deliver>2000</time-to-deliver>
         <redelivery-delay>10000</redelivery-delay>
     </delivery-params-overrides>
+    <jndi-name>mosgis.outExportOrgByGUIDQueue</jndi-name>
   </uniform-distributed-queue>
   
   
@@ -47,11 +47,11 @@
   <!-- очередь опроса статуса исходящих запросов на импорт ДУ по организации-исполнителю -->
   <uniform-distributed-queue name="outExportOrgMgmtContractsQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-    <jndi-name>mosgis.outExportOrgMgmtContractsQueue</jndi-name>
     <delivery-params-overrides>
         <time-to-deliver>2000</time-to-deliver>
         <redelivery-delay>10000</redelivery-delay>
     </delivery-params-overrides>
+    <jndi-name>mosgis.outExportOrgMgmtContractsQueue</jndi-name>
   </uniform-distributed-queue>
  
   
@@ -67,11 +67,11 @@
   <!-- очередь опроса статуса исходящих запросов на импорт ДУ по организации-исполнителю -->
   <uniform-distributed-queue name="outExportOrgChartersQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-    <jndi-name>mosgis.outExportOrgChartersQueue</jndi-name>
     <delivery-params-overrides>
         <time-to-deliver>2000</time-to-deliver>
         <redelivery-delay>10000</redelivery-delay>
     </delivery-params-overrides>
+    <jndi-name>mosgis.outExportOrgChartersQueue</jndi-name>
   </uniform-distributed-queue>
 
                 
@@ -85,11 +85,11 @@
   <!-- очередь опроса статуса исходящих запросов на импорт справочника доплнительных услуг по организации-исполнителю -->
   <uniform-distributed-queue name="outExportOrgAddServicesQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-    <jndi-name>mosgis.outExportOrgAddServicesQueue</jndi-name>
     <delivery-params-overrides>
         <time-to-deliver>2000</time-to-deliver>
         <redelivery-delay>10000</redelivery-delay>
     </delivery-params-overrides>
+    <jndi-name>mosgis.outExportOrgAddServicesQueue</jndi-name>
   </uniform-distributed-queue>
 
 </weblogic-jms>

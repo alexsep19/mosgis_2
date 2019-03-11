@@ -4,21 +4,21 @@
  <!-- очередь обработки запросов на экспорт индивидуальных услуг лицевого счета -->
  <uniform-distributed-queue name="inAccountIndividualServicesQueue">
    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-   <jndi-name>mosgis.inAccountIndividualServicesQueue</jndi-name>
    <delivery-params-overrides>
        <time-to-deliver>2000</time-to-deliver>
        <redelivery-delay>10000</redelivery-delay>
    </delivery-params-overrides>
+   <jndi-name>mosgis.inAccountIndividualServicesQueue</jndi-name>
  </uniform-distributed-queue>
  
  <!-- очередь опроса статуса исходящих запросов на экспорт индивидуальных услуг лицевого счета -->
  <uniform-distributed-queue name="outExportAccountIndividualServicesQueue">
    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>    
-   <jndi-name>mosgis.outExportAccountIndividualServicesQueue</jndi-name>
    <delivery-params-overrides>
        <time-to-deliver>2000</time-to-deliver>
        <redelivery-delay>10000</redelivery-delay>
    </delivery-params-overrides>
+   <jndi-name>mosgis.outExportAccountIndividualServicesQueue</jndi-name>
  </uniform-distributed-queue>
 
 </weblogic-jms>

@@ -4,21 +4,21 @@
  <!-- очередь обработки запросов на экспорт планов по работам и услугам -->
  <uniform-distributed-queue name="inInfrastructuresQueue">
    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-   <jndi-name>mosgis.inInfrastructuresQueue</jndi-name>
    <delivery-params-overrides>
        <time-to-deliver>2000</time-to-deliver>
        <redelivery-delay>10000</redelivery-delay>
    </delivery-params-overrides>
+   <jndi-name>mosgis.inInfrastructuresQueue</jndi-name>
  </uniform-distributed-queue>
  
  <!-- очередь опроса статуса исходящих запросов на экспорт планов по работам и услугам -->
  <uniform-distributed-queue name="outExportInfrastructuresQueue">
    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>    
-   <jndi-name>mosgis.outExportInfrastructuresQueue</jndi-name>
    <delivery-params-overrides>
        <time-to-deliver>2000</time-to-deliver>
        <redelivery-delay>10000</redelivery-delay>
    </delivery-params-overrides>
+   <jndi-name>mosgis.outExportInfrastructuresQueue</jndi-name>
  </uniform-distributed-queue>
 
 </weblogic-jms>
