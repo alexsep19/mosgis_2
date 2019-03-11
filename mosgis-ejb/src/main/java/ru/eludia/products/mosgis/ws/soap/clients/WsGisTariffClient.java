@@ -22,11 +22,8 @@ import ru.gosuslugi.dom.schema.integration.tariff_service.TariffAsyncService;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class WsGisTariffClient {
-        
-//    private static final Logger logger = Logger.getLogger (WsGisServicesClient.class.getName ());
-    
-//    @HandlerChain (file="handler-chain-out.xml")
-    @HandlerChain (file="handler-chain-out-anon.xml")
+            
+    @HandlerChain (file="handler-chain-out.xml")
     @WebServiceRef(wsdlLocation = "META-INF/wsdl/tariff/hcs-tariff-service-async.wsdl")
     
     private TariffAsyncService service;

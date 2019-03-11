@@ -46,10 +46,40 @@ define ([], function () {
             add_vocabularies (data, {
                 vc_nsi_268: 1,
                 vc_diff_value_types: 1,
-                vc_diff_tariff: 1,
+                vc_tariff_types: 1,
             })
 
             data.records = dia2w2uiRecords (data.root)
+            
+            var idx = {}; 
+            
+            $.each (data.records, function () {
+                this.idx_tar = {}
+                this.idx_268 = {}
+                idx [this.id] = this
+            })
+            
+            $.each (data.vc_diff_tariff, function () {
+                idx [this.differentiationcode].idx_tar [this.id] = 1
+            })
+
+            $.each (data.vc_diff_nsi_268, function () {
+                idx [this.differentiationcode].idx_268 [this.code] = 1
+            })
+            
+            $.each (data.records, function () {
+            
+                this.tariffs = Object.keys (this.idx_tar)
+                    .map (function (id) {return data.vc_tariff_types [id]})
+                    .sort ()
+                    .join (', ')
+                    
+                this.nsi_268 = Object.keys (this.idx_268)
+                    .map (function (id) {return data.vc_nsi_268 [id]})
+                    .sort ()
+                    .join (', ')
+                    
+            })
 
             done (data)
 
