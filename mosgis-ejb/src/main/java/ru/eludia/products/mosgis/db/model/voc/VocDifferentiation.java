@@ -1,10 +1,14 @@
 package ru.eludia.products.mosgis.db.model.voc;
 
+import java.sql.SQLException;
+import java.util.Map;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
+import ru.gosuslugi.dom.schema.integration.tariff.ExportDifferentiationType;
 
 public class VocDifferentiation extends Table {
     
@@ -33,4 +37,20 @@ public class VocDifferentiation extends Table {
     
     }
     
+    static void store (DB db, ExportDifferentiationType diff) throws SQLException {
+        
+        final Map<String, Object> r = DB.HASH (
+            c.DIFFERENTIATIONCODE,      diff.getDifferentiationCode (),
+            c.DIFFERENTIATIONNAME,      diff.getDifferentiationName (),
+            c.DIFFERENTIATIONVALUEKIND, diff.getDifferentiationValueKind ().value (),
+            c.ISPLURAL,                 DB.ok (diff.isIsPlural ())
+        );
+        
+        ExportDifferentiationType.NsiItem nsiItem = diff.getNsiItem ();        
+        if (nsiItem != null) r.put (c.NSIITEM.lc (), diff.getNsiItem ().getRegistryNumber ());
+        
+        db.upsert (VocDifferentiation.class, r);
+        
+    }    
+
 }
