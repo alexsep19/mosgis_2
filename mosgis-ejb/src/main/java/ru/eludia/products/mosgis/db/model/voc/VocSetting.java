@@ -117,7 +117,7 @@ public class VocSetting extends Table {
         WS_RD_TMT_CONN ("ws.rd.timeout.connection", "Время ожидания подключения к сервису ГИС РД (NsiCommonAsyncService), мс", "1000"),
         WS_RD_TMT_RESP ("ws.rd.timeout.response", "Время ожидания подключения к сервису ГИС РД (NsiCommonAsyncService), мс", "1000"),
 
-        WS_GIS_TARIFF_URL ("ws.gis.tariff.url", "Endpoint URL сервиса обмена сведениями о тарифах ГИС ЖКХ (TariffAsyncService)", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-volume-quality-service/services/TariffAsync/"),
+        WS_GIS_TARIFF_URL ("ws.gis.tariff.url", "Endpoint URL сервиса обмена сведениями о тарифах ГИС ЖКХ (TariffAsyncService)", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-tariff-service/services/TariffAsync/"),
 	WS_GIS_TARIFF_TMT_CONN ("ws.gis.tariff.timeout.connection", "Время ожидания подключения к сервису обмена сведениями о тарифах ГИС ЖКХ (TariffAsyncService), мс", "10000"),
 	WS_GIS_TARIFF_TMT_RESP ("ws.gis.tariff.timeout.response", "Время ожидания подключения к сервису обмена сведениями об о тарифах ГИС ЖКХ (TariffAsyncService), мс", "10000"),
         

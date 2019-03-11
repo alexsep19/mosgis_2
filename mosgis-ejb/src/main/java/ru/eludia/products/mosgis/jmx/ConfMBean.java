@@ -37,6 +37,13 @@ public interface ConfMBean {
     public int    getWsGisBillsRespTimeout ();     
     public void   setWsGisBillsRespTimeout (int i);
     
+    public String getWsGisTariffsUrl ();
+    public void   setWsGisTariffsUrl (String s);    
+    public int    getWsGisTariffsConnTimeout ();     
+    public void   setWsGisTariffsConnTimeout (int i);
+    public int    getWsGisTariffsRespTimeout ();     
+    public void   setWsGisTariffsRespTimeout (int i);    
+    
     public String getWsGisLicensesUrl ();
     public void   setWsGisLicensesUrl (String s);    
     public int    getWsGisLicensesConnTimeout ();     
