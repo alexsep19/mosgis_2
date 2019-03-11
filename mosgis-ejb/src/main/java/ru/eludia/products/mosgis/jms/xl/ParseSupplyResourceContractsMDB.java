@@ -28,6 +28,8 @@ import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractObject;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractObjectLog;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubjectLog;
+import ru.eludia.products.mosgis.db.model.voc.VocPerson;
+import ru.eludia.products.mosgis.db.model.voc.VocPersonLog;
 import ru.eludia.products.mosgis.jms.xl.base.XLMDB;
 import ru.eludia.products.mosgis.jms.xl.base.XLException;
 
@@ -305,6 +307,7 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 	    XSSFRow row = sheet.getRow(i);
 	    Object label = EnTable.toString(row, 0, "Не указано Название(столбец A)");
 	    Object code = EnTable.toString(row, 1, "Не указан Код(столбец B)");
+	    code = code.toString().replace("\u00a0", " ").trim(); // nbsp;
 	    r.put(label.toString(), code.toString());
 	}
 
@@ -357,7 +360,12 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
     protected void completeOK (DB db, UUID parent) throws SQLException {
 
 	super.completeOK (db, parent);
-        
+
+	db.update(VocPerson.class, DB.HASH(
+	    VocPerson.c.UUID_XL, parent,
+	    EnTable.c.IS_DELETED, 0
+	), VocPerson.c.UUID_XL.lc());
+
         db.update (SupplyResourceContract.class, DB.HASH (
             SupplyResourceContract.c.UUID_XL, parent,
             EnTable.c.IS_DELETED, 0
@@ -410,7 +418,6 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 	);
 
 
-
 	db.update(SupplyResourceContract.class, HASH(
 	    SupplyResourceContract.c.ID_LOG, null,
 	    SupplyResourceContract.c.UUID_XL, parent
@@ -423,6 +430,20 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
             .select (SupplyResourceContract.class, "uuid")
             .where (SupplyResourceContract.c.UUID_XL, parent)
         );
+
+
+	db.update(VocPerson.class, HASH(
+	    VocPerson.c.ID_LOG, null,
+	    VocPerson.c.UUID_XL, parent
+	), VocPerson.c.UUID_XL.lc());
+	db.delete(m
+	    .select(VocPersonLog.class, "uuid")
+	    .where(VocPerson.c.UUID_XL, parent)
+	);
+	db.delete(m
+	    .select(VocPerson.class, "uuid")
+	    .where(VocPerson.c.UUID_XL, parent)
+	);
     }
 
     protected Map<String, Map<String, Object>> processVocLines(XSSFWorkbook wb, UUID uuid, DB db) throws XLException {
