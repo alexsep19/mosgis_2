@@ -2,6 +2,7 @@ package ru.eludia.products.mosgis.db.model.voc;
 
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.stream.Collectors;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
@@ -45,12 +46,24 @@ public class VocDifferentiation extends Table {
             c.DIFFERENTIATIONVALUEKIND, diff.getDifferentiationValueKind ().value (),
             c.ISPLURAL,                 DB.ok (diff.isIsPlural ())
         );
-        
-        ExportDifferentiationType.NsiItem nsiItem = diff.getNsiItem ();        
+
+        ExportDifferentiationType.NsiItem nsiItem = diff.getNsiItem ();
         if (nsiItem != null) r.put (c.NSIITEM.lc (), diff.getNsiItem ().getRegistryNumber ());
         
         db.upsert (VocDifferentiation.class, r);
         
+        db.dupsert (VocDifferentiationNsi268.class, 
+            DB.HASH (c.DIFFERENTIATIONCODE, diff.getDifferentiationCode ()), 
+            diff.getTariffKind ().stream ().map ((t) -> DB.HASH ("code", t.getCode ())).collect (Collectors.toList ()), 
+            "code"
+        );
+        
+        db.dupsert (VocDifferentiationUsedFor.class, 
+            DB.HASH (c.DIFFERENTIATIONCODE, diff.getDifferentiationCode ()), 
+            diff.getUsedFor ().stream ().map ((t) -> DB.HASH (VocTariffCaseType.c.ID, t.value ())).collect (Collectors.toList ()), 
+            VocTariffCaseType.c.ID.lc ()
+        );
+                                
     }    
 
 }

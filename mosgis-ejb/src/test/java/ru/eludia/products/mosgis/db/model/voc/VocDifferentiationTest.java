@@ -32,14 +32,8 @@ public class VocDifferentiationTest extends BaseTest {
         
         System.out.println (diffs.size ());
         
-        try (DB db = model.getDb ()) {
-            
-            for (ExportDifferentiationType diff: diffs) {
-                    
-                VocDifferentiation.store (db, diff);
-                
-            }
-                        
+        try (DB db = model.getDb ()) {            
+            for (ExportDifferentiationType diff: diffs) VocDifferentiation.store (db, diff);
         }        
         
     }
