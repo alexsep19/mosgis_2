@@ -33,20 +33,20 @@
     
     <module>
         <name>Workflow-org</name>
-	    <type>JMS</type>
+        <type>JMS</type>
         <path>META-INF/mosgismodule-org-jms.xml</path>
     </module>
     
     <module>
         <name>Workflow-infrastructure</name>
-	    <type>JMS</type>
+        <type>JMS</type>
         <path>META-INF/mosgismodule-infrastructure-jms.xml</path>
     </module>
 
     <module>
-		<name>Workflow-supply-resource-contracts</name>
-		<type>JMS</type>
-		<path>META-INF/mosgismodule-supply-resource-contracts-jms.xml</path>
+        <name>Workflow-supply-resource-contracts</name>
+        <type>JMS</type>
+        <path>META-INF/mosgismodule-supply-resource-contracts-jms.xml</path>
     </module>
 
     <module>
@@ -62,27 +62,27 @@
     </module>
 
     <module>
-		<name>Workflow-settlement-docs</name>
-		<type>JMS</type>
-		<path>META-INF/mosgismodule-settlement-docs-jms.xml</path>
+        <name>Workflow-settlement-docs</name>
+        <type>JMS</type>
+        <path>META-INF/mosgismodule-settlement-docs-jms.xml</path>
     </module>
 
     <module>
-		<name>Workflow-intervals</name>
-		<type>JMS</type>
-		<path>META-INF/mosgismodule-intervals-jms.xml</path>
+        <name>Workflow-intervals</name>
+        <type>JMS</type>
+        <path>META-INF/mosgismodule-intervals-jms.xml</path>
     </module>
 
     <module>
-		<name>Workflow-metering-devices</name>
-		<type>JMS</type>
-		<path>META-INF/mosgismodule-metering-devices-jms.xml</path>
+        <name>Workflow-metering-devices</name>
+        <type>JMS</type>
+        <path>META-INF/mosgismodule-metering-devices-jms.xml</path>
     </module>
 
     <module>
-		<name>Workflow-metering-device-values</name>
-		<type>JMS</type>
-		<path>META-INF/mosgismodule-metering-device-values-jms.xml</path>
+        <name>Workflow-metering-device-values</name>
+        <type>JMS</type>
+        <path>META-INF/mosgismodule-metering-device-values-jms.xml</path>
     </module>
     
     <module>
@@ -95,6 +95,12 @@
         <name>Workflow-overhaul-work-types</name>
         <type>JMS</type>
         <path>META-INF/mosgismodule-overhaul-work-types-jms.xml</path>
+    </module>
+    
+    <module>
+        <name>Workflow-tariff</name>
+        <type>JMS</type>
+        <path>META-INF/mosgismodule-tariff-jms.xml</path>
     </module>
     
 </weblogic-application>

@@ -34,7 +34,7 @@ public class Diff implements DiffMBean, DiffLocal {
     @EJB
     protected UUIDPublisher UUIDPublisher;
 
-    @Resource (mappedName = "mosgis.inDiffQueue")
+    @Resource (mappedName = "mosgis.inExportDiffQueue")
     Queue inDiffQueue;
     
     @PostConstruct

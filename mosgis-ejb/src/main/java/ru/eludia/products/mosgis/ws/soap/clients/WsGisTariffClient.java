@@ -45,7 +45,7 @@ public class WsGisTariffClient {
         return getPort (orgPPAGuid, UUID.randomUUID ()).getState (getStateRequest);
     }
     
-    public AckRequest.Ack exportTariffDifferentiation (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+    public AckRequest.Ack exportTariffDifferentiation (UUID orgPPAGuid, UUID messageGUID) throws Fault {
         final ExportTariffDifferentiationRequest rq = new ExportTariffDifferentiationRequest ();
         return getPort (orgPPAGuid, messageGUID).exportTariffDifferentiation (rq).getAck ();
     }

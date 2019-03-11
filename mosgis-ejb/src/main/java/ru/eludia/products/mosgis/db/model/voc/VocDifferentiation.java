@@ -38,7 +38,7 @@ public class VocDifferentiation extends Table {
     
     }
     
-    static void store (DB db, ExportDifferentiationType diff) throws SQLException {
+    public static void store (DB db, ExportDifferentiationType diff) throws SQLException {
         
         final Map<String, Object> r = DB.HASH (
             c.DIFFERENTIATIONCODE,      diff.getDifferentiationCode (),
