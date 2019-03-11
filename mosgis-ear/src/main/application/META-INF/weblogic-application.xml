@@ -1,90 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <weblogic-application xmlns="http://xmlns.oracle.com/weblogic/weblogic-application" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/javaee_5.xsd http://xmlns.oracle.com/weblogic/weblogic-application http://xmlns.oracle.com/weblogic/weblogic-application/1.7/weblogic-application.xsd">
     
-    <module><type>JMS</type>
+    <module>
         <name>Workflows</name>        
+    	<type>JMS</type>
         <path>META-INF/mosgismodule-jms.xml</path>        
     </module>
     
-    <module><type>JMS</type>
+    <module>
         <name>Workflow-working-lists</name>
+    	<type>JMS</type>
         <path>META-INF/mosgismodule-working-lists-jms.xml</path>        
     </module>
     
-    <module><type>JMS</type>
+    <module>
         <name>Workflow-working-plans</name>
+        <type>JMS</type>
         <path>META-INF/mosgismodule-working-plans-jms.xml</path>
     </module>
     
-    <module><type>JMS</type>
+    <module>
         <name>Workflow-reporting-periods</name>
+        <type>JMS</type>
         <path>META-INF/mosgismodule-reporting-periods-jms.xml</path>
     </module>
     
-    <module><type>JMS</type>
+    <module>
         <name>Workflow-in-xl</name>
+    	<type>JMS</type>
         <path>META-INF/mosgismodule-in-xl-jms.xml</path>
     </module>
     
-    <module><type>JMS</type>
+    <module>
         <name>Workflow-org</name>
+	    <type>JMS</type>
         <path>META-INF/mosgismodule-org-jms.xml</path>
     </module>
     
-    <module><type>JMS</type>
+    <module>
         <name>Workflow-infrastructure</name>
+	    <type>JMS</type>
         <path>META-INF/mosgismodule-infrastructure-jms.xml</path>
     </module>
 
     <module>
-	<type>JMS</type>
-	<name>Workflow-supply-resource-contracts</name>
-	<path>META-INF/mosgismodule-supply-resource-contracts-jms.xml</path>
+		<name>Workflow-supply-resource-contracts</name>
+		<type>JMS</type>
+		<path>META-INF/mosgismodule-supply-resource-contracts-jms.xml</path>
     </module>
 
-    <module><type>JMS</type>
+    <module>
         <name>Workflow-accounts</name>
+    	<type>JMS</type>
         <path>META-INF/mosgismodule-accounts-jms.xml</path>
     </module>
     
-    <module><type>JMS</type>
+    <module>
         <name>Workflow-account-individual-services</name>
+    	<type>JMS</type>
         <path>META-INF/mosgismodule-account-individual-services-jms.xml</path>
     </module>
 
     <module>
-	<type>JMS</type>
-	<name>Workflow-settlement-docs</name>
-	<path>META-INF/mosgismodule-settlement-docs-jms.xml</path>
+		<name>Workflow-settlement-docs</name>
+		<type>JMS</type>
+		<path>META-INF/mosgismodule-settlement-docs-jms.xml</path>
     </module>
 
     <module>
-	<type>JMS</type>
-	<name>Workflow-intervals</name>
-	<path>META-INF/mosgismodule-intervals-jms.xml</path>
+		<name>Workflow-intervals</name>
+		<type>JMS</type>
+		<path>META-INF/mosgismodule-intervals-jms.xml</path>
     </module>
 
     <module>
-	<type>JMS</type>
-	<name>Workflow-metering-devices</name>
-	<path>META-INF/mosgismodule-metering-devices-jms.xml</path>
+		<name>Workflow-metering-devices</name>
+		<type>JMS</type>
+		<path>META-INF/mosgismodule-metering-devices-jms.xml</path>
     </module>
 
     <module>
-	<type>JMS</type>
-	<name>Workflow-metering-device-values</name>
-	<path>META-INF/mosgismodule-metering-device-values-jms.xml</path>
+		<name>Workflow-metering-device-values</name>
+		<type>JMS</type>
+		<path>META-INF/mosgismodule-metering-device-values-jms.xml</path>
     </module>
     
     <module>
-        <type>JMS</type>
         <name>WS-RegOrgServiceAsync</name>
+        <type>JMS</type>
         <path>META-INF/ws-jms/mosgismodule-ws-reg-org-service-async-jms.xml</path>
     </module>
     
     <module>
-        <type>JMS</type>
         <name>Workflow-overhaul-work-types</name>
+        <type>JMS</type>
         <path>META-INF/mosgismodule-overhaul-work-types-jms.xml</path>
     </module>
     

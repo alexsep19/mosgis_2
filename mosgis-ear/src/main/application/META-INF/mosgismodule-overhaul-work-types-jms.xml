@@ -4,41 +4,41 @@
  <!-- очередь обработки запросов на импорт справочника видов работ капитального ремонта -->
  <uniform-distributed-queue name="inImportOverhaulWorkTypesQueue">
    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-   <jndi-name>mosgis.inImportOverhaulWorkTypesQueue</jndi-name>
    <delivery-params-overrides>
        <time-to-deliver>2000</time-to-deliver>
        <redelivery-delay>10000</redelivery-delay>
    </delivery-params-overrides>
+   <jndi-name>mosgis.inImportOverhaulWorkTypesQueue</jndi-name>
  </uniform-distributed-queue>
  
  <!-- очередь опроса статуса исходящих запросов на импорт справочника видов работ капитального ремонта -->
  <uniform-distributed-queue name="outImportOverhaulWorkTypesQueue">
    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>    
-   <jndi-name>mosgis.outImportOverhaulWorkTypesQueue</jndi-name>
    <delivery-params-overrides>
        <time-to-deliver>2000</time-to-deliver>
        <redelivery-delay>10000</redelivery-delay>
    </delivery-params-overrides>
+   <jndi-name>mosgis.outImportOverhaulWorkTypesQueue</jndi-name>
  </uniform-distributed-queue>
  
  <!-- очередь обработки запросов на экспорт справочника видов работ капитального ремонта -->
  <uniform-distributed-queue name="inExportOverhaulWorkTypesQueue">
    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-   <jndi-name>mosgis.inExportOverhaulWorkTypesQueue</jndi-name>
    <delivery-params-overrides>
        <time-to-deliver>2000</time-to-deliver>
        <redelivery-delay>10000</redelivery-delay>
    </delivery-params-overrides>
+   <jndi-name>mosgis.inExportOverhaulWorkTypesQueue</jndi-name>
  </uniform-distributed-queue>
  
  <!-- очередь опроса статуса исходящих запросов на экспорт справочника видов работ капитального ремонта -->
  <uniform-distributed-queue name="outExportOverhaulWorkTypesQueue">
    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>    
-   <jndi-name>mosgis.outExportOverhaulWorkTypesQueue</jndi-name>
    <delivery-params-overrides>
        <time-to-deliver>2000</time-to-deliver>
        <redelivery-delay>10000</redelivery-delay>
    </delivery-params-overrides>
+   <jndi-name>mosgis.outExportOverhaulWorkTypesQueue</jndi-name>
  </uniform-distributed-queue>
 
 </weblogic-jms>

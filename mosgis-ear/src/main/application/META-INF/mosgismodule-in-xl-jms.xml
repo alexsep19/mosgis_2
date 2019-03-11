@@ -4,19 +4,19 @@
 <!-- очередь обработки Excel-файлов со списками объектов договоров управления -->
 <uniform-distributed-queue name="inXlContractObjectsQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-    <jndi-name>mosgis.inXlContractObjectsQueue</jndi-name>
     <delivery-params-overrides>
        <redelivery-delay>10000</redelivery-delay>
     </delivery-params-overrides>
+    <jndi-name>mosgis.inXlContractObjectsQueue</jndi-name>
 </uniform-distributed-queue>
 
 <!-- очередь обработки Excel-файлов со списками паспортов ЖД -->
 <uniform-distributed-queue name="inXlHousesQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-    <jndi-name>mosgis.inXlHousesQueue</jndi-name>
     <delivery-params-overrides>
        <redelivery-delay>10000</redelivery-delay>
     </delivery-params-overrides>
+    <jndi-name>mosgis.inXlHousesQueue</jndi-name>
 </uniform-distributed-queue>
 
 </weblogic-jms>

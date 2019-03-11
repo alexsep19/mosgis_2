@@ -4,20 +4,20 @@
  <!-- очередь обработки запросов на экспорт расчетов -->
  <uniform-distributed-queue name="inSettlementDocsQueue">
    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-   <jndi-name>mosgis.inSettlementDocsQueue</jndi-name>
    <delivery-params-overrides>
        <time-to-deliver>2000</time-to-deliver>
        <redelivery-delay>10000</redelivery-delay>
    </delivery-params-overrides>
+   <jndi-name>mosgis.inSettlementDocsQueue</jndi-name>
  </uniform-distributed-queue>
  
  <!-- очередь опроса статуса исходящих запросов на экспорт расчетов -->
  <uniform-distributed-queue name="outExportSettlementDocsQueue">
    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>    
-   <jndi-name>mosgis.outExportSettlementDocsQueue</jndi-name>
    <delivery-params-overrides>
        <time-to-deliver>2000</time-to-deliver>
        <redelivery-delay>10000</redelivery-delay>
    </delivery-params-overrides>
+   <jndi-name>mosgis.outExportSettlementDocsQueue</jndi-name>
  </uniform-distributed-queue>
 </weblogic-jms>
