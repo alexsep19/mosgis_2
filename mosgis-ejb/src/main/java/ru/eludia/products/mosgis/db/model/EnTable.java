@@ -47,6 +47,8 @@ public abstract class EnTable extends Table {
         pk    (c.UUID);
     }
 
+    private static final Logger logger = Logger.getLogger(EnTable.class.getName());
+
     public static Object toNumeric(XSSFRow row, int col, Object error) throws XLException {
 
 	Object result = toNumeric(row, col);

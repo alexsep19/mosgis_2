@@ -21,6 +21,7 @@ import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractDimension;
 import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustomerType;
+import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.voc.nsi58.VocNsi58;
 import ru.eludia.products.mosgis.jms.xl.base.XLException;
 
@@ -33,17 +34,7 @@ public class InXlSupplyResourceContract extends EnTable {
 
 	CUSTOMER_TYPE           (Type.INTEGER, null, "Тип лица/организации: 1 - ФЛ, 2 - ЮЛ, 3 - ИП, 4 - Не указывать"),
 	// Заказчик ФЛ
-	SURNAME                 (Type.STRING, 256, null, "Фамилия"),
-	FIRSTNAME               (Type.STRING, 256, null, "Имя"),
-	PATRONYMIC              (Type.STRING, 256, null, "Отчество"),
-	IS_FEMALE               (Type.BOOLEAN, null, "Пол"),
-	BIRTHDATE               (Type.DATE,          null,       "Дата рождения"),
-	SNILS                   (Type.NUMERIC, 11,   null,       "СНИЛС"),
 	LABEL_VC_NSI_95         (Type.STRING, null, "Вид документа, удостоверяющего личность"),
-	CODE_VC_NSI_95          (Type.STRING,  20,   null,      "Код документа, удостоверяющего личность (НСИ 95)"),
-	SERIES                  (Type.STRING,  45,   null,      "Серия документа, удостоверяющего дичность"),
-	NUMBER_                 (Type.STRING,  45,   null,      "Номер документа, удостоверяющего личность"),
-	ISSUEDATE               (Type.DATE,          null,      "Дата выдачи документа, удостоверяющего личность"),
 
 	// Заказчик ЮЛ
 	OGRN                    (Type.NUMERIC, 15, null, "ОГРН"),
@@ -81,13 +72,12 @@ public class InXlSupplyResourceContract extends EnTable {
             r.put (c.ERR.lc (), ex.getMessage ());
         }
 
-	logger.info("InXlSupplyResourceContract.r=" + DB.to.json(r));
+	logger.log(Level.FINE, "InXlSupplyResourceContract.r=" + DB.to.json(r));
 
 	return r;
     }
 
     private static void setFields (Map<String, Object> r, XSSFRow row, Map<String, Map<String, Object>> vocs) throws XLException {
-	logger.log(Level.INFO, "InXlSupplyResourceContract.setFields start");
 
 	r.put(c.CODE.lc(), toString(row, 0, "Не указан Иной код договора (столбец A)"));
 
@@ -302,8 +292,6 @@ public class InXlSupplyResourceContract extends EnTable {
 	} catch (Exception ex) {
 	    throw new XLException("Некорректный тип ячейки Идентификатор договора ресурсоснабжения (столбец AR)");
 	}
-
-	logger.log(Level.INFO, "InXlSupplyResourceContract.setFields end");
     }
 
 
@@ -395,39 +383,45 @@ public class InXlSupplyResourceContract extends EnTable {
 
     private static void setFieldsCustomerPerson(Map<String, Object> r, XSSFRow row, Map<String, Map<String, Object>> vocs) throws XLException {
 
-	r.put(c.SURNAME.lc(), toString(row, 9, "Не указано Фамилия (столбец J)"));
+	r.put(VocPerson.c.SURNAME.lc(), toString(row, 9, "Не указано Фамилия (столбец J)"));
 
-	r.put(c.FIRSTNAME.lc(), toString(row, 10, "Не указано Имя (столбец K)"));
+	r.put(VocPerson.c.FIRSTNAME.lc(), toString(row, 10, "Не указано Имя (столбец K)"));
 
-	r.put(c.PATRONYMIC.lc(), toString(row, 11));
-
-
-	r.put(c.IS_FEMALE.lc(), toIsFemale(row, 12));
-
-	r.put(c.BIRTHDATE.lc(), toDate(row, 13));
-
-	r.put(c.SNILS.lc(), toNumeric(row, 14));
+	r.put(VocPerson.c.PATRONYMIC.lc(), toString(row, 11));
 
 
-	if (!DB.ok(r.get(c.SNILS.lc()))) {
+	r.put(VocPerson.c.IS_FEMALE.lc(), toIsFemale(row, 12));
 
-	    final Object label_vc_nsi_95 = toString (row, 15, "Не указан Вид документа (столбец P)");
+	r.put(VocPerson.c.BIRTHDATE.lc(), toDate(row, 13));
 
-	    r.put(c.LABEL_VC_NSI_95.lc(), label_vc_nsi_95);
+	r.put(VocPerson.c.SNILS.lc(), toNumeric(row, 14));
 
-	    final Object code = vocs.get("vc_nsi_95").get(label_vc_nsi_95);
 
-	    if (!DB.ok(code)) {
-		throw new XLException("Не удалось определить Вид документа (столбец P) по справочнику");
-	    }
+	final Object label_vc_nsi_95 = toString (row, 15);
 
-	    r.put(c.CODE_VC_NSI_95.lc(), code);
+	r.put(c.LABEL_VC_NSI_95.lc(), label_vc_nsi_95);
 
-	    r.put(c.SERIES.lc(), toString(row, 17));
+	final Object code = vocs.get("vc_nsi_95").get(label_vc_nsi_95);
 
-	    r.put(c.NUMBER_.lc(), toString(row, 16, "Не указан Номер документа (столбец Q)"));
+	if (DB.ok(r.get(c.LABEL_VC_NSI_95.lc())) && !DB.ok(code)) {
+	    throw new XLException("Не удалось определить Вид документа (столбец P) по справочнику");
+	}
 
-	    r.put(c.ISSUEDATE.lc(), toDate(row, 18, "Не указана Дата выдачи документа (столбец S)"));
+	r.put(VocPerson.c.CODE_VC_NSI_95.lc(), code);
+
+	r.put(VocPerson.c.SERIES.lc(), toString(row, 17));
+
+	r.put(VocPerson.c.NUMBER_.lc(), toString(row, 16));
+
+	r.put(VocPerson.c.ISSUEDATE.lc(), toDate(row, 18));
+
+	if (!DB.ok(r.get(VocPerson.c.SNILS.lc()))
+	    && (!DB.ok(r.get(VocPerson.c.CODE_VC_NSI_95.lc()))
+	    || !DB.ok(r.get(VocPerson.c.NUMBER_.lc()))
+	    || !DB.ok(r.get(VocPerson.c.ISSUEDATE.lc()))
+	    )
+	) {
+	    throw new XLException("Укажите или СНИЛС (столбец O), или реквизиты документа (столбцы P-S)");
 	}
     }
 
@@ -522,6 +516,27 @@ public class InXlSupplyResourceContract extends EnTable {
 	    add(col);
 	}
 
+	for (ColEnum o : VocPerson.c.values()) {
+
+	    VocPerson.c c = (VocPerson.c) o;
+
+	    if (!c.isToXlImport() || c == VocPerson.c.UUID_XL) {
+		continue;
+	    }
+
+	    Col col = c.getCol().clone();
+
+	    Def def = col.getDef();
+	    boolean isVirtual = def != null && def instanceof Virt;
+
+	    if (!isVirtual) {
+		col.setDef(null);
+		col.setNullable(true);
+	    }
+
+	    add(col);
+	}
+
         key ("uuid_xl", SupplyResourceContract.c.UUID_XL);
 
         trigger ("BEFORE INSERT", ""
@@ -533,6 +548,10 @@ public class InXlSupplyResourceContract extends EnTable {
             + " IF :NEW.err IS NOT NULL THEN RETURN; END IF; "
 
 	    + " IF :NEW.customer_type = 1 AND :NEW.uuid_person_customer IS NULL THEN BEGIN "
+	    + "   IF :NEW.label_vc_nsi_95 IS NOT NULL THEN BEGIN "
+	    + "     SELECT code INTO :NEW.code_vc_nsi_95 FROM vc_nsi_95 WHERE isactual = 1 AND code = :NEW.code_vc_nsi_95; "
+	    + "     EXCEPTION WHEN NO_DATA_FOUND THEN raise_application_error (-20000, 'Заказчик ФЛ: не найден тип документа  ' || :NEW.label_vc_nsi_95 ); "
+	    + "   END; END IF; "
 	    + "   IF :NEW.uuid_person_customer IS NULL THEN BEGIN "
 	    + "     SELECT uuid INTO :NEW.uuid_person_customer FROM vc_persons WHERE is_deleted = 0 "
 	    + "       AND surname        = :NEW.surname "
@@ -552,9 +571,6 @@ public class InXlSupplyResourceContract extends EnTable {
 	    + "       ; "
 	    + "       EXCEPTION WHEN NO_DATA_FOUND THEN :NEW.uuid_person_customer := NULL; "
 	    + "   END; END IF;"
-	    + "   IF :NEW.uuid_person_customer IS NULL THEN "
-	    + "     raise_application_error (-20000, 'Не удалось определить заказчика ФЛ'); "
-	    + "   END IF;"
 	    + " END; END IF; "
 
 	    + " IF :NEW.customer_type = 2 AND :NEW.uuid_org_customer IS NULL THEN BEGIN "
@@ -576,6 +592,8 @@ public class InXlSupplyResourceContract extends EnTable {
 
 	StringBuilder sb_insert = new StringBuilder();
 	StringBuilder sb_fields = new StringBuilder();
+	StringBuilder sb_p_fields = new StringBuilder();
+	StringBuilder sb_p_insert = new StringBuilder();
 
         for (SupplyResourceContract.c c: SupplyResourceContract.c.values ()) if (c.isToXlImport ()) {
 	    String col = c.lc();
@@ -587,22 +605,49 @@ public class InXlSupplyResourceContract extends EnTable {
 	    sb_insert.append(":NEW." + col);
         }
 
+	for (VocPerson.c c : VocPerson.c.values()) { if (c.isToXlImport()) {
+		String col = c.lc();
+
+		sb_p_fields.append(", ");
+		sb_p_fields.append(col);
+
+		sb_p_insert.append(", ");
+		sb_p_insert.append(":NEW." + col);
+	    }
+	}
+
         trigger ("BEFORE UPDATE", ""
 
             + "DECLARE"
 	    + " ctr         RAW (16); "
 	    + " log         RAW (16); "
+	    + " person_log  RAW (16); "
 	    + " usr         RAW (16); "
+	    + " org         RAW (16); "
+	    + " person      RAW (16); "
             + " PRAGMA AUTONOMOUS_TRANSACTION; "
             + "BEGIN "
 
             + " IF :NEW.err IS NOT NULL THEN :NEW.is_deleted := 1; END IF; "
             + " IF NOT (:OLD.is_deleted = 1 AND :NEW.is_deleted = 0) THEN RETURN; END IF; "
 
+	    + " SELECT uuid_user, uuid_org INTO usr, org FROM in_xl_files WHERE uuid = :NEW.uuid_xl; "
+
+	    + " IF :NEW.customer_type = 1 AND :NEW.uuid_person_customer IS NULL THEN BEGIN "
+	    + "   INSERT INTO vc_persons(uuid_org,is_deleted" + sb_p_fields + ") "
+	    + "   VALUES (org,0" + sb_p_insert + ") "
+	    + "   RETURNING uuid INTO :NEW.uuid_person_customer; "
+
+	    + "   INSERT INTO vc_persons__log (action, uuid_object, uuid_user) "
+	    + "   VALUES ('" + VocAction.i.IMPORT_FROM_FILE.getName() + "', :NEW.uuid_person_customer, usr) "
+	    + "   RETURNING uuid INTO person_log; "
+
+	    + "   UPDATE vc_persons SET id_log = person_log, is_deleted = 1 WHERE uuid = :NEW.uuid_person_customer; "
+	    + " END; END IF;"
+
 	    + " ctr := :NEW.uuid; "
 	    + " INSERT INTO tb_sr_ctr (uuid,is_deleted" + sb_fields + ") VALUES (ctr,0" + sb_insert + "); "
 
-	    + " SELECT uuid_user INTO usr FROM in_xl_files WHERE uuid = :NEW.uuid_xl; "
 	    + " INSERT INTO tb_sr_ctr__log (action, uuid_object, uuid_user) "
 	    + " VALUES ('" + VocAction.i.IMPORT_FROM_FILE.getName() + "', ctr, usr) "
 	    + " RETURNING uuid INTO log; "
