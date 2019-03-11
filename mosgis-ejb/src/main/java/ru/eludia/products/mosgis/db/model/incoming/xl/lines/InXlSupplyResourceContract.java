@@ -241,21 +241,7 @@ public class InXlSupplyResourceContract extends EnTable {
 	    throw new XLException(ex.getMessage());
 	}
 
-	try {
-	    final XSSFCell cell = row.getCell(36);
-	    if (cell == null) {
-		throw new XLException("Не указан Размещение информации о начислениях за коммунальные услуги осуществляет (столбец AK)");
-	    }
-	    final String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указан Размещение информации о начислениях за коммунальные услуги осуществляет (столбец AK)");
-	    }
-
-	    r.put(SupplyResourceContract.c.COUNTINGRESOURCE.lc(), s.toLowerCase().contains("рсо")? 1 : 0);
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
+	r.put(SupplyResourceContract.c.COUNTINGRESOURCE.lc(), toCountingResource(row, 36));
 
 	r.put(SupplyResourceContract.c.MDINFO.lc(), toBool(row, 37));
 
@@ -466,6 +452,17 @@ public class InXlSupplyResourceContract extends EnTable {
 	}
 
 	return result;
+    }
+
+    public static Object toCountingResource(XSSFRow row, int col) throws XLException {
+
+	Object result = toString(row, col);
+
+	if (result == null) {
+	    return result;
+	}
+
+	return result.toString().toLowerCase().contains("рсо")? 1 : 0;
     }
 
     private static void setFieldsDeadlines(Map<String, Object> r, XSSFRow row) throws XLException {

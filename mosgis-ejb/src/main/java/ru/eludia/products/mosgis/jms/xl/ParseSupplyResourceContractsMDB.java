@@ -22,6 +22,9 @@ import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceCo
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceContractObject;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceContractService;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceContractSubject;
+import ru.eludia.products.mosgis.db.model.tables.Block;
+import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
+import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractObject;
@@ -371,6 +374,19 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
             EnTable.c.IS_DELETED, 0
         ), SupplyResourceContract.c.UUID_XL.lc ());
 
+
+	db.update(ResidentialPremise.class, DB.HASH(
+	    "uuid_xl", parent,
+	    "is_deleted", 0
+	), "uuid_xl");
+	db.update(NonResidentialPremise.class, DB.HASH(
+	    "uuid_xl", parent,
+	    "is_deleted", 0
+	), "uuid_xl");
+	db.update(Block.class, DB.HASH(
+	    Block.c.UUID_XL, parent,
+	    EnTable.c.IS_DELETED, 0
+	), Block.c.UUID_XL.lc());
 	db.update(SupplyResourceContractObject.class, DB.HASH(
 	    SupplyResourceContractObject.c.UUID_XL, parent,
 	    EnTable.c.IS_DELETED, 0
@@ -402,21 +418,7 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 	    .where(SupplyResourceContractSubject.c.UUID_XL, parent)
 	);
 
-
-
-	db.update(SupplyResourceContractObject.class, HASH(
-	    SupplyResourceContractObject.c.ID_LOG, null,
-	    SupplyResourceContractObject.c.UUID_XL, parent
-	), SupplyResourceContractObject.c.UUID_XL.lc());
-	db.delete(m
-	    .select(SupplyResourceContractObjectLog.class, "uuid")
-	    .where(SupplyResourceContractObject.c.UUID_XL, parent)
-	);
-	db.delete(m
-	    .select(SupplyResourceContractObject.class, "uuid")
-	    .where(SupplyResourceContractObject.c.UUID_XL, parent)
-	);
-
+	cleanXlSupplyResourceContractObjects(db, parent);
 
 	db.update(SupplyResourceContract.class, HASH(
 	    SupplyResourceContract.c.ID_LOG, null,
@@ -431,7 +433,10 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
             .where (SupplyResourceContract.c.UUID_XL, parent)
         );
 
-
+	db.update(InXlSupplyResourceContract.class, HASH(
+	    SupplyResourceContract.c.UUID_PERSON_CUSTOMER, null,
+	    SupplyResourceContract.c.UUID_XL, parent
+	), SupplyResourceContract.c.UUID_XL.lc());
 	db.update(VocPerson.class, HASH(
 	    VocPerson.c.ID_LOG, null,
 	    VocPerson.c.UUID_XL, parent
@@ -521,6 +526,38 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 	}
 
         if (!isOk) throw new XLException ();
+    }
+
+    private void cleanXlSupplyResourceContractObjects(DB db, UUID parent) throws SQLException {
+
+	final Model m = db.getModel();
+
+	db.delete(m
+	    .select(ResidentialPremise.class, "uuid")
+	    .where("uuid_xl", parent)
+	);
+	db.delete(m
+	    .select(NonResidentialPremise.class, "uuid")
+	    .where("uuid_xl", parent)
+	);
+	db.delete(m
+	    .select(Block.class, "uuid")
+	    .where(Block.c.UUID_XL, parent)
+	);
+
+
+	db.update(SupplyResourceContractObject.class, HASH(
+	    SupplyResourceContractObject.c.ID_LOG, null,
+	    SupplyResourceContractObject.c.UUID_XL, parent
+	), SupplyResourceContractObject.c.UUID_XL.lc());
+	db.delete(m
+	    .select(SupplyResourceContractObjectLog.class, "uuid")
+	    .where(SupplyResourceContractObject.c.UUID_XL, parent)
+	);
+	db.delete(m
+	    .select(SupplyResourceContractObject.class, "uuid")
+	    .where(SupplyResourceContractObject.c.UUID_XL, parent)
+	);
     }
 
 }

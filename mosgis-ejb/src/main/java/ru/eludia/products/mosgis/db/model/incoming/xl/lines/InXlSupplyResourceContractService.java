@@ -265,7 +265,7 @@ public class InXlSupplyResourceContractService extends EnTable {
 	    + "    AND NVL(apartmentnumber, '00') = NVL(:NEW.apartmentnumber, '00') "
 	    + "    AND NVL(roomnumber, '00')      = NVL(:NEW.roomnumber, '00') "
 	    + " ; "
-	    + "  EXCEPTION WHEN NO_DATA_FOUND THEN raise_application_error (-20000, 'Отсутствуют сведения по иному коду на вкладке \"Объекты жилищного фонда\"'); "
+	    + "  EXCEPTION WHEN NO_DATA_FOUND THEN raise_application_error (-20000, 'Отсутствуют сведения на вкладке \"Объекты жилищного фонда\"'); "
 	    + " END; "
 	    + " IF in_ctr_obj.err IS NOT NULL THEN raise_application_error (-20000, 'Некорректное значение на вкладке \"Объекты жилищного фонда\"'); END IF; "
 	    + " :NEW.uuid_sr_ctr_obj := in_ctr_obj.uuid; "
