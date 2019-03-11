@@ -27,7 +27,7 @@ import ru.gosuslugi.dom.schema.integration.tariff.ExportDifferentiationType;
 import ru.gosuslugi.dom.schema.integration.tariff.GetStateResult;
 
 @MessageDriven(activationConfig = {
- @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outExportWorkingPlansQueue")
+ @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outExportDiffQueue")
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })

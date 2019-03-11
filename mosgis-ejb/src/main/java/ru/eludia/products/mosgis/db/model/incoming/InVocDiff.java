@@ -30,7 +30,7 @@ public class InVocDiff extends Table {
         super ("in_" + VocDifferentiation.TABLE_NAME, "Запросы на импорт справочника критериев дифференциации");
         cols  (InVocDiff.c.class);        
         pk    (c.UUID);
-/*        
+
         trigger ("BEFORE UPDATE",                 
             "BEGIN "
               + "  IF :NEW.IS_OVER = 1 AND :OLD.IS_OVER = 0 THEN "
@@ -38,6 +38,8 @@ public class InVocDiff extends Table {
               + "  END IF;"
             + "END;"     
         );
+        
+        /*        
         
         trigger ("AFTER UPDATE",                 
             "BEGIN "
