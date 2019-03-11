@@ -30,6 +30,9 @@ public class MosGisModelTest {
 
     @Test
     public void testMethod () throws SQLException {
+        m.getTables ().stream ().map ((t) -> t.getName ()).sorted ().forEach ((t) -> {
+            System.out.println ("table/view: " + t);
+        });
         m.update ();
     }
     
