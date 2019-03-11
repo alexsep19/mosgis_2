@@ -4,31 +4,31 @@
  <!-- очередь обработки запросов на экспорт перечней работ и услуг -->
  <uniform-distributed-queue name="inWorkingListsQueue">
    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-   <jndi-name>mosgis.inWorkingListsQueue</jndi-name>
    <delivery-params-overrides>
        <time-to-deliver>2000</time-to-deliver>
        <redelivery-delay>10000</redelivery-delay>
    </delivery-params-overrides>
+   <jndi-name>mosgis.inWorkingListsQueue</jndi-name>
  </uniform-distributed-queue>
  
  <!-- очередь опроса статуса исходящих запросов на экспорт перечней работ и услуг -->
  <uniform-distributed-queue name="outExportWorkingListsQueue">
    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>    
-   <jndi-name>mosgis.outExportWorkingListsQueue</jndi-name>
    <delivery-params-overrides>
        <time-to-deliver>2000</time-to-deliver>
        <redelivery-delay>10000</redelivery-delay>
    </delivery-params-overrides>
+   <jndi-name>mosgis.outExportWorkingListsQueue</jndi-name>
  </uniform-distributed-queue> 
  
  <!-- очередь опроса статуса исходящих запросов на импорт перечней работ и услуг -->
  <uniform-distributed-queue name="outImportWorkingListsQueue">
    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>    
-   <jndi-name>mosgis.outImportWorkingListsQueue</jndi-name>
    <delivery-params-overrides>
        <time-to-deliver>2000</time-to-deliver>
        <redelivery-delay>10000</redelivery-delay>
    </delivery-params-overrides>
+   <jndi-name>mosgis.outImportWorkingListsQueue</jndi-name>
  </uniform-distributed-queue>
 
 </weblogic-jms>

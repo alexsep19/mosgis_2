@@ -4,21 +4,21 @@
  <!-- очередь обработки запросов на экспорт приборов учёта -->
  <uniform-distributed-queue name="inExportMeteringDeviceValuesQueue">
    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-   <jndi-name>mosgis.inExportMeteringDeviceValuesQueue</jndi-name>
    <delivery-params-overrides>
        <time-to-deliver>2000</time-to-deliver>
        <redelivery-delay>10000</redelivery-delay>
    </delivery-params-overrides>
+   <jndi-name>mosgis.inExportMeteringDeviceValuesQueue</jndi-name>
  </uniform-distributed-queue>
  
  <!-- очередь опроса статуса исходящих запросов на экспорт приборов учёта -->
  <uniform-distributed-queue name="outExportMeteringDeviceValuesQueue">
    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name> 
-   <jndi-name>mosgis.outExportMeteringDeviceValuesQueue</jndi-name>
    <delivery-params-overrides>
        <time-to-deliver>2000</time-to-deliver>
        <redelivery-delay>10000</redelivery-delay>
    </delivery-params-overrides>
+   <jndi-name>mosgis.outExportMeteringDeviceValuesQueue</jndi-name>
  </uniform-distributed-queue>
 
 </weblogic-jms>

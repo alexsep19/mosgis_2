@@ -7,3 +7,8 @@
 nb-configuration.xml
 /mosgis-web/src/main/webapp/_/app/js/_.js
 /mosgis-web/src/main/webapp/_/libs/mosgis/mosgis.css
+
+*.project
+*.settings
+*.classpath
+bin
