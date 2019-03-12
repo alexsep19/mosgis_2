@@ -204,7 +204,7 @@
                         <id>wsimport-generate-gis-zhkh-services</id>
                         <phase>generate-sources</phase>
                     </execution>
-                    
+<!--                    
                     <execution>
                         <goals>
                             <goal>wsimport</goal>
@@ -225,25 +225,7 @@
                         <id>wsimport-generate-web-services</id>
                         <phase>generate-sources</phase>
                     </execution>
-<!--                    
-                    <execution>
-                        <goals>
-                            <goal>wsimport</goal>
-                        </goals>
-                        <configuration>
-                            <wsdlFiles>
-                                <wsdlFile>hcs-house-management-service-async.wsdl</wsdlFile>
-                            </wsdlFiles>
-                            <vmArgs>
-                                <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
-                            </vmArgs>
-                            <staleFile>${project.build.directory}/jaxws/stale/hcs-house-management-service-async.stale</staleFile>
-                        </configuration>
-                        <id>wsimport-generate-hcs-house-management-service-async</id>
-                        <phase>generate-sources</phase>
-                    </execution>
 -->                    
-                    
                 </executions>
                 <dependencies>
                     <dependency>

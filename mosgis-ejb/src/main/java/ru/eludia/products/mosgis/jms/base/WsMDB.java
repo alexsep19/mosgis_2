@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
@@ -34,9 +35,9 @@ import ru.eludia.products.mosgis.db.model.ws.WsMessages;
 import ru.eludia.products.mosgis.util.StringUtils;
 import ru.eludia.products.mosgis.ws.soap.impl.base.Fault;
 import ru.eludia.products.mosgis.ws.soap.impl.base.AbstactServiceAsync;
-import ru.mos.gkh.gis.schema.integration.base.BaseAsyncResponseType;
-import ru.mos.gkh.gis.schema.integration.base.ErrorMessageType;
-import ru.mos.gkh.gis.schema.integration.base.ResultHeader;
+import ru.gosuslugi.dom.schema.integration.base.BaseAsyncResponseType;
+import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
+import ru.gosuslugi.dom.schema.integration.base.ResultHeader;
 
 /**
  *
@@ -79,8 +80,9 @@ public abstract class WsMDB extends UUIDMDB<WsMessages>{
             soapBody.addDocument(document);
 
             ResultHeader resultHeader = new ResultHeader();
-            LocalDateTime responseDt = LocalDateTime.now();
-            resultHeader.setDate(responseDt);
+            
+            final Timestamp now = new Timestamp (System.currentTimeMillis ());
+            resultHeader.setDate (DB.to.XMLGregorianCalendar (now));
             resultHeader.setMessageGUID(r.get(WsMessages.c.UUID.lc()).toString());
             AbstactServiceAsync.addHeaderToResponse(soapMessage, resultHeader);
 
@@ -88,8 +90,9 @@ public abstract class WsMDB extends UUIDMDB<WsMessages>{
             soapMessage.writeTo(out);
             String responseStr = new String(out.toByteArray(), "UTF-8");
 
-            r.put(WsMessages.c.RESPONSE_TIME.lc(), responseDt);
+            r.put(WsMessages.c.RESPONSE_TIME.lc(), now);
             r.put(WsMessages.c.RESPONSE.lc(), responseStr);
+            
         } catch (Exception ex) {
             try {
                 SOAPMessage soapMessage = MessageFactory.newInstance().createMessage();

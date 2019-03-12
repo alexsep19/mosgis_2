@@ -5,7 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -15,7 +15,6 @@ import java.util.logging.Level;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPMessage;
-import javax.xml.ws.ProtocolException;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 import ru.eludia.base.DB;
@@ -25,13 +24,10 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
 import ru.eludia.products.mosgis.db.model.ws.WsMessages;
 import ru.eludia.products.mosgis.db.ModelHolder;
-import ru.eludia.products.mosgis.util.StringUtils;
-import ru.eludia.products.mosgis.ws.soap.impl.base.Errors;
-import ru.eludia.products.mosgis.ws.soap.impl.base.Fault;
-import ru.mos.gkh.gis.schema.integration.base.AckRequest;
-import ru.mos.gkh.gis.schema.integration.base.HeaderType;
-import ru.mos.gkh.gis.schema.integration.base.RequestHeader;
-import ru.mos.gkh.gis.schema.integration.base.ResultHeader;
+import ru.gosuslugi.dom.schema.integration.base.AckRequest;
+import ru.gosuslugi.dom.schema.integration.base.HeaderType;
+import ru.gosuslugi.dom.schema.integration.base.RequestHeader;
+import ru.gosuslugi.dom.schema.integration.base.ResultHeader;
 
 public class LoggingMessageHandler extends BaseLoggingMessageHandler {
    
@@ -127,7 +123,7 @@ public class LoggingMessageHandler extends BaseLoggingMessageHandler {
             }
         } else if (messageInfo.isOut){
             ResultHeader resultHeader = new ResultHeader();
-            resultHeader.setDate(LocalDateTime.now());
+            resultHeader.setDate (DB.to.XMLGregorianCalendar (new Timestamp (System.currentTimeMillis ())));
             resultHeader.setMessageGUID(messageContext.get("msgId").toString());
             AbstactServiceAsync.addHeaderToResponse(msg, resultHeader);
         }

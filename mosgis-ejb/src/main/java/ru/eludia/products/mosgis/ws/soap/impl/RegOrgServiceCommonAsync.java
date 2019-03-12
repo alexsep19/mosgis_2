@@ -13,23 +13,19 @@ import javax.xml.ws.handler.MessageContext;
 import ru.eludia.products.mosgis.jms.UUIDPublisher;
 import ru.eludia.products.mosgis.ws.soap.impl.base.Fault;
 import ru.eludia.products.mosgis.ws.soap.impl.base.WsInterceptor;
-import ru.mos.gkh.gis.schema.integration.base.AckRequest;
-import ru.mos.gkh.gis.schema.integration.base.GetStateRequest;
-import ru.mos.gkh.gis.schema.integration.organizations_registry_common.ExportOrgRegistryRequest;
-import ru.mos.gkh.gis.schema.integration.organizations_registry_common.GetStateResult;
+import ru.gosuslugi.dom.schema.integration.base.AckRequest;
+import ru.gosuslugi.dom.schema.integration.base.GetStateRequest;
+import ru.gosuslugi.dom.schema.integration.organizations_registry_common.ExportOrgRegistryRequest;
+import ru.gosuslugi.dom.schema.integration.organizations_registry_common.GetStateResult;
 
-/**
- *
- * @author Aleksei
- */
 @HandlerChain (file="handler-chain.xml")
 @SchemaValidation(outbound = false)
 @WebService(
-        serviceName = "RegOrgServiceAsync", 
-        portName = "RegOrgAsyncPort", 
-        endpointInterface = "ru.mos.gkh.gis.schema.integration.organizations_registry_common_service_async.RegOrgPortsTypeAsync", 
-        targetNamespace = "http://gis.gkh.mos.ru/schema/integration/organizations-registry-common-service-async/", 
-        wsdlLocation = "META-INF/ws/wsdl/organizations-registry-common/hcs-organizations-registry-common-service-async.wsdl")
+    serviceName = "RegOrgServiceAsync", 
+    portName = "RegOrgAsyncPort", 
+    endpointInterface = "ru.gosuslugi.dom.schema.integration.organizations_registry_common_service_async.RegOrgPortsTypeAsync", 
+    targetNamespace = "http://dom.gosuslugi.ru/schema/integration/organizations-registry-common-service-async/", 
+    wsdlLocation = "META-INF/wsdl/organizations-registry-common/hcs-organizations-registry-common-service-async.wsdl")
 @Stateless
 public class RegOrgServiceCommonAsync {
 

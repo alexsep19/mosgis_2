@@ -49,9 +49,9 @@ public abstract class AbstactServiceAsync {
                     RequestHeader.class, 
                     ResultHeader.class, 
                     ru.gosuslugi.dom.schema.integration.organizations_registry_common.GetStateResult.class,
-                    ru.mos.gkh.gis.schema.integration.base.ISRequestHeader.class,
-                    ru.mos.gkh.gis.schema.integration.base.RequestHeader.class,
-                    ru.mos.gkh.gis.schema.integration.base.ResultHeader.class
+                    ru.gosuslugi.dom.schema.integration.base.ISRequestHeader.class,
+                    ru.gosuslugi.dom.schema.integration.base.RequestHeader.class,
+                    ru.gosuslugi.dom.schema.integration.base.ResultHeader.class
             );
         }
         catch (JAXBException ex) {
