@@ -43,19 +43,9 @@ public class ExportOrgRegistry extends WsMDB {
                 ExportOrgRegistryRequest.class,
                 GetStateResult.class);
     }
-
-    @Override
-    protected BaseAsyncResponseType handleRequest(DB db, Object request) throws Exception {
-        try {
-            return generateResponse(db, request);
-        } catch (Fault e) {
-            GetStateResult result = new GetStateResult();
-            result.setErrorMessage(createErrorMessage(e));
-            return result;
-        }
-    }
         
-    static BaseAsyncResponseType generateResponse(DB db, Object request) throws Fault, SQLException {    
+    @Override
+    protected BaseAsyncResponseType generateResponse (DB db, Object request) throws Fault, SQLException {    
         
         ExportOrgRegistryRequest exportOrgRegistryRequest = (ExportOrgRegistryRequest) request;
 

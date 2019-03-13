@@ -11,8 +11,9 @@ package ru.eludia.products.mosgis.ws.soap.impl.base;
  */
 public enum Errors {
     AUT011002 ("Организация не найдена"),
-    INT002012("Нет объектов для экспорта"),
-    INT002013("Запрос не найден");
+    INT002012 ("Нет объектов для экспорта"),
+    FMT001300 ("Некорректный XML"),
+    INT002013 ("Запрос не найден");
 
     private Errors(String message) {
         this.message = message;

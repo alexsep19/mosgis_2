@@ -3,10 +3,12 @@ package ru.eludia.products.mosgis.ws.soap.impl;
 import com.sun.xml.ws.developer.SchemaValidation;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
+import javax.interceptor.Interceptors;
 import javax.jms.Queue;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import ru.eludia.products.mosgis.ws.soap.impl.base.BaseServiceAsync;
+import ru.eludia.products.mosgis.ws.soap.impl.base.WsInterceptor;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 
 @HandlerChain (file="handler-chain.xml")
@@ -23,6 +25,11 @@ public class HouseManagementServiceAsync extends BaseServiceAsync {
     @Resource (mappedName = "mosgis.inSoapImportSupplyResourceContractData")
     private Queue inSoapImportSupplyResourceContractData;
 
+    @Interceptors(WsInterceptor.class)
+    public ru.gosuslugi.dom.schema.integration.house_management.GetStateResult getState (ru.gosuslugi.dom.schema.integration.base.GetStateRequest getStateRequest) throws Fault {
+        return null;
+    }
+
     public ru.gosuslugi.dom.schema.integration.base.AckRequest importSupplyResourceContractData (ru.gosuslugi.dom.schema.integration.house_management.ImportSupplyResourceContractRequest importSupplyResourceContractRequest) throws Fault {
         return publishIfNew (inSoapImportSupplyResourceContractData);
     }
@@ -33,11 +40,6 @@ public class HouseManagementServiceAsync extends BaseServiceAsync {
     }
 
     public ru.gosuslugi.dom.schema.integration.base.AckRequest exportMeteringDeviceData (ru.gosuslugi.dom.schema.integration.house_management.ExportMeteringDeviceDataRequest exportMeteringDeviceDataRequest) throws Fault {
-        //TODO implement this method
-        throw new UnsupportedOperationException ("Not implemented yet.");
-    }
-
-    public ru.gosuslugi.dom.schema.integration.house_management.GetStateResult getState (ru.gosuslugi.dom.schema.integration.base.GetStateRequest getStateRequest) throws Fault {
         //TODO implement this method
         throw new UnsupportedOperationException ("Not implemented yet.");
     }
