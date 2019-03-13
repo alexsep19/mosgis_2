@@ -11,7 +11,7 @@ import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
-import ru.eludia.products.mosgis.db.model.tables.ActualSupplyResourceContract;
+import ru.eludia.products.mosgis.db.model.tables.AnySupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi3;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi239;
@@ -91,7 +91,7 @@ public class SupplyResourceContractSubjectImpl extends BaseCRUD<SupplyResourceCo
 
         final JsonObject item = db.getJsonObject (m
             .get (SupplyResourceContractSubject.class, id, "*")
-            .toOne(ActualSupplyResourceContract.class, "AS sr_ctr", "*").on("uuid_sr_ctr")
+            .toOne(AnySupplyResourceContract.class, "AS sr_ctr", "*").on("uuid_sr_ctr")
         );
 
         job.add ("item", item);
