@@ -104,7 +104,7 @@ define ([], function () {
             onSearch: function(e) {
                 e.searchData = e.searchData.map(function(i) { // HACK: between "01.01.2019" AND "" -> 500
 
-                    if (i.type == 'date' && i.operator == 'between') {
+                    if (i.type == 'date' && i.operator == 'between' && Array.isArray(i.value)) {
 
                         i.value = i.value.map(function(v, idx) {
                             if (v) return v

@@ -44,7 +44,7 @@ public class SupplyResourceContract extends EnTable {
 
 	LABEL                (Type.STRING, new Virt("'№' || contractnumber || ' от ' || TO_CHAR (signingdate, 'DD.MM.YYYY')"), "№/дата"),
 
-        CODE_VC_NSI_58       (Type.STRING, 20, "Основание заключения договора (НСИ 58)"),
+        CODE_VC_NSI_58       (Type.STRING, 20, null, "Основание заключения договора (НСИ 58)"),
         IS_CONTRACT          (Type.BOOLEAN,    null, "1, если является публичным; иначе 0"),
 
         ONETIMEPAYMENT       (Type.BOOLEAN, null, "1, если единоразовая оплата услуг; иначе 0"),
@@ -292,7 +292,9 @@ public class SupplyResourceContract extends EnTable {
                     + " END LOOP; "
 
 		    + " IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING + " THEN "
-
+			+ " IF :NEW.code_vc_nsi_58 IS NULL THEN "
+			+ "   raise_application_error (-20000, 'Необходимо заполнить поле \"Основание заключения договора\"'); "
+			+ " END IF; "
 			+ " IF :NEW.is_contract = 1 THEN "
 			+ "   SELECT COUNT(*) INTO cnt FROM tb_sr_ctr_files WHERE is_deleted = 0 AND id_type=" + VocSupplyResourceContractFileType.i.CONTRACT + " AND id_status=1 AND UUID_SR_CTR=:NEW.uuid; "
 			+ "   IF cnt=0 THEN raise_application_error (-20000, 'Файл договора не загружен на сервер. Операция отменена.'); END IF; "
