@@ -30,7 +30,7 @@ public class InXlSupplyResourceContract extends EnTable {
     public enum c implements ColEnum {
 
         ORD                     (Type.NUMERIC, 5, "Номер строки"),
-        CODE                    (Type.STRING, 255, "Иной код договора"),
+        CODE                    (Type.STRING, null, "Иной код договора"),
 
 	CUSTOMER_TYPE           (Type.INTEGER, null, "Тип лица/организации: 1 - ФЛ, 2 - ЮЛ, 3 - ИП, 4 - Не указывать"),
 	// Заказчик ФЛ

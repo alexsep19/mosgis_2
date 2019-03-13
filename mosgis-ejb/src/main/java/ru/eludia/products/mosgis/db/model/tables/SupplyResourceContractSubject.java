@@ -177,12 +177,12 @@ public class SupplyResourceContractSubject extends EnTable {
 		    + "   :NEW.feedingmode := NULL; "
 		    + " END IF; "
 
-		    + " IF :NEW.volume IS NOT NULL THEN "
+		    + " IF :NEW.volume IS NOT NULL THEN BEGIN "
 
 		    + "   SELECT plannedvolumetype, isplannedvolume INTO volume_type, is_volume FROM tb_sr_ctr WHERE uuid = :NEW.uuid_sr_ctr; "
 
 		    + "   IF is_volume = 0 THEN "
-		    + "     raise_application_error (-20000, 'В договоре не указано наличие планового объема и режим подачи'); "
+		    + "     raise_application_error (-20000, 'В договоре не указано наличие планового объема и режима подачи'); "
 		    + "   END IF; "
 
 		    + "   IF volume_type = " + VocGisContractDimension.i.BY_CONTRACT
@@ -205,7 +205,7 @@ public class SupplyResourceContractSubject extends EnTable {
 		    + "     raise_application_error (-20000, 'Укажите, пожалуйста, единицу измерения планового объема'); "
 		    + "   END IF; "
 
-		    + " END IF; " // IF :NEW.volume IS NOT NULL
+		    + " END; END IF; " // IF :NEW.volume IS NOT NULL
 
                     + " IF UPDATING AND :NEW.code_vc_nsi_239 <> :OLD.code_vc_nsi_239 "
                     + " THEN BEGIN "
