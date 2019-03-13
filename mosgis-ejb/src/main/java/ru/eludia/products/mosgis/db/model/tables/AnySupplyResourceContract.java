@@ -12,16 +12,17 @@ import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustomerType;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 
-public class ActualSupplyResourceContract extends View {
+public class AnySupplyResourceContract extends View {
 
     public enum c implements ColEnum {
-        ID                   (Type.UUID,   "id"),
-        IS_CUSTOMER_ORG      (Type.BOOLEAN, "1 для организации, 0 для физлица"),
-        ORG_LABEL            (Type.STRING, "Исполнитель"),
-        ORG_LABEL_UC         (Type.STRING, "ИСПОЛНИТЕЛЬ"),
-        CUSTOMER_TYPE_LABEL  (Type.STRING, "Тип Заказчика"),
-        CUSTOMER_LABEL       (Type.STRING, "Заказчик"),
-        CUSTOMER_LABEL_UC    (Type.STRING, "ЗАКАЗЧИК")
+	ID                   (Type.UUID,   "id"),
+	IS_CUSTOMER_ORG      (Type.BOOLEAN, "1 для организации, 0 для физлица"),
+	ORG_LABEL            (Type.STRING, "Исполнитель"),
+	ORG_LABEL_UC         (Type.STRING, "ИСПОЛНИТЕЛЬ"),
+	CUSTOMER_TYPE_LABEL  (Type.STRING, "Тип Заказчика"),
+	CUSTOMER_LABEL       (Type.STRING, "Заказчик"),
+	CUSTOMER_LABEL_UC    (Type.STRING, "ЗАКАЗЧИК"),
+	CONTRACTNUMBER_UC    (Type.STRING, "НОМЕР ДОГОВОРА")
         ;
 
         @Override
@@ -32,7 +33,7 @@ public class ActualSupplyResourceContract extends View {
 
     }
 
-    public ActualSupplyResourceContract () {
+    public AnySupplyResourceContract () {
         super  ("vw_sr_ctr", "Объекты договоров ресурсоснабжения, определяющие права доступа в данный момент");
         cols   (EnTable.c.class);
         cols   (SupplyResourceContract.c.class);
@@ -65,6 +66,7 @@ public class ActualSupplyResourceContract extends View {
             + " , customer_types.label customer_type_label"
             + " , NVL (org_customer.label, prc_customer.label) customer_label"
             + " , UPPER(NVL (org_customer.label, prc_customer.label)) customer_label_uc"
+	    + " , UPPER(contractnumber) contractnumber_uc"
             + " FROM " + getName (SupplyResourceContract.class) + " o"
             + " INNER JOIN " + getName (VocOrganization.class) + " org ON o.uuid_org = org.uuid"
             + " LEFT  JOIN " + getName (VocOrganization.class) + " org_customer ON o.uuid_org_customer = org_customer.uuid"

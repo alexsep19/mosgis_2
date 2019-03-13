@@ -11,7 +11,7 @@ import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
-import ru.eludia.products.mosgis.db.model.tables.ActualSupplyResourceContract;
+import ru.eludia.products.mosgis.db.model.tables.AnySupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractTemperatureChart;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.rest.User;
