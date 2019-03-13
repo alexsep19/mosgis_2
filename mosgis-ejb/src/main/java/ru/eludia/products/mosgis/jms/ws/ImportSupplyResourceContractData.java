@@ -15,6 +15,7 @@ import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
+import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustomerType;
 import ru.eludia.products.mosgis.db.model.ws.WsMessages;
 import ru.eludia.products.mosgis.jms.base.WsMDB;
 import ru.eludia.products.mosgis.ws.soap.impl.base.Errors;
@@ -112,6 +113,32 @@ logger.info ("r=" + r);
 
         r.put (SupplyResourceContract.c.UUID_ORG.lc (), wsr.get (WsMessages.c.UUID_ORG.lc ()));
         
+        if (supplyResourceContract.getApartmentBuildingOwner () != null) {
+            r.put (SupplyResourceContract.c.ID_CUSTOMER_TYPE.lc (), VocGisSupplyResourceContractCustomerType.i.OWNER.getId ());
+        }
+
+        if (supplyResourceContract.getApartmentBuildingRepresentativeOwner () != null) {
+            r.put (SupplyResourceContract.c.ID_CUSTOMER_TYPE.lc (), VocGisSupplyResourceContractCustomerType.i.REPRESENTATIVEOWNER.getId ());
+        }
+        
+        if (supplyResourceContract.getApartmentBuildingSoleOwner () != null) {
+            r.put (SupplyResourceContract.c.ID_CUSTOMER_TYPE.lc (), VocGisSupplyResourceContractCustomerType.i.SOLEOWNER.getId ());            
+        }
+        
+        if (supplyResourceContract.getLivingHouseOwner () != null) {
+            r.put (SupplyResourceContract.c.ID_CUSTOMER_TYPE.lc (), VocGisSupplyResourceContractCustomerType.i.LIVINGHOUSEOWNER.getId ());
+        }
+        
+        if (DB.ok (supplyResourceContract.isOffer ())) {
+            r.put (SupplyResourceContract.c.ID_CUSTOMER_TYPE.lc (), VocGisSupplyResourceContractCustomerType.i.OFFER.getId ());
+        }
+        
+        if (DB.ok (supplyResourceContract.getOrganization ())) {
+            r.put (SupplyResourceContract.c.ID_CUSTOMER_TYPE.lc (), VocGisSupplyResourceContractCustomerType.i.ORGANIZATION.getId ());
+        }
+        
+logger.info ("r=" + r);
+
         try (DB db = m.getDb ()) {
             UUID uuid = (UUID) db.insertId (SupplyResourceContract.class, r);
             return uuid.toString ();
