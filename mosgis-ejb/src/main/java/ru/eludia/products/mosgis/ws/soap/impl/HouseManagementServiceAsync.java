@@ -1,16 +1,14 @@
 package ru.eludia.products.mosgis.ws.soap.impl;
 
 import com.sun.xml.ws.developer.SchemaValidation;
-import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.xml.ws.WebServiceContext;
-import javax.xml.ws.handler.MessageContext;
 import ru.eludia.products.mosgis.jms.UUIDPublisher;
-import ru.eludia.products.mosgis.ws.soap.tools.LoggingMessageHandler;
+import ru.eludia.products.mosgis.ws.soap.impl.base.BaseServiceAsync;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 
 @HandlerChain (file="handler-chain.xml")
@@ -22,15 +20,17 @@ import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
     targetNamespace = "http://dom.gosuslugi.ru/schema/integration/house-management-service-async/", 
     wsdlLocation = "META-INF/wsdl/house-management/hcs-house-management-service-async.wsdl")
 @Stateless
-public class HouseManagementServiceAsync {
-    
-    protected Logger logger = Logger.getLogger (getClass ().getName ());
-    
+public class HouseManagementServiceAsync extends BaseServiceAsync {
+        
     @Resource
     private WebServiceContext wsContext;
 
     @EJB
     protected UUIDPublisher UUIDPublisher;    
+    
+    public ru.gosuslugi.dom.schema.integration.base.AckRequest importSupplyResourceContractData (ru.gosuslugi.dom.schema.integration.house_management.ImportSupplyResourceContractRequest importSupplyResourceContractRequest) throws Fault {
+        return publishIfNew (null);
+    }    
 
     public ru.gosuslugi.dom.schema.integration.base.AckRequest importMeteringDeviceData (ru.gosuslugi.dom.schema.integration.house_management.ImportMeteringDeviceDataRequest importMeteringDeviceDataRequest) throws Fault {
         //TODO implement this method
@@ -125,24 +125,6 @@ public class HouseManagementServiceAsync {
     public ru.gosuslugi.dom.schema.integration.base.AckRequest importHouseESPData (ru.gosuslugi.dom.schema.integration.house_management.ImportHouseESPRequest importHouseESPDataRequest) throws Fault {
         //TODO implement this method
         throw new UnsupportedOperationException ("Not implemented yet.");
-    }
-
-    public ru.gosuslugi.dom.schema.integration.base.AckRequest importSupplyResourceContractData (ru.gosuslugi.dom.schema.integration.house_management.ImportSupplyResourceContractRequest importSupplyResourceContractRequest) throws Fault {
-
-        final ru.gosuslugi.dom.schema.integration.base.AckRequest result = new ru.gosuslugi.dom.schema.integration.base.AckRequest ();
-/*        
-        final MessageContext messageContext = wsContext.getMessageContext ();
-logger.info ("messageContext=" + messageContext);
-        result.setAck (LoggingMessageHandler.getAck (messageContext));
-        
-        if (LoggingMessageHandler.isNew (messageContext)); //...
-*/        
-/*
-        if  msgContext.get("isNew") != null && ((Boolean) msgContext.get("isNew")))
-            UUIDPublisher.publish(exportOrgRegistryQueue, ack.getMessageGUID().toString());
-*/
-        return result;
-
     }
 
     public ru.gosuslugi.dom.schema.integration.base.AckRequest exportSupplyResourceContractData (ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractRequest exportSupplyResourceContractRequest) throws Fault {

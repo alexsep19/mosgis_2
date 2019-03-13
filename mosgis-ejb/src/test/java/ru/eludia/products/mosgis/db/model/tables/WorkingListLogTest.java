@@ -15,7 +15,7 @@ import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.base.BaseTest;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
-import ru.eludia.products.mosgis.ws.soap.impl.base.AbstactServiceAsync;
+import ru.eludia.products.mosgis.ws.soap.impl.base.SOAPTools;
 import ru.gosuslugi.dom.schema.integration.services.ImportWorkingListRequest;
 
 public class WorkingListLogTest extends BaseTest {
@@ -33,7 +33,7 @@ public class WorkingListLogTest extends BaseTest {
         super ();        
 
         jc       = JAXBContext.newInstance (ImportWorkingListRequest.class);
-        schema   = AbstactServiceAsync.loadSchema ("services/hcs-services-types.xsd");
+        schema   = SOAPTools.loadSchema ("services/hcs-services-types.xsd");
         
         table     = (WorkingList) model.get (WorkingList.class);
         logTable  = (WorkingListLog) model.get (WorkingListLog.class);        

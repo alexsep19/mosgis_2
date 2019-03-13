@@ -34,7 +34,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState;
 import ru.eludia.products.mosgis.db.model.ws.WsMessages;
 import ru.eludia.products.mosgis.util.StringUtils;
 import ru.eludia.products.mosgis.ws.soap.impl.base.Fault;
-import ru.eludia.products.mosgis.ws.soap.impl.base.AbstactServiceAsync;
+import ru.eludia.products.mosgis.ws.soap.impl.base.SOAPTools;
 import ru.gosuslugi.dom.schema.integration.base.BaseAsyncResponseType;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.base.ResultHeader;
@@ -84,7 +84,7 @@ public abstract class WsMDB extends UUIDMDB<WsMessages>{
             final Timestamp now = new Timestamp (System.currentTimeMillis ());
             resultHeader.setDate (DB.to.XMLGregorianCalendar (now));
             resultHeader.setMessageGUID(r.get(WsMessages.c.UUID.lc()).toString());
-            AbstactServiceAsync.addHeaderToResponse(soapMessage, resultHeader);
+            SOAPTools.addHeaderToResponse(soapMessage, resultHeader);
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             soapMessage.writeTo(out);

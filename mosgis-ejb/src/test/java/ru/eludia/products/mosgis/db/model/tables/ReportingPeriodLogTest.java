@@ -13,7 +13,7 @@ import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.base.BaseTest;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
-import ru.eludia.products.mosgis.ws.soap.impl.base.AbstactServiceAsync;
+import ru.eludia.products.mosgis.ws.soap.impl.base.SOAPTools;
 import ru.gosuslugi.dom.schema.integration.services.ImportCompletedWorksRequest;
 
 public class ReportingPeriodLogTest extends BaseTest {
@@ -28,7 +28,7 @@ public class ReportingPeriodLogTest extends BaseTest {
         super ();        
         
         jc            = JAXBContext.newInstance (ImportCompletedWorksRequest.class);
-        schema        = AbstactServiceAsync.loadSchema ("services/hcs-services-types.xsd");
+        schema        = SOAPTools.loadSchema ("services/hcs-services-types.xsd");
         
         table         = (ReportingPeriod) model.get (ReportingPeriod.class);
         logTable      = (ReportingPeriodLog) model.get (ReportingPeriodLog.class);        

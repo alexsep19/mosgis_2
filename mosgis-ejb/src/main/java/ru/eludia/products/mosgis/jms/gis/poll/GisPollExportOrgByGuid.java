@@ -25,7 +25,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTypes;
 import ru.eludia.products.mosgis.jms.UUIDPublisher;
 import ru.eludia.products.mosgis.ws.soap.clients.WsGisOrgCommonClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
-import ru.eludia.products.mosgis.ws.soap.impl.base.AbstactServiceAsync;
+import ru.eludia.products.mosgis.ws.soap.impl.base.SOAPTools;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_base.SubsidiaryType;
@@ -143,13 +143,13 @@ public class GisPollExportOrgByGuid extends UUIDMDB<OutSoap> {
         if (orgVersion.getForeignBranch () != null) o = orgVersion.getForeignBranch ();
         
         if (o == null) {
-            logger.warning ("Cannot import org: " + AbstactServiceAsync.toJSON (rp));
+            logger.warning ("Cannot import org: " + SOAPTools.toJSON (rp));
             return true;        
         }
         
 logger.info ("" + o.getClass ().getSimpleName ());
         
-        JsonObject jo = DB.to.JsonObject (AbstactServiceAsync.toJSON (o));
+        JsonObject jo = DB.to.JsonObject (SOAPTools.toJSON (o));
         
 logger.info ("" + jo);
         

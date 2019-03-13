@@ -6,7 +6,7 @@ import javax.xml.bind.JAXBContext;
 import org.junit.Test;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.tables.base.BaseTest;
-import ru.eludia.products.mosgis.ws.soap.impl.base.AbstactServiceAsync;
+import ru.eludia.products.mosgis.ws.soap.impl.base.SOAPTools;
 import ru.gosuslugi.dom.schema.integration.device_metering.ImportMeteringDeviceValuesRequest;
 
 public class MeteringDeviceValueLogTest extends BaseTest {
@@ -14,7 +14,7 @@ public class MeteringDeviceValueLogTest extends BaseTest {
     public MeteringDeviceValueLogTest () throws Exception {
         super ();
         jc = JAXBContext.newInstance (ImportMeteringDeviceValuesRequest.class);
-        schema = AbstactServiceAsync.loadSchema ("device-metering/hcs-device-metering-types.xsd");
+        schema = SOAPTools.loadSchema ("device-metering/hcs-device-metering-types.xsd");
     }
 
     @Test (expected = Test.None.class)

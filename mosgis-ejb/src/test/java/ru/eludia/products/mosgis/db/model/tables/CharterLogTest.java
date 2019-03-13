@@ -6,7 +6,7 @@ import javax.xml.bind.JAXBContext;
 import org.junit.Test;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.products.mosgis.db.model.tables.base.BaseTest;
-import ru.eludia.products.mosgis.ws.soap.impl.base.AbstactServiceAsync;
+import ru.eludia.products.mosgis.ws.soap.impl.base.SOAPTools;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportCharterRequest;
 
 public class CharterLogTest extends BaseTest {
@@ -15,7 +15,7 @@ public class CharterLogTest extends BaseTest {
         
         super ();
         jc = JAXBContext.newInstance (ImportCharterRequest.class);
-        schema = AbstactServiceAsync.loadSchema ("house-management/hcs-house-management-types.xsd");
+        schema = SOAPTools.loadSchema ("house-management/hcs-house-management-types.xsd");
         
     }
 

@@ -1,16 +1,11 @@
 package ru.eludia.products.mosgis.ws.soap.impl.base;
 
-import javax.xml.ws.WebServiceContext;
-import com.sun.xml.ws.api.message.HeaderList;
-import com.sun.xml.ws.api.message.Header;
 import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Iterator;
-import java.util.UUID;
-import javax.ejb.EJB;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -23,24 +18,15 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import org.xml.sax.SAXException;
-import ru.eludia.products.mosgis.jms.UUIDPublisher;
-import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.base.RequestHeader;
 import ru.gosuslugi.dom.schema.integration.base.HeaderType;
 import ru.gosuslugi.dom.schema.integration.base.ISRequestHeader;
 import ru.gosuslugi.dom.schema.integration.base.ResultHeader;
 
-public abstract class AbstactServiceAsync {
-        
-    protected ru.gosuslugi.dom.schema.integration.base.ObjectFactory of = new ru.gosuslugi.dom.schema.integration.base.ObjectFactory ();
-        
-    protected abstract WebServiceContext getContext ();
-
+public abstract class SOAPTools {
+                
     private static JAXBContext jc;
-    
-    @EJB
-    protected UUIDPublisher UUIDPublisher;
-    
+        
     static {
         
         try {
@@ -137,41 +123,6 @@ public abstract class AbstactServiceAsync {
 
     }
 
-    protected final RequestHeader getRequestHeader () {
-
-        HeaderList hl = (HeaderList) getContext ().getMessageContext ().get ("com.sun.xml.ws.api.message.HeaderList");
-        
-        if (hl == null) throw new IllegalStateException ("No SOAP header");
-
-        if (hl.size () > 1) throw new IllegalStateException ("Too much SOAP headers");
-    
-        Header h = hl.get (0);
-
-        try {
-            return (RequestHeader) h.readAsJAXB (jc.createUnmarshaller ());
-        }
-        catch (JAXBException ex) {
-            throw new IllegalStateException ("Cannot parse SOAP header", ex);
-        }
-
-    }
-    
-    protected final ru.gosuslugi.dom.schema.integration.base.AckRequest createAck (UUID uuid) {
-
-        RequestHeader requestHeader = getRequestHeader ();
-        
-        AckRequest.Ack aa = of.createAckRequestAck ();
-
-        aa.setMessageGUID (uuid.toString ());
-        aa.setRequesterMessageGUID (requestHeader.getMessageGUID ());
-        
-        ru.gosuslugi.dom.schema.integration.base.AckRequest a = of.createAckRequest ();
-        a.setAck (aa);
-
-        return a;
-        
-    }
-    
     public static Object fromXML (String xml) {
         
         try {

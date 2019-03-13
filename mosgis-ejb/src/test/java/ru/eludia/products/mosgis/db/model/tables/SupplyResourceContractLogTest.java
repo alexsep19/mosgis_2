@@ -13,7 +13,7 @@ import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.base.BaseTest;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
-import ru.eludia.products.mosgis.ws.soap.impl.base.AbstactServiceAsync;
+import ru.eludia.products.mosgis.ws.soap.impl.base.SOAPTools;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportSupplyResourceContractRequest;
 
 public class SupplyResourceContractLogTest extends BaseTest {
@@ -26,7 +26,7 @@ public class SupplyResourceContractLogTest extends BaseTest {
         super ();
 
         jc            = JAXBContext.newInstance (ImportSupplyResourceContractRequest.class);
-        schema        = AbstactServiceAsync.loadSchema ("house-management/hcs-house-management-types.xsd");
+        schema        = SOAPTools.loadSchema ("house-management/hcs-house-management-types.xsd");
 
         table         = (SupplyResourceContract) model.get (SupplyResourceContract.class);
         logTable      = (SupplyResourceContractLog) model.get (SupplyResourceContractLog.class);

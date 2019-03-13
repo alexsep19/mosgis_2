@@ -15,7 +15,7 @@ import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.base.BaseTest;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationProposal.c;
-import ru.eludia.products.mosgis.ws.soap.impl.base.AbstactServiceAsync;
+import ru.eludia.products.mosgis.ws.soap.impl.base.SOAPTools;
 import ru.gosuslugi.dom.schema.integration.organizations_registry.ImportSubsidiaryRequest;
 import ru.gosuslugi.dom.schema.integration.organizations_registry.ImportForeignBranchRequest;
 
@@ -31,7 +31,7 @@ public class VocOrganizationProposalLogTest extends BaseTest {
         super ();        
         
         jc            = JAXBContext.newInstance (ImportSubsidiaryRequest.class, ImportForeignBranchRequest.class);
-        schema        = AbstactServiceAsync.loadSchema ("organizations-registry/hcs-organizations-registry-types.xsd");
+        schema        = SOAPTools.loadSchema ("organizations-registry/hcs-organizations-registry-types.xsd");
         
         table         = (VocOrganizationProposal)    model.get (VocOrganizationProposal.class);
         logTable      = (VocOrganizationProposalLog) model.get (VocOrganizationProposalLog.class);

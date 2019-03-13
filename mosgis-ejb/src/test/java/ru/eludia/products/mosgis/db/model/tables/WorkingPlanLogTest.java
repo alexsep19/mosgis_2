@@ -15,7 +15,7 @@ import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.base.BaseTest;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
-import ru.eludia.products.mosgis.ws.soap.impl.base.AbstactServiceAsync;
+import ru.eludia.products.mosgis.ws.soap.impl.base.SOAPTools;
 import ru.gosuslugi.dom.schema.integration.services.ImportWorkingPlanRequest;
 import ru.gosuslugi.dom.schema.integration.services.ExportWorkingPlanRequest;
 import ru.eludia.products.mosgis.db.model.tables.WorkingPlan.c;
@@ -38,7 +38,7 @@ public class WorkingPlanLogTest extends BaseTest {
         super ();        
 
         jc            = JAXBContext.newInstance (ImportWorkingPlanRequest.class, ExportWorkingPlanRequest.class);
-        schema        = AbstactServiceAsync.loadSchema ("services/hcs-services-types.xsd");
+        schema        = SOAPTools.loadSchema ("services/hcs-services-types.xsd");
         
         table         = (WorkingPlan) model.get (WorkingPlan.class);
         logTable      = (WorkingPlanLog) model.get (WorkingPlanLog.class);        
