@@ -14,6 +14,7 @@ import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
+import ru.eludia.products.mosgis.db.model.voc.VocGisContractDimension;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 
 public class SupplyResourceContractSubject extends EnTable {
@@ -86,7 +87,21 @@ public class SupplyResourceContractSubject extends EnTable {
 	    default:
 		return false;
 	    }
+	}
 
+	public boolean isToXlImportVolume() {
+
+	    switch (this) {
+	    case UUID_XL:
+	    case CODE_VC_NSI_3:
+	    case CODE_VC_NSI_239:
+	    case VOLUME:
+	    case UNIT:
+	    case FEEDINGMODE:
+		return true;
+	    default:
+		return false;
+	    }
 	}
     }
 
@@ -104,6 +119,8 @@ public class SupplyResourceContractSubject extends EnTable {
                 + " PRAGMA AUTONOMOUS_TRANSACTION; "
                 + " ctr_effectivedate  DATE := NULL; "
                 + " ctr_completiondate DATE := NULL; "
+		+ " volume_type NUMBER := NULL; "
+		+ " is_volume   NUMBER := NULL; "
                 + "BEGIN "
 
                 + " IF :NEW.is_deleted = 0 THEN BEGIN "
@@ -155,15 +172,40 @@ public class SupplyResourceContractSubject extends EnTable {
                         + "|| '. Операция отменена.'); "
                     + " END LOOP; "
 
-                    + " IF :NEW.volume IS NOT NULL AND :NEW.volume < 0 "
-                    + " THEN "
-                    + "   raise_application_error (-20000, 'Укажите неотрицательный плановый объем. Операция отменена.'); "
-                    + " END IF; "
+		    + " IF :NEW.volume IS NULL THEN "
+		    + "   :NEW.unit := NULL; "
+		    + "   :NEW.feedingmode := NULL; "
+		    + " END IF; "
 
-                    + " IF :NEW.volume IS NOT NULL AND :NEW.unit IS NULL "
-                    + " THEN "
-                    + "   raise_application_error (-20000, 'Укажите, пожалуйста, единицу измерения планового объема. Операция отменена.'); "
-                    + " END IF; "
+		    + " IF :NEW.volume IS NOT NULL THEN "
+
+		    + "   SELECT plannedvolumetype, isplannedvolume INTO volume_type, is_volume FROM tb_sr_ctr WHERE uuid = :NEW.uuid_sr_ctr; "
+
+		    + "   IF is_volume = 0 THEN "
+		    + "     raise_application_error (-20000, 'В договоре не указано наличие планового объема и режим подачи'); "
+		    + "   END IF; "
+
+		    + "   IF volume_type = " + VocGisContractDimension.i.BY_CONTRACT
+		    + "     AND :NEW.uuid_sr_ctr_obj IS NOT NULL "
+		    + "   THEN "
+		    + "     raise_application_error (-20000, 'Укажите плановый объем и режим подачи в предмете договора, а не в поставляемом ресурсе'); "
+		    + "   END IF; "
+
+		    + "   IF volume_type = " + VocGisContractDimension.i.BY_HOUSE
+		    + "     AND :NEW.uuid_sr_ctr_obj IS NULL "
+		    + "   THEN "
+		    + "     raise_application_error (-20000, 'Укажите плановый объем и режим подачи в поставляемом ресурсе, а не в предмете договора'); "
+		    + "   END IF; "
+
+		    + "   IF :NEW.volume < 0 THEN "
+		    + "     raise_application_error (-20000, 'Укажите неотрицательный плановый объем'); "
+		    + "   END IF; "
+
+		    + "   IF :NEW.unit IS NULL THEN "
+		    + "     raise_application_error (-20000, 'Укажите, пожалуйста, единицу измерения планового объема'); "
+		    + "   END IF; "
+
+		    + " END IF; " // IF :NEW.volume IS NOT NULL
 
                     + " IF UPDATING AND :NEW.code_vc_nsi_239 <> :OLD.code_vc_nsi_239 "
                     + " THEN BEGIN "
