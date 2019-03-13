@@ -15,6 +15,7 @@ import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
+import ru.eludia.products.mosgis.db.model.ws.WsMessages;
 import ru.eludia.products.mosgis.jms.base.WsMDB;
 import ru.eludia.products.mosgis.ws.soap.impl.base.Errors;
 import ru.gosuslugi.dom.schema.integration.base.BaseAsyncResponseType;
@@ -52,21 +53,21 @@ public class ImportSupplyResourceContractData extends WsMDB {
     }
 
     @Override
-    protected BaseAsyncResponseType generateResponse (DB db, Object request) throws Exception {
+    protected BaseAsyncResponseType generateResponse (DB db, Map<String, Object> r, Object request) throws Exception {
         if (!(request instanceof ImportSupplyResourceContractRequest)) throw new Fault (Errors.FMT001300);
         final GetStateResult result = new GetStateResult ();
-        fill (result, (ImportSupplyResourceContractRequest) request);
+        fill (result, r, (ImportSupplyResourceContractRequest) request);
         return result;
     }
 
-    private void fill (GetStateResult result, ImportSupplyResourceContractRequest importSupplyResourceContractRequest) {
+    private void fill (GetStateResult result, Map<String, Object> r, ImportSupplyResourceContractRequest importSupplyResourceContractRequest) {
         
         final ImportResult importResult = new ImportResult ();
         
         List<ImportResult.CommonResult> commonResult = importResult.getCommonResult ();
         
         try {
-            for (ImportSupplyResourceContractRequest.Contract i: importSupplyResourceContractRequest.getContract ()) commonResult.add (toCommonResult (i));
+            for (ImportSupplyResourceContractRequest.Contract i: importSupplyResourceContractRequest.getContract ()) commonResult.add (toCommonResult (r, i));
             result.getImportResult ().add (importResult);
         }
         catch (Exception ex) {
@@ -80,21 +81,21 @@ public class ImportSupplyResourceContractData extends WsMDB {
         
     }
 
-    private ImportResult.CommonResult toCommonResult (ImportSupplyResourceContractRequest.Contract i) throws Exception {
+    private ImportResult.CommonResult toCommonResult (Map<String, Object> r, ImportSupplyResourceContractRequest.Contract i) throws Exception {
         final ImportResult.CommonResult result = new ImportResult.CommonResult ();
         result.setTransportGUID (i.getTransportGUID ());
         result.setUpdateDate (DB.to.XMLGregorianCalendar (new Timestamp (System.currentTimeMillis ())));
-        result.setGUID (getUUID (i));
+        result.setGUID (getUUID (r, i));
         return result;
     }
 
-    private String getUUID (ImportSupplyResourceContractRequest.Contract i) throws Exception {
+    private String getUUID (Map<String, Object> r, ImportSupplyResourceContractRequest.Contract i) throws Exception {
         String contractGUID = i.getContractGUID ();
-        if (i.getSupplyResourceContract () != null) return getUUID (contractGUID, i.getSupplyResourceContract ());
+        if (i.getSupplyResourceContract () != null) return getUUID (r, contractGUID, i.getSupplyResourceContract ());
         throw new UnsupportedOperationException ("Not supported yet."); 
     }
 
-    private String getUUID (String contractGUID, SupplyResourceContractType supplyResourceContract) throws Exception {
+    private String getUUID (Map<String, Object> wsr, String contractGUID, SupplyResourceContractType supplyResourceContract) throws Exception {
         
         if (contractGUID != null) throw new UnsupportedOperationException ("Updating is not supported yet.");
 
@@ -108,6 +109,8 @@ logger.info ("jsonObject=" + jsonObject);
 
         final Map<String, Object> r = DB.to.Map (jsonObject);
 logger.info ("r=" + r);
+
+        r.put (SupplyResourceContract.c.UUID_ORG.lc (), wsr.get (WsMessages.c.UUID_ORG.lc ()));
         
         try (DB db = m.getDb ()) {
             UUID uuid = (UUID) db.insertId (SupplyResourceContract.class, r);

@@ -45,7 +45,7 @@ public class ExportOrgRegistry extends WsMDB {
     }
         
     @Override
-    protected BaseAsyncResponseType generateResponse (DB db, Object request) throws Fault, SQLException {    
+    protected BaseAsyncResponseType generateResponse (DB db, Map<String, Object> r, Object request) throws Fault, SQLException {    
         
         ExportOrgRegistryRequest exportOrgRegistryRequest = (ExportOrgRegistryRequest) request;
 

@@ -54,12 +54,12 @@ public abstract class WsMDB extends UUIDMDB<WsMessages>{
     
     protected abstract JAXBContext getJAXBContext() throws JAXBException;
         
-    protected abstract BaseAsyncResponseType generateResponse (DB db, Object request) throws Exception;    
+    protected abstract BaseAsyncResponseType generateResponse (DB db, Map<String, Object> r, Object request) throws Exception;    
     
-    protected BaseAsyncResponseType handleRequest (DB db, Object request) throws Exception {
+    protected BaseAsyncResponseType handleRequest (DB db, Map<String, Object> r, Object request) throws Exception {
         
         try {            
-            return generateResponse(db, request);            
+            return generateResponse (db, r, request);            
         } 
         catch (Fault e) {
             GetStateResult result = new GetStateResult();
@@ -99,7 +99,7 @@ public abstract class WsMDB extends UUIDMDB<WsMessages>{
 
             String request = r.get(WsMessages.c.REQUEST.lc()).toString();
             
-            BaseAsyncResponseType result = handleRequest(db, unmarshaller.unmarshal(getSoapBodyNode(request)));
+            BaseAsyncResponseType result = handleRequest (db, r, unmarshaller.unmarshal(getSoapBodyNode(request)));
             
             result.setRequestState(VocAsyncRequestState.i.DONE.getId());
             result.setMessageGUID(uuid.toString());
