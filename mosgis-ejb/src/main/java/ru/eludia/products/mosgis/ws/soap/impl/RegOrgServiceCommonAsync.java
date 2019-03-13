@@ -2,19 +2,14 @@ package ru.eludia.products.mosgis.ws.soap.impl;
 
 import com.sun.xml.ws.developer.SchemaValidation;
 import javax.annotation.Resource;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 import javax.jms.Queue;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
-import javax.xml.ws.WebServiceContext;
-import javax.xml.ws.handler.MessageContext;
-import ru.eludia.products.mosgis.jms.UUIDPublisher;
 import ru.eludia.products.mosgis.ws.soap.impl.base.BaseServiceAsync;
 import ru.eludia.products.mosgis.ws.soap.impl.base.Fault;
 import ru.eludia.products.mosgis.ws.soap.impl.base.WsInterceptor;
-import ru.eludia.products.mosgis.ws.soap.tools.LoggingInMessageHandler;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.base.GetStateRequest;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_common.ExportOrgRegistryRequest;
@@ -43,4 +38,24 @@ public class RegOrgServiceCommonAsync extends BaseServiceAsync {
         return publishIfNew (exportOrgRegistryQueue);
     }
     
+    public ru.gosuslugi.dom.schema.integration.base.AckRequest exportDataProvider (ru.gosuslugi.dom.schema.integration.organizations_registry_common.ExportDataProviderRequest exportDataProviderRequest) throws ru.gosuslugi.dom.schema.integration.organizations_registry_common_service_async.Fault {
+        //TODO implement this method
+        throw new UnsupportedOperationException ("Not implemented yet.");
+    }
+
+    public ru.gosuslugi.dom.schema.integration.base.AckRequest exportDelegatedAccess (ru.gosuslugi.dom.schema.integration.organizations_registry_common.ExportDelegatedAccessRequest exportDelegatedAccessRequest) throws ru.gosuslugi.dom.schema.integration.organizations_registry_common_service_async.Fault {
+        //TODO implement this method
+        throw new UnsupportedOperationException ("Not implemented yet.");
+    }
+
+    public ru.gosuslugi.dom.schema.integration.base.AckRequest exportObjectsDelegatedAccess (ru.gosuslugi.dom.schema.integration.organizations_registry_common.ExportObjectsDelegatedAccessRequest exportObjectsDelegatedAccessRequest) throws ru.gosuslugi.dom.schema.integration.organizations_registry_common_service_async.Fault {
+        //TODO implement this method
+        throw new UnsupportedOperationException ("Not implemented yet.");
+    }
+
+    public ru.gosuslugi.dom.schema.integration.base.AckRequest exportTerritoryDelegatedAccess (ru.gosuslugi.dom.schema.integration.organizations_registry_common.ExportTerritoryDelegatedAccessRequest exportTerritoryDelegatedAccessRequest) throws ru.gosuslugi.dom.schema.integration.organizations_registry_common_service_async.Fault {
+        //TODO implement this method
+        throw new UnsupportedOperationException ("Not implemented yet.");
+    }
+        
 }
