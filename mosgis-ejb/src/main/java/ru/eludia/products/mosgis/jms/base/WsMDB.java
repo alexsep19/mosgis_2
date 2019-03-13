@@ -158,11 +158,8 @@ public abstract class WsMDB extends UUIDMDB<WsMessages>{
 
         StringBuilder stringBuilder = new StringBuilder ();
         Element root = document.getDocumentElement ();
-logger.info ("root=" + root);
-        
         
         String rootPrefix = root.getPrefix();
-logger.info ("rootPrefix=" + rootPrefix);
 
         if (rootPrefix.isEmpty()) {
             stringBuilder.append("Body");
@@ -171,17 +168,14 @@ logger.info ("rootPrefix=" + rootPrefix);
         }
         
         final String tagName = stringBuilder.toString ();
-logger.info ("tagName=" + tagName);
 
         NodeList nodeList = root.getElementsByTagName (tagName);
-logger.info ("nodeList=" + nodeList);
 
         if (nodeList == null || nodeList.item(0) == null) {
             throw new SOAPException ("No Body tag found in document");
         }
 
         Node messageNode = nodeList.item(0).getFirstChild ();
-logger.info ("messageNode 1 =" + messageNode);
 
         while (messageNode != null && !(messageNode instanceof Element)) {
             messageNode = messageNode.getNextSibling();
@@ -190,11 +184,9 @@ logger.info ("messageNode 1 =" + messageNode);
         if (messageNode == null) {
             throw new SOAPException("Missing message tag");
         }
-        
-logger.info ("messageNode 2 =" + messageNode);
 
         return messageNode;
-        
+
     }
 
     private DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {
