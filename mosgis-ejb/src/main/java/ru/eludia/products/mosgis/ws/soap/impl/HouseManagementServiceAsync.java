@@ -1,13 +1,9 @@
 package ru.eludia.products.mosgis.ws.soap.impl;
 
 import com.sun.xml.ws.developer.SchemaValidation;
-import javax.annotation.Resource;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
-import javax.xml.ws.WebServiceContext;
-import ru.eludia.products.mosgis.jms.UUIDPublisher;
 import ru.eludia.products.mosgis.ws.soap.impl.base.BaseServiceAsync;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 
@@ -21,13 +17,7 @@ import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
     wsdlLocation = "META-INF/wsdl/house-management/hcs-house-management-service-async.wsdl")
 @Stateless
 public class HouseManagementServiceAsync extends BaseServiceAsync {
-        
-    @Resource
-    private WebServiceContext wsContext;
 
-    @EJB
-    protected UUIDPublisher UUIDPublisher;    
-    
     public ru.gosuslugi.dom.schema.integration.base.AckRequest importSupplyResourceContractData (ru.gosuslugi.dom.schema.integration.house_management.ImportSupplyResourceContractRequest importSupplyResourceContractRequest) throws Fault {
         return publishIfNew (null);
     }    
