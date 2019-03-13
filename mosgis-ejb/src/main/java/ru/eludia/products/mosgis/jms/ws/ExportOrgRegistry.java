@@ -55,7 +55,7 @@ public class ExportOrgRegistry extends WsMDB {
         }
     }
         
-    private BaseAsyncResponseType generateResponse(DB db, Object request) throws Fault, SQLException {    
+    static BaseAsyncResponseType generateResponse(DB db, Object request) throws Fault, SQLException {    
         
         ExportOrgRegistryRequest exportOrgRegistryRequest = (ExportOrgRegistryRequest) request;
 
