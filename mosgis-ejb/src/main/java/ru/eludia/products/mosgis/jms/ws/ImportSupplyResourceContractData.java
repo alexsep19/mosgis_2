@@ -16,6 +16,7 @@ import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract.c;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustomerType;
 import ru.eludia.products.mosgis.db.model.ws.WsMessages;
 import ru.eludia.products.mosgis.jms.base.WsMDB;
@@ -121,8 +122,13 @@ logger.info ("r=" + r);
 logger.info ("r=" + r);
 
         try (DB db = m.getDb ()) {
+            
             UUID uuid = (UUID) db.insertId (SupplyResourceContract.class, r);
-            return uuid.toString ();
+            
+            String idLog = m.createIdLogWs (db, m.get (SupplyResourceContract.class), (UUID) wsr.get ("uuid"), uuid, VocAction.i.CREATE);
+
+            return idLog;
+
         }
         
     }
