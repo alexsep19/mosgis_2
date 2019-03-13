@@ -196,26 +196,9 @@ public class InXlSupplyResourceContract extends EnTable {
 
 	setFieldsMdPeriod(r, row);
 
-	try {
-	    final XSSFCell cell = row.getCell(34);
-	    if (cell == null) {
-		throw new XLException("Не указано Основание заключения договора (столбец AI)");
-	    }
-	    final String s = cell.getStringCellValue();
-
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указано Основание заключения договора (столбец AI)");
-	    }
-
-	    r.put(c.CONTRACTBASE.lc(), s);
-
-	    r.put(SupplyResourceContract.c.CODE_VC_NSI_58.lc(), vocs.get("vc_nsi_58").get(s));
-
-	} catch (XLException ex) {
-	    throw ex;
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
+	Object contractbase = toString(row, 34);
+	r.put(c.CONTRACTBASE.lc(), contractbase);
+	r.put(SupplyResourceContract.c.CODE_VC_NSI_58.lc(), vocs.get("vc_nsi_58").get(contractbase));
 
 	try {
 	    final XSSFCell cell = row.getCell(35);
