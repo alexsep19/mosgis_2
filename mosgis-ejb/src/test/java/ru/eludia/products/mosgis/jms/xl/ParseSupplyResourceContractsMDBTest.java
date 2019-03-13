@@ -18,10 +18,11 @@ import ru.eludia.products.mosgis.db.model.voc.VocFileStatus;
 
 public class ParseSupplyResourceContractsMDBTest extends BaseTest {
     
-    private static final UUID uuid = UUID.fromString ("83598688-7f03-5b7e-e053-0100007f6bbb");
+    private static final UUID uuid = UUID.fromString ("83e1697d-7d09-4aa0-e053-0100007fc05e");
 
     public ParseSupplyResourceContractsMDBTest () throws Exception {
     }
+
 
     @Test (expected = None.class)
     public void test () throws Exception {

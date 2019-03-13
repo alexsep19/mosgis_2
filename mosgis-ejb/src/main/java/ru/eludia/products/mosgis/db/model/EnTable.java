@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.db.model;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.logging.Logger;
 import org.apache.poi.ss.usermodel.CellType;
@@ -62,8 +63,6 @@ public abstract class EnTable extends Table {
 
     public static Object toNumeric(XSSFRow row, int col) throws XLException {
 
-	String s;
-
 	try {
 	    final XSSFCell cell = row.getCell(col);
 	    if (cell == null) {
@@ -71,22 +70,24 @@ public abstract class EnTable extends Table {
 	    }
 
 	    if (cell.getCellTypeEnum() == CellType.NUMERIC) {
-		s = DB.to.String((long)cell.getNumericCellValue());
-	    } else {
-		s = cell.getStringCellValue();
-		if (DB.ok(s)) {
-		    s = s.trim().replaceAll("\\D", "");
-		}
+		return new BigDecimal (cell.getNumericCellValue());
+	    }
+
+	    String s = cell.getStringCellValue();
+
+	    if (DB.ok(s)) {
+		s = s.trim().replaceAll("\\D", "");
 	    }
 
 	    if (!DB.ok(s)) {
 		return null;
 	    }
+
+	    return new BigDecimal(s);
+
 	} catch (Exception ex) {
 	    throw new XLException("col: " + col + " " + ex.getMessage());
 	}
-
-	return DB.to.Long(s);
     }
 
     public static Object toString(XSSFRow row, int col, Object error) throws XLException {

@@ -21,7 +21,7 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.ActualBankAccount;
-import ru.eludia.products.mosgis.db.model.tables.ActualSupplyResourceContract;
+import ru.eludia.products.mosgis.db.model.tables.AnySupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.BankAccount;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
@@ -79,7 +79,10 @@ public class SupplyResourceContractImpl extends BaseCRUD<SupplyResourceContract>
 
         final String s = search.getSearchString ();
 
-        if (s != null) select.and ("customer_label_uc LIKE ?%", s.toUpperCase ().replace (' ', '%'));
+        if (s != null) {
+	    final String q = s.toUpperCase().replace(' ', '%');
+	    select.andEither ("customer_label_uc LIKE ?%", q).or("contractnumber_uc LIKE ?%", q);
+	}
 
     }
 
@@ -100,7 +103,7 @@ public class SupplyResourceContractImpl extends BaseCRUD<SupplyResourceContract>
 
         final Model m = ModelHolder.getModel ();
 
-        Select select = m.select (ActualSupplyResourceContract.class, "*")
+        Select select = m.select (AnySupplyResourceContract.class, "*")
             .orderBy (SupplyResourceContract.c.SIGNINGDATE.lc() + " DESC")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 

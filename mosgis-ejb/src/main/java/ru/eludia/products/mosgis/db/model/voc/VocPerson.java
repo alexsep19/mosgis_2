@@ -1,12 +1,8 @@
 package ru.eludia.products.mosgis.db.model.voc;
 
 import ru.eludia.base.model.Col;
-import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
-import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
-import ru.eludia.base.model.def.Bool;
-import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
