@@ -3,6 +3,7 @@ package ru.eludia.products.mosgis.jms.xl;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,23 +21,48 @@ public class ParseSupplyResourceContractsMDBTest extends BaseTest {
     
     private static final UUID uuid = UUID.fromString ("83e1697d-7d09-4aa0-e053-0100007fc05e");
 
+    private static final Logger logger = Logger.getLogger(ParseSupplyResourceContractsMDBTest.class.getName());
+
     public ParseSupplyResourceContractsMDBTest () throws Exception {
     }
 
-
     @Test (expected = None.class)
-    public void test () throws Exception {
+    public void testParse () throws Exception {
 
         ParseSupplyResourceContractsMDB mdb = new ParseSupplyResourceContractsMDB ();
 
         try (DB db = model.getDb ()) {
 
-            mdb.setStatus (db, uuid, VocFileStatus.i.PROCESSING);
+	    mdb.setStatus (db, uuid, VocFileStatus.i.PROCESSING);
 
             Map<String, Object> r = db.getMap (InXlFile.class, uuid);
 
             mdb.handleRecord (db, uuid, r);
         }
+    }
+
+    @Ignore
+    @Test(expected = None.class)
+    public void killXlSupplyResourceContracts() throws Exception {
+
+	ParseSupplyResourceContractsMDB mdb = new ParseSupplyResourceContractsMDB();
+
+	try (DB db = model.getDb()) {
+
+	    db.forEach(model.select(SupplyResourceContract.class, "AS root", "uuid", "contractnumber", "uuid_xl")
+		.where("contractnumber LIKE", "Шаблон %"),
+		 (rs) -> {
+		    Map<String, Object> ctr = db.HASH(rs);
+
+		    logger.info(DB.to.json(ctr).toString());
+
+		    try {
+			mdb.killXlSupplyResourceContract(db, (UUID) ctr.get("uuid_xl"));
+		    } catch (SQLException ex) {
+		    }
+		}
+	    );
+	}
     }
 
     @Before

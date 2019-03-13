@@ -22,6 +22,7 @@ import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceCo
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceContractObject;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceContractService;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceContractSubject;
+import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceContractVolume;
 import ru.eludia.products.mosgis.db.model.tables.Block;
 import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
@@ -288,6 +289,67 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 	return false;
     }
 
+    protected void addVolumeLines(XSSFSheet sheet, UUID parent, DB db, Map<String, Map<String, Object>> vocs) throws SQLException {
+
+	logger.log(Level.INFO, "addVolumeLines start");
+
+	for (int i = 2; i <= sheet.getLastRowNum(); i++) {
+
+	    UUID uuid = (UUID) db.insertId(InXlSupplyResourceContractVolume.class,
+		InXlSupplyResourceContractVolume.toHash(parent, i, sheet.getRow(i), vocs)
+	    );
+
+	    try {
+		db.update(InXlSupplyResourceContractVolume.class, DB.HASH(
+		    EnTable.c.UUID, uuid,
+		    EnTable.c.IS_DELETED, 0
+		));
+
+	    } catch (SQLException e) {
+
+		String s = e.getMessage();
+
+		if (e.getErrorCode() == 20000) {
+		    s
+			= new StringTokenizer(e.getMessage(), "\n\r")
+			    .nextToken()
+			    .replace("ORA-20000: ", "");
+		}
+
+		db.update(InXlSupplyResourceContractVolume.class, DB.HASH(
+		    EnTable.c.UUID, uuid,
+		    InXlSupplyResourceContractVolume.c.ERR, s
+		));
+
+	    }
+
+	}
+
+	logger.log(Level.INFO, "addVolumeLines finish");
+    }
+
+    private boolean checkVolumeLines(XSSFSheet sheet, DB db, UUID parent) throws SQLException {
+
+	List<Map<String, Object>> brokenLines = db.getList(db.getModel()
+	    .select(InXlSupplyResourceContractVolume.class, "*")
+	    .where(SupplyResourceContractObject.c.UUID_XL, parent)
+	    .where(EnTable.c.IS_DELETED, 1)
+	);
+
+	if (brokenLines.isEmpty()) {
+	    return true;
+	}
+
+	for (Map<String, Object> brokenLine : brokenLines) {
+	    XSSFRow row = sheet.getRow((int) DB.to.Long(brokenLine.get(InXlSupplyResourceContractVolume.c.ORD.lc())));
+	    XSSFCell cell = row.getLastCellNum() < 10 ? row.createCell(10) : row.getCell(10);
+	    String val = brokenLine.get(InXlSupplyResourceContractVolume.c.ERR.lc()).toString();
+	    cell.setCellValue(val);
+	}
+
+	return false;
+    }
+
     protected Map<String, Object> processVocNsi58Lines(XSSFSheet sheet) throws XLException {
 
 	final Map<String, Object> r = DB.HASH();
@@ -403,6 +465,11 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 
         super.completeFail (db, parent, wb);
 
+	killXlSupplyResourceContract(db, parent);
+    }
+
+    protected void killXlSupplyResourceContract(DB db, UUID parent) throws SQLException {
+
 	final Model m = db.getModel();
 
 	db.update(SupplyResourceContractSubject.class, HASH(
@@ -418,7 +485,7 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 	    .where(SupplyResourceContractSubject.c.UUID_XL, parent)
 	);
 
-	cleanXlSupplyResourceContractObjects(db, parent);
+	killXlSupplyResourceContractObjects(db, parent);
 
 	db.update(SupplyResourceContract.class, HASH(
 	    SupplyResourceContract.c.ID_LOG, null,
@@ -498,37 +565,44 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 	final XSSFSheet sheetSubjects = wb.getSheetAt(1);
 	final XSSFSheet sheetObjects = wb.getSheetAt(2);
 	final XSSFSheet sheetServices = wb.getSheetAt(3);
+	final XSSFSheet sheetVolumes = wb.getSheetAt(6);
 
 	boolean isOk = true;
 
         addContractLines(sheetContracts, uuid, db, vocs);
         if (!checkContractLines(sheetContracts, db, uuid)) {
 	    isOk = false;
-	    logger.log(Level.INFO, "ParseSupplyResourceContractsMDB.checkContractLines NOT OK. See SELECT err FROM in_xl_sr_ctr WHERE uuid_xl='" + uuid.toString().toUpperCase().replace("-", "") + "'");
+	    logger.log(Level.FINE, "ParseSupplyResourceContractsMDB.checkContractLines NOT OK. See SELECT err FROM in_xl_sr_ctr WHERE uuid_xl='" + uuid.toString().toUpperCase().replace("-", "") + "'");
 	}
 
 	addSubjectLines(sheetSubjects, uuid, db, vocs);
 	if (!checkSubjectLines(sheetSubjects, db, uuid)) {
 	    isOk = false;
-	    logger.log (Level.INFO, "ParseSupplyResourceContractsMDB.checkSubjectLines NOT OK. See SELECT err FROM in_xl_sr_ctr_subj WHERE uuid_xl='" + uuid.toString().toUpperCase().replace("-", "") + "'");
+	    logger.log (Level.FINE, "ParseSupplyResourceContractsMDB.checkSubjectLines NOT OK. See SELECT err FROM in_xl_sr_ctr_subj WHERE uuid_xl='" + uuid.toString().toUpperCase().replace("-", "") + "'");
 	}
 
 	addObjectLines(sheetObjects, uuid, db);
 	if (!checkObjectLines(sheetObjects, db, uuid)) {
 	    isOk = false;
-	    logger.log(Level.INFO, "ParseSupplyResourceContractsMDB.checkObjectLines NOT OK. See SELECT err FROM in_xl_sr_ctr_obj WHERE uuid_xl='" + uuid.toString().toUpperCase().replace("-", "") + "'");
+	    logger.log(Level.FINE, "ParseSupplyResourceContractsMDB.checkObjectLines NOT OK. See SELECT err FROM in_xl_sr_ctr_obj WHERE uuid_xl='" + uuid.toString().toUpperCase().replace("-", "") + "'");
 	}
 
 	addServiceLines(sheetServices, uuid, db, vocs);
 	if (!checkServiceLines(sheetServices, db, uuid)) {
 	    isOk = false;
-	    logger.log(Level.INFO, "ParseSupplyResourceContractsMDB.checkServiceLines NOT OK. See SELECT err FROM in_xl_sr_ctr_svc WHERE uuid_xl='" + uuid.toString().toUpperCase().replace("-", "") + "'");
+	    logger.log(Level.FINE, "ParseSupplyResourceContractsMDB.checkServiceLines NOT OK. See SELECT err FROM in_xl_sr_ctr_svc WHERE uuid_xl='" + uuid.toString().toUpperCase().replace("-", "") + "'");
 	}
 
-        if (!isOk) throw new XLException ();
+	addVolumeLines(sheetVolumes, uuid, db, vocs);
+	if (!checkVolumeLines(sheetVolumes, db, uuid)) {
+	    isOk = false;
+	    logger.log(Level.FINE, "ParseSupplyResourceContractsMDB.checkServiceLines NOT OK. See SELECT err FROM in_xl_sr_ctr_svc WHERE uuid_xl='" + uuid.toString().toUpperCase().replace("-", "") + "'");
+	}
+
+        if (!isOk) throw new XLException ("ParseSupplyResourceContractsMDB NOT OK");
     }
 
-    private void cleanXlSupplyResourceContractObjects(DB db, UUID parent) throws SQLException {
+    private void killXlSupplyResourceContractObjects(DB db, UUID parent) throws SQLException {
 
 	final Model m = db.getModel();
 
