@@ -232,6 +232,8 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 	    boolean plannedVolumeInObjects = DB.ok(r.get("isplannedvolume"))
 		&& DB.to.String(r.get("plannedvolumetype")).equals(VocGisContractDimension.i.BY_HOUSE.getName());
 
+	    boolean accrualInObjects = VocGisContractDimension.i.BY_HOUSE == VocGisContractDimension.i.forName(DB.to.String(r.get("accrualprocedure")));
+
 	    for (Map<String, Object> o : objects) {
 		o.put("apartmentnumber", o.get("premise.apartmentnumber"));
 		o.put("roomnumber", o.get("premise.roomnumber"));
@@ -265,13 +267,18 @@ public class SupplyResourceContractLog extends GisWsLogTable {
 			ObjectAddress.PlannedVolume v = DB.to.javaBean(ObjectAddress.PlannedVolume.class, service);
 			oa.getPlannedVolume().add(v);
 		    }
+
+		    if (accrualInObjects) {
+			oa.setMeteringDeviceInformation(DB.ok(r.get("mdinfo")));
+		    }
 		}
 
 		result.getObjectAddress().add(oa);
 	    }
 
-	    if (VocGisContractDimension.i.BY_CONTRACT != VocGisContractDimension.i.forName(DB.to.String(r.get("accrualprocedure")))) {
+	    if (accrualInObjects) {
 		result.setCountingResource(null);
+		result.setMeteringDeviceInformation(null);
 	    }
 
 	}
