@@ -238,7 +238,7 @@ public class InXlSupplyResourceContractObject extends EnTable {
 	    + "   IF house.is_condo <> :NEW.is_condo THEN "
 	    + "     raise_application_error (-20000, 'Найден паспорт дома другого типа'); "
 	    + "   END IF; "
-	    + "   IF :NEW.is_condo = 0 AND :NEW.hasblocks IS NOT NULL AND house.hasblocks <> :NEW.hasblocks THEN "
+	    + "   IF :NEW.is_condo = 0 AND house.hasblocks <> :NEW.hasblocks THEN "
 	    + "     raise_application_error (-20000, 'ЖД с заданным адресом ' "
 	    + "       || CASE WHEN house.hasblocks = 0 THEN 'не ' ELSE '' END "
 	    + "       || 'является домом блокированной застройки'); "
@@ -265,7 +265,7 @@ public class InXlSupplyResourceContractObject extends EnTable {
 	    + " и " + VocGisSupplyResourceContractCustomerType.i.OFFER.getLabel()
 	    + " создаются на дом а не на квартиру. Очистите номер квартиры'); "
 	    + "   END IF; "
-	    + "   IF :NEW.is_condo = 0 AND :NEW.is_add = 1 THEN "
+	    + "   IF :NEW.is_condo = 0 AND :NEW.hasblocks = 0 AND :NEW.is_add = 1 THEN "
 	    + "     raise_application_error (-20000, 'Дом является ЖД. Очистите поле Добавить помещение'); "
 	    + "   END IF; "
 
