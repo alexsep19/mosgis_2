@@ -14,6 +14,8 @@ import ru.eludia.products.mosgis.db.model.voc.VocRcContractServiceTypes;
 
 public class RcContract extends EnTable {
 
+    public static final String TABLE_NAME = "tb_rc_ctr";
+
     public enum c implements EnColEnum {
 
 	UUID_ORG             (VocOrganization.class, "Расчетный центр"),
@@ -76,7 +78,7 @@ public class RcContract extends EnTable {
 
     public RcContract () {
 
-        super ("tb_rc_ctr", "Договор услуг РЦ (расчетного центра)");
+        super (TABLE_NAME, "Договор услуг РЦ (расчетного центра)");
 
         cols   (c.class);
 

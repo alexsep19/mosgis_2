@@ -27,6 +27,8 @@ import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType
 import ru.gosuslugi.dom.schema.integration.organizations_registry_base.RegOrgType;
 
 public class Contract extends EnTable {
+    
+    public static final String TABLE_NAME = "tb_contracts";
 
     public enum c implements ColEnum {
 
@@ -85,7 +87,7 @@ public class Contract extends EnTable {
         
     public Contract () {
 
-        super ("tb_contracts", "Договоры управления");
+        super (TABLE_NAME, "Договоры управления");
         cols   (c.class);        
 
         key   ("org_docnum", "uuid_org", "docnum");

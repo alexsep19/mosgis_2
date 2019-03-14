@@ -16,8 +16,9 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisContractDimension;
 import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustomerType;
 import ru.eludia.products.mosgis.db.model.voc.VocSupplyResourceContractFileType;
 
-
 public class SupplyResourceContract extends EnTable {
+
+    public static final String TABLE_NAME = "tb_sr_ctr";
 
     public enum c implements EnColEnum {
 
@@ -154,7 +155,7 @@ public class SupplyResourceContract extends EnTable {
 
     public SupplyResourceContract () {
 
-        super ("tb_sr_ctr", "Договор ресурсоснабжения");
+        super (TABLE_NAME, "Договор ресурсоснабжения");
 
         cols   (c.class);
 

@@ -55,24 +55,67 @@ public class BankAccount extends EnTable {
             + " cnt NUMBER;"
             + "BEGIN "
                     
-                + "IF :NEW.is_deleted=1 THEN RETURN; END IF; "
+                + "IF :NEW.is_deleted=0 THEN BEGIN "
                     
-                + " FOR i IN ("
-                    + "SELECT "
-                    + " o.uuid "
-                    + " , org.label "
-                    + "FROM "
-                    + TABLE_NAME + "  o "
-                    + " LEFT JOIN " + VocOrganization.TABLE_NAME +  " org ON o.UUID_ORG = org.uuid"
-                    + " WHERE o.is_deleted = 0"
-                    + " AND o.ACCOUNTNUMBER = :NEW.ACCOUNTNUMBER "
-                    + " AND o.BIKCREDORG = :NEW.BIKCREDORG "
-                    + ") LOOP"
-                + " raise_application_error (-20000, 'Номер расчетного счета выбранной кредитной организации уже используется ' || i.label || '. Операция отменена.'); "
-                + " END LOOP; "
-                    
+                    + " FOR i IN ("
+                        + "SELECT "
+                        + " o.uuid "
+                        + " , org.label "
+                        + "FROM "
+                        + TABLE_NAME + "  o "
+                        + " LEFT JOIN " + VocOrganization.TABLE_NAME +  " org ON o.UUID_ORG = org.uuid"
+                        + " WHERE o.is_deleted = 0"
+                        + " AND o.ACCOUNTNUMBER = :NEW.ACCOUNTNUMBER "
+                        + " AND o.BIKCREDORG = :NEW.BIKCREDORG "
+                        + ") LOOP"
+                    + " raise_application_error (-20000, 'Номер расчетного счета выбранной кредитной организации уже используется ' || i.label || '. Операция отменена.'); "
+                    + " END LOOP; "
+                                
+                + "END; END IF; "
+                                                                            
+                + "IF :OLD.is_deleted=0 AND :NEW.is_deleted=1 THEN BEGIN "
+                                
+                    + " FOR i IN ("
+                        + "SELECT o.* "
+                        + "FROM " + Contract.TABLE_NAME + " o "
+                        + " WHERE o.is_deleted = 0 AND o.is_annuled = 0 "
+                        + " AND :NEW.uuid = o." + Contract.c.UUID_BNK_ACCT
+                        + ") LOOP"
+                    + " raise_application_error (-20000, 'Данный расчётный счёт указан в качестве платёжного реквизита договора управления №' || i.DOCNUM || ' от ' || TO_CHAR (i.SIGNINGDATE, 'DD.MM.YYYY') || '. Операция отменена.'); "
+                    + " END LOOP; "
+
+                    + " FOR i IN ("
+                        + "SELECT org.label "
+                        + "FROM " + Charter.TABLE_NAME + " o "
+                        + " INNER JOIN " + VocOrganization.TABLE_NAME + " org ON o.uuid_org=org.uuid"
+                        + " WHERE o.is_deleted = 0 AND o.is_annuled = 0 "
+                        + " AND :NEW.uuid = o." + Charter.c.UUID_BNK_ACCT
+                        + ") LOOP"
+                    + " raise_application_error (-20000, 'Данный расчётный счёт указан в качестве платёжного реквизита устава ' || i.label || '. Операция отменена.'); "
+                    + " END LOOP; "
+
+                    + " FOR i IN ("
+                        + "SELECT o.* "
+                        + "FROM " + RcContract.TABLE_NAME + " o "
+                        + " WHERE o.is_deleted = 0 "
+                        + " AND :NEW.uuid = o." + RcContract.c.UUID_BNK_ACCT
+                        + ") LOOP"
+                    + " raise_application_error (-20000, 'Данный расчётный счёт указан в качестве платёжного реквизита договора услуг РЦ №' || i.CONTRACTNUMBER || ' от ' || TO_CHAR (i.SIGNINGDATE, 'DD.MM.YYYY') || '. Операция отменена.'); "
+                    + " END LOOP; "
+
+                    + " FOR i IN ("
+                        + "SELECT o.* "
+                        + "FROM " + SupplyResourceContract.TABLE_NAME + " o "
+                        + " WHERE o.is_deleted = 0 AND o.is_annuled = 0 "
+                        + " AND :NEW.uuid = o." + SupplyResourceContract.c.UUID_BNK_ACCT
+                        + ") LOOP"
+                    + " raise_application_error (-20000, 'Данный расчётный счёт указан в качестве платёжного реквизита договора ресурсоснабжения №' || i.CONTRACTNUMBER || ' от ' || TO_CHAR (i.SIGNINGDATE, 'DD.MM.YYYY') || '. Операция отменена.'); "
+                    + " END LOOP; "
+                                
+                + "END; END IF; "
+
             + "END;"
-                
+
         );
 
     }
