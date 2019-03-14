@@ -60,6 +60,7 @@ public class VocOverhaulWorkTypesImpl extends BaseCRUD<VocOverhaulWorkType> impl
                 .toOne      (VocOrganization.class, "AS org", "label").on ()
                 .toMaybeOne (VocOverhaulWorkTypeLog.class, "AS log").on ()
                 .toMaybeOne (OutSoap.class, "err_text AS err_text").on ()
+                .where      ("is_deleted", 0)
                 .orderBy    ("root.code")
                 .limit      (p.getInt ("offset"), p.getInt ("limit"));
         

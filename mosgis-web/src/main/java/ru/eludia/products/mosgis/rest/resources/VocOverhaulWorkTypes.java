@@ -63,4 +63,21 @@ public class VocOverhaulWorkTypes extends EJBResource <VocOverhaulWorkTypesLocal
         return back.doCreate (p, getUser ());
     }
     
+    @POST
+    @Path("{id}/update")
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject doUpdate (@PathParam ("id") String id, JsonObject p) {
+        checkPost ();
+        return back.doUpdate (id, p, getUser ());
+    }
+    
+    @POST
+    @Path("{id}/delete")
+    @Produces (APPLICATION_JSON)
+    public JsonObject doDelete (@PathParam ("id") String id) {
+        checkPost ();
+        return back.doDelete (id, getUser ());
+    }
+    
 }
