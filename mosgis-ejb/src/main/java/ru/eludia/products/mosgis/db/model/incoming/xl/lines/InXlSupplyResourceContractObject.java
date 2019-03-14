@@ -25,7 +25,7 @@ public class InXlSupplyResourceContractObject extends EnTable {
 
         ORD                     (Type.NUMERIC, 5, "Номер строки"),
 
-	CODE_SR_CTR             (Type.STRING, 255, "Иной код договора"),
+	CODE_SR_CTR             (Type.STRING, null, "Иной код договора"),
 	UUID_SR_CTR             (Type.UUID, null, "Договор"),
 
 	IS_CONDO                (Type.BOOLEAN, null, "1 для МКД, 0 для ЖД"),
