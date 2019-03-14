@@ -81,69 +81,82 @@ public class LoggingInMessageHandler extends BaseLoggingMessageHandler {
         return (AckRequest) msgContext.get (ACK_REQUEST);
     }
     
+    
+    
     @Override
     public boolean handleMessage (SOAPMessageContext messageContext) {
         
-        SOAPMessage msg = messageContext.getMessage ();
-        
-        MessageInfo messageInfo = new MessageInfo (messageContext);
-        
-        Map<String, Object> sender = null;
-        if (!messageInfo.isOut) {
-            try {
-                HttpServletResponse response =  (HttpServletResponse) messageContext.get(MessageContext.SERVLET_RESPONSE);
-                
-                sender = getSender(messageContext);
-                if (sender == null) {
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                    return false;
-                } else if (TypeConverter.Boolean(sender.get(Sender.c.IS_LOCKED.lc()))) {
-                    response.sendError(HttpServletResponse.SC_FORBIDDEN);
-                    return false;
+        try {
+            
+            SOAPMessage msg = messageContext.getMessage ();
+
+            MessageInfo messageInfo = new MessageInfo (messageContext);
+
+            Map<String, Object> sender = null;
+            if (!messageInfo.isOut) {
+                try {
+                    HttpServletResponse response =  (HttpServletResponse) messageContext.get(MessageContext.SERVLET_RESPONSE);
+
+                    sender = getSender(messageContext);
+                    if (sender == null) {
+                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                        return false;
+                    } else if (TypeConverter.Boolean(sender.get(Sender.c.IS_LOCKED.lc()))) {
+                        response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                        return false;
+                    }
+                    addParamToMessageContext(messageContext, "sender", sender);
+                } catch (IOException ex) {
+                    throw new RuntimeException("Cannot load IS", ex);
                 }
-                addParamToMessageContext(messageContext, "sender", sender);
-            } catch (IOException ex) {
-                throw new RuntimeException("Cannot load IS", ex);
             }
+
+            if (!messageInfo.isOut && !GET_STATE_OPERATION.equals(messageInfo.operation)) {
+                byte [] bytes = toBytes (msg);
+                String s = getLoggedMessge (messageInfo, bytes, getCharSetName (msg));
+
+                HeaderType rh = SOAPTools.getHeader(msg, HeaderType.class);
+                
+                if (rh == null) throw new IllegalArgumentException ("Invalid SOAP request: missing Envelope/Header/RequestHeader");
+
+                Map<String, Object> savedMsg = storeToDB (sender, messageInfo, rh, s);
+
+                AckRequest.Ack ack = new AckRequest.Ack ();
+                ack.setMessageGUID(savedMsg.get("msgId").toString());
+                ack.setRequesterMessageGUID(rh.getMessageGUID());
+
+                AckRequest ackRequest = new AckRequest ();
+                ackRequest.setAck (ack);
+
+                addParamToMessageContext(messageContext, "ack", ack);
+                addParamToMessageContext(messageContext, ACK_REQUEST, ackRequest);
+                addParamToMessageContext(messageContext, "msgId", rh.getMessageGUID());
+                addParamToMessageContext(messageContext, IS_NEW, savedMsg.get (IS_NEW));
+
+            } else if (messageInfo.isOut && messageContext.get("response") != null) { 
+                try {
+                    InputStream is = new ByteArrayInputStream(messageContext.get("response").toString().getBytes("UTF-8"));
+                    SOAPMessage response = MessageFactory.newInstance().createMessage(null, is);
+                    messageContext.setMessage(response);
+                } catch (Exception ex) {
+                    throw new IllegalStateException("Cannot create SOAP message", ex);
+                }
+            } else if (messageInfo.isOut){
+                ResultHeader resultHeader = new ResultHeader();
+                resultHeader.setDate (DB.to.XMLGregorianCalendar (new Timestamp (System.currentTimeMillis ())));
+                resultHeader.setMessageGUID(messageContext.get("msgId").toString());
+                SOAPTools.addHeaderToResponse(msg, resultHeader);
+            }
+
+            return true;
+            
         }
-        
-        if (!messageInfo.isOut && !GET_STATE_OPERATION.equals(messageInfo.operation)) {
-            byte [] bytes = toBytes (msg);
-            String s = getLoggedMessge (messageInfo, bytes, getCharSetName (msg));
-            
-            HeaderType rh = SOAPTools.getHeader(msg, HeaderType.class);
-
-            Map<String, Object> savedMsg = storeToDB (sender, messageInfo, rh, s);
-
-            AckRequest.Ack ack = new AckRequest.Ack ();
-            ack.setMessageGUID(savedMsg.get("msgId").toString());
-            ack.setRequesterMessageGUID(rh.getMessageGUID());
-            
-            AckRequest ackRequest = new AckRequest ();
-            ackRequest.setAck (ack);
-            
-            addParamToMessageContext(messageContext, "ack", ack);
-            addParamToMessageContext(messageContext, ACK_REQUEST, ackRequest);
-            addParamToMessageContext(messageContext, "msgId", rh.getMessageGUID());
-            addParamToMessageContext(messageContext, IS_NEW, savedMsg.get (IS_NEW));
-            
-        } else if (messageInfo.isOut && messageContext.get("response") != null) { 
-            try {
-                InputStream is = new ByteArrayInputStream(messageContext.get("response").toString().getBytes("UTF-8"));
-                SOAPMessage response = MessageFactory.newInstance().createMessage(null, is);
-                messageContext.setMessage(response);
-            } catch (Exception ex) {
-                throw new IllegalStateException("Cannot create SOAP message", ex);
-            }
-        } else if (messageInfo.isOut){
-            ResultHeader resultHeader = new ResultHeader();
-            resultHeader.setDate (DB.to.XMLGregorianCalendar (new Timestamp (System.currentTimeMillis ())));
-            resultHeader.setMessageGUID(messageContext.get("msgId").toString());
-            SOAPTools.addHeaderToResponse(msg, resultHeader);
+        catch (Exception ex) {            
+            String id = UUID.randomUUID ().toString ();            
+            logger.log (Level.SEVERE, id, ex);
+            throw new RuntimeException (ex.getMessage () + " (search log for " + id +")", ex);
         }
                 
-        return true;
-        
     }
     private static final String ACK_REQUEST = "ackRequest";
     private static final String IS_NEW = "isNew";
