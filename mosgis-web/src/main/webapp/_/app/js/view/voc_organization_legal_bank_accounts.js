@@ -32,7 +32,7 @@ define ([], function () {
             textSearch: 'contains',
 
             columns: [
-                {field: 'accountnumber', caption: 'Л/сч. №', size: 20},
+                {field: 'accountnumber', caption: 'Р/сч. №', size: 20},
                 {field: 'bank.namep', caption: 'Банк', size: 30},
                 {field: 'bank.bic', caption: 'БИК', size: 10},
                 {field: 'bank.account', caption: 'Кор. сч. №', size: 10},
