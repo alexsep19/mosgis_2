@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.jms.ws;
 
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
@@ -14,11 +15,13 @@ import javax.xml.bind.JAXBException;
 import javax.xml.datatype.XMLGregorianCalendar;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract.c;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustomerType;
+import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.ws.WsMessages;
 import ru.eludia.products.mosgis.jms.base.WsMDB;
 import ru.eludia.products.mosgis.ws.soap.impl.base.Errors;
@@ -32,6 +35,7 @@ import ru.gosuslugi.dom.schema.integration.house_management.ImportSupplyResource
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportResult;
 import ru.gosuslugi.dom.schema.integration.house_management.SupplyResourceContractType;
+import ru.gosuslugi.dom.schema.integration.individual_registry_base.ID;
 
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inSoapImportSupplyResourceContractData")
@@ -126,13 +130,19 @@ public class ImportSupplyResourceContractData extends WsMDB {
 
         MosGisModel m = ModelHolder.getModel ();
         
-        SupplyResourceContractType.IsNotContract isNotContract = src.getIsNotContract ();
-        if (isNotContract == null) throw new UnsupportedOperationException ("Not supported yet, only isNotContract please");
+        final Map<String, Object> r;
         
-        final JsonObject jsonObject = toJsonObject (isNotContract);
+        SupplyResourceContractType.IsNotContract isNotContract = src.getIsNotContract ();
+        if (isNotContract != null) {
+            final JsonObject jsonObject = toJsonObject (isNotContract);
 logger.info ("jsonObject=" + jsonObject);
+            r = DB.to.Map (jsonObject);
+            r.put (c.IS_CONTRACT.lc (), 0);
+        }
+        else {
+            throw new UnsupportedOperationException ("Not supported yet, only isNotContract please");
+        }        
 
-        final Map<String, Object> r = DB.to.Map (jsonObject);
 logger.info ("r=" + r);
 
         r.put (SupplyResourceContract.c.UUID_ORG.lc (), wsr.get (WsMessages.c.UUID_ORG.lc ()));
@@ -159,18 +169,85 @@ logger.info ("r=" + r);
         
     }
 
-    protected void setCustomer (final Map<String, Object> r, DRSORegOrgType regOrg, DRSOIndType ind) {
+    protected void setCustomer (final Map<String, Object> r, DRSORegOrgType regOrg) {
+        final String orgRootEntityGUID = regOrg.getOrgRootEntityGUID ();
+        if (orgRootEntityGUID == null) throw new IllegalArgumentException ("Не указан orgRootEntityGUID для DRSORegOrgType");
+        r.put (c.UUID_ORG_CUSTOMER.lc (), orgRootEntityGUID);
+    }    
+    
+    private void setCustomer (Map<String, Object> r, DRSOIndType ind) throws Exception {
         
-        if (regOrg != null) {
-            final String orgRootEntityGUID = regOrg.getOrgRootEntityGUID ();
-            if (orgRootEntityGUID == null) throw new IllegalArgumentException ("Не указан orgRootEntityGUID для DRSORegOrgType");
-            r.put (c.UUID_ORG_CUSTOMER.lc (), orgRootEntityGUID);
-            return;
+        Map<String, Object> person = DB.to.Map (toJsonObject (ind));
+        
+        String snils = ind.getSNILS ();
+        
+        if (snils == null) {                
+            setCustomer (r, person, ind.getID ());
+        }
+        else {
+            
+            person.put (VocPerson.c.SNILS.lc (), snils);
+            
+            final MosGisModel m = ModelHolder.getModel ();
+            
+            try (DB db = m.getDb ()) {
+
+                db.upsert (VocPerson.class, person, VocPerson.c.SNILS.lc ());
+                
+                r.put (c.UUID_PERSON_CUSTOMER.lc (),
+                    db.getString (m
+                        .select (VocPerson.class, EnTable.c.UUID.lc ())
+                        .where (VocPerson.c.SNILS, snils)
+                    )
+                );                
+
+            }
+
         }
         
     }
     
-    protected void setCustomer (final Map<String, Object> r, SupplyResourceContractType src) {
+    private void setCustomer (Map<String, Object> r, Map<String, Object> person, ID id) throws Exception {
+        
+        if (id == null) throw new IllegalArgumentException ("Не указан ни СНИЛС, ни документ");
+        
+        person.put (VocPerson.c.CODE_VC_NSI_95.lc (), id.getType ().getCode ());
+        person.put (VocPerson.c.SERIES.lc (), id.getSeries ());
+        person.put (VocPerson.c.NUMBER_.lc (), id.getNumber ());
+        person.put (VocPerson.c.ISSUEDATE.lc (), id.getIssueDate ());
+
+        final MosGisModel m = ModelHolder.getModel ();
+
+        try (DB db = m.getDb ()) {
+/*
+            db.upsert (VocPerson.class, person, VocPerson.c.SNILS.lc ());
+
+            r.put (c.UUID_PERSON_CUSTOMER.lc (),
+                db.getString (m
+                    .select (VocPerson.class, EnTable.c.UUID.lc ())
+                    .where (VocPerson.c.SNILS, snils)
+                )
+            );                
+*/
+        }
+        
+    }
+
+    protected void setCustomer (final Map<String, Object> r, DRSORegOrgType regOrg, DRSOIndType ind) throws Exception {
+        
+        if (regOrg != null) {
+            setCustomer (r, regOrg);
+        }
+        else if (ind != null) {
+            setCustomer (r, ind);
+        }
+        else {
+            throw new IllegalArgumentException ("No regOrg nor ind provided");
+        }
+                        
+    }
+    
+    protected void setCustomer (final Map<String, Object> r, SupplyResourceContractType src) throws Exception {
         
         if (DB.ok (src.isOffer ())) {
             r.put (c.ID_CUSTOMER_TYPE.lc (), VocGisSupplyResourceContractCustomerType.i.OFFER.getId ());
