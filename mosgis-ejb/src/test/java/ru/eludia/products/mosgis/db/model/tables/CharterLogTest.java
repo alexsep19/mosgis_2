@@ -6,7 +6,7 @@ import javax.xml.bind.JAXBContext;
 import org.junit.Test;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.products.mosgis.db.model.tables.base.BaseTest;
-import ru.eludia.products.mosgis.ws.soap.impl.base.SOAPTools;
+import ru.eludia.products.mosgis.ws.soap.tools.SOAPTools;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportCharterRequest;
 
 public class CharterLogTest extends BaseTest {

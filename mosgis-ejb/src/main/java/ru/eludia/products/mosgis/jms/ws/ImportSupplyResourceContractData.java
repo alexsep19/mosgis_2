@@ -11,6 +11,7 @@ import javax.ejb.MessageDriven;
 import javax.json.JsonObject;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.datatype.XMLGregorianCalendar;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
@@ -23,6 +24,7 @@ import ru.eludia.products.mosgis.jms.base.WsMDB;
 import ru.eludia.products.mosgis.ws.soap.impl.base.Errors;
 import ru.gosuslugi.dom.schema.integration.base.BaseAsyncResponseType;
 import ru.eludia.products.mosgis.ws.soap.impl.base.Fault;
+import ru.eludia.products.mosgis.ws.soap.tools.SOAPTools;
 import ru.gosuslugi.dom.schema.integration.base.CommonResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.DRSOIndType;
 import ru.gosuslugi.dom.schema.integration.house_management.DRSORegOrgType;
@@ -87,20 +89,28 @@ public class ImportSupplyResourceContractData extends WsMDB {
     }
 
     private ImportResult.CommonResult toCommonResult (Map<String, Object> r, ImportSupplyResourceContractRequest.Contract i) throws Exception {
+        
         final ImportResult.CommonResult result = new ImportResult.CommonResult ();
-        result.setTransportGUID (i.getTransportGUID ());
-        result.setUpdateDate (DB.to.XMLGregorianCalendar (new Timestamp (System.currentTimeMillis ())));
-        result.setGUID (getUUID (r, i));
+
+        result.setTransportGUID (i.getTransportGUID ());        
+        result.setUpdateDate (SOAPTools.xmlNow ());
+        
+        final ImportResult.CommonResult.ImportSupplyResourceContract importSupplyResourceContract = toImportSupplyResourceContract (r, i);
+        result.setImportSupplyResourceContract (importSupplyResourceContract);
+        result.setGUID (importSupplyResourceContract.getContractGUID ());
+        
         return result;
+        
     }
 
-    private String getUUID (Map<String, Object> r, ImportSupplyResourceContractRequest.Contract i) throws Exception {
+
+    private ImportResult.CommonResult.ImportSupplyResourceContract toImportSupplyResourceContract (Map<String, Object> r, ImportSupplyResourceContractRequest.Contract i) throws Exception {
         String contractGUID = i.getContractGUID ();
-        if (i.getSupplyResourceContract () != null) return getUUID (r, contractGUID, i.getSupplyResourceContract ());
+        if (i.getSupplyResourceContract () != null) return toImportSupplyResourceContract (r, contractGUID, i.getSupplyResourceContract ());
         throw new UnsupportedOperationException ("Not supported yet."); 
     }
 
-    private String getUUID (Map<String, Object> wsr, String contractGUID, SupplyResourceContractType src) throws Exception {
+    private ImportResult.CommonResult.ImportSupplyResourceContract toImportSupplyResourceContract (Map<String, Object> wsr, String contractGUID, SupplyResourceContractType src) throws Exception {
         
         if (contractGUID != null) throw new UnsupportedOperationException ("Updating is not supported yet.");
 
@@ -121,13 +131,19 @@ logger.info ("r=" + r);
         
 logger.info ("r=" + r);
 
+        ImportResult.CommonResult.ImportSupplyResourceContract result = new ImportResult.CommonResult.ImportSupplyResourceContract ();
+
         try (DB db = m.getDb ()) {
             
             UUID uuid = (UUID) db.insertId (SupplyResourceContract.class, r);
             
+            result.setContractRootGUID (uuid.toString ());
+            
             String idLog = m.createIdLogWs (db, m.get (SupplyResourceContract.class), (UUID) wsr.get ("uuid"), uuid, VocAction.i.CREATE);
+            
+            result.setContractGUID (idLog);
 
-            return idLog;
+            return result;
 
         }
         

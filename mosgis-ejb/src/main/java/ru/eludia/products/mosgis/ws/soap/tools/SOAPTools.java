@@ -1,16 +1,18 @@
-package ru.eludia.products.mosgis.ws.soap.impl.base;
+package ru.eludia.products.mosgis.ws.soap.tools;
 
 import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.sql.Timestamp;
 import java.util.Iterator;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPHeader;
 import javax.xml.soap.SOAPHeaderElement;
@@ -18,6 +20,7 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import org.xml.sax.SAXException;
+import ru.eludia.base.DB;
 import ru.gosuslugi.dom.schema.integration.base.RequestHeader;
 import ru.gosuslugi.dom.schema.integration.base.HeaderType;
 import ru.gosuslugi.dom.schema.integration.base.ISRequestHeader;
@@ -197,6 +200,10 @@ public abstract class SOAPTools {
 
         return sw.toString ();
                     
+    }
+
+    public static XMLGregorianCalendar xmlNow () {
+        return DB.to.XMLGregorianCalendar (new Timestamp (System.currentTimeMillis ()));
     }
     
 }

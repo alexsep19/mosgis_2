@@ -29,7 +29,7 @@ import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.jms.UUIDPublisher;
 import ru.eludia.products.mosgis.ws.soap.clients.WsGisOrgCommonClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
-import ru.eludia.products.mosgis.ws.soap.impl.base.SOAPTools;
+import ru.eludia.products.mosgis.ws.soap.tools.SOAPTools;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_base.SubsidiaryType;

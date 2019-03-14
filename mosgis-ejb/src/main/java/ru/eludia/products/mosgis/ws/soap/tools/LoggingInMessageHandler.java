@@ -1,6 +1,5 @@
 package ru.eludia.products.mosgis.ws.soap.tools;
 
-import ru.eludia.products.mosgis.ws.soap.impl.base.SOAPTools;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;

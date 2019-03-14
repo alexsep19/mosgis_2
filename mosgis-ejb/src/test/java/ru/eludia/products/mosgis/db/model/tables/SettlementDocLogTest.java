@@ -6,7 +6,7 @@ import javax.xml.bind.JAXBContext;
 import org.junit.Test;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.tables.base.BaseTest;
-import ru.eludia.products.mosgis.ws.soap.impl.base.SOAPTools;
+import ru.eludia.products.mosgis.ws.soap.tools.SOAPTools;
 import ru.gosuslugi.dom.schema.integration.bills.ImportRSOSettlementsRequest;
 
 public class SettlementDocLogTest extends BaseTest {

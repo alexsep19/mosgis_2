@@ -37,7 +37,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState;
 import ru.eludia.products.mosgis.db.model.ws.WsMessages;
 import ru.eludia.products.mosgis.util.StringUtils;
 import ru.eludia.products.mosgis.ws.soap.impl.base.Fault;
-import ru.eludia.products.mosgis.ws.soap.impl.base.SOAPTools;
+import ru.eludia.products.mosgis.ws.soap.tools.SOAPTools;
 import ru.gosuslugi.dom.schema.integration.base.BaseAsyncResponseType;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.base.ResultHeader;
