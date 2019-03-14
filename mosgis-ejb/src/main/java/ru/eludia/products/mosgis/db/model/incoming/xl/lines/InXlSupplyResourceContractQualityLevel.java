@@ -122,7 +122,7 @@ public class InXlSupplyResourceContractQualityLevel extends EnTable {
 
     public InXlSupplyResourceContractQualityLevel() {
 
-	super("in_xl_sr_ctr_qls", "Строки импорта показателей качества поставляемых ресурсов ДРСО");
+	super("in_xl_sr_ctr_qls", "Строки импорта показателей качества ДРСО");
 
 	cols(c.class);
 

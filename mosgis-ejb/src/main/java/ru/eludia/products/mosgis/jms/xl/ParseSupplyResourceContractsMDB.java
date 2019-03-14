@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
@@ -24,6 +23,7 @@ import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceCo
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceContractService;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceContractSubject;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceContractQualityLevel;
+import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceContractTemperatureChart;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceContractVolume;
 import ru.eludia.products.mosgis.db.model.tables.Block;
 import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
@@ -36,6 +36,7 @@ import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractOtherQual
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractQualityLevel;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubjectLog;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractTemperatureChart;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.voc.VocPersonLog;
 import ru.eludia.products.mosgis.jms.xl.base.XLMDB;
@@ -450,6 +451,62 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 	return false;
     }
 
+    protected void addTemperatureChartLines(XSSFSheet sheet, UUID parent, DB db, Map<String, Map<String, Object>> vocs) throws SQLException {
+
+	for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+
+	    UUID uuid = (UUID) db.insertId(InXlSupplyResourceContractTemperatureChart.class,
+		InXlSupplyResourceContractTemperatureChart.toHash(parent, i, sheet.getRow(i), vocs)
+	    );
+
+	    try {
+		db.update(InXlSupplyResourceContractTemperatureChart.class, DB.HASH(
+		    EnTable.c.UUID, uuid,
+		    EnTable.c.IS_DELETED, 0
+		));
+
+	    } catch (SQLException e) {
+
+		String s = e.getMessage();
+
+		if (e.getErrorCode() == 20000) {
+		    s
+			= new StringTokenizer(e.getMessage(), "\n\r")
+			    .nextToken()
+			    .replace("ORA-20000: ", "");
+		}
+
+		db.update(InXlSupplyResourceContractTemperatureChart.class, DB.HASH(
+		    EnTable.c.UUID, uuid,
+		    InXlSupplyResourceContractTemperatureChart.c.ERR, s
+		));
+
+	    }
+
+	}
+    }
+
+    private boolean checkTemperatureChartLines(XSSFSheet sheet, DB db, UUID parent) throws SQLException {
+
+	List<Map<String, Object>> brokenLines = db.getList(db.getModel()
+	    .select(InXlSupplyResourceContractTemperatureChart.class, "*")
+	    .where(SupplyResourceContractObject.c.UUID_XL, parent)
+	    .where(EnTable.c.IS_DELETED, 1)
+	);
+
+	if (brokenLines.isEmpty()) {
+	    return true;
+	}
+
+	for (Map<String, Object> brokenLine : brokenLines) {
+	    XSSFRow row = sheet.getRow((int) DB.to.Long(brokenLine.get(InXlSupplyResourceContractTemperatureChart.c.ORD.lc())));
+	    XSSFCell cell = row.getLastCellNum() < 8 ? row.createCell(8) : row.getCell(8);
+	    String val = brokenLine.get(InXlSupplyResourceContractTemperatureChart.c.ERR.lc()).toString();
+	    cell.setCellValue(val);
+	}
+
+	return false;
+    }
     protected Map<String, Object> processVocNsi58Lines(XSSFSheet sheet) throws XLException {
 
 	final Map<String, Object> r = DB.HASH();
@@ -568,6 +625,10 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 	    SupplyResourceContractOtherQualityLevel.c.UUID_XL, parent,
 	    EnTable.c.IS_DELETED, 0
 	), SupplyResourceContractOtherQualityLevel.c.UUID_XL.lc());
+	db.update(SupplyResourceContractTemperatureChart.class, DB.HASH(
+	    SupplyResourceContractTemperatureChart.c.UUID_XL, parent,
+	    EnTable.c.IS_DELETED, 0
+	), SupplyResourceContractTemperatureChart.c.UUID_XL.lc());
     }
 
     @Override
@@ -589,6 +650,10 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 	db.delete(m
 	    .select(SupplyResourceContractOtherQualityLevel.class, "uuid")
 	    .where(SupplyResourceContractOtherQualityLevel.c.UUID_XL, parent)
+	);
+	db.delete(m
+	    .select(SupplyResourceContractTemperatureChart.class, "uuid")
+	    .where(SupplyResourceContractTemperatureChart.c.UUID_XL, parent)
 	);
 
 	db.update(SupplyResourceContractSubject.class, HASH(
@@ -718,6 +783,7 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 	final XSSFSheet sheetQuality = wb.getSheetAt(4);
 	final XSSFSheet sheetOtherQuality = wb.getSheetAt(5);
 	final XSSFSheet sheetVolumes = wb.getSheetAt(6);
+	final XSSFSheet sheetTemperatureCharts = wb.getSheetAt(7);
 
 	boolean isOk = true;
 
@@ -756,6 +822,10 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 	    isOk = false;
 	}
 
+	addTemperatureChartLines(sheetTemperatureCharts, uuid, db, vocs);
+	if (!checkTemperatureChartLines(sheetTemperatureCharts, db, uuid)) {
+	    isOk = false;
+	}
 
         if (!isOk) throw new XLException ("ParseSupplyResourceContractsMDB NOT OK");
     }
