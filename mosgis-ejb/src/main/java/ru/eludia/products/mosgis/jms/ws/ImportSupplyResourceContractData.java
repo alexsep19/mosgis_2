@@ -92,12 +92,22 @@ public class ImportSupplyResourceContractData extends WsMDB {
         
         final ImportResult.CommonResult result = new ImportResult.CommonResult ();
 
-        result.setTransportGUID (i.getTransportGUID ());        
-        result.setUpdateDate (SOAPTools.xmlNow ());
+        result.setTransportGUID (i.getTransportGUID ());
         
         final ImportResult.CommonResult.ImportSupplyResourceContract importSupplyResourceContract = toImportSupplyResourceContract (r, i);
-        result.setImportSupplyResourceContract (importSupplyResourceContract);
-        result.setGUID (importSupplyResourceContract.getContractGUID ());
+        
+        try {
+            result.setImportSupplyResourceContract (importSupplyResourceContract);
+            result.setGUID (importSupplyResourceContract.getContractGUID ());
+            result.setUpdateDate (SOAPTools.xmlNow ());
+        }
+        catch (Exception ex) {
+            logger.log (Level.WARNING, i.getTransportGUID (), ex);
+            final CommonResultType.Error error = new CommonResultType.Error ();
+            error.setErrorCode (Errors.FMT001300.name ());
+            error.setDescription (ex.getMessage ());
+            result.getError ().add (error);
+        }
         
         return result;
         
@@ -132,7 +142,7 @@ logger.info ("r=" + r);
 logger.info ("r=" + r);
 
         ImportResult.CommonResult.ImportSupplyResourceContract result = new ImportResult.CommonResult.ImportSupplyResourceContract ();
-
+        
         try (DB db = m.getDb ()) {
             
             UUID uuid = (UUID) db.insertId (SupplyResourceContract.class, r);
@@ -150,10 +160,14 @@ logger.info ("r=" + r);
     }
 
     protected void setCustomer (final Map<String, Object> r, DRSORegOrgType regOrg, DRSOIndType ind) {
+        
         if (regOrg != null) {
-            r.put (c.UUID_ORG_CUSTOMER.lc (), regOrg.getOrgRootEntityGUID ());
+            final String orgRootEntityGUID = regOrg.getOrgRootEntityGUID ();
+            if (orgRootEntityGUID == null) throw new IllegalArgumentException ("Не указан orgRootEntityGUID для DRSORegOrgType");
+            r.put (c.UUID_ORG_CUSTOMER.lc (), orgRootEntityGUID);
             return;
         }
+        
     }
     
     protected void setCustomer (final Map<String, Object> r, SupplyResourceContractType src) {
