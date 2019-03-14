@@ -25,7 +25,7 @@ public class InXlSupplyResourceContractVolume extends EnTable {
 
 	ORD                     (Type.NUMERIC, 5, "Номер строки"),
 
-	CODE_SR_CTR             (Type.STRING, 255, "Иной код договора"),
+	CODE_SR_CTR             (Type.STRING, null, "Иной код договора"),
         UUID_SR_CTR             (Type.UUID, null, "Ссылка на Договор"),
 	UUID_SR_CTR_SUBJ        (Type.UUID, null, "Ссылка на поставляемый ресурс"),
 
@@ -96,7 +96,7 @@ public class InXlSupplyResourceContractVolume extends EnTable {
 
 	r.put(SupplyResourceContractSubject.c.UNIT.lc(), toNumeric(row, 7));
 
-	r.put(SupplyResourceContractSubject.c.FEEDINGMODE.lc(), toNumeric(row, 8));
+	r.put(SupplyResourceContractSubject.c.FEEDINGMODE.lc(), toString(row, 8));
     }
 
     public InXlSupplyResourceContractVolume() {

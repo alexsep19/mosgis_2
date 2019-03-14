@@ -24,7 +24,7 @@ public class InXlSupplyResourceContractService extends EnTable {
 
 	ORD                     (Type.NUMERIC, 5,           "Номер строки"),
 
-	CODE_SR_CTR             (Type.STRING, 255, "Иной код договора"),
+	CODE_SR_CTR             (Type.STRING, null, "Иной код договора"),
         UUID_SR_CTR             (Type.UUID, null, "Ссылка на Договор"),
 	UUID_SR_CTR_OBJ         (Type.UUID, null, "Ссылка на ОЖФ"),
 
@@ -135,6 +135,8 @@ public class InXlSupplyResourceContractService extends EnTable {
 	    + " in_ctr_obj in_xl_sr_ctr_obj%ROWTYPE; "
 	    + "BEGIN "
 	    + " IF :NEW.err IS NOT NULL THEN RETURN; END IF; "
+
+	    + " IF :NEW.code_sr_ctr IS NULL THEN raise_application_error (-20000, 'Укажите иной код договора'); END IF; "
 
 	    + " BEGIN "
 	    + "  SELECT * INTO in_ctr FROM in_xl_sr_ctr WHERE uuid_xl = :NEW.uuid_xl AND code = :NEW.code_sr_ctr; "

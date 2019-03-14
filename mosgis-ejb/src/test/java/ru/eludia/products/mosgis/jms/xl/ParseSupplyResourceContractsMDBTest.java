@@ -19,7 +19,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocFileStatus;
 
 public class ParseSupplyResourceContractsMDBTest extends BaseTest {
     
-    private static final UUID uuid = UUID.fromString ("83e1697d-7d09-4aa0-e053-0100007fc05e");
+    private static final UUID uuid = UUID.fromString ("840a696e-3a81-672e-e053-0d0b000aa429");
 
     private static final Logger logger = Logger.getLogger(ParseSupplyResourceContractsMDBTest.class.getName());
 
@@ -69,6 +69,7 @@ public class ParseSupplyResourceContractsMDBTest extends BaseTest {
     public void clean() throws SQLException {
 
 	try (DB db = model.getDb()) {
+	    db.d0(new QP("DELETE FROM in_xl_sr_ctr_qls WHERE uuid_xl = ?", uuid));
 	    db.d0(new QP("DELETE FROM in_xl_sr_ctr_svc WHERE uuid_xl = ?", uuid));
 	    db.d0(new QP("DELETE FROM in_xl_sr_ctr_obj WHERE uuid_xl = ?", uuid));
 	    db.d0(new QP("DELETE FROM in_xl_sr_ctr_subj WHERE uuid_xl = ?", uuid));
