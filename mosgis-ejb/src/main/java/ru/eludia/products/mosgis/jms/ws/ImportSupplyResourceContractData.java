@@ -1,7 +1,5 @@
 package ru.eludia.products.mosgis.jms.ws;
 
-import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +10,6 @@ import javax.ejb.MessageDriven;
 import javax.json.JsonObject;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.datatype.XMLGregorianCalendar;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
@@ -178,7 +175,16 @@ logger.info ("r=" + r);
     private void setCustomer (Map<String, Object> r, DRSOIndType ind) throws Exception {
         
         Map<String, Object> person = DB.to.Map (toJsonObject (ind));
+      
+logger.info ("person 1 = " + person);
         
+        person.put (EnTable.c.IS_DELETED.lc (), 0);
+        person.put (VocPerson.c.UUID_ORG.lc (), r.get (c.UUID_ORG.lc ()));
+        person.put (VocPerson.c.BIRTHDATE.lc (), ind.getDateOfBirth ());
+        person.put (VocPerson.c.IS_FEMALE.lc (), "F".equals (ind.getSex ()));
+            
+logger.info ("person 2 = " + person);
+
         String snils = ind.getSNILS ();
         
         if (snils == null) {                
@@ -197,7 +203,8 @@ logger.info ("r=" + r);
                 r.put (c.UUID_PERSON_CUSTOMER.lc (),
                     db.getString (m
                         .select (VocPerson.class, EnTable.c.UUID.lc ())
-                        .where (VocPerson.c.SNILS, snils)
+                        .where  (VocPerson.c.UUID_ORG, r.get (c.UUID_ORG.lc ()))
+                        .where  (VocPerson.c.SNILS, snils)
                     )
                 );                
 
@@ -209,26 +216,35 @@ logger.info ("r=" + r);
     
     private void setCustomer (Map<String, Object> r, Map<String, Object> person, ID id) throws Exception {
         
-        if (id == null) throw new IllegalArgumentException ("Не указан ни СНИЛС, ни документ");
-        
-        person.put (VocPerson.c.CODE_VC_NSI_95.lc (), id.getType ().getCode ());
+        if (id == null) throw new IllegalArgumentException ("Не указан ни СНИЛС, ни документ");                
+
+        if (!DB.ok (id.getSeries ())) throw new IllegalArgumentException ("Не указана серия документа");
         person.put (VocPerson.c.SERIES.lc (), id.getSeries ());
         person.put (VocPerson.c.NUMBER_.lc (), id.getNumber ());
         person.put (VocPerson.c.ISSUEDATE.lc (), id.getIssueDate ());
+        person.put (VocPerson.c.CODE_VC_NSI_95.lc (), id.getType ().getCode ());
 
         final MosGisModel m = ModelHolder.getModel ();
 
         try (DB db = m.getDb ()) {
-/*
-            db.upsert (VocPerson.class, person, VocPerson.c.SNILS.lc ());
+
+            db.upsert (VocPerson.class, person
+                , VocPerson.c.SERIES.lc ()
+                , VocPerson.c.NUMBER_.lc ()
+                , VocPerson.c.ISSUEDATE.lc ()
+                , VocPerson.c.CODE_VC_NSI_95.lc ()
+            );
 
             r.put (c.UUID_PERSON_CUSTOMER.lc (),
                 db.getString (m
                     .select (VocPerson.class, EnTable.c.UUID.lc ())
-                    .where (VocPerson.c.SNILS, snils)
-                )
-            );                
-*/
+                    .where  (VocPerson.c.UUID_ORG, r.get (c.UUID_ORG.lc ()))
+                    .where  (VocPerson.c.SERIES, id.getSeries ())
+                    .where  (VocPerson.c.NUMBER_, id.getNumber ())
+                    .where  (VocPerson.c.ISSUEDATE, id.getIssueDate ())
+                    .where  (VocPerson.c.CODE_VC_NSI_95, id.getType ().getCode ())                
+            ));
+
         }
         
     }
