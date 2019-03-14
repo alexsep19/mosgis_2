@@ -7,11 +7,12 @@ import static ru.eludia.base.model.Type.NUMERIC;
 import static ru.eludia.base.model.Type.INTEGER;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 
 public class SupplyResourceContractTemperatureChart extends EnTable {
 
     public enum c implements EnColEnum {
-
+	UUID_XL                          (InXlFile.class, "Файл импорта"),
         UUID_SR_CTR                      (SupplyResourceContract.class, "Договор"),
 	UUID_SR_CTR_OBJ                  (SupplyResourceContractObject.class, null, "Объект жилищного фонда договора (заполняется в случае если график привязан ОЖФ)"),
 
@@ -38,6 +39,19 @@ public class SupplyResourceContractTemperatureChart extends EnTable {
         public boolean isLoggable() {
 	    return false;
         }
+
+	public boolean isToXlImport() {
+
+	    switch (this) {
+	    case UUID_XL:
+	    case OUTSIDETEMPERATURE:
+	    case FLOWLINETEMPERATURE:
+	    case OPPOSITELINETEMPERATURE:
+		return true;
+	    default:
+		return false;
+	    }
+	}
     }
 
     public SupplyResourceContractTemperatureChart () {
