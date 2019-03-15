@@ -69,6 +69,6 @@ public class RcContractObjects extends EJBResource <RcContractObjectLocal> {
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     public JsonObject getBuildings(JsonObject p) {
-        return back.getBuildings(p);
+        return back.getBuildings(p, getUser());
     }
 }

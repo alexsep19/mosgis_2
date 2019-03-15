@@ -1,6 +1,8 @@
 package ru.eludia.products.mosgis.ws.rest.impl;
 
+import java.util.StringTokenizer;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -16,6 +18,8 @@ import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.tables.ActualSomeContractObject;
+import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.RcContractObjectLocal;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
@@ -96,7 +100,41 @@ public class RcContractObjectImpl extends BaseCRUD<RcContractObject> implements 
         VocAction.addTo(job);
     });}
 
+    private static final Pattern RE_ZIP = Pattern.compile("[1-9][0-9]{5}");
+
     @Override
-    public JsonObject getBuildings(JsonObject p) { return fetchData((db, job) -> {
+    public JsonObject getBuildings(JsonObject p, User user) { return fetchData((db, job) -> {
+
+	final Model m = db.getModel();
+
+	Select select = m
+	    .select(VocBuildingAddress.class, "AS root", "houseguid AS id", "label", "postalcode", "is_condo", "uuid_house")
+	    .where("houseguid", m.select(ActualSomeContractObject.class, ActualSomeContractObject.c.FIASHOUSEGUID.lc())
+		.where(ActualSomeContractObject.c.UUID_ORG, user.getUuidOrg())
+	    )
+	    .orderBy("postalcode, label")
+	    .limit(0, 50);
+
+
+	StringBuilder sb = new StringBuilder();
+	StringTokenizer st = new StringTokenizer(p.getString("search", ""));
+
+	while (st.hasMoreTokens()) {
+
+	    final String token = st.nextToken();
+
+	    if (sb.length() == 0 && RE_ZIP.matcher(token).matches()) {
+		select.and("postalcode", token);
+	    } else {
+		sb.append(token.toUpperCase().replace('Ё', 'Е'));
+		sb.append('%');
+	    }
+	}
+
+	if (sb.length() > 0) {
+	    select.and("label_uc LIKE", sb.toString());
+	}
+
+	db.addJsonArrays(job, select);
     });}
 }
