@@ -193,6 +193,6 @@ public class InXlSupplyResourceContractSubject extends EnTable {
 
 	r.put(SupplyResourceContractSubject.c.UNIT.lc(), toNumeric(row, 6));
 
-	r.put(SupplyResourceContractSubject.c.FEEDINGMODE.lc(), toNumeric(row, 7));
+	r.put(SupplyResourceContractSubject.c.FEEDINGMODE.lc(), toString(row, 7));
     }
 }
