@@ -83,76 +83,18 @@ public class InXlSupplyResourceContract extends EnTable {
 
 	r.put(SupplyResourceContract.c.IS_CONTRACT.lc(), toBool(row, 1, "Не указан Является публичным договор (столбец B)"));
 
-        try {
-            final XSSFCell cell = row.getCell (2);
-            if (cell == null) throw new XLException ("Не указан Номер договора (столбец C)");
-            final String s = cell.getStringCellValue ();
-            if (!DB.ok (s)) throw new XLException ("Не указан Номер договора (столбец C)");
-            r.put(SupplyResourceContract.c.CONTRACTNUMBER.lc (), s);
-        }
-        catch (XLException ex) {
-            throw ex;
-        }
-        catch (Exception ex) {
-            throw new XLException (ex.getMessage());
-        }
+	r.put(SupplyResourceContract.c.CONTRACTNUMBER.lc (), toString(row, 2, "Не указан Номер договора (столбец C)"));
 
-        try {
-            final XSSFCell cell = row.getCell (3);
-            if (cell == null) throw new XLException ("Не указана Дата заключения договора (столбец D)");
-            final Date d = cell.getDateCellValue ();
-            if (d == null) throw new XLException ("Не указана Дата заключения договора (столбец D)");
-            r.put(SupplyResourceContract.c.SIGNINGDATE.lc (), d);
-        }
-        catch (XLException ex) {
-            throw ex;
-        }
-        catch (Exception ex) {
-            throw new XLException (ex.getMessage());
-        }
+	r.put(SupplyResourceContract.c.SIGNINGDATE.lc (), toDate(row, 3, "Не указана Дата заключения договора (столбец D)"));
 
-	try {
-	    final XSSFCell cell = row.getCell(4);
-	    if (cell == null) {
-		throw new XLException("Не указана Дата вступления в силу договора (столбец E)");
-	    }
-	    final Date d = cell.getDateCellValue();
-	    if (d == null) {
-		throw new XLException("Не указана Дата вступления в силу договора (столбец E)");
-	    }
-	    r.put(SupplyResourceContract.c.EFFECTIVEDATE.lc(), d);
-	} catch (XLException ex) {
-	    throw ex;
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
+	r.put(SupplyResourceContract.c.EFFECTIVEDATE.lc(), toDate(row, 4, "Не указана Дата вступления в силу договора (столбец E)"));
 
 	r.put(SupplyResourceContract.c.AUTOROLLOVER.lc(), DB.ok(toBool(row, 5))? 1 : 0);
 
-	try {
-	    final XSSFCell cell = row.getCell(6);
-	    if (cell == null) {
-		throw new XLException("Не указана Дата окончания действия (столбец G)");
-	    }
-	    final Date d = cell.getDateCellValue();
-	    if (d == null) {
-		throw new XLException("Не указана Дата окончания действия (столбец G)");
-	    }
-	    r.put(SupplyResourceContract.c.COMPLETIONDATE.lc(), d);
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
+	r.put(SupplyResourceContract.c.COMPLETIONDATE.lc(), toDate(row, 6));
 
 	try {
-	    final XSSFCell cell = row.getCell(7);
-	    if (cell == null) {
-		throw new XLException("Не указан Тип заказчика (столбец H)");
-	    }
-	    String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указан Тип заказчика (столбец H)");
-	    }
+	    String s = DB.to.String(toString(row, 7, "Не указан Тип заказчика (столбец H)"));
 
 	    VocGisSupplyResourceContractCustomerType.i id_customer_type;
 
@@ -201,14 +143,9 @@ public class InXlSupplyResourceContract extends EnTable {
 	r.put(SupplyResourceContract.c.CODE_VC_NSI_58.lc(), vocs.get("vc_nsi_58").get(contractbase));
 
 	try {
-	    final XSSFCell cell = row.getCell(35);
-	    if (cell == null) {
-		throw new XLException("Порядок размещения информации о начислениях за коммунальные услуги (столбец AJ)");
-	    }
-	    String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указан Порядок размещения информации о начислениях за коммунальные услуги (столбец AJ)");
-	    }
+	    String s = DB.to.String(toString(row, 35
+		, "Не указан Порядок размещения информации о начислениях за коммунальные услуги (столбец AJ)"
+	    ));
 
 	    s = s.toLowerCase().replace(" ожф", " объектов жилищного фонда");
 
@@ -229,14 +166,8 @@ public class InXlSupplyResourceContract extends EnTable {
 	r.put(SupplyResourceContract.c.MDINFO.lc(), toBool(row, 37));
 
 	try {
-	    final XSSFCell cell = row.getCell(38);
-	    if (cell == null) {
-		throw new XLException("Не указано Показатели качества коммунальных ресурсов ведутся (столбец AM)");
-	    }
-	    final String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указан Показатели качества коммунальных ресурсов ведутся (столбец AM)");
-	    }
+	    final String s = DB.to.String(toString(row, 38, "Не указан Показатели качества коммунальных ресурсов ведутся (столбец AM)"));
+
 	    VocGisContractDimension.i specqtyinds = VocGisContractDimension.i.forLabel(s);
 	    if (!DB.ok(specqtyinds)) {
 		throw new XLException("Не найдено Показатели качества коммунальных ресурсов ведутся (столбец AM): " + s);
@@ -251,13 +182,8 @@ public class InXlSupplyResourceContract extends EnTable {
 	setFieldsPlannedVolume (r, row);
 
 	try {
-	    final XSSFCell cell = row.getCell(41);
-	    if (cell != null) {
-		final String s = cell.getStringCellValue();
-		if (DB.ok(s)) {
-		    r.put(c.ID_SR_CTR.lc(), UUID.fromString(s));
-		}
-	    }
+	    final String s = DB.to.String(toString(row, 41));
+	    r.put(c.ID_SR_CTR.lc(), UUID.fromString(s));
 	} catch (Exception ex) {
 	    throw new XLException("Некорректный тип ячейки Идентификатор договора ресурсоснабжения (столбец AR)");
 	}
