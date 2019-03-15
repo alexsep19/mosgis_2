@@ -183,9 +183,11 @@ public class InXlSupplyResourceContract extends EnTable {
 
 	try {
 	    final String s = DB.to.String(toString(row, 41));
-	    r.put(c.ID_SR_CTR.lc(), UUID.fromString(s));
+	    if (DB.ok(s)) {
+		r.put(c.ID_SR_CTR.lc(), UUID.fromString(s));
+	    }
 	} catch (Exception ex) {
-	    throw new XLException("Некорректный тип ячейки Идентификатор договора ресурсоснабжения (столбец AR)");
+	    throw new XLException("Некорректный тип ячейки Идентификатор договора ресурсоснабжения (столбец AR): " + ex.getMessage());
 	}
     }
 
