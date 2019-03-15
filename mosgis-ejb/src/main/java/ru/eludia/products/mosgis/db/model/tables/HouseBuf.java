@@ -20,13 +20,15 @@ public class HouseBuf extends Table {
         col    ("id_vc_rd_1240",         Type.INTEGER, null,               "вид жилого фонда");
 
 
-        trigger ("BEFORE INSERT", "BEGIN "
+        trigger ("BEFORE INSERT", "BEGIN RETURN;"
+/*                
                 + " IF :NEW.fiashouseguid IS NULL THEN "
                 + "  BEGIN"
                 + "   SELECT fiashouseguid INTO :NEW.fiashouseguid FROM in_open_data_lines WHERE unom = :NEW.unom; "
                 + "   EXCEPTION WHEN NO_DATA_FOUND THEN :NEW.fiashouseguid := NULL;"
                 + "  END;"
                 + " END IF;"
+*/
                 + "END;");
 
     }
