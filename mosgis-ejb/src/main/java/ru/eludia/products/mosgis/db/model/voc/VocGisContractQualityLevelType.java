@@ -65,6 +65,20 @@ public class VocGisContractQualityLevelType extends Table {
 	public static i forId(Object id) {
 	    return forId(Integer.parseInt(id.toString()));
 	}
+
+	public static i forLabel(String label) {
+	    for (i i : values()) {
+		if (i.label.equals(label)) {
+		    return i;
+		}
+	    }
+	    return null;
+	}
+
+	@Override
+	public String toString() {
+	    return Integer.toString(id);
+	}
     }
 
     private static JsonArray jsonArray;

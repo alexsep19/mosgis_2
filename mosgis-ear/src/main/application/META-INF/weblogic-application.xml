@@ -92,6 +92,12 @@
     </module>
     
     <module>
+        <name>WS-HouseManagementServiceAsync</name>
+        <type>JMS</type>
+        <path>META-INF/ws-jms/mosgismodule-ws-house-management-service-async-jms.xml</path>
+    </module>
+    
+    <module>
         <name>Workflow-overhaul-work-types</name>
         <type>JMS</type>
         <path>META-INF/mosgismodule-overhaul-work-types-jms.xml</path>

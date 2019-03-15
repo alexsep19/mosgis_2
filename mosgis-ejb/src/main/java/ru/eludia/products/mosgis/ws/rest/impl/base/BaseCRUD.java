@@ -16,6 +16,8 @@ import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.tables.Sender;
+import ru.eludia.products.mosgis.db.model.ws.WsMessages;
 import ru.eludia.products.mosgis.jms.UUIDPublisher;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.base.CRUDBackend;
@@ -61,8 +63,15 @@ public abstract class BaseCRUD <T extends Table> extends Base<T> implements CRUD
             .orderBy ("log.ts DESC")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
         
-        if (logTable.getColumn ("uuid_out_soap") != null) select.toMaybeOne (OutSoap.class, "AS soap", "id_status", "is_failed", "ts", "ts_rp", "err_text", "uuid_ack").on ();
-        
+        if (logTable.getColumn ("uuid_out_soap") != null) select
+            .toMaybeOne (OutSoap.class, "AS soap", "id_status", "is_failed", "ts", "ts_rp", "err_text", "uuid_ack").on ()
+        ;
+
+        if (logTable.getColumn ("uuid_in_soap") != null) select
+            .toMaybeOne (WsMessages.class).on ()
+            .toMaybeOne (Sender.class, Sender.c.LABEL.lc ()).on ()
+        ;
+
         logTable.getColumns ().forEachEntry (0, (i) -> {
             final Col value = i.getValue ();
             if (!(value instanceof Ref)) return;

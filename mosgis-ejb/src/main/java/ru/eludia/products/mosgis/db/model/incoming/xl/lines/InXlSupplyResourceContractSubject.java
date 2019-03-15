@@ -24,7 +24,7 @@ public class InXlSupplyResourceContractSubject extends EnTable {
 
 	ORD                     (Type.NUMERIC, 5, "Номер строки"),
 
-	CODE_SR_CTR             (Type.STRING, 255, "Иной код договора"),
+	CODE_SR_CTR             (Type.STRING, null, "Иной код договора"),
         UUID_SR_CTR             (Type.UUID, null, "Договор"),
 
 	SERVICETYPE             (Type.STRING, 255, "Вид коммунальной услуги"),
@@ -169,101 +169,30 @@ public class InXlSupplyResourceContractSubject extends EnTable {
 
 	r.put(c.CODE_SR_CTR.lc(), toString(row, 0, "Не указан Иной код договора (столбец A)"));
 
-	try {
-	    final XSSFCell cell = row.getCell(1);
-	    if (cell == null) {
-		throw new XLException("Не указана Коммунальная услуга(столбец B)");
-	    }
-	    final String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указана Коммунальная услуга(столбец B)");
-	    }
-	    r.put(c.SERVICETYPE.lc(), s);
 
-	    r.put(SupplyResourceContractSubject.c.CODE_VC_NSI_3.lc(), vocs.get("vc_nsi_3").get(s));
+	Object servicetype = toString(row, 1, "Не указана Коммунальная услуга(столбец B)");
 
-	} catch (XLException ex) {
-	    throw ex;
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
+	r.put(c.SERVICETYPE.lc(), servicetype);
 
-        try {
-            final XSSFCell cell = row.getCell (2);
-            if (cell == null) throw new XLException ("Не указан Коммунальный ресурс(столбец C)");
-            final String s = cell.getStringCellValue ();
-            if (!DB.ok (s)) throw new XLException ("Не указан Коммунальный ресурс(столбец C)");
+	r.put(SupplyResourceContractSubject.c.CODE_VC_NSI_3.lc(), vocs.get("vc_nsi_3").get(servicetype));
 
-	    r.put (c.MUNICIPALRESOURCE.lc (), s);
 
-	    r.put(SupplyResourceContractSubject.c.CODE_VC_NSI_239.lc(), vocs.get("vc_nsi_239").get(s));
-        }
-        catch (XLException ex) {
-            throw ex;
-        }
-        catch (Exception ex) {
-            throw new XLException (ex.getMessage());
-        }
+	Object municipalresource = toString(row, 2, "Не указан Коммунальный ресурс(столбец C)");
 
-        try {
-            final XSSFCell cell = row.getCell (3);
-            if (cell == null) throw new XLException ("Не указана Дата начала поставки ресурса(столбец D)");
-            final Date d = cell.getDateCellValue ();
-            if (d == null) throw new XLException ("Не указана Дата начала поставки ресурса(столбец D)");
-            r.put (SupplyResourceContractSubject.c.STARTSUPPLYDATE.lc (), d);
-        }
-        catch (XLException ex) {
-            throw ex;
-        }
-        catch (Exception ex) {
-            throw new XLException (ex.getMessage());
-        }
+	r.put(c.MUNICIPALRESOURCE.lc(), municipalresource);
 
-	try {
-	    final XSSFCell cell = row.getCell(4);
-	    if (cell == null) {
-		throw new XLException("Не указана Дата окончания поставки ресурса(столбец E)");
-	    }
-	    final Date d = cell.getDateCellValue();
-	    if (d == null) {
-		throw new XLException("Не указана Дата окончания поставки ресурса(столбец E)");
-	    }
-	    r.put(SupplyResourceContractSubject.c.ENDSUPPLYDATE.lc(), d);
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
+	r.put(SupplyResourceContractSubject.c.CODE_VC_NSI_239.lc(), vocs.get("vc_nsi_239").get(municipalresource));
+
+
+	r.put(SupplyResourceContractSubject.c.STARTSUPPLYDATE.lc(), toDate(row, 3, "Не указана Дата начала поставки ресурса(столбец D)"));
+
+	r.put(SupplyResourceContractSubject.c.ENDSUPPLYDATE.lc(), toDate(row, 4));
+
 
 	r.put(SupplyResourceContractSubject.c.VOLUME.lc(), toNumeric(row, 5));
 
-	try {
-	    final XSSFCell cell = row.getCell(6);
-	    if (cell == null) {
-		throw new XLException("Не указан Код единицы измерения(столбец G)");
-	    }
-	    final String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указан Код единицы измерения(столбец G)");
-	    }
-	    r.put(SupplyResourceContractSubject.c.UNIT.lc(), s);
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
+	r.put(SupplyResourceContractSubject.c.UNIT.lc(), toNumeric(row, 6));
 
-	try {
-	    final XSSFCell cell = row.getCell(7);
-	    if (cell == null) {
-		throw new XLException("Не указан Режим подачи(столбец H)");
-	    }
-	    final String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указан Режим подачи(столбец H)");
-	    }
-	    r.put(SupplyResourceContractSubject.c.FEEDINGMODE.lc(), s);
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
+	r.put(SupplyResourceContractSubject.c.FEEDINGMODE.lc(), toNumeric(row, 7));
     }
 }

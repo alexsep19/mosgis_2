@@ -7,7 +7,7 @@ import javax.xml.bind.JAXBContext;
 import org.junit.Test;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.tables.base.BaseTest;
-import ru.eludia.products.mosgis.ws.soap.impl.base.AbstactServiceAsync;
+import ru.eludia.products.mosgis.ws.soap.tools.SOAPTools;
 import ru.gosuslugi.dom.schema.integration.volume_quality.ImportIntervalRequest;
 
 public class IntervalLogTest extends BaseTest {
@@ -19,7 +19,7 @@ public class IntervalLogTest extends BaseTest {
         
         super ();
         jc = JAXBContext.newInstance (ImportIntervalRequest.class);
-        schema = AbstactServiceAsync.loadSchema ("volume-quality/hcs-volume-quality-types.xsd");
+        schema = SOAPTools.loadSchema ("volume-quality/hcs-volume-quality-types.xsd");
         
         table = (Interval) model.get (Interval.class);
         logTable = (IntervalLog) model.get (IntervalLog.class);

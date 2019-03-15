@@ -4,12 +4,16 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
+import javax.json.Json;
+import javax.json.JsonObject;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -33,10 +37,11 @@ import ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState;
 import ru.eludia.products.mosgis.db.model.ws.WsMessages;
 import ru.eludia.products.mosgis.util.StringUtils;
 import ru.eludia.products.mosgis.ws.soap.impl.base.Fault;
-import ru.eludia.products.mosgis.ws.soap.impl.base.AbstactServiceAsync;
-import ru.mos.gkh.gis.schema.integration.base.BaseAsyncResponseType;
-import ru.mos.gkh.gis.schema.integration.base.ErrorMessageType;
-import ru.mos.gkh.gis.schema.integration.base.ResultHeader;
+import ru.eludia.products.mosgis.ws.soap.tools.SOAPTools;
+import ru.gosuslugi.dom.schema.integration.base.BaseAsyncResponseType;
+import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
+import ru.gosuslugi.dom.schema.integration.base.ResultHeader;
+import ru.gosuslugi.dom.schema.integration.organizations_registry_common.GetStateResult;
 
 /**
  *
@@ -48,8 +53,39 @@ public abstract class WsMDB extends UUIDMDB<WsMessages>{
          new QName(SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE, "Server", SOAPConstants.SOAP_ENV_PREFIX);
     
     protected abstract JAXBContext getJAXBContext() throws JAXBException;
+        
+    protected abstract BaseAsyncResponseType generateResponse (DB db, Map<String, Object> r, Object request) throws Exception;    
     
-    protected abstract BaseAsyncResponseType handleRequest(DB db, Object request) throws Exception ;
+    protected BaseAsyncResponseType handleRequest (DB db, Map<String, Object> r, Object request) throws Exception {
+        
+        try {            
+            return generateResponse (db, r, request);            
+        } 
+        catch (Fault e) {
+            GetStateResult result = new GetStateResult();
+            result.setErrorMessage(createErrorMessage(e));
+            return result;
+        }
+        
+    }
+    
+    protected JsonObject toJsonObject (Object dom) {
+        
+        if (dom == null) throw new IllegalArgumentException ("null!");
+        
+        StringWriter sw = new StringWriter ();
+        
+        try {
+            Marshaller m = getJAXBContext().createMarshaller ();
+            m.setProperty ("eclipselink.media-type", "application/json");
+            m.marshal (dom, sw);
+            return Json.createReader (new StringReader (sw.toString ())).readObject ();
+        }
+        catch (Exception ex) {
+            throw new IllegalArgumentException ("Cannot reserialize " + dom, ex);
+        }
+                            
+    }    
     
     @Override
     protected void handleRecord(DB db, UUID uuid, Map<String, Object> r) throws SQLException {
@@ -63,7 +99,7 @@ public abstract class WsMDB extends UUIDMDB<WsMessages>{
 
             String request = r.get(WsMessages.c.REQUEST.lc()).toString();
             
-            BaseAsyncResponseType result = handleRequest(db, unmarshaller.unmarshal(getSoapBodyNode(request)));
+            BaseAsyncResponseType result = handleRequest (db, r, unmarshaller.unmarshal(getSoapBodyNode(request)));
             
             result.setRequestState(VocAsyncRequestState.i.DONE.getId());
             result.setMessageGUID(uuid.toString());
@@ -79,17 +115,19 @@ public abstract class WsMDB extends UUIDMDB<WsMessages>{
             soapBody.addDocument(document);
 
             ResultHeader resultHeader = new ResultHeader();
-            LocalDateTime responseDt = LocalDateTime.now();
-            resultHeader.setDate(responseDt);
+            
+            final Timestamp now = new Timestamp (System.currentTimeMillis ());
+            resultHeader.setDate (DB.to.XMLGregorianCalendar (now));
             resultHeader.setMessageGUID(r.get(WsMessages.c.UUID.lc()).toString());
-            AbstactServiceAsync.addHeaderToResponse(soapMessage, resultHeader);
+            SOAPTools.addHeaderToResponse(soapMessage, resultHeader);
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             soapMessage.writeTo(out);
             String responseStr = new String(out.toByteArray(), "UTF-8");
 
-            r.put(WsMessages.c.RESPONSE_TIME.lc(), responseDt);
+            r.put(WsMessages.c.RESPONSE_TIME.lc(), now);
             r.put(WsMessages.c.RESPONSE.lc(), responseStr);
+            
         } catch (Exception ex) {
             try {
                 SOAPMessage soapMessage = MessageFactory.newInstance().createMessage();
@@ -118,8 +156,9 @@ public abstract class WsMDB extends UUIDMDB<WsMessages>{
         DocumentBuilder documentBuilder = getDocumentBuilder();
         Document document = documentBuilder.parse(new ByteArrayInputStream(message.getBytes()));
 
-        StringBuilder stringBuilder = new StringBuilder();
-        Element root = document.getDocumentElement();
+        StringBuilder stringBuilder = new StringBuilder ();
+        Element root = document.getDocumentElement ();
+        
         String rootPrefix = root.getPrefix();
 
         if (rootPrefix.isEmpty()) {
@@ -127,13 +166,17 @@ public abstract class WsMDB extends UUIDMDB<WsMessages>{
         } else {
             stringBuilder.append(rootPrefix).append(":Body");
         }
+        
+        final String tagName = stringBuilder.toString ();
 
-        NodeList nodeList = root.getElementsByTagName(stringBuilder.toString());
+        NodeList nodeList = root.getElementsByTagName (tagName);
+
         if (nodeList == null || nodeList.item(0) == null) {
-            throw new SOAPException("No Body tag found in document");
+            throw new SOAPException ("No Body tag found in document");
         }
 
-        Node messageNode = nodeList.item(0).getFirstChild();
+        Node messageNode = nodeList.item(0).getFirstChild ();
+
         while (messageNode != null && !(messageNode instanceof Element)) {
             messageNode = messageNode.getNextSibling();
         }
@@ -143,6 +186,7 @@ public abstract class WsMDB extends UUIDMDB<WsMessages>{
         }
 
         return messageNode;
+
     }
 
     private DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {
@@ -162,5 +206,5 @@ public abstract class WsMDB extends UUIDMDB<WsMessages>{
         sw.getBuffer().toString();
         errorMessage.setStackTrace(sw.getBuffer().toString());
         return errorMessage;
-    }
+    }        
 }

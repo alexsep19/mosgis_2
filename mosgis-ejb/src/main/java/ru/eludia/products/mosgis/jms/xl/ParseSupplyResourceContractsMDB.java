@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
@@ -20,14 +19,24 @@ import ru.eludia.base.Model;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceContractObject;
+import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceContractOtherQualityLevel;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceContractService;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceContractSubject;
+import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceContractQualityLevel;
+import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceContractTemperatureChart;
+import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceContractVolume;
+import ru.eludia.products.mosgis.db.model.tables.Block;
+import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
+import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractObject;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractObjectLog;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractOtherQualityLevel;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractQualityLevel;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubjectLog;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractTemperatureChart;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.voc.VocPersonLog;
 import ru.eludia.products.mosgis.jms.xl.base.XLMDB;
@@ -43,8 +52,6 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
     private static final Logger logger = Logger.getLogger(ParseSupplyResourceContractsMDB.class.getName());
 
     protected void addContractLines (XSSFSheet sheet, UUID parent, DB db, Map<String, Map<String, Object>> vocs) throws SQLException {
-
-	logger.log(Level.INFO, "addContractLines start");
 
 	for (int i = 2; i <= sheet.getLastRowNum (); i ++) {
             
@@ -77,8 +84,6 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
             }
             
         }
-
-	logger.log(Level.INFO, "addContractLines finish");
     }
 
     private boolean checkContractLines (XSSFSheet sheet, DB db, UUID parent) throws SQLException {
@@ -102,8 +107,6 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
     }
 
     protected void addSubjectLines(XSSFSheet sheet, UUID parent, DB db, Map<String, Map<String, Object>> vocs) throws SQLException {
-
-	logger.log(Level.INFO, "addSubjectLines start");
 
 	for (int i = 2; i <= sheet.getLastRowNum(); i++) {
 
@@ -137,8 +140,6 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 	    }
 
 	}
-
-	logger.log(Level.INFO, "addSubjectLines finish");
     }
 
     private boolean checkSubjectLines(XSSFSheet sheet, DB db, UUID parent) throws SQLException {
@@ -164,8 +165,6 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
     }
 
     protected void addObjectLines(XSSFSheet sheet, UUID parent, DB db) throws SQLException {
-
-	logger.log(Level.INFO, "addObjectLines start");
 
 	for (int i = 1; i <= sheet.getLastRowNum(); i++) {
 
@@ -197,8 +196,6 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 	    }
 
 	}
-
-	logger.log(Level.INFO, "addObjectLines finish");
     }
 
     private boolean checkObjectLines(XSSFSheet sheet, DB db, UUID parent) throws SQLException {
@@ -224,8 +221,6 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
     }
 
     protected void addServiceLines(XSSFSheet sheet, UUID parent, DB db, Map<String, Map<String, Object>> vocs) throws SQLException {
-
-	logger.log(Level.INFO, "addServiceLines start");
 
 	for (int i = 2; i <= sheet.getLastRowNum(); i++) {
 
@@ -259,8 +254,6 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 	    }
 
 	}
-
-	logger.log(Level.INFO, "addServiceLines finish");
     }
 
     private boolean checkServiceLines(XSSFSheet sheet, DB db, UUID parent) throws SQLException {
@@ -285,6 +278,235 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 	return false;
     }
 
+    protected void addQualityLines(XSSFSheet sheet, UUID parent, DB db, Map<String, Map<String, Object>> vocs) throws SQLException {
+
+	for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+
+	    UUID uuid = (UUID) db.insertId(InXlSupplyResourceContractQualityLevel.class,
+		 InXlSupplyResourceContractQualityLevel.toHash(parent, i, sheet.getRow(i), vocs)
+	    );
+
+	    try {
+
+		db.update(InXlSupplyResourceContractQualityLevel.class, DB.HASH(
+		    EnTable.c.UUID, uuid,
+		    EnTable.c.IS_DELETED, 0
+		));
+
+	    } catch (SQLException e) {
+
+		String s = e.getMessage();
+
+		if (e.getErrorCode() == 20000) {
+		    s
+			= new StringTokenizer(e.getMessage(), "\n\r")
+			    .nextToken()
+			    .replace("ORA-20000: ", "");
+		}
+
+		db.update(InXlSupplyResourceContractQualityLevel.class, DB.HASH(
+		    EnTable.c.UUID, uuid,
+		    InXlSupplyResourceContractQualityLevel.c.ERR, s
+		));
+
+	    }
+
+	}
+    }
+
+    private boolean checkQualityLines(XSSFSheet sheet, DB db, UUID parent) throws SQLException {
+
+	List<Map<String, Object>> brokenLines = db.getList(db.getModel()
+	    .select(InXlSupplyResourceContractQualityLevel.class, "*")
+	    .where(SupplyResourceContractQualityLevel.c.UUID_XL, parent)
+	    .where(EnTable.c.IS_DELETED, 1)
+	);
+
+	if (brokenLines.isEmpty()) {
+	    return true;
+	}
+
+	for (Map<String, Object> brokenLine : brokenLines) {
+	    XSSFRow row = sheet.getRow((int) DB.to.Long(brokenLine.get(InXlSupplyResourceContractQualityLevel.c.ORD.lc())));
+	    XSSFCell cell = row.getLastCellNum() < 15 ? row.createCell(15) : row.getCell(15);
+	    String val = brokenLine.get(InXlSupplyResourceContractQualityLevel.c.ERR.lc()).toString();
+	    cell.setCellValue(val);
+	}
+
+	return false;
+    }
+
+    protected void addOtherQualityLines(XSSFSheet sheet, UUID parent, DB db, Map<String, Map<String, Object>> vocs) throws SQLException {
+
+	for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+
+	    UUID uuid = (UUID) db.insertId(InXlSupplyResourceContractOtherQualityLevel.class,
+		InXlSupplyResourceContractOtherQualityLevel.toHash(parent, i, sheet.getRow(i), vocs)
+	    );
+
+	    try {
+
+		db.update(InXlSupplyResourceContractOtherQualityLevel.class, DB.HASH(
+		    EnTable.c.UUID, uuid,
+		    EnTable.c.IS_DELETED, 0
+		));
+
+	    } catch (SQLException e) {
+
+		String s = e.getMessage();
+
+		if (e.getErrorCode() == 20000) {
+		    s
+			= new StringTokenizer(e.getMessage(), "\n\r")
+			    .nextToken()
+			    .replace("ORA-20000: ", "");
+		}
+
+		db.update(InXlSupplyResourceContractOtherQualityLevel.class, DB.HASH(
+		    EnTable.c.UUID, uuid,
+		    InXlSupplyResourceContractOtherQualityLevel.c.ERR, s
+		));
+
+	    }
+
+	}
+    }
+
+    private boolean checkOtherQualityLines(XSSFSheet sheet, DB db, UUID parent) throws SQLException {
+
+	List<Map<String, Object>> brokenLines = db.getList(db.getModel()
+	    .select(InXlSupplyResourceContractOtherQualityLevel.class, "*")
+	    .where(SupplyResourceContractOtherQualityLevel.c.UUID_XL, parent)
+	    .where(EnTable.c.IS_DELETED, 1)
+	);
+
+	if (brokenLines.isEmpty()) {
+	    return true;
+	}
+
+	for (Map<String, Object> brokenLine : brokenLines) {
+	    XSSFRow row = sheet.getRow((int) DB.to.Long(brokenLine.get(InXlSupplyResourceContractOtherQualityLevel.c.ORD.lc())));
+	    XSSFCell cell = row.getLastCellNum() < 16 ? row.createCell(16) : row.getCell(16);
+	    String val = brokenLine.get(InXlSupplyResourceContractOtherQualityLevel.c.ERR.lc()).toString();
+	    cell.setCellValue(val);
+	}
+
+	return false;
+    }
+
+    protected void addVolumeLines(XSSFSheet sheet, UUID parent, DB db, Map<String, Map<String, Object>> vocs) throws SQLException {
+
+	for (int i = 2; i <= sheet.getLastRowNum(); i++) {
+
+	    UUID uuid = (UUID) db.insertId(InXlSupplyResourceContractVolume.class,
+		InXlSupplyResourceContractVolume.toHash(parent, i, sheet.getRow(i), vocs)
+	    );
+
+	    try {
+		db.update(InXlSupplyResourceContractVolume.class, DB.HASH(
+		    EnTable.c.UUID, uuid,
+		    EnTable.c.IS_DELETED, 0
+		));
+
+	    } catch (SQLException e) {
+
+		String s = e.getMessage();
+
+		if (e.getErrorCode() == 20000) {
+		    s
+			= new StringTokenizer(e.getMessage(), "\n\r")
+			    .nextToken()
+			    .replace("ORA-20000: ", "");
+		}
+
+		db.update(InXlSupplyResourceContractVolume.class, DB.HASH(
+		    EnTable.c.UUID, uuid,
+		    InXlSupplyResourceContractVolume.c.ERR, s
+		));
+
+	    }
+
+	}
+    }
+
+    private boolean checkVolumeLines(XSSFSheet sheet, DB db, UUID parent) throws SQLException {
+
+	List<Map<String, Object>> brokenLines = db.getList(db.getModel()
+	    .select(InXlSupplyResourceContractVolume.class, "*")
+	    .where(SupplyResourceContractObject.c.UUID_XL, parent)
+	    .where(EnTable.c.IS_DELETED, 1)
+	);
+
+	if (brokenLines.isEmpty()) {
+	    return true;
+	}
+
+	for (Map<String, Object> brokenLine : brokenLines) {
+	    XSSFRow row = sheet.getRow((int) DB.to.Long(brokenLine.get(InXlSupplyResourceContractVolume.c.ORD.lc())));
+	    XSSFCell cell = row.getLastCellNum() < 10 ? row.createCell(10) : row.getCell(10);
+	    String val = brokenLine.get(InXlSupplyResourceContractVolume.c.ERR.lc()).toString();
+	    cell.setCellValue(val);
+	}
+
+	return false;
+    }
+
+    protected void addTemperatureChartLines(XSSFSheet sheet, UUID parent, DB db, Map<String, Map<String, Object>> vocs) throws SQLException {
+
+	for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+
+	    UUID uuid = (UUID) db.insertId(InXlSupplyResourceContractTemperatureChart.class,
+		InXlSupplyResourceContractTemperatureChart.toHash(parent, i, sheet.getRow(i), vocs)
+	    );
+
+	    try {
+		db.update(InXlSupplyResourceContractTemperatureChart.class, DB.HASH(
+		    EnTable.c.UUID, uuid,
+		    EnTable.c.IS_DELETED, 0
+		));
+
+	    } catch (SQLException e) {
+
+		String s = e.getMessage();
+
+		if (e.getErrorCode() == 20000) {
+		    s
+			= new StringTokenizer(e.getMessage(), "\n\r")
+			    .nextToken()
+			    .replace("ORA-20000: ", "");
+		}
+
+		db.update(InXlSupplyResourceContractTemperatureChart.class, DB.HASH(
+		    EnTable.c.UUID, uuid,
+		    InXlSupplyResourceContractTemperatureChart.c.ERR, s
+		));
+
+	    }
+
+	}
+    }
+
+    private boolean checkTemperatureChartLines(XSSFSheet sheet, DB db, UUID parent) throws SQLException {
+
+	List<Map<String, Object>> brokenLines = db.getList(db.getModel()
+	    .select(InXlSupplyResourceContractTemperatureChart.class, "*")
+	    .where(SupplyResourceContractObject.c.UUID_XL, parent)
+	    .where(EnTable.c.IS_DELETED, 1)
+	);
+
+	if (brokenLines.isEmpty()) {
+	    return true;
+	}
+
+	for (Map<String, Object> brokenLine : brokenLines) {
+	    XSSFRow row = sheet.getRow((int) DB.to.Long(brokenLine.get(InXlSupplyResourceContractTemperatureChart.c.ORD.lc())));
+	    XSSFCell cell = row.getLastCellNum() < 8 ? row.createCell(8) : row.getCell(8);
+	    String val = brokenLine.get(InXlSupplyResourceContractTemperatureChart.c.ERR.lc()).toString();
+	    cell.setCellValue(val);
+	}
+
+	return false;
+    }
     protected Map<String, Object> processVocNsi58Lines(XSSFSheet sheet) throws XLException {
 
 	final Map<String, Object> r = DB.HASH();
@@ -332,7 +554,7 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 
 	final Map<String, Object> r = DB.HASH();
 
-	for (int i = 2; i <= sheet.getLastRowNum(); i++) {
+	for (int i = 1; i <= sheet.getLastRowNum(); i++) {
 	    XSSFRow row = sheet.getRow(i);
 	    Object label = EnTable.toString(row, 0, "Не указано Название(столбец A)");
 	    Object code = EnTable.toString(row, 1, "Не указан Код(столбец B)");
@@ -346,7 +568,7 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 
 	final Map<String, Object> r = DB.HASH();
 
-	for (int i = 2; i <= sheet.getLastRowNum(); i++) {
+	for (int i = 1; i <= sheet.getLastRowNum(); i++) {
 	    XSSFRow row = sheet.getRow(i);
 	    Object label = EnTable.toString(row, 0, "Не указано Название(столбец A)");
 	    Object code = EnTable.toString(row, 1, "Не указан Код(столбец B)");
@@ -371,6 +593,19 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
             EnTable.c.IS_DELETED, 0
         ), SupplyResourceContract.c.UUID_XL.lc ());
 
+
+	db.update(ResidentialPremise.class, DB.HASH(
+	    "uuid_xl", parent,
+	    "is_deleted", 0
+	), "uuid_xl");
+	db.update(NonResidentialPremise.class, DB.HASH(
+	    "uuid_xl", parent,
+	    "is_deleted", 0
+	), "uuid_xl");
+	db.update(Block.class, DB.HASH(
+	    Block.c.UUID_XL, parent,
+	    EnTable.c.IS_DELETED, 0
+	), Block.c.UUID_XL.lc());
 	db.update(SupplyResourceContractObject.class, DB.HASH(
 	    SupplyResourceContractObject.c.UUID_XL, parent,
 	    EnTable.c.IS_DELETED, 0
@@ -380,6 +615,20 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 	    SupplyResourceContractSubject.c.UUID_XL, parent,
 	    EnTable.c.IS_DELETED, 0
 	), SupplyResourceContractSubject.c.UUID_XL.lc());
+
+
+	db.update(SupplyResourceContractQualityLevel.class, DB.HASH(
+	    SupplyResourceContractQualityLevel.c.UUID_XL, parent,
+	    EnTable.c.IS_DELETED, 0
+	), SupplyResourceContractQualityLevel.c.UUID_XL.lc());
+	db.update(SupplyResourceContractOtherQualityLevel.class, DB.HASH(
+	    SupplyResourceContractOtherQualityLevel.c.UUID_XL, parent,
+	    EnTable.c.IS_DELETED, 0
+	), SupplyResourceContractOtherQualityLevel.c.UUID_XL.lc());
+	db.update(SupplyResourceContractTemperatureChart.class, DB.HASH(
+	    SupplyResourceContractTemperatureChart.c.UUID_XL, parent,
+	    EnTable.c.IS_DELETED, 0
+	), SupplyResourceContractTemperatureChart.c.UUID_XL.lc());
     }
 
     @Override
@@ -387,7 +636,25 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 
         super.completeFail (db, parent, wb);
 
+	killXlSupplyResourceContract(db, parent);
+    }
+
+    protected void killXlSupplyResourceContract(DB db, UUID parent) throws SQLException {
+
 	final Model m = db.getModel();
+
+	db.delete(m
+	    .select(SupplyResourceContractQualityLevel.class, "uuid")
+	    .where(SupplyResourceContractQualityLevel.c.UUID_XL, parent)
+	);
+	db.delete(m
+	    .select(SupplyResourceContractOtherQualityLevel.class, "uuid")
+	    .where(SupplyResourceContractOtherQualityLevel.c.UUID_XL, parent)
+	);
+	db.delete(m
+	    .select(SupplyResourceContractTemperatureChart.class, "uuid")
+	    .where(SupplyResourceContractTemperatureChart.c.UUID_XL, parent)
+	);
 
 	db.update(SupplyResourceContractSubject.class, HASH(
 	    SupplyResourceContractSubject.c.ID_LOG, null,
@@ -402,21 +669,7 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 	    .where(SupplyResourceContractSubject.c.UUID_XL, parent)
 	);
 
-
-
-	db.update(SupplyResourceContractObject.class, HASH(
-	    SupplyResourceContractObject.c.ID_LOG, null,
-	    SupplyResourceContractObject.c.UUID_XL, parent
-	), SupplyResourceContractObject.c.UUID_XL.lc());
-	db.delete(m
-	    .select(SupplyResourceContractObjectLog.class, "uuid")
-	    .where(SupplyResourceContractObject.c.UUID_XL, parent)
-	);
-	db.delete(m
-	    .select(SupplyResourceContractObject.class, "uuid")
-	    .where(SupplyResourceContractObject.c.UUID_XL, parent)
-	);
-
+	killXlSupplyResourceContractObjects(db, parent);
 
 	db.update(SupplyResourceContract.class, HASH(
 	    SupplyResourceContract.c.ID_LOG, null,
@@ -431,7 +684,10 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
             .where (SupplyResourceContract.c.UUID_XL, parent)
         );
 
-
+	db.update(InXlSupplyResourceContract.class, HASH(
+	    SupplyResourceContract.c.UUID_PERSON_CUSTOMER, null,
+	    SupplyResourceContract.c.UUID_XL, parent
+	), SupplyResourceContract.c.UUID_XL.lc());
 	db.update(VocPerson.class, HASH(
 	    VocPerson.c.ID_LOG, null,
 	    VocPerson.c.UUID_XL, parent
@@ -443,6 +699,37 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 	db.delete(m
 	    .select(VocPerson.class, "uuid")
 	    .where(VocPerson.c.UUID_XL, parent)
+	);
+    }
+
+    private void killXlSupplyResourceContractObjects(DB db, UUID parent) throws SQLException {
+
+	final Model m = db.getModel();
+
+	db.delete(m
+	    .select(ResidentialPremise.class, "uuid")
+	    .where("uuid_xl", parent)
+	);
+	db.delete(m
+	    .select(NonResidentialPremise.class, "uuid")
+	    .where("uuid_xl", parent)
+	);
+	db.delete(m
+	    .select(Block.class, "uuid")
+	    .where(Block.c.UUID_XL, parent)
+	);
+
+	db.update(SupplyResourceContractObject.class, HASH(
+	    SupplyResourceContractObject.c.ID_LOG, null,
+	    SupplyResourceContractObject.c.UUID_XL, parent
+	), SupplyResourceContractObject.c.UUID_XL.lc());
+	db.delete(m
+	    .select(SupplyResourceContractObjectLog.class, "uuid")
+	    .where(SupplyResourceContractObject.c.UUID_XL, parent)
+	);
+	db.delete(m
+	    .select(SupplyResourceContractObject.class, "uuid")
+	    .where(SupplyResourceContractObject.c.UUID_XL, parent)
 	);
     }
 
@@ -493,34 +780,53 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 	final XSSFSheet sheetSubjects = wb.getSheetAt(1);
 	final XSSFSheet sheetObjects = wb.getSheetAt(2);
 	final XSSFSheet sheetServices = wb.getSheetAt(3);
+	final XSSFSheet sheetQuality = wb.getSheetAt(4);
+	final XSSFSheet sheetOtherQuality = wb.getSheetAt(5);
+	final XSSFSheet sheetVolumes = wb.getSheetAt(6);
+	final XSSFSheet sheetTemperatureCharts = wb.getSheetAt(7);
 
 	boolean isOk = true;
 
         addContractLines(sheetContracts, uuid, db, vocs);
         if (!checkContractLines(sheetContracts, db, uuid)) {
 	    isOk = false;
-	    logger.log(Level.INFO, "ParseSupplyResourceContractsMDB.checkContractLines NOT OK. See SELECT err FROM in_xl_sr_ctr WHERE uuid_xl='" + uuid.toString().toUpperCase().replace("-", "") + "'");
 	}
 
 	addSubjectLines(sheetSubjects, uuid, db, vocs);
 	if (!checkSubjectLines(sheetSubjects, db, uuid)) {
 	    isOk = false;
-	    logger.log (Level.INFO, "ParseSupplyResourceContractsMDB.checkSubjectLines NOT OK. See SELECT err FROM in_xl_sr_ctr_subj WHERE uuid_xl='" + uuid.toString().toUpperCase().replace("-", "") + "'");
 	}
 
 	addObjectLines(sheetObjects, uuid, db);
 	if (!checkObjectLines(sheetObjects, db, uuid)) {
 	    isOk = false;
-	    logger.log(Level.INFO, "ParseSupplyResourceContractsMDB.checkObjectLines NOT OK. See SELECT err FROM in_xl_sr_ctr_obj WHERE uuid_xl='" + uuid.toString().toUpperCase().replace("-", "") + "'");
 	}
 
 	addServiceLines(sheetServices, uuid, db, vocs);
 	if (!checkServiceLines(sheetServices, db, uuid)) {
 	    isOk = false;
-	    logger.log(Level.INFO, "ParseSupplyResourceContractsMDB.checkServiceLines NOT OK. See SELECT err FROM in_xl_sr_ctr_svc WHERE uuid_xl='" + uuid.toString().toUpperCase().replace("-", "") + "'");
 	}
 
-        if (!isOk) throw new XLException ();
-    }
+	addQualityLines(sheetQuality, uuid, db, vocs);
+	if (!checkQualityLines(sheetQuality, db, uuid)) {
+	    isOk = false;
+	}
 
+	addOtherQualityLines(sheetOtherQuality, uuid, db, vocs);
+	if (!checkOtherQualityLines(sheetOtherQuality, db, uuid)) {
+	    isOk = false;
+	}
+
+	addVolumeLines(sheetVolumes, uuid, db, vocs);
+	if (!checkVolumeLines(sheetVolumes, db, uuid)) {
+	    isOk = false;
+	}
+
+	addTemperatureChartLines(sheetTemperatureCharts, uuid, db, vocs);
+	if (!checkTemperatureChartLines(sheetTemperatureCharts, db, uuid)) {
+	    isOk = false;
+	}
+
+        if (!isOk) throw new XLException ("ParseSupplyResourceContractsMDB NOT OK");
+    }
 }

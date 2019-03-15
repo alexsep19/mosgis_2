@@ -6,7 +6,7 @@ import javax.xml.bind.JAXBContext;
 import org.junit.Test;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.tables.base.BaseTest;
-import ru.eludia.products.mosgis.ws.soap.impl.base.AbstactServiceAsync;
+import ru.eludia.products.mosgis.ws.soap.tools.SOAPTools;
 import ru.gosuslugi.dom.schema.integration.bills.ImportRSOSettlementsRequest;
 
 public class SettlementDocLogTest extends BaseTest {
@@ -18,7 +18,7 @@ public class SettlementDocLogTest extends BaseTest {
         
         super ();
         jc = JAXBContext.newInstance (ImportRSOSettlementsRequest.class);
-        schema = AbstactServiceAsync.loadSchema ("bills/hcs-bills-types.xsd");
+        schema = SOAPTools.loadSchema ("bills/hcs-bills-types.xsd");
         
         table = (SettlementDoc) model.get (SettlementDoc.class);
         logTable = (SettlementDocLog) model.get (SettlementDocLog.class);

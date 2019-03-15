@@ -1,11 +1,10 @@
 package ru.eludia.products.mosgis.ws.soap.tools;
 
-import ru.eludia.products.mosgis.ws.soap.impl.base.AbstactServiceAsync;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -15,7 +14,6 @@ import java.util.logging.Level;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPMessage;
-import javax.xml.ws.ProtocolException;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 import ru.eludia.base.DB;
@@ -25,15 +23,12 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
 import ru.eludia.products.mosgis.db.model.ws.WsMessages;
 import ru.eludia.products.mosgis.db.ModelHolder;
-import ru.eludia.products.mosgis.util.StringUtils;
-import ru.eludia.products.mosgis.ws.soap.impl.base.Errors;
-import ru.eludia.products.mosgis.ws.soap.impl.base.Fault;
-import ru.mos.gkh.gis.schema.integration.base.AckRequest;
-import ru.mos.gkh.gis.schema.integration.base.HeaderType;
-import ru.mos.gkh.gis.schema.integration.base.RequestHeader;
-import ru.mos.gkh.gis.schema.integration.base.ResultHeader;
+import ru.gosuslugi.dom.schema.integration.base.AckRequest;
+import ru.gosuslugi.dom.schema.integration.base.HeaderType;
+import ru.gosuslugi.dom.schema.integration.base.RequestHeader;
+import ru.gosuslugi.dom.schema.integration.base.ResultHeader;
 
-public class LoggingMessageHandler extends BaseLoggingMessageHandler {
+public class LoggingInMessageHandler extends BaseLoggingMessageHandler {
    
     private static final String GET_STATE_OPERATION = "getState";
     
@@ -55,11 +50,11 @@ public class LoggingMessageHandler extends BaseLoggingMessageHandler {
                     .where(WsMessages.c.UUID_MESSAGE, rh.getMessageGUID())
                     .and(WsMessages.c.UUID_SENDER, sender.get("uuid")) );
             if (msg != null && !msg.isEmpty()) {
-                result.put("isNew", false);
+                result.put(IS_NEW, false);
                 result.put("msgId", msg.get(WsMessages.c.UUID.lc()));
                 return result;
             }
-            result.put("isNew", true);
+            result.put(IS_NEW, true);
             result.put("msgId", db.insertId(WsMessages.class, DB.HASH(
                     WsMessages.c.SERVICE,      messageInfo.getService(),
                     WsMessages.c.OPERATION,    messageInfo.getOperation(),
@@ -77,64 +72,93 @@ public class LoggingMessageHandler extends BaseLoggingMessageHandler {
 
     }
     
+    public static final boolean isNewRequest (MessageContext msgContext) {
+        return DB.ok (msgContext.get (IS_NEW));
+    }
+    
+    public static final AckRequest getAckRequest (MessageContext msgContext) {
+        return (AckRequest) msgContext.get (ACK_REQUEST);
+    }
+    
+    
+    
     @Override
     public boolean handleMessage (SOAPMessageContext messageContext) {
         
-        SOAPMessage msg = messageContext.getMessage ();
-        
-        MessageInfo messageInfo = new MessageInfo (messageContext);
-        
-        Map<String, Object> sender = null;
-        if (!messageInfo.isOut) {
-            try {
-                HttpServletResponse response =  (HttpServletResponse) messageContext.get(MessageContext.SERVLET_RESPONSE);
-                
-                sender = getSender(messageContext);
-                if (sender == null) {
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                    return false;
-                } else if (TypeConverter.Boolean(sender.get(Sender.c.IS_LOCKED.lc()))) {
-                    response.sendError(HttpServletResponse.SC_FORBIDDEN);
-                    return false;
-                }
-                addParamToMessageContext(messageContext, "sender", sender);
-            } catch (IOException ex) {
-                throw new RuntimeException("Cannot load IS", ex);
-            }
-        }
-        
-        if (!messageInfo.isOut && !GET_STATE_OPERATION.equals(messageInfo.operation)) {
-            byte [] bytes = toBytes (msg);
-            String s = getLoggedMessge (messageInfo, bytes, getCharSetName (msg));
+        try {
             
-            HeaderType rh = AbstactServiceAsync.getHeader(msg, HeaderType.class);
+            SOAPMessage msg = messageContext.getMessage ();
 
-            Map<String, Object> savedMsg = storeToDB (sender, messageInfo, rh, s);
+            MessageInfo messageInfo = new MessageInfo (messageContext);
 
-            AckRequest.Ack ack = new AckRequest.Ack();
-            ack.setMessageGUID(savedMsg.get("msgId").toString());
-            ack.setRequesterMessageGUID(rh.getMessageGUID());
-            addParamToMessageContext(messageContext, "ack", ack);
-            addParamToMessageContext(messageContext, "msgId", rh.getMessageGUID());
-            addParamToMessageContext(messageContext, "isNew", savedMsg.get("isNew"));
-        } else if (messageInfo.isOut && messageContext.get("response") != null) { 
-            try {
-                InputStream is = new ByteArrayInputStream(messageContext.get("response").toString().getBytes("UTF-8"));
-                SOAPMessage response = MessageFactory.newInstance().createMessage(null, is);
-                messageContext.setMessage(response);
-            } catch (Exception ex) {
-                throw new IllegalStateException("Cannot create SOAP message", ex);
+            Map<String, Object> sender = null;
+            if (!messageInfo.isOut) {
+                try {
+                    HttpServletResponse response =  (HttpServletResponse) messageContext.get(MessageContext.SERVLET_RESPONSE);
+
+                    sender = getSender(messageContext);
+                    if (sender == null) {
+                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                        return false;
+                    } else if (TypeConverter.Boolean(sender.get(Sender.c.IS_LOCKED.lc()))) {
+                        response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                        return false;
+                    }
+                    addParamToMessageContext(messageContext, "sender", sender);
+                } catch (IOException ex) {
+                    throw new RuntimeException("Cannot load IS", ex);
+                }
             }
-        } else if (messageInfo.isOut){
-            ResultHeader resultHeader = new ResultHeader();
-            resultHeader.setDate(LocalDateTime.now());
-            resultHeader.setMessageGUID(messageContext.get("msgId").toString());
-            AbstactServiceAsync.addHeaderToResponse(msg, resultHeader);
+
+            if (!messageInfo.isOut && !GET_STATE_OPERATION.equals(messageInfo.operation)) {
+                byte [] bytes = toBytes (msg);
+                String s = getLoggedMessge (messageInfo, bytes, getCharSetName (msg));
+
+                HeaderType rh = SOAPTools.getHeader(msg, HeaderType.class);
+                
+                if (rh == null) throw new IllegalArgumentException ("Invalid SOAP request: missing Envelope/Header/RequestHeader");
+
+                Map<String, Object> savedMsg = storeToDB (sender, messageInfo, rh, s);
+
+                AckRequest.Ack ack = new AckRequest.Ack ();
+                ack.setMessageGUID(savedMsg.get("msgId").toString());
+                ack.setRequesterMessageGUID(rh.getMessageGUID());
+
+                AckRequest ackRequest = new AckRequest ();
+                ackRequest.setAck (ack);
+
+                addParamToMessageContext(messageContext, "ack", ack);
+                addParamToMessageContext(messageContext, ACK_REQUEST, ackRequest);
+                addParamToMessageContext(messageContext, "msgId", rh.getMessageGUID());
+                addParamToMessageContext(messageContext, IS_NEW, savedMsg.get (IS_NEW));
+
+            } else if (messageInfo.isOut && messageContext.get("response") != null) { 
+                try {
+                    InputStream is = new ByteArrayInputStream(messageContext.get("response").toString().getBytes("UTF-8"));
+                    SOAPMessage response = MessageFactory.newInstance().createMessage(null, is);
+                    messageContext.setMessage(response);
+                } catch (Exception ex) {
+                    throw new IllegalStateException("Cannot create SOAP message", ex);
+                }
+            } else if (messageInfo.isOut){
+                ResultHeader resultHeader = new ResultHeader();
+                resultHeader.setDate (DB.to.XMLGregorianCalendar (new Timestamp (System.currentTimeMillis ())));
+                resultHeader.setMessageGUID(messageContext.get("msgId").toString());
+                SOAPTools.addHeaderToResponse(msg, resultHeader);
+            }
+
+            return true;
+            
+        }
+        catch (Exception ex) {            
+            String id = UUID.randomUUID ().toString ();            
+            logger.log (Level.SEVERE, id, ex);
+            throw new RuntimeException (ex.getMessage () + " (search log for " + id +")", ex);
         }
                 
-        return true;
-        
     }
+    private static final String ACK_REQUEST = "ackRequest";
+    private static final String IS_NEW = "isNew";
     
     private void addParamToMessageContext(SOAPMessageContext messageContext, String name, Object value) {
         messageContext.put(name, value);

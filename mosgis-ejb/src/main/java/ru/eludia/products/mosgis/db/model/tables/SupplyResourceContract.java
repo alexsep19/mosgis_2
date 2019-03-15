@@ -16,8 +16,9 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisContractDimension;
 import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustomerType;
 import ru.eludia.products.mosgis.db.model.voc.VocSupplyResourceContractFileType;
 
-
 public class SupplyResourceContract extends EnTable {
+
+    public static final String TABLE_NAME = "tb_sr_ctr";
 
     public enum c implements EnColEnum {
 
@@ -44,7 +45,7 @@ public class SupplyResourceContract extends EnTable {
 
 	LABEL                (Type.STRING, new Virt("'№' || contractnumber || ' от ' || TO_CHAR (signingdate, 'DD.MM.YYYY')"), "№/дата"),
 
-        CODE_VC_NSI_58       (Type.STRING, 20, "Основание заключения договора (НСИ 58)"),
+        CODE_VC_NSI_58       (Type.STRING, 20, null, "Основание заключения договора (НСИ 58)"),
         IS_CONTRACT          (Type.BOOLEAN,    null, "1, если является публичным; иначе 0"),
 
         ONETIMEPAYMENT       (Type.BOOLEAN, null, "1, если единоразовая оплата услуг; иначе 0"),
@@ -154,7 +155,7 @@ public class SupplyResourceContract extends EnTable {
 
     public SupplyResourceContract () {
 
-        super ("tb_sr_ctr", "Договор ресурсоснабжения");
+        super (TABLE_NAME, "Договор ресурсоснабжения");
 
         cols   (c.class);
 
@@ -292,7 +293,9 @@ public class SupplyResourceContract extends EnTable {
                     + " END LOOP; "
 
 		    + " IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING + " THEN "
-
+			+ " IF :NEW.code_vc_nsi_58 IS NULL THEN "
+			+ "   raise_application_error (-20000, 'Необходимо заполнить поле \"Основание заключения договора\"'); "
+			+ " END IF; "
 			+ " IF :NEW.is_contract = 1 THEN "
 			+ "   SELECT COUNT(*) INTO cnt FROM tb_sr_ctr_files WHERE is_deleted = 0 AND id_type=" + VocSupplyResourceContractFileType.i.CONTRACT + " AND id_status=1 AND UUID_SR_CTR=:NEW.uuid; "
 			+ "   IF cnt=0 THEN raise_application_error (-20000, 'Файл договора не загружен на сервер. Операция отменена.'); END IF; "
@@ -352,8 +355,23 @@ public class SupplyResourceContract extends EnTable {
 			+ " SELECT COUNT(*) INTO cnt FROM tb_sr_ctr_obj WHERE is_deleted = 0 AND id_ctr_status <> " + VocGisStatus.i.ANNUL + "AND UUID_SR_CTR=:NEW.uuid; "
 			+ " IF cnt=0 THEN raise_application_error (-20000, 'Укажите объекты жилищного фонда договора. Операция отменена.'); END IF; "
 
-			+ " SELECT COUNT(*) INTO cnt FROM tb_sr_ctr_subj WHERE is_deleted = 0 AND uuid_sr_ctr_obj IS NOT NULL AND UUID_SR_CTR=:NEW.uuid; "
-			+ " IF cnt=0 THEN raise_application_error (-20000, 'Укажите поставляемые ресурсы в каждом объекте жилищного фонда договора. Операция отменена.'); END IF; "
+			+ " FOR i IN ( "
+			+ " SELECT "
+			+ "   b.label "
+			+ " FROM "
+			+ "   tb_sr_ctr_obj o "
+			+ " LEFT JOIN tb_sr_ctr_subj subj ON subj.is_deleted = 0 "
+			+ "   AND subj.uuid_sr_ctr_obj = o.uuid "
+			+ "   AND subj.uuid_sr_ctr     = o.uuid_sr_ctr "
+			+ " LEFT JOIN vc_build_addresses b ON b.houseguid = o.fiashouseguid "
+			+ " WHERE "
+			+ "   o.is_deleted = 0 "
+			+ "   AND o.uuid_sr_ctr = :NEW.uuid "
+			+ "   AND o.id_ctr_status <> " + VocGisStatus.i.ANNUL
+			+ "   AND subj.uuid IS NULL "
+			+ " ) LOOP "
+			+ "   raise_application_error (-20000, 'В объекте жилищного фонда ' || i.label || ' не указаны поставляемые ресурсы'); "
+			+ " END LOOP; "
 
 			+ " IF :NEW.id_customer_type = " + VocGisSupplyResourceContractCustomerType.i.ORGANIZATION + " THEN "
 			+ "   IF :NEW.accrualprocedure IS NULL THEN "

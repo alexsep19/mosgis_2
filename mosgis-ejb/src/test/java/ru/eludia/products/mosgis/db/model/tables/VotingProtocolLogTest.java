@@ -13,7 +13,7 @@ import ru.eludia.base.model.Table;
 import ru.eludia.base.model.def.Def;
 import ru.eludia.products.mosgis.db.model.tables.base.BaseTest;
 import ru.eludia.products.mosgis.db.model.voc.VocVotingForm;
-import ru.eludia.products.mosgis.ws.soap.impl.base.AbstactServiceAsync;
+import ru.eludia.products.mosgis.ws.soap.tools.SOAPTools;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportVotingProtocolRequest;
 
 public class VotingProtocolLogTest extends BaseTest {
@@ -25,7 +25,7 @@ public class VotingProtocolLogTest extends BaseTest {
         
         super ();
         jc = JAXBContext.newInstance (ImportVotingProtocolRequest.class);
-        schema = AbstactServiceAsync.loadSchema ("house-management/hcs-house-management-types.xsd");
+        schema = SOAPTools.loadSchema ("house-management/hcs-house-management-types.xsd");
         table = model.get (VotingProtocolLog.class);        
         commonPart = HASH (    
 

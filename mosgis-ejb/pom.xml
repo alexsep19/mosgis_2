@@ -157,7 +157,7 @@
                 <groupId>org.jvnet.jax-ws-commons</groupId>
                 <artifactId>jaxws-maven-plugin</artifactId>
                 <version>2.3</version>                                            
-                <executions>
+                <executions>                    
                     <execution>
                         <goals>
                             <goal>wsimport</goal>
@@ -203,26 +203,6 @@
                         <id>wsimport-generate-gis-zhkh-services</id>
                         <phase>generate-sources</phase>
                     </execution>
-                    <execution>
-                        <goals>
-                            <goal>wsimport</goal>
-                        </goals>
-                        <configuration>
-                            <wsdlDirectory>src/main/resources/ws/wsdl</wsdlDirectory>
-                            <wsdlFiles>
-                                <wsdlFile>organizations-registry-common/hcs-organizations-registry-common-service-async.wsdl</wsdlFile>
-                            </wsdlFiles>
-                            <bindingDirectory>src/main/resources/ws</bindingDirectory>
-                            <bindingFiles>
-                                <bindingFile>bindings.xjb</bindingFile>
-                            </bindingFiles>
-                            <vmArgs>
-                                <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
-                            </vmArgs>
-                        </configuration>
-                        <id>wsimport-generate-web-services</id>
-                        <phase>generate-sources</phase>
-                    </execution>
                 </executions>
                 <dependencies>
                     <dependency>
@@ -245,20 +225,18 @@
                     <target>2.0</target>
                 </configuration>
             </plugin>
-
-<plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-surefire-plugin</artifactId>
-    <configuration>
-      <systemPropertyVariables>
-        <ru.eludia.db.driver.path>${ru.eludia.db.driver.path}</ru.eludia.db.driver.path>
-        <ru.eludia.db.url>${ru.eludia.db.url}</ru.eludia.db.url>
-        <ru.eludia.db.user>${ru.eludia.db.user}</ru.eludia.db.user>
-        <ru.eludia.db.password>${ru.eludia.db.password}</ru.eludia.db.password>
-      </systemPropertyVariables>
-    </configuration>
-</plugin>
-          
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                  <systemPropertyVariables>
+                    <ru.eludia.db.driver.path>${ru.eludia.db.driver.path}</ru.eludia.db.driver.path>
+                    <ru.eludia.db.url>${ru.eludia.db.url}</ru.eludia.db.url>
+                    <ru.eludia.db.user>${ru.eludia.db.user}</ru.eludia.db.user>
+                    <ru.eludia.db.password>${ru.eludia.db.password}</ru.eludia.db.password>
+                  </systemPropertyVariables>
+                </configuration>
+            </plugin>          
         </plugins>
     </build>
 

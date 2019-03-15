@@ -1,6 +1,5 @@
 package ru.eludia.products.mosgis.ws.soap.tools;
 
-import ru.eludia.products.mosgis.ws.soap.impl.base.AbstactServiceAsync;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.logging.Logger;
@@ -96,7 +95,7 @@ public abstract class LoggingOutMessageHandler extends BaseLoggingMessageHandler
             rh.setMessageGUID (getMessageGUID (messageContext).toString ());
             
             try {
-                AbstactServiceAsync.setRequestHeader (msg, rh);
+                SOAPTools.setRequestHeader (msg, rh);
             }
             catch (Exception ex) {
                 Logger.getLogger (LoggingOutMessageHandler.class.getName()).log (Level.SEVERE, null, ex);
@@ -108,7 +107,7 @@ public abstract class LoggingOutMessageHandler extends BaseLoggingMessageHandler
         else {
             
             if ("getState".equals (messageInfo.operation)) {                
-                ResultHeader resultHeader = AbstactServiceAsync.getResultHeader (msg);                
+                ResultHeader resultHeader = SOAPTools.getResultHeader (msg);                
                 update (resultHeader, s);            
             }            
             

@@ -28,6 +28,8 @@ import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType
 
 public class Charter extends EnTable {
 
+    public static final String TABLE_NAME = "tb_charters";
+
     public enum c implements ColEnum {
         
         UUID_ORG                  (VocOrganization.class,                                      "Организация"),
@@ -83,7 +85,7 @@ public class Charter extends EnTable {
 
     public Charter () {
 
-        super ("tb_charters", "Уставы");
+        super (TABLE_NAME, "Уставы");
         
         cols   (c.class);
         

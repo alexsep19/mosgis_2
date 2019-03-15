@@ -10,6 +10,8 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 
 public class BankAccount extends EnTable {
 
+    public static final String TABLE_NAME = "tb_bnk_accts";
+
     public enum c implements EnColEnum {
         
         UUID_ORG               (VocOrganization.class, null, "Организация-владелец счёта"),
@@ -46,69 +48,76 @@ public class BankAccount extends EnTable {
         
         key ("uuid_org", "uuid_org");
 
-/*        
-        trigger ("BEFORE UPDATE", 
+        trigger ("BEFORE INSERT OR UPDATE", 
                 
             "DECLARE "
+            + " PRAGMA AUTONOMOUS_TRANSACTION; "
             + " cnt NUMBER;"
             + "BEGIN "
                     
-                + "IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS "
-                    + " AND :OLD.ID_CTR_STATUS <> " + VocGisStatus.i.FAILED_PLACING
-                    + " AND :NEW.ID_CTR_STATUS =  " + VocGisStatus.i.PROJECT
-                + " THEN "
-                    + " :NEW.ID_CTR_STATUS := " + VocGisStatus.i.MUTATING
-                + "; END IF; "
-                        
-                + "IF :NEW.is_deleted=0 AND :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING + " THEN BEGIN "
-                        
-                + "SELECT COUNT(*) INTO cnt FROM tb_account_items WHERE is_deleted=0 AND uuid_account=:NEW.uuid; "
-                + "IF cnt=0 THEN raise_application_error (-20000, 'Для данного счёта не указано ни одно помещение. Операция отменена.'); END IF; "
-                        
-                + " FOR i IN ("
-                    + "SELECT "
-                    + " o.uuid "
-                    + " , h.address "
-                    + " , p.label "
-                    + "FROM "
-                    + " tb_account_items o "
-                    + " LEFT JOIN tb_houses h ON o.fiashouseguid = h.fiashouseguid"
-                    + " LEFT JOIN vw_premises p ON o.uuid_premise = p.id"
-                    + " WHERE o.is_deleted = 0"
-                    + " AND o.uuid_account = :NEW.uuid "
-                    + " AND p.id IS NOT NULL AND p.premisesguid IS NULL AND p.livingroomguid IS NULL"
-                    + ") LOOP"
-                + " raise_application_error (-20000, 'Помещение ' || i.address || ', ' || i.label || ' не размещено в ГИС ЖКХ. Операция отменена.'); "
-                + " END LOOP; "
-                        
-                + " FOR i IN ("
-                    + "SELECT "
-                    + " o.uuid "
-                    + " , h.address "
-                    + "FROM "
-                    + " tb_account_items o "
-                    + " LEFT JOIN tb_houses h ON o.fiashouseguid = h.fiashouseguid"
-                    + " WHERE o.is_deleted = 0"
-                    + " AND o.uuid_account = :NEW.uuid "
-                    + " AND h.gis_guid IS NULL "
-                    + ") LOOP"
-                + " raise_application_error (-20000, 'Паспорт МКД с адресом ' || i.address || ' не размещён в ГИС ЖКХ. Операция отменена.'); "
-                + " END LOOP; "                        
+                + "IF :NEW.is_deleted=0 THEN BEGIN "
+                    
+                    + " FOR i IN ("
+                        + "SELECT "
+                        + " o.uuid "
+                        + " , org.label "
+                        + "FROM "
+                        + TABLE_NAME + "  o "
+                        + " LEFT JOIN " + VocOrganization.TABLE_NAME +  " org ON o.UUID_ORG = org.uuid"
+                        + " WHERE o.is_deleted = 0"
+                        + " AND o.ACCOUNTNUMBER = :NEW.ACCOUNTNUMBER "
+                        + " AND o.BIKCREDORG = :NEW.BIKCREDORG "
+                        + ") LOOP"
+                    + " raise_application_error (-20000, 'Номер расчетного счета выбранной кредитной организации уже используется ' || i.label || '. Операция отменена.'); "
+                    + " END LOOP; "
+                                
+                + "END; END IF; "
+                                                                            
+                + "IF :OLD.is_deleted=0 AND :NEW.is_deleted=1 THEN BEGIN "
+                                
+                    + " FOR i IN ("
+                        + "SELECT o.* "
+                        + "FROM " + Contract.TABLE_NAME + " o "
+                        + " WHERE o.is_deleted = 0 AND o.is_annuled = 0 "
+                        + " AND :NEW.uuid = o." + Contract.c.UUID_BNK_ACCT
+                        + ") LOOP"
+                    + " raise_application_error (-20000, 'Данный расчётный счёт указан в качестве платёжного реквизита договора управления №' || i.DOCNUM || ' от ' || TO_CHAR (i.SIGNINGDATE, 'DD.MM.YYYY') || '. Операция отменена.'); "
+                    + " END LOOP; "
 
+                    + " FOR i IN ("
+                        + "SELECT org.label "
+                        + "FROM " + Charter.TABLE_NAME + " o "
+                        + " INNER JOIN " + VocOrganization.TABLE_NAME + " org ON o.uuid_org=org.uuid"
+                        + " WHERE o.is_deleted = 0 AND o.is_annuled = 0 "
+                        + " AND :NEW.uuid = o." + Charter.c.UUID_BNK_ACCT
+                        + ") LOOP"
+                    + " raise_application_error (-20000, 'Данный расчётный счёт указан в качестве платёжного реквизита устава ' || i.label || '. Операция отменена.'); "
+                    + " END LOOP; "
+
+                    + " FOR i IN ("
+                        + "SELECT o.* "
+                        + "FROM " + RcContract.TABLE_NAME + " o "
+                        + " WHERE o.is_deleted = 0 "
+                        + " AND :NEW.uuid = o." + RcContract.c.UUID_BNK_ACCT
+                        + ") LOOP"
+                    + " raise_application_error (-20000, 'Данный расчётный счёт указан в качестве платёжного реквизита договора услуг РЦ №' || i.CONTRACTNUMBER || ' от ' || TO_CHAR (i.SIGNINGDATE, 'DD.MM.YYYY') || '. Операция отменена.'); "
+                    + " END LOOP; "
+
+                    + " FOR i IN ("
+                        + "SELECT o.* "
+                        + "FROM " + SupplyResourceContract.TABLE_NAME + " o "
+                        + " WHERE o.is_deleted = 0 AND o.is_annuled = 0 "
+                        + " AND :NEW.uuid = o." + SupplyResourceContract.c.UUID_BNK_ACCT
+                        + ") LOOP"
+                    + " raise_application_error (-20000, 'Данный расчётный счёт указан в качестве платёжного реквизита договора ресурсоснабжения №' || i.CONTRACTNUMBER || ' от ' || TO_CHAR (i.SIGNINGDATE, 'DD.MM.YYYY') || '. Операция отменена.'); "
+                    + " END LOOP; "
+                                
                 + "END; END IF; "
 
-                + "IF "
-                    + "     :OLD.ID_CTR_STATUS = " + VocGisStatus.i.MUTATING
-                    + " AND :NEW.ID_CTR_STATUS = " + VocGisStatus.i.PENDING_RQ_PLACING
-                + " THEN "
-                    + " :NEW.ID_CTR_STATUS := " + VocGisStatus.i.PENDING_RQ_EDIT
-                + "; END IF; "
-                        
             + "END;"
-                
+
         );
-*/
+
     }
-    public static final String TABLE_NAME = "tb_bnk_accts";
 
 }

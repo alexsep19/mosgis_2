@@ -13,7 +13,7 @@ import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.base.BaseTest;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
-import ru.eludia.products.mosgis.ws.soap.impl.base.AbstactServiceAsync;
+import ru.eludia.products.mosgis.ws.soap.tools.SOAPTools;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportPublicPropertyContractRequest;
 
 public class AgreementPaymentLogTest extends BaseTest {
@@ -30,7 +30,7 @@ public class AgreementPaymentLogTest extends BaseTest {
         super ();        
         
         jc       = JAXBContext.newInstance (ImportPublicPropertyContractRequest.class);
-        schema   = AbstactServiceAsync.loadSchema ("house-management/hcs-house-management-types.xsd");
+        schema   = SOAPTools.loadSchema ("house-management/hcs-house-management-types.xsd");
         
         table    = (AgreementPayment) model.get (AgreementPayment.class);
         logTable = (AgreementPaymentLog) model.get (AgreementPaymentLog.class);        

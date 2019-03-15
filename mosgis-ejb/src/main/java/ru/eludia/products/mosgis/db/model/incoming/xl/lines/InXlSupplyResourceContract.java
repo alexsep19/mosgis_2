@@ -30,7 +30,7 @@ public class InXlSupplyResourceContract extends EnTable {
     public enum c implements ColEnum {
 
         ORD                     (Type.NUMERIC, 5, "Номер строки"),
-        CODE                    (Type.STRING, 255, "Иной код договора"),
+        CODE                    (Type.STRING, null, "Иной код договора"),
 
 	CUSTOMER_TYPE           (Type.INTEGER, null, "Тип лица/организации: 1 - ФЛ, 2 - ЮЛ, 3 - ИП, 4 - Не указывать"),
 	// Заказчик ФЛ
@@ -196,26 +196,9 @@ public class InXlSupplyResourceContract extends EnTable {
 
 	setFieldsMdPeriod(r, row);
 
-	try {
-	    final XSSFCell cell = row.getCell(34);
-	    if (cell == null) {
-		throw new XLException("Не указано Основание заключения договора (столбец AI)");
-	    }
-	    final String s = cell.getStringCellValue();
-
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указано Основание заключения договора (столбец AI)");
-	    }
-
-	    r.put(c.CONTRACTBASE.lc(), s);
-
-	    r.put(SupplyResourceContract.c.CODE_VC_NSI_58.lc(), vocs.get("vc_nsi_58").get(s));
-
-	} catch (XLException ex) {
-	    throw ex;
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
+	Object contractbase = toString(row, 34);
+	r.put(c.CONTRACTBASE.lc(), contractbase);
+	r.put(SupplyResourceContract.c.CODE_VC_NSI_58.lc(), vocs.get("vc_nsi_58").get(contractbase));
 
 	try {
 	    final XSSFCell cell = row.getCell(35);
@@ -241,21 +224,7 @@ public class InXlSupplyResourceContract extends EnTable {
 	    throw new XLException(ex.getMessage());
 	}
 
-	try {
-	    final XSSFCell cell = row.getCell(36);
-	    if (cell == null) {
-		throw new XLException("Не указан Размещение информации о начислениях за коммунальные услуги осуществляет (столбец AK)");
-	    }
-	    final String s = cell.getStringCellValue();
-	    if (!DB.ok(s)) {
-		throw new XLException("Не указан Размещение информации о начислениях за коммунальные услуги осуществляет (столбец AK)");
-	    }
-
-	    r.put(SupplyResourceContract.c.COUNTINGRESOURCE.lc(), s.toLowerCase().contains("рсо")? 1 : 0);
-	} catch (XLException ex) {
-	} catch (Exception ex) {
-	    throw new XLException(ex.getMessage());
-	}
+	r.put(SupplyResourceContract.c.COUNTINGRESOURCE.lc(), toCountingResource(row, 36));
 
 	r.put(SupplyResourceContract.c.MDINFO.lc(), toBool(row, 37));
 
@@ -466,6 +435,17 @@ public class InXlSupplyResourceContract extends EnTable {
 	}
 
 	return result;
+    }
+
+    public static Object toCountingResource(XSSFRow row, int col) throws XLException {
+
+	Object result = toString(row, col);
+
+	if (result == null) {
+	    return result;
+	}
+
+	return result.toString().toLowerCase().contains("рсо")? 1 : 0;
     }
 
     private static void setFieldsDeadlines(Map<String, Object> r, XSSFRow row) throws XLException {

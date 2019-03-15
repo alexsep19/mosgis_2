@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ru.eludia.products.mosgis.ws.soap.impl.base;
 
 import java.sql.SQLException;
@@ -16,10 +11,8 @@ import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState;
 import ru.eludia.products.mosgis.db.model.ws.WsMessages;
 import ru.eludia.products.mosgis.db.ModelHolder;
-import ru.eludia.products.mosgis.ws.soap.impl.base.Errors;
-import ru.eludia.products.mosgis.ws.soap.impl.base.Fault;
-import ru.mos.gkh.gis.schema.integration.base.BaseAsyncResponseType;
-import ru.mos.gkh.gis.schema.integration.base.GetStateRequest;
+import ru.gosuslugi.dom.schema.integration.base.BaseAsyncResponseType;
+import ru.gosuslugi.dom.schema.integration.base.GetStateRequest;
 
 /**
  *

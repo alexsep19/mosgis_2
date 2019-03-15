@@ -107,6 +107,7 @@ public class ContractPayment extends EnTable {
                     + "FROM "
                     + " tb_ctr_payments o "
                     + "WHERE o.is_deleted = 0"
+                    + " AND o.ID_CTR_STATUS NOT IN (" + VocGisStatus.i.ANNUL + ") "
                     + " AND o.uuid_contract = :NEW.uuid_contract "
                     + " AND (o.fiashouseguid IS NULL OR :NEW.fiashouseguid IS NULL OR o.fiashouseguid = :NEW.fiashouseguid)"
                     + " AND o.enddate   >= :NEW.begindate "

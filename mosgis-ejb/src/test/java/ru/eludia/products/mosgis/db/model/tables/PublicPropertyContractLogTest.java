@@ -16,7 +16,7 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.base.BaseTest;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocPublicPropertyContractFileType;
-import ru.eludia.products.mosgis.ws.soap.impl.base.AbstactServiceAsync;
+import ru.eludia.products.mosgis.ws.soap.tools.SOAPTools;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportPublicPropertyContractRequest;
 
 public class PublicPropertyContractLogTest extends BaseTest {
@@ -55,7 +55,7 @@ public class PublicPropertyContractLogTest extends BaseTest {
         );
         
         jc       = JAXBContext.newInstance (ImportPublicPropertyContractRequest.class);
-        schema   = AbstactServiceAsync.loadSchema ("house-management/hcs-house-management-types.xsd");
+        schema   = SOAPTools.loadSchema ("house-management/hcs-house-management-types.xsd");
         table    = (PublicPropertyContract) model.get (PublicPropertyContract.class);
         logTable = (PublicPropertyContractLog) model.get (PublicPropertyContractLog.class);
         fileTable = (PublicPropertyContractFile) model.get (PublicPropertyContractFile.class);

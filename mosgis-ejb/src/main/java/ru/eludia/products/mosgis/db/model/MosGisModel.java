@@ -2,6 +2,7 @@ package ru.eludia.products.mosgis.db.model;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
@@ -50,6 +51,29 @@ public final class MosGisModel extends ru.eludia.base.Model {
         return idLog;
         
     }
+    
+    public String createIdLogWs (DB db, Table table, UUID uuidInSoap, Object id, VocAction.i action) throws SQLException {
+
+        Table logTable = getLogTable (table);
+
+        if (logTable == null) return null;
+        
+        String idLog = db.insertId (logTable, HASH (
+            "action", action,
+            "uuid_object", id,
+            "uuid_in_soap", uuidInSoap
+        )).toString ();
+        
+        db.update (table, HASH (
+            table.getPk ().get (0).getName (), id,
+            "id_status",                       VocAsyncEntityState.i.PENDING.getId (),
+            "id_log",                          idLog
+        ));
+                
+        return idLog;
+        
+    }
+    
     
     public MosGisModel (DataSource ds) throws SQLException, IOException {
         

@@ -8,7 +8,7 @@ import org.junit.Test;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.products.mosgis.db.model.tables.base.BaseTest;
-import ru.eludia.products.mosgis.ws.soap.impl.base.AbstactServiceAsync;
+import ru.eludia.products.mosgis.ws.soap.tools.SOAPTools;
 import ru.gosuslugi.dom.schema.integration.infrastructure.ImportOKIRequest;
 import ru.gosuslugi.dom.schema.integration.infrastructure.ExportOKIRequest;
 
@@ -24,7 +24,7 @@ public class InfrastructureLogTest extends BaseTest {
         super ();
         
         jc            = JAXBContext.newInstance (ImportOKIRequest.class, ExportOKIRequest.class);
-        schema        = AbstactServiceAsync.loadSchema ("infrastructure/hcs-infrastructure-types.xsd");
+        schema        = SOAPTools.loadSchema ("infrastructure/hcs-infrastructure-types.xsd");
         
         table = (Infrastructure) model.get (Infrastructure.class);
         logTable = (InfrastructureLog) model.get(InfrastructureLog.class);

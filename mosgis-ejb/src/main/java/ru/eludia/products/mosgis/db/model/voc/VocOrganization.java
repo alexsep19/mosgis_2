@@ -19,6 +19,8 @@ import ru.gosuslugi.dom.schema.integration.organizations_registry_base.RegOrgTyp
 
 public class VocOrganization extends Table {
 
+    public static final String TABLE_NAME = "vc_orgs";
+
     private static final ObjectFactory of = new ObjectFactory ();
 
     public enum c implements EnColEnum {
@@ -139,7 +141,7 @@ public class VocOrganization extends Table {
 
     public VocOrganization () {
 
-        super  ("vc_orgs", "Юридические лица и частные предприниматели");
+        super  (TABLE_NAME, "Юридические лица и частные предприниматели");
 
         cols(c.class);
 
