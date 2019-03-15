@@ -19,18 +19,11 @@ define ([], function () {
 
                 fields : [
                     {name: 'fiashouseguid', type: 'list', hint: 'Адрес', options: {
-                        url: '/mosgis/_rest/?type=supply_resource_contract_objects&part=buildings',
+                        url: '/mosgis/_rest/?type=rc_contract_objects&part=buildings',
                         filter: false,
                         cacheMax: 50,
                         selected: data.selected_address,
                         items: [data.selected_address],
-                        postData: {
-                            offset: 0,
-                            limit: 50,
-                            is_condo: [1, 2, 3].indexOf(data.item.id_customer_type) != -1? '1'
-                                : 4 == data.item.id_customer_type? '0'
-                                : undefined
-                        },
                         onLoad: function (e) {
                             e.data = {
                                 status: "success",
