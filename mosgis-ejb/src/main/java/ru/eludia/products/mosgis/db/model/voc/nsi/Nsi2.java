@@ -14,6 +14,7 @@ import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.View;
 import ru.eludia.base.model.Type;
+import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 
 public class Nsi2 extends View {
     
@@ -23,6 +24,7 @@ public class Nsi2 extends View {
         ID     (Type.NUMERIC,    null, "Битовая маска"),
         LABEL  (Type.STRING,     null, "Наименование"),
         GUID   (Type.UUID,       null, "Глобально-уникальный идентификатор элемента справочника"),        
+        UNIT   (Type.STRING,     null, "Единица измерения"),
         ;
         
         @Override
@@ -43,13 +45,15 @@ public class Nsi2 extends View {
     public final String getSQL () {
 
         return "SELECT "
-            + " code, "
-            + " POWER (2, code - 1) id, "
-            + VocNsi2.c.F_C8D77DDAD5.name () + " label, "
-            + " guid "
-            + "FROM "
-            + " vc_nsi_2 "
-            + "WHERE"
+            + " v.code, "
+            + " POWER (2, v.code - 1) id, "
+            + "v." + VocNsi2.c.F_C8D77DDAD5.name () + " label, "
+            + " v.guid, "
+            + " u." + VocOkei.c.NATIONAL + " unit "
+            + " FROM "
+            + " vc_nsi_2 v "
+            + "  LEFT JOIN " + VocOkei.TABLE_NAME + " u ON v." + VocNsi2.c.F_C6E5A29665.name () + " = u." + VocOkei.c.CODE
+            + " WHERE"
             + " isactual=1"
         ;
 

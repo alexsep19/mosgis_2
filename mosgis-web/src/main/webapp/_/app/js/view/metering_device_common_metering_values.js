@@ -83,9 +83,11 @@ define ([], function () {
                 {field: 'id_type', caption: 'Тип', size: 18, voc: data.vc_meter_value_types},
                 {field: 'code_vc_nsi_2', caption: 'Ресурс', size: 18, off: it.mask_vc_nsi_2 < 17, voc: data.resources},
 
-                {field: 'meteringvaluet1', caption: it.tariffcount > 1 ? 'Показание T1' : 'Показание', size: 50, render: 'float:7'},
+                {field: 'meteringvaluet1', caption: it.tariffcount > 1 ? 'Показание T1' : 'Показание', size: 50, render: 'float:7'},                
                 {field: 'meteringvaluet2', caption: 'Показание T2', size: 50, render: 'float:7', off: it.tariffcount < 2},
                 {field: 'meteringvaluet3', caption: 'Показание T3', size: 50, render: 'float:7', off: it.tariffcount < 3},
+
+                {field: 'nsi_2.unit', caption: 'Ед. изм.', size: 10},
 
                 {field: 'id_ctr_status', caption: 'Статус', size: 100, voc: data.vc_gis_status},
                 {field: 'out_soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: 'data-ref=1'},
