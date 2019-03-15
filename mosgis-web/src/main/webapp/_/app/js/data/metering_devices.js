@@ -1,11 +1,9 @@
 define ([], function () {
-/*    
-    $_DO.create_metering_devices = function (e) {
-            
-        use.block ('metering_device_new')
-    
+
+    $_DO.import_metering_devices = function (e) {
+        use.block ('metering_devices_import_popup')
     }
-*/    
+
     return function (done) {
 
         w2ui ['topmost_layout'].unlock ('main')

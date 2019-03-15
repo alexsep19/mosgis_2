@@ -22,6 +22,22 @@ define ([], function () {
                 footer: 1,
             },            
 
+            toolbar: {
+            
+                items: [
+                
+                    {
+                        type: 'button',
+                        id: 'import_objects',
+                        caption: 'Импорт ПУ...',
+                        icon: 'w2ui-icon-plus',
+                        onClick: $_DO.import_metering_devices,
+                    },
+                    
+                ].filter (not_off),
+                
+            },                        
+
             textSearch: 'contains',
 
             searches: [            
