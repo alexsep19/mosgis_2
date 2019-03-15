@@ -107,8 +107,10 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
 
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
             .toMaybeOne (Premise.class, "AS premise", Premise.c.LABEL.lc ()).on ()
+            .toOne (VocBuilding.class, "AS building", "label AS address").on ()
 //            .toMaybeOne (MeteringDeviceLog.class               ).on ()
 //            .toMaybeOne (OutSoap.class,       "err_text").on ()
+            .orderBy ("building.label")
             .orderBy ("root.meteringdevicenumber")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
