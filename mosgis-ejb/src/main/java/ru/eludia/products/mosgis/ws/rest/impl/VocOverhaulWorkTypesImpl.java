@@ -75,6 +75,19 @@ public class VocOverhaulWorkTypesImpl extends BaseCRUD<VocOverhaulWorkType> impl
             .get   (getTable (), id, "*")
             .toOne (VocOrganization.class,        "label").on ()
         ));
+        
+        VocGisStatus.addLiteTo (job);
+        VocAction.addTo (job);
+        
+        db.addJsonArrays (job,
+
+                ModelHolder.getModel ()
+                    .select (VocAsyncEntityState.class, "id", "label")                    
+                    .orderBy ("label"),
+                
+                NsiTable.getNsiTable (218).getVocSelect ()
+
+            );
 
     });}
 
@@ -83,7 +96,8 @@ public class VocOverhaulWorkTypesImpl extends BaseCRUD<VocOverhaulWorkType> impl
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();
         
-        VocGisStatus.addLiteTo(jb);
+        VocGisStatus.addLiteTo (jb);
+        VocAction.addTo (jb);
         
         try (DB db = ModelHolder.getModel ().getDb ()) {
             

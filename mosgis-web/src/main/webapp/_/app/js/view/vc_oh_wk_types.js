@@ -85,7 +85,7 @@ define ([], function () {
             onUnselect: recalcToolbar,
             
             onDblClick: function (e) {
-                //openTab ('/vc_oh_wk_types/' + e.recid)
+                openTab ('/vc_oh_wk_type/' + e.recid)
             },
 
         }).refresh ();

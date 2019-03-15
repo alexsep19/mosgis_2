@@ -36,7 +36,7 @@ public class VocOverhaulWorkTypes extends EJBResource <VocOverhaulWorkTypesLocal
     @Produces (APPLICATION_JSON)
     public JsonObject select (JsonObject p) { 
         checkGet ();
-        return back.select (p, getUser ()); 
+        return back.select (p, getUser ());
     }
     
     @POST
@@ -51,8 +51,16 @@ public class VocOverhaulWorkTypes extends EJBResource <VocOverhaulWorkTypesLocal
     @Path("vocs") 
     @Produces (APPLICATION_JSON)
     public JsonObject getVocs () {
-        checkGet ();
         return back.getVocs ();
+    }
+    
+    @POST
+    @Path("{id}/log")
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
+        checkGet ();
+        return back.getLog (id, p, getUser ());
     }
     
     @POST
