@@ -52,13 +52,17 @@ public class InXlFilesImpl extends BaseCRUD<InXlFile> implements InXlFilesLocal 
 
     @Resource(mappedName = "mosgis.inXlSupplyResourceContractsQueue")
     Queue inXlSupplyResourceContractsQueue;
+    
+    @Resource(mappedName = "mosgis.inXlMeteringDevicesQueue")
+    Queue inXlMeteringDevicesQueue;    
 
     public Queue getQueue (VocXLFileType.i type) {
         
         switch (type) {
-            case CTR_OBJECTS:     return inXlContractObjectsQueue;
-            case HOUSE_PASSPORTS: return inXlHousesQueue;
-	    case SR_CTR:          return inXlSupplyResourceContractsQueue;
+            case CTR_OBJECTS:      return inXlContractObjectsQueue;
+            case HOUSE_PASSPORTS:  return inXlHousesQueue;
+	    case SR_CTR:           return inXlSupplyResourceContractsQueue;
+	    case METERING_DEVICES: return inXlMeteringDevicesQueue;
             default: throw new IllegalArgumentException ("XL file type not suported: " + type);
         }
 

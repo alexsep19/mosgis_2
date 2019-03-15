@@ -7,6 +7,7 @@ import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceType;
@@ -20,6 +21,7 @@ public class MeteringDevice extends EnTable {
     
     public enum c implements EnColEnum {
         
+	UUID_XL                 	(InXlFile.class,        null,           "Источник импорта"),
         ID_TYPE                (VocMeteringDeviceType.class,                    "Тип прибора учёта"),
         INSTALLATIONPLACE      (VocMeteringDeviceInstallationPlace.class, null, "Место установки"),
 
@@ -95,7 +97,8 @@ public class MeteringDevice extends EnTable {
     public MeteringDevice () {
         super  ("tb_meters", "Приборы учёта");
         cols   (c.class);
-        key    ("fiashouseguid", "fiashouseguid");
+        key    (c.UUID_XL);
+        key    (c.FIASHOUSEGUID);
 
         trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
 
