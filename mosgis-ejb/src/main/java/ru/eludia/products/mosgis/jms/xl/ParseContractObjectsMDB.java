@@ -137,9 +137,9 @@ public class ParseContractObjectsMDB extends XLMDB {
     
 
     @Override
-    protected void completeOK (DB db, UUID parent) throws SQLException {
+    protected void completeOK (DB db, UUID parent, XSSFWorkbook wb) throws SQLException {
         
-        super.completeOK (db, parent);
+        super.completeOK (db, parent, wb);
         
         db.update (ContractObject.class, DB.HASH (
             InXlContractObject.c.UUID_XL, parent,

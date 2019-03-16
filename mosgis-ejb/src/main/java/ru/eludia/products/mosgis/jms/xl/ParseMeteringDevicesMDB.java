@@ -42,7 +42,9 @@ public class ParseMeteringDevicesMDB extends XLMDB {
                     EnTable.c.UUID, uuid,
                     EnTable.c.IS_DELETED, 0
                 ));
-                
+
+                row.getCell (33).setCellValue (uuid.toString ());
+
             }
             catch (SQLException e) {
 
@@ -85,9 +87,9 @@ public class ParseMeteringDevicesMDB extends XLMDB {
     }
 
     @Override
-    protected void completeOK (DB db, UUID parent) throws SQLException {
+    protected void completeOK (DB db, UUID parent, XSSFWorkbook wb) throws SQLException {
         
-        super.completeOK (db, parent);
+        super.completeOK (db, parent, wb);
         
         db.update (MeteringDevice.class, DB.HASH (
             MeteringDevice.c.UUID_XL, parent,

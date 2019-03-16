@@ -43,13 +43,17 @@ public abstract class XLMDB extends UUIDMDB<InXlFile> {
         
     }    
 
-    protected void completeOK (DB db, UUID parent) throws SQLException {
-        setStatus (db, parent, VocFileStatus.i.PROCESSED_OK);
+    protected void completeOK (DB db, UUID uuid, XSSFWorkbook wb) throws SQLException {
+        setStatus (db, uuid, VocFileStatus.i.PROCESSED_OK);
+        storeResult (db, uuid, wb);
     }
 
-    protected void completeFail (DB db, UUID uuid, XSSFWorkbook wb) throws SQLException {
-        
-        setStatus (db, uuid, VocFileStatus.i.PROCESSED_FAILED);
+    protected void completeFail (DB db, UUID uuid, XSSFWorkbook wb) throws SQLException {        
+        setStatus (db, uuid, VocFileStatus.i.PROCESSED_FAILED);        
+        storeResult (db, uuid, wb);        
+    }
+
+    private void storeResult (DB db, UUID uuid, XSSFWorkbook wb) throws SQLException {
         
         final Connection cn = db.getConnection ();
         
@@ -78,8 +82,8 @@ public abstract class XLMDB extends UUIDMDB<InXlFile> {
             
             cn.commit ();
             cn.setAutoCommit (true);
-                
-        }         
+            
+        }
         
     }
     
@@ -121,7 +125,7 @@ public abstract class XLMDB extends UUIDMDB<InXlFile> {
         
         try {
             processLines (wb, uuid, db);
-            completeOK (db, uuid);
+            completeOK (db, uuid, wb);
         }
         catch (XLException e) {
             completeFail (db, uuid, wb);

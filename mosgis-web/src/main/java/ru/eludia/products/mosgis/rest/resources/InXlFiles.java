@@ -24,7 +24,7 @@ public class InXlFiles extends EJBResource <InXlFilesLocal> {
         try {
             return Response
                 .ok ((StreamingOutput) (OutputStream output) -> {((InXlFilesLocal) back).download_errors (id, output);})
-                .header ("Content-Disposition", "attachment;filename=" + URLEncoder.encode ("Ошибки_" + fileName, "UTF-8"))
+                .header ("Content-Disposition", "attachment;filename=" + URLEncoder.encode ("Результаты_" + fileName, "UTF-8"))
                 .header ("Content-Length", len)
                 .build ();
             
