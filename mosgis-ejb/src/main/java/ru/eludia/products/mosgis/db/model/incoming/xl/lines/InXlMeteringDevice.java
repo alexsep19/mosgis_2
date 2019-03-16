@@ -1,20 +1,16 @@
 package ru.eludia.products.mosgis.db.model.incoming.xl.lines;
 
 import java.math.BigInteger;
-import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
-import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
-import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
-import ru.eludia.products.mosgis.db.model.tables.MeteringDeviceLog;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -35,12 +31,11 @@ public class InXlMeteringDevice extends EnTable {
         UUID_ORG                (VocOrganization.class,     "Организация-источник данных"),
         ERR                     (Type.STRING,  null,        "Ошибка"),
         
-        
-        
         ID_TYPE                (VocMeteringDeviceType.class,                    "Тип прибора учёта"),
         INSTALLATIONPLACE      (VocMeteringDeviceInstallationPlace.class, null, "Место установки"),
 
         UUID_PREMISE           (Premise.class,       null,                      "Помещение"),
+        UNOM                   (Type.INTEGER,                                   "Идентификатор дома в московских системах"),
 	FIASHOUSEGUID          (VocBuilding.class,                              "Глобальный уникальный идентификатор дома по ФИАС"),
 
         METERINGDEVICENUMBER   (Type.STRING,  50,                               "Заводской (серийный) номер ПУ"),
@@ -77,10 +72,6 @@ public class InXlMeteringDevice extends EnTable {
         ID_CTR_STATUS          (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения mosgis"),
         ID_CTR_STATUS_GIS      (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения ГИС ЖКХ"),
                        
-        METERINGDEVICEGUID            (Type.UUID,       null,                   "Идентификатор ПУ"),
-        METERINGDEVICEVERSIONGUID     (Type.UUID,       null,                   "Идентификатор версии ПУ"),
-        UNIQUENUMBER                  (Type.STRING,     null,                   "Уникальный номер"),        
-
         ;
 
         @Override
@@ -92,23 +83,12 @@ public class InXlMeteringDevice extends EnTable {
         boolean isToCopy () {
 
             switch (this) {
-
-                case UUID_XL:
-
-//                case UUID_CONTRACT:
-//                case UUID_CONTRACT_AGREEMENT:
-
-                case FIASHOUSEGUID:
-
-//                case ENDDATE:
-//                case STARTDATE:
-                    
+                case ORD:
+                case ERR:
+                case UNOM:
+                    return false;                    
+                default:                    
                     return true;
-                    
-                default:
-                    
-                    return false;
-
             }
 
         }
@@ -138,16 +118,21 @@ public class InXlMeteringDevice extends EnTable {
     
     private static void setFields (Map<String, Object> r, XSSFRow row) throws XLException {
         
-        r.put (c.METERINGDEVICENUMBER.lc (), toString (row, 1, "Не указан серийный номер"));        
-        r.put (c.ID_TYPE.lc (), VocMeteringDeviceType.i.fromXL (toString (row, 2, "Не указан тип ПУ").toString ()));      
-        r.put (c.METERINGDEVICESTAMP.lc (), toString (row, 3, "Не указана марка"));
-        r.put (c.METERINGDEVICEMODEL.lc (), toString (row, 4, "Не указана модель"));
+        r.put (c.METERINGDEVICENUMBER.lc (),  toString (row, 1, "Не указан серийный номер"));        
+        r.put (c.ID_TYPE.lc (),               VocMeteringDeviceType.i.fromXL (toString (row, 2, "Не указан тип ПУ").toString ()));      
+        r.put (c.METERINGDEVICESTAMP.lc (),   toString (row, 3, "Не указана марка"));
+        r.put (c.METERINGDEVICEMODEL.lc (),   toString (row, 4, "Не указана модель"));
+        r.put (c.UNOM.lc (),                  toNumeric (row, 6, "Не указан UNOM"));
+        r.put (c.REMOTEMETERINGMODE.lc (),    toBool (row, 11, "Не указано наличие возможности дистанционного снятия показаний"));
+        r.put (c.REMOTEMETERINGINFO.lc (),    toString (row, 12));
+        r.put (c.NOTLINKEDWITHMETERING.lc (), 1 - toBool (row, 13, "Не указано, определяется ли объём ресурсов несколькими ПУ"));
+        r.put (c.INSTALLATIONPLACE.lc (),     toString (row, 14));
 
     }
 
     public InXlMeteringDevice () {
 
-        super ("in_xl_ctr_objects", "Строки импорта объектов управления");
+        super ("in_xl_meters", "Строки импорта приборов учёта");
 
         cols  (c.class);
 
@@ -210,11 +195,11 @@ public class InXlMeteringDevice extends EnTable {
 
             + " IF :NEW.err IS NOT NULL THEN :NEW.is_deleted := 1; END IF; "
             + " IF NOT (:OLD.is_deleted = 1 AND :NEW.is_deleted = 0) THEN RETURN; END IF; "
-
+/*
             + " INSERT INTO tb_contract_objects (uuid,is_deleted" + sb + ") VALUES (:NEW.uuid,0" + nsb + "); "
             + " UPDATE tb_contract_objects SET is_deleted=1 WHERE uuid=:NEW.uuid; "
             + " COMMIT; "
-
+*/
             + "END; "
 
         );        

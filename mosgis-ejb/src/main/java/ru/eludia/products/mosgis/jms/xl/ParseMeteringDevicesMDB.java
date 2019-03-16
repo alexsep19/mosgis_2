@@ -1,6 +1,7 @@
 package ru.eludia.products.mosgis.jms.xl;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -15,6 +16,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlMeteringDevice;
 import ru.eludia.products.mosgis.db.model.tables.MeteringDevice;
+import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi2;
 import ru.eludia.products.mosgis.jms.xl.base.XLMDB;
 import ru.eludia.products.mosgis.jms.xl.base.XLException;
 
@@ -25,7 +27,7 @@ import ru.eludia.products.mosgis.jms.xl.base.XLException;
 })
 public class ParseMeteringDevicesMDB extends XLMDB {
         
-    protected void addMeters (XSSFSheet sheet, UUID parent, DB db) throws SQLException {
+    protected void addMeters (XSSFSheet sheet, UUID parent, DB db, Map<Integer, Integer> resourceMap) throws SQLException {
 
         for (int i = 2; i <= sheet.getLastRowNum (); i ++) {
             
@@ -97,10 +99,31 @@ public class ParseMeteringDevicesMDB extends XLMDB {
         super.completeFail (db, parent, wb);
         
         db.delete (db.getModel ()
-            .select (MeteringDevice.class, "uuid")
-            .where (InXlMeteringDevice.c.UUID_XL, parent)
+            .select (MeteringDevice.class)
+            .where  (MeteringDevice.c.UUID_XL, parent)
         );            
         
+    }
+    
+    static Map<Integer, Integer> toResourceMap (XSSFSheet sheet) throws XLException {
+        
+        final HashMap<Integer, Integer> result = new HashMap<> ();
+        
+        for (int i = 2; i <= sheet.getLastRowNum (); i ++) {
+            
+            XSSFRow row = sheet.getRow (i);
+            
+            final int k = EnTable.toNumeric (row, 0, "Некорректный ссылочный номер").intValue ();
+
+            result.put (k, 
+                (int) DB.to.Long (result.get (k)) + 
+                Nsi2.i.forLabel (EnTable.toString (row, 2)).getId ()
+            );
+
+        }
+
+        return result;
+
     }
     
     @Override
@@ -108,10 +131,13 @@ public class ParseMeteringDevicesMDB extends XLMDB {
         
         boolean isOk = true;        
         
-        final XSSFSheet sheetMeters = wb.getSheetAt (0);
-//        final XSSFSheet sheetAddResources = wb.getSheetAt (1);
+        final XSSFSheet sheetAddResources = wb.getSheetAt (1);
+        Map<Integer, Integer> resourceMap = toResourceMap (sheetAddResources);
         
-        addMeters (sheetMeters, uuid, db);
+System.out.println ("resourceMap=" + resourceMap);
+
+        final XSSFSheet sheetMeters = wb.getSheetAt (0);        
+        addMeters (sheetMeters, uuid, db, resourceMap);
         
         if (!checkMeterLines (sheetMeters, db, uuid)) isOk = false;
 

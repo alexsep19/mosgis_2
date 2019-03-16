@@ -71,7 +71,7 @@ public class Nsi2 extends View {
         HEAT_COLD_WATER      (0, HEAT.getId () | COLD_WATER.getId (),  "Тепловая энергия + холодная вода"),
         HEAT_WATER           (0, HEAT.getId () | HOT_WATER.getId () | COLD_WATER.getId (),  "Тепловая энергия + холодная и горячая вода"),
         
-        WASTE_WATER          (8, 128, "Сточные воды"),
+        WASTE_WATER          (8, 128, "Сточные бытовые воды"),
 
         ;
                 
@@ -117,6 +117,11 @@ public class Nsi2 extends View {
             for (i i: values ()) if (DB.eq (id, i.id)) return i;
             throw new IllegalArgumentException ("Unknown NSI 2 bit mask: " + id);
         }        
+        
+        public static i forLabel (String label) {
+            for (i i: values ()) if (i.label.equals (label)) return i;
+            throw new IllegalArgumentException ("Неизвестный вид бытовых ресурсов: " + label);
+        }
         
         private JsonObject toJsonObject () {
             return Json.createObjectBuilder ()
