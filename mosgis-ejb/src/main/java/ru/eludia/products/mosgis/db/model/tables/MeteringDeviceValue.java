@@ -80,7 +80,7 @@ public class MeteringDeviceValue extends EnTable {
             + "END IF; "
 
             + "IF :NEW.is_deleted = 0 AND :NEW.id_type <> " + VocMeteringDeviceValueType.i.BASE + " THEN "
-            + " :NEW.DT_PERIOD := :NEW.DATEVALUE; "
+            + " :NEW.DT_PERIOD := TRUNC (:NEW.DATEVALUE, 'MM'); "
             + "END IF; "
 
         + "END;");
