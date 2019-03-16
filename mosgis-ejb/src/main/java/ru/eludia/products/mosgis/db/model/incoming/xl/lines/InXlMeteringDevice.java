@@ -11,6 +11,7 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
+import ru.eludia.products.mosgis.db.model.tables.MeteringDevice;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -23,6 +24,8 @@ import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi27;
 import ru.eludia.products.mosgis.jms.xl.base.XLException;
 
 public class InXlMeteringDevice extends EnTable {
+
+    public static final String TABLE_NAME = "in_xl_meters";
 
     public enum c implements ColEnum {
 
@@ -156,7 +159,7 @@ public class InXlMeteringDevice extends EnTable {
 
     public InXlMeteringDevice () {
 
-        super ("in_xl_meters", "Строки импорта приборов учёта");
+        super (TABLE_NAME, "Строки импорта приборов учёта");
 
         cols  (c.class);
 
@@ -208,11 +211,16 @@ public class InXlMeteringDevice extends EnTable {
 
             + " IF :NEW.err IS NOT NULL THEN :NEW.is_deleted := 1; END IF; "
             + " IF NOT (:OLD.is_deleted = 1 AND :NEW.is_deleted = 0) THEN RETURN; END IF; "
-/*
-            + " INSERT INTO tb_contract_objects (uuid,is_deleted" + sb + ") VALUES (:NEW.uuid,0" + nsb + "); "
-            + " UPDATE tb_contract_objects SET is_deleted=1 WHERE uuid=:NEW.uuid; "
+
+            + "BEGIN "
+            + " INSERT INTO " + MeteringDevice.TABLE_NAME + " (uuid,is_deleted" + sb + ") VALUES (:NEW.uuid,1" + nsb + "); "
             + " COMMIT; "
-*/
+            + " EXCEPTION WHEN OTHERS THEN "
+            + " ROLLBACK; "
+//            + " UPDATE " + TABLE_NAME + " SET err = REPLACE(SUBSTR(SQLERRM, 1, 1000), 'ORA-20000: ', '') WHERE uuid; "
+            + " :NEW.err := REPLACE(SUBSTR(SQLERRM, 1, 1000), 'ORA-20000: ', ''); "
+            + "END; "
+
             + "END; "
 
         );        

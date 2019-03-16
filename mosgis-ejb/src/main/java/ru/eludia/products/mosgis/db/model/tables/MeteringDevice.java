@@ -19,6 +19,8 @@ import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi27;
 
 public class MeteringDevice extends EnTable {
     
+    public static final String TABLE_NAME = "tb_meters";
+
     public enum c implements EnColEnum {
         
 	UUID_XL                 	(InXlFile.class,        null,           "Источник импорта"),
@@ -95,7 +97,7 @@ public class MeteringDevice extends EnTable {
     }
 
     public MeteringDevice () {
-        super  ("tb_meters", "Приборы учёта");
+        super  (TABLE_NAME, "Приборы учёта");
         cols   (c.class);
         key    (c.UUID_XL);
         key    (c.FIASHOUSEGUID);
