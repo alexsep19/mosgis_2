@@ -60,6 +60,11 @@ public class MeteringDeviceValue extends EnTable {
                 
             + "DECLARE" 
             + " PRAGMA AUTONOMOUS_TRANSACTION; "
+            + " d NUMBER (2); "
+            + " ddt_m_start NUMBER (2); "
+            + " ddt_m_start_nxt NUMBER (1); "
+            + " ddt_m_end NUMBER (2); "
+            + " ddt_m_end_nxt NUMBER (1); "
             + "BEGIN "
                 
             + "IF :NEW.is_deleted = 0 AND :NEW.id_type = " + VocMeteringDeviceValueType.i.BASE + " THEN "
@@ -80,7 +85,14 @@ public class MeteringDeviceValue extends EnTable {
             + "END IF; "
 
             + "IF :NEW.is_deleted = 0 AND :NEW.id_type <> " + VocMeteringDeviceValueType.i.BASE + " THEN "
+            + " BEGIN "
+            + "  SELECT ddt_m_start,ddt_m_start_nxt,ddt_m_end,ddt_m_end_nxt INTO ddt_m_start,ddt_m_start_nxt,ddt_m_end,ddt_m_end_nxt FROM " + ActualCaChObject.TABLE_NAME + " WHERE fiashouseguid IN (SELECT fiashouseguid FROM " + MeteringDevice.TABLE_NAME + " WHERE uuid=:NEW.uuid_meter);"
+            + "  EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Для данного дома не найден договор управления или устав с заданным периодом ввода показаний приборов учёта.');"
+            + " END; "
             + " :NEW.DT_PERIOD := TRUNC (:NEW.DATEVALUE, 'MM'); "
+            + " d := EXTRACT (DAY FROM :NEW.DATEVALUE); "
+            + " IF d < ddt_m_start THEN :NEW.DT_PERIOD := ADD_MONTHS (:NEW.DT_PERIOD, -1); END IF;"     
+            + " IF ddt_m_start_nxt = 1 THEN :NEW.DT_PERIOD := ADD_MONTHS (:NEW.DT_PERIOD, 1); END IF;"
             + "END IF; "
 
         + "END;");
