@@ -13,6 +13,7 @@ public class Nsi16 extends View {
     public enum c implements ColEnum {
         
         ID    (Type.STRING, 20, null, "Код"),
+        VALUE (Type.INTEGER,    null, "Значение"),
         LABEL (Type.STRING,     null, "Наименование"),
         ;
         
@@ -35,6 +36,7 @@ public class Nsi16 extends View {
 
         return "SELECT "
             + " 0+code id, "
+            + " " + VocNsi16.c.F_17E03CCF84.name () + " value, "
             + " " + VocNsi16.c.F_17E03CCF84.name () + " || ' ' || " + VocNsi16.c.F_A008C7D1F3.name () + " label "
             + "FROM "
             + " vc_nsi_16 "
