@@ -11,6 +11,8 @@ import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceValueType;
 
 public class MeteringDeviceValue extends EnTable {
 
+    private static final String TABLE_NAME = "tb_meter_values";
+
     public enum c implements EnColEnum {
 
         UUID_METER             (MeteringDevice.class,                           "Прибор учёта"),
@@ -52,7 +54,7 @@ public class MeteringDeviceValue extends EnTable {
 
     public MeteringDeviceValue () {
         
-        super  ("tb_meter_values", "Показания приборов учёта");
+        super  (TABLE_NAME, "Показания приборов учёта");
         cols   (c.class);
         key    ("uuid_meter", "uuid_meter");
 
@@ -60,6 +62,7 @@ public class MeteringDeviceValue extends EnTable {
                 
             + "DECLARE" 
             + " PRAGMA AUTONOMOUS_TRANSACTION; "
+            + " cnt NUMBER; "
             + " d NUMBER (2); "
             + " ddt_m_start NUMBER (2); "
             + " ddt_m_start_nxt NUMBER (1); "
@@ -97,6 +100,10 @@ public class MeteringDeviceValue extends EnTable {
             + " :NEW.DT_PERIOD := TRUNC (:NEW.DATEVALUE, 'MM'); "
             + " IF d < ddt_m_start THEN :NEW.DT_PERIOD := ADD_MONTHS (:NEW.DT_PERIOD, -1); END IF;"
             + " IF ddt_m_start_nxt = 1 THEN :NEW.DT_PERIOD := ADD_MONTHS (:NEW.DT_PERIOD, 1); END IF;"
+                    
+            + " SELECT COUNT(*) INTO cnt FROM " + TABLE_NAME + " WHERE is_deleted=0 AND UUID_METER=:NEW.UUID_METER AND ID_TYPE=:NEW.ID_TYPE AND CODE_VC_NSI_2=:NEW.CODE_VC_NSI_2 AND DT_PERIOD=:NEW.DT_PERIOD;"
+            + " IF cnt>0 THEN raise_application_error (-20000, 'Показания на данный период уже внесены'); END IF;"
+
             + "END IF; "
 
         + "END;");
