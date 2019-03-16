@@ -18,6 +18,7 @@ public class MeteringDeviceValue extends EnTable {
         CODE_VC_NSI_2          (Type.STRING,  20,                               "Коммунальный ресурс (НСИ 2)"),
 
         DATEVALUE              (Type.DATE,                                      "Дата снятия показания"),
+        DT_PERIOD              (Type.DATE, null,                                "Период (месяц, год), к которому относятся показания"),
 
         METERINGVALUET1        (Type.NUMERIC, 22, 7, null,                      "Объем по тарифу T1"),
         METERINGVALUET2        (Type.NUMERIC, 22, 7, null,                      "Объем по тарифу T2"),
@@ -75,6 +76,11 @@ public class MeteringDeviceValue extends EnTable {
                 + ") LOOP"
             + " raise_application_error (-20000, 'Базовые показания для данного прибора учёта уже введены. Операция отменена.'); "
             + " END LOOP; "
+            + " :NEW.DT_PERIOD := NULL; "
+            + "END IF; "
+
+            + "IF :NEW.is_deleted = 0 AND :NEW.id_type <> " + VocMeteringDeviceValueType.i.BASE + " THEN "
+            + " :NEW.DT_PERIOD := :NEW.DATEVALUE; "
             + "END IF; "
 
         + "END;");
