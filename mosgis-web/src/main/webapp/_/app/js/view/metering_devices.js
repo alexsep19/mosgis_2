@@ -32,6 +32,7 @@ define ([], function () {
                         caption: 'Импорт ПУ...',
                         icon: 'w2ui-icon-plus',
                         onClick: $_DO.import_metering_devices,
+                        off: !$_USER.uuid_org,
                     },
                     
                 ].filter (not_off),

@@ -8,6 +8,7 @@ import java.util.StringTokenizer;
 import java.util.UUID;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -20,7 +21,7 @@ import ru.eludia.products.mosgis.jms.xl.base.XLMDB;
 import ru.eludia.products.mosgis.jms.xl.base.XLException;
 
 @MessageDriven(activationConfig = {
-    @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inXlContractObjectsQueue")
+    @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inXlMeteringDevicesQueue")
     , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
     , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
@@ -42,7 +43,8 @@ public class ParseMeteringDevicesMDB extends XLMDB {
                     EnTable.c.UUID, uuid,
                     EnTable.c.IS_DELETED, 0
                 ));
-
+                
+                if (row.getCell (33) == null) row.createCell (33, CellType.STRING);
                 row.getCell (33).setCellValue (uuid.toString ());
 
             }
