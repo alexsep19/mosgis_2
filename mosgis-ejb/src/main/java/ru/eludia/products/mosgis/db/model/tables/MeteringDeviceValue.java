@@ -89,9 +89,13 @@ public class MeteringDeviceValue extends EnTable {
             + "  SELECT ddt_m_start,ddt_m_start_nxt,ddt_m_end,ddt_m_end_nxt INTO ddt_m_start,ddt_m_start_nxt,ddt_m_end,ddt_m_end_nxt FROM " + ActualCaChObject.TABLE_NAME + " WHERE fiashouseguid IN (SELECT fiashouseguid FROM " + MeteringDevice.TABLE_NAME + " WHERE uuid=:NEW.uuid_meter);"
             + "  EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Для данного дома не найден договор управления или устав с заданным периодом ввода показаний приборов учёта.');"
             + " END; "
-            + " :NEW.DT_PERIOD := TRUNC (:NEW.DATEVALUE, 'MM'); "
+                    
             + " d := EXTRACT (DAY FROM :NEW.DATEVALUE); "
-            + " IF d < ddt_m_start THEN :NEW.DT_PERIOD := ADD_MONTHS (:NEW.DT_PERIOD, -1); END IF;"     
+            + " IF ddt_m_start_nxt=ddt_m_end_nxt AND (d<ddt_m_start  OR d>ddt_m_end) THEN raise_application_error (-20000, 'Указанная дата лежит вне периода приёма показаний'); END IF;"
+            + " IF ddt_m_start_nxt<ddt_m_end_nxt AND (d<ddt_m_start AND d>ddt_m_end) THEN raise_application_error (-20000, 'Указанная дата лежит вне периода приёма показаний'); END IF;"
+
+            + " :NEW.DT_PERIOD := TRUNC (:NEW.DATEVALUE, 'MM'); "
+            + " IF d < ddt_m_start THEN :NEW.DT_PERIOD := ADD_MONTHS (:NEW.DT_PERIOD, -1); END IF;"
             + " IF ddt_m_start_nxt = 1 THEN :NEW.DT_PERIOD := ADD_MONTHS (:NEW.DT_PERIOD, 1); END IF;"
             + "END IF; "
 
