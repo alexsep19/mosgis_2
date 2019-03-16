@@ -16,7 +16,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlMeteringDevice;
 import ru.eludia.products.mosgis.db.model.tables.MeteringDevice;
-import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi2;
 import ru.eludia.products.mosgis.jms.xl.base.XLMDB;
 import ru.eludia.products.mosgis.jms.xl.base.XLException;
 
@@ -31,7 +30,11 @@ public class ParseMeteringDevicesMDB extends XLMDB {
 
         for (int i = 2; i <= sheet.getLastRowNum (); i ++) {
             
-            UUID uuid = (UUID) db.insertId (InXlMeteringDevice.class, InXlMeteringDevice.toHash (parent, i, sheet.getRow (i)));
+            final XSSFRow row = sheet.getRow (i);
+
+            if (row.getCell (0) == null) continue;
+            
+            UUID uuid = (UUID) db.insertId (InXlMeteringDevice.class, InXlMeteringDevice.toHash (parent, i, row, resourceMap));
             
             try {
                 
@@ -104,22 +107,15 @@ public class ParseMeteringDevicesMDB extends XLMDB {
         );            
         
     }
-    
+        
     static Map<Integer, Integer> toResourceMap (XSSFSheet sheet) throws XLException {
         
         final HashMap<Integer, Integer> result = new HashMap<> ();
         
-        for (int i = 2; i <= sheet.getLastRowNum (); i ++) {
-            
-            XSSFRow row = sheet.getRow (i);
-            
+        for (int i = 1; i <= sheet.getLastRowNum (); i ++) {
+            XSSFRow row = sheet.getRow (i);           
             final int k = EnTable.toNumeric (row, 0, "Некорректный ссылочный номер").intValue ();
-
-            result.put (k, 
-                (int) DB.to.Long (result.get (k)) + 
-                Nsi2.i.forLabel (EnTable.toString (row, 2)).getId ()
-            );
-
+            result.put (k, InXlMeteringDevice.addResource (result, k, EnTable.toString (row, 2)));
         }
 
         return result;
@@ -131,12 +127,10 @@ public class ParseMeteringDevicesMDB extends XLMDB {
         
         boolean isOk = true;        
         
-        final XSSFSheet sheetAddResources = wb.getSheetAt (1);
+        final XSSFSheet sheetAddResources = wb.getSheet ("Доп. комм. ресурсы");        
         Map<Integer, Integer> resourceMap = toResourceMap (sheetAddResources);
         
-System.out.println ("resourceMap=" + resourceMap);
-
-        final XSSFSheet sheetMeters = wb.getSheetAt (0);        
+        final XSSFSheet sheetMeters = wb.getSheet ("Сведения о ПУ");        
         addMeters (sheetMeters, uuid, db, resourceMap);
         
         if (!checkMeterLines (sheetMeters, db, uuid)) isOk = false;

@@ -18,6 +18,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceInstallationPlace
 import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceType;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi16;
+import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi2;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi27;
 import ru.eludia.products.mosgis.jms.xl.base.XLException;
 
@@ -27,15 +28,16 @@ public class InXlMeteringDevice extends EnTable {
 
         UUID_XL                 (InXlFile.class,            "Файл импорта"),
         ORD                     (Type.NUMERIC, 5,           "Номер строки"),
+        ERR                     (Type.STRING,  null,        "Ошибка"),
+        UNOM                    (Type.INTEGER,                                   "Идентификатор дома в московских системах"),
+        VERIF_INT               (Type.INTEGER, null,                             "Межповерочный интервал"),
         
         UUID_ORG                (VocOrganization.class,     "Организация-источник данных"),
-        ERR                     (Type.STRING,  null,        "Ошибка"),
         
         ID_TYPE                (VocMeteringDeviceType.class,                    "Тип прибора учёта"),
         INSTALLATIONPLACE      (VocMeteringDeviceInstallationPlace.class, null, "Место установки"),
 
         UUID_PREMISE           (Premise.class,       null,                      "Помещение"),
-        UNOM                   (Type.INTEGER,                                   "Идентификатор дома в московских системах"),
 	FIASHOUSEGUID          (VocBuilding.class,                              "Глобальный уникальный идентификатор дома по ФИАС"),
 
         METERINGDEVICENUMBER   (Type.STRING,  50,                               "Заводской (серийный) номер ПУ"),
@@ -95,7 +97,7 @@ public class InXlMeteringDevice extends EnTable {
 
     }
     
-    public static Map<String, Object> toHash (UUID uuid, int ord, XSSFRow row) {
+    public static Map<String, Object> toHash (UUID uuid, int ord, XSSFRow row, Map<Integer, Integer> resourceMap) {
         
         Map<String, Object> r = DB.HASH (
             EnTable.c.IS_DELETED, 1,
@@ -104,7 +106,7 @@ public class InXlMeteringDevice extends EnTable {
         );
         
         try {
-            setFields (r, row);
+            setFields (r, row, resourceMap);
         }         
         catch (XLException ex) {
             r.put (c.ERR.lc (), ex.getMessage ());
@@ -114,9 +116,13 @@ public class InXlMeteringDevice extends EnTable {
         
     }
     
+    public static int addResource (Map<Integer, Integer> resourceMap, int k, String label) {
+        Integer v = resourceMap.get (k);
+        int result = v == null ? 0 : v;
+        return result | Nsi2.i.forLabel (label).getId ();
+    }    
     
-    
-    private static void setFields (Map<String, Object> r, XSSFRow row) throws XLException {
+    private static void setFields (Map<String, Object> r, XSSFRow row, Map<Integer, Integer> resourceMap) throws XLException {
         
         r.put (c.METERINGDEVICENUMBER.lc (),  toString (row, 1, "Не указан серийный номер"));        
         r.put (c.ID_TYPE.lc (),               VocMeteringDeviceType.i.fromXL (toString (row, 2, "Не указан тип ПУ").toString ()));      
@@ -127,7 +133,24 @@ public class InXlMeteringDevice extends EnTable {
         r.put (c.REMOTEMETERINGINFO.lc (),    toString (row, 12));
         r.put (c.NOTLINKEDWITHMETERING.lc (), 1 - toBool (row, 13, "Не указано, определяется ли объём ресурсов несколькими ПУ"));
         r.put (c.INSTALLATIONPLACE.lc (),     toString (row, 14));
-
+    
+        try {
+            final String resourceLabel = toString (row, 16, "Не указаны виды коммунальных ресурсов");
+            final int mask = addResource (resourceMap, toNumeric (row, 0).intValue (), resourceLabel);            
+            r.put (c.MASK_VC_NSI_2.lc (), Nsi2.i.forId (mask).getId ());
+        }
+        catch (Exception ex) {
+            throw new XLException ("Некорректно заданы виды коммунальных ресурсов");
+        }
+        
+        r.put (c.FIRSTVERIFICATIONDATE.lc (),         toDate (row, 25));
+        r.put (c.FACTORYSEALDATE.lc (),               toDate (row, 26));
+        r.put (c.VERIF_INT.lc (),                     toNumeric (row, 27));
+        r.put (c.TEMPERATURESENSOR.lc (),             toBool (row, 28));
+        r.put (c.TEMPERATURESENSINGELEMENTINFO.lc (), toString (row, 29));
+        r.put (c.PRESSURESENSOR.lc (),                toBool (row, 30));
+        r.put (c.PRESSURESENSINGELEMENTINFO.lc (),    toString (row, 31));
+        
     }
 
     public InXlMeteringDevice () {
