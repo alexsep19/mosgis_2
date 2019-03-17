@@ -115,6 +115,13 @@ public class MeteringDevice extends EnTable {
 
             + "SELECT CODE_VC_NSI_27 INTO :NEW.CODE_VC_NSI_27 FROM vc_meter_types WHERE id = :NEW.ID_TYPE; "
 
+            + "IF :NEW.is_deleted = 0 THEN BEGIN "
+                + " IF :NEW.COMMISSIONINGDATE < :NEW.INSTALLATIONDATE THEN raise_application_error (-20000, 'Дата ввода в эксплуатацию не должна быть раньше даты установки.'); END IF; "
+                + " IF :NEW.FIRSTVERIFICATIONDATE < :NEW.FACTORYSEALDATE THEN raise_application_error (-20000, 'Дата последней проверки должна быть не раньше даты опломбирования изготовителем'); END IF; "
+                + " IF :NEW.FIRSTVERIFICATIONDATE > TRUNC (SYSDATE, 'DD') THEN raise_application_error (-20000, 'Дата опломбирования изготовителем не может быть позже сегодняшней даты'); END IF; "
+                + " IF :NEW.FACTORYSEALDATE > TRUNC (SYSDATE, 'DD') THEN raise_application_error (-20000, 'Дата последней проверки не может быть позже сегодняшней даты'); END IF; "
+            + " END; END IF; "
+                
             + "IF UPDATING AND :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS "
                 + " AND :OLD.ID_CTR_STATUS <> " + VocGisStatus.i.FAILED_PLACING
                 + " AND :NEW.ID_CTR_STATUS =  " + VocGisStatus.i.PROJECT
