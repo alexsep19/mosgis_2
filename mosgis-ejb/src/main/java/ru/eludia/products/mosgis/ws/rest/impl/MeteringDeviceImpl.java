@@ -184,6 +184,7 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
         Nsi2.i.addMeteringTo (job);
         VocAction.addTo (job);
         VocMeteringDeviceType.addTo (job);
+        VocGisStatus.addLiteTo (job);
         
         db.addJsonArrays (job, 
            Nsi16.getVocSelect ()
