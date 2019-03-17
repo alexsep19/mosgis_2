@@ -111,7 +111,11 @@ public class MeteringDevice extends EnTable {
 
         + "END;");
         
-        trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
+        trigger ("BEFORE INSERT OR UPDATE", 
+            "DECLARE "
+            + " PRAGMA AUTONOMOUS_TRANSACTION; "
+            + " cnt NUMBER; "
+            + "BEGIN "
 
             + "SELECT CODE_VC_NSI_27 INTO :NEW.CODE_VC_NSI_27 FROM vc_meter_types WHERE id = :NEW.ID_TYPE; "
 
@@ -120,8 +124,10 @@ public class MeteringDevice extends EnTable {
                 + " IF :NEW.FIRSTVERIFICATIONDATE < :NEW.FACTORYSEALDATE THEN raise_application_error (-20000, 'Дата последней проверки должна быть не раньше даты опломбирования изготовителем'); END IF; "
                 + " IF :NEW.FIRSTVERIFICATIONDATE > TRUNC (SYSDATE, 'DD') THEN raise_application_error (-20000, 'Дата опломбирования изготовителем не может быть позже сегодняшней даты'); END IF; "
                 + " IF :NEW.FACTORYSEALDATE > TRUNC (SYSDATE, 'DD') THEN raise_application_error (-20000, 'Дата последней проверки не может быть позже сегодняшней даты'); END IF; "
+                + " SELECT COUNT(*) INTO cnt FROM " + TABLE_NAME + " WHERE is_deleted=0 AND fiashouseguid=:NEW.fiashouseguid AND ID_TYPE=:NEW.ID_TYPE AND ID_TYPE=:NEW.ID_TYPE AND METERINGDEVICENUMBER=:NEW.METERINGDEVICENUMBER AND METERINGDEVICESTAMP=:NEW.METERINGDEVICESTAMP AND METERINGDEVICEMODEL=:NEW.METERINGDEVICEMODEL;"
+                + " IF cnt>0 THEN raise_application_error (-20000, 'Прибор учёта с такой моделью, маркой и заводским номером уже зарегистрирован в этом доме'); END IF; "
             + " END; END IF; "
-                
+
             + "IF UPDATING AND :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS "
                 + " AND :OLD.ID_CTR_STATUS <> " + VocGisStatus.i.FAILED_PLACING
                 + " AND :NEW.ID_CTR_STATUS =  " + VocGisStatus.i.PROJECT
