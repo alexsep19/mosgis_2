@@ -43,7 +43,6 @@ import ru.eludia.products.mosgis.db.model.voc.VocBuildingStructure;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import com.github.junrar.Archive;
 import javax.ejb.EJB;
-import ru.eludia.products.mosgis.jmx.Fias;
 import ru.eludia.products.mosgis.jmx.FiasLocal;
 
 @MessageDriven(activationConfig = {
