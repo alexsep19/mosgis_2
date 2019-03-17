@@ -102,6 +102,15 @@ public class MeteringDevice extends EnTable {
         key    (c.UUID_XL);
         key    (c.FIASHOUSEGUID);
 
+        trigger ("AFTER UPDATE", "BEGIN "
+
+            + "IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS = " + VocGisStatus.i.APPROVED
+            + " THEN "
+                + " UPDATE " + MeteringDeviceValue.TABLE_NAME + " SET ID_CTR_STATUS=:NEW.ID_CTR_STATUS WHERE uuid_meter=:NEW.uuid AND id_type=" + VocMeteringDeviceValueType.i.BASE
+            + "; END IF; "
+
+        + "END;");
+        
         trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
 
             + "SELECT CODE_VC_NSI_27 INTO :NEW.CODE_VC_NSI_27 FROM vc_meter_types WHERE id = :NEW.ID_TYPE; "

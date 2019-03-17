@@ -11,7 +11,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceValueType;
 
 public class MeteringDeviceValue extends EnTable {
 
-    private static final String TABLE_NAME = "tb_meter_values";
+    public static final String TABLE_NAME = "tb_meter_values";
 
     public enum c implements EnColEnum {
 
