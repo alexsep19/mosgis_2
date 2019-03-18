@@ -2,25 +2,20 @@ package ru.eludia.products.mosgis.db.model.tables;
 
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
-import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
-import static ru.eludia.base.model.Type.DATE;
-import static ru.eludia.base.model.Type.STRING;
-import static ru.eludia.base.model.Type.NUMERIC;
-import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Num;
-import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
-import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustomerType;
-import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 
 public class SupplyResourceContractObject extends EnTable {
 
+    public static final String TABLE_NAME = "tb_sr_ctr_obj";
+
     public enum c implements EnColEnum {
+        
 	UUID_XL               (InXlFile.class, "Файл импорта"),
 
 	UUID_SR_CTR           (SupplyResourceContract.class, "Договор"),
@@ -74,7 +69,7 @@ public class SupplyResourceContractObject extends EnTable {
 
     public SupplyResourceContractObject () {
 
-        super ("tb_sr_ctr_obj", "Объект жилищного фонда договора РСО");
+        super (TABLE_NAME, "Объект жилищного фонда договора РСО");
 
         cols  (c.class);
 

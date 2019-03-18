@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.xml.bind.JAXBContext;
@@ -18,6 +19,7 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract.c;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractObject;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.ws.WsMessages;
@@ -132,6 +134,7 @@ public class ImportSupplyResourceContractData extends WsMDB {
         }
         
         addContractSubjects (r, src.getContractSubject ());
+        addContractOjects (r, src.getObjectAddress ());
         
         return r;
         
@@ -147,6 +150,15 @@ public class ImportSupplyResourceContractData extends WsMDB {
         result.put (SupplyResourceContractSubject.c.CODE_VC_NSI_239.lc (), cs.getMunicipalResource ().getCode ());
         return result;
     }
+    
+    private void addContractOjects (Map<String, Object> r, List<SupplyResourceContractType.ObjectAddress> objectAddress) {
+        r.put (SupplyResourceContractObject.TABLE_NAME, objectAddress.stream ().map (t -> toMap (t)).collect (Collectors.toList ()));
+    }
+    
+    private Map<String, Object> toMap (SupplyResourceContractType.ObjectAddress co) {
+        Map<String, Object> result = DB.to.Map (toJsonObject (co));
+        return result;
+    }    
     
     private ImportResult.CommonResult.ImportSupplyResourceContract toImportSupplyResourceContract (Map<String, Object> wsr, String contractGUID, SupplyResourceContractType src) throws Exception {
         
@@ -176,24 +188,31 @@ logger.info ("r=" + r);
             
             result.setContractGUID (idLog);
             
-            List<Map<String, Object>> subjects = (List<Map<String, Object>>) r.get (SupplyResourceContractSubject.TABLE_NAME);
-            
-            for (Map<String, Object> i: subjects) {
-
-                i.put (SupplyResourceContractSubject.c.UUID_SR_CTR.lc (), uuid);
-                
-                final UUID uuidSubject = (UUID) db.insertId (SupplyResourceContractSubject.class, i);
-
-                i.put (EnTable.c.UUID.lc (), uuidSubject);
-                                
-                m.createIdLogWs (db, SupplyResourceContractSubject.class, uuidInSoap, uuidSubject, VocAction.i.CREATE);
-
-            }
+            createDetails (db, uuidInSoap, uuid, SupplyResourceContractSubject.class, r);
+            createDetails (db, uuidInSoap, uuid, SupplyResourceContractObject.class,  r);
 
             return result;
 
         }
         
+    }
+    
+    void createDetails (DB db, UUID uuidInSoap, UUID uuid, Class c, Map<String, Object> r) throws SQLException {
+    
+        final MosGisModel model = ModelHolder.getModel ();
+
+        for (Map<String, Object> i: (List<Map<String, Object>>) r.get (model.getName (c))) {
+            
+            i.put ("uuid_sr_ctr", uuid);
+            
+            final UUID u = (UUID) db.insertId (c, i);
+            
+            i.put (EnTable.c.UUID.lc (), u);
+            
+            model.createIdLogWs (db, c, uuidInSoap, u, VocAction.i.CREATE);
+
+        }
+
     }
 
 }
