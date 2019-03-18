@@ -129,7 +129,7 @@ public class Raw {
      */
     public static final long readLongLittleEndian(byte[] array, int pos) {
 	int temp = 0;
-	temp |= array[pos + 7] & 0xff;
+        temp |= array[pos + 7] & 0xff;
 	temp <<= 8;
 	temp |= array[pos + 6] & 0xff;
 	temp <<= 8;
