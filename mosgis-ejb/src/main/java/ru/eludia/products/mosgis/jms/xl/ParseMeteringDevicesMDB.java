@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.UUID;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
@@ -26,7 +25,10 @@ import ru.eludia.products.mosgis.jms.xl.base.XLException;
     , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
 public class ParseMeteringDevicesMDB extends XLMDB {
-        
+       
+    private static final int N_COL_UUID = 33;
+    private static final int N_COL_ERR  = 34;
+
     protected void addMeters (XSSFSheet sheet, UUID parent, DB db, Map<Integer, Integer> resourceMap) throws SQLException {
 
         for (int i = 2; i <= sheet.getLastRowNum (); i ++) {
@@ -35,8 +37,8 @@ public class ParseMeteringDevicesMDB extends XLMDB {
 
             if (row.getCell (0) == null) continue;
             
-            UUID uuid = (UUID) db.insertId (InXlMeteringDevice.class, InXlMeteringDevice.toHash (parent, i, row, resourceMap));
-            
+            UUID uuid = (UUID) db.insertId (InXlMeteringDevice.class, InXlMeteringDevice.toHash (parent, i, row, resourceMap));            
+
             try {
                 
                 db.update (InXlMeteringDevice.class, DB.HASH (
@@ -44,23 +46,24 @@ public class ParseMeteringDevicesMDB extends XLMDB {
                     EnTable.c.IS_DELETED, 0
                 ));
                 
-                if (row.getCell (33) == null) row.createCell (33, CellType.STRING);
-                row.getCell (33).setCellValue (uuid.toString ());
+                db.update (MeteringDevice.class, DB.HASH (
+                    EnTable.c.UUID, uuid,
+                    EnTable.c.IS_DELETED, 0
+                ));
+                
+                setCellStringValue (row, N_COL_UUID, uuid.toString ());
 
             }
             catch (SQLException e) {
 
-                String s = e.getMessage ();
-
-                if (e.getErrorCode () == 20000) s =
-                    new StringTokenizer (e.getMessage (), "\n\r")
-                    .nextToken ()
-                    .replace ("ORA-20000: ", "");
+                String s = getErrorMessage (e);
 
                 db.update (InXlMeteringDevice.class, DB.HASH (
-                    EnTable.c.UUID, uuid,
+                    EnTable.c.UUID,           uuid,
                     InXlMeteringDevice.c.ERR, s
                 ));
+                
+                setCellStringValue (row, N_COL_ERR, s);
                 
             }
             

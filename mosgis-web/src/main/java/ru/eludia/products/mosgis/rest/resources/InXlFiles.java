@@ -19,12 +19,12 @@ import ru.eludia.products.mosgis.rest.api.InXlFilesLocal;
 @Path ("in_xl_files")
 public class InXlFiles extends EJBResource <InXlFilesLocal> {
     
-    protected Response createErrDownloadResponse (String id, String fileName, int len) {
-        
+    protected Response createDownloadResponse (String id, String fileName, int len) {
+
         try {
             return Response
                 .ok ((StreamingOutput) (OutputStream output) -> {((InXlFilesLocal) back).download_errors (id, output);})
-                .header ("Content-Disposition", "attachment;filename=" + URLEncoder.encode ("Результаты_" + fileName, "UTF-8"))
+                .header ("Content-Disposition", "attachment;filename=" + URLEncoder.encode (fileName, "UTF-8"))
                 .header ("Content-Length", len)
                 .build ();
             
@@ -79,7 +79,7 @@ public class InXlFiles extends EJBResource <InXlFilesLocal> {
     @Produces(APPLICATION_OCTET_STREAM)
     public Response download_errors (@PathParam ("id") String id) {
         JsonObject item = back.getItem (id, getUser ());
-        return createErrDownloadResponse (id, item.getString ("label"), item.getInt ("errr_len"));
+        return createDownloadResponse (id, item.getString ("label_result"), item.getInt ("errr_len"));
     }
     
     @POST

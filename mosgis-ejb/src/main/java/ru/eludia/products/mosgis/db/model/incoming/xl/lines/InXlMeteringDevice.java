@@ -204,22 +204,23 @@ public class InXlMeteringDevice extends EnTable {
 
         trigger ("BEFORE UPDATE", ""
 
+            + "BEGIN "
+            + " IF :NEW.err IS NOT NULL THEN :NEW.is_deleted := 1; END IF; "
+            + "END; "
+
+        );        
+        
+        trigger ("AFTER UPDATE", ""
+
             + "DECLARE" 
             + " PRAGMA AUTONOMOUS_TRANSACTION; "
-            + " l_err VARCHAR2 (1000); "
+//            + " l_err VARCHAR2 (1000); "
             + "BEGIN "
 
-            + " IF :NEW.err IS NOT NULL THEN :NEW.is_deleted := 1; END IF; "
             + " IF NOT (:OLD.is_deleted = 1 AND :NEW.is_deleted = 0) THEN RETURN; END IF; "
 
-            + "BEGIN "
             + " INSERT INTO " + MeteringDevice.TABLE_NAME + " (uuid,is_deleted" + sb + ") VALUES (:NEW.uuid,1" + nsb + "); "
             + " COMMIT; "
-            + " EXCEPTION WHEN OTHERS THEN "
-            + " ROLLBACK; "
-//            + " UPDATE " + TABLE_NAME + " SET err = REPLACE(SUBSTR(SQLERRM, 1, 1000), 'ORA-20000: ', '') WHERE uuid; "
-            + " :NEW.err := REPLACE(SUBSTR(SQLERRM, 1, 1000), 'ORA-20000: ', ''); "
-            + "END; "
 
             + "END; "
 
