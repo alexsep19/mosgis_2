@@ -63,6 +63,7 @@ public class ParseMeteringDevicesMDB extends XLMDB {
                     InXlMeteringDevice.c.ERR, s
                 ));
                 
+                setCellStringValue (row, N_COL_UUID, "");
                 setCellStringValue (row, N_COL_ERR, s);
                 
             }

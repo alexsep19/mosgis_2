@@ -124,7 +124,7 @@ public class MeteringDevice extends EnTable {
                 + " IF :NEW.FIRSTVERIFICATIONDATE < :NEW.FACTORYSEALDATE THEN raise_application_error (-20000, 'Дата последней поверки должна быть не раньше даты опломбирования изготовителем'); END IF; "
                 + " IF :NEW.FIRSTVERIFICATIONDATE > TRUNC (SYSDATE, 'DD') THEN raise_application_error (-20000, 'Дата опломбирования изготовителем не может быть позже сегодняшней даты'); END IF; "
                 + " IF :NEW.FACTORYSEALDATE > TRUNC (SYSDATE, 'DD') THEN raise_application_error (-20000, 'Дата последней поверки не может быть позже сегодняшней даты'); END IF; "
-                + " SELECT COUNT(*) INTO cnt FROM " + TABLE_NAME + " WHERE is_deleted=0 AND fiashouseguid=:NEW.fiashouseguid AND ID_TYPE=:NEW.ID_TYPE AND ID_TYPE=:NEW.ID_TYPE AND METERINGDEVICENUMBER=:NEW.METERINGDEVICENUMBER AND METERINGDEVICESTAMP=:NEW.METERINGDEVICESTAMP AND METERINGDEVICEMODEL=:NEW.METERINGDEVICEMODEL;"
+                + " SELECT COUNT(*) INTO cnt FROM " + TABLE_NAME + " WHERE uuid<>:NEW.uuid AND is_deleted=0 AND fiashouseguid=:NEW.fiashouseguid AND ID_TYPE=:NEW.ID_TYPE AND ID_TYPE=:NEW.ID_TYPE AND METERINGDEVICENUMBER=:NEW.METERINGDEVICENUMBER AND METERINGDEVICESTAMP=:NEW.METERINGDEVICESTAMP AND METERINGDEVICEMODEL=:NEW.METERINGDEVICEMODEL;"
                 + " IF cnt>0 THEN raise_application_error (-20000, 'Прибор учёта с такой моделью, маркой и заводским номером уже зарегистрирован в этом доме'); END IF; "
             + " END; END IF; "
 
