@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.jms.ws;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import javax.ejb.MessageDriven;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import ru.eludia.base.DB;
+import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
@@ -145,7 +147,7 @@ public class ImportSupplyResourceContractData extends WsMDB {
         result.put (SupplyResourceContractSubject.c.CODE_VC_NSI_239.lc (), cs.getMunicipalResource ().getCode ());
         return result;
     }
-
+    
     private ImportResult.CommonResult.ImportSupplyResourceContract toImportSupplyResourceContract (Map<String, Object> wsr, String contractGUID, SupplyResourceContractType src) throws Exception {
         
         if (contractGUID != null) throw new UnsupportedOperationException ("Операции обновления пока не поддерживаются");
@@ -162,23 +164,29 @@ logger.info ("r=" + r);
 
         ImportResult.CommonResult.ImportSupplyResourceContract result = new ImportResult.CommonResult.ImportSupplyResourceContract ();
         
+        final UUID uuidInSoap = (UUID) wsr.get ("uuid");
+        
         try (DB db = m.getDb ()) {
             
             UUID uuid = (UUID) db.insertId (SupplyResourceContract.class, r);
             
             result.setContractRootGUID (uuid.toString ());
             
-            String idLog = m.createIdLogWs (db, m.get (SupplyResourceContract.class), (UUID) wsr.get ("uuid"), uuid, VocAction.i.CREATE);
+            String idLog = m.createIdLogWs (db, SupplyResourceContract.class, uuidInSoap, uuid, VocAction.i.CREATE);
             
-            result.setContractGUID (idLog);            
+            result.setContractGUID (idLog);
             
             List<Map<String, Object>> subjects = (List<Map<String, Object>>) r.get (SupplyResourceContractSubject.TABLE_NAME);
             
             for (Map<String, Object> i: subjects) {
 
                 i.put (SupplyResourceContractSubject.c.UUID_SR_CTR.lc (), uuid);
+                
+                final UUID uuidSubject = (UUID) db.insertId (SupplyResourceContractSubject.class, i);
 
-                i.put (EnTable.c.UUID.lc (), db.insertId (SupplyResourceContractSubject.class, i));
+                i.put (EnTable.c.UUID.lc (), uuidSubject);
+                                
+                m.createIdLogWs (db, SupplyResourceContractSubject.class, uuidInSoap, uuidSubject, VocAction.i.CREATE);
 
             }
 

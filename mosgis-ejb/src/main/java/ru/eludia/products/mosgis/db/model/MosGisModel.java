@@ -52,6 +52,10 @@ public final class MosGisModel extends ru.eludia.base.Model {
         
     }
     
+    public String createIdLogWs (DB db, Class c, UUID uuidInSoap, Object id, VocAction.i action) throws SQLException {
+        return createIdLogWs (db, get (c), uuidInSoap, id, action);
+    }
+
     public String createIdLogWs (DB db, Table table, UUID uuidInSoap, Object id, VocAction.i action) throws SQLException {
 
         Table logTable = getLogTable (table);
