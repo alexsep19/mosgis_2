@@ -8,11 +8,11 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
-import javax.json.JsonObject;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract.c;
@@ -175,9 +175,11 @@ logger.info ("r=" + r);
             List<Map<String, Object>> subjects = (List<Map<String, Object>>) r.get (SupplyResourceContractSubject.TABLE_NAME);
             
             for (Map<String, Object> i: subjects) {
-                
-                
-                
+
+                i.put (SupplyResourceContractSubject.c.UUID_SR_CTR.lc (), uuid);
+
+                i.put (EnTable.c.UUID.lc (), db.insertId (SupplyResourceContractSubject.class, i));
+
             }
 
             return result;
