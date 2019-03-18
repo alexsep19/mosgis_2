@@ -69,14 +69,14 @@ public abstract class WsMDB extends UUIDMDB<WsMessages>{
         
     }
     
-    protected JsonObject toJsonObject (Object dom) {
+    public static JsonObject toJsonObject (JAXBContext jc, Object dom) {
         
         if (dom == null) throw new IllegalArgumentException ("null!");
         
         StringWriter sw = new StringWriter ();
         
         try {
-            Marshaller m = getJAXBContext().createMarshaller ();
+            Marshaller m = jc.createMarshaller ();
             m.setProperty ("eclipselink.media-type", "application/json");
             m.marshal (dom, sw);
             return Json.createReader (new StringReader (sw.toString ())).readObject ();
@@ -84,7 +84,18 @@ public abstract class WsMDB extends UUIDMDB<WsMessages>{
         catch (Exception ex) {
             throw new IllegalArgumentException ("Cannot reserialize " + dom, ex);
         }
-                            
+        
+    }
+    
+    protected JsonObject toJsonObject (Object dom) {
+        
+        try {
+            return toJsonObject (getJAXBContext (), dom);
+        }
+        catch (Exception ex) {
+            throw new IllegalArgumentException ("Cannot reserialize " + dom, ex);
+        }
+        
     }    
     
     @Override

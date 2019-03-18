@@ -1,12 +1,19 @@
 package ru.eludia.products.mosgis.db.model.voc;
 
+import java.util.Map;
+import java.util.UUID;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
+import ru.gosuslugi.dom.schema.integration.individual_registry_base.ID;
 
 public class VocPerson extends EnTable {
 
@@ -90,4 +97,58 @@ public class VocPerson extends EnTable {
         key ("uuid_org", "uuid_org");
     }
     
+    public static String getCustomerUuidBySnils (Map<String, Object> r, String snils) throws Exception {
+        
+        r.put (VocPerson.c.SNILS.lc (), snils);
+
+        final MosGisModel m = ModelHolder.getModel ();
+
+        try (DB db = m.getDb ()) {
+
+            db.upsert (VocPerson.class, r, VocPerson.c.SNILS.lc ());
+
+            return  db.getString (m
+                .select (VocPerson.class, EnTable.c.UUID.lc ())
+                .where  (c.UUID_ORG, r.get (c.UUID_ORG.lc ()))
+                .where  (VocPerson.c.SNILS, snils)
+            );
+
+        }
+        
+    }    
+    
+    public static String getCustomerUuidByLegalId (Map<String, Object> r, ID id) throws Exception {
+        
+        if (id == null) throw new IllegalArgumentException ("Не указан ни СНИЛС, ни документ");
+
+        if (!DB.ok (id.getSeries ())) throw new IllegalArgumentException ("Не указана серия документа");
+        r.put (c.SERIES.lc (), id.getSeries ());
+        r.put (c.NUMBER_.lc (), id.getNumber ());
+        r.put (c.ISSUEDATE.lc (), id.getIssueDate ());
+        r.put (c.CODE_VC_NSI_95.lc (), id.getType ().getCode ());
+
+        final MosGisModel m = ModelHolder.getModel ();
+
+        try (DB db = m.getDb ()) {
+
+            db.upsert (VocPerson.class, r
+                , c.SERIES.lc ()
+                , c.NUMBER_.lc ()
+                , c.ISSUEDATE.lc ()
+                , c.CODE_VC_NSI_95.lc ()
+            );
+
+            return db.getString (m
+                .select (VocPerson.class, EnTable.c.UUID.lc ())
+                .where  (c.UUID_ORG, r.get (c.UUID_ORG.lc ()))
+                .where  (c.SERIES, id.getSeries ())
+                .where  (c.NUMBER_, id.getNumber ())
+                .where  (c.ISSUEDATE, id.getIssueDate ())
+                .where  (c.CODE_VC_NSI_95, id.getType ().getCode ())                
+            );
+
+        }
+        
+    }
+        
 }
