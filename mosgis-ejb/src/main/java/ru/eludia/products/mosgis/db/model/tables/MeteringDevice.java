@@ -121,7 +121,7 @@ public class MeteringDevice extends EnTable {
 
             + "IF :NEW.is_deleted = 0 THEN BEGIN "
                 + " IF :NEW.COMMISSIONINGDATE < :NEW.INSTALLATIONDATE THEN raise_application_error (-20000, 'Дата ввода в эксплуатацию не должна быть раньше даты установки.'); END IF; "
-                + " IF :NEW.FIRSTVERIFICATIONDATE < :NEW.FACTORYSEALDATE THEN raise_application_error (-20000, 'Дата последней поверки должна быть не раньше даты опломбирования изготовителем'); END IF; "
+//                + " IF :NEW.FIRSTVERIFICATIONDATE < :NEW.FACTORYSEALDATE THEN raise_application_error (-20000, 'Дата последней поверки должна быть не раньше даты опломбирования изготовителем'); END IF; "
                 + " IF :NEW.FIRSTVERIFICATIONDATE > TRUNC (SYSDATE, 'DD') THEN raise_application_error (-20000, 'Дата опломбирования изготовителем не может быть позже сегодняшней даты'); END IF; "
                 + " IF :NEW.FACTORYSEALDATE > TRUNC (SYSDATE, 'DD') THEN raise_application_error (-20000, 'Дата последней поверки не может быть позже сегодняшней даты'); END IF; "
                 + " SELECT COUNT(*) INTO cnt FROM " + TABLE_NAME + " WHERE uuid<>:NEW.uuid AND is_deleted=0 AND fiashouseguid=:NEW.fiashouseguid AND ID_TYPE=:NEW.ID_TYPE AND ID_TYPE=:NEW.ID_TYPE AND METERINGDEVICENUMBER=:NEW.METERINGDEVICENUMBER AND METERINGDEVICESTAMP=:NEW.METERINGDEVICESTAMP AND METERINGDEVICEMODEL=:NEW.METERINGDEVICEMODEL;"
