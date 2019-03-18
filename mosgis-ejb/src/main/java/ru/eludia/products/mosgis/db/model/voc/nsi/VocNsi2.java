@@ -9,9 +9,10 @@ public class VocNsi2 extends Table {
     
     public enum c implements ColEnum {
         
-        CODE         (Type.STRING,  20, "Код элемента справочника, уникальный в пределах справочника"),        
+        CODE         (Type.STRING,  20, "Код элемента справочника, уникальный в пределах справочника"),
         F_C8D77DDAD5 (Type.STRING,      "Вид коммунального ресурса"),
-        GUID         (Type.UUID,        "Глобально-уникальный идентификатор элемента справочника"),        
+        F_C6E5A29665 (Type.STRING,      "Единица измерения"),
+        GUID         (Type.UUID,        "Глобально-уникальный идентификатор элемента справочника"),
         ISACTUAL     (Type.BOOLEAN,     "Актуально")
         ;
         

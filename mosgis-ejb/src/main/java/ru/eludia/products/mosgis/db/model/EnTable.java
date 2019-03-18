@@ -50,18 +50,19 @@ public abstract class EnTable extends Table {
 
     private static final Logger logger = Logger.getLogger(EnTable.class.getName());
 
-    public static Object toNumeric(XSSFRow row, int col, Object error) throws XLException {
+    public static BigDecimal toNumeric(XSSFRow row, int col, Object error) throws XLException {
 
-	Object result = toNumeric(row, col);
+	BigDecimal result = toNumeric(row, col);
 
 	if (result == null) {
 	    throw new XLException(error.toString());
 	}
 
 	return result;
+        
     }
 
-    public static Object toNumeric(XSSFRow row, int col) throws XLException {
+    public static BigDecimal toNumeric(XSSFRow row, int col) throws XLException {
 
 	try {
 	    final XSSFCell cell = row.getCell(col);
@@ -90,18 +91,19 @@ public abstract class EnTable extends Table {
 	}
     }
 
-    public static Object toString(XSSFRow row, int col, Object error) throws XLException {
+    public static String toString(XSSFRow row, int col, Object error) throws XLException {
 
-	Object result = toString(row, col);
+	String result = toString(row, col);
 
 	if (result == null) {
 	    throw new XLException(error.toString());
 	}
 
 	return result;
+        
     }
 
-    public static Object toString(XSSFRow row, int col) throws XLException {
+    public static String toString(XSSFRow row, int col) throws XLException {
 
 	String s;
 
@@ -129,18 +131,20 @@ public abstract class EnTable extends Table {
 
 	return DB.to.String(s);
     }
-    public static Object toBool(XSSFRow row, int col, Object error) throws XLException {
+    
+    public static Integer toBool(XSSFRow row, int col, Object error) throws XLException {
 
-	Object result = toBool(row, col);
+	Integer result = toBool(row, col);
 
 	if (result == null) {
 	    throw new XLException(error.toString());
 	}
 
 	return result;
+        
     }
 
-    public static Object toBool(XSSFRow row, int col) throws XLException {
+    public static Integer toBool(XSSFRow row, int col) throws XLException {
 
 	String s;
 
@@ -160,6 +164,7 @@ public abstract class EnTable extends Table {
 	}
 
 	return s.toLowerCase().equals("да") ? 1 : s.toLowerCase().equals("нет") ? 0 : null;
+    
     }
 
     public static Object toDate(XSSFRow row, int col, Object error) throws XLException {

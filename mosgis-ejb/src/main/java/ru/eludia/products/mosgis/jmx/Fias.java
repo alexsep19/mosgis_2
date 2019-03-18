@@ -89,7 +89,7 @@ public class Fias implements FiasMBean, FiasLocal {
     
     private static final FileSystem fs = FileSystems.getDefault ();
     
-    private class Import {
+    public class Import {
 
         Map<String, Object> record = HASH ();
         
@@ -100,9 +100,9 @@ public class Fias implements FiasMBean, FiasLocal {
             
         }
                 
-        public Import () {
+        public Import (String path) {
             
-            CheckPath ch = new CheckPath(fs.getPath (Conf.get (VocSetting.i.PATH_FIAS), "fias_xml.rar"));
+            CheckPath ch = new CheckPath(fs.getPath (path, "fias_xml.rar"));
             ch.check();
                 
             try {
@@ -140,7 +140,7 @@ public class Fias implements FiasMBean, FiasLocal {
         
         try (DB db = ModelHolder.getModel ().getDb ()) {
                                     
-            UUIDPublisher.publish (inFiasQueue, (UUID) db.insertId (InFias.class, (new Import ()).getRecord ()));
+            UUIDPublisher.publish (inFiasQueue, (UUID) db.insertId (InFias.class, (new Import (Conf.get (VocSetting.i.PATH_FIAS))).getRecord ()));
             
         }
         catch (SQLException ex) {

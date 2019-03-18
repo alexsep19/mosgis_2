@@ -11,6 +11,8 @@ import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceValueType;
 
 public class MeteringDeviceValue extends EnTable {
 
+    public static final String TABLE_NAME = "tb_meter_values";
+
     public enum c implements EnColEnum {
 
         UUID_METER             (MeteringDevice.class,                           "Прибор учёта"),
@@ -18,6 +20,7 @@ public class MeteringDeviceValue extends EnTable {
         CODE_VC_NSI_2          (Type.STRING,  20,                               "Коммунальный ресурс (НСИ 2)"),
 
         DATEVALUE              (Type.DATE,                                      "Дата снятия показания"),
+        DT_PERIOD              (Type.DATE, null,                                "Период (месяц, год), к которому относятся показания"),
 
         METERINGVALUET1        (Type.NUMERIC, 22, 7, null,                      "Объем по тарифу T1"),
         METERINGVALUET2        (Type.NUMERIC, 22, 7, null,                      "Объем по тарифу T2"),
@@ -51,7 +54,7 @@ public class MeteringDeviceValue extends EnTable {
 
     public MeteringDeviceValue () {
         
-        super  ("tb_meter_values", "Показания приборов учёта");
+        super  (TABLE_NAME, "Показания приборов учёта");
         cols   (c.class);
         key    ("uuid_meter", "uuid_meter");
 
@@ -59,6 +62,12 @@ public class MeteringDeviceValue extends EnTable {
                 
             + "DECLARE" 
             + " PRAGMA AUTONOMOUS_TRANSACTION; "
+            + " cnt NUMBER; "
+            + " d NUMBER (2); "
+            + " ddt_m_start NUMBER (2); "
+            + " ddt_m_start_nxt NUMBER (1); "
+            + " ddt_m_end NUMBER (2); "
+            + " ddt_m_end_nxt NUMBER (1); "
             + "BEGIN "
                 
             + "IF :NEW.is_deleted = 0 AND :NEW.id_type = " + VocMeteringDeviceValueType.i.BASE + " THEN "
@@ -75,6 +84,26 @@ public class MeteringDeviceValue extends EnTable {
                 + ") LOOP"
             + " raise_application_error (-20000, 'Базовые показания для данного прибора учёта уже введены. Операция отменена.'); "
             + " END LOOP; "
+            + " :NEW.DT_PERIOD := NULL; "
+            + "END IF; "
+
+            + "IF :NEW.is_deleted = 0 AND :NEW.id_type <> " + VocMeteringDeviceValueType.i.BASE + " THEN "
+            + " BEGIN "
+            + "  SELECT ddt_m_start,ddt_m_start_nxt,ddt_m_end,ddt_m_end_nxt INTO ddt_m_start,ddt_m_start_nxt,ddt_m_end,ddt_m_end_nxt FROM " + ActualCaChObject.TABLE_NAME + " WHERE fiashouseguid IN (SELECT fiashouseguid FROM " + MeteringDevice.TABLE_NAME + " WHERE uuid=:NEW.uuid_meter);"
+            + "  EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Для данного дома не найден договор управления или устав с заданным периодом ввода показаний приборов учёта.');"
+            + " END; "
+                    
+            + " d := EXTRACT (DAY FROM :NEW.DATEVALUE); "
+            + " IF ddt_m_start_nxt=ddt_m_end_nxt AND (d<ddt_m_start  OR d>ddt_m_end) THEN raise_application_error (-20000, 'Указанная дата лежит вне периода приёма показаний'); END IF;"
+            + " IF ddt_m_start_nxt<ddt_m_end_nxt AND (d<ddt_m_start AND d>ddt_m_end) THEN raise_application_error (-20000, 'Указанная дата лежит вне периода приёма показаний'); END IF;"
+
+            + " :NEW.DT_PERIOD := TRUNC (:NEW.DATEVALUE, 'MM'); "
+            + " IF d < ddt_m_start THEN :NEW.DT_PERIOD := ADD_MONTHS (:NEW.DT_PERIOD, -1); END IF;"
+            + " IF ddt_m_start_nxt = 1 THEN :NEW.DT_PERIOD := ADD_MONTHS (:NEW.DT_PERIOD, 1); END IF;"
+                    
+            + " SELECT COUNT(*) INTO cnt FROM " + TABLE_NAME + " WHERE is_deleted=0 AND UUID_METER=:NEW.UUID_METER AND ID_TYPE=:NEW.ID_TYPE AND CODE_VC_NSI_2=:NEW.CODE_VC_NSI_2 AND DT_PERIOD=:NEW.DT_PERIOD;"
+            + " IF cnt>0 THEN raise_application_error (-20000, 'Показания на данный период уже внесены'); END IF;"
+
             + "END IF; "
 
         + "END;");

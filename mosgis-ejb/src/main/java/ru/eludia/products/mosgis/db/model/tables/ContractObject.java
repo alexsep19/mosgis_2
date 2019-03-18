@@ -13,7 +13,6 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
-import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Num;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnTable;
@@ -63,9 +62,9 @@ public class ContractObject extends EnTable {
     public ContractObject () {
         
         super  ("tb_contract_objects", "Объекты договоров управления");
-        cols   (c.class);        
-        key (c.UUID_XL.lc (), c.UUID_XL);
- 
+        cols   (c.class);
+        key    (c.UUID_XL);
+
         trigger ("BEFORE INSERT OR UPDATE", ""
                 
             + "DECLARE" 

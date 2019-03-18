@@ -95,6 +95,7 @@ public class MeteringDeviceValueImpl extends BaseCRUD<MeteringDeviceValue> imple
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
             .toMaybeOne (MeteringDeviceValueLog.class).on ()
             .toMaybeOne (OutSoap.class, "ts", "ts_rp", "err_text", "uuid_ack").on ()
+            .toMaybeOne (Nsi2.class, "AS nsi_2", Nsi2.c.UNIT.lc ()).on ("root." + MeteringDeviceValue.c.CODE_VC_NSI_2.lc () +  "=nsi_2." + Nsi2.c.CODE.lc ())
             .where (EnTable.c.IS_DELETED, 0)
             .orderBy ("root.datevalue DESC")
             .limit (p.getInt ("offset"), p.getInt ("limit"));

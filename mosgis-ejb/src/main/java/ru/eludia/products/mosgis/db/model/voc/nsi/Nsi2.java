@@ -14,6 +14,7 @@ import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.View;
 import ru.eludia.base.model.Type;
+import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 
 public class Nsi2 extends View {
     
@@ -23,6 +24,7 @@ public class Nsi2 extends View {
         ID     (Type.NUMERIC,    null, "Битовая маска"),
         LABEL  (Type.STRING,     null, "Наименование"),
         GUID   (Type.UUID,       null, "Глобально-уникальный идентификатор элемента справочника"),        
+        UNIT   (Type.STRING,     null, "Единица измерения"),
         ;
         
         @Override
@@ -43,13 +45,15 @@ public class Nsi2 extends View {
     public final String getSQL () {
 
         return "SELECT "
-            + " code, "
-            + " POWER (2, code - 1) id, "
-            + VocNsi2.c.F_C8D77DDAD5.name () + " label, "
-            + " guid "
-            + "FROM "
-            + " vc_nsi_2 "
-            + "WHERE"
+            + " v.code, "
+            + " POWER (2, v.code - 1) id, "
+            + "v." + VocNsi2.c.F_C8D77DDAD5.name () + " label, "
+            + " v.guid, "
+            + " u." + VocOkei.c.NATIONAL + " unit "
+            + " FROM "
+            + " vc_nsi_2 v "
+            + "  LEFT JOIN " + VocOkei.TABLE_NAME + " u ON v." + VocNsi2.c.F_C6E5A29665.name () + " = u." + VocOkei.c.CODE
+            + " WHERE"
             + " isactual=1"
         ;
 
@@ -67,7 +71,7 @@ public class Nsi2 extends View {
         HEAT_COLD_WATER      (0, HEAT.getId () | COLD_WATER.getId (),  "Тепловая энергия + холодная вода"),
         HEAT_WATER           (0, HEAT.getId () | HOT_WATER.getId () | COLD_WATER.getId (),  "Тепловая энергия + холодная и горячая вода"),
         
-        WASTE_WATER          (8, 128, "Сточные воды"),
+        WASTE_WATER          (8, 128, "Сточные бытовые воды"),
 
         ;
                 
@@ -113,6 +117,11 @@ public class Nsi2 extends View {
             for (i i: values ()) if (DB.eq (id, i.id)) return i;
             throw new IllegalArgumentException ("Unknown NSI 2 bit mask: " + id);
         }        
+        
+        public static i forLabel (String label) {
+            for (i i: values ()) if (i.label.equals (label)) return i;
+            throw new IllegalArgumentException ("Неизвестный вид бытовых ресурсов: " + label);
+        }
         
         private JsonObject toJsonObject () {
             return Json.createObjectBuilder ()

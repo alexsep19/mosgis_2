@@ -28,8 +28,9 @@ define ([], function () {
                             {id: 'rc_contracts', caption: 'Договоры услуг РЦ'
                                 , off: !($_USER.role.admin || $_USER.is_building_society() || $_USER.has_nsi_20(1, 2, 7, 8, 36))
                             },
-                            {id: 'voc_organizations', caption: 'Организации'},
-                            {id: 'voc_users', caption: 'Учётные записи', off: !$_USER.role.admin},
+                            {id: 'voc_organizations', caption: 'Организации'},                            
+                            {id: 'metering_devices', caption: 'ПУ'},
+                            {id: 'voc_users', caption: 'УЗ', off: !$_USER.role.admin},
                             {id: 'licenses', caption: 'Лицензии'},
                         ].filter (not_off),
 
