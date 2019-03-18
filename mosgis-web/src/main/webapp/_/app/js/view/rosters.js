@@ -32,6 +32,9 @@ define ([], function () {
                             {id: 'metering_devices', caption: 'ПУ'},
                             {id: 'voc_users', caption: 'УЗ', off: !$_USER.role.admin},
                             {id: 'licenses', caption: 'Лицензии'},
+                            {id: 'legal_acts', caption: 'НПА'
+                                , off: !($_USER.role.admin || $_USER.has_nsi_20(7, 10))
+                            },
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_rosters
