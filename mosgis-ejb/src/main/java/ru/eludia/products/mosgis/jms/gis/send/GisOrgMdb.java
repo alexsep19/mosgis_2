@@ -45,9 +45,12 @@ public class GisOrgMdb extends UUIDMDB<InVocOrganization> {
     protected void handleRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
         
         try {
-            
-            AckRequest.Ack ack = wsGisOrgClient.exportOrgRegistry (r.get ("ogrn").toString (), uuid);
-            
+        	AckRequest.Ack ack = null;
+        	if (r.get (InVocOrganization.c.ORGROOTENTITYGUID.lc()) != null)
+            	ack = wsGisOrgClient.exportOrgRegistry ((UUID)r.get (InVocOrganization.c.ORGROOTENTITYGUID.lc()), uuid);
+        	else
+            	ack = wsGisOrgClient.exportOrgRegistry (r.get (InVocOrganization.c.OGRN.lc()).toString (), uuid);
+        		
             db.update (OutSoap.class, DB.HASH (
                 "uuid",     uuid,
                 "uuid_ack", ack.getMessageGUID ()

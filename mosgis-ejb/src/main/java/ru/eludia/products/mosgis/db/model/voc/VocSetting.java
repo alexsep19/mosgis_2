@@ -77,6 +77,10 @@ public class VocSetting extends Table {
         WS_GIS_INFRASTRUCTURES_TMT_CONN ("ws.gis.infrastructures.timeout.connection", "Время ожидания подключения к сервису обмена сведениями об объектах коммунальной инфраструктуры ГИС ЖКХ, мс", "10000"),
         WS_GIS_INFRASTRUCTURES_TMT_RESP ("ws.gis.infrastructures.timeout.response", "Время ожидания подключения к сервису обмена сведениями об объектах коммунальной инфраструктуры ГИС ЖКХ, мс", "10000"),
 
+        WS_GIS_INSPECTION_URL      ("ws.gis.inspection.url", "Endpoint URL сервиса работы с планами проверок и проверками ГИС ЖКХ (InspectionServiceAsync)", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-inspection-service/services/InspectionAsync"),
+        WS_GIS_INSPECTION_TMT_CONN ("ws.gis.inspection.timeout.connection", "Время ожидания подключения к сервису работы с планами проверок и проверками ГИС ЖКХ, мс", "10000"),
+        WS_GIS_INSPECTION_TMT_RESP ("ws.gis.inspection.timeout.response", "Время ожидания подключения к сервису работы с планами проверок и проверками ГИС ЖКХ, мс", "10000"),
+        
         WS_GIS_LICENSES_URL      ("ws.gis.licenses.url", "Endpoint URL сервиса управления экспортом лицензий и дисквалифицированных лиц ГИС ЖКХ (LicenseServiceAsync)", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-licenses-service/services/LicensesAsync"),
         WS_GIS_LICENSES_TMT_CONN ("ws.gis.licenses.timeout.connection", "Время ожидания подключения к сервису управления экспортом лицензий и дисквалифицированных лиц ГИС ЖКХ (LicenseServiceAsync), мс", "10000"),
         WS_GIS_LICENSES_TMT_RESP ("ws.gis.licenses.timeout.response", "Время ожидания подключения к сервису управления экспортом лицензий и дисквалифицированных лиц ГИС ЖКХ (LicenseServiceAsync), мс", "10000"),

@@ -6,6 +6,7 @@ import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocPlannedExaminationStatus;
 
 public class PlannedExamination extends EnTable {
     
@@ -46,15 +47,31 @@ public class PlannedExamination extends EnTable {
         SUBJECT_LABEL                   (Type.STRING, null, "Наименование субъекта проверки"),
         REGULATOR_LABEL                 (Type.STRING, null, "Наименование регулятора проверки"),
         
+        PLANNEDEXAMINATIONGUID          (Type.UUID,        null, "Идентификатор проверки в ГИС ЖКХ"),
+        REGISTRYNUMBER                  (Type.STRING, 255, null, "Реестровый номер плана проверок"),
+        
+        ID_STATUS_GIS                   (VocPlannedExaminationStatus.class, null, "Статус проверки в ГИС ЖКХ"),
+        
+        CHANGE_CODE_VC_NSI_271          (Type.STRING, 20,       null, "Причина изменения (НСИ 271)"), // ChangeReason
+        CHANGEDECISIONNUMBER            (Type.STRING, 255,      null, "Номер решения об изменении"),
+        CHANGEDATE                      (Type.DATE,             null, "Дата изменения проверки"),
+        CHANGE_ORG_UUID                 (VocOrganization.class, null, "Субъект проверки"),
+        ADDITIONCHANGEINFO              (Type.STRING, 2000,     null, "Дополнительная информация"),
+        
+        CANCEL_CODE_VC_NSI_271          (Type.STRING, 20,       null, "Причина отмены (НСИ 271)"), // Reason
+        CANCELDECISIONNUMBER            (Type.STRING, 255,      null, "Номер решения об изменении"),
+        CANCELDATE                      (Type.DATE,             null, "Дата изменения проверки"),
+        CANCEL_ORG_UUID                 (VocOrganization.class, null, "Субъект проверки"),
+        ADDITIONCANCELINFO              (Type.STRING, 2000,     null, "Дополнительная информация"),
+        
         ID_LOG                          (PlannedExaminationLog.class, "Последнее событие редактирования")
 
         ;
-        
         @Override
         public Col getCol () {return col;}
         private Col col;        
         private c (Type type, Object... p) {col = new Col (this, type, p);}
-        private c (Class c,   Object... p) {col = new Ref (this, c, p);}
+        private c (Class<?> c,   Object... p) {col = new Ref (this, c, p);}
 
         @Override
         public boolean isLoggable () {
