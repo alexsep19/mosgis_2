@@ -1,0 +1,53 @@
+<span
+	data-popup-width=500
+	data-popup-height=190
+	data-popup-title='Региональная программа'
+>
+
+	<style>
+
+        label[data-block-name=overhaul_regional_programs_new] {
+        	width: 120px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=overhaul_regional_programs_new] {
+        	width: 320px !important;
+        }
+
+        input[data-block-name=overhaul_regional_programs_new].year {
+            width: 80px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:145px ">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Срок реализации: с</label>
+                <div>
+                    <input name=startyear maxlength=4 class=year />
+по
+                    <input name=endyear maxlength=4 class=year />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Наименование: </label>
+                <div>
+                	<input name=programname>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+        	<progress/>
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>
