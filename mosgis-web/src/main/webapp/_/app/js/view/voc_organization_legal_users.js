@@ -57,7 +57,7 @@ define ([], function () {
             onAdd:      $_DO.create_voc_organization_legal_users,
             
             onEdit:     $_DO.edit_voc_organization_legal_users,            
-            onDblClick: $_DO.edit_voc_organization_legal_users,
+            onDblClick: !$_USER.role.admin ? null : $_DO.edit_voc_organization_legal_users,
 
             onDelete:   $_DO.delete_voc_organization_legal_users,
             
@@ -69,5 +69,6 @@ define ([], function () {
         }).refresh ();
 
     }
+
 
 })
