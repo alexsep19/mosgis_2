@@ -1,35 +1,16 @@
 package ru.eludia.products.mosgis.jms.ws.sr_ctr;
 
 import java.util.Map;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustomerType;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
-import static ru.eludia.products.mosgis.jms.base.WsMDB.toJsonObject;
 import ru.gosuslugi.dom.schema.integration.house_management.DRSOIndType;
 import ru.gosuslugi.dom.schema.integration.house_management.DRSORegOrgType;
-import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
-import ru.gosuslugi.dom.schema.integration.house_management.ImportSupplyResourceContractRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.SupplyResourceContractType;
 
 public class CustomerSetter {
-
-    private final static JAXBContext jc;
-    
-    static {
-        try {
-            jc = JAXBContext.newInstance (
-                GetStateResult.class,
-                ImportSupplyResourceContractRequest.class
-            );
-        }
-        catch (JAXBException ex) {
-            throw new IllegalStateException (ex);
-        }
-    }
 
     private static Object setCustomerOrg (final Map<String, Object> r, DRSORegOrgType regOrg) {
         final String orgRootEntityGUID = regOrg.getOrgRootEntityGUID ();
@@ -39,7 +20,7 @@ public class CustomerSetter {
     
     private static Object setCustomerInd (Map<String, Object> r, DRSOIndType ind) throws Exception {
         
-        Map<String, Object> person = DB.to.Map (toJsonObject (jc, ind));
+        Map<String, Object> person = DB.to.Map (ind);
         
         person.put (EnTable.c.IS_DELETED.lc (), 0);
         person.put (VocPerson.c.UUID_ORG.lc (), r.get (SupplyResourceContract.c.UUID_ORG.lc ()));

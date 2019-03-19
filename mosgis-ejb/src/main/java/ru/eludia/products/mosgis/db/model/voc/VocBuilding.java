@@ -23,9 +23,11 @@ public class VocBuilding extends Table {
     private final String LABELSTR = "s_formalname || ' ' || s_shortname "
                          + "|| var_house || var_build || var_shortname";
     
+    public static final String TABLE_NAME = "vc_buildings";
+
     public VocBuilding () {
         
-        super ("vc_buildings", "Здания, сооружения");
+        super (TABLE_NAME, "Здания, сооружения");
         
         pk    ("houseguid",    Type.UUID,                                         "Код здания в ФИАС");        
         

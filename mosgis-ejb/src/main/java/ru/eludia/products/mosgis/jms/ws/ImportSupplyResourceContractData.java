@@ -7,13 +7,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import ru.eludia.base.DB;
-import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
@@ -126,7 +124,7 @@ public class ImportSupplyResourceContractData extends WsMDB {
         
         SupplyResourceContractType.IsNotContract isNotContract = src.getIsNotContract ();        
         if (isNotContract != null) {
-            r = DB.to.Map (toJsonObject (isNotContract));
+            r = DB.to.Map (isNotContract);
             r.put (c.IS_CONTRACT.lc (), 0);
         }
         else {
@@ -145,7 +143,7 @@ public class ImportSupplyResourceContractData extends WsMDB {
     }    
     
     private Map<String, Object> toMap (SupplyResourceContractType.ContractSubject cs) {
-        Map<String, Object> result = DB.to.Map (toJsonObject (cs));
+        Map<String, Object> result = DB.to.Map (cs);
         result.put (SupplyResourceContractSubject.c.CODE_VC_NSI_3.lc (), cs.getServiceType ().getCode ());
         result.put (SupplyResourceContractSubject.c.CODE_VC_NSI_239.lc (), cs.getMunicipalResource ().getCode ());
         return result;
@@ -156,7 +154,7 @@ public class ImportSupplyResourceContractData extends WsMDB {
     }
     
     private Map<String, Object> toMap (SupplyResourceContractType.ObjectAddress co) {
-        Map<String, Object> result = DB.to.Map (toJsonObject (co));
+        Map<String, Object> result = DB.to.Map (co);
         return result;
     }    
     

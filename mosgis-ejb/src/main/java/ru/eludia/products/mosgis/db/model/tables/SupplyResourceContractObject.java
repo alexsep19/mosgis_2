@@ -9,6 +9,7 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocUnom;
 
 public class SupplyResourceContractObject extends EnTable {
 
@@ -80,8 +81,21 @@ public class SupplyResourceContractObject extends EnTable {
 	trigger("BEFORE INSERT OR UPDATE", ""
 	    + "DECLARE"
 	    + " PRAGMA AUTONOMOUS_TRANSACTION; "
+	    + " cnt NUMBER; "
+	    + " hex VARCHAR2 (32); "
 	    + "BEGIN "
 	    + " IF :NEW.is_deleted = 0 THEN BEGIN "
+                
+                + "SELECT COUNT(*) INTO cnt FROM " + VocBuilding.TABLE_NAME + " WHERE :NEW.fiashouseguid = houseguid;"
+                + "IF cnt=0 THEN BEGIN "
+                    + "hex := RAWTOHEX (:NEW.fiashouseguid); "
+                    + "IF REGEXP_LIKE (hex, '^\\d+$') THEN BEGIN "
+                        + "SELECT COUNT(*), MIN (fiashouseguid) INTO cnt, :NEW.fiashouseguid FROM " + VocUnom.TABLE_NAME + " WHERE 0+hex = unom;"
+                        + "IF cnt>1 THEN raise_application_error (-20000, 'Не удалось однозначно определить FiasHouseGUID по UNOM'); END IF;"
+                    + "END; END IF;"
+                    + "IF cnt=0 THEN raise_application_error (-20000, 'Неизвестное значение FiasHouseGUID (UNOM)'); END IF;"                                
+                + "END; END IF;"
+                
 		+ " FOR i IN ("
 		    + "SELECT "
 		    + " o.uuid_premise     uuid_premise"

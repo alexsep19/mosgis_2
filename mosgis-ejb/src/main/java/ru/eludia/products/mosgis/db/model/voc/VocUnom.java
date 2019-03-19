@@ -8,6 +8,8 @@ import ru.eludia.base.model.Type;
 
 public class VocUnom extends Table {
 
+    public static final String TABLE_NAME = "vc_unom";
+
     public enum c implements ColEnum {
         
         UNOM          (Type.NUMERIC, 15,     "UNOM"),
@@ -36,7 +38,7 @@ public class VocUnom extends Table {
 
     public VocUnom () {
 
-        super ("vc_unom", "Мапинг UNOM");
+        super (TABLE_NAME, "Мапинг UNOM");
 
         cols (c.class);
 
