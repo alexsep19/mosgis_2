@@ -11,6 +11,7 @@ import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgram;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramLog;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.rest.User;
@@ -39,22 +40,24 @@ public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProg
     });}
 
     @Override
-    public JsonObject getItem(String id, User user) {return fetchData ((db, job) -> {
+    public JsonObject getItem (String id, User user) {return fetchData ((db, job) -> {
         
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
             .get   (getTable (), id, "*")
         ));
         
         VocGisStatus.addLiteTo (job);
+        VocAction.addTo (job);
         
     });}
 
     @Override
-    public JsonObject getVocs() {
+    public JsonObject getVocs () {
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();
         
         VocGisStatus.addLiteTo (jb);
+        VocAction.addTo (jb);
         
         return jb.build ();
         

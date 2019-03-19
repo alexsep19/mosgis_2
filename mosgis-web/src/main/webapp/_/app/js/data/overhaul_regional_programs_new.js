@@ -12,6 +12,7 @@ define ([], function () {
         if (!reg_year.test (v.startyear)) die ('startyear', 'Пожалуйста, укажите корректное значение года начала периода реализации')
         if (!v.endyear) die ('endyear', 'Пожалуйста, укажите год окончания периода реализации')
         if (!reg_year.test (v.endyear)) die ('endyear', 'Пожалуйста, укажите корректное значение года окончания периода реализации')
+        if (v.endyear < v.startyear) die ('endyear', 'Год окончания реализации не может быть раньше года начала реализации')    
         if (!v.programname) die ('programname', 'Пожалуйста, укажите наименование')
 
         if (!$_USER.role.admin) v.org_uuid = $_USER.uuid_org
