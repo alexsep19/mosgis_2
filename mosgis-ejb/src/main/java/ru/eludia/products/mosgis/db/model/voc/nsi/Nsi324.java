@@ -11,13 +11,15 @@ import ru.eludia.base.model.View;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.voc.VocLegalActLevel;
 
-public class Nsi237 extends View {
+public class Nsi324 extends View {
 
     public enum c implements ColEnum {
 
         ID     (Type.STRING, 20, null, "Код"),
         LABEL  (Type.STRING,     null, "Наименование"),
+	LEVEL_ (VocLegalActLevel.class, null, "Уровень (сфера действия)")
         ;
 
         @Override
@@ -28,10 +30,8 @@ public class Nsi237 extends View {
 
     }
 
-    public static String CODE_MOSCOW = "77";
-
-    public Nsi237 () {
-        super  ("vw_nsi_237", "Коды субъектов Российской Федерации (регионов)");
+    public Nsi324 () {
+        super  ("vw_nsi_324", "Вид закона и нормативного акта");
         cols   (c.class);
         pk     (c.ID);
     }
@@ -40,10 +40,14 @@ public class Nsi237 extends View {
     public final String getSQL () {
 
         return "SELECT "
-            + " code id, "
-            + VocNsi237.c.F_64B1C12EF9.lc () + " || ' ' || " + VocNsi237.c.f_356213bef6.lc () + " label "
+            + " code id "
+	    + " , F_BCE3C198BF label "
+	    + " , CASE WHEN " + VocNsi324.c.F_6C1D96410E + " = 'FEDERAL' THEN " + VocLegalActLevel.i.FEDERAL
+	    + "    WHEN " + VocNsi324.c.F_6C1D96410E + " = 'REGIONAL' THEN " + VocLegalActLevel.i.REGIONAL
+	    + "    WHEN " + VocNsi324.c.F_6C1D96410E + " = 'MUNICIPAL' THEN " + VocLegalActLevel.i.MUNICIPAL
+	    + "  END level_ "
             + "FROM "
-            + " vc_nsi_237 "
+            + " vc_nsi_324 "
             + "WHERE"
             + " isactual=1"
         ;
@@ -54,11 +58,11 @@ public class Nsi237 extends View {
 
 	final MosGisModel m = ModelHolder.getModel();
 
-	return m.select(Nsi237.class, "AS root", "*")
-	    .orderBy(Nsi237.c.LABEL);
+	return m.select(Nsi324.class, "AS root", "*")
+	    .orderBy(Nsi324.c.ID);
     }
 
     public static void addTo(JsonObjectBuilder job, DB db) throws SQLException {
-	job.add("vc_nsi_237", db.getJsonArray(select()));
+	job.add("vc_nsi_324", db.getJsonArray(select()));
     }
 }
