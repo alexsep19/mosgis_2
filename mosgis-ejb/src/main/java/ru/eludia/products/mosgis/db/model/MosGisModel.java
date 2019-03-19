@@ -36,10 +36,13 @@ public final class MosGisModel extends ru.eludia.base.Model {
 
         if (logTable == null) return null;
         
+        String uuidUser = null;        
+        if (user != null && !"-1".equals (user.getId ())) uuidUser = user.getId ();
+        
         String idLog = db.insertId (logTable, HASH (
             "action", action,
             "uuid_object", id,
-            "uuid_user", user == null ? null : user.getId ()
+            "uuid_user", uuidUser
         )).toString ();
         
         db.update (table, HASH (
