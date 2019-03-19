@@ -51,8 +51,11 @@ public class VocUser extends Table {
         col   ("sha1",         Type.BINARY, 20, null,   "SHA1 от пароля с учётом salt");
 
         col   ("is_admin",     Type.BOOLEAN,        Bool.FALSE, "1, для УЗ администратора системы; иначе 0");
-        col   ("is_blocked",   Type.BOOLEAN,        Bool.FALSE, "1, если УЗ заблокирована; иначе 0");
+//        col   ("is_blocked",   Type.BOOLEAN,        Bool.FALSE, "1, если УЗ заблокирована; иначе 0");
         col   ("is_deleted",   Type.BOOLEAN,        Bool.FALSE, "1, если УЗ удалена; иначе 0");
+        
+        col   ("is_locked",   Type.BOOLEAN, null,   Bool.FALSE, "1, если УЗ заблокирована; иначе 0");
+        col   ("lockreason",   Type.STRING, null,        "Причина блокировки");
 
         key   ("label",    "label");
         key   ("label_uc", "label_uc");

@@ -11,6 +11,8 @@ public interface VocUsersLocal {
     JsonObject getItem (String id);
     JsonObject doCreate (JsonObject p);
     JsonObject doUpdate (String id, JsonObject p);
+    JsonObject doLock (String id, JsonObject p);
+    JsonObject doUnlock (String id);
     JsonObject doDelete (String id);
     JsonObject doSetPassword (String id, String password);
 

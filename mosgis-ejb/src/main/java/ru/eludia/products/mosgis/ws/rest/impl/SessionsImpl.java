@@ -68,12 +68,17 @@ public class SessionsImpl implements SessionsLocal {
         try (DB db = ModelHolder.getModel ().getDb ()) {
             
             Map<String, Object> user = db.getMap (ModelHolder.getModel ()
-                .select     (VocUser.class, "salt", "sha1", "uuid", "label", "uuid_org")
+                .select     (VocUser.class, "salt", "sha1", "uuid", "label", "uuid_org", "is_locked")
                 .toMaybeOne (VocOrganization.class, "label AS label_org").on ()
                 .where ("login", login)
             );
 
             if (user != null) {
+                
+                if ("1".equals(user.get ("is_locked").toString())) {
+                    logger.warning ("Login attempt of blocked user:  " + login);
+                    return null;
+                }
                 
                 String asIs = user.get ("sha1").toString ();
                 String toBe = VocUser.encrypt ((UUID) user.get ("salt"), password);
