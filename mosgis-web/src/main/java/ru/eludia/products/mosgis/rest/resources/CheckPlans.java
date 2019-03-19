@@ -80,4 +80,12 @@ public class CheckPlans extends EJBResource <CheckPlansLocal> {
         return back.doUpdate (id, p, getUser ());
     }
     
+    @POST
+    @Path("import") 
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject doImport (JsonObject p) {
+        check ();
+        return back.doImport (p, getUser ());
+    }
 }

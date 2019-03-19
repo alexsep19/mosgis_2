@@ -55,6 +55,10 @@ public class RestGisFilesClient {
         uuidPublisher.publish (getQueue (isCharter), uuid);
     }
     
+    public void download (final UUID uuid, Queue queue) {
+        uuidPublisher.publish (queue, uuid);
+    }
+    
     private class Authenticator implements ClientRequestFilter {
 
         public void filter (ClientRequestContext requestContext) throws IOException {

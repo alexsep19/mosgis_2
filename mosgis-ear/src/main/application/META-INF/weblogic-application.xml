@@ -109,4 +109,10 @@
         <path>META-INF/mosgismodule-tariff-jms.xml</path>
     </module>
     
+    <module>
+        <name>Workflow-inspection</name>
+        <type>JMS</type>
+        <path>META-INF/mosgismodule-inspection-jms.xml</path>
+    </module>
+    
 </weblogic-application>

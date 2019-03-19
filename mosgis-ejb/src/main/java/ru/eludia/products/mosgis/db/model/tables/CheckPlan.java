@@ -15,8 +15,11 @@ public class CheckPlan extends EnTable {
         SIGN                        (Type.BOOLEAN, "Признак подписания"),
         SHOULDNOTBEREGISTERED       (Type.BOOLEAN, "Не должен быть зарегестрирован в ЕРП"),
         
-        SHOULDBEREGISTERED          (Type.BOOLEAN, new Virt ("DECODE(\"SHOULDNOTBEREGISTERED\",1,0,1)"), "Должен быть зарегестрирован в ЕРП"),
+        SHOULDBEREGISTERED          (Type.BOOLEAN,     new Virt ("DECODE(\"SHOULDNOTBEREGISTERED\",1,0,1)"), "Должен быть зарегестрирован в ЕРП"),
         URIREGISTRATIONPLANNUMBER   (Type.NUMERIC, 12, null, "Регистрационный номер плана в ЕРП"),
+        
+        INSPECTIONPLANGUID          (Type.UUID,        null, "Идентификатор плана проверок в ГИС ЖКХ"),
+        REGISTRYNUMBER              (Type.STRING, 255, null, "Реестровый номер плана проверок"),
         
         ID_LOG                      (CheckPlanLog.class, "Последнее событие редактирования")
         
@@ -26,7 +29,7 @@ public class CheckPlan extends EnTable {
         public Col getCol () {return col;}
         private Col col;        
         private c (Type type, Object... p) {col = new Col (this, type, p);}
-        private c (Class c,   Object... p) {col = new Ref (this, c, p);}
+        private c (Class<?> c,   Object... p) {col = new Ref (this, c, p);}
 
         @Override
         public boolean isLoggable () {
