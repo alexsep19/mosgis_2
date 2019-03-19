@@ -82,6 +82,22 @@ public class VocUsers extends EJBResource <VocUsersLocal> {
     }
     
     @POST
+    @Path("{id}/lock") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject doLock (@PathParam ("id") String id, JsonObject p) { 
+        checkItem (id);
+        return back.doLock (id, p);
+    }
+    
+    @POST
+    @Path("{id}/unlock") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject doUnlock (@PathParam ("id") String id) { 
+        checkItem (id);
+        return back.doUnlock (id);
+    }
+    
+    @POST
     @Path("{id}/set_password") 
     @Produces (APPLICATION_JSON)    
     public JsonObject doSetPassword (@PathParam ("id") String id, @HeaderParam ("X-Request-Param-password") String password) { 

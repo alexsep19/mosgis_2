@@ -17,11 +17,16 @@ import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Predicate;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.base.model.def.Bool;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.tables.Sender;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.rest.api.VocUsersLocal;
 import ru.eludia.products.mosgis.ws.rest.impl.base.Base;
@@ -42,6 +47,8 @@ public class VocUsersImpl extends Base<VocUser> implements VocUsersLocal {
         Predicate code_vc_nsi_20 = search.getFilters ().get ("code_vc_nsi_20");
 
         if (code_vc_nsi_20 != null) select.and ("uuid_org", ModelHolder.getModel ().select (VocOrganizationNsi20.class, "uuid").and ("code", code_vc_nsi_20));
+        
+        if (!search.getFilters().containsKey ("is_locked")) select.and ("is_locked", 0);
 
     }
     
@@ -185,6 +192,39 @@ public class VocUsersImpl extends Base<VocUser> implements VocUsersLocal {
                         
     });}
 
+    @Override
+    public JsonObject doLock (String id, JsonObject p) {return doAction ((DB db) -> {
+        
+        JsonObject data = p.getJsonObject ("data");
+        
+        try {
+            db.update (getTable (), getData (p,
+                "uuid", id,
+                "is_locked", Bool.TRUE,
+                "lockreason", data.getString ("lockreason", null)
+            ));
+        }            
+        catch (SQLException ex) {
+            croak (ex);
+        }  
+        
+    });}
+    
+    @Override
+    public JsonObject doUnlock (String id) {return doAction ((DB db) -> {
+          
+        try {
+            db.update (getTable (), HASH (
+                "uuid", id,
+                "is_locked", Bool.FALSE,
+                "lockreason", ""
+            ));
+        }            
+        catch (SQLException ex) {
+            croak (ex);
+        }  
+    });}
+    
     @Override
     public JsonObject doDelete (String id) {return doAction ((db) -> {
         

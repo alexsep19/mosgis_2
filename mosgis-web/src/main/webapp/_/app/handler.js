@@ -264,7 +264,7 @@ function color_data_mandatory (e) {
         var $this = $(this)
         var r = grid.get ($this.attr ('recid'))
         if (!r) return
-        if (r.is_annuled) $('td', $this).css ({background: '#ccc'})
+        if (r.is_annuled || r.is_locked) $('td', $this).css ({background: '#ccc'})
         if (r.id_status == 30) $('td', $this).css ({background: '#fdd'})
         if (r.is_deleted) $('td div', $this).css ({'text-decoration': 'line-through'})
     })
