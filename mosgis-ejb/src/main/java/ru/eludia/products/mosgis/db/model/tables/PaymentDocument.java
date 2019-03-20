@@ -45,6 +45,8 @@ public class PaymentDocument extends EnTable {
         ID_CTR_STATUS                 (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения mosgis"),
         ID_CTR_STATUS_GIS             (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения ГИС ЖКХ"),
         
+        ID_LOG                        (PaymentDocumentLog.class, "Последнее событие редактирования"),        
+        
         ;
 
         @Override
@@ -53,7 +55,7 @@ public class PaymentDocument extends EnTable {
         @Override
         public boolean isLoggable () {
             switch (this) {
-//                case ID_LOG:
+                case ID_LOG:
                 case UUID_ORG:
                 case UUID_ACCOUNT:
                     return false;
@@ -65,11 +67,11 @@ public class PaymentDocument extends EnTable {
     }
 
     public PaymentDocument () {
-        
+
         super  (TABLE_NAME, "Платёжные документы");
-        
+
         cols   (c.class);        
-        
+
         key (c.UUID_ACCOUNT);
                
     }
