@@ -39,7 +39,10 @@ define ([], function () {
             columnGroups : [
                 {span: 3, caption: 'Платёжный документ'},
                 {span: 2, caption: 'На начало периода'},
-//                {master: true},
+                {master: true},
+                {master: true},
+                {master: true},
+                {master: true},
             ],            
             
             columns: [              
@@ -59,6 +62,12 @@ define ([], function () {
                     return r.debtpreviousperiods > 0 ?   r.debtpreviousperiods : ''
                 }},
                 
+                {field: 'totalpayablebypd', caption: 'Сумма документа, руб.', size: 10, render: 'float:2'},
+                {field: 'advancebllingperiod', caption: 'Оплачено в периоде, руб.', size: 10, render: 'float:2'},
+                {field: 'totalpayablebypdwith_da', caption: 'К оплате по документу, руб.', size: 10, render: 'float:2'},
+                
+                {field: 'id_ctr_status', caption: 'Статус', size: 15, voc: data.vc_gis_status},
+
             ],
             
             postData: {data: {uuid_account: $_REQUEST.id}},
