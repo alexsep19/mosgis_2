@@ -115,7 +115,10 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
 
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
             .get (getTable (), id, "AS root", "*")
-            .toOne      (Account.class, "AS acct", Account.c.ACCOUNTNUMBER.lc ()).on ()
+            .toOne      (Account.class, "AS acct"
+                , Account.c.ACCOUNTNUMBER.lc ()
+                , Account.c.ID_CTR_STATUS.lc ()
+            ).on ()
             .toMaybeOne (Contract.class, "AS ca", "*").on ()
             .toMaybeOne (Charter.class, "AS ch", "*").on ()
             .toMaybeOne (SupplyResourceContract.class, "AS sr_ctr", "*").on ()
