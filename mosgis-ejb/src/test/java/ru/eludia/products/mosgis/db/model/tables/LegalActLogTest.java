@@ -57,4 +57,15 @@ public class LegalActLogTest extends BaseTest {
         dump (r);        
         validate (LegalActLog.toImportDocumentsRegionRequest (r));
     }
+
+    @Test(expected = Test.None.class)
+    public void testDeleteRegional() throws SQLException {
+
+	Map<String, Object> r = getData();
+
+	r.put("documentguid", r.get("uuid"));
+	r.put("reasonofannulment", "123");
+	dump(r);
+	validate(LegalActLog.toDeleteDocumentsMunicipalRequest(r));
+    }
 }

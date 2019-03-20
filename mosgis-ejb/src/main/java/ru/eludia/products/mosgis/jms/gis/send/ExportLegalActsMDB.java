@@ -64,8 +64,13 @@ public class ExportLegalActsMDB extends GisExportMDB<LegalActLog> {
 		    case REGIONAL:
 			return wsGisUkClient.importDocumentsRegion(orgPPAGuid, messageGUID, r);
 		}
-//            case ANNULMENT:
-//                return wsGisUkClient.deleteLegalActs (orgPPAGuid, messageGUID, r);
+            case ANNULMENT:
+		switch (level) {
+		    case MUNICIPAL:
+			return wsGisUkClient.deleteDocumentsMunicipal(orgPPAGuid, messageGUID, r);
+		    case REGIONAL:
+			return wsGisUkClient.deleteDocumentsRegion(orgPPAGuid, messageGUID, r);
+		}
             default: 
                 throw new IllegalArgumentException ("No action implemented for " + action.name ());
         }

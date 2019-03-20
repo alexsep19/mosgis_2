@@ -12,6 +12,10 @@ define ([], function () {
         query({type: 'legal_acts', action: 'alter'}, {}, reload_page)
     }
 
+    $_DO.annul_legal_act_common = function (e) {
+        use.block('legal_act_annul_popup')
+    }
+
     $_DO.cancel_legal_act_common = function (e) {
 
         if (!confirm ('Отменить несохранённые правки?')) return

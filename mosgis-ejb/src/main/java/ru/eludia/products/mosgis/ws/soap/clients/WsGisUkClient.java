@@ -50,4 +50,12 @@ public class WsGisUkClient {
     public AckRequest.Ack importDocumentsRegion(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
 	return getPort(orgPPAGuid, messageGUID).importDocumentsRegion(LegalActLog.toImportDocumentsRegionRequest(r)).getAck();
     }
+
+    public AckRequest.Ack deleteDocumentsMunicipal(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+	return getPort(orgPPAGuid, messageGUID).importDocumentsMunicipal(LegalActLog.toDeleteDocumentsMunicipalRequest(r)).getAck();
+    }
+
+    public AckRequest.Ack deleteDocumentsRegion(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+	return getPort(orgPPAGuid, messageGUID).importDocumentsRegion(LegalActLog.toDeleteDocumentsRegionRequest(r)).getAck();
+    }
 }

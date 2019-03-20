@@ -35,6 +35,8 @@ public class LegalAct extends AttachTable  {
 	ID_CTR_STATUS          (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения mosgis"),
 	ID_CTR_STATUS_GIS      (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения ГИС ЖКХ"),
 
+	REASONOFANNULMENT      (Type.STRING, 1000, null, "Причина аннулирования"),
+	IS_ANNULED             (Type.BOOLEAN, new Virt("DECODE(\"REASONOFANNULMENT\",NULL,0,1)"), "1, если запись аннулирована; иначе 0"),
 	DOCUMENTGUID           (Type.UUID, null, "Идентификатор НПА в ГИС ЖКХ"),
 
 	ID_LOG                 (LegalActLog.class, "Последнее событие редактирования")

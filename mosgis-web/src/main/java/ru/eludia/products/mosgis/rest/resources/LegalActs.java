@@ -108,8 +108,8 @@ public class LegalActs extends EJBResource <LegalActLocal> {
     @POST
     @Path("{id}/annul")
     @Produces(APPLICATION_JSON)
-    public JsonObject doAnnul(@PathParam("id") String id) {
-	return back.doAnnul(id, getUser());
+    public JsonObject doAnnul(@PathParam("id") String id, JsonObject p) {
+	return back.doAnnul(id, p, getUser());
     }
 
     @POST
