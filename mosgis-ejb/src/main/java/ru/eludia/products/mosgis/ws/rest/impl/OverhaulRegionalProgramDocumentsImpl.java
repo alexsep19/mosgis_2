@@ -44,7 +44,7 @@ public class OverhaulRegionalProgramDocumentsImpl extends BaseCRUD <OverhaulRegi
         
         if (searchString == null || searchString.isEmpty ()) return;
 
-        select.and ("fullname LIKE ?%", searchString.toUpperCase ());
+        select.and ("fullname_uc LIKE ?%", searchString.toUpperCase ());
         
     }
     

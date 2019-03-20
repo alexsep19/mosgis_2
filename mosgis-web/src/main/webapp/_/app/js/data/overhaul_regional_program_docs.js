@@ -15,6 +15,8 @@ define ([], function () {
 
             add_vocabularies (data, data)
 
+            data.item = clone ($('body').data ('data')).item
+
             $('body').data ('data', data)
 
             done (data)

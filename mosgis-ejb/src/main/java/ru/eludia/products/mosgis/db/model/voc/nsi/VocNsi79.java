@@ -64,12 +64,12 @@ public class VocNsi79 extends EnTable {
         
         db.addJsonArrays (job,
             db.getModel ()
-                .select    (VocNsi79Ref80.class, "AS ref")
-                .toOne     (Nsi79.class, "*")
-                    .on    ("ref.guid_from = vw_nsi_79.guid")
+                .select    (VocNsi79Ref80.class, "AS vc_nsi_79")
+                .toOne     (Nsi79.class, "label AS label", "id AS id")
+                    .on    ("vc_nsi_79.guid_from = vw_nsi_79.guid")
                 .toOne     ("vc_nsi_80")
                     .where ("code", 2)
-                    .on    ("ref.guid_to = vc_nsi_80.guid")
+                    .on    ("vc_nsi_79.guid_to = vc_nsi_80.guid")
                 .orderBy   (Nsi79.c.ID)
         );
         

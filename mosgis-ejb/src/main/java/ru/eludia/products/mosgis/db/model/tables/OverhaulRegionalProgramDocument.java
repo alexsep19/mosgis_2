@@ -3,6 +3,7 @@ package ru.eludia.products.mosgis.db.model.tables;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
+import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 
@@ -16,6 +17,7 @@ public class OverhaulRegionalProgramDocument extends EnTable {
         
         NUMBER_             (Type.STRING, 512, "Номер документа"),
         FULLNAME            (Type.STRING, 1000, "Полное имя документа"),
+        FULLNAME_UC         (Type.STRING, new Virt ("UPPER(\"FULLNAME\")"), "ПОЛНОЕ ИМЯ ДОКУМЕНТА В ВЕРХНЕМ РЕГИСТРЕ"),
         DATE_               (Type.DATE, "Дата документа"),
         LEGISLATURE         (Type.STRING, 512, "Орган власти, принявший документ"),
         
