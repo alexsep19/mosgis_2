@@ -73,7 +73,23 @@ public class PaymentDocument extends EnTable {
         cols   (c.class);        
 
         key (c.UUID_ACCOUNT);
-               
+
+        trigger ("BEFORE INSERT", ""
+
+            + "DECLARE" 
+            + "  PRAGMA AUTONOMOUS_TRANSACTION; "
+            + " BEGIN "
+
+            + " IF :NEW.ID_TYPE = " + VocPaymentDocumentType.i.REGULAR + " THEN BEGIN "
+            + "   FOR i IN (SELECT uuid FROM " + TABLE_NAME + " WHERE uuid<>:NEW.uuid AND is_deleted=0 AND UUID_ACCOUNT=:NEW.UUID_ACCOUNT AND YEAR=:NEW.YEAR AND MONTH=:NEW.MONTH AND ID_TYPE=:NEW.ID_TYPE) LOOP"
+            + "     raise_application_error (-20000, 'Текущий платёжный документ на данный период уже зарегистрирован. Операция отменена.'); "
+            + "   END LOOP; "
+            + " END; END IF; "
+
+            + "END; "
+
+        );
+
     }
 /*
     public enum Action {
