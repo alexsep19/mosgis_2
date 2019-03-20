@@ -32,6 +32,7 @@ define ([], function () {
             toolbar: {
                 items: [
                     {type: 'button', id: 'deleteButton', caption: 'Удалить', onClick: $_DO.delete_check_plans, icon: 'w2ui-icon-cross', disabled: true},
+                    {type: 'button', id: 'importButton', caption: 'Импорт из ГИС ЖКХ', onClick: $_DO.import_check_plans, icon: 'w2ui-icon-plus'},
                 ]
             },
 

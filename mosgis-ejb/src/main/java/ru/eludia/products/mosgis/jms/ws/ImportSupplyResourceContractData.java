@@ -1,13 +1,14 @@
 package ru.eludia.products.mosgis.jms.ws;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
-import javax.json.JsonObject;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import ru.eludia.base.DB;
@@ -16,23 +17,21 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract.c;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractObject;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
-import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustomerType;
-import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.ws.WsMessages;
 import ru.eludia.products.mosgis.jms.base.WsMDB;
+import ru.eludia.products.mosgis.jms.ws.sr_ctr.CustomerSetter;
 import ru.eludia.products.mosgis.ws.soap.impl.base.Errors;
 import ru.gosuslugi.dom.schema.integration.base.BaseAsyncResponseType;
 import ru.eludia.products.mosgis.ws.soap.impl.base.Fault;
 import ru.eludia.products.mosgis.ws.soap.tools.SOAPTools;
 import ru.gosuslugi.dom.schema.integration.base.CommonResultType;
-import ru.gosuslugi.dom.schema.integration.house_management.DRSOIndType;
-import ru.gosuslugi.dom.schema.integration.house_management.DRSORegOrgType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportSupplyResourceContractRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportResult;
 import ru.gosuslugi.dom.schema.integration.house_management.SupplyResourceContractType;
-import ru.gosuslugi.dom.schema.integration.individual_registry_base.ID;
 
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inSoapImportSupplyResourceContractData")
@@ -95,9 +94,8 @@ public class ImportSupplyResourceContractData extends WsMDB {
 
         result.setTransportGUID (i.getTransportGUID ());
         
-        final ImportResult.CommonResult.ImportSupplyResourceContract importSupplyResourceContract = toImportSupplyResourceContract (r, i);
-        
         try {
+            final ImportResult.CommonResult.ImportSupplyResourceContract importSupplyResourceContract = toImportSupplyResourceContract (r, i);
             result.setImportSupplyResourceContract (importSupplyResourceContract);
             result.setGUID (importSupplyResourceContract.getContractGUID ());
             result.setUpdateDate (SOAPTools.xmlNow ());
@@ -106,7 +104,7 @@ public class ImportSupplyResourceContractData extends WsMDB {
             logger.log (Level.WARNING, i.getTransportGUID (), ex);
             final CommonResultType.Error error = new CommonResultType.Error ();
             error.setErrorCode (Errors.FMT001300.name ());
-            error.setDescription (ex.getMessage ());
+            error.setDescription (i.getTransportGUID () + ": " + ex.getMessage ());
             result.getError ().add (error);
         }
         
@@ -114,41 +112,69 @@ public class ImportSupplyResourceContractData extends WsMDB {
         
     }
 
-
     private ImportResult.CommonResult.ImportSupplyResourceContract toImportSupplyResourceContract (Map<String, Object> r, ImportSupplyResourceContractRequest.Contract i) throws Exception {
         String contractGUID = i.getContractGUID ();
         if (i.getSupplyResourceContract () != null) return toImportSupplyResourceContract (r, contractGUID, i.getSupplyResourceContract ());
-        throw new UnsupportedOperationException ("Not supported yet."); 
+        throw new UnsupportedOperationException ("Не найден supplyResourceContract, такие запросы пока не поддерживаются");
     }
-
-    private ImportResult.CommonResult.ImportSupplyResourceContract toImportSupplyResourceContract (Map<String, Object> wsr, String contractGUID, SupplyResourceContractType src) throws Exception {
-        
-        if (contractGUID != null) throw new UnsupportedOperationException ("Updating is not supported yet.");
-
-        MosGisModel m = ModelHolder.getModel ();
+    
+    private Map<String, Object> toMap (SupplyResourceContractType src) throws UnsupportedOperationException {
         
         final Map<String, Object> r;
         
-        SupplyResourceContractType.IsNotContract isNotContract = src.getIsNotContract ();
+        SupplyResourceContractType.IsNotContract isNotContract = src.getIsNotContract ();        
         if (isNotContract != null) {
-            final JsonObject jsonObject = toJsonObject (isNotContract);
-logger.info ("jsonObject=" + jsonObject);
-            r = DB.to.Map (jsonObject);
+            r = DB.to.Map (isNotContract);
             r.put (c.IS_CONTRACT.lc (), 0);
         }
         else {
-            throw new UnsupportedOperationException ("Not supported yet, only isNotContract please");
-        }        
+            throw new UnsupportedOperationException ("Не найден isNotContract, такие запросы пока не поддерживаются");
+        }
+        
+        addContractSubjects (r, src.getContractSubject ());
+        addContractOjects (r, src.getObjectAddress ());
+        
+        return r;
+        
+    }
+    
+    private void addContractSubjects (Map<String, Object> r, List<SupplyResourceContractType.ContractSubject> contractSubject) {
+        r.put (SupplyResourceContractSubject.TABLE_NAME, contractSubject.stream ().map (t -> toMap (t)).collect (Collectors.toList ()));
+    }    
+    
+    private Map<String, Object> toMap (SupplyResourceContractType.ContractSubject cs) {
+        Map<String, Object> result = DB.to.Map (cs);
+        result.put (SupplyResourceContractSubject.c.CODE_VC_NSI_3.lc (), cs.getServiceType ().getCode ());
+        result.put (SupplyResourceContractSubject.c.CODE_VC_NSI_239.lc (), cs.getMunicipalResource ().getCode ());
+        return result;
+    }
+    
+    private void addContractOjects (Map<String, Object> r, List<SupplyResourceContractType.ObjectAddress> objectAddress) {
+        r.put (SupplyResourceContractObject.TABLE_NAME, objectAddress.stream ().map (t -> toMap (t)).collect (Collectors.toList ()));
+    }
+    
+    private Map<String, Object> toMap (SupplyResourceContractType.ObjectAddress co) {
+        Map<String, Object> result = DB.to.Map (co);
+        return result;
+    }    
+    
+    private ImportResult.CommonResult.ImportSupplyResourceContract toImportSupplyResourceContract (Map<String, Object> wsr, String contractGUID, SupplyResourceContractType src) throws Exception {
+        
+        if (contractGUID != null) throw new UnsupportedOperationException ("Операции обновления пока не поддерживаются");
 
-logger.info ("r=" + r);
+        MosGisModel m = ModelHolder.getModel ();
+        
+        Map<String, Object> r = toMap (src);        
 
         r.put (SupplyResourceContract.c.UUID_ORG.lc (), wsr.get (WsMessages.c.UUID_ORG.lc ()));
 
-        setCustomer (r, src);
+        CustomerSetter.setCustomer (r, src);
         
 logger.info ("r=" + r);
 
         ImportResult.CommonResult.ImportSupplyResourceContract result = new ImportResult.CommonResult.ImportSupplyResourceContract ();
+        
+        final UUID uuidInSoap = (UUID) wsr.get ("uuid");
         
         try (DB db = m.getDb ()) {
             
@@ -156,150 +182,35 @@ logger.info ("r=" + r);
             
             result.setContractRootGUID (uuid.toString ());
             
-            String idLog = m.createIdLogWs (db, m.get (SupplyResourceContract.class), (UUID) wsr.get ("uuid"), uuid, VocAction.i.CREATE);
+            String idLog = m.createIdLogWs (db, SupplyResourceContract.class, uuidInSoap, uuid, VocAction.i.CREATE);
             
             result.setContractGUID (idLog);
+            
+            createDetails (db, uuidInSoap, uuid, SupplyResourceContractSubject.class, r);
+            createDetails (db, uuidInSoap, uuid, SupplyResourceContractObject.class,  r);
 
             return result;
 
         }
         
     }
-
-    protected void setCustomer (final Map<String, Object> r, DRSORegOrgType regOrg) {
-        final String orgRootEntityGUID = regOrg.getOrgRootEntityGUID ();
-        if (orgRootEntityGUID == null) throw new IllegalArgumentException ("Не указан orgRootEntityGUID для DRSORegOrgType");
-        r.put (c.UUID_ORG_CUSTOMER.lc (), orgRootEntityGUID);
-    }    
     
-    private void setCustomer (Map<String, Object> r, DRSOIndType ind) throws Exception {
-        
-        Map<String, Object> person = DB.to.Map (toJsonObject (ind));
-      
-logger.info ("person 1 = " + person);
-        
-        person.put (EnTable.c.IS_DELETED.lc (), 0);
-        person.put (VocPerson.c.UUID_ORG.lc (), r.get (c.UUID_ORG.lc ()));
-        person.put (VocPerson.c.BIRTHDATE.lc (), ind.getDateOfBirth ());
-        person.put (VocPerson.c.IS_FEMALE.lc (), "F".equals (ind.getSex ()));
-            
-logger.info ("person 2 = " + person);
-
-        String snils = ind.getSNILS ();
-        
-        if (snils == null) {                
-            setCustomer (r, person, ind.getID ());
-        }
-        else {
-            
-            person.put (VocPerson.c.SNILS.lc (), snils);
-            
-            final MosGisModel m = ModelHolder.getModel ();
-            
-            try (DB db = m.getDb ()) {
-
-                db.upsert (VocPerson.class, person, VocPerson.c.SNILS.lc ());
-                
-                r.put (c.UUID_PERSON_CUSTOMER.lc (),
-                    db.getString (m
-                        .select (VocPerson.class, EnTable.c.UUID.lc ())
-                        .where  (VocPerson.c.UUID_ORG, r.get (c.UUID_ORG.lc ()))
-                        .where  (VocPerson.c.SNILS, snils)
-                    )
-                );                
-
-            }
-
-        }
-        
-    }
+    void createDetails (DB db, UUID uuidInSoap, UUID uuid, Class c, Map<String, Object> r) throws SQLException {
     
-    private void setCustomer (Map<String, Object> r, Map<String, Object> person, ID id) throws Exception {
-        
-        if (id == null) throw new IllegalArgumentException ("Не указан ни СНИЛС, ни документ");                
+        final MosGisModel model = ModelHolder.getModel ();
 
-        if (!DB.ok (id.getSeries ())) throw new IllegalArgumentException ("Не указана серия документа");
-        person.put (VocPerson.c.SERIES.lc (), id.getSeries ());
-        person.put (VocPerson.c.NUMBER_.lc (), id.getNumber ());
-        person.put (VocPerson.c.ISSUEDATE.lc (), id.getIssueDate ());
-        person.put (VocPerson.c.CODE_VC_NSI_95.lc (), id.getType ().getCode ());
-
-        final MosGisModel m = ModelHolder.getModel ();
-
-        try (DB db = m.getDb ()) {
-
-            db.upsert (VocPerson.class, person
-                , VocPerson.c.SERIES.lc ()
-                , VocPerson.c.NUMBER_.lc ()
-                , VocPerson.c.ISSUEDATE.lc ()
-                , VocPerson.c.CODE_VC_NSI_95.lc ()
-            );
-
-            r.put (c.UUID_PERSON_CUSTOMER.lc (),
-                db.getString (m
-                    .select (VocPerson.class, EnTable.c.UUID.lc ())
-                    .where  (VocPerson.c.UUID_ORG, r.get (c.UUID_ORG.lc ()))
-                    .where  (VocPerson.c.SERIES, id.getSeries ())
-                    .where  (VocPerson.c.NUMBER_, id.getNumber ())
-                    .where  (VocPerson.c.ISSUEDATE, id.getIssueDate ())
-                    .where  (VocPerson.c.CODE_VC_NSI_95, id.getType ().getCode ())                
-            ));
+        for (Map<String, Object> i: (List<Map<String, Object>>) r.get (model.getName (c))) {
+            
+            i.put ("uuid_sr_ctr", uuid);
+            
+            final UUID u = (UUID) db.insertId (c, i);
+            
+            i.put (EnTable.c.UUID.lc (), u);
+            
+            model.createIdLogWs (db, c, uuidInSoap, u, VocAction.i.CREATE);
 
         }
-        
-    }
 
-    protected void setCustomer (final Map<String, Object> r, DRSORegOrgType regOrg, DRSOIndType ind) throws Exception {
-        
-        if (regOrg != null) {
-            setCustomer (r, regOrg);
-        }
-        else if (ind != null) {
-            setCustomer (r, ind);
-        }
-        else {
-            throw new IllegalArgumentException ("No regOrg nor ind provided");
-        }
-                        
-    }
-    
-    protected void setCustomer (final Map<String, Object> r, SupplyResourceContractType src) throws Exception {
-        
-        if (DB.ok (src.isOffer ())) {
-            r.put (c.ID_CUSTOMER_TYPE.lc (), VocGisSupplyResourceContractCustomerType.i.OFFER.getId ());
-            return;
-        }
-        
-        final SupplyResourceContractType.ApartmentBuildingOwner abo = src.getApartmentBuildingOwner ();        
-        if (abo != null) {
-            r.put (c.ID_CUSTOMER_TYPE.lc (), VocGisSupplyResourceContractCustomerType.i.OWNER.getId ());
-            if (!DB.ok (abo.isNoData ())) setCustomer (r, abo.getRegOrg (), abo.getInd ());
-            return;
-        }
-
-        final SupplyResourceContractType.ApartmentBuildingRepresentativeOwner abro = src.getApartmentBuildingRepresentativeOwner ();
-        if (abro != null) {
-            r.put (c.ID_CUSTOMER_TYPE.lc (), VocGisSupplyResourceContractCustomerType.i.REPRESENTATIVEOWNER.getId ());
-            if (!DB.ok (abro.isNoData ())) setCustomer (r, abro.getRegOrg (), abro.getInd ());
-        }
-
-        final SupplyResourceContractType.ApartmentBuildingSoleOwner abso = src.getApartmentBuildingSoleOwner ();        
-        if (abso != null) {
-            r.put (c.ID_CUSTOMER_TYPE.lc (), VocGisSupplyResourceContractCustomerType.i.SOLEOWNER.getId ());            
-            if (!DB.ok (abso.isNoData ())) setCustomer (r, abso.getRegOrg (), abso.getInd ());
-        }
-        
-        final SupplyResourceContractType.LivingHouseOwner lho = src.getLivingHouseOwner ();        
-        if (lho != null) {
-            r.put (c.ID_CUSTOMER_TYPE.lc (), VocGisSupplyResourceContractCustomerType.i.LIVINGHOUSEOWNER.getId ());
-            if (!DB.ok (lho.isNoData ())) setCustomer (r, lho.getRegOrg (), lho.getInd ());
-        }
-                
-        if (DB.ok (src.getOrganization ())) {
-            r.put (c.ID_CUSTOMER_TYPE.lc (), VocGisSupplyResourceContractCustomerType.i.ORGANIZATION.getId ());
-            r.put (c.UUID_ORG_CUSTOMER.lc (), src.getOrganization ().getOrgRootEntityGUID ());
-        }
-        
     }
 
 }

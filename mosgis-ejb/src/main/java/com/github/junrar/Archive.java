@@ -24,6 +24,7 @@ import com.github.junrar.rarfile.MarkHeader;
 import com.github.junrar.rarfile.ProtectHeader;
 import com.github.junrar.rarfile.SignHeader;
 import com.github.junrar.rarfile.SubBlockHeader;
+import com.github.junrar.rarfile.UnrarHeadertype;
 import com.github.junrar.unpack.ComprDataIO;
 import com.github.junrar.unpack.Unpack;
 
@@ -60,7 +61,7 @@ public class Archive{
 
                     block.setPositionInFile(position);
 
-                    switch (block.getHeaderType())
+                    switch (block.getHeaderType ())
                     {
                         case MarkHeader:
                             logger.log(Level.INFO, "<---MARK HEADER detected--->");

@@ -36,10 +36,13 @@ public final class MosGisModel extends ru.eludia.base.Model {
 
         if (logTable == null) return null;
         
+        String uuidUser = null;        
+        if (user != null && !"-1".equals (user.getId ())) uuidUser = user.getId ();
+        
         String idLog = db.insertId (logTable, HASH (
             "action", action,
             "uuid_object", id,
-            "uuid_user", user == null ? null : user.getId ()
+            "uuid_user", uuidUser
         )).toString ();
         
         db.update (table, HASH (
@@ -52,6 +55,10 @@ public final class MosGisModel extends ru.eludia.base.Model {
         
     }
     
+    public String createIdLogWs (DB db, Class c, UUID uuidInSoap, Object id, VocAction.i action) throws SQLException {
+        return createIdLogWs (db, get (c), uuidInSoap, id, action);
+    }
+
     public String createIdLogWs (DB db, Table table, UUID uuidInSoap, Object id, VocAction.i action) throws SQLException {
 
         Table logTable = getLogTable (table);

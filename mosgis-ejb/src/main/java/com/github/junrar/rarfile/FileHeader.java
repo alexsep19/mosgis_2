@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.logging.Logger;
 
 import com.github.junrar.io.Raw;
+import java.util.Arrays;
 
 public class FileHeader extends BlockHeader {
 

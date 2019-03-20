@@ -107,8 +107,10 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
 
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
             .toMaybeOne (Premise.class, "AS premise", Premise.c.LABEL.lc ()).on ()
+            .toOne (VocBuilding.class, "AS building", "label AS address").on ()
 //            .toMaybeOne (MeteringDeviceLog.class               ).on ()
 //            .toMaybeOne (OutSoap.class,       "err_text").on ()
+            .orderBy ("building.label")
             .orderBy ("root.meteringdevicenumber")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
@@ -182,6 +184,7 @@ public class MeteringDeviceImpl extends BaseCRUD<MeteringDevice> implements Mete
         Nsi2.i.addMeteringTo (job);
         VocAction.addTo (job);
         VocMeteringDeviceType.addTo (job);
+        VocGisStatus.addLiteTo (job);
         
         db.addJsonArrays (job, 
            Nsi16.getVocSelect ()

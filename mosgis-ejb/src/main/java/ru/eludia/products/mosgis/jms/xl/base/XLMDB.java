@@ -8,8 +8,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.UUID;
 import java.util.logging.Level;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
@@ -22,6 +25,23 @@ public abstract class XLMDB extends UUIDMDB<InXlFile> {
     @Override
     protected Class getTableClass () {
         return InXlFile.class;
+    }
+    
+    public static void setCellStringValue (XSSFRow row, int col, String s) {
+        if (row.getCell (col) == null) row.createCell (col, CellType.STRING);
+        row.getCell (col).setCellValue (s);
+    }
+    
+    public static String getErrorMessage (SQLException e) {
+        
+        String s = e.getMessage ();
+                
+        if (e.getErrorCode () != 20000) return s;
+        
+        return new StringTokenizer (e.getMessage (), "\n\r")
+            .nextToken ()
+            .replace ("ORA-20000: ", "");
+        
     }
     
     protected final XSSFWorkbook readWorkbook (DB db, UUID uuid) throws SQLException {
@@ -43,13 +63,17 @@ public abstract class XLMDB extends UUIDMDB<InXlFile> {
         
     }    
 
-    protected void completeOK (DB db, UUID parent) throws SQLException {
-        setStatus (db, parent, VocFileStatus.i.PROCESSED_OK);
+    protected void completeOK (DB db, UUID uuid, XSSFWorkbook wb) throws SQLException {
+        setStatus (db, uuid, VocFileStatus.i.PROCESSED_OK);
+        storeResult (db, uuid, wb);
     }
 
-    protected void completeFail (DB db, UUID uuid, XSSFWorkbook wb) throws SQLException {
-        
-        setStatus (db, uuid, VocFileStatus.i.PROCESSED_FAILED);
+    protected void completeFail (DB db, UUID uuid, XSSFWorkbook wb) throws SQLException {        
+        setStatus (db, uuid, VocFileStatus.i.PROCESSED_FAILED);        
+        storeResult (db, uuid, wb);        
+    }
+
+    private void storeResult (DB db, UUID uuid, XSSFWorkbook wb) throws SQLException {
         
         final Connection cn = db.getConnection ();
         
@@ -78,8 +102,8 @@ public abstract class XLMDB extends UUIDMDB<InXlFile> {
             
             cn.commit ();
             cn.setAutoCommit (true);
-                
-        }         
+            
+        }
         
     }
     
@@ -121,7 +145,7 @@ public abstract class XLMDB extends UUIDMDB<InXlFile> {
         
         try {
             processLines (wb, uuid, db);
-            completeOK (db, uuid);
+            completeOK (db, uuid, wb);
         }
         catch (XLException e) {
             completeFail (db, uuid, wb);

@@ -16,6 +16,7 @@ import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi27;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi30;
+import ru.eludia.products.mosgis.jms.xl.base.XLException;
 
 public class VocMeteringDeviceType extends Table {
     
@@ -82,6 +83,13 @@ public class VocMeteringDeviceType extends Table {
         public Integer getCode_vc_nsi_30 () {
             return code_vc_nsi_30;
         }      
+        
+        public static i fromXL (String s) throws XLException {
+            switch (s) {
+                case "Коллективный (общедомовой)": return COLLECTIVE;
+                default: throw new XLException ("Пока поддерживается только тип ПУ 'Коллективный (общедомовой)'");
+            }
+        }
 
         private i (int id, int is_condo, Nsi27.i nsi27, String label) {
             this.id = id;

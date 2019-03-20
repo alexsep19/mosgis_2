@@ -20,22 +20,22 @@ import ru.eludia.products.mosgis.ws.rest.impl.tools.SimpleSearch;
 public class VocOktmoImpl implements VocOktmoLocal {
 
     private static final Logger logger = Logger.getLogger (VocOktmoImpl.class.getName ());
-    
+
     private void applyComplexSearch (final ComplexSearch search, Select select) {
         search.filter (select, "");
     }
-    
+
     private void applySimpleSearch (final SimpleSearch search, Select select) {
 
         final String searchString = search.getSearchString ();
-        
+
         if (searchString == null || searchString.isEmpty ()) return;
 
         select.and ("code LIKE %?%", searchString.toUpperCase ());
-        
+
     }
-    
-    private void applySearch (final Search search, Select select) {        
+
+    private void applySearch (final Search search, Select select) {
 
         if (search instanceof SimpleSearch) {
             applySimpleSearch  ((SimpleSearch) search, select);
@@ -45,10 +45,10 @@ public class VocOktmoImpl implements VocOktmoLocal {
         }
 
     }
-    
+
     @Override
     public JsonObject select (JsonObject p) {
-        
+
         JsonObjectBuilder job = Json.createObjectBuilder ();
 
         try (DB db = ModelHolder.getModel ().getDb ()) {
@@ -58,16 +58,16 @@ public class VocOktmoImpl implements VocOktmoLocal {
                     .orderBy (VocOktmo.c.SETTLEMENT_CODE.lc ())
                     .orderBy (VocOktmo.c.LOCALITY_CODE.lc ())
                     .orderBy (VocOktmo.c.SECTION_CODE.lc ());
-            
+
             applySearch (Search.from (p), select);
-            
+
             db.addJsonArrayCnt (job, select);
-            
+
         }
         catch (SQLException ex) {
             throw new InternalServerErrorException (ex);
         }
-        
+
         return job.build ();
 
     }

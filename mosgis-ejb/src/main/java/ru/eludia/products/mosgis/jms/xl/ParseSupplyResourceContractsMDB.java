@@ -579,9 +579,9 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
     }
 
     @Override
-    protected void completeOK (DB db, UUID parent) throws SQLException {
+    protected void completeOK (DB db, UUID parent, XSSFWorkbook wb) throws SQLException {
 
-	super.completeOK (db, parent);
+	super.completeOK (db, parent, wb);
 
 	db.update(VocPerson.class, DB.HASH(
 	    VocPerson.c.UUID_XL, parent,

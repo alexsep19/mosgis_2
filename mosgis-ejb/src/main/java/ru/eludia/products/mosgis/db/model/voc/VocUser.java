@@ -69,7 +69,7 @@ public class VocUser extends Table {
                 + ":NEW.label := TRIM   (:NEW.f || ' ' || :NEW.i || ' ' || :NEW.o);"
 
                 + "IF :NEW.uuid_org IS NULL THEN :NEW.is_admin   := 1; ELSE :NEW.is_admin   := 0; END IF;"
-                + "IF :NEW.sha1     IS NULL THEN :NEW.is_blocked := 1; ELSE :NEW.is_blocked := 0; END IF;"
+//                + "IF :NEW.sha1     IS NULL THEN :NEW.is_blocked := 1; ELSE :NEW.is_blocked := 0; END IF;"
                     
             + "END;"
                 

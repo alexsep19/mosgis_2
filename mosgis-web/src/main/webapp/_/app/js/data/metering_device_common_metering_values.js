@@ -35,8 +35,12 @@ define ([], function () {
     }
 
     $_DO.edit_metering_device_common_metering_values = function (e) {
+    
+        var grid = w2ui ['metering_device_common_metering_values_grid']
 
-        $_SESSION.set ('record', w2ui ['metering_device_common_metering_values_grid'].get (e.recid))
+        var r = grid.get (grid.getSelection () [0])
+
+        $_SESSION.set ('record', r)
 
         use.block ('metering_value_popup')
 

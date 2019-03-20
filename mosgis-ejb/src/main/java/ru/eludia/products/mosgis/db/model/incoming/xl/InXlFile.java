@@ -25,6 +25,7 @@ public class InXlFile extends EnTable {
         BODY           (Type.BLOB,              EMPTY_BLOB,         "Исходное содержимое"),
         ERRR           (Type.BLOB,              EMPTY_BLOB,         "Содержимое с ошибками"),        
         ERRR_LEN       (Type.INTEGER,           new Virt ("DBMS_LOB.GETLENGTH(\"ERRR\")"),  "Размер файла с ошибками"),
+        LABEL_RESULT   (Type.STRING,            new Virt ("DECODE(DBMS_LOB.GETLENGTH(\"ERRR\"),0,NULL,DECODE(\"ID_STATUS\"," + VocFileStatus.i.PROCESSED_FAILED + ",'Ошибки ','Результаты ')||\"LABEL\")"), "Имя файла с результатами"),
         
         TS             (Type.TIMESTAMP,         NOW,                "Дата начала импорта"),
 //        ERR            (Type.TEXT,              new ru.eludia.base.model.def.String ("	Ошибки импорта "),  "Ошибки"),

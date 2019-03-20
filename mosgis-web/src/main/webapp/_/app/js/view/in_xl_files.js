@@ -23,8 +23,8 @@ define ([], function () {
                 {field: 'u.label', caption: 'Пользователь',    size: 20},
                 {field: 'org.label', caption: 'Организация',    size: 20, off: !$_USER.role.admin},
                 
-                {field: 'label', caption: 'Файл импорта',    size: 20, attr: 'data-ref=1'},
-                {field: 'errr', caption: 'Протокол ошибок', render: function (x) {return x.id_status == 5 ? 'Ошибки ' + x.label : null}, attr: 'data-ref=1', size: 20},
+                {field: 'label', caption: 'Исходный файл',    size: 20, attr: 'data-ref=1'},
+                {field: 'label_result', caption: 'Обработанный файл', attr: 'data-ref=1', size: 20},
                 {field: 'id_status', caption: 'Статус обработки',    size: 20, voc: data.vc_file_status},
 
             ].filter (not_off),
@@ -32,16 +32,20 @@ define ([], function () {
             postData: {data: {uuid_org: $_REQUEST.id}},
 
             url: '/mosgis/_rest/?type=in_xl_files',
-                        
+
             onDblClick: function (e) {},
-            
+
             onClick: function (e) {
-            
-                switch (this.columns[e.column].field) {
+
+                var col = this.columns [e.column].field
+
+                if (!this.get (e.recid) [col]) return
+
+                switch (col) {
                     case 'label': return $_DO.download_in_xl_files (e)
-                    case 'errr': return $_DO.download_errors_in_xl_files (e)
+                    case 'label_result': return $_DO.download_errors_in_xl_files (e)
                 }
-            
+
             },
 
         }).refresh ();

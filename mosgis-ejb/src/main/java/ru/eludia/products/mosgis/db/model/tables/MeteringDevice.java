@@ -7,6 +7,7 @@ import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceType;
@@ -18,8 +19,11 @@ import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi27;
 
 public class MeteringDevice extends EnTable {
     
+    public static final String TABLE_NAME = "tb_meters";
+
     public enum c implements EnColEnum {
         
+	UUID_XL                 	(InXlFile.class,        null,           "Источник импорта"),
         ID_TYPE                (VocMeteringDeviceType.class,                    "Тип прибора учёта"),
         INSTALLATIONPLACE      (VocMeteringDeviceInstallationPlace.class, null, "Место установки"),
 
@@ -93,13 +97,36 @@ public class MeteringDevice extends EnTable {
     }
 
     public MeteringDevice () {
-        super  ("tb_meters", "Приборы учёта");
+        super  (TABLE_NAME, "Приборы учёта");
         cols   (c.class);
-        key    ("fiashouseguid", "fiashouseguid");
+        key    (c.UUID_XL);
+        key    (c.FIASHOUSEGUID);
 
-        trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
+        trigger ("AFTER UPDATE", "BEGIN "
+
+            + "IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS = " + VocGisStatus.i.APPROVED
+            + " THEN "
+                + " UPDATE " + MeteringDeviceValue.TABLE_NAME + " SET ID_CTR_STATUS=:NEW.ID_CTR_STATUS WHERE uuid_meter=:NEW.uuid AND id_type=" + VocMeteringDeviceValueType.i.BASE
+            + "; END IF; "
+
+        + "END;");
+        
+        trigger ("BEFORE INSERT OR UPDATE", 
+            "DECLARE "
+            + " PRAGMA AUTONOMOUS_TRANSACTION; "
+            + " cnt NUMBER; "
+            + "BEGIN "
 
             + "SELECT CODE_VC_NSI_27 INTO :NEW.CODE_VC_NSI_27 FROM vc_meter_types WHERE id = :NEW.ID_TYPE; "
+
+            + "IF :NEW.is_deleted = 0 THEN BEGIN "
+                + " IF :NEW.COMMISSIONINGDATE < :NEW.INSTALLATIONDATE THEN raise_application_error (-20000, 'Дата ввода в эксплуатацию не должна быть раньше даты установки.'); END IF; "
+//                + " IF :NEW.FIRSTVERIFICATIONDATE < :NEW.FACTORYSEALDATE THEN raise_application_error (-20000, 'Дата последней поверки должна быть не раньше даты опломбирования изготовителем'); END IF; "
+                + " IF :NEW.FIRSTVERIFICATIONDATE > TRUNC (SYSDATE, 'DD') THEN raise_application_error (-20000, 'Дата опломбирования изготовителем не может быть позже сегодняшней даты'); END IF; "
+                + " IF :NEW.FACTORYSEALDATE > TRUNC (SYSDATE, 'DD') THEN raise_application_error (-20000, 'Дата последней поверки не может быть позже сегодняшней даты'); END IF; "
+                + " SELECT COUNT(*) INTO cnt FROM " + TABLE_NAME + " WHERE uuid<>:NEW.uuid AND is_deleted=0 AND fiashouseguid=:NEW.fiashouseguid AND ID_TYPE=:NEW.ID_TYPE AND ID_TYPE=:NEW.ID_TYPE AND METERINGDEVICENUMBER=:NEW.METERINGDEVICENUMBER AND METERINGDEVICESTAMP=:NEW.METERINGDEVICESTAMP AND METERINGDEVICEMODEL=:NEW.METERINGDEVICEMODEL;"
+                + " IF cnt>0 THEN raise_application_error (-20000, 'Прибор учёта с такой моделью, маркой и заводским номером уже зарегистрирован в этом доме'); END IF; "
+            + " END; END IF; "
 
             + "IF UPDATING AND :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS "
                 + " AND :OLD.ID_CTR_STATUS <> " + VocGisStatus.i.FAILED_PLACING
