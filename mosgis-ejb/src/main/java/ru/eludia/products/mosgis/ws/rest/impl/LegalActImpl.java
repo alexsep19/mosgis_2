@@ -184,9 +184,9 @@ public class LegalActImpl extends BaseCRUD<LegalAct> implements LegalActLocal  {
     });}
 
     @Override
-    public JsonObject doAnnul (String id, User user) {return doAction ((db) -> {
+    public JsonObject doAnnul (String id, JsonObject p, User user) {return doAction ((db) -> {
 
-        final Map<String, Object> r = HASH (
+        final Map<String, Object> r = getData(p,
             EnTable.c.UUID,               id,
             LegalAct.c.ID_CTR_STATUS,  VocGisStatus.i.PENDING_RQ_ANNULMENT.getId ()
         );

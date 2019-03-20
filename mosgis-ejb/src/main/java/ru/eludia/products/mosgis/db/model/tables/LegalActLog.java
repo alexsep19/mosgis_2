@@ -102,6 +102,40 @@ public class LegalActLog extends GisWsLogTable {
 	return result;
     }
 
+    public static ImportDocumentMunicipalRequest toDeleteDocumentsMunicipalRequest(Map<String, Object> r) {
+
+	final ImportDocumentMunicipalRequest result = new ImportDocumentMunicipalRequest();
+
+	ImportDocumentMunicipalRequest.Document d = new ImportDocumentMunicipalRequest.Document();
+
+	d.setTransportGUID(UUID.randomUUID().toString());
+
+	ImportDocumentMunicipalRequest.Document.AnnulmentDocument ad = DB.to.javaBean(ImportDocumentMunicipalRequest.Document.AnnulmentDocument.class, r);
+
+	d.setAnnulmentDocument(ad);
+
+	result.getDocument().add(d);
+
+	return result;
+    }
+
+    public static ImportDocumentRegionRequest toDeleteDocumentsRegionRequest(Map<String, Object> r) {
+
+	final ImportDocumentRegionRequest result = new ImportDocumentRegionRequest();
+
+	ImportDocumentRegionRequest.Document d = new ImportDocumentRegionRequest.Document();
+
+	d.setTransportGUID(UUID.randomUUID().toString());
+
+	ImportDocumentRegionRequest.Document.AnnulmentDocument ad = DB.to.javaBean(ImportDocumentRegionRequest.Document.AnnulmentDocument.class, r);
+
+	d.setAnnulmentDocument(ad);
+
+	result.getDocument().add(d);
+
+	return result;
+    }
+
     public static Map<String, Object> getForExport(DB db, String id) throws SQLException {
 
 	final Model m = db.getModel();
