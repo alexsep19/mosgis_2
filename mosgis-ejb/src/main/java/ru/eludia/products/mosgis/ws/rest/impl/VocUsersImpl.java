@@ -69,6 +69,7 @@ public class VocUsersImpl extends Base<VocUser> implements VocUsersLocal {
             select.and ("login LIKE ?%", searchString);
         }
         
+        filterOffLocked (select);
     }
     
     private void applySearch (final Search search, Select select) {        
@@ -78,10 +79,15 @@ public class VocUsersImpl extends Base<VocUser> implements VocUsersLocal {
         }
         else if (search instanceof ComplexSearch) {
             applyComplexSearch ((ComplexSearch) search, select);
+        } else {
+            filterOffLocked (select);
         }
-
     }
 
+    private void filterOffLocked (Select select) {
+        select.and ("is_locked", 0);
+    }    
+    
     @Override
     public JsonObject select (JsonObject p) {
                 
