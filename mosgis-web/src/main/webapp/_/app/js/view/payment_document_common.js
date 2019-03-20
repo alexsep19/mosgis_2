@@ -3,7 +3,7 @@ define ([], function () {
     var form_name = 'payment_document_common_form'
 
     return function (data, view) {
-darn (data)    
+
         var it = data.item              
     
         $_F5 = function (data) {
@@ -59,6 +59,8 @@ darn (data)
             record : it,                
             
             fields : [            
+            
+                {name: 'paymentdocumentnumber', type: 'text'},
             
                 {name: 'dateoflastreceivedpayment', type: 'date', options: {min: 0, precision: 2}},
                 {name: 'paymentstaken_dt', type: 'date', options: {min: 0, precision: 2}},

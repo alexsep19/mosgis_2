@@ -5,7 +5,9 @@ define ([], function () {
         var it = data.item
         
         it.type_label = data.vc_pay_doc_types [it.id_type]
-        
+
+        it.customer_label = it ['ind_customer.label'] || it ['org_customer.label']
+darn (it)        
         it.month_label = w2utils.settings.fullmonths [it.month - 1].toLowerCase ()
         
         $('title').text ('ПД ' + it.paymentdocumentnumber)

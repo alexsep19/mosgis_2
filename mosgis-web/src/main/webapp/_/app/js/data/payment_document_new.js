@@ -18,6 +18,7 @@ define ([], function () {
             w2popup.close ()
             var grid = w2ui ['account_payment_documents_grid']
             grid.reload (grid.refresh)
+            w2confirm ('Платёжный документ зарегистрирован. Открыть его страницу в новой вкладке?').yes (function () {openTab ('/payment_document/' + data.id)})
         })
 
     }

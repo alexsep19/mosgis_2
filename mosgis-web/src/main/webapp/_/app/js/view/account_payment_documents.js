@@ -52,7 +52,7 @@ define ([], function () {
                 
             ],
             
-            postData: {data: {uuid_contract: $_REQUEST.id}},
+            postData: {data: {uuid_account: $_REQUEST.id}},
 
             url: '/mosgis/_rest/?type=payment_documents',
                                     

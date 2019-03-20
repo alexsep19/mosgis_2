@@ -19,7 +19,11 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.Account;
+import ru.eludia.products.mosgis.db.model.tables.AccountItem;
+import ru.eludia.products.mosgis.db.model.tables.Premise;
+import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.PaymentDocumentLocal;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
@@ -112,12 +116,16 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
 
     @Override
     public JsonObject getItem (String id, User user) {return fetchData ((db, job) -> {
-
-        job.add ("item", db.getJsonObject (ModelHolder.getModel ()
+        
+        final JsonObject item = db.getJsonObject (ModelHolder.getModel ()
             .get (getTable (), id, "AS root", "*")
-            .toOne      (Account.class, "AS acct"
+            .toOne (Account.class, "AS acct"
                 , Account.c.ACCOUNTNUMBER.lc ()
                 , Account.c.ID_CTR_STATUS.lc ()
+                , Account.c.LIVINGPERSONSNUMBER.lc ()
+                , Account.c.TOTALSQUARE.lc ()
+                , Account.c.RESIDENTIALSQUARE.lc ()
+                , Account.c.HEATEDAREA.lc ()
             ).on ()
             .toMaybeOne (Contract.class, "AS ca", "*").on ()
             .toMaybeOne (Charter.class, "AS ch", "*").on ()
@@ -127,7 +135,20 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
             .toOne      (VocOrganization.class, "AS org", "label").on ("root.uuid_org=org.uuid")
             .toMaybeOne (VocOrganization.class, "AS org_customer", "label").on ("acct.uuid_org_customer=org_customer.uuid")
             .toMaybeOne (VocPerson.class,       "AS ind_customer", "label").on ("acct.uuid_person_customer=ind_customer.uuid")
-        ));
+        );
+
+        job.add ("item", item);
+        
+        db.addJsonArrays (job, 
+                
+            ModelHolder.getModel ().select (AccountItem.class, "AS acct_items", "*", "uuid AS id")
+                .toOne (VocBuilding.class, "AS addr", "label").on ()
+                .toMaybeOne (Premise.class, "AS prem", "label", Premise.c.TOTALAREA.lc ()).on ()                
+                .where (AccountItem.c.UUID_ACCOUNT, item.getString (PaymentDocument.c.UUID_ACCOUNT.lc ()))
+                .where (EnTable.c.IS_DELETED, 0)
+                .orderBy ("prem.label")
+                
+        );        
         
         VocPaymentDocumentType.addTo (job);
         VocGisStatus.addTo (job);
