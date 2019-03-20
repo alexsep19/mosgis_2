@@ -7,7 +7,20 @@ define ([], function () {
         it.type_label = data.vc_pay_doc_types [it.id_type]
 
         it.customer_label = it ['ind_customer.label'] || it ['org_customer.label']
-darn (it)        
+        
+        var acct_items = data.acct_items
+
+        if (acct_items && acct_items.length) {
+        
+            it.customer_label += ', ' + acct_items [0] ['addr.label']
+            
+            $.each (acct_items, function () {
+                var l = this ['prem.label']
+                if (l) it.customer_label += ', ' + l
+            })
+        
+        }        
+
         it.month_label = w2utils.settings.fullmonths [it.month - 1].toLowerCase ()
         
         $('title').text ('ПД ' + it.paymentdocumentnumber)
