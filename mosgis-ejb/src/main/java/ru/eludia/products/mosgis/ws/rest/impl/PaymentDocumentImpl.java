@@ -115,15 +115,15 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
 
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
             .get (getTable (), id, "AS root", "*")
-            .toOne      (Account.class, "AS acct", "label").on ()                
+            .toOne      (Account.class, "AS acct", Account.c.ACCOUNTNUMBER.lc ()).on ()
             .toMaybeOne (Contract.class, "AS ca", "*").on ()
             .toMaybeOne (Charter.class, "AS ch", "*").on ()
             .toMaybeOne (SupplyResourceContract.class, "AS sr_ctr", "*").on ()
             .toMaybeOne (PaymentDocumentLog.class, "AS log").on ()
             .toMaybeOne (OutSoap.class, "err_text").on ("log.uuid_out_soap=out_soap.uuid")
             .toOne      (VocOrganization.class, "AS org", "label").on ("root.uuid_org=org.uuid")
-            .toMaybeOne (VocOrganization.class, "AS org_customer", "label").on ("root.uuid_org_customer=org_customer.uuid")
-            .toMaybeOne (VocPerson.class,       "AS ind_customer", "label").on ("root.uuid_person_customer=ind_customer.uuid")
+            .toMaybeOne (VocOrganization.class, "AS org_customer", "label").on ("acct.uuid_org_customer=org_customer.uuid")
+            .toMaybeOne (VocPerson.class,       "AS ind_customer", "label").on ("acct.uuid_person_customer=ind_customer.uuid")
         ));
         
         VocPaymentDocumentType.addTo (job);

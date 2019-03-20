@@ -37,7 +37,7 @@ define ([], function () {
             textSearch: 'contains',
 
             columnGroups : [
-                {span: 3, caption: 'Лицевой счет'},                
+                {span: 3, caption: 'Платёжный документ'},
 //                {master: true},
             ],            
             
