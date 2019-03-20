@@ -141,5 +141,11 @@ public interface ConfMBean {
     public void   setWsGisInspectionConnTimeout (int i);
     public int    getWsGisInspectionRespTimeout ();     
     public void   setWsGisInspectionRespTimeout (int i);
-    
+
+    public String getWsGisUkUrl ();
+    public void   setWsGisUkUrl (String s);
+    public int    getWsGisUkConnTimeout ();
+    public void   setWsGisUkConnTimeout (int i);
+    public int    getWsGisUkRespTimeout ();
+    public void   setWsGisUkRespTimeout (int i);
 }

@@ -124,7 +124,11 @@ public class VocSetting extends Table {
         WS_GIS_TARIFF_URL ("ws.gis.tariff.url", "Endpoint URL сервиса обмена сведениями о тарифах ГИС ЖКХ (TariffAsyncService)", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-tariff-service/services/TariffAsync/"),
 	WS_GIS_TARIFF_TMT_CONN ("ws.gis.tariff.timeout.connection", "Время ожидания подключения к сервису обмена сведениями о тарифах ГИС ЖКХ (TariffAsyncService), мс", "10000"),
 	WS_GIS_TARIFF_TMT_RESP ("ws.gis.tariff.timeout.response", "Время ожидания подключения к сервису обмена сведениями об о тарифах ГИС ЖКХ (TariffAsyncService), мс", "10000"),
-        
+
+	WS_GIS_UK_URL("ws.gis.uk.url", "Endpoint URL сервиса обмена сведениями о нормативно-правовых документах ГИС ЖКХ (UkAsyncService)", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-uk-service/services/UkAsyncService/"),
+	WS_GIS_UK_TMT_CONN("ws.gis.uk.timeout.connection", "Время ожидания подключения к сервису обмена сведениями о нормативно-правовых документах ГИС ЖКХ (UkAsyncService), мс", "10000"),
+	WS_GIS_UK_TMT_RESP("ws.gis.uk.timeout.response", "Время ожидания подключения к сервису обмена сведениями об о нормативно-правовых документах ГИС ЖКХ (UkAsyncService), мс", "10000"),
+
         GIS_ID_ORGANIZATION ("gis.id.organization", "ГИС-идентификатор организации-отправителя данных", "392cf4d1-3527-4b99-9f60-7c3ecbba11d8"),
         
         URL_BIC ("url.bic", "URL zip-архива с XML-документом, содержащим актуальный реестр БИК финансовых организаций РФ", "http://cbr.ru/s/newbik"),

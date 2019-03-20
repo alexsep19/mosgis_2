@@ -92,6 +92,27 @@ public class LegalActs extends EJBResource <LegalActLocal> {
     }
 
     @POST
+    @Path("{id}/approve")
+    @Produces(APPLICATION_JSON)
+    public JsonObject doApprove(@PathParam("id") String id) {
+	return back.doApprove(id, getUser());
+    }
+
+    @POST
+    @Path("{id}/alter")
+    @Produces(APPLICATION_JSON)
+    public JsonObject doAlter(@PathParam("id") String id) {
+	return back.doAlter(id, getUser());
+    }
+
+    @POST
+    @Path("{id}/annul")
+    @Produces(APPLICATION_JSON)
+    public JsonObject doAnnul(@PathParam("id") String id) {
+	return back.doAnnul(id, getUser());
+    }
+
+    @POST
     @Path("{id}/delete")
     @Produces (APPLICATION_JSON)
     public JsonObject doDelete (@PathParam ("id") String id) {

@@ -7,6 +7,11 @@ define ([], function () {
         query ({type: 'legal_acts', action: 'approve'}, {}, reload_page)
     }
 
+    $_DO.alter_legal_act_common = function (e) {
+        if (!confirm('Открыть эту карточку на редактирование?')) return
+        query({type: 'legal_acts', action: 'alter'}, {}, reload_page)
+    }
+
     $_DO.cancel_legal_act_common = function (e) {
 
         if (!confirm ('Отменить несохранённые правки?')) return
