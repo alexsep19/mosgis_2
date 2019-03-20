@@ -53,6 +53,9 @@ define ([], function () {
         var f = w2ui [form_name]
 
         var v = f.values ()
+        
+        v.debtpreviousperiods *= (- v.sign)
+        
 /*        
         if (!(v.totalsquare >= 0.01)) die ('totalsquare', 'Укажите, пожалуйста, корректный размер общей площади')
         if (parseFloat (v.residentialsquare) > v.totalsquare) die ('residentialsquare', 'Жилая площадь не может превышать общую')
@@ -88,6 +91,10 @@ define ([], function () {
     
         it.status_label = $('body').data ('data').vc_gis_status [it.id_ctr_status]
         
+        it.sign = it.debtpreviousperiods > 0 ? -1 : 1
+
+        it.debtpreviousperiods *= (- it.sign)
+
     }    
 
     return function (done) {        

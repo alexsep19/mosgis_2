@@ -74,6 +74,11 @@ define ([], function () {
                 {name: 'totalpayablebypdwith_da', type: 'float', options: {min: 0, precision: 2}},
                 {name: 'paidcash', type: 'float', options: {min: 0, precision: 2}},
                 {name: 'limitindex', type: 'float', options: {min: 0, precision: 2}},
+
+                {name: 'sign', type: 'list', options: {items: [
+                    {id: -1, text: "Задолженность"},
+                    {id:  1, text: "Переплата"},
+                ]}},
                 
             ],
 

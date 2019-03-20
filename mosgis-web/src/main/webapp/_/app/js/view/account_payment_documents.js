@@ -38,6 +38,7 @@ define ([], function () {
 
             columnGroups : [
                 {span: 3, caption: 'Платёжный документ'},
+                {span: 2, caption: 'На начало периода'},
 //                {master: true},
             ],            
             
@@ -48,6 +49,14 @@ define ([], function () {
 
                 {field: 'dt_period', caption: 'Период', size: 22, render: function (r) {
                     return w2utils.settings.fullmonths [r.month - 1] + ' ' + r.year
+                }},
+
+                {field: 'debtpreviousperiods_m', caption: 'Переплата', size: 10, render: function (r) {
+                    return r.debtpreviousperiods < 0 ? - r.debtpreviousperiods : ''
+                }},
+
+                {field: 'debtpreviousperiods_p', caption: 'Задолженность', size: 10, render: function (r) {
+                    return r.debtpreviousperiods > 0 ?   r.debtpreviousperiods : ''
                 }},
                 
             ],
