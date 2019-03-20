@@ -22,6 +22,7 @@ import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.Account;
 import ru.eludia.products.mosgis.db.model.tables.AccountItem;
+import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.rest.User;
@@ -144,6 +145,7 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
             ModelHolder.getModel ().select (AccountItem.class, "AS acct_items", "*", "uuid AS id")
                 .toOne (VocBuilding.class, "AS addr", "label").on ()
                 .toMaybeOne (Premise.class, "AS prem", "label", Premise.c.TOTALAREA.lc ()).on ()                
+                .toOne (House.class, "AS house", "uuid").on ("addr.houseguid=house.fiashouseguid")
                 .where (AccountItem.c.UUID_ACCOUNT, item.getString (PaymentDocument.c.UUID_ACCOUNT.lc ()))
                 .where (EnTable.c.IS_DELETED, 0)
                 .orderBy ("prem.label")

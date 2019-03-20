@@ -12,11 +12,12 @@ define ([], function () {
 
         if (acct_items && acct_items.length) {
         
-            it.customer_label += ', ' + acct_items [0] ['addr.label']
+            it.address_label = ', ' + acct_items [0] ['addr.label']
+            it.uuid_house = acct_items [0] ['house.uuid']
             
             $.each (acct_items, function () {
                 var l = this ['prem.label']
-                if (l) it.customer_label += ', ' + l
+                if (l) it.address_label += ', ' + l
             })
         
         }        
@@ -54,6 +55,7 @@ define ([], function () {
                 clickActiveTab (this.get ('main').tabs, 'payment_document.active_tab')
                 
                 clickOn ($('#account_link'), function () { openTab ('/account/' + it.uuid_account) })
+                clickOn ($('#address_link'), function () { openTab ('/house/' + it.uuid_house) })
                 
                 
             },
