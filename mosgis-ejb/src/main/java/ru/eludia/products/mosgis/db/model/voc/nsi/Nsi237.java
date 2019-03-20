@@ -28,8 +28,6 @@ public class Nsi237 extends View {
 
     }
 
-    public static String CODE_MOSCOW = "77";
-
     public Nsi237 () {
         super  ("vw_nsi_237", "Коды субъектов Российской Федерации (регионов)");
         cols   (c.class);

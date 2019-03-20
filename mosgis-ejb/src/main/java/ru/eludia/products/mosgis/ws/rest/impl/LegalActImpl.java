@@ -10,9 +10,11 @@ import java.sql.SQLException;
 import java.util.Base64;
 import java.util.Map;
 import java.util.logging.Logger;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.jms.Queue;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.ws.rs.WebApplicationException;
@@ -47,6 +49,23 @@ import ru.eludia.products.mosgis.ws.rest.impl.tools.SimpleSearch;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class LegalActImpl extends BaseCRUD<LegalAct> implements LegalActLocal  {
+
+    @Resource(mappedName = "mosgis.inLegalActsQueue")
+    Queue queue;
+
+    @Override
+    protected Queue getQueue(VocAction.i action) {
+
+	switch (action) {
+	case APPROVE:
+	case ALTER:
+	case ANNUL:
+	    return queue;
+	default:
+	    return null;
+	}
+
+    }
 
     private static final Logger logger = Logger.getLogger (LegalActImpl.class.getName ());
 
@@ -139,6 +158,44 @@ public class LegalActImpl extends BaseCRUD<LegalAct> implements LegalActLocal  {
 	logAction(db, user, id, VocAction.i.UPDATE);
     });}
 
+    @Override
+    public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
+
+        db.update (getTable (), HASH (EnTable.c.UUID,               id,
+            LegalAct.c.ID_CTR_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+        ));
+
+        logAction (db, user, id, VocAction.i.APPROVE);
+
+    });}
+
+    @Override
+    public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
+
+        final Map<String, Object> r = HASH (
+            EnTable.c.UUID,               id,
+            LegalAct.c.ID_CTR_STATUS,  VocGisStatus.i.PROJECT.getId ()
+        );
+
+        db.update (getTable (), r);
+
+        logAction (db, user, id, VocAction.i.ALTER);
+
+    });}
+
+    @Override
+    public JsonObject doAnnul (String id, User user) {return doAction ((db) -> {
+
+        final Map<String, Object> r = HASH (
+            EnTable.c.UUID,               id,
+            LegalAct.c.ID_CTR_STATUS,  VocGisStatus.i.PENDING_RQ_ANNULMENT.getId ()
+        );
+
+        db.update (getTable (), r);
+
+        logAction (db, user, id, VocAction.i.ANNUL);
+
+    });}
 
     @Override
     protected void logAction (DB db, User user, Object id, VocAction.i action) throws SQLException {
@@ -192,13 +249,7 @@ public class LegalActImpl extends BaseCRUD<LegalAct> implements LegalActLocal  {
 	);
 	job.add("item", item);
 
-	final JsonArray oktmo = db.getJsonArray(m
-	    .select(VocOktmo.class, "AS vc_oktmo", "*")
-	    .where(VocOktmo.c.ID.lc(), m
-		.select(LegalActOktmo.class, "oktmo").where("uuid", id)
-	    )
-	    .orderBy("vc_oktmo.code")
-	);
+	final JsonArray oktmo = db.getJsonArray(LegalActOktmo.select(db, id));
 
 	job.add("legal_act_oktmo", oktmo);
 

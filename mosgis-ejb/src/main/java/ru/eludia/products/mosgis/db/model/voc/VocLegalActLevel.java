@@ -59,7 +59,7 @@ public class VocLegalActLevel extends Table {
         public static i forId (Object id) {
             int iid = (int) DB.to.Long (id);
             for (i i: values ()) if (i.id == iid) return i;
-            throw new IllegalArgumentException ("Unknown type id: " + id);
+            throw new IllegalArgumentException ("Unknown legal act level: " + id);
         }
 
         @Override

@@ -38,7 +38,9 @@ define ([], function () {
                 record: data.record,
 
                 fields : [
-                    {name: 'level_', type: 'list', options: {items: data.vc_legal_act_levels.items}},
+                    {name: 'level_', type: 'list', options: {
+                        items: data.vc_legal_act_levels.items.filter((i) => { return i.id != 3 })}
+                    },
                     {name: 'code_vc_nsi_324', type: 'list', options: {items: []}},
                     {name: 'name', type: 'text'},
                     {name: 'docnumber', type: 'text'},

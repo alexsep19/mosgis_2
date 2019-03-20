@@ -27,24 +27,36 @@ define ([], function () {
 
                 for (k in d) data [k] = d [k]
 
-                data.item._can = {
-                    edit: $_USER.has_nsi_20(7, 10),
-                    approve: 0,
-                    update: 1,
-                    cancel: 1,
-                }
+                var it = data.item
 
-                data.item._can.delete = data.item._can.edit
 
-                if (!data.item.is_deleted) {
+                it._can = {cancel: 1}
 
-                    switch (data.item.id_ctr_status) {
+                if (!it.is_deleted && it.uuid_org == $_USER.uuid_org) {
+
+                    it._can.edit_values = 1
+
+                    switch (it.id_ctr_status) {
+                        case 10:
+                        case 11:
+                            it._can.edit = 1
+                            it._can.approve = 1
+                    }
+
+                    switch (it.id_ctr_status) {
+                        case 10:
+                        case 14:
+                            it._can.delete = 1
+                    }
+
+                    switch (it.id_ctr_status) {
                         case 14:
                         case 34:
                         case 40:
-                            it._can.alter = 0
+                            it._can.alter = 1
                     }
 
+                    it._can.update = it._can.edit
                 }
 
                 $('body').data ('data', data)

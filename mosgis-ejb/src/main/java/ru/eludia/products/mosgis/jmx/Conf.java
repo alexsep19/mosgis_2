@@ -718,4 +718,34 @@ public class Conf implements ConfMBean, ConfLocal {
         setInt (VocSetting.i.WS_GIS_INSPECTION_TMT_RESP, i);
     }
     
+    @Override
+    public String getWsGisUkUrl () {
+        return get (VocSetting.i.WS_GIS_UK_URL);
+    }
+    
+    @Override
+    public void setWsGisUkUrl(String s) {
+        set (VocSetting.i.WS_GIS_UK_URL, s);
+        set (VocSetting.i.WS_GIS_URL_ROOT, "");
+    }
+    
+    @Override
+    public int getWsGisUkConnTimeout() {
+        return getInt (VocSetting.i.WS_GIS_UK_TMT_CONN);
+    }
+
+    @Override
+    public void setWsGisUkConnTimeout(int i) {
+        setInt (VocSetting.i.WS_GIS_UK_TMT_CONN, i);
+    }
+    
+    @Override
+    public int getWsGisUkRespTimeout() {
+        return getInt (VocSetting.i.WS_GIS_UK_TMT_RESP);
+    }
+
+    @Override
+    public void setWsGisUkRespTimeout(int i) {
+        setInt (VocSetting.i.WS_GIS_UK_TMT_RESP, i);
+    }
 }
