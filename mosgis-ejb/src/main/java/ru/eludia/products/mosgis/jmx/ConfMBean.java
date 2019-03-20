@@ -133,6 +133,13 @@ public interface ConfMBean {
     public int    getWsGisMeteringConnTimeout ();     
     public void   setWsGisMeteringConnTimeout (int i);
     public int    getWsGisMeteringRespTimeout ();     
-    public void   setWsGisMeteringRespTimeout (int i);     
+    public void   setWsGisMeteringRespTimeout (int i);
+    
+    public String getWsGisInspectionUrl ();
+    public void   setWsGisInspectionUrl (String s);    
+    public int    getWsGisInspectionConnTimeout ();     
+    public void   setWsGisInspectionConnTimeout (int i);
+    public int    getWsGisInspectionRespTimeout ();     
+    public void   setWsGisInspectionRespTimeout (int i);
     
 }
