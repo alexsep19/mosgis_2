@@ -66,7 +66,7 @@ public class PaymentDocument extends EnTable {
 
     public PaymentDocument () {
         
-        super  (TABLE_NAME, "Лицевые счета");
+        super  (TABLE_NAME, "Платёжные документы");
         
         cols   (c.class);        
         
