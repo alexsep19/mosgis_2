@@ -7,7 +7,7 @@
         	<style>
 
         		.w2ui-field > label {
-        			width: 255px;
+        			width: 300px;
         			margin-right: 10px;
         		}
 
@@ -25,50 +25,20 @@
 
         		<tr>
 
-					<td style="min-width:500px;" width=1 valign=top>
+					<td style="min-width:520px;" width=1 valign=top>
 
 							<div class="w2ui-field">
-								<div style="margin-left:0">
-									<input name=sign style="width:110px!important">
-									за предыдущие периоды
-									<input name=debtpreviousperiods maxlength=13 style="margin-left:3px"> руб.
+								<label>№ документа</label>
+								<div>
+									<input name=paymentdocumentnumber maxlength=30>
+									за <span data-text=month_label/> <span data-text=year/> г.
 								</div>
 							</div>
 
 							<div class="w2ui-field">
-								<label>Аванс на начало расчетного периода</label>
+								<label>Оплачено в периоде</label>
 								<div>
 									<input name=advancebllingperiod maxlength=13> руб.
-								</div>
-							</div>
-
-
-							<div class="w2ui-field">
-								<label>Дата последнего учтенного платежа</label>
-								<div>
-									<input name=paymentstaken_dt placeholder="" class=dt>
-								</div>
-							</div>
-
-
-							<div class="w2ui-field" title="Сумма к оплате за расчетный период по услугам">
-								<label>К оплате по услугам</label>
-								<div>
-									<input name=totalpayablebychargeinfo maxlength=13> руб.
-								</div>
-							</div>
-
-							<div class="w2ui-field" title="Итого к оплате по неустойкам и судебным издержкам">
-								<label>Неустойки / судебные издержки</label>
-								<div>
-									<input name=totalbypenaltiesandcourtcosts maxlength=13> руб.
-								</div>
-							</div>
-
-							<div class="w2ui-field" title="Итого к оплате за расчетный период всего">
-								<label>Всего к оплате за период</label>
-								<div>
-									<input name=totalpayablebypd maxlength=13> руб.
 								</div>
 							</div>
 
@@ -79,45 +49,72 @@
 								</div>
 							</div>
 
-							<div class="w2ui-field" title="Итого к оплате за расчетный период c учетом задолженности/переплаты">
-								<label>Итого к оплате</label>
+							<div class="w2ui-field" title="Итого к оплате за расчетный период всего">
+								<label><b>Сумма к оплате за период</b></label>
 								<div>
-									<input name=totalpayablebypdwith_da maxlength=13> руб.
+									<input name=totalpayablebypd> руб.
 								</div>
 							</div>
+
+							<div class="w2ui-field">
+								<label>Оплачено по документу</label>
+								<div>
+									<input name=paidcash maxlength=13> руб.
+								</div>
+							</div>
+<!--
+							<div class="w2ui-field" title="Сумма к оплате за расчетный период по услугам">
+								<label>К оплате по услугам</label>
+								<div>
+									<input name=totalpayablebychargeinfo maxlength=13> руб.
+								</div>
+							</div>
+-->
 
 					</td>
 
 					<td style="min-width:520px;" valign=top>
 
+
 							<div class="w2ui-field">
-								<label>№ документа</label>
-								<div>
-									<input name=paymentdocumentnumber maxlength=30>
+								<div style="margin-left:0">
+									<input name=sign style="width:110px!important;margin-left:45px;">
+									за предыдущие периоды
+									<input name=debtpreviousperiods maxlength=13 style="margin-left:3px"> руб.
 								</div>
 							</div>
 
 							<div class="w2ui-field">
-								<label>Оплачено денежных средств</label>
+								<label>Дата последнего учтенного платежа</label>
 								<div>
-									<input name=paidcash maxlength=13> руб.
+									<input name=paymentstaken_dt placeholder="" class=dt>
+								</div>
+							</div>
+
+							<div class="w2ui-field" title="Итого к оплате по неустойкам и судебным издержкам">
+								<label>Неустойки и судебные издержки</label>
+								<div>
+									<input name=totalbypenaltiesandcourtcosts maxlength=13> руб.
+								</div>
+							</div>
+
+							<div class="w2ui-field" title="Итого к оплате за расчетный период c учетом задолженности/переплаты">
+								<label><b>Задолженность с учётом прошлых периодов</b></label>
+								<div>
+									<input name=totalpayablebypdwith_da maxlength=13> руб.
 								</div>
 							</div>
 
 							<div class="w2ui-field">
-								<label>Дата последней поступившей оплаты</label>
+								<label>Дата последней оплаты</label>
 								<div>
 									<input name=dateoflastreceivedpayment placeholder="" class=dt>
 								</div>
 							</div>
 
-							<div class="w2ui-field" title="Предельный (максимальный) индекс изменения размера платы граждан за коммунальные услуги в муниципальном образовании">
-								<label>Индекс изменения размера платы</label>
-								<div>
-									<input name=limitindex maxlength=13> %
-								</div>
-							</div>
+					</td>
 
+					<td valign=top>
 
 						<table border=0 cellpadding=0 cellspacing=0 width=100% class=sync>
 
@@ -134,8 +131,6 @@
 							</tr>
 -->
 						</table>
-
-
 
 					</td>
 

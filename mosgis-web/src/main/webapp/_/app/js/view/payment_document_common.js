@@ -14,7 +14,22 @@ define ([], function () {
 
             w2ui [form_name].record = r
             
-            $('div[data-block-name=payment_document_common] input').prop ({disabled: data.__read_only})
+            function dis (name) {
+                
+                switch (name) {
+                    case 'totalpayablebypd':
+                    case 'totalpayablebypdwith_da':
+                    case 'totalbypenaltiesandcourtcosts':
+                        return true
+                    default:
+                        return data.__read_only
+                }
+                
+            }
+
+            $('div[data-block-name=payment_document_common] input').each (function () {            
+                $(this).prop ({disabled: dis (this.name)})
+            })
 
             w2ui [form_name].refresh ()
 
@@ -30,7 +45,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 340},
+                {type: 'top', size: 250},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
