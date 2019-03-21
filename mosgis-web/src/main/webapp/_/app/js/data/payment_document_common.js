@@ -33,6 +33,10 @@ define ([], function () {
     }
     
     $_DO.edit_payment_document_common = function (e) {
+    
+        $_SESSION.set ('edit_payment_document_common', 1)
+    
+        w2ui ['passport_layout'].get ('main').tabs.click ('payment_document_common_additional_information')
 
         var data = {item: w2ui [form_name].record}
 
@@ -56,11 +60,10 @@ define ([], function () {
         
         v.debtpreviousperiods *= (- v.sign)
         
-/*        
-        if (!(v.totalsquare >= 0.01)) die ('totalsquare', 'Укажите, пожалуйста, корректный размер общей площади')
-        if (parseFloat (v.residentialsquare) > v.totalsquare) die ('residentialsquare', 'Жилая площадь не может превышать общую')
-        if (parseFloat (v.heatedarea) > v.totalsquare) die ('heatedarea', 'Отапливаемая площадь не может превышать общую')
-*/        
+        v.additionalinformation = $('textarea').val () || ''
+        
+        if (v.additionalinformation.length > 1000) die ('additionalinformation', 'Дополнительная информация не может содержать более 1000 символов')
+        
         query ({type: 'payment_documents', action: 'update'}, {data: v}, reload_page)
 
     }
