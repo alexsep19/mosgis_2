@@ -12,8 +12,9 @@ define ([], function () {
 
                 fields : [
                     {name: 'paymentdocumentnumber', type: 'text'},
-                    {name: 'month',   type: 'list', options: {items: data.months}},
-                    {name: 'year',    type: 'list', options: {items: data.years}},
+                    {name: 'period',   type: 'list', options: {items: data.periods}},
+//                    {name: 'month',   type: 'list', options: {items: data.months}},
+//                    {name: 'year',    type: 'list', options: {items: data.years}},
                     {name: 'id_type', type: 'list', options: {items: data.vc_pay_doc_types.items}},
                 ],
                 

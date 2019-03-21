@@ -8,6 +8,11 @@ define ([], function () {
 
         var v = form.values ()
         
+        var ym = v.period.split (/-0?/)
+        
+        v.year = ym [0]
+        v.month = ym [1]
+
         var dt = new Date ();        
 
         if (v.year == dt.getFullYear () && v.month > (1 + dt.getMonth ())) die ('month', 'Этот период ещё не наступил')
@@ -58,6 +63,54 @@ define ([], function () {
 
         var data = clone ($('body').data ('data'))
         
+        var it = data.item       
+        
+        var now = new Date ()
+        
+        var dt_from = it ['ca.effectivedate'] || it ['ch.date_'] || it ['sr_ctr.effectivedate']
+        
+        if (dt_from) {
+            dt_from = new Date (dt_from)
+            dt_from.setDate (1)
+        }
+        else {
+            dt_from = new Date ()
+            dt_from.setDate (1)
+            dt_from.setMonth (0)
+            dt_from.setFullYear (dt_from.getFullYear () - 3)
+        }
+        
+        var dt_to = it ['ca.terminate'] || it ['ca.plandatecomptetion'] || it ['ch.terminate'] || it ['sr_ctr.terminate'] || it ['sr_ctr.completiondate']
+
+        if (dt_to) {
+            dt_to = new Date (dt_to)
+            if (dt_to > now) dt_to = new Date ()
+            dt_to.setDate (1)
+        }
+        else {
+            dt_to = new Date ()
+            dt_to.setDate (1)
+        }        
+        
+        var periods = []
+        
+        var dt = dt_to
+        var ts_limit = dt_from.getTime ()
+        
+        while (periods.length < 36 && dt.getTime () > ts_limit) {
+        
+            periods.push ({
+                id: dt.toJSON ().slice (0, 7),
+                text: w2utils.settings.fullmonths [dt.getMonth ()] + ' ' + dt.getFullYear ()
+            })
+            
+            dt.setMonth (dt.getMonth () - 1)
+
+        }        
+        
+        data.periods = periods
+
+/*        
         var dt = new Date ();
         
         var yyyy = dt.getFullYear ()
@@ -69,11 +122,12 @@ define ([], function () {
         ]
         
         data.months = []; for (var i = 0; i < 12; i ++) data.months.push ({id: i + 1, text: w2utils.settings.fullmonths [i]})
-
+*/
         data.record = {
             id_type: 0,
-            year: yyyy,
-            month: dt.getMonth () + 1,
+            period: periods [0].id
+//            year: yyyy,
+//            month: dt.getMonth () + 1,
         }
 
         done (data)
