@@ -2,13 +2,13 @@
 <weblogic-jms xmlns="http://xmlns.oracle.com/weblogic/weblogic-jms" xmlns:sec="http://xmlns.oracle.com/weblogic/security" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wls="http://xmlns.oracle.com/weblogic/security/wls" xsi:schemaLocation="http://xmlns.oracle.com/weblogic/weblogic-jms http://xmlns.oracle.com/weblogic/weblogic-jms/1.1/weblogic-jms.xsd">
     
  <!-- очередь обработки запросов на экспорт нормативно-правовых актов -->
- <uniform-distributed-queue name="inLegalActsQueue">
+ <uniform-distributed-queue name="inExportLegalActsQueue">
    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
    <delivery-params-overrides>
        <time-to-deliver>2000</time-to-deliver>
        <redelivery-delay>10000</redelivery-delay>
    </delivery-params-overrides>
-   <jndi-name>mosgis.inLegalActsQueue</jndi-name>
+   <jndi-name>mosgis.inExportLegalActsQueue</jndi-name>
  </uniform-distributed-queue>
  
  <!-- очередь опроса статуса исходящих запросов на экспорт нормативно-правовых актов -->
@@ -19,6 +19,36 @@
        <redelivery-delay>10000</redelivery-delay>
    </delivery-params-overrides>
    <jndi-name>mosgis.outExportLegalActsQueue</jndi-name>
+ </uniform-distributed-queue>
+
+ <!-- очередь обработки запросов на импорт нормативно-правовых актов -->
+ <uniform-distributed-queue name="inImportLegalActsQueue">
+     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+     <delivery-params-overrides>
+	 <time-to-deliver>2000</time-to-deliver>
+	 <redelivery-delay>10000</redelivery-delay>
+     </delivery-params-overrides>
+     <jndi-name>mosgis.inImportLegalActsQueue</jndi-name>
+ </uniform-distributed-queue>
+
+ <!-- очередь опроса статуса исходящих запросов на импорт нормативно-правовых актов -->
+ <uniform-distributed-queue name="outImportLegalActsQueue">
+     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+     <delivery-params-overrides>
+	 <time-to-deliver>2000</time-to-deliver>
+	 <redelivery-delay>10000</redelivery-delay>
+     </delivery-params-overrides>
+     <jndi-name>mosgis.outImportLegalActsQueue</jndi-name>
+ </uniform-distributed-queue>
+
+ <!-- очередь обработки запросов на импорт файлов нормативно-правовых актов -->
+ <uniform-distributed-queue name="inImportLegalActFilesQueue">
+     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+     <delivery-params-overrides>
+	 <time-to-deliver>2000</time-to-deliver>
+	 <redelivery-delay>10000</redelivery-delay>
+     </delivery-params-overrides>
+     <jndi-name>mosgis.inImportLegalActFilesQueue</jndi-name>
  </uniform-distributed-queue>
 
 </weblogic-jms>

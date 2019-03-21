@@ -1,0 +1,48 @@
+<span
+	data-popup-width=400
+	data-popup-height=220
+	data-popup-title='Импорт нормативно-правовых актов'
+>
+
+	<style>
+
+        label[data-block-name=legal_acts_new] {
+        	width: 120px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=legal_acts_new] {
+        	width: 80px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:170px ">
+
+        <div class="w2ui-page page-0" style="height:170px;">
+
+            <div class="w2ui-field">
+                <label>Уровень</label>
+                <div>
+		    <input name=level_ >
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Период принятия с</label>
+                <div>
+		    <input name=acceptstartdate class=dt>
+                </div>
+                <label>по</label>
+                <div>
+		    <input name=acceptenddate class=dt>
+                </div>
+            </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=import>Импорт из ГИС ЖКХ</button>
+        </div>
+
+	</div>
+
+</span>

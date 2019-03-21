@@ -257,7 +257,7 @@ logger.info ("setting Authorization=" + basicAuthentication);
         NSI,                    // Подсистема Нормативно-справочная информации
         DISCLOSURE,             // Подсистема Раскрытие деятельности УО
         CAPITALREPAIRPROGRAMS,  // Подсистема Капитальный ремонт
-//        UK,                     // Подсистема Нормативно-правовые акты
+        CONTENTMANAGEMENT,      // Подсистема Управление контентом
         MSP;                    // Подсистема Меры социальной поддержки
     }
     

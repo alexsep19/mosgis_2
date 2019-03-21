@@ -157,4 +157,14 @@ public class LegalActs extends EJBResource <LegalActLocal> {
 //        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
         return back.getLog (id, p, getUser ());
     }
+
+    @POST
+    @Path("import")
+    @Consumes(APPLICATION_JSON)
+    @Produces(APPLICATION_JSON)
+    public JsonObject doImport(JsonObject p) {
+//        final JsonObject item = back.getItem (id);
+//        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
+	return back.doImport(p, getUser());
+    }
 }

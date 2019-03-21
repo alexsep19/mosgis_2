@@ -57,6 +57,10 @@ define ([], function () {
 
     }
 
+    $_DO.import_legal_acts = function (e) {
+        use.block('legal_acts_import')
+    }
+
     return function (done) {
 
         w2ui ['topmost_layout'].unlock ('main')
@@ -70,6 +74,10 @@ define ([], function () {
             for (k in d) data [k] = d [k]
 
             $('body').data('data', data)
+
+            data._can = {
+                create: $_USER.has_nsi_20(7, 10)
+            }
 
             done (data);
 

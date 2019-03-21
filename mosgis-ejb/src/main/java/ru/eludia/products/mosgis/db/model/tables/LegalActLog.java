@@ -73,12 +73,6 @@ public class LegalActLog extends GisWsLogTable {
 	    result.setRegion(NsiTable.toDom(r, "vc_nsi_237"));
 	}
 
-	if (VocLegalActLevel.i.REGIONAL.getId() == DB.to.Long(r.get(LegalAct.c.LEVEL_.lc()))) {
-	    // FIXME: fix ExportLegalActsMDB.sendFileThenSoap context
-	    r.put("attachmentguid", UUID.fromString("00000000-0000-0000-0000-000000000000"));
-	    r.put("attachmenthash", "0000000000000000");
-	}
-
 	result.setAttachment(LegalAct.toAttachmentType(r));
 
 	return result;

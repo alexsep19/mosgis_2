@@ -13,4 +13,5 @@ public interface LegalActLocal extends CRUDBackend, FileBackend {
     JsonObject doApprove   (String id, User user);
     JsonObject doAlter     (String id, User user);
     JsonObject doAnnul     (String id, JsonObject p, User user);
+    JsonObject doImport    (JsonObject p, User user);
 }

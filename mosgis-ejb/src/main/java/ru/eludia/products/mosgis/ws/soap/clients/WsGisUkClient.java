@@ -9,12 +9,19 @@ import javax.ejb.TransactionAttributeType;
 import javax.jws.HandlerChain;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
+import ru.eludia.base.DB;
+import ru.eludia.products.mosgis.db.model.incoming.InLegalAct;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.LegalAct;
 import ru.eludia.products.mosgis.db.model.tables.LegalActLog;
+import ru.eludia.products.mosgis.db.model.voc.VocLegalActLevel;
+import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
 
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ws.soap.tools.LoggingOutMessageHandler;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.base.GetStateRequest;
+import ru.gosuslugi.dom.schema.integration.uk.ExportDocumentRequest;
 import ru.gosuslugi.dom.schema.integration.uk.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.uk_service_async.Fault;
 import ru.gosuslugi.dom.schema.integration.uk_service_async.UkAsyncPort;
@@ -57,5 +64,12 @@ public class WsGisUkClient {
 
     public AckRequest.Ack deleteDocumentsRegion(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
 	return getPort(orgPPAGuid, messageGUID).importDocumentsRegion(LegalActLog.toDeleteDocumentsRegionRequest(r)).getAck();
+    }
+
+    public AckRequest.Ack exportDocuments(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+
+	ExportDocumentRequest request = InLegalAct.toExportDocumentsRequest (r);
+
+	return getPort(orgPPAGuid, messageGUID).exportDocuments(request).getAck();
     }
 }

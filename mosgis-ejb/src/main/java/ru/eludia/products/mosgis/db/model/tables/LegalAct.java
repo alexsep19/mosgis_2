@@ -9,12 +9,14 @@ import ru.eludia.base.model.def.Bool;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
+import ru.eludia.products.mosgis.db.model.incoming.InLegalAct;
 import ru.eludia.products.mosgis.db.model.voc.VocFileStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocLegalActLevel;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi237;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi324;
+import ru.gosuslugi.dom.schema.integration.uk.ExportDocumentType;
 
 public class LegalAct extends AttachTable  {
 
@@ -39,6 +41,7 @@ public class LegalAct extends AttachTable  {
 	IS_ANNULED             (Type.BOOLEAN, new Virt("DECODE(\"REASONOFANNULMENT\",NULL,0,1)"), "1, если запись аннулирована; иначе 0"),
 	DOCUMENTGUID           (Type.UUID, null, "Идентификатор НПА в ГИС ЖКХ"),
 
+	UUID_IMPORT            (InLegalAct.class, null, "Последнее событие импорта"),
 	ID_LOG                 (LegalActLog.class, "Последнее событие редактирования")
         ;
 
