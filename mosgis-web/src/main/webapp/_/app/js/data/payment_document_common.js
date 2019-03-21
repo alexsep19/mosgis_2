@@ -106,7 +106,7 @@ define ([], function () {
         
         var data = clone ($('body').data ('data'))
 
-        data.active_tab = localStorage.getItem ('payment_document_common.active_tab') || 'payment_document_common_log'
+        data.active_tab = localStorage.getItem ('payment_document_common.active_tab') || 'payment_document_common_additional_information'
 
         data.__read_only = 1
         

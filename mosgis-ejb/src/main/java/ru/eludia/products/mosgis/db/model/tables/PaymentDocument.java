@@ -27,7 +27,7 @@ public class PaymentDocument extends EnTable {
         
         PAYMENTDOCUMENTNUMBER         (Type.STRING,  30,    null,   "Номер платежного документа, по которому внесена плата, присвоенный такому документу исполнителем в целях осуществления расчетов по внесению платы"),
         
-        ADDITIONALINFORMATION         (Type.STRING,  1000,  null,   "Дополнительная информация"),
+        ADDITIONALINFORMATION         (Type.STRING,  4000,  null,   "Дополнительная информация"),
         
         DEBTPREVIOUSPERIODS           (Type.NUMERIC, 10, 2, null,   "Задолженность за предыдущие периоды, руб."), 
         ADVANCEBLLINGPERIOD           (Type.NUMERIC, 10, 2, null,   "Аванс на начало расчетного периода, руб."), 
