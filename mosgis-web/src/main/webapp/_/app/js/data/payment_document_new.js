@@ -14,12 +14,43 @@ define ([], function () {
         
         v.uuid_account = $_REQUEST.id
         
-        query ({type: 'payment_documents', action: 'create', id: null}, {data: v}, function (data) {
-            w2popup.close ()
-            var grid = w2ui ['account_payment_documents_grid']
-            grid.reload (grid.refresh)
-            w2confirm ('Платёжный документ зарегистрирован. Открыть его страницу в новой вкладке?').yes (function () {openTab ('/payment_document/' + data.id)})
-        })
+        function done () {
+        
+            query ({type: 'payment_documents', action: 'create', id: null}, {data: v}, function (data) {
+                w2popup.close ()
+                var grid = w2ui ['account_payment_documents_grid']
+                grid.reload (grid.refresh)
+                w2confirm ('Платёжный документ зарегистрирован. Открыть его страницу в новой вкладке?').yes (function () {openTab ('/payment_document/' + data.id)})
+            })
+            
+        }
+        
+        var dt = v.year + '-' + String (v.month).padStart (2, '0') + '-01'
+               
+        query ({type: 'payment_documents', id: null}, 
+        
+            {
+              searchLogic: "AND",
+              limit: 100,
+              offset: 0,
+              data: {uuid_account: v.uuid_account},
+              search: [
+                {field: "dt_period", type: "date", operator: "between", value: [dt, dt]},
+                {field: "id_ctr_status", type: "enum", operator: "in", value: [{id: 10}]},
+                {field: "is_deleted", type: "enum", operator: "in", value: [{id: "0"}]},
+                {field: "id_type", type: "enum", operator: "in", value: [{id: v.id_type}]},
+              ],
+            }        
+        
+            , function (d) {
+            
+                if (!d.root.length) return done ()
+                w2popup.close ()
+                w2confirm ('Такой платёжный документ уже зарегистрирован. Открыть его страницу в новой вкладке?').yes (function () {openTab ('/payment_document/' + d.root [0].id)})
+            
+            }
+            
+        )
 
     }
 
