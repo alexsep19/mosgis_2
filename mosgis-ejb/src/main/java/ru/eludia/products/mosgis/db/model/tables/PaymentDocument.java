@@ -82,7 +82,7 @@ public class PaymentDocument extends EnTable {
             + " BEGIN "
 
             + " IF :NEW.ID_TYPE = " + VocPaymentDocumentType.i.REGULAR + " THEN BEGIN "
-            + "   FOR i IN (SELECT uuid FROM " + TABLE_NAME + " WHERE uuid<>:NEW.uuid AND is_deleted=0 AND UUID_ACCOUNT=:NEW.UUID_ACCOUNT AND YEAR=:NEW.YEAR AND MONTH=:NEW.MONTH AND ID_TYPE=:NEW.ID_TYPE) LOOP"
+            + "   FOR i IN (SELECT uuid FROM " + TABLE_NAME + " WHERE uuid<>:NEW.uuid AND UUID_ACCOUNT=:NEW.UUID_ACCOUNT AND YEAR=:NEW.YEAR AND MONTH=:NEW.MONTH AND ID_TYPE=:NEW.ID_TYPE AND is_deleted=0 AND ID_CTR_STATUS NOT IN (" + VocGisStatus.i.ANNUL + ")) LOOP"
             + "     raise_application_error (-20000, 'Текущий платёжный документ на данный период уже зарегистрирован. Операция отменена.'); "
             + "   END LOOP; "
             + " END; END IF; "
