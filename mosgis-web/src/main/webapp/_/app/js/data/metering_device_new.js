@@ -48,9 +48,7 @@ define ([], function () {
 
                 if (this.class != t.clazz) return
 
-                if (t.code_vc_nsi_30 != this.code_vc_nsi_30) return
-
-                if (t.code_vc_nsi_30)
+                if (t.code_vc_nsi_30 && (t.code_vc_nsi_30 != this.code_vc_nsi_30)) return
 
                 result.push ({
                     id: t.id + '_' + this.id,
