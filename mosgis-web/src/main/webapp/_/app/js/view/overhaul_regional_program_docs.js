@@ -33,6 +33,8 @@ define ([], function () {
             
             url: '/mosgis/_rest/?type=overhaul_regional_program_documents',
 
+            postData: {program_uuid: $_REQUEST.id},
+
             onAdd: $_DO.create_overhaul_regional_program_doc,
             
             onDblClick: function (e) {

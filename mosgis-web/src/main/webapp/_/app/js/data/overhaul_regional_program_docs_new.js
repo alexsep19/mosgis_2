@@ -12,6 +12,8 @@ define ([], function () {
         if (!v.fullname) die ('fullname', 'Пожалуйста, укажите наименование')
         if (!v.legislature) die ('legislature', 'Пожалуйста, укажите орган власти, принявший документ')
         
+        v.program_uuid = $_REQUEST.id
+
         var tia = {type: 'overhaul_regional_program_documents'}
         tia.id = form.record.id
         tia.action = tia.id ? 'update' : 'create'

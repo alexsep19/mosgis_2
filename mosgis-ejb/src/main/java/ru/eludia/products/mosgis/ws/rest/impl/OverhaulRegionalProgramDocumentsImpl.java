@@ -9,6 +9,7 @@ import javax.json.JsonObjectBuilder;
 import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgram;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramDocument;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -66,7 +67,7 @@ public class OverhaulRegionalProgramDocumentsImpl extends BaseCRUD <OverhaulRegi
     public JsonObject select(JsonObject p, User user) {return fetchData ((db, job) -> {
         
         Select select = ModelHolder.getModel ().select (OverhaulRegionalProgramDocument.class, "AS root", "*")
-                .where   ("program_uuid", p.get ("program_uuid"))
+                .where   ("program_uuid", p.getString ("program_uuid"))
                 .orderBy ("number_")
                 .orderBy ("fullname")
                 .orderBy ("date_")
@@ -83,7 +84,7 @@ public class OverhaulRegionalProgramDocumentsImpl extends BaseCRUD <OverhaulRegi
         
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
             .get   (getTable (), id, "*")
-            .toOne (OverhaulRegionalProgramDocument.class, "programname AS programname").on ()
+            .toOne (OverhaulRegionalProgram.class, "AS program", "is_deleted", "org_uuid", "id_orp_status").on ()
         ));
         
         VocGisStatus.addLiteTo (job);

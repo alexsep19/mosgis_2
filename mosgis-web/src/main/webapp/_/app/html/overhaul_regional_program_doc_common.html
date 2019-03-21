@@ -1,0 +1,96 @@
+<span>
+
+    <div>
+
+        <div class="w2ui-page page-0 page-1">
+
+        	<style>
+
+        		.w2ui-field > label {
+        			width: 220px;
+        			margin-right: 10px;
+        		}
+
+        		.w2ui-field input {
+					width: 300px !important;
+				}
+
+        		.w2ui-field input.dt {
+					width: 70px !important;
+				}
+
+        	</style>
+
+        	<table border=0 cellpadding=0 cellspacing=0 width=50%>
+
+        		<tr>
+					<td>
+						<div class="w2ui-field">
+							<label>Вид документа: </label>
+							<div>
+								<input name=code_nsi_79>
+							</div>
+						</div>
+					</td>
+				</tr>
+
+				<tr>
+					<td>
+						<div class="w2ui-field">
+							<label>Номер: </label>
+							<div>
+								<input name=number_ maxlength=512>
+							</div>
+						</div>
+					</td>
+				</tr>
+
+				<tr>
+					<td>
+						<div class="w2ui-field">
+							<label>Дата: </label>
+							<div>
+								<input name=date_ class=dt>
+							</div>
+						</div>
+					</td>
+				</tr>
+
+				<tr>
+					<td>
+						<div class="w2ui-field">
+							<label>Наименование документа: </label>
+							<div>
+								<input name=fullname maxlength=1000>
+							</div>
+						</div>
+					</td>
+				</tr>
+
+				<tr>
+					<td>
+						<div class="w2ui-field">
+							<label>Орган власти, принявший документ: </label>
+							<div>
+								<input name=legislature maxlength=512>
+							</div>
+						</div>
+					</td>
+				</tr>
+
+			</table>
+
+        </div>
+
+        <div class="w2ui-buttons">
+        	<span>
+				<button class=w2ui-btn name=edit    data-on=__read_only>Редактировать</button>
+				<button class=w2ui-btn name=update  data-off=__read_only>Сохранить</button>
+				<button class=w2ui-btn name=cancel  data-off=__read_only>Отменить</button>
+				<button class=w2ui-btn name=delete  data-on=__read_only>Удалить</button>
+            </span>
+        </div>
+
+    </div>
+
+</span>
