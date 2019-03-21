@@ -23,6 +23,7 @@ public class PaymentDocument extends EnTable {
 
         YEAR                          (Type.NUMERIC, 4,             "Год"),
         MONTH                         (Type.NUMERIC, 4,             "Месяц"),
+        DT_PERIOD                     (Type.DATE,           null,   "ГГГГ-ММ-01"),
         
         PAYMENTDOCUMENTNUMBER         (Type.STRING,  30,    null,   "Номер платежного документа, по которому внесена плата, присвоенный такому документу исполнителем в целях осуществления расчетов по внесению платы"),
         
@@ -85,10 +86,12 @@ public class PaymentDocument extends EnTable {
             + "     raise_application_error (-20000, 'Текущий платёжный документ на данный период уже зарегистрирован. Операция отменена.'); "
             + "   END LOOP; "
             + " END; END IF; "
+                    
+            + " :NEW.dt_period := TO_DATE (:NEW.year || LPAD (:NEW.month, 2, '0') || '01', 'YYYYMMDD'); "
 
             + "END; "
 
-        );
+        );                
 
     }
 /*

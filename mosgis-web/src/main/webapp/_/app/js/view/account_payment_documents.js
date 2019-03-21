@@ -45,6 +45,16 @@ define ([], function () {
                 {master: true},
             ],            
             
+            searches: [            
+                {field: 'dt_period', caption: 'Период',         type: 'date', operator: 'between', operators: ['between']},
+                {field: 'id_ctr_status', caption: 'Статус',     type: 'enum', options: {items: data.vc_gis_status.items}},
+                {field: 'is_deleted', caption: 'Статус записи', type: 'enum', options: {items: [
+                    {id: "0", text: "Актуальные"},
+                    {id: "1", text: "Удалённые"},
+                ]}},
+//                {field: 'uuid_org', caption: 'Организации', type: 'enum', options: {items: data.vc_orgs.items}, off: !$_USER.role.admin},
+            ].filter (not_off),            
+            
             columns: [              
             
                 {field: 'paymentdocumentnumber', caption: 'Номер', size: 20},
