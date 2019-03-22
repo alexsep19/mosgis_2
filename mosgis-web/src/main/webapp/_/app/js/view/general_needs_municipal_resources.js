@@ -72,7 +72,7 @@ define ([], function () {
                         
             onAdd:      $_DO.create_general_needs_municipal_resources,            
             onEdit:     $_DO.edit_general_needs_municipal_resources,            
-            onDblClick: function (e) {openTab ('/general_needs_municipal_resourcee/' + e.recid)},            
+            onDblClick: function (e) {openTab ('/general_needs_municipal_resource/' + e.recid)},            
             onRefresh: function (e) {e.done (color_data_mandatory)},            
             onSelect: recalcToolbar,
             onUnselect: recalcToolbar,
