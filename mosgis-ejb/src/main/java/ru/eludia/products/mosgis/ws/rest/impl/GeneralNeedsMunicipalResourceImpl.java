@@ -13,6 +13,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi2;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.GeneralNeedsMunicipalResourceLocal;
@@ -110,18 +111,27 @@ public class GeneralNeedsMunicipalResourceImpl extends BaseCRUD<GeneralNeedsMuni
         
         VocGisStatus.addTo (job);
         VocAction.addTo (job);
+        Nsi2.i.addGeneralNeedsTo (job);
+        
+        db.addJsonArrays (job
+            , Nsi2.getVocSelect ()
+            , VocOkei.getVocSelect ()
+        );
 
     });}
 
     @Override
     public JsonObject getVocs () {return fetchData ((db, job) -> {
         
+        VocGisStatus.addTo (job);
         VocAction.addTo (job);
-        
         Nsi2.i.addGeneralNeedsTo (job);
         
-        db.addJsonArrays (job, Nsi2.getVocSelect ());        
+        db.addJsonArrays (job
+            , Nsi2.getVocSelect ()
+            , VocOkei.getVocSelect ()
+        );
 
     });}
-    
+
 }
