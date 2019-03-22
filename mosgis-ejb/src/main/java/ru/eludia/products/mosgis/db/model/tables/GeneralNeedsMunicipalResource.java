@@ -18,6 +18,7 @@ public class GeneralNeedsMunicipalResource extends EnTable {
         
         UUID_ORG                     (VocOrganization.class, null,  "Организация, которая создала данную запись"),
 
+        PARENTCODE                   (Type.NUMERIC, 1,              "Код родительской записи верхнего уровня"),
         GENERALMUNICIPALRESOURCENAME (Type.STRING,  1000,    null,  "Наименование главного коммунального ресурса"),
         CODE_VC_NSI_2                (Type.STRING,  20,      null,  "Вид коммунального ресурса (НСИ 2)"),
 
@@ -55,6 +56,8 @@ public class GeneralNeedsMunicipalResource extends EnTable {
         super (TABLE_NAME, "Коммунальные ресурсы, потребляемые при использовании и содержании общего имущества в многоквартирном доме (НСИ 337)");
         
         cols (c.class);
+        
+        key (c.UUID_ORG);
 
     }
     
