@@ -1,9 +1,11 @@
 package ru.eludia.products.mosgis.db.model.voc;
 
+import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.Table;
+import ru.eludia.products.mosgis.db.ModelHolder;
 
 public class VocOkei extends Table {
 
@@ -25,6 +27,15 @@ public class VocOkei extends Table {
         super (TABLE_NAME, "Общероссийский классификатор единиц измерения");
         cols  (c.class);        
         pk    (c.CODE);        
+
+    }
+
+    public static Select getVocSelect () {
+
+        return ModelHolder.getModel ().select (VocOkei.class
+            , c.CODE.lc () + " AS id"
+            , c.NATIONAL.lc () + " AS label"
+        ).orderBy (c.NATIONAL);
 
     }
 

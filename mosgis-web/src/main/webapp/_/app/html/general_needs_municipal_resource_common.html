@@ -1,0 +1,101 @@
+<span>
+
+    <div>
+
+        <div class="w2ui-page page-0 page-1">
+
+        	<style>
+
+        		.w2ui-field > label {
+        			width: 300px;
+        			margin-right: 10px;
+        		}
+
+        		.w2ui-field input {
+        			width: 230px !important;
+        		}
+
+        	</style>
+
+			<center>
+        	<table border=0 cellpadding=0 cellspacing=0 width=90%>
+
+        		<tr>
+
+					<td style="min-width:550px;" width=1 valign=top>
+
+						<div class="w2ui-field">
+							<label>Раздел</label>
+							<div>
+								<input name=parentcode style="margin-right:10px">
+							</div>
+						</div>
+
+						<div class="w2ui-field">
+							<label>№ п/п</label>
+							<div>
+								<input name=sortorder maxlength=3>
+							</div>
+						</div>
+
+						<div class="w2ui-field">
+							<label>Наименование</label>
+							<div>
+								<input name=generalmunicipalresourcename maxlength=255>
+							</div>
+						</div>
+
+						<div class="w2ui-field">
+							<label>Вид коммунального ресурса</label>
+							<div>
+								<input name=code_vc_nsi_2>
+							</div>
+						</div>
+
+						<div class="w2ui-field">
+							<label>Единица измерения</label>
+							<div>
+								<input name=okei>
+							</div>
+						</div>
+
+					</td>
+
+					<td valign=top>
+
+						<table border=0 cellpadding=0 cellspacing=0 width=100% class=sync>
+
+							<tr>
+								<td>Статус синхронизации:</td>
+								<td data-text=status_label></td>
+							</tr>
+							<tr>
+								<th colspan=2 data-text=err_text></th>
+							</tr>
+
+						</table>
+
+					</td>
+
+        		</tr>
+
+        	</table>
+			</center>
+
+        </div>
+
+        <div class="w2ui-buttons">
+        	<span>
+				<button class=w2ui-btn name=edit   data-on=__read_only>Редактировать</button>
+				<button class=w2ui-btn name=update data-off=__read_only>Сохранить</button>
+				<button class=w2ui-btn name=cancel data-off=__read_only>Отменить</button>
+				<button class=w2ui-btn name=delete  data-on=__read_only>Удалить</button>
+<!--
+				<button class=w2ui-btn name=undelete data-on=__read_only>Восстановить</button>
+-->
+            </span>
+        </div>
+
+    </div>
+
+</span>

@@ -10,7 +10,7 @@ define ([], function () {
                 
         it.status_label = data.vc_gis_status [it.id_ctr_status]
         it.resource_label = data.vc_nsi_2 [it.mask_vc_nsi_2]
-        it.volume_label = data.consumedvolume ? 'объём потребленного' : 'текущие показания'
+        it.volume_label = it.consumedvolume ? 'объём потребленного' : 'текущие показания'
 
         $('title').text ('ПУ №' + it.meteringdevicenumber)
         

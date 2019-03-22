@@ -2,14 +2,11 @@ package ru.eludia.products.mosgis.db.model.tables;
 
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
-import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.Type.DATE;
 import static ru.eludia.base.model.Type.STRING;
 import static ru.eludia.base.model.Type.NUMERIC;
 import static ru.eludia.base.model.Type.BOOLEAN;
-import static ru.eludia.base.model.def.Def.NEW_UUID;
-import ru.eludia.base.model.def.Num;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
@@ -18,6 +15,8 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisContractDimension;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 
 public class SupplyResourceContractSubject extends EnTable {
+
+    public static final String TABLE_NAME = "tb_sr_ctr_subj";
 
     public enum c implements EnColEnum {
         UUID_XL               (InXlFile.class, "Файл импорта"),
@@ -107,7 +106,7 @@ public class SupplyResourceContractSubject extends EnTable {
 
     public SupplyResourceContractSubject () {
 
-        super ("tb_sr_ctr_subj", "Предмет, поставляемый ресурс ОЖФ договора РСО");
+        super (TABLE_NAME, "Предмет, поставляемый ресурс ОЖФ договора РСО");
 
         cols  (c.class);
 

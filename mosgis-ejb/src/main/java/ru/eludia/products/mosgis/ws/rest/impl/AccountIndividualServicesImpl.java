@@ -45,7 +45,7 @@ public class AccountIndividualServicesImpl extends BaseCRUD<AccountIndividualSer
 
     @Override
     protected Queue getQueue (VocAction.i action) {
-        
+
         switch (action) {
             case APPROVE:
             case ALTER:
@@ -54,22 +54,22 @@ public class AccountIndividualServicesImpl extends BaseCRUD<AccountIndividualSer
             default:
                 return null;
         }
-        
+
     }
 
-    private static final Logger logger = Logger.getLogger (AccountIndividualServicesImpl.class.getName ());    
+    private static final Logger logger = Logger.getLogger (AccountIndividualServicesImpl.class.getName ());
 
     @Override
     public JsonObject doCreate (JsonObject p, User user) {return fetchData ((db, job) -> {
 
         JsonObject file = p.getJsonObject ("file");
-                       
-        db.begin ();        
-        
+
+        db.begin ();
+
             final Map<String, Object> h = ((AttachTable) getTable ()).HASH (file);
-            
+
             Object id;
-            
+
             if (file.containsKey ("uuid")) {
                 id = file.getString ("uuid");
                 h.put (AttachTable.c.BODY.lc (), null);
@@ -80,20 +80,20 @@ public class AccountIndividualServicesImpl extends BaseCRUD<AccountIndividualSer
                 id = db.insertId (getTable (), h);
                 logAction (db, user, id, VocAction.i.CREATE);
             }
-            
+
             job.add ("id", id.toString ());
-            
+
         db.commit ();
-        
+
     });}
-        
+
     @Override
     public JsonObject doUpdate (String id, JsonObject p, User user) {return doAction (db -> {
-        
+
         byte [] bytes = Base64.getDecoder ().decode (p.getString ("chunk"));
-                
+
         Connection cn = db.getConnection ();
-            
+
         final AccountIndividualService table = (AccountIndividualService) getTable ();
 
         final String uuid = id.replace ("-", "").toUpperCase ();
@@ -110,22 +110,22 @@ public class AccountIndividualServicesImpl extends BaseCRUD<AccountIndividualSer
                     long  len = rs.getLong (2);
 
                     try (OutputStream os = blob.setBinaryStream (len + 1)) {
-                        os.write (bytes);                            
+                        os.write (bytes);
                     }
 
                 }
 
             }
-                
+
             db.update (getTable (), HASH (
                 "uuid",      uuid,
                 "id_status", 0
             ));
 
-        }                    
+        }
 
     });}
-    
+
     @Override
     protected void logAction (DB db, User user, Object id, VocAction.i action) throws SQLException {
 
@@ -138,7 +138,7 @@ public class AccountIndividualServicesImpl extends BaseCRUD<AccountIndividualSer
             "uuid_object", id,
             "uuid_user", user == null ? null : user.getId ()
         )).toString ();
-        
+
         db.update (getTable (), HASH (
             "uuid",      id,
             "id_log",    id_log
@@ -147,30 +147,30 @@ public class AccountIndividualServicesImpl extends BaseCRUD<AccountIndividualSer
         publishMessage (action, id_log);
 
     }
-    
+
     @Override
     public JsonObject doDelete (String id, User user) {return doAction (db -> {
-        
+
         JsonObject houseFile = db.getJsonObject (ModelHolder.getModel ().get (AccountIndividualService.class, id, "*"));
-            
+
         db.update (AccountIndividualService.class, HASH (
             "uuid",      id,
             "id_status", 2
         ));
-        
+
         logAction (db, user, id, VocAction.i.DELETE);
-        
+
     });}
-    
+
     @Override
-    public void download (String id, OutputStream out) throws IOException, WebApplicationException {fetchData ((db, job) -> {        
+    public void download (String id, OutputStream out) throws IOException, WebApplicationException {fetchData ((db, job) -> {
         db.getStream (getTable (), id, "body", out);
     });}
 
     @Override
     public JsonObject getItem (String id, User user) {
 
-        try (DB db = ModelHolder.getModel ().getDb ()) {            
+        try (DB db = ModelHolder.getModel ().getDb ()) {
             return db.getJsonObject (ModelHolder.getModel ()
                 .get (getTable (), id, "*")
                 .toOne (AccountIndividualServiceLog.class, "AS log").on ()
@@ -218,33 +218,33 @@ public class AccountIndividualServicesImpl extends BaseCRUD<AccountIndividualSer
         logAction (db, user, id, VocAction.i.APPROVE);
 
     });}
-    
+
     @Override
     public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
-                
+
         final Map<String, Object> r = HASH (
             EnTable.c.UUID,               id,
             AccountIndividualService.c.ID_CTR_STATUS,  VocGisStatus.i.PROJECT.getId ()
         );
-                
+
         db.update (getTable (), r);
-        
+
         logAction (db, user, id, VocAction.i.ALTER);
-        
-    });}    
-    
+
+    });}
+
     @Override
     public JsonObject doAnnul (String id, User user) {return doAction ((db) -> {
-                
+
         final Map<String, Object> r = HASH (
             EnTable.c.UUID,               id,
             AccountIndividualService.c.ID_CTR_STATUS,  VocGisStatus.i.PENDING_RQ_ANNULMENT.getId ()
         );
-                
+
         db.update (getTable (), r);
-        
+
         logAction (db, user, id, VocAction.i.ANNUL);
-        
-    });}    
-    
+
+    });}
+
 }

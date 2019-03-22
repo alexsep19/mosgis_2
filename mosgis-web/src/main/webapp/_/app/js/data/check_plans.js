@@ -28,6 +28,10 @@ define ([], function () {
             })
         })
 	}
+	
+	$_DO.import_check_plans = function (e) {
+		use.block ('check_plans_import')
+	}
 
     return function (done) {        
         

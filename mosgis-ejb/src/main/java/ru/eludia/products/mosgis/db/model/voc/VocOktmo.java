@@ -63,7 +63,7 @@ public class VocOktmo extends Table {
         
     }
     
-    public static OKTMORefType createOKTMORef(Long oktmo) throws SQLException {
+    public static OKTMORefType createOKTMORef(Long oktmo) {
         if (oktmo == null) {
             return null;
         }

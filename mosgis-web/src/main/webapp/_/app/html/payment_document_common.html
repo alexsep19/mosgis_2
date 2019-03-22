@@ -1,0 +1,157 @@
+<span>
+
+    <div>
+
+        <div class="w2ui-page page-0 page-1">
+
+        	<style>
+
+        		.w2ui-field > label {
+        			width: 300px;
+        			margin-right: 10px;
+        		}
+
+        		.w2ui-field input {
+        			width: 100px !important;
+        		}
+
+        		.w2ui-field input.dt {
+        			width: 70px !important;
+        		}
+
+        	</style>
+			<center>
+        	<table border=0 cellpadding=0 cellspacing=0 style="min-width:850px;">
+
+        		<tr>
+
+					<td style="min-width:520px;" width=1 valign=top>
+
+							<div class="w2ui-field">
+								<label>№ документа</label>
+								<div>
+									<input name=paymentdocumentnumber maxlength=30>
+									за <span data-text=month_label/> <span data-text=year/> г.
+								</div>
+							</div>
+
+							<div class="w2ui-field">
+								<label>Оплачено в периоде</label>
+								<div>
+									<input name=advancebllingperiod maxlength=13> руб.
+								</div>
+							</div>
+
+							<div class="w2ui-field" title="Субсидии, компенсации и иные меры соц. поддержки граждан">
+								<label>Субсидии/компенсации</label>
+								<div>
+									<input name=subsidiescompensation_ maxlength=13> руб.
+								</div>
+							</div>
+
+							<div class="w2ui-field" title="Итого к оплате за расчетный период всего">
+								<label><b>Сумма к оплате за период</b></label>
+								<div>
+									<input name=totalpayablebypd> руб.
+								</div>
+							</div>
+
+							<div class="w2ui-field">
+								<label>Оплачено по документу</label>
+								<div>
+									<input name=paidcash maxlength=13> руб.
+								</div>
+							</div>
+<!--
+							<div class="w2ui-field" title="Сумма к оплате за расчетный период по услугам">
+								<label>К оплате по услугам</label>
+								<div>
+									<input name=totalpayablebychargeinfo maxlength=13> руб.
+								</div>
+							</div>
+-->
+
+					</td>
+
+					<td style="min-width:520px;" valign=top>
+
+
+							<div class="w2ui-field">
+								<div style="margin-left:0">
+									<input name=sign style="width:110px!important;margin-left:45px;">
+									за предыдущие периоды
+									<input name=debtpreviousperiods maxlength=13 style="margin-left:3px"> руб.
+								</div>
+							</div>
+
+							<div class="w2ui-field">
+								<label>Дата последнего учтенного платежа</label>
+								<div>
+									<input name=paymentstaken_dt placeholder="" class=dt>
+								</div>
+							</div>
+
+							<div class="w2ui-field" title="Итого к оплате по неустойкам и судебным издержкам">
+								<label>Неустойки и судебные издержки</label>
+								<div>
+									<input name=totalbypenaltiesandcourtcosts maxlength=13> руб.
+								</div>
+							</div>
+
+							<div class="w2ui-field" title="Итого к оплате за расчетный период c учетом задолженности/переплаты">
+								<label><b>Задолженность с учётом прошлых периодов</b></label>
+								<div>
+									<input name=totalpayablebypdwith_da maxlength=13> руб.
+								</div>
+							</div>
+
+							<div class="w2ui-field">
+								<label>Дата последней оплаты</label>
+								<div>
+									<input name=dateoflastreceivedpayment placeholder="" class=dt>
+								</div>
+							</div>
+
+					</td>
+
+					<td valign=top>
+
+						<table border=0 cellpadding=0 cellspacing=0 width=100% class=sync>
+
+							<tr>
+								<td>Статус:</td>
+								<td>
+									<span data-text=status_label />
+									<span data-text=err_text />
+								</td>
+							</tr>
+<!--
+							<tr data-on=err_text>
+								<th colspan=2 data-text=err_text></th>
+							</tr>
+-->
+						</table>
+
+					</td>
+
+        		</tr>
+
+        	</table>
+			</center>
+
+        </div>
+
+        <div class="w2ui-buttons">
+        	<span>
+				<button class=w2ui-btn name=edit    data-on=__read_only>Редактировать</button>
+				<button class=w2ui-btn name=update  data-off=__read_only>Сохранить</button>
+				<button class=w2ui-btn name=cancel  data-off=__read_only>Отменить</button>
+				<button class=w2ui-btn name=delete  data-on=__read_only>Удалить</button>
+				<button class=w2ui-btn name=approve data-on=__read_only>Разместить</button>
+				<button class=w2ui-btn name=alter   data-on=__read_only>Изменить</button>
+            </span>
+        </div>
+
+    </div>
+
+</span>

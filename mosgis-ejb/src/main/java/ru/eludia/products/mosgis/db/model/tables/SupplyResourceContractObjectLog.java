@@ -1,9 +1,9 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
 import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.LogTable;
+import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 
-public class SupplyResourceContractObjectLog extends LogTable {
+public class SupplyResourceContractObjectLog extends GisWsLogTable {
 
     public SupplyResourceContractObjectLog () {
 

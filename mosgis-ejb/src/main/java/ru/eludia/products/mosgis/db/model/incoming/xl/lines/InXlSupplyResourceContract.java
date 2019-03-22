@@ -394,7 +394,7 @@ public class InXlSupplyResourceContract extends EnTable {
 	r.put(SupplyResourceContract.c.DDT_M_START_NXT.lc(), toBool(row, 31));
 
 	r.put(SupplyResourceContract.c.DDT_M_END.lc(), toDeadlineNum(row, 32));
-	r.put(SupplyResourceContract.c.DDT_M_START_NXT.lc(), toBool(row, 33));
+	r.put(SupplyResourceContract.c.DDT_M_END_NXT.lc(), toBool(row, 33));
     }
 
     public InXlSupplyResourceContract () {

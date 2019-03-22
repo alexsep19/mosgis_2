@@ -9,11 +9,13 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import ru.eludia.base.DB;
+import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.View;
 import ru.eludia.base.model.Type;
+import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 
 public class Nsi2 extends View {
@@ -129,6 +131,13 @@ public class Nsi2 extends View {
                 .add ("label", label)
             .build ();
         }
+        
+        private JsonObject toGeneralNeedsJsonObject () {
+            return Json.createObjectBuilder ()
+                .add ("id",    code)
+                .add ("label", label)
+            .build ();
+        }
 
         public static JsonArray toMeteringJsonArray () {            
             JsonArrayBuilder builder = Json.createArrayBuilder ();                    
@@ -144,12 +153,35 @@ public class Nsi2 extends View {
             return builder.build ();            
         }
         
-        private static JsonArray meteringJsonArray = i.toMeteringJsonArray ();
+        public static JsonArray toGeneralNeedsJsonArray () {
+            JsonArrayBuilder builder = Json.createArrayBuilder ();
+                builder.add (COLD_WATER.toGeneralNeedsJsonObject ());
+                builder.add (HOT_WATER.toGeneralNeedsJsonObject ());
+                builder.add (POWER.toGeneralNeedsJsonObject ());
+                builder.add (WASTE_WATER.toGeneralNeedsJsonObject ());
+            return builder.build ();
+        }
         
-        public  static final void addMeteringTo (JsonObjectBuilder job) {
+        private static JsonArray meteringJsonArray = i.toMeteringJsonArray ();
+        private static JsonArray generalNeedsJsonArray = i.toGeneralNeedsJsonArray ();
+        
+        public static final void addMeteringTo (JsonObjectBuilder job) {
             job.add ("vc_nsi_2", meteringJsonArray);
         }        
-                
+        
+        public static final void addGeneralNeedsTo (JsonObjectBuilder job) {
+            job.add ("parents", generalNeedsJsonArray);
+        }        
+                        
     }        
+    
+    public static Select getVocSelect () {
+        
+        return ModelHolder.getModel ().select (Nsi2.class, "AS vc_nsi_2"
+            , c.CODE.lc () + " AS id"
+            , c.LABEL.lc ()
+        ).orderBy (c.LABEL);
+        
+    }    
 
 }

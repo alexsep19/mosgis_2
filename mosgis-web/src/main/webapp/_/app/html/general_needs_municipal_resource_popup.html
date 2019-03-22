@@ -1,0 +1,64 @@
+<span
+	data-popup-width=620
+	data-popup-height=225
+	data-popup-title='НСИ 337'
+>
+
+	<style>
+
+        label[data-block-name=general_needs_municipal_resource_popup] {
+        	width: 170px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=general_needs_municipal_resource_popup] {
+        	width: 170px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form">
+
+        <div class="w2ui-page page-0" style="height:280px">
+
+            <div class="w2ui-field">
+                <label>Раздел</label>
+                <div>
+                	<input name=parentcode style="margin-right:10px">
+                	№ п/п
+                	<input name=sortorder maxlength=3>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Наименование</label>
+                <div>
+                	<input name=generalmunicipalresourcename maxlength=255>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Вид коммунального ресурса</label>
+                <div>
+                	<input name=code_vc_nsi_2>
+                	ед. изм.
+                	<input name=okei>
+                </div>
+            </div>
+<!--
+            <div class="w2ui-field">
+                <label>Единица измерения</label>
+                <div>
+                	<input name=okei>
+                </div>
+            </div>
+-->
+        </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>

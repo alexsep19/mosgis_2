@@ -65,6 +65,15 @@ define ([], function () {
                                 it._can.delete = 1
                         }
                         
+                        switch (it.id_ctr_status) {
+                            case 11:
+                            case 40:
+                            case 34:
+                            case 42:
+                            case 43:
+                                it._can.create_payment_documents = 1
+                        }
+                        
                 }            
                 
                 it._can.update = it._can.edit

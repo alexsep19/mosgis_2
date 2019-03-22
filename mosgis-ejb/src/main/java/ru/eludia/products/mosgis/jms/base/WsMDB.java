@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -12,8 +11,6 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
-import javax.json.Json;
-import javax.json.JsonObject;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -68,24 +65,6 @@ public abstract class WsMDB extends UUIDMDB<WsMessages>{
         }
         
     }
-    
-    protected JsonObject toJsonObject (Object dom) {
-        
-        if (dom == null) throw new IllegalArgumentException ("null!");
-        
-        StringWriter sw = new StringWriter ();
-        
-        try {
-            Marshaller m = getJAXBContext().createMarshaller ();
-            m.setProperty ("eclipselink.media-type", "application/json");
-            m.marshal (dom, sw);
-            return Json.createReader (new StringReader (sw.toString ())).readObject ();
-        }
-        catch (Exception ex) {
-            throw new IllegalArgumentException ("Cannot reserialize " + dom, ex);
-        }
-                            
-    }    
     
     @Override
     protected void handleRecord(DB db, UUID uuid, Map<String, Object> r) throws SQLException {

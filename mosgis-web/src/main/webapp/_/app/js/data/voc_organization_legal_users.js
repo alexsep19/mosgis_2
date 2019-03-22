@@ -25,8 +25,8 @@ define ([], function () {
         var grid = w2ui [e.target]
         $_SESSION.set ('record', grid.get (e.recid))
         use.block ('voc_user_popup')
-    }    
-
+    }  
+    
     return function (done) {        
         
         var layout = w2ui ['topmost_layout']
@@ -34,7 +34,7 @@ define ([], function () {
         if (layout) layout.unlock ('main')
         
         query ({type: 'voc_users', part: 'vocs', id: undefined}, {}, function (data) {
-        
+
             done (data)
         
         }) 

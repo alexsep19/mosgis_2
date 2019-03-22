@@ -8,34 +8,23 @@ define ([], function () {
 
             show: {
                 toolbar: true,
-                toolbarAdd: true,
-                toolbarEdit: true,
-                toolbarDelete: true,
+                toolbarAdd: $_USER.role.admin,
+                toolbarEdit: $_USER.role.admin,
+                toolbarDelete: $_USER.role.admin,
                 footer: true,
             },     
-/*            
-            toolbar: {
             
-                items: [
-                    {type: 'button', id: 'import', caption: 'Импорт из ГИС ЖКХ...', onClick: $_DO.import_voc_organizations},
-                ],
-                
-            }, 
-
             searches: [            
-                {field: 'ogrn',      caption: 'ОГРН(ИП)',            type: 'text', operator: 'is', operators: ['is']},
-                {field: 'label_uc',  caption: 'Наименование / ФИО',  type: 'text'},
-                {field: 'inn',       caption: 'ИНН',                 type: 'text', operator: 'is', operators: ['is']},
-                {field: 'kpp',       caption: 'КПП',                 type: 'text', operator: 'is', operators: ['is']},
-                {field: 'code_vc_nsi_20', caption: 'Полномочия',     type: 'enum', options: {items: data.vc_nsi_20.items}},
-                {field: 'id_type', caption: 'Типы',     type: 'enum', options: {items: data.vc_organization_types.items}},
-            ],
-
-*/            
+                {field: 'is_locked', caption: 'Блокировка', type: 'enum', options: {items: [
+                    {id: "0", text: "Активные"},
+                    {id: "1", text: "Заблокированные"},
+                ]}},
+            ].filter (not_off),    
 
             columns: [                
                 {field: 'label', caption: 'ФИО',    size: 100},
                 {field: 'login', caption: 'login',  size: 100},
+                {field: 'lockreason', caption: 'Причина запрета',  size: 100, hidden: true},
             ],
             
             postData: {data: {uuid_org: $_REQUEST.id}},
@@ -45,12 +34,16 @@ define ([], function () {
             onAdd:      $_DO.create_voc_organization_legal_users,
             
             onEdit:     $_DO.edit_voc_organization_legal_users,            
-            onDblClick: $_DO.edit_voc_organization_legal_users,
+            onDblClick: !$_USER.role.admin ? null : $_DO.edit_voc_organization_legal_users,
 
             onDelete:   $_DO.delete_voc_organization_legal_users,
-
+            
+            onRefresh: function (e) {e.done (color_data_mandatory)},
+            onColumnOnOff: function (e) {e.done (color_data_mandatory)},
+            
         }).refresh ();
 
     }
+
 
 })

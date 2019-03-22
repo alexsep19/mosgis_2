@@ -13,6 +13,8 @@ import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 
 public class Account extends EnTable {
 
+    public static final String TABLE_NAME = "tb_accounts";
+
     public enum c implements EnColEnum {
         
         UUID_ORG               (VocOrganization.class, null, "Организация, которая создала данный счёт"),
@@ -52,11 +54,7 @@ public class Account extends EnTable {
         
         ;
 
-        @Override
-        public Col getCol () {return col;}
-        private Col col;        
-        private c (Type type, Object... p) {col = new Col (this, type, p);}
-        private c (Class c,   Object... p) {col = new Ref (this, c, p);}
+        @Override public Col getCol () {return col;} private Col col; private c (Type type, Object... p) {col = new Col (this, type, p);} private c (Class c,   Object... p) {col = new Ref (this, c, p);}
         
         @Override
         public boolean isLoggable () {
@@ -74,7 +72,7 @@ public class Account extends EnTable {
 
     public Account () {
         
-        super  ("tb_accounts", "Лицевые счета");
+        super  (TABLE_NAME, "Лицевые счета");
         
         cols   (c.class);        
         

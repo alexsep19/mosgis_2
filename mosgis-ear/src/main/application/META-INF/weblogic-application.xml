@@ -14,6 +14,12 @@
     </module>
     
     <module>
+        <name>Workflow-general-needs-municipal-resource</name>
+    	<type>JMS</type>
+        <path>META-INF/mosgismodule-general-needs-municipal-resource-jms.xml</path>        
+    </module>
+    
+    <module>
         <name>Workflow-working-plans</name>
         <type>JMS</type>
         <path>META-INF/mosgismodule-working-plans-jms.xml</path>
@@ -74,6 +80,12 @@
     </module>
 
     <module>
+	<name>Workflow-legal-acts</name>
+	<type>JMS</type>
+	<path>META-INF/mosgismodule-legal-acts-jms.xml</path>
+    </module>
+
+    <module>
         <name>Workflow-metering-devices</name>
         <type>JMS</type>
         <path>META-INF/mosgismodule-metering-devices-jms.xml</path>
@@ -113,6 +125,12 @@
         <name>Workflow-overhaul-regional-program</name>
         <type>JMS</type>
         <path>META-INF/mosgismodule-overhaul-regional-programs-jms.xml</path>
+    </module>
+
+    <module>
+        <name>Workflow-inspection</name>
+        <type>JMS</type>
+        <path>META-INF/mosgismodule-inspection-jms.xml</path>
     </module>
     
 </weblogic-application>

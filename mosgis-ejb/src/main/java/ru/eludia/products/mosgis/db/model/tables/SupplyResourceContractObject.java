@@ -2,25 +2,21 @@ package ru.eludia.products.mosgis.db.model.tables;
 
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
-import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
-import static ru.eludia.base.model.Type.DATE;
-import static ru.eludia.base.model.Type.STRING;
-import static ru.eludia.base.model.Type.NUMERIC;
-import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Num;
-import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
-import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustomerType;
-import ru.eludia.products.mosgis.db.model.voc.VocOkei;
+import ru.eludia.products.mosgis.db.model.voc.VocUnom;
 
 public class SupplyResourceContractObject extends EnTable {
 
+    public static final String TABLE_NAME = "tb_sr_ctr_obj";
+
     public enum c implements EnColEnum {
+        
 	UUID_XL               (InXlFile.class, "Файл импорта"),
 
 	UUID_SR_CTR           (SupplyResourceContract.class, "Договор"),
@@ -74,7 +70,7 @@ public class SupplyResourceContractObject extends EnTable {
 
     public SupplyResourceContractObject () {
 
-        super ("tb_sr_ctr_obj", "Объект жилищного фонда договора РСО");
+        super (TABLE_NAME, "Объект жилищного фонда договора РСО");
 
         cols  (c.class);
 
@@ -85,8 +81,21 @@ public class SupplyResourceContractObject extends EnTable {
 	trigger("BEFORE INSERT OR UPDATE", ""
 	    + "DECLARE"
 	    + " PRAGMA AUTONOMOUS_TRANSACTION; "
+	    + " cnt NUMBER; "
+	    + " hex VARCHAR2 (32); "
 	    + "BEGIN "
 	    + " IF :NEW.is_deleted = 0 THEN BEGIN "
+                
+                + "SELECT COUNT(*) INTO cnt FROM " + VocBuilding.TABLE_NAME + " WHERE :NEW.fiashouseguid = houseguid;"
+                + "IF cnt=0 THEN BEGIN "
+                    + "hex := RAWTOHEX (:NEW.fiashouseguid); "
+                    + "IF REGEXP_LIKE (hex, '^\\d+$') THEN BEGIN "
+                        + "SELECT COUNT(*), MIN (fiashouseguid) INTO cnt, :NEW.fiashouseguid FROM " + VocUnom.TABLE_NAME + " WHERE 0+hex = unom;"
+                        + "IF cnt>1 THEN raise_application_error (-20000, 'Не удалось однозначно определить FiasHouseGUID по UNOM'); END IF;"
+                    + "END; END IF;"
+                    + "IF cnt=0 THEN raise_application_error (-20000, 'Неизвестное значение FiasHouseGUID (UNOM)'); END IF;"                                
+                + "END; END IF;"
+                
 		+ " FOR i IN ("
 		    + "SELECT "
 		    + " o.uuid_premise     uuid_premise"

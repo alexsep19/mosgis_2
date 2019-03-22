@@ -48,9 +48,7 @@ define ([], function () {
 
                 if (this.class != t.clazz) return
 
-                if (t.code_vc_nsi_30 != this.code_vc_nsi_30) return
-
-                if (t.code_vc_nsi_30)
+                if (t.code_vc_nsi_30 && (t.code_vc_nsi_30 != this.code_vc_nsi_30)) return
 
                 result.push ({
                     id: t.id + '_' + this.id,
@@ -75,8 +73,8 @@ define ([], function () {
                 mask |= [1 << (this.code_vc_nsi_2 - 1)]
             })
             
-            data.vc_nsi_2.items = data.vc_nsi_2.items.filter (function (i) {return i.id & mask})
-            
+            data.vc_nsi_2.items = data.vc_nsi_2.items.filter (function (i) {return (i.id & mask) == i.id})
+
             if (!data.vc_nsi_2.items.length) die ('foo', 'Ваша организация не предоставляет ни одной услуги, связанной с коммунальными ресурсами, для которых предусмотрена установка приборов учёта. Проверьте, пожалуйста, полностью ли оформлен ваш договор управления.')
             
             data.record.mask_vc_nsi_2 = data.vc_nsi_2.items [0].id
@@ -88,8 +86,8 @@ define ([], function () {
     }
     
     function load_ca_nsi2_and_show_popup (data, done) {
-darn (333)
-        query ({type: 'charter_object_services', id: null}, {limit:10000, offset:0, search: [{field: "uuid_charter_object", operator: "is", value: data.cach.uuid}]}, function (d) {
+
+          query ({type: 'charter_object_services', id: null}, {limit:10000, offset:0, search: [{field: "uuid_charter_object", operator: "is", value: data.cach.uuid}]}, function (d) {
         
             var mask = 0
         
@@ -97,7 +95,7 @@ darn (333)
                 mask |= [1 << (this.code_vc_nsi_2 - 1)]
             })
             
-            data.vc_nsi_2.items = data.vc_nsi_2.items.filter (function (i) {return i.id & mask})
+            data.vc_nsi_2.items = data.vc_nsi_2.items.filter (function (i) {return (i.id & mask) == i.id})
             
             if (!data.vc_nsi_2.items.length) die ('foo', 'Ваша организация не предоставляет ни одной услуги, связанной с коммунальными ресурсами, для которых предусмотрена установка приборов учёта. Проверьте, пожалуйста, полностью ли оформлен ваш договор управления.')
             
@@ -125,7 +123,7 @@ darn (333)
                 mask |= [1 << (this.code_vc_nsi_2 - 1)]
             })
             
-            data.vc_nsi_2.items = data.vc_nsi_2.items.filter (function (i) {return i.id & mask})
+            data.vc_nsi_2.items = data.vc_nsi_2.items.filter (function (i) {return (i.id & mask) == i.id})
             
             if (!data.vc_nsi_2.items.length) die ('foo', 'Ваша организация не поставляет в этот дом ни одного ресурса, для которого предусмотрена установка приборов учёта. Проверьте, пожалуйста, полностью ли оформлен ваш договор ресурсоснабжения.')
             

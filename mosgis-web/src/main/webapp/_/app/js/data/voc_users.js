@@ -29,7 +29,24 @@ define ([], function () {
         $_SESSION.set ('record', grid.get (e.recid))
         use.block ('voc_user_popup')
     }    
+    $_DO.lock_voc_user = function (e) {
+        $_SESSION.set ('record', {})
+        use.block ('lock_voc_user_popup')
+    }    
 
+    $_DO.unlock_voc_user = function (e) {
+        
+        var grid = w2ui ['voc_organizations_grid']
+        var id = grid.getSelection () [0]
+        
+        query ({        
+            type:   'voc_users', 
+            id:     id,
+            action: 'unlock',            
+        }, {}, reload_page)
+        
+    } 
+    
     return function (done) {        
         
         var layout = w2ui ['rosters_layout']
