@@ -39,12 +39,26 @@ public class GeneralNeedsMunicipalResourceLog extends GisWsLogTable {
         );
         
     }
-    
+        
     public static ImportGeneralNeedsMunicipalResourceRequest toImportGeneralNeedsMunicipalResourceRequest (Map<String, Object> r) {
+
         final ImportGeneralNeedsMunicipalResourceRequest result = new ImportGeneralNeedsMunicipalResourceRequest ();
-        result.getTopLevelMunicipalResource ().add (toTopLevelMunicipalResource (r));
+
+        if (DB.ok (r.get ("is_deleted"))) {
+            result.getDeleteGeneralMunicipalResource ().add (toDeleteGeneralMunicipalResource (r));
+        }
+        else {
+            result.getTopLevelMunicipalResource ().add (toTopLevelMunicipalResource (r));
+        }
+        
         return result;
+        
     }
+    
+    private static ImportGeneralNeedsMunicipalResourceRequest.DeleteGeneralMunicipalResource toDeleteGeneralMunicipalResource (Map<String, Object> r) {
+        final ImportGeneralNeedsMunicipalResourceRequest.DeleteGeneralMunicipalResource result = DB.to.javaBean (ImportGeneralNeedsMunicipalResourceRequest.DeleteGeneralMunicipalResource.class, r);
+        return result;
+    }    
     
     private static ImportGeneralNeedsMunicipalResourceRequest.TopLevelMunicipalResource toTopLevelMunicipalResource (Map<String, Object> r) {
         final ImportGeneralNeedsMunicipalResourceRequest.TopLevelMunicipalResource result = DB.to.javaBean (ImportGeneralNeedsMunicipalResourceRequest.TopLevelMunicipalResource.class, r);

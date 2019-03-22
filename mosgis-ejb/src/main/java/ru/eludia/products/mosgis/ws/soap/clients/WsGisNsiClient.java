@@ -180,5 +180,4 @@ logger.info ("rq = " + rq);
         return getPort (orgPPAGuid, messageGUID).importGeneralNeedsMunicipalResource (GeneralNeedsMunicipalResourceLog.toImportGeneralNeedsMunicipalResourceRequest (r)).getAck ();
     }
     
-    
 }
