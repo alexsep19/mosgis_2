@@ -19,7 +19,10 @@ public class GeneralNeedsMunicipalResource extends EnTable {
         UUID_ORG                     (VocOrganization.class, null,  "Организация, которая создала данную запись"),
 
         PARENTCODE                   (Type.NUMERIC, 1,              "Код родительской записи верхнего уровня"),
+        
         GENERALMUNICIPALRESOURCENAME (Type.STRING,  1000,    null,  "Наименование главного коммунального ресурса"),
+        LABEL_UC                     (Type.STRING,           new Virt  ("UPPER(\"GENERALMUNICIPALRESOURCENAME\")"), "НАИМЕНОВАНИЕ"),
+        
         CODE_VC_NSI_2                (Type.STRING,  20,      null,  "Вид коммунального ресурса (НСИ 2)"),
 
         OKEI                         (VocOkei.class,                "Единицы измерения (ОКЕИ)"),
