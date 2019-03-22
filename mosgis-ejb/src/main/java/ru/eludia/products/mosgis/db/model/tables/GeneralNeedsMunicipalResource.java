@@ -27,23 +27,26 @@ public class GeneralNeedsMunicipalResource extends EnTable {
 
         ELEMENTGUID                  (Type.UUID,             null,  "Идентификатор существующего элемента справочника"),
         
+        ID_LOG                       (GeneralNeedsMunicipalResourceLog.class, "Последнее событие редактирования"),
+        
         ID_CTR_STATUS                (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения mosgis"),
         ID_CTR_STATUS_GIS            (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения ГИС ЖКХ"),        
         ;
 
         @Override public Col getCol () {return col;} private Col col; private c (Type type, Object... p) {col = new Col (this, type, p);} private c (Class c,   Object... p) {col = new Ref (this, c, p);}
-        
+
         @Override
         public boolean isLoggable () {
+
             switch (this) {
-//                case ID_LOG:
-//                case ID_TYPE:
-//                case IS_CUSTOMER_ORG:
-//                    return false;
+                case UUID_ORG:
+                case ID_LOG:
+                    return false;
                 default:
                     return true;
             }
-        }        
+
+        }
 
     }
 
