@@ -57,6 +57,7 @@ public class GeneralNeedsMunicipalResourceLog extends GisWsLogTable {
     
     private static ImportGeneralNeedsMunicipalResourceRequest.DeleteGeneralMunicipalResource toDeleteGeneralMunicipalResource (Map<String, Object> r) {
         final ImportGeneralNeedsMunicipalResourceRequest.DeleteGeneralMunicipalResource result = DB.to.javaBean (ImportGeneralNeedsMunicipalResourceRequest.DeleteGeneralMunicipalResource.class, r);
+        result.setTransportGUID (UUID.randomUUID ().toString ());
         return result;
     }    
     

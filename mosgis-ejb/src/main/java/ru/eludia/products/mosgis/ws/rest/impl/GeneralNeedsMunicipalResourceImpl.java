@@ -37,6 +37,7 @@ public class GeneralNeedsMunicipalResourceImpl extends BaseCRUD<GeneralNeedsMuni
         switch (action) {
             case CREATE:
             case UPDATE:
+            case DELETE:
                 return queue;
             default:
                 return null;
