@@ -85,8 +85,8 @@ public class GeneralNeedsMunicipalResourceImpl extends BaseCRUD<GeneralNeedsMuni
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
             .toMaybeOne (GeneralNeedsMunicipalResourceLog.class).on ()
             .toMaybeOne (OutSoap.class,       "err_text").on ()
-            .orderBy (GeneralNeedsMunicipalResource.c.PARENTCODE)
-            .orderBy (GeneralNeedsMunicipalResource.c.SORTORDER)
+            .orderBy ("root." + GeneralNeedsMunicipalResource.c.PARENTCODE.lc ())
+            .orderBy ("root." + GeneralNeedsMunicipalResource.c.SORTORDER.lc ())
             .limit (p.getInt ("offset"), p.getInt ("limit"));
         
         JsonObject data = p.getJsonObject ("data");

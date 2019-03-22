@@ -61,6 +61,11 @@ define ([], function () {
                 id: 'vc_oh_wk_types',
                 text: 'Вид работ капитального ремонта',
             })
+            
+            if (one_of_roles (1, 19, 20, 21, 22, 36, 2)) org_vocs.push ({
+                id: 'general_needs_municipal_resources',
+                text: '337. Потребляемые ком. ресурсы',
+            })
 
             if (org_vocs.length) data.vc_nsi_list_group.unshift ({
                 name: '_ORG',
