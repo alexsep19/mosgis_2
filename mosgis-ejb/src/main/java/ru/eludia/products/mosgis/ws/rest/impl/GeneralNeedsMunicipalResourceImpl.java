@@ -13,6 +13,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi2;
 import ru.eludia.products.mosgis.rest.User;
@@ -85,6 +86,7 @@ public class GeneralNeedsMunicipalResourceImpl extends BaseCRUD<GeneralNeedsMuni
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
             .toMaybeOne (GeneralNeedsMunicipalResourceLog.class).on ()
             .toMaybeOne (OutSoap.class,       "err_text").on ()
+            .toOne      (VocOrganization.class, "AS org", "label").on ("root.uuid_org=org.uuid")
             .orderBy ("root." + GeneralNeedsMunicipalResource.c.PARENTCODE.lc ())
             .orderBy ("root." + GeneralNeedsMunicipalResource.c.SORTORDER.lc ())
             .limit (p.getInt ("offset"), p.getInt ("limit"));
@@ -123,6 +125,8 @@ public class GeneralNeedsMunicipalResourceImpl extends BaseCRUD<GeneralNeedsMuni
     @Override
     public JsonObject getVocs () {return fetchData ((db, job) -> {
         
+        final MosGisModel m = ModelHolder.getModel ();
+
         VocGisStatus.addTo (job);
         VocAction.addTo (job);
         Nsi2.i.addGeneralNeedsTo (job);
@@ -130,6 +134,11 @@ public class GeneralNeedsMunicipalResourceImpl extends BaseCRUD<GeneralNeedsMuni
         db.addJsonArrays (job
             , Nsi2.getVocSelect ()
             , VocOkei.getVocSelect ()
+            , m
+                .select (VocOrganization.class, "uuid AS id", "label")                    
+                .orderBy ("label")
+                .and ("uuid", m.select (getTable (), "uuid_org").where ("is_deleted", 0))
+                
         );
 
     });}

@@ -48,7 +48,7 @@ define ([], function () {
                     {id: "1", text: "Удалённые"},
                 ]}},
                 {field: 'id_ctr_status', caption: 'Статус синхронизации',     type: 'enum', options: {items: data.vc_gis_status.items}},
-//                {field: 'uuid_org', caption: 'Организации', type: 'enum', options: {items: data.vc_orgs.items}, off: !$_USER.role.admin},
+                {field: 'uuid_org', caption: 'Организации', type: 'enum', options: {items: data.vc_orgs.items}, off: !$_USER.role.admin},
             ].filter (not_off),
 
             columns: [      
