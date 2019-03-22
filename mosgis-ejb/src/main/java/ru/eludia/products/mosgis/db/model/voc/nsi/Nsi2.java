@@ -129,6 +129,13 @@ public class Nsi2 extends View {
                 .add ("label", label)
             .build ();
         }
+        
+        private JsonObject toGeneralNeedsJsonObject () {
+            return Json.createObjectBuilder ()
+                .add ("id",    code)
+                .add ("label", label)
+            .build ();
+        }
 
         public static JsonArray toMeteringJsonArray () {            
             JsonArrayBuilder builder = Json.createArrayBuilder ();                    
@@ -142,6 +149,15 @@ public class Nsi2 extends View {
                 builder.add (HEAT_WATER.toJsonObject ());
                 builder.add (WASTE_WATER.toJsonObject ());
             return builder.build ();            
+        }
+        
+        public static JsonArray toGeneralNeedsJsonArray () {
+            JsonArrayBuilder builder = Json.createArrayBuilder ();
+                builder.add (COLD_WATER.toGeneralNeedsJsonObject ());
+                builder.add (HOT_WATER.toGeneralNeedsJsonObject ());
+                builder.add (POWER.toGeneralNeedsJsonObject ());
+                builder.add (WASTE_WATER.toGeneralNeedsJsonObject ());
+            return builder.build ();
         }
         
         private static JsonArray meteringJsonArray = i.toMeteringJsonArray ();
