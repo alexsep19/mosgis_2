@@ -61,7 +61,7 @@ define ([], function () {
                 {field: 'code_vc_nsi_2',  caption: 'Ресурс',     size: 25, voc: data.vc_nsi_2},
                 {field: 'okei',  caption: 'Ед. изм.',     size: 10, voc: data.vc_okei},
 
-                {field: 'elementguid', caption: 'Код в ГИС ЖКХ', size: 10},
+                {field: 'uniquenumber', caption: 'Код в ГИС ЖКХ', size: 10},
                 {field: 'id_ctr_status',  caption: 'Статус',     size: 50, voc: data.vc_gis_status},
 
             ].filter (not_off),

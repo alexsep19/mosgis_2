@@ -32,7 +32,7 @@ import ru.gosuslugi.dom.schema.integration.nsi.GetStateResult;
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class GisPollGeneralNeedsMunicipalResourceMDB  extends GisPollMDB {
+public class GisPollExportGeneralNeedsMunicipalResourceMDB extends GisPollMDB {
 
     @EJB
     WsGisNsiClient wsGisNsiClient;
@@ -66,11 +66,16 @@ public class GisPollGeneralNeedsMunicipalResourceMDB  extends GisPollMDB {
             List<CommonResultType> importResult = state.getImportResult ();
             
             if (importResult == null || importResult.isEmpty ()) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
-            
+                        
             CommonResultType cr = importResult.get (0);
             
+            List<CommonResultType.Error> error = cr.getError ();
+
+            if (error != null && !error.isEmpty ()) throw new GisPollException (error.get (0));
+                    
             final Map<String, Object> h = statusHash (action.getOkStatus ());
             h.put (c.ELEMENTGUID.lc (), cr.getGUID ());
+            h.put (c.UNIQUENUMBER.lc (), cr.getUniqueNumber ());
             update (db, uuid, r, h);
 
             db.update (OutSoap.class, HASH (

@@ -30,7 +30,8 @@ public class GeneralNeedsMunicipalResource extends EnTable {
         SORTORDERNOTDEFINED          (Type.BOOLEAN,          new Virt  ("DECODE(\"SORTORDER\",NULL,1,0)"), "Порядок сортировки не задан"),
 
         ELEMENTGUID                  (Type.UUID,             null,  "Идентификатор существующего элемента справочника"),
-        
+        UNIQUENUMBER                 (Type.STRING,           null,  "Уникальный номер, присвоенный ГИС ЖКХ"),
+
         ID_LOG                       (GeneralNeedsMunicipalResourceLog.class, "Последнее событие редактирования"),
         
         ID_CTR_STATUS                (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения mosgis"),
@@ -65,9 +66,17 @@ public class GeneralNeedsMunicipalResource extends EnTable {
         trigger ("BEFORE INSERT OR UPDATE", ""
             
             + "BEGIN "
-                + " IF :NEW.is_deleted=0 THEN :NEW.ID_CTR_STATUS := " + VocGisStatus.i.PENDING_RQ_PLACING
-                + " ; ELSE :NEW.ID_CTR_STATUS := " + VocGisStatus.i.PENDING_RQ_CANCEL
-                + " ; END IF;"
+                
+                + " IF :NEW.ID_CTR_STATUS_GIS = 10 THEN BEGIN "
+                
+                    + " IF :NEW.is_deleted=0 THEN :NEW.ID_CTR_STATUS := " + VocGisStatus.i.PENDING_RQ_PLACING
+                    + " ; ELSE :NEW.ID_CTR_STATUS := " + VocGisStatus.i.PENDING_RQ_CANCEL
+                    + " ; END IF;"
+                        
+                + " END; END IF; "
+                            
+                + " :NEW.ID_CTR_STATUS_GIS := 10; "
+                        
             + "END;"
                     
         );

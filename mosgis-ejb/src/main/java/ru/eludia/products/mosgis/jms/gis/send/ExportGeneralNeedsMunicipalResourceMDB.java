@@ -28,7 +28,7 @@ import ru.gosuslugi.dom.schema.integration.nsi_service_async.Fault;
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class GeneralNeedsMunicipalResourceMDB extends GisExportMDB<GeneralNeedsMunicipalResourceLog> {
+public class ExportGeneralNeedsMunicipalResourceMDB extends GisExportMDB<GeneralNeedsMunicipalResourceLog> {
     
     @EJB
     WsGisNsiClient wsGisNsiClient;
@@ -60,7 +60,7 @@ public class GeneralNeedsMunicipalResourceMDB extends GisExportMDB<GeneralNeedsM
         
         r = GeneralNeedsMunicipalResourceLog.getForExport (db, uuid.toString ());
         
-        VocGisStatus.i status = VocGisStatus.i.forId (r.get ("r." + GeneralNeedsMunicipalResource.c.ID_CTR_STATUS.lc ()));
+        VocGisStatus.i status = VocGisStatus.i.forId (r.get (GeneralNeedsMunicipalResource.c.ID_CTR_STATUS.lc ()));
         
         GeneralNeedsMunicipalResource.Action action = GeneralNeedsMunicipalResource.Action.forStatus (status);        
         
