@@ -9,11 +9,13 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import ru.eludia.base.DB;
+import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.View;
 import ru.eludia.base.model.Type;
+import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 
 public class Nsi2 extends View {
@@ -161,11 +163,25 @@ public class Nsi2 extends View {
         }
         
         private static JsonArray meteringJsonArray = i.toMeteringJsonArray ();
+        private static JsonArray generalNeedsJsonArray = i.toGeneralNeedsJsonArray ();
         
-        public  static final void addMeteringTo (JsonObjectBuilder job) {
+        public static final void addMeteringTo (JsonObjectBuilder job) {
             job.add ("vc_nsi_2", meteringJsonArray);
         }        
-                
+        
+        public static final void addGeneralNeedsTo (JsonObjectBuilder job) {
+            job.add ("parents", generalNeedsJsonArray);
+        }        
+                        
     }        
+    
+    public static Select getVocSelect () {
+        
+        return ModelHolder.getModel ().select (Nsi2.class, "AS vc_nsi_2"
+            , c.CODE.lc () + " AS id"
+            , c.LABEL.lc ()
+        ).orderBy (c.LABEL);
+        
+    }    
 
 }
