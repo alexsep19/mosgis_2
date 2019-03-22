@@ -55,21 +55,14 @@ define ([], function () {
             
                 {field: 'org.label', caption: 'Организация', size: 100, off: !$_USER.role.admin},
 
-                {field: 'parentcode',  caption: 'Раздел',     size: 10, voc: data.parents},
+                {field: 'parentcode',  caption: 'Раздел',     size: 20, voc: data.parents},
                 {field: 'sortorder', caption: '№п/п', size: 5},
                 {field: 'generalmunicipalresourcename', caption: 'Наименование', size: 50},
                 {field: 'code_vc_nsi_2',  caption: 'Ресурс',     size: 25, voc: data.vc_nsi_2},
                 {field: 'okei',  caption: 'Ед. изм.',     size: 10, voc: data.vc_okei},
 
                 {field: 'elementguid', caption: 'Код в ГИС ЖКХ', size: 10},
-                {field: 'id_status',  caption: 'Статус',     size: 50, render: function (r, i, c, v) {
-                    var s = data.vc_async_entity_states [v]
-                    if (v == 30) {
-                        s = '<font color=red>' + s + '</font>: '
-                        s += r.out_soap.err_text
-                    }
-                    return s
-                }},
+                {field: 'id_ctr_status',  caption: 'Статус',     size: 50, voc: data.vc_gis_status},
 
             ].filter (not_off),
             
