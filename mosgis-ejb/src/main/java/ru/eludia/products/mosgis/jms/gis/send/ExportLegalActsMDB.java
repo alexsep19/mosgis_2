@@ -28,7 +28,7 @@ import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.uk_service_async.Fault;
 
 @MessageDriven(activationConfig = {
- @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inLegalActsQueue")
+ @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inExportLegalActsQueue")
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
@@ -151,8 +151,7 @@ public class ExportLegalActsMDB extends GisExportMDB<LegalActLog> {
 
                 GisRestStream out = new GisRestStream (
                     restGisFilesClient,
-//                    Context.UK, // FIXME: fix ExportLegalActsMDB.sendFileThenSoap context
-		    Context.HOMEMANAGEMENT,
+		    Context.CONTENTMANAGEMENT,
                     orgppaguid, 
                     r.get ("label").toString (), 
                     Long.parseLong (r.get ("len").toString ()),

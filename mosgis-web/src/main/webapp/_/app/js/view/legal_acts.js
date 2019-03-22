@@ -19,7 +19,7 @@ define ([], function () {
 
             show: {
                 toolbar: true,
-                toolbarAdd: $_USER.has_nsi_20(7, 10),
+                toolbarAdd: data._can.create,
                 footer: 1,
                 toolbarSearch: false
             },
@@ -27,8 +27,15 @@ define ([], function () {
             toolbar: {
 
                 items: [
+                    {
+                        type: 'button',
+                        id: 'importButton',
+                        caption: 'Импорт из ГИС ЖКХ',
+                        onClick: $_DO.import_legal_acts,
+                        icon: 'w2ui-icon-plus',
+                        off: !data._can.create
+                    },
                 ].filter (not_off),
-
             },
 
             textSearch: 'contains',

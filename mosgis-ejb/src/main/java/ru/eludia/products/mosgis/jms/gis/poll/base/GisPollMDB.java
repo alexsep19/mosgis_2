@@ -24,7 +24,7 @@ public abstract class GisPollMDB extends UUIDMDB<OutSoap> {
     protected void checkIfResponseReady (BaseAsyncResponseType rp) throws GisPollRetryException {
         
         final byte requestState = rp.getRequestState ();
-        
+
         if (requestState >= DONE.getId ()) return;
         
         logger.info ("requestState = " + requestState + ", retrying request");

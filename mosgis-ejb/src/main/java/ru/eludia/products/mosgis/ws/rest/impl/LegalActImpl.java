@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Base64;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
@@ -23,6 +24,7 @@ import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
+import java.util.UUID;
 import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.rest.api.LegalActLocal;
 import ru.eludia.products.mosgis.db.model.tables.LegalAct;
@@ -34,6 +36,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.incoming.InLegalAct;
 import ru.eludia.products.mosgis.db.model.tables.LegalActOktmo;
 import ru.eludia.products.mosgis.db.model.voc.VocLegalActLevel;
 import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
@@ -41,6 +44,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi237;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi324;
 import ru.eludia.products.mosgis.rest.User;
+import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
 import ru.eludia.products.mosgis.ws.rest.impl.tools.ComplexSearch;
 import ru.eludia.products.mosgis.ws.rest.impl.tools.Search;
@@ -50,8 +54,11 @@ import ru.eludia.products.mosgis.ws.rest.impl.tools.SimpleSearch;
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class LegalActImpl extends BaseCRUD<LegalAct> implements LegalActLocal  {
 
-    @Resource(mappedName = "mosgis.inLegalActsQueue")
+    @Resource(mappedName = "mosgis.inExportLegalActsQueue")
     Queue queue;
+
+    @Resource(mappedName = "mosgis.inImportLegalActsQueue")
+    Queue inImportLegalActsQueue;
 
     @Override
     protected Queue getQueue(VocAction.i action) {
@@ -268,14 +275,6 @@ public class LegalActImpl extends BaseCRUD<LegalAct> implements LegalActLocal  {
             .orderBy ("root.approvedate DESC")
         ;
 
-	JsonObject data = p.getJsonObject("data");
-
-	String k = LegalAct.c.UUID_ORG.lc();
-	String v = data.getString(k, null);
-	if (DB.ok(v)) {
-	    select.and(k, v);
-	}
-
 	applySearch(Search.from(p), select);
 
         db.addJsonArrays (job, select);
@@ -324,4 +323,31 @@ public class LegalActImpl extends BaseCRUD<LegalAct> implements LegalActLocal  {
 	VocAction.addTo(job);
 	VocGisStatus.addTo(job);
     });}
+
+    @Override
+    public JsonObject doImport(JsonObject p, User user) {
+
+	try (DB db = ModelHolder.getModel().getDb()) {
+
+	    String uuidOrg = user.getUuidOrg();
+
+	    if (uuidOrg == null) {
+		logger.warning("User has no org set, access prohibited");
+		throw new ValidationException("foo", "Отсутствует организация пользователя, доступ запрещен");
+	    }
+
+	    Map<String, Object> data = DB.to.Map(p.getJsonObject("data"));
+
+	    data.put(InLegalAct.c.UUID_ORG.lc(), uuidOrg);
+
+	    UUID uuid = (UUID) db.insertId(InLegalAct.class, data);
+
+	    UUIDPublisher.publish(inImportLegalActsQueue, uuid);
+
+	} catch (Exception ex) {
+	    Logger.getLogger(LegalAct.class.getName()).log(Level.SEVERE, null, ex);
+	}
+
+	return EMPTY_JSON_OBJECT;
+    }
 }

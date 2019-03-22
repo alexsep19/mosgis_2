@@ -1,6 +1,10 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.json.JsonString;
 import javax.json.JsonArray;
@@ -8,7 +12,9 @@ import ru.eludia.base.DB;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
+import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
+import ru.gosuslugi.dom.schema.integration.base.OKTMORefType;
 
 public class LegalActOktmo extends Table {
 
@@ -45,5 +51,49 @@ public class LegalActOktmo extends Table {
 	    )
 	    .orderBy("vc_oktmo.code")
 	;
+    }
+
+    public static List<Map<String, Object>> toHashList(List<OKTMORefType> oktmos) {
+
+	List<Map<String, Object>> result = new ArrayList<>();
+
+	for (OKTMORefType o : oktmos) {
+
+	    Map<String, Object> legalActOktmo = DB.HASH(
+		"code", o.getCode(),
+		"name", o.getName()
+	    );
+	    result.add(legalActOktmo);
+	}
+
+	return result;
+    }
+
+    public static void store(DB db, List<Map<String, Object>> oktmos) throws SQLException {
+
+	final Model m = ModelHolder.getModel();
+	final String code = VocOktmo.c.CODE.lc();
+	final String id = VocOktmo.c.ID.lc();
+
+	Map<Object, Map<String, Object>> oktmoIdx = db.getIdx(m.select(VocOktmo.class, code, id), code);
+
+	List<Map<String, Object>> result = new ArrayList<>();
+
+	for (Map<String, Object> i : oktmos) {
+
+	    if (i.get("oktmo") == null && i.get(code) != null) {
+		Map<String, Object> o = oktmoIdx.get(i.get(code));
+		if (o == null) {
+		    continue;
+		}
+		i.put("oktmo", o.get(id));
+	    }
+
+	    result.add(i);
+	}
+
+Logger.getLogger(LegalActOktmo.class.getName()).info(DB.to.json(result).toString());
+
+	db.upsert(LegalActOktmo.class, result, "uuid");
     }
 }
