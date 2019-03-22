@@ -73,6 +73,10 @@ public class VocSetting extends Table {
         WS_GIS_BILLS_TMT_CONN ("ws.gis.bills.timeout.connection", "Время ожидания подключения к сервису обмена сведениями о начислениях, взаиморасчетах ГИС ЖКХ (BillsServiceAsync), мс", "10000"),
         WS_GIS_BILLS_TMT_RESP ("ws.gis.bills.timeout.response", "Время ожидания подключения к сервису обмена сведениями о начислениях, взаиморасчетах ГИС ЖКХ (BillsServiceAsync), мс", "10000"),
         
+        WS_GIS_CAPITAL_REPAIR_URL      ("ws.gis.capital.repair.url", "Endpoint URL сервиса обмена сведениями о капитальных ремонтах ГИС ЖКХ (CapitalRepairServiceAsync)", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-capital-repair-programs-service/services/CapitalRepairAsync"),
+        WS_GIS_CAPITAL_REPAIR_TMT_CONN ("ws.gis.capital.repair.timeout.connection", "Время ожидания подключения к сервису обмена сведениями о капитальных ремонтах ГИС ЖКХ, мс", "10000"),
+        WS_GIS_CAPITAL_REPAIR_TMT_RESP ("ws.gis.capital.repair.timeout.response", "Время ожидания подключения к сервису обмена сведениями о капитальных ремонтах ГИС ЖКХ, мс", "10000"),
+        
         WS_GIS_INFRASTRUCTURES_URL      ("ws.gis.infrastructures.url", "Endpoint URL сервиса обмена сведениями об объектах коммунальной инфраструктуры ГИС ЖКХ (InfrastructureServiceAsync)", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-rki-service/services/InfrastructureAsync"),
         WS_GIS_INFRASTRUCTURES_TMT_CONN ("ws.gis.infrastructures.timeout.connection", "Время ожидания подключения к сервису обмена сведениями об объектах коммунальной инфраструктуры ГИС ЖКХ, мс", "10000"),
         WS_GIS_INFRASTRUCTURES_TMT_RESP ("ws.gis.infrastructures.timeout.response", "Время ожидания подключения к сервису обмена сведениями об объектах коммунальной инфраструктуры ГИС ЖКХ, мс", "10000"),

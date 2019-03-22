@@ -30,6 +30,7 @@ define ([], function () {
             var it = data.item
 
             it.doctype = data.vc_nsi_79[it.code_nsi_79]
+            it.dmy_date = dt_dmy (it.date_)
 
             it._can = {cancel: 1}
 

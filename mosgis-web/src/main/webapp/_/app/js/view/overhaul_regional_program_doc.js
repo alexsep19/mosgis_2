@@ -4,7 +4,7 @@ define ([], function () {
         
         var it = data.item
 
-        $('title').text (data.vc_nsi_79[it.code_nsi_79] + ' №' + it.number_ + ' от ' + it.date_)
+        $('title').text (data.vc_nsi_79[it.code_nsi_79] + ' №' + it.number_ + ' от ' + dt_dmy (it.date_))
         
         fill (view, it, $('#body'))
 

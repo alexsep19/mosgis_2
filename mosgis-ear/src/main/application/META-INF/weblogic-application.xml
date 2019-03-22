@@ -109,4 +109,10 @@
         <path>META-INF/mosgismodule-tariff-jms.xml</path>
     </module>
     
+    <module>
+        <name>Workflow-overhaul-regional-program</name>
+        <type>JMS</type>
+        <path>META-INF/mosgismodule-overhaul-regional-programs-jms.xml</path>
+    </module>
+    
 </weblogic-application>

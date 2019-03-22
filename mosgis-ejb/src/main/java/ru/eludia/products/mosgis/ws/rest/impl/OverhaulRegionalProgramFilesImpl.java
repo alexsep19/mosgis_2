@@ -6,6 +6,7 @@ import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Base64;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
@@ -17,9 +18,11 @@ import javax.ws.rs.WebApplicationException;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.AttachTable;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramFile;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.OverhaulRegionalProgramFilesLocal;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
@@ -39,12 +42,34 @@ public class OverhaulRegionalProgramFilesImpl extends BaseCRUD <OverhaulRegional
         db.begin ();
 
             Object id = db.insertId (getTable (), ((AttachTable) getTable ()).HASH (file));
-            //logAction (db, user, id, VocAction.i.CREATE);            
+            logAction (db, user, id, VocAction.i.CREATE);            
             job.add ("id", id.toString ());
 
         db.commit ();
 
     });}
+    
+    @Override
+    protected void logAction (DB db, User user, Object id, VocAction.i action) throws SQLException {
+
+        Table logTable = ModelHolder.getModel ().getLogTable (getTable ());
+
+        if (logTable == null) return;
+
+        String id_log = db.insertId (logTable, HASH (
+            "action", action,
+            "uuid_object", id,
+            "uuid_user", user == null ? null : user.getId ()
+        )).toString ();
+        
+        db.update (getTable (), HASH (
+            "uuid",      id,
+            "id_log",    id_log
+        ));
+
+//        publishMessage (action, id_log);
+
+    }
     
     @Override
     public JsonObject doUpdate (String id, JsonObject p, User user) {return doAction (db -> {

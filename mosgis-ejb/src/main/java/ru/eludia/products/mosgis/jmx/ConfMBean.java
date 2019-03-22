@@ -99,6 +99,13 @@ public interface ConfMBean {
     public int    getWsGisInfrastructureRespTimeout ();     
     public void   setWsGisInfrastructureRespTimeout (int i);
     
+    public String getWsGisCapitalRepairUrl ();
+    public void   setWsGisCapitalRepairUrl (String s);    
+    public int    getWsGisCapitalRepairConnTimeout ();     
+    public void   setWsGisCapitalRepairConnTimeout (int i);
+    public int    getWsGisCapitalRepairRespTimeout ();     
+    public void   setWsGisCapitalRepairRespTimeout (int i);
+    
     public String getGisIdOrganization ();
     public void   setGisIdOrganization (String s);
     

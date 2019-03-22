@@ -84,7 +84,7 @@ define ([], function () {
 
         var it = data.item
 
-        data.active_tab = localStorage.getItem ('overhaul_regional_program_doc_common.active_tab') || 'overhaul_regional_program_doc_common_log'
+        data.active_tab = localStorage.getItem ('overhaul_regional_program_common.active_tab') || 'overhaul_regional_program_common_log'
 
         data.__read_only = 1
                         

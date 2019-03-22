@@ -477,6 +477,37 @@ public class Conf implements ConfMBean, ConfLocal {
     public void setWsGisInfrastructureRespTimeout(int i) {
         setInt (VocSetting.i.WS_GIS_INFRASTRUCTURES_TMT_RESP, i);
     }
+    
+    @Override
+    public String getWsGisCapitalRepairUrl () {
+        return get (VocSetting.i.WS_GIS_CAPITAL_REPAIR_URL);
+    }
+    
+    @Override
+    public void setWsGisCapitalRepairUrl(String s) {
+        set (VocSetting.i.WS_GIS_CAPITAL_REPAIR_URL, s);
+        set (VocSetting.i.WS_GIS_URL_ROOT, "");
+    }
+    
+    @Override
+    public int getWsGisCapitalRepairConnTimeout() {
+        return getInt (VocSetting.i.WS_GIS_CAPITAL_REPAIR_TMT_CONN);
+    }
+
+    @Override
+    public void setWsGisCapitalRepairConnTimeout(int i) {
+        setInt (VocSetting.i.WS_GIS_CAPITAL_REPAIR_TMT_CONN, i);
+    }
+    
+    @Override
+    public int getWsGisCapitalRepairRespTimeout() {
+        return getInt (VocSetting.i.WS_GIS_CAPITAL_REPAIR_TMT_RESP);
+    }
+
+    @Override
+    public void setWsGisCapitalRepairRespTimeout(int i) {
+        setInt (VocSetting.i.WS_GIS_CAPITAL_REPAIR_TMT_RESP, i);
+    }
         
     @Override
     public String getWsGisFilesUrl () {

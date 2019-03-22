@@ -14,7 +14,8 @@ public class OverhaulRegionalProgramFile extends AttachTable {
     
     public enum c implements EnColEnum {
         
-        UUID_OH_REG_PR_DOC (OverhaulRegionalProgramDocument.class, "Документ региональной программы капитального ремонта")
+        UUID_OH_REG_PR_DOC (OverhaulRegionalProgramDocument.class, "Документ региональной программы капитального ремонта"),
+        ID_LOG             (OverhaulRegionalProgramFileLog.class,  "Послднее событие редактирования")
         
         ;
         
