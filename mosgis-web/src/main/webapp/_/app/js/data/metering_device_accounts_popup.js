@@ -30,6 +30,8 @@ define ([], function () {
             data.account_items = []
 
             $.each (d.root, function () {
+            
+                if (!it.uuid_premise && this.uuid_premise) return
                 
                 var id = this ['acc.uuid']
                 if (id in ids) return

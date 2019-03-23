@@ -49,7 +49,7 @@ define ([], function () {
                     tabs: {
                         tabs:    [
                             {id: 'metering_device_common_metering_values', caption: 'Показания'},
-                            {id: 'metering_device_common_accounts', caption: 'Лицевые счета', off: !it.uuid_premise},
+                            {id: 'metering_device_common_accounts', caption: 'Лицевые счета'},
                             {id: 'metering_device_metering_devices', caption: 'Связанные ПУ', off: it.notlinkedwithmetering},
                             {id: 'metering_device_common_log', caption: 'История изменений'},
                         ].filter (not_off),
