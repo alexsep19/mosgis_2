@@ -152,7 +152,7 @@ public class InLegalAct extends Table {
 	return (Get) ModelHolder.getModel().get(InLegalAct.class, uuid, "*")
 	    .toOne(VocOrganization.class, "orgppaguid AS ppa").on()
 	    .toOne(VocNsi237.class, "guid", "code").on("vc_nsi_237.code = '77'")
-	    .toOne(VocOktmo.class, "code").on("vc_oktmo.code = '45000000' AND vc_oktmo.section_code = '1'")
+	    .toOne(VocOktmo.class, "code").on("vc_oktmo.code = '" + VocOktmo.CODE_MOSCOW + "' AND vc_oktmo.section_code = '1'")
 	;
     }
 }
