@@ -20,6 +20,9 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.tables.PremiseUsageTarifOktmo;
+import ru.eludia.products.mosgis.db.model.voc.VocDifferentiation;
+import ru.eludia.products.mosgis.db.model.voc.VocDifferentiationOperator;
+import ru.eludia.products.mosgis.db.model.voc.VocDifferentiationValueKindType;
 import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.PremiseUsageTarifLocal;
@@ -141,15 +144,13 @@ public class PremiseUsageTarifImpl extends BaseCRUD<PremiseUsageTarif> implement
 
     @Override
     public JsonObject getVocs () {
-        
-        JsonObjectBuilder jb = Json.createObjectBuilder ();
 
-        VocAction.addTo (jb);
+	JsonObjectBuilder jb = Json.createObjectBuilder();
+
 	VocGisStatus.addTo(jb);
 	VocAction.addTo(jb);
-        
-        return jb.build ();
-        
+
+	return jb.build();
     }
 
     @Override
