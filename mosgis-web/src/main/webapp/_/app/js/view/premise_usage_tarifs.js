@@ -64,8 +64,8 @@ define ([], function () {
                 }},
                 {field: 'datefrom', caption: 'Дата начала действия', size: 30, render: _dt},
                 {field: 'dateto', caption: 'Дата окончания действия', size: 30, render: _dt},
-                {field: 'price', caption: 'Величина', size: 20},
-                {field: 'org.label', caption: 'Организация', size: 30},
+                {field: 'price', caption: 'Величина, руб./кв.метр', size: 20},
+                {field: 'org.label', caption: 'Организация', size: 50},
 
             ].filter (not_off),
 

@@ -32,9 +32,7 @@ define ([], function () {
 
                 it._can = {cancel: 1}
 
-                if (!it.is_deleted && it.uuid_org == $_USER.uuid_org) {
-
-                    it._can.edit_values = 1
+                if (!it.is_deleted && $_USER.has_nsi_20(7, 8, 10)) {
 
                     switch (it.id_ctr_status) {
                         case 10:
