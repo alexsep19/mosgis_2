@@ -22,7 +22,10 @@ public class OverhaulRegionalProgram extends EnTable {
         STARTYEAR           (Type.NUMERIC, 4, "Год начала периода реализации"),
         ENDYEAR             (Type.NUMERIC, 4, "Год окончания периода реализации"),
         
-        ID_LOG              (OverhaulRegionalProgramLog.class, "Последнее событие редактирования")
+        ID_LOG              (OverhaulRegionalProgramLog.class, "Последнее событие редактирования"),
+        
+        REGIONALPROGRAMGUID (Type.UUID,       null,                   "Идентификатор региональной программы"),
+        UNIQUENUMBER        (Type.STRING,     null,                   "Уникальный номер")
         
         ;
 

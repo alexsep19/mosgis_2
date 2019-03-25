@@ -35,10 +35,7 @@ public class RegionalProgramLogTest extends BaseTest {
         
         try (DB db = model.getDb ()) {
             
-            Map<String, Object> record = 
-                    db.getMap (logTable.getForExport(db, uuid));
-            
-            OverhaulRegionalProgramLog.addDocumentsForImport (db, record);
+            Map<String, Object> record = logTable.getForExport(db, uuid);
             
             System.out.println (record);
             

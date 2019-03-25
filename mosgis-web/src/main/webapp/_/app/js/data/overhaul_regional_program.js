@@ -38,7 +38,7 @@ define ([], function () {
                     case 10:
                     case 11:
                         it._can.edit = 1
-                        it._can.update = 1
+                        it._can.approve = 1
                 }
 
                 switch (it.id_orp_status) {
@@ -46,6 +46,15 @@ define ([], function () {
                     case 14:
                         it._can.delete = 1
                 }
+
+                switch (it.id_orp_status) {
+                    case 14:
+                    case 34:
+                    case 40:
+                        it._can.alter = 1
+                }
+
+                it._can.update = it._can.edit
 
             }
 
