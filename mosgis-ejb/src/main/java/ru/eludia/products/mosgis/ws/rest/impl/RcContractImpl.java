@@ -1,14 +1,20 @@
 package ru.eludia.products.mosgis.ws.rest.impl;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.json.JsonObject;
 import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.base.model.def.Bool;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.ActualBankAccount;
@@ -22,6 +28,15 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocRcContractServiceTypes;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.ActualSomeContractObject;
+import ru.eludia.products.mosgis.db.model.tables.CharterLog;
+import ru.eludia.products.mosgis.db.model.tables.CharterObject;
+import ru.eludia.products.mosgis.db.model.tables.CharterObjectLog;
+import ru.eludia.products.mosgis.db.model.tables.CharterObjectService;
+import ru.eludia.products.mosgis.db.model.tables.CharterObjectServiceLog;
+import ru.eludia.products.mosgis.db.model.tables.RcContractObject;
+import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.RcContractLocal;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
@@ -125,5 +140,96 @@ public class RcContractImpl extends BaseCRUD<RcContract> implements RcContractLo
         VocGisStatus.addLiteTo (job);
 	VocAction.addTo(job);
 	VocRcContractServiceTypes.addTo(job);
+        db.addJsonArrays (job, NsiTable.getNsiTable(54).getVocSelect ());
+    });}
+    
+    @Override
+    public JsonObject doApprove (String id) {return doAction ((DB db) -> {
+          
+        db.update (getTable (), HASH (
+            "uuid", id,
+            "id_ctr_status", 40
+        ));
+        
+        final Model m = db.getModel();
+        
+        List<Map<String, Object>> idsRcContractObject = db.getList (m.select(RcContractObject.class, "uuid" )
+            .where(RcContractObject.c.UUID_RC_CTR, id)
+            .and(RcContractObject.c.ID_CTR_STATUS, 10));
+        
+        List<Map<String, Object>> newIdsRcContractObject = new ArrayList<>();
+        
+        idsRcContractObject.forEach(rec -> {
+            rec.put(RcContractObject.c.ID_CTR_STATUS.lc(), 40);
+            newIdsRcContractObject.add(rec);
+        });
+
+        db.update (RcContractObject.class, newIdsRcContractObject);
+
+    });}
+    
+    @Override
+    public JsonObject doAlter (String id) {return doAction ((DB db) -> {
+          
+        db.update (getTable (), HASH (
+            "uuid", id,
+            "id_ctr_status", 11
+        ));
+
+    });}
+    
+    @Override
+    public JsonObject doAnnul (String id, JsonObject p) {return doAction ((DB db) -> {
+        
+        JsonObject data = p.getJsonObject ("data");
+        
+        db.update (getTable (), getData (p,
+            "uuid", id,
+            "id_ctr_status", 110,
+            "reason_of_annulment", data.getString ("reason_of_annulment", null)
+        ));
+        
+        final Model m = db.getModel();
+        
+        List<Map<String, Object>> idsRcContractObject = db.getList (m.select(RcContractObject.class, "uuid" )
+            .where(RcContractObject.c.UUID_RC_CTR, id));
+        
+        List<Map<String, Object>> newIdsRcContractObject = new ArrayList<>();
+        
+        idsRcContractObject.forEach(rec -> {
+            rec.put(RcContractObject.c.ID_CTR_STATUS.lc(), 110);
+            newIdsRcContractObject.add(rec);
+        });
+
+        db.update (RcContractObject.class, newIdsRcContractObject);
+        
+    });}
+    
+    @Override
+    public JsonObject doTerminate (String id, JsonObject p) {return doAction ((DB db) -> {
+        
+        JsonObject data = p.getJsonObject ("data");
+        
+        db.update (getTable (), getData (p,
+            "uuid", id,
+            "id_ctr_status", 100,
+            "terminate", data.getString ("date_of_termination", null),    
+            "reason_of_termination", data.getString ("reason_of_termination", null)
+        ));
+        
+        final Model m = db.getModel();
+        
+        List<Map<String, Object>> idsRcContractObject = db.getList (m.select(RcContractObject.class, "uuid" )
+            .where(RcContractObject.c.UUID_RC_CTR, id));
+        
+        List<Map<String, Object>> newIdsRcContractObject = new ArrayList<>();
+        
+        idsRcContractObject.forEach(rec -> {
+            rec.put(RcContractObject.c.DT_TO.lc(), data.getString ("date_of_termination", null));
+            newIdsRcContractObject.add(rec);
+        });
+
+        db.update (RcContractObject.class, newIdsRcContractObject);
+        
     });}
 }

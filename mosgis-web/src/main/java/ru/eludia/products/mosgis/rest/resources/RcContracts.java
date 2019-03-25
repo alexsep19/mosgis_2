@@ -127,4 +127,42 @@ public class RcContracts extends EJBResource <RcContractLocal> {
     public JsonObject getVocs (JsonObject p) {
         return back.getVocs (p);
     }
+    
+    @POST
+    @Path("{id}/approve")
+    @Produces (APPLICATION_JSON)
+    public JsonObject doApprove (@PathParam ("id") String id) {
+        final JsonObject item = getInnerItem (id);
+        checkOrg (item);
+        return back.doApprove (id);
+    }
+    
+    @POST
+    @Path("{id}/alter")
+    @Produces (APPLICATION_JSON)
+    public JsonObject doAlter (@PathParam ("id") String id) {
+        final JsonObject item = getInnerItem (id);
+        checkOrg (item);
+        return back.doAlter (id);
+    }
+    
+    @POST
+    @Path("{id}/annul")
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject doAnnul (@PathParam ("id") String id, JsonObject p) {
+        final JsonObject item = back.getItem (id, getUser ());
+        checkOrg (item.getJsonObject ("item"));
+        return back.doAnnul (id, p);
+    }
+    
+    @POST
+    @Path("{id}/terminate")
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject doTerminate (@PathParam ("id") String id, JsonObject p) {
+        final JsonObject item = back.getItem (id, getUser ());
+        checkOrg (item.getJsonObject ("item"));
+        return back.doTerminate (id, p);
+    }
 }
