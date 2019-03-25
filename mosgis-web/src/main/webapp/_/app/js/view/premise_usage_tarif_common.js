@@ -38,7 +38,7 @@ define ([], function () {
                 {type: 'main', size: 400,
                     tabs: {
                         tabs: [
-//                            {id: 'premise_usage_tarif_common_log', caption: 'История изменений'},
+                            {id: 'premise_usage_tarif_common_log', caption: 'История изменений'},
                         ],
                         onClick: $_DO.choose_tab_premise_usage_tarif_common
                     }
