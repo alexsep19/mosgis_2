@@ -124,7 +124,7 @@ public class PremiseUsageTarifImpl extends BaseCRUD<PremiseUsageTarif> implement
         
         db.addJsonArrays (job, 
             ModelHolder.getModel ().select (PremiseUsageTarifOktmo.class, "AS oktmos", "*")
-                .toOne (VocOktmo.class, "AS vc_oktmo", "code").on ()
+                .toOne (VocOktmo.class, "AS vc_oktmo", "code", "site_name").on ()
 		.where("uuid", id)
                 .orderBy ("vc_oktmo.code")
         );        
