@@ -28,6 +28,8 @@ public class ChargeInfo extends EnTable {
         ACCOUNTINGPERIODTOTAL (Type.NUMERIC, 13, 2, null,   "Всего начислено за расчетный период (без перерасчетов и льгот), руб."),
         
         CALCEXPLANATION       (Type.STRING,  null,          "Порядок расчетов"),
+        
+        ID_LOG                (ChargeInfoLog.class,         "Последнее событие редактирования"),
 
         ;
         
@@ -37,7 +39,7 @@ public class ChargeInfo extends EnTable {
         @Override
         public boolean isLoggable () {
             switch (this) {
-//                case ID_LOG:
+                case ID_LOG:
                 case UUID_ORG:
                 case UUID_PAY_DOC:
                     return false;

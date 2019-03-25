@@ -1,40 +1,24 @@
 define ([], function () {
-/*
-    $_DO.patch_payment_document_common_charge_info = function (e) {    
-    
-        var grid = this
-    
-        var col = grid.columns [e.column]
-        
-        var editable = col.editable (grid.get (e.recid))
 
-        var data = {
-            k: 'f_' + e.recid,
-            v: normalizeValue (e.value_new, editable.type)
-        }
-        
-        if (data.v != null) data.v = String (data.v)
+    $_DO.patch_payment_document_common_charge_info = function (e) {
+
+        var grid = this
+
+        var col = grid.columns [e.column]
+
+        var v = normalizeValue (e.value_new, col.editable.type)
+
+        var data = {}; data [col.field] = v == null ? v : String (v)
 
         grid.lock ()
-        
-        var tia = {type: 'houses', action: 'patch'}
 
-        query (tia, {data: data}, function () {
-
-            var house = $('body').data ('data')
-            house.item [data.k] = data.v            
-
-            $('body').data ('data', house)            
-            
-            if ($('body').data ('area_codes') [e.recid]) setTimeout ($_DO.check_sum_area_fields_of_a_house, 400)
-            
-            grid.unlock ()                
+        query ({type: 'charge_info', id: e.recid, action: 'update'}, {data: data}, function () {
+            grid.unlock ()
             $_F5 ()
-
         })
-    
+
     }
-*/
+
     return function (done) {
 
         var layout = w2ui ['passport_layout']
