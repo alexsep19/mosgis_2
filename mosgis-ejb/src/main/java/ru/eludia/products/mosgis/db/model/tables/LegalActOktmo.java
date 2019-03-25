@@ -2,6 +2,7 @@ package ru.eludia.products.mosgis.db.model.tables;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -24,20 +25,6 @@ public class LegalActOktmo extends Table {
 
         pkref ("uuid",  LegalAct.class, "НПА");
         pkref ("oktmo", VocOktmo.class, "ОКТМО");
-    }
-
-    public static void store(DB db, Object id, JsonArray oktmo) throws SQLException {
-
-	db.dupsert(
-	    LegalActOktmo.class,
-	    DB.HASH("uuid", id),
-	    oktmo.getValuesAs(JsonString.class).stream()
-		.map((t) -> {
-		    return DB.HASH("oktmo", t.getString());
-		})
-		.collect(Collectors.toList()),
-	    "oktmo"
-	);
     }
 
     public static Select select(DB db, Object id) throws SQLException {
@@ -77,23 +64,55 @@ public class LegalActOktmo extends Table {
 
 	Map<Object, Map<String, Object>> oktmoIdx = db.getIdx(m.select(VocOktmo.class, code, id), code);
 
-	List<Map<String, Object>> result = new ArrayList<>();
+	Map<Object, List<Map<String, Object>>> idx = new HashMap<Object,List<Map<String, Object>>>();
 
 	for (Map<String, Object> i : oktmos) {
 
-	    if (i.get("oktmo") == null && i.get(code) != null) {
+	    if (i.get("id") == null && i.get(code) != null) {
 		Map<String, Object> o = oktmoIdx.get(i.get(code));
 		if (o == null) {
 		    continue;
 		}
-		i.put("oktmo", o.get(id));
+		i.put("id", o.get(id));
 	    }
 
-	    result.add(i);
+	    List<Map<String, Object>> uuid_oktmos = idx.get(i.get("uuid"));
+	    if (uuid_oktmos == null) {
+		uuid_oktmos = new ArrayList<Map<String, Object>>();
+		idx.put(i.get("uuid"), uuid_oktmos);
+	    }
+	    uuid_oktmos.add(i);
 	}
 
-Logger.getLogger(LegalActOktmo.class.getName()).info(DB.to.json(result).toString());
+	for (Map.Entry<Object, List<Map<String, Object>>> entry : idx.entrySet()) {
+	    store (db, entry.getKey(), entry.getValue());
+	}
+    }
 
-	db.upsert(LegalActOktmo.class, result, "uuid");
+    public static void store(DB db, Object id, JsonArray oktmo) throws SQLException {
+
+	store(
+	    db,
+	    id,
+	    oktmo.getValuesAs(JsonString.class).stream()
+		.map((t) -> {
+		    return DB.HASH("id", t.getString());
+		})
+		.collect(Collectors.toList())
+	);
+    }
+
+    public static void store(DB db, Object id, List<Map<String, Object>> oktmo) throws SQLException {
+
+	db.dupsert(
+	    LegalActOktmo.class,
+	    DB.HASH("uuid", id),
+	    oktmo.stream()
+		.map((t) -> {
+		    return DB.HASH("oktmo", t.get("id"));
+		})
+		.collect(Collectors.toList()),
+	    "oktmo"
+	);
     }
 }

@@ -12,7 +12,7 @@ define ([], function () {
         if (!v.name)            die('name', 'Укажите, пожалуйста, наименование документа')
 
         if (!v.approvedate) die ('approvedate', 'Укажите, пожалуйста, дату принятия органом государственной власти')
-        if (!v.files)       die('files', 'Укажите, пожалуйста, основание')
+        if (!v.files)       die('files', 'Укажите, пожалуйста, документ')
         v.scope = v.scope || 0
         if(!v.oktmo) delete v.oktmo
 
