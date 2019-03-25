@@ -1,15 +1,17 @@
 package ru.eludia.products.mosgis.ws.rest.impl;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonString;
+import ru.eludia.base.DB;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Select;
-import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.PremiseUsageTarif;
 import ru.eludia.products.mosgis.db.model.tables.PremiseUsageTarifLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -112,8 +114,10 @@ public class PremiseUsageTarifImpl extends BaseCRUD<PremiseUsageTarif> implement
 
     @Override
     public JsonObject getItem (String id, User user) {return fetchData ((db, job) -> {
-        
-        final JsonObject item = db.getJsonObject (ModelHolder.getModel ()
+
+	final Model m = ModelHolder.getModel();
+
+	final JsonObject item = db.getJsonObject (m
             .get (getTable (), id, "AS root", "*")
             .toMaybeOne (PremiseUsageTarifLog.class, "AS log").on ()
             // .toMaybeOne (OutSoap.class, "err_text").on ("log.uuid_out_soap=out_soap.uuid")
@@ -123,8 +127,8 @@ public class PremiseUsageTarifImpl extends BaseCRUD<PremiseUsageTarif> implement
         job.add ("item", item);
         
         db.addJsonArrays (job, 
-            ModelHolder.getModel ().select (PremiseUsageTarifOktmo.class, "AS oktmos", "*")
-                .toOne (VocOktmo.class, "AS vc_oktmo", "code", "site_name").on ()
+            m.select (PremiseUsageTarifOktmo.class, "AS oktmos", "*")
+                .toOne (VocOktmo.class, "AS vc_oktmo", "code", "site_name", "id").on ()
 		.where("uuid", id)
                 .orderBy ("vc_oktmo.code")
         );        
@@ -146,6 +150,30 @@ public class PremiseUsageTarifImpl extends BaseCRUD<PremiseUsageTarif> implement
         return jb.build ();
         
     }
+
+    @Override
+    public JsonObject doUpdate(String id, JsonObject p, User user) {return doAction(db -> {
+
+	JsonObject data = p.getJsonObject("data");
+
+	Map<String, Object> r = getTable().HASH(data, "uuid", id);
+
+	db.update(PremiseUsageTarif.class, r);
+
+	if (data.containsKey("oktmo")) {
+
+	    PremiseUsageTarifOktmo.store(db, id
+		, data.getJsonArray("oktmo").getValuesAs(JsonString.class).stream()
+		    .map((t) -> {
+			return DB.HASH("id", t.getString());
+		    })
+		    .collect(Collectors.toList())
+	    );
+	}
+
+	logAction(db, user, id, VocAction.i.UPDATE);
+    });}
+
 /*    
     @Override
     public JsonObject doApprove (String id, User user) {return doAction ((db) -> {

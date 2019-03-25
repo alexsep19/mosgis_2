@@ -64,7 +64,9 @@ define ([], function () {
         if (!v.price)
             die('price', 'Укажите, пожалуйста, величину')
 
-        query({type: 'premise_usage_tarifs', id: undefined, action: 'update'}, {data: v}, reload_page)
+        v.oktmo = v.oktmo || []
+
+        query({type: 'premise_usage_tarifs', action: 'update'}, {data: v}, reload_page)
 
     }
 
@@ -110,7 +112,7 @@ define ([], function () {
 
         data.item.selected_oktmo = data.oktmos.map(function (i) {
             return {
-                id: i.id,
+                id: i['vc_oktmo.id'],
                 code: i['vc_oktmo.code'],
                 text: i['vc_oktmo.code'] + ' ' + i['vc_oktmo.site_name']
             }

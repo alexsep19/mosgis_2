@@ -4,6 +4,12 @@ define ([], function () {
 
     return function (data, view) {
 
+        function recalc () {
+            var form = w2ui[form_name]
+            // HACK: fix enum selected
+            $(form.get('oktmo').el).data('selected', form.get('oktmo').options.selected).change()
+        }
+
         $_F5 = function (data) {
 
             data.item.__read_only = data.__read_only
@@ -59,6 +65,8 @@ define ([], function () {
                 {name: 'dateto', type: 'date'},
                 {name: 'price', type: 'float', options: {min: 0}},
                 {name: 'oktmo', type: 'enum', hint: 'ОКТМО', options: {
+                    items:  data.item.selected_oktmo,
+                    selected: data.item.selected_oktmo,
                     maxDropWidth: 800,
                     renderItem: function (i, idx, remove) {
                         return i.code + remove
@@ -94,7 +102,11 @@ define ([], function () {
                 }},
             ],
 
-            focus: -1
+            focus: 0,
+
+            onRefresh: function (e) {
+                e.done(recalc)
+            },
         })
 
         $_F5 (data)
