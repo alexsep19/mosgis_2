@@ -21,7 +21,7 @@ define ([], function () {
                 toolbar: true,
                 toolbarAdd: data._can.create,
                 footer: 1,
-                toolbarSearch: false
+                toolbarSearch: true
             },
 
             toolbar: {
@@ -41,8 +41,25 @@ define ([], function () {
             textSearch: 'contains',
 
             searches: [
-//                {field: 'level_', caption: 'Уровень', type: 'enum', options: {items: data.vc_legal_act_levels.items}},
                 {field: 'docnumber', caption: 'Номер документа', type: 'text'},
+                {field: 'id_ctr_status', caption: 'Статус', type: 'enum'
+                    , options: {items: data.vc_gis_status.items.filter(function (i) {
+                        switch (i.id) {
+                            case 10:
+                            case 11:
+                            case 12:
+                            case 14:
+                            case 34:
+                            case 40:
+                            case 102:
+                            case 110:
+                            case 104:
+                                return true;
+                            default:
+                                return false;
+                        }
+                    })}
+                },
             ].filter (not_off),
 
             columns: [
