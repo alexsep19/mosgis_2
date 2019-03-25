@@ -7,7 +7,7 @@ import ru.eludia.base.model.Table;
 
 public class VocChargeInfoType extends Table {
     
-    private static final String TABLE_NAME = "vc_charge_types";
+    public static final String TABLE_NAME = "vc_charge_types";
     
     public VocChargeInfoType () {       
         super (TABLE_NAME, "Типы строк начислений в платёжных документах");

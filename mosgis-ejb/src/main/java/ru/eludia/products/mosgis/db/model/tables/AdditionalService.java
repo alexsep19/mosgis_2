@@ -24,6 +24,8 @@ import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
 
 public class AdditionalService extends EnTable {
 
+    public static final String TABLE_NAME = "tb_add_services";
+
     public enum c implements EnColEnum {
 
         UUID_ORG                  (VocOrganization.class,                      "Организация"),
@@ -68,7 +70,7 @@ public class AdditionalService extends EnTable {
 
     public AdditionalService () {
 
-        super ("tb_add_services",                                                       "Дополнительные услуги");
+        super (TABLE_NAME,                                                       "Дополнительные услуги");
         cols   (c.class);
 
         key   ("uuid_org", "uuid_org");

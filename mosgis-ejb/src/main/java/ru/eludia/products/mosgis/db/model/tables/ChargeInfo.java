@@ -14,14 +14,14 @@ public class ChargeInfo extends EnTable {
     
     public enum c implements EnColEnum {
         
-        UUID_PAY_DOC     (PaymentDocument.class,            "Платёжный документ"),
-        ID_TYPE          (VocChargeInfoType.class,          "Тип услуги"),
+        UUID_PAY_DOC          (PaymentDocument.class,            "Платёжный документ"),
+        ID_TYPE               (VocChargeInfoType.class,          "Тип услуги"),
         
-        UUID_ORG         (VocOrganization.class,            "Организация-исполнитель услуги"),
+        UUID_ORG              (VocOrganization.class,            "Организация-исполнитель услуги"),
 
-        CODE_VC_NSI_50   (Type.STRING,  20,    null,        "Вид жилищной услуги (НСИ 50)"),
-        UUID_M_M_SERVICE (MainMunicipalService.class, null, "Коммунальная услуга"),
-        UUID_ADD_SERVICE (AdditionalService.class, null,    "Дополнительная услуга"),
+        CODE_VC_NSI_50        (Type.STRING,  20,    null,        "Вид жилищной услуги (НСИ 50)"),
+        UUID_M_M_SERVICE      (MainMunicipalService.class, null, "Коммунальная услуга"),
+        UUID_ADD_SERVICE      (AdditionalService.class, null,    "Дополнительная услуга"),
         
         RATE                  (Type.NUMERIC, 14, 6, null,   "Тариф"),
         TOTALPAYABLE          (Type.NUMERIC, 13, 2, null,   "Итого к оплате за расчетный период, руб."),
