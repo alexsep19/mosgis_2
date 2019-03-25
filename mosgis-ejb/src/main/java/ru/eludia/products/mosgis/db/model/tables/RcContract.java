@@ -29,7 +29,7 @@ public class RcContract extends EnTable {
 	SIGNINGDATE          (Type.DATE, "Дата заключения"),
 	EFFECTIVEDATE        (Type.DATE, "Дата вступления в силу"),
 	COMPLETIONDATE       (Type.DATE, null, "Дата окончания плановая"),
-	TERMINATE            (Type.DATE, null, "Дата растрожения"),
+	TERMINATE            (Type.DATE, null, "Дата расторжения"),
 
 	DT_FROM              (Type.DATE, null, "Дата начала действия договора"),
 	DT_TO                (Type.DATE, null, "Дата окончания действия договора"),
@@ -51,6 +51,9 @@ public class RcContract extends EnTable {
 
         UUID_BNK_ACCT        (BankAccount.class,     "Платёжные реквизиты"),
 
+        REASON_OF_ANNULMENT  (Type.STRING, null, "Причина аннулирования"),
+        REASON_OF_TERMINATION(Type.STRING, null, "Причина расторжения"),
+        
         ;
 
         @Override

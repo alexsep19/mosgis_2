@@ -6,6 +6,11 @@ define ([], function () {
         it.is_bnk_acct_visible = it.is_billing || it.id_ctr_status > 10
     }
 
+    function check_is_bnk_acct_visible (it) {
+        it.is_annuled = it.id_ctr_status == 110
+        it.is_terminated = it.id_ctr_status == 100
+    }
+
     function recalc () {
 
         var f = w2ui [form_name]
@@ -180,6 +185,10 @@ define ([], function () {
                 {name: 'completiondate', type: 'date'},
                 {name: 'uuid_org', type: 'text', hidden: true},
                 {name: 'label_org', type: 'text'},
+                
+                {name: 'reason_of_annulment', type: 'text'},
+                {name: 'terminate', type: 'text'},
+                {name: 'reason_of_termination', type: 'text'},
 
                 {name: 'is_accounts', type: 'list', options: {items: data.voc_bool}},
                 {name: 'is_invoices', type: 'list', options: {items: data.voc_bool}},
