@@ -43,14 +43,14 @@ define ([], function () {
 
         var data = $('body').data ('data')                
 
-        query ({type: 'charge_info', id: null}, {data: {uuid_pay_doc: $_REQUEST.id}}, function (d) {
+        query ({type: 'payment_documents', part: 'charge_info'}, {}, function (d) {
         
             var lines = []            
             var last_type = ''
             
             $.each (dia2w2uiRecords (d.root), function () {
             
-                if (last_type != this.label_type) lines.push ({recid: Math.random (), label: last_type = this.label_type})
+                if (last_type != this.label_type) lines.push ({recid: String (Math.random ()).replace ('.', ''), label: last_type = this.label_type})
                 
                 lines.push (this)
             

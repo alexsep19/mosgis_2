@@ -126,9 +126,9 @@ define ([], function () {
                     $.each (data.lines, function () {
 
                         if (!('id_type' in this)) {
-                        
-                            var sel = 'tr[recid=' + this.id + ']'
 
+                            var sel = 'tr[recid=' + this.recid + ']'
+darn (sel)
                             $(sel + ' td.w2ui-grid-data').css ({
                                 'font-weight': 'bold',
                                 'border-bottom-width': '1px',

@@ -22,6 +22,8 @@ import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.Account;
 import ru.eludia.products.mosgis.db.model.tables.AccountItem;
+import ru.eludia.products.mosgis.db.model.tables.AnyChargeInfo;
+import ru.eludia.products.mosgis.db.model.tables.ChargeInfo;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
@@ -195,4 +197,16 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
         
     });}    
 */    
+
+    @Override
+    public JsonObject getChargeInfo (String id, User user) {{return fetchData ((db, job) -> {                
+
+        Select select = ModelHolder.getModel ().select (AnyChargeInfo.class, "AS root", "*")
+            .where   (ChargeInfo.c.UUID_PAY_DOC, id)
+            .orderBy ("root.label")
+        ;
+
+        db.addJsonArrays (job, select);
+
+    });}}
 }

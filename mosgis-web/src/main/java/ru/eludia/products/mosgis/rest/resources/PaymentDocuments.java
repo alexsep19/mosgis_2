@@ -117,6 +117,16 @@ public class PaymentDocuments extends EJBResource <PaymentDocumentLocal> {
 //        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
         return back.getLog (id, p, getUser ());
     }
+    
+    @POST
+    @Path("{id}/charge_info") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject getChargeInfo (@PathParam ("id") String id) {
+//        final JsonObject item = back.getItem (id);
+//        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
+        return back.getChargeInfo (id, getUser ());
+    }
+    
 /*    
     @POST
     @Path("{id}/approve") 
