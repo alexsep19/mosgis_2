@@ -70,6 +70,7 @@ define([], function () {
                         case 34:
                         case 40:
                             it._can.alter = 1
+                            it._can.terminate = 1
                     }
 
                     switch (it.id_ctr_status) {
@@ -77,7 +78,11 @@ define([], function () {
                             it._can.annul = 1
                             it._can.create_payment = 1
                     }
-
+                    
+                    switch (it.id_ctr_status) {
+                        case 100:
+                            it._can.annul = 1
+                    }
                 }
                 $('body').data('data', data)
 

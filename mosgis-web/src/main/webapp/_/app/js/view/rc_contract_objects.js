@@ -9,6 +9,8 @@ define ([], function () {
         var $panel = $(layout.el ('main'))
 
         var is_editable = data.item._can.edit
+        
+        var is_active = !(data.vc_gis_status == 40 || data.vc_gis_status == 100 || data.vc_gis_status == 110)
 
         $panel.w2regrid ({
 
@@ -22,8 +24,8 @@ define ([], function () {
                 toolbarColumns: false,
                 toolbarInput: false,
                 toolbarSearch: false,
-                toolbarAdd: is_editable,
-                toolbarDelete: is_editable
+                toolbarAdd: is_editable && is_active,
+                toolbarDelete: is_editable && is_active
             },
 
             searches: [

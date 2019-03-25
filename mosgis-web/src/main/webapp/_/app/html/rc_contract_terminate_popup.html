@@ -1,0 +1,42 @@
+<span>
+
+	<style>
+
+        label[data-block-name=rc_contract_terminate_popup] {
+        	width: 150px;
+        	margin-right: 10px;
+        }
+
+        textarea[data-block-name=rc_contract_terminate_popup] {
+        	width: 350px;
+        	height: 90px;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:185px ">
+
+        <div class="w2ui-page page-0">
+            <div class="w2ui-field">
+                <label>Дата расторжения</label>
+                <div>
+                	<input name=date_of_termination placeholder="" class=dt></input>
+                </div>
+            </div>
+            
+            <div class="w2ui-field">
+                <label>Основание расторжения</label>
+                <div>
+                	<input name=reason_of_termination>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>

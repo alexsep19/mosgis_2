@@ -66,7 +66,11 @@ define ([], function () {
     }
 
     $_DO.annul_rc_contract_common = function (e) {
-        use.block ('supply_resource_contract_annul_popup')
+        use.block ('rc_contract_annul_popup')
+    }
+    
+    $_DO.terminate_rc_contract_common = function (e) {
+        use.block ('rc_contract_terminate_popup')
     }
     
     $_DO.set_bank_acct_rc_contract_common = function (e) {   
@@ -151,6 +155,7 @@ define ([], function () {
 
         it.status_label     = data.vc_gis_status [it.id_ctr_status]
         it.state_label      = data.vc_gis_status [it.id_ctr_state]
+        it.reason_of_termination    = data.vc_nsi_54 [it.reason_of_termination]
 
         if (it.id_ctr_status != 10) {
             if (it.id_ctr_status != it.id_ctr_status_gis) it.gis_status_label = data.vc_gis_status [it.id_ctr_status_gis]
