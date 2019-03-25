@@ -24,7 +24,7 @@ define ([], function () {
                             {id: 'tarifs',                     caption: 'Тарифы', text: 'Тарифы', tooltip: ''
                                 , off: !($_USER.role.admin || $_USER.has_nsi_20 (7, 8, 10))
                             },
-                            {id: 'overhaul_regional_programs', caption: 'Капитальный ремонт - Региональная программа', off: !$_USER.role.admin && !$_USER.has_nsi_20 (7, 14)},
+                            {id: 'overhauls', caption: 'Капитальный ремонт', off: !$_USER.role.admin && !$_USER.has_nsi_20 (7, 14)},
                             {id: 'integration',                caption: 'Интеграция', off: !$_USER.role.admin && !$_USER.has_nsi_20 (1, 2)},
                             {id: 'supervision',                caption: 'Надзор', off: !($_USER.role.admin || $_USER.has_nsi_20 (4))},
                         ].filter (not_off),
