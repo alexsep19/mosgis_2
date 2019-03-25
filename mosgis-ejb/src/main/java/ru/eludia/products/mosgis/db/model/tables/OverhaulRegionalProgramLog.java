@@ -70,7 +70,7 @@ public class OverhaulRegionalProgramLog extends GisWsLogTable {
         );
         
         record.put ("documents", db.getList (db.getModel ()
-                .select (OverhaulRegionalProgramDocument.class, "AS doc", "*")
+                .select  (OverhaulRegionalProgramDocument.class, "AS doc", "*")
                 .toOne   (Nsi79.class, "AS nsi_79", "*").on ("doc.code_nsi_79 = nsi_79.id")
                 .where   ("program_uuid", record.get ("uuid_object"))
                 .and     ("is_deleted", 0)

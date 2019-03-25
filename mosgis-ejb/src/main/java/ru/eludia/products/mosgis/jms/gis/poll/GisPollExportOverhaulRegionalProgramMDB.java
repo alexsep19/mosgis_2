@@ -42,7 +42,7 @@ public class GisPollExportOverhaulRegionalProgramMDB extends GisPollMDB {
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
             .toOne (OverhaulRegionalProgramLog.class,     "AS log", "uuid", "action", "id_orp_status").on ("log.uuid_out_soap=root.uuid")
             .toOne (OverhaulRegionalProgram.class,        "AS program", "uuid").on ()
-            .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("program.uuid_org=org.uuid")
+            .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("program.org_uuid=org.uuid")
         ;
         
     }
