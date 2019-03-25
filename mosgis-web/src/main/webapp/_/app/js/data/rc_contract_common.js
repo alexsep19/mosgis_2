@@ -155,6 +155,7 @@ define ([], function () {
 
         it.status_label     = data.vc_gis_status [it.id_ctr_status]
         it.state_label      = data.vc_gis_status [it.id_ctr_state]
+        it.reason_of_termination    = data.vc_nsi_54 [it.reason_of_termination]
 
         if (it.id_ctr_status != 10) {
             if (it.id_ctr_status != it.id_ctr_status_gis) it.gis_status_label = data.vc_gis_status [it.id_ctr_status_gis]
