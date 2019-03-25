@@ -49,9 +49,10 @@ define ([], function () {
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
+                            {id: 'payment_document_common_charge_info', caption: 'Текущие начисления', off: it.id_type != 0},
                             {id: 'payment_document_common_additional_information', caption: 'Дополнительная информация'},
                             {id: 'payment_document_common_log', caption: 'История изменений'},
-                        ],
+                        ].filter (not_off),
                         onClick: $_DO.choose_tab_payment_document_common
                     }                
                 },
@@ -83,13 +84,13 @@ define ([], function () {
                 
                 {name: 'debtpreviousperiods', type: 'float', options: {min: 0, precision: 2}},
                 {name: 'advancebllingperiod', type: 'float', options: {min: 0, precision: 2}},               
-                {name: 'totalpayablebychargeinfo', type: 'float', options: {min: 0, precision: 2}},
+//                {name: 'totalpayablebychargeinfo', type: 'float', options: {min: 0, precision: 2}},
                 {name: 'totalbypenaltiesandcourtcosts', type: 'float', options: {min: 0, precision: 2}},
                 {name: 'totalpayablebypd', type: 'float', options: {min: 0, precision: 2}},
                 {name: 'subsidiescompensation_', type: 'float', options: {min: 0, precision: 2}},
                 {name: 'totalpayablebypdwith_da', type: 'float', options: {min: 0, precision: 2}},
                 {name: 'paidcash', type: 'float', options: {min: 0, precision: 2}},
-                {name: 'limitindex', type: 'float', options: {min: 0, precision: 2}},
+//                {name: 'limitindex', type: 'float', options: {min: 0, precision: 2}},
 
                 {name: 'sign', type: 'list', options: {items: [
                     {id: -1, text: "Задолженность"},

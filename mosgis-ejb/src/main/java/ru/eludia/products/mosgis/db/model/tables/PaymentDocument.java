@@ -98,7 +98,7 @@ public class PaymentDocument extends EnTable {
         trigger ("AFTER INSERT", ""
 
             + "DECLARE" 
-            + "  PRAGMA AUTONOMOUS_TRANSACTION; "
+//            + "  PRAGMA AUTONOMOUS_TRANSACTION; "
                 
             + " BEGIN "
             + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, CODE_VC_NSI_50) VALUES (:NEW.UUID, :NEW.UUID_ORG, 1, 1);"
