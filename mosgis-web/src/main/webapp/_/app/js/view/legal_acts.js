@@ -64,13 +64,13 @@ define ([], function () {
 
             columns: [
 
-                {field: 'org.label', caption: 'Организация', size: 30},
                 {field: 'id_ctr_status', caption: 'Статус', size: 20, voc: data.vc_gis_status},
                 {field: 'level_', caption: 'Уровень', size: 20, voc: data.vc_legal_act_levels},
                 {field: 'code_vc_nsi_324', caption: 'Вид документа', size: 30, voc: data.vc_nsi_324},
                 {field: 'name', caption: 'Наименование документа', size: 100},
                 {field: 'docnumber', caption: 'Номер документа', size: 30},
                 {field: 'approvedate', caption: 'Дата принятия', size: 30, render: _dt},
+                {field: 'org.label', caption: 'Организация', size: 30},
 
             ].filter (not_off),
 
