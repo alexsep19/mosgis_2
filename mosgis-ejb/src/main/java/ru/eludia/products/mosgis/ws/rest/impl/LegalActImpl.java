@@ -321,7 +321,7 @@ public class LegalActImpl extends BaseCRUD<LegalAct> implements LegalActLocal  {
 	Nsi324.addTo(job, db);
 	VocLegalActLevel.addTo(job);
 	VocAction.addTo(job);
-	VocGisStatus.addTo(job);
+	VocGisStatus.addLiteTo(job);
     });}
 
     @Override

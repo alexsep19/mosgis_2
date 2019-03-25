@@ -74,6 +74,13 @@ public class LegalAct extends AttachTable  {
 
             + "IF :NEW.ID_CTR_STATUS = " + VocGisStatus.i.ANNUL + " THEN " + " :NEW.ID_STATUS := " + VocFileStatus.i.DELETED + "; END IF; "
 
+	    + "IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS "
+	    + " AND :OLD.ID_CTR_STATUS <> " + VocGisStatus.i.FAILED_PLACING.getId()
+	    + " AND :NEW.ID_CTR_STATUS =  " + VocGisStatus.i.PROJECT.getId()
+	    + " THEN "
+	    + " :NEW.ID_CTR_STATUS := " + VocGisStatus.i.MUTATING.getId()
+	    + "; END IF; "
+
 	    + "IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING + " THEN "
 	    + "  SELECT COUNT(*) INTO cnt FROM tb_legal_act_oktmo WHERE uuid=:NEW.uuid; "
 	    + "  IF :NEW.scope = 1 THEN "
