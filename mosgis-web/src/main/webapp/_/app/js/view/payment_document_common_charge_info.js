@@ -54,6 +54,18 @@ define ([], function () {
             
             onChange: $_DO.patch_payment_document_common_charge_info,
             
+            onEditField: function (e) {
+            
+                var grid = this
+                
+                var r = grid.get (e.recid)
+                
+                if (!r.id_type) return e.preventDefault ()
+            
+darn (e)                
+            
+            },            
+            
             onRefresh: function (e) {
             
                 e.done (function () {
