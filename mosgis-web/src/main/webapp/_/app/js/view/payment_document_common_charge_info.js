@@ -38,7 +38,14 @@ define ([], function () {
 
             columns: [                
                 {field: 'label',        caption: 'Наименование услуги', size: 100},
-                {field: 'totalpayable', caption: 'Итого к оплате за расчетный период', size: 20, editable: {type: 'float', precision: 2, autoFormat: true, keyboard: false, min: 0}},
+                {field: 'totalpayable', caption: 'Итого к оплате за расчетный период', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, keyboard: false, min: 0}},
+                {field: 'accountingperiodtotal', caption: 'Всего начислено за расчетный период (без перерасчетов и льгот)', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, keyboard: false, min: 0}},
+
+                {field: 'rate', caption: 'Тариф', size: 10, editable: {type: 'float', precision: 6, autoFormat: true, keyboard: false, min: 0}},
+
+                {field: 'unit', caption: 'Ед. изм.', size: 10},                
+                {field: 'calcexplanation', caption: 'Порядок расчётов', size: 10, editable: {type: 'text'}},
+
             ],
 
             records: [],
@@ -59,10 +66,10 @@ define ([], function () {
 
                             var sel = 'tr[recid=' + this.recid + ']'
 
-                            $(sel + ' td.w2ui-grid-data').css ({
+                            $(sel + ' td.w2ui-grid-data:not(:last-child)').css ({
                                 'font-weight': 'bold',
                                 'border-bottom-width': '1px',
-                            }).eq (0).css ({'border-right-width': 0})
+                            }).css ({'border-right-width': 0})
                             
                             if (last) {
                             
