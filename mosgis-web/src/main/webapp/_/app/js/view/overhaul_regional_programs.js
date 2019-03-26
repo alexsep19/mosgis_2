@@ -4,7 +4,7 @@ define ([], function () {
     
         data = $('body').data ('data')
         
-        $(w2ui ['topmost_layout'].el ('main')).w2regrid ({ 
+        $(w2ui ['overhauls_layout'].el ('main')).w2regrid ({
 
             name: 'overhaul_regional_programs_grid',
 
