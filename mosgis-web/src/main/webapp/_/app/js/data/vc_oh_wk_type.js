@@ -32,8 +32,6 @@ define ([], function () {
             data.item.status_label = data.vc_gis_status [data.item.id_owt_status]
             data.item.org_label = data.item ['vc_orgs.label']
             data.item.voc_code = data.item.code ? data.item.code : 'Отсутствует'
-            data.item.servicename = '"' + data.item.servicename + '"'
-            data.item.work_group = data.vc_nsi_218 [data.item.code_vc_nsi_218]
             data.item.actuality = data.item.isactual ? 'Актуально' : 'Не актуально'
 
             $('body').data ('data', data)

@@ -48,6 +48,14 @@ public class VocOverhaulWorkTypes extends EJBResource <VocOverhaulWorkTypesLocal
     }
     
     @POST
+    @Path("{id}/alter")
+    @Produces(APPLICATION_JSON)
+    public JsonObject doAlter(@PathParam("id") String id, JsonObject p) {
+	checkPost ();
+	return back.doAlter(id, p, getUser());
+    }
+    
+    @POST
     @Path("vocs") 
     @Produces (APPLICATION_JSON)
     public JsonObject getVocs () {

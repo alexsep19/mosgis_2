@@ -46,9 +46,12 @@ public class VocOverhaulWorkTypesImpl extends BaseCRUD<VocOverhaulWorkType> impl
     protected Queue getQueue (VocAction.i action) {
 
         switch (action) {
-            case IMPORT_OVERHAUL_WORK_TYPES: return inImportOverhaulWorkTypesQueue;
-            case APPROVE:                    return inExportOverhaulWorkTypesQueue;
-            default:                         return null;
+            case IMPORT_OVERHAUL_WORK_TYPES: 
+                return inImportOverhaulWorkTypesQueue;
+            case APPROVE:                    
+                return inExportOverhaulWorkTypesQueue;
+            default:
+                return null;
         }
 
     }
@@ -152,6 +155,22 @@ public class VocOverhaulWorkTypesImpl extends BaseCRUD<VocOverhaulWorkType> impl
     }
     
     @Override
+    public JsonObject doAlter(String id, JsonObject p, User user) {
+	return doAction((db) -> {
+
+	    final Map<String, Object> r = HASH(
+		EnTable.c.UUID, id,
+		VocOverhaulWorkType.c.ID_OWT_STATUS, VocGisStatus.i.PROJECT.getId()
+	    );
+
+	    db.update(getTable(), r);
+
+	    logAction(db, user, id, VocAction.i.ALTER);
+            
+	});
+    }
+    
+    @Override
     public JsonObject doCreate (JsonObject p, User user) {return doAction ((db, job) -> {
         
         String userOrg = user.getUuidOrg ();
@@ -175,6 +194,20 @@ public class VocOverhaulWorkTypesImpl extends BaseCRUD<VocOverhaulWorkType> impl
         
         logAction (db, user, insertId, VocAction.i.APPROVE);
 
+    });}
+    
+    @Override
+    public JsonObject doUpdate (String id, JsonObject p, User user) {return doAction ((db) -> {
+        
+        db.update (getTable (), getData (p,
+            EnTable.c.UUID, id,
+            VocOverhaulWorkType.c.ID_OWT_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+        ));
+        
+        logAction (db, user, id, VocAction.i.UPDATE);
+        
+        logAction (db, user, id, VocAction.i.APPROVE);
+                        
     });}
     
 }
