@@ -205,7 +205,8 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
         Select select = ModelHolder.getModel ().select (AnyChargeInfo.class, "AS root", "*")
             .toMaybeOne (VocOkei.class, VocOkei.c.NATIONAL.lc () + " AS unit").on ()
             .where   (ChargeInfo.c.UUID_PAY_DOC, id)
-            .orderBy ("root.label")
+            .orderBy ("root." + ChargeInfo.c.ID_TYPE)
+            .orderBy ("root." + AnyChargeInfo.c.LABEL.lc ())
         ;
 
         db.addJsonArrays (job, select);
