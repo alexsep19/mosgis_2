@@ -82,13 +82,13 @@ public class PaymentDocument extends EnTable {
             + "DECLARE" 
             + "  PRAGMA AUTONOMOUS_TRANSACTION; "
             + " BEGIN "
-
+/*
             + " IF :NEW.ID_TYPE = " + VocPaymentDocumentType.i.REGULAR + " THEN BEGIN "
             + "   FOR i IN (SELECT uuid FROM " + TABLE_NAME + " WHERE uuid<>:NEW.uuid AND UUID_ACCOUNT=:NEW.UUID_ACCOUNT AND YEAR=:NEW.YEAR AND MONTH=:NEW.MONTH AND ID_TYPE=:NEW.ID_TYPE AND is_deleted=0 AND ID_CTR_STATUS NOT IN (" + VocGisStatus.i.ANNUL + ")) LOOP"
             + "     raise_application_error (-20000, 'Текущий платёжный документ на данный период уже зарегистрирован. Операция отменена.'); "
             + "   END LOOP; "
             + " END; END IF; "
-                    
+*/                    
             + " :NEW.dt_period := TO_DATE (:NEW.year || LPAD (:NEW.month, 2, '0') || '01', 'YYYYMMDD'); "
 
             + "END; "
@@ -101,7 +101,17 @@ public class PaymentDocument extends EnTable {
 //            + "  PRAGMA AUTONOMOUS_TRANSACTION; "
                 
             + " BEGIN "
+                
             + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, CODE_VC_NSI_50) VALUES (:NEW.UUID, :NEW.UUID_ORG, 1, 1);"
+
+            + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, CODE_VC_NSI_50) SELECT :NEW.UUID UUID_PAY_DOC, :NEW.UUID_ORG UUID_ORG, 2 ID_TYPE, mms.uuid UUID_M_M_SERVICE"
+                    + " FROM  " + MainMunicipalService.TABLE_NAME + "  mms"
+                    + " "
+                    + ""
+                    + ""
+                    + ""
+                    + ";"
+                    
             + " END; "
 
         );                

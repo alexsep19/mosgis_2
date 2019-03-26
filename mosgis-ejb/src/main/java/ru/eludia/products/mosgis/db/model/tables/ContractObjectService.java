@@ -20,9 +20,11 @@ import ru.gosuslugi.dom.schema.integration.house_management.ImportContractReques
 
 public class ContractObjectService extends Table {
 
+    public static final String TABLE_NAME = "tb_contract_services";
+
     public ContractObjectService () {
 
-        super  ("tb_contract_services", "Услуги по договору");
+        super  (TABLE_NAME, "Услуги по договору");
 
         ref    ("uuid_xl",                 InXlFile.class,        null,         "Источник импорта");
         
