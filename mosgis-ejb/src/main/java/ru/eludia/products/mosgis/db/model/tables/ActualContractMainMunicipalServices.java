@@ -19,7 +19,7 @@ public class ActualContractMainMunicipalServices extends View {
     public final String getSQL () {
 
         return "SELECT" +
-            "  ms.uuid id" +
+            "  cs.uuid id" +
             "  , co.fiashouseguid" +
             "  , ms.uuid uuid_m_m_service" +
             "  , cs.startdate" +

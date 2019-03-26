@@ -6,6 +6,7 @@ import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.voc.VocChargeInfoType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPaymentDocumentType;
@@ -102,14 +103,20 @@ public class PaymentDocument extends EnTable {
                 
             + " BEGIN "
                 
-            + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, CODE_VC_NSI_50) VALUES (:NEW.UUID, :NEW.UUID_ORG, 1, 1);"
+            + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, CODE_VC_NSI_50) VALUES (:NEW.UUID, :NEW.UUID_ORG, " + VocChargeInfoType.i.HOUSING + ", 1);"
 
-            + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_M_M_SERVICE) SELECT :NEW.UUID UUID_PAY_DOC, mms.UUID_ORG, 2 ID_TYPE, mms.UUID_M_M_SERVICE"
+            + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_M_M_SERVICE) SELECT :NEW.UUID UUID_PAY_DOC, mms.UUID_ORG, " + VocChargeInfoType.i.MUNICIPAL + " ID_TYPE, mms.UUID_M_M_SERVICE"
                 + " FROM  " + ActualBuildingMainMunicipalServices.TABLE_NAME + "  mms "
                 + " WHERE FIASHOUSEGUID = (SELECT FIASHOUSEGUID"
                 + " FROM " + Account.TABLE_NAME 
-                + " WHERE uuid=:NEW.UUID_ACCOUNT);"
-                    
+                + " WHERE uuid=:NEW.UUID_ACCOUNT) AND :NEW.dt_period BETWEEN STARTDATE AND ENDDATE;"
+
+            + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_ADD_SERVICE) SELECT :NEW.UUID UUID_PAY_DOC, ads.UUID_ORG, " + VocChargeInfoType.i.ADDITIONAL + " ID_TYPE, ads.UUID_ADD_SERVICE"
+                + " FROM  " + ActualBuildingAdditionalServices.TABLE_NAME + " ads "
+                + " WHERE FIASHOUSEGUID = (SELECT FIASHOUSEGUID"
+                + " FROM " + Account.TABLE_NAME 
+                + " WHERE uuid=:NEW.UUID_ACCOUNT) AND :NEW.dt_period BETWEEN STARTDATE AND ENDDATE;"
+
             + " END; "
 
         );                

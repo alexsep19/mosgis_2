@@ -9,15 +9,15 @@ import ru.eludia.base.model.View;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 
-public class ActualBuildingMainMunicipalServices extends View {
+public class ActualBuildingAdditionalServices extends View {
     
-    public static final String TABLE_NAME = "vw_bld_municipal_svc";
+    public static final String TABLE_NAME = "vw_bld_add_svc";
 
     public enum c implements ColEnum {
         
         ID                   (Type.UUID,     "id"),
 	FIASHOUSEGUID        (VocBuilding.class,   null,   "Глобальный уникальный идентификатор дома по ФИАС"),
-        UUID_M_M_SERVICE     (MainMunicipalService.class, null, "Коммунальная услуга"),
+        UUID_ADD_SERVICE      (AdditionalService.class, null,    "Дополнительная услуга"),
         STARTDATE            (Type.STRING,   "Начало"),
         ENDDATE              (Type.STRING,   "Окончание"),
         UUID_ORG             (VocOrganization.class, null, "Организация - исполнитель"),
@@ -32,7 +32,7 @@ public class ActualBuildingMainMunicipalServices extends View {
     }
     
 
-    public ActualBuildingMainMunicipalServices () {        
+    public ActualBuildingAdditionalServices () {        
         
         super  (TABLE_NAME, "Коммунальные услуги, оказываемые по адресам в рамках действующих договоров управления");
 
@@ -55,9 +55,9 @@ public class ActualBuildingMainMunicipalServices extends View {
         String select = qp.toString ();
 
         return 
-            select + ActualContractMainMunicipalServices.TABLE_NAME
+            select + ActualContractAdditionalServices.TABLE_NAME
                 + " UNION " +
-            select + ActualCharterMainMunicipalServices.TABLE_NAME
+            select + ActualCharterAdditionalServices.TABLE_NAME
         ;
 
     }
