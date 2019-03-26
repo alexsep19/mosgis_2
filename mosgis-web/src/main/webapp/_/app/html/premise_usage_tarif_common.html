@@ -12,7 +12,7 @@
                 }
 
                 .w2ui-field input {
-                    width: 320px !important;
+                    width: 100px !important;
                 }
                 .w2ui-field input.long {
                     width: 640px !important;
@@ -22,11 +22,12 @@
                     width: 70px !important;
                 }
 
-                .w2ui-field div span[data-text] {
+		textarea[data-block-name=premise_usage_tarif_common] {
+		    resize: none
+		}
+
+                .w2ui-field span {
                     line-height: 19px
-                }
-                #file_label span {
-                    line-height: 12px
                 }
 
                 .w2ui-field div span[data-html] {
@@ -37,60 +38,16 @@
 
 
             <table border=0 cellpadding=0 cellspacing=0 width=90%>
-
 		<tr>
-
 		    <td class="left-block" width=1 valign=top>
-
 			<div class="w2ui-field">
-			    <label>Вид документа</label>
-			    <div>
-				<input name=code_vc_nsi_324>
-			    </div>
-			</div>
-
-			<div class="w2ui-field">
-			    <label>Номер</label>
-			    <div>
-				<input name=docnumber maxlength=50>
-			    </div>
-			</div>
-
-			<div class="w2ui-field" title="Введите полное наименование документа, например: «Федеральный закон от 21.07.2014 № 209-ФЗ О государственной информационной системе жилищно-коммунального хозяйства»">
 			    <label>Наименование</label>
 			    <div>
-				<input name=name maxlength=1000>
-			    </div>
-			</div>
-
-			<div class="w2ui-field">
-			    <label>Дата принятия ОГВ</label>
-			    <div>
-				<input name=approvedate placeholder="" class=dt />
-			    </div>
-			</div>
-
-			<div class="w2ui-field protocol" data-off=__read_only>
-			    <label>Документ</label>
-			    <div>
-				<input name=files style="width:300px" />
-			    </div>
-			</div>
-
-			<div class="w2ui-field" data-on=__read_only>
-			    <label>Документ</label>
-			    <div class=name id=file_label>
-				<u><span data-text=label></span></u>
-			    </div>
-			</div>
-
-			<div class="w2ui-field">
-			    <label>Действует</label>
-			    <div>
-				<input name=scope>
+				<textarea name=name maxlength=4000 cols=58 />
 			    </div>
 			</div>
 		    </td>
+
 		    <td valign=top>
 
 			<table border=0 cellpadding=0 cellspacing=0 width=100% class=sync>
@@ -107,7 +64,7 @@
 				</td>
 			    </tr>
 
-			    <tr>
+			    <tr data-on=err_text >
 				<th colspan=2 data-text=err_text></th>
 			    </tr>
 
@@ -115,17 +72,55 @@
 		    </td>
 		</tr>
 		<tr>
+		    <td class="left-block" width=1 valign=top>
+			<div class="w2ui-field">
+			    <label>Дата начала действия</label>
+			    <div>
+				<input name=datefrom placeholder="" class=dt />
+			    </div>
+			</div>
+		    </td>
+		    <td>
+			<div class="w2ui-field">
+			    <label>Дата окончания действия</label>
+			    <div>
+				<input name=dateto placeholder="" class=dt />
+			    </div>
+			</div>
+		    </td>
+		</tr>
+		<tr>
+		    <td class="left-block" width=1 valign=top>
+			<div class="w2ui-field">
+			    <label>Величина</label>
+			    <div>
+				<input name=price>
+			    </div>
+			</div>
+
+		    </td>
+		    <td>
+			<div class="w2ui-field">
+			    <label>Единица измерения</label>
+			    <div>
+				<span>руб./кв.метр</span>
+			    </div>
+			</div>
+		    </td>
+		</tr>
+
+		<tr>
 		    <td colspan="2" id="oktmo">
 
 			<div class="w2ui-field" data-off=__read_only>
-			    <label>ОКТМО</label>
+			    <label>Территория действия</label>
 			    <div>
 				<input name=oktmo class=long />
 			    </div>
 			</div>
 
 			<div class="w2ui-field" data-on=__read_only>
-			    <label>ОКТМО</label>
+			    <label>Территория действия</label>
 			    <div>
 				<span data-list=oktmo_list data-html=html>
 				</span>
@@ -140,9 +135,9 @@
         <div class="w2ui-buttons">
             <span>
 
-                <button class=w2ui-btn name=approve      data-on=__read_only>Разместить</button>
-                <button class=w2ui-btn name=alter        data-on=__read_only>Изменить</button>
-		<button class=w2ui-btn name=annul        data-on=__read_only>Аннулировать</button>
+                <!--<button class=w2ui-btn name=approve      data-on=__read_only>Разместить</button>-->
+                <!--<button class=w2ui-btn name=alter        data-on=__read_only>Изменить</button>-->
+		<!--<button class=w2ui-btn name=annul        data-on=__read_only>Аннулировать</button>-->
 
                 <button class=w2ui-btn name=edit   data-on=__read_only>Редактировать</button>
                 <button class=w2ui-btn name=update data-off=__read_only>Сохранить</button>

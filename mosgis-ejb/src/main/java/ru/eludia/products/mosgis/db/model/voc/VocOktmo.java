@@ -73,5 +73,5 @@ public class VocOktmo extends Table {
         return oktmoRef;
         
     }
-    
+    public static String CODE_MOSCOW = "45000000";
 }

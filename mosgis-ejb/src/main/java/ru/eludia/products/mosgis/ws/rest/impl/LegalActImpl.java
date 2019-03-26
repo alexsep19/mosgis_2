@@ -271,7 +271,6 @@ public class LegalActImpl extends BaseCRUD<LegalAct> implements LegalActLocal  {
 	    .toMaybeOne(VocOrganization.class, "AS org", "label").on("root.uuid_org = org.uuid")
             .toOne   (LegalActLog.class, "AS log").on ()
             .toMaybeOne (OutSoap.class, "AS soap", "*").on ("log.uuid_out_soap=soap.uuid")
-            .where   ("id_status", VocFileStatus.i.LOADED.getId ())
             .orderBy ("root.approvedate DESC")
         ;
 
@@ -282,12 +281,15 @@ public class LegalActImpl extends BaseCRUD<LegalAct> implements LegalActLocal  {
 
     private void filterOffDeleted(Select select) {
 	select.and(EnTable.c.IS_DELETED, Operator.EQ, 0);
+	select.and("id_status", VocFileStatus.i.LOADED.getId());
     }
 
     private void applyComplexSearch(final ComplexSearch search, Select select) {
 
 	search.filter(select, "");
-	if (!search.getFilters().containsKey("is_deleted")) {
+	if (!search.getFilters().containsKey("is_deleted")
+	    && !search.getFilters().containsKey("id_ctr_status")
+	) {
 	    filterOffDeleted(select);
 	}
 
@@ -321,7 +323,7 @@ public class LegalActImpl extends BaseCRUD<LegalAct> implements LegalActLocal  {
 	Nsi324.addTo(job, db);
 	VocLegalActLevel.addTo(job);
 	VocAction.addTo(job);
-	VocGisStatus.addTo(job);
+	VocGisStatus.addLiteTo(job);
     });}
 
     @Override

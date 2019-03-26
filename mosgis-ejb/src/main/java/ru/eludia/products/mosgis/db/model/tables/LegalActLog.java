@@ -84,12 +84,16 @@ public class LegalActLog extends GisWsLogTable {
 
 	result.setDocumentType(NsiTable.toDom(r, "vc_nsi_324"));
 
-	List<Map<String, Object>> oktmos = (List<Map<String, Object>>) r.get("oktmos");
-	Map<String, Object> o = oktmos.get(0);
-	if (o == null || o.isEmpty()){
-	    throw new IllegalStateException("No municipal legal act oktmos fetched: " + r);
+	if (DB.ok(r.get(LegalAct.c.SCOPE.lc()))) {
+	    List<Map<String, Object>> oktmos = (List<Map<String, Object>>) r.get("oktmos");
+	    Map<String, Object> o = oktmos.get(0);
+	    if (o == null || o.isEmpty()){
+		throw new IllegalStateException("No municipal legal act oktmos fetched: " + r);
+	    }
+	    result.setMunicipal(VocOktmo.createOKTMORef(DB.to.Long(o.get("code"))));
+	} else {
+	    result.setMunicipal(VocOktmo.createOKTMORef(DB.to.Long(VocOktmo.CODE_MOSCOW)));
 	}
-	result.setMunicipal(VocOktmo.createOKTMORef(DB.to.Long(o.get("code"))));
 
 	result.setAttachment(LegalAct.toAttachmentType(r));
 
