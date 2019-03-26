@@ -104,13 +104,11 @@ public class PaymentDocument extends EnTable {
                 
             + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, CODE_VC_NSI_50) VALUES (:NEW.UUID, :NEW.UUID_ORG, 1, 1);"
 
-            + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, CODE_VC_NSI_50) SELECT :NEW.UUID UUID_PAY_DOC, :NEW.UUID_ORG UUID_ORG, 2 ID_TYPE, mms.uuid UUID_M_M_SERVICE"
-                    + " FROM  " + MainMunicipalService.TABLE_NAME + "  mms"
-                    + " "
-                    + ""
-                    + ""
-                    + ""
-                    + ";"
+            + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_M_M_SERVICE) SELECT :NEW.UUID UUID_PAY_DOC, mms.UUID_ORG, 2 ID_TYPE, mms.UUID_M_M_SERVICE"
+                + " FROM  " + ActualBuildingMainMunicipalServices.TABLE_NAME + "  mms "
+                + " WHERE FIASHOUSEGUID = (SELECT FIASHOUSEGUID"
+                + " FROM " + Account.TABLE_NAME 
+                + " WHERE uuid=:NEW.UUID_ACCOUNT);"
                     
             + " END; "
 

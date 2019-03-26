@@ -24,6 +24,7 @@ public class ActualContractMainMunicipalServices extends View {
             "  , ms.uuid uuid_m_m_service" +
             "  , cs.startdate" +
             "  , cs.enddate " +
+            "  , co.uuid_org " +
             "FROM" +
             "  vw_contract_objects co " +
             "  INNER JOIN tb_contract_services cs ON (cs.uuid_contract_object=co.uuid AND cs.is_deleted=0 AND cs.is_additional=0) " +

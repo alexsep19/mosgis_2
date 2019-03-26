@@ -1,11 +1,15 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.View;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 
 public class ActualBuildingMainMunicipalServices extends View {
     
@@ -18,6 +22,7 @@ public class ActualBuildingMainMunicipalServices extends View {
         UUID_M_M_SERVICE     (MainMunicipalService.class, null, "Коммунальная услуга"),
         STARTDATE            (Type.STRING,   "Начало"),
         ENDDATE              (Type.STRING,   "Окончание"),
+        UUID_ORG             (VocOrganization.class, null, "Организация - исполнитель"),
         ;        
 
         @Override
@@ -40,11 +45,21 @@ public class ActualBuildingMainMunicipalServices extends View {
 
     @Override
     public final String getSQL () {
+        
+        QP qp = new QP ("SELECT ");
+        for (c c: c.values ()) {
+            qp.append (c.name ());
+            qp.append (',');
+        }
+        qp.setLastChar (' ');
+        qp.append ("FROM ");
+
+        String select = qp.toString ();
 
         return 
-            "SELECT * FROM " + ActualContractMainMunicipalServices.TABLE_NAME
+            select + ActualContractMainMunicipalServices.TABLE_NAME
                 + " UNION " +
-            "SELECT * FROM " + ActualCharterMainMunicipalServices.TABLE_NAME
+            select + ActualCharterMainMunicipalServices.TABLE_NAME
         ;
 
     }

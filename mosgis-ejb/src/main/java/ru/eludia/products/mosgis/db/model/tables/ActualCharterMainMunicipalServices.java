@@ -24,6 +24,7 @@ public class ActualCharterMainMunicipalServices extends View {
             "  , ms.uuid uuid_m_m_service" +
             "  , cs.startdate" +
             "  , cs.enddate " +
+            "  , co.uuid_org " +
             "FROM" +
             "  vw_charter_objects co " +
             "  INNER JOIN tb_charter_services cs ON (cs.uuid_charter_object=co.uuid AND cs.is_deleted=0 AND cs.is_additional=0) " +
