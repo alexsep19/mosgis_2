@@ -26,18 +26,6 @@ define ([], function () {
         use.block ('vc_oh_wk_types_popup')
     }
 
-    $_DO.edit_vc_oh_wk_types = function (e) {
-        var grid = w2ui ['vc_oh_wk_types_grid']
-        $_SESSION.set ('record', grid.get (grid.getSelection () [0]))
-        use.block ('vc_oh_wk_types_popup')
-    }
-
-    $_DO.delete_vc_oh_wk_types = function (e) {
-        var grid = w2ui ['vc_oh_wk_types_grid']
-        if (!confirm ('Удалить эту запись, Вы уверены?')) return        
-        query ({type: 'voc_overhaul_work_types', action: 'delete', id: grid.getSelection () [0]}, {}, reload_page)
-    }
-
     return function (done) {
     
         var layout = w2ui ['vocs_layout']

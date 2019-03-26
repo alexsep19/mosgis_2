@@ -160,7 +160,7 @@ public class VocOverhaulWorkTypesImpl extends BaseCRUD<VocOverhaulWorkType> impl
 
 	    final Map<String, Object> r = HASH(
 		EnTable.c.UUID, id,
-		VocOverhaulWorkType.c.ID_OWT_STATUS, VocGisStatus.i.PROJECT.getId()
+		VocOverhaulWorkType.c.ID_OWT_STATUS, VocGisStatus.i.MUTATING.getId()
 	    );
 
 	    db.update(getTable(), r);

@@ -34,6 +34,29 @@ define ([], function () {
             data.item.voc_code = data.item.code ? data.item.code : 'Отсутствует'
             data.item.actuality = data.item.isactual ? 'Актуально' : 'Не актуально'
 
+            var it = data.item
+
+            it._can = {cancel: 1}
+
+            var is_locked = it.is_deleted || !$_USER.role.nsi_20_7
+
+            if (!is_locked) {
+
+                switch (it.id_owt_status) {
+                    case 10:
+                    case 14:
+                        it._can.edit = 1
+                }
+
+                it._can.delete = it._can.update = it._can.edit
+
+                switch (it.id_owt_status) {
+                    case 40:
+                        it._can.alter = 1
+                }
+                
+            }
+
             $('body').data ('data', data)
     
             done (data)
