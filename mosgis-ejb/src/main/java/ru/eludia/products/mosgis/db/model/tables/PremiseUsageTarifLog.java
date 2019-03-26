@@ -8,7 +8,7 @@ public class PremiseUsageTarifLog extends GisWsLogTable {
 
     public PremiseUsageTarifLog () {
 
-        super ("tb_pu_usage_tfs__log", "История редактирования тарифов Размер платы за пользование жилым помещением", PremiseUsageTarif.class
+        super ("tb_pu_tfs__log", "История редактирования тарифов Размер платы за пользование жилым помещением", PremiseUsageTarif.class
             , EnTable.c.class
             , PremiseUsageTarif.c.class
         );

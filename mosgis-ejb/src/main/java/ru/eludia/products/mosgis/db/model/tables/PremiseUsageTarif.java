@@ -10,7 +10,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 
 public class PremiseUsageTarif extends EnTable  {
 
-    public static final String TABLE_NAME = "tb_pu_usage_tfs";
+    public static final String TABLE_NAME = "tb_pu_tfs";
 
     public enum c implements EnColEnum {
 	UUID_ORG               (VocOrganization.class, "Организация, которая завела данный тариф в БД"),
