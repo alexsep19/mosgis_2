@@ -12,6 +12,7 @@ import javax.json.JsonString;
 import ru.eludia.base.DB;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.tables.PremiseUsageTarif;
 import ru.eludia.products.mosgis.db.model.tables.PremiseUsageTarifLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -150,6 +151,36 @@ public class PremiseUsageTarifImpl extends BaseCRUD<PremiseUsageTarif> implement
         return jb.build ();
         
     }
+
+    @Override
+    public JsonObject doCreate(JsonObject p, User user) { return doAction((db, job) -> {
+
+	final Table table = getTable();
+
+	Map<String, Object> data = getData(p);
+
+	if (!data.containsKey(UUID_ORG)) {
+	    data.put(UUID_ORG, user.getUuidOrg());
+	}
+
+	Object insertId = db.insertId(table, data);
+
+	job.add("id", insertId.toString());
+
+	if (p.getJsonObject("data").containsKey("oktmo")) {
+
+	    PremiseUsageTarifOktmo.store(db, insertId.toString()
+		, p.getJsonObject("data").getJsonArray("oktmo").getValuesAs(JsonString.class).stream()
+		    .map((t) -> {
+			return DB.HASH("id", t.getString());
+		    })
+		    .collect(Collectors.toList())
+	    );
+	}
+
+	logAction(db, user, insertId, VocAction.i.CREATE);
+
+    });}
 
     @Override
     public JsonObject doUpdate(String id, JsonObject p, User user) {return doAction(db -> {
