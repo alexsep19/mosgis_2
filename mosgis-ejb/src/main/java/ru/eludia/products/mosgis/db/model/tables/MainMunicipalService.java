@@ -13,9 +13,11 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 
 public class MainMunicipalService extends Table {
 
+    public static final String TABLE_NAME = "tb_municipal_svc";
+    
     public MainMunicipalService () {
         
-        super ("tb_municipal_svc", "Коммунальные услуги");
+        super (TABLE_NAME, "Коммунальные услуги");
         
         pk    ("uuid",                     Type.UUID,           NEW_UUID,   "Ключ");
         fk    ("uuid_org",                 VocOrganization.class,                      "Организация");

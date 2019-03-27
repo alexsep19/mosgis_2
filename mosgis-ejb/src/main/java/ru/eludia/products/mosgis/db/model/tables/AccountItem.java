@@ -12,6 +12,8 @@ import ru.gosuslugi.dom.schema.integration.house_management.AccountType;
 
 public class AccountItem extends EnTable {
 
+    public static final String TABLE_NAME = "tb_account_items";
+    
     public enum c implements EnColEnum {
         
         UUID_ACCOUNT           (Account.class,  "Лицевой счёт"),
@@ -44,11 +46,18 @@ public class AccountItem extends EnTable {
     }
 
     public AccountItem () {
-        
-        super  ("tb_account_items", "Лицевые счета / помещения");
-        cols   (c.class);
-        key    ("uuid_account", c.UUID_ACCOUNT.lc ());
-        
+
+        super  (TABLE_NAME, "Лицевые счета / помещения");
+
+        cols (c.class);
+        key  (c.UUID_ACCOUNT);
+
+        trigger ("AFTER INSERT OR UPDATE", ""
+            + " BEGIN "
+            + "  UPDATE " + Account.TABLE_NAME + " SET FIASHOUSEGUID=:NEW.FIASHOUSEGUID WHERE uuid=:NEW.UUID_ACCOUNT;"
+            + " END;"
+        );
+
     }
     
     static AccountType.Accommodation toAccommodation (Map<String, Object> r) {
