@@ -1,0 +1,183 @@
+<span
+    data-popup-width=540
+    data-popup-height=240
+    data-popup-title='Критерий дифференциации'
+    >
+
+    <style>
+
+        label[data-block-name=tarif_diffs_popup] {
+            width: 160px;
+            margin-right: 10px;
+        }
+
+	textarea[data-block-name=tarif_diffs_popup] {
+	    resize: none;
+	    width: 325px;
+	}
+
+        input[data-block-name=tarif_diffs_popup] {
+            width: 325px !important;
+        }
+        input.number[data-block-name=tarif_diffs_popup] {
+            width: 100px !important;
+        }
+        input.short[data-block-name=tarif_diffs_popup] {
+            width: 120px !important;
+        }
+    </style>
+
+    <div class="w2ui-reset w2ui-form" style="height:190px;margin:8px 0 0 0;" >
+
+        <div class="w2ui-page page-0">
+	    <table width=100% border=0 cellpadding=0 cellspacing=0>
+		<tr id="tr_code_diff">
+		    <td>
+			<div class="w2ui-field">
+			    <label>Критерий дифференциации</label>
+			    <div>
+				<input name=uuid_tf type=hidden />
+				<input name=id_type type=hidden />
+				<input name=code_diff readonly />
+			    </div>
+			</div>
+		    </td>
+		</tr>
+		<tr style="display:none" id="tr_operator">
+		    <td>
+			<div class="w2ui-field">
+			    <label>Оператор</label>
+			    <div>
+				<input name=operator />
+			    </div>
+			</div>
+
+		    </td>
+		</tr>
+		<tr style="display:none" id="tr_valuereal">
+		    <td>
+			<div class="w2ui-field">
+			    <label>Значение</label>
+			    <div>
+				<span class=from>от</span>
+				<input name=valuereal class="short" maxlength=20 />
+				<span class=to>до
+				    <input name=valuereal_to class="short" maxlength=20 />
+				</span>
+			    </div>
+			</div>
+		    </td>
+		</tr>
+		<tr style="display:none" id="tr_valueinteger">
+		    <td>
+			<div class="w2ui-field">
+			    <label>Значение</label>
+			    <div>
+				<span class=from>от</span>
+				<input name=valueinteger class="short" maxlength=20 />
+				<span class=to>до
+				    <input name=valueinteger_to class="short" maxlength=20 />
+				</span>
+			    </div>
+			</div>
+		    </td>
+		</tr>
+		<tr style="display:none" id="tr_valueboolean">
+		    <td>
+			<div class="w2ui-field">
+			    <label>Значение</label>
+			    <div>
+				<input name=valueboolean class=checkbox />
+			    </div>
+			</div>
+		    </td>
+		</tr>
+		<tr style="display:none" id="tr_valuestring">
+		    <td>
+			<div class="w2ui-field" >
+			    <label>Значение</label>
+			    <div>
+				<input name=valuestring maxlength=4000>
+			    </div>
+			</div>
+		    </td>
+		</tr>
+
+		<tr style="display:none" id="tr_label">
+		    <td>
+			<div class="w2ui-field">
+			    <label>Наименование критерия</label>
+			    <div>
+				<input name=label />
+			    </div>
+			</div>
+		    </td>
+		</tr>
+		<tr style="display:none" id="tr_valuemultiline">
+		    <td>
+			<div class="w2ui-field" >
+			    <label>Значение</label>
+			    <div>
+				<textarea name=valuemultiline rows=2 cols=50 maxlength=2000 />
+			    </div>
+			</div>
+		    </td>
+		</tr>
+		<tr style="display:none" id="tr_valuedate">
+		    <td>
+			<div class="w2ui-field">
+			    <label>Значение</label>
+			    <div>
+				<span class=from>от</span>
+				<input name=valuedate class="short" maxlength=20 />
+				<span class=to>до
+				    <input name=valuedate_to class="short" maxlength=20 />
+				</span>
+			    </div>
+			</div>
+		    </td>
+		</tr>
+		<tr style="display:none" id="tr_valueyear">
+		    <td>
+			<div class="w2ui-field">
+			    <label>Значение</label>
+			    <div>
+				<span class=from>от</span>
+				<input name=valueyear class="short" maxlength=4 />
+				<span class=to>до
+				    <input name=valueyear_to class="short" maxlength=4 />
+				</span>
+			    </div>
+			</div>
+		    </td>
+		</tr>
+		<tr style="display:none" id="tr_fias">
+		    <td>
+			<div class="w2ui-field">
+			    <label>Адрес:</label>
+			    <div>
+				<input name=fias />
+			    </div>
+			</div>
+		    </td>
+		</tr>
+		<tr style="display:none" id="tr_oktmo">
+		    <td>
+			<div class="w2ui-field">
+			    <label>ОКТМО</label>
+			    <div>
+				<input name=oktmo />
+			    </div>
+			</div>
+		    </td>
+		</tr>
+	    </table>
+        </div>
+
+        <div class="w2ui-buttons">
+            <button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+    </div>
+
+</span>

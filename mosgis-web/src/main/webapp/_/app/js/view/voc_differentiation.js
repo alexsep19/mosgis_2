@@ -2,9 +2,9 @@ define ([], function () {
 
     return function (data, view) {
     
-        data = $('body').data ('data')
+        var is_popup = 1 == $_SESSION.delete('voc_differentiation_popup.on')
 
-        $(w2ui ['vocs_layout'].el ('main')).w2regrid ({
+        $((w2ui ['popup_layout'] || w2ui ['vocs_layout']).el ('main')).w2regrid ({
 
             name: 'voc_differentiation_grid',
 
@@ -19,8 +19,10 @@ define ([], function () {
             toolbar: {
 
                 items: [
-                    {type: 'button', id: 'edit', caption: 'Обновить', onClick: $_DO.import_voc_differentiation, icon: 'w2ui-icon-pencil'},
-                ],
+                    {type: 'button', id: 'edit', caption: 'Обновить', onClick: $_DO.import_voc_differentiation, icon: 'w2ui-icon-pencil'
+                        , off: is_popup
+                    }
+                ].filter(not_off),
             
             },
 
@@ -39,8 +41,18 @@ define ([], function () {
             
             records: data.records,
             
-            onDblClick: null,
-            
+            onDblClick: function (e) {
+
+                var r = this.get (e.recid)
+
+                if (is_popup) {
+
+                    $_SESSION.set ('voc_differentiation_popup.data', clone (r))
+
+                    w2popup.close ()
+
+                }
+            }
         }).refresh ()
         
         if (!data.records.length) setTimeout ($_DO.check_voc_differentiation, 10)
