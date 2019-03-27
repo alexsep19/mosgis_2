@@ -6,6 +6,7 @@ import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocChargeInfoType;
+import ru.eludia.products.mosgis.db.model.voc.VocConsumptionVolumeDeterminingMethod;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 
 public class ChargeInfo extends EnTable {
@@ -28,6 +29,12 @@ public class ChargeInfo extends EnTable {
         ACCOUNTINGPERIODTOTAL (Type.NUMERIC, 13, 2, null,   "Всего начислено за расчетный период (без перерасчетов и льгот), руб."),
         
         CALCEXPLANATION       (Type.STRING,  null,          "Порядок расчетов"),
+
+        CONS_I_VOL            (Type.NUMERIC, 22, 7, null,   "Потреблённый объём услуги / индивидульное потребление"),
+        CONS_I_DTRM_METH      (VocConsumptionVolumeDeterminingMethod.class, "Способ определения объёма / индивидульное потребление"),
+        
+        CONS_O_VOL            (Type.NUMERIC, 22, 7, null,   "Потреблённый объём услуги / общедомовые нужды"),
+        CONS_O_DTRM_METH      (VocConsumptionVolumeDeterminingMethod.class, "Способ определения объёма / общедомовые нужды"),
         
         ID_LOG                (ChargeInfoLog.class,         "Последнее событие редактирования"),
 

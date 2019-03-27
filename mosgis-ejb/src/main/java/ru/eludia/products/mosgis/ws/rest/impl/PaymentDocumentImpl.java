@@ -27,6 +27,7 @@ import ru.eludia.products.mosgis.db.model.tables.ChargeInfo;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import ru.eludia.products.mosgis.db.model.voc.VocConsumptionVolumeDeterminingMethod;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.PaymentDocumentLocal;
@@ -158,7 +159,8 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
         VocPaymentDocumentType.addTo (job);
         VocGisStatus.addTo (job);
         VocAction.addTo (job);
-
+        VocConsumptionVolumeDeterminingMethod.addTo (job);
+        
     });}
 
     @Override
