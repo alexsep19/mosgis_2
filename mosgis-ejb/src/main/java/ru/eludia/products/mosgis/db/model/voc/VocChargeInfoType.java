@@ -17,7 +17,7 @@ public class VocChargeInfoType extends Table {
     }
     
     public enum c implements ColEnum {        
-        ID         (Type.NUMERIC, 1, "Идентификатор"),
+        ID         (Type.NUMERIC, 2, "Идентификатор"),
         LABEL      (Type.STRING,     "Наименование");        
                                                                                     @Override public Col getCol () {return col;} private Col col; private c (Type type, Object... p) {col = new Col (this, type, p);}
     }

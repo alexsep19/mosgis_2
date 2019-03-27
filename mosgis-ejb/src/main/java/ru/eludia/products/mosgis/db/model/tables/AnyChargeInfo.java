@@ -17,6 +17,7 @@ public class AnyChargeInfo extends View {
         LABEL_TYPE           (Type.STRING,   "Тип"),
         LABEL                (Type.STRING,   "Услуга"),
         OKEI                 (VocOkei.class, "Единицы измерения (ОКЕИ)"),
+        SORTORDER            (Type.STRING,   "Порядок сортировки"),
         ;
 
         @Override
@@ -55,13 +56,15 @@ public class AnyChargeInfo extends View {
         return sb.toString ()
             + " o.uuid id "
             + " , t.label " + c.LABEL_TYPE
-            + " , COALESCE (m.label, a.label, n.label) " + c.LABEL
-            + " , COALESCE (m.okei,  a.okei,  n.okei) " + c.OKEI
+            + " , COALESCE (m.label, a.label, n.label, g.generalmunicipalresourcename) " + c.LABEL
+            + " , COALESCE (m.okei,  a.okei,  n.okei,  g.okei) " + c.OKEI
+            + " , COALESCE (m.label, a.label, n.label, g.sortorder) " + c.SORTORDER
             + " FROM " + ChargeInfo.TABLE_NAME + " o"
             + " INNER JOIN " + VocChargeInfoType.TABLE_NAME + " t ON t.id = o." + ChargeInfo.c.ID_TYPE
             + " LEFT  JOIN " + MainMunicipalService.TABLE_NAME + " m ON m.uuid = " + ChargeInfo.c.UUID_M_M_SERVICE
             + " LEFT  JOIN " + AdditionalService.TABLE_NAME + " a ON a.uuid = " + ChargeInfo.c.UUID_ADD_SERVICE
             + " LEFT  JOIN " + Nsi50.TABLE_NAME + " n ON n.id = " + ChargeInfo.c.CODE_VC_NSI_50
+            + " LEFT  JOIN " + GeneralNeedsMunicipalResource.TABLE_NAME + " g ON n.id = " + ChargeInfo.c.UUID_GEN_NEED_RES
         ;
 
     }
