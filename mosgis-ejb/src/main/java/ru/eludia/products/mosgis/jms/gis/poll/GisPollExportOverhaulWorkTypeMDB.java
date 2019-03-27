@@ -17,6 +17,8 @@ import ru.eludia.products.mosgis.db.model.voc.VocOverhaulWorkType;
 import ru.eludia.products.mosgis.db.model.voc.VocOverhaulWorkTypeLog;
 import ru.eludia.products.mosgis.db.model.voc.VocOverhaulWorkType.c;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.ws.soap.clients.WsGisNsiClient;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
@@ -73,18 +75,17 @@ public class GisPollExportOverhaulWorkTypeMDB extends GisPollMDB {
             String uniqueNumber = result.getUniqueNumber ();
             String guid = result.getGUID ();
             
-            if (uniqueNumber != null && guid != null) {
-                db.update (VocOverhaulWorkType.class, HASH (
-                    "uuid", r.get ("log.uuid_object"),
-                    "uniquenumber", uniqueNumber,
-                    "guid", guid
-                ));
-                db.update (VocOverhaulWorkTypeLog.class, HASH (
-                    "uuid", r.get ("log.uuid"),
-                    "uniquenumber", uniqueNumber,
-                    "guid", guid
-                ));
-            }
+            final Map<String, Object> h = statusHash (action.getOkStatus ());
+            
+            h.put (c.CODE.lc (), uniqueNumber);
+            h.put (c.GUID.lc (), guid);
+            
+            update (db, uuid, r, h);
+            
+            db.update (OutSoap.class, HASH (
+                "uuid", getUuid (),
+                "id_status", DONE.getId ()
+            ));
             
         }
         catch (GisPollRetryException ex) {

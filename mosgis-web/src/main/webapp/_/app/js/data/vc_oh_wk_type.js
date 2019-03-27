@@ -43,8 +43,9 @@ define ([], function () {
             if (!is_locked) {
 
                 switch (it.id_owt_status) {
-                    case 10:
+                    case 11:
                     case 14:
+                    case 34:
                         it._can.edit = 1
                 }
 

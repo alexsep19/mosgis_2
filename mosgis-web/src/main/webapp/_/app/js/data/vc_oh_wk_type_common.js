@@ -57,6 +57,11 @@ define ([], function () {
         if (!confirm ('Удалить эту запись, Вы уверены?')) return
         query ({type: 'voc_overhaul_work_types', action: 'delete'}, {}, reload_page)
     }
+
+    $_DO.alter_vc_oh_wk_type_common = function (e) {
+        if (!confirm ('Открыть эту запись на редактирование?')) return
+        query ({type: 'voc_overhaul_work_types', action: 'alter'}, {}, reload_page)
+    }
     
     $_DO.choose_tab_vc_oh_wk_type_common = function (e) {
     
