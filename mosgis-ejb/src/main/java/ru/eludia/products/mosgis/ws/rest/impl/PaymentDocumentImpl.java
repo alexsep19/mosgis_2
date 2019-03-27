@@ -22,9 +22,12 @@ import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.Account;
 import ru.eludia.products.mosgis.db.model.tables.AccountItem;
+import ru.eludia.products.mosgis.db.model.tables.AnyChargeInfo;
+import ru.eludia.products.mosgis.db.model.tables.ChargeInfo;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.PaymentDocumentLocal;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
@@ -195,4 +198,18 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
         
     });}    
 */    
+
+    @Override
+    public JsonObject getChargeInfo (String id, User user) {{return fetchData ((db, job) -> {                
+
+        Select select = ModelHolder.getModel ().select (AnyChargeInfo.class, "AS root", "*")
+            .toMaybeOne (VocOkei.class, VocOkei.c.NATIONAL.lc () + " AS unit").on ()
+            .where   (ChargeInfo.c.UUID_PAY_DOC, id)
+            .orderBy ("root." + ChargeInfo.c.ID_TYPE)
+            .orderBy ("root." + AnyChargeInfo.c.LABEL.lc ())
+        ;
+
+        db.addJsonArrays (job, select);
+
+    });}}
 }

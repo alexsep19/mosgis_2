@@ -6,6 +6,7 @@ import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.voc.VocChargeInfoType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPaymentDocumentType;
@@ -82,18 +83,44 @@ public class PaymentDocument extends EnTable {
             + "DECLARE" 
             + "  PRAGMA AUTONOMOUS_TRANSACTION; "
             + " BEGIN "
-
+/*
             + " IF :NEW.ID_TYPE = " + VocPaymentDocumentType.i.REGULAR + " THEN BEGIN "
             + "   FOR i IN (SELECT uuid FROM " + TABLE_NAME + " WHERE uuid<>:NEW.uuid AND UUID_ACCOUNT=:NEW.UUID_ACCOUNT AND YEAR=:NEW.YEAR AND MONTH=:NEW.MONTH AND ID_TYPE=:NEW.ID_TYPE AND is_deleted=0 AND ID_CTR_STATUS NOT IN (" + VocGisStatus.i.ANNUL + ")) LOOP"
             + "     raise_application_error (-20000, 'Текущий платёжный документ на данный период уже зарегистрирован. Операция отменена.'); "
             + "   END LOOP; "
             + " END; END IF; "
-                    
+*/                    
             + " :NEW.dt_period := TO_DATE (:NEW.year || LPAD (:NEW.month, 2, '0') || '01', 'YYYYMMDD'); "
 
             + "END; "
 
         );                
+        
+        trigger ("AFTER INSERT", ""
+
+            + "DECLARE" 
+//            + "  PRAGMA AUTONOMOUS_TRANSACTION; "
+                
+            + " BEGIN "
+                
+            + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, CODE_VC_NSI_50) VALUES (:NEW.UUID, :NEW.UUID_ORG, " + VocChargeInfoType.i.HOUSING + ", 1);"
+
+            + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_M_M_SERVICE) SELECT :NEW.UUID UUID_PAY_DOC, mms.UUID_ORG, " + VocChargeInfoType.i.MUNICIPAL + " ID_TYPE, mms.UUID_M_M_SERVICE"
+                + " FROM  " + ActualBuildingMainMunicipalServices.TABLE_NAME + "  mms "
+                + " WHERE FIASHOUSEGUID = (SELECT FIASHOUSEGUID"
+                + " FROM " + Account.TABLE_NAME 
+                + " WHERE uuid=:NEW.UUID_ACCOUNT) AND :NEW.dt_period BETWEEN STARTDATE AND ENDDATE;"
+
+            + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_ADD_SERVICE) SELECT :NEW.UUID UUID_PAY_DOC, ads.UUID_ORG, " + VocChargeInfoType.i.ADDITIONAL + " ID_TYPE, ads.UUID_ADD_SERVICE"
+                + " FROM  " + ActualBuildingAdditionalServices.TABLE_NAME + " ads "
+                + " WHERE FIASHOUSEGUID = (SELECT FIASHOUSEGUID"
+                + " FROM " + Account.TABLE_NAME 
+                + " WHERE uuid=:NEW.UUID_ACCOUNT) AND :NEW.dt_period BETWEEN STARTDATE AND ENDDATE;"
+
+            + " END; "
+
+        );                
+        
 
     }
 /*

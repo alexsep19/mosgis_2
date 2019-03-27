@@ -7,6 +7,7 @@ import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocAccountType;
+import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
@@ -23,6 +24,8 @@ public class Account extends EnTable {
 	UUID_CONTRACT          (Contract.class,               null, "Ссылка на договор"),
         UUID_CHARTER           (Charter.class,                null, "Ссылка на устав"),
         UUID_SR_CONTRACT       (SupplyResourceContract.class, null, "Ссылка на договор поставки ресурсов"),
+        
+	FIASHOUSEGUID          (VocBuilding.class,   null,   "Глобальный уникальный идентификатор дома по ФИАС"),
 
         ACCOUNTNUMBER          (Type.STRING,  30,    null,  "Причина закрытия (НСИ 22)"),
         
