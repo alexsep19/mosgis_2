@@ -41,7 +41,10 @@ public class ChargeInfo extends EnTable {
 
         MONEYRECALCULATION    (Type.NUMERIC, 13, 2, null,   "Перерасчеты, корректировки, руб."),
         MONEYDISCOUNT         (Type.NUMERIC, 13, 2, null,   "Льготы, субсидии, скидки, руб."),
-        
+
+        RATIO                 (Type.NUMERIC, 5,  2, null,   "Размер повышающего коэффициента"),
+        AMOUNTOFEXCESSFEES    (Type.NUMERIC, 13, 2, null,   "Размер превышения платы, рассчитанной с применением повышающего коэффициента над размером платы, рассчитанной без учета повышающего коэффициента, руб."),
+
         ID_LOG                (ChargeInfoLog.class,         "Последнее событие редактирования"),
 
         ;

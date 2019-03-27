@@ -47,7 +47,8 @@ define ([], function () {
 
                 {master: true},
                 
-                {span: 2, caption: 'Корректировки, руб'},                
+                {span: 2, caption: 'Повышающий коэффициент'},
+                {span: 2, caption: 'Корректировки, руб'},
                 
                 {master: true},
                 
@@ -68,6 +69,9 @@ define ([], function () {
                 {field: 'cons_o_dtrm_meth', caption: 'Определён по', size: 10, editable: {type: 'list'}, voc: data.vc_cnsmp_vol_dtrm},
 
                 {field: 'unit', caption: 'Ед. изм.', size: 10},                
+
+                {field: 'ratio', caption: 'Коэффициент', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, keyboard: false, min: 0}},
+                {field: 'amountofexcessfees', caption: 'Размер превышения платы', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, keyboard: false}},
 
                 {field: 'moneyrecalculation', caption: 'Перерасчет', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, keyboard: false}},
                 {field: 'moneydiscount', caption: 'Субсидии, скидки', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, keyboard: false}},
