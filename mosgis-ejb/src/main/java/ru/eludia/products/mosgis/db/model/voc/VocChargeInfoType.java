@@ -24,9 +24,10 @@ public class VocChargeInfoType extends Table {
     
     public enum i {
         
-        HOUSING    (1, "Жилищные услуги"),
-        MUNICIPAL  (2, "Коммунальные услуги"),
-        ADDITIONAL (3, "Дополнительные услуги"),
+        HOUSING    (10, "Жилищные услуги"),
+        GENERAL    (15, ", в том числе коммунальные ресурсы, потребляемые при использовании и содержании общего имущества"),
+        MUNICIPAL  (20, "Коммунальные услуги"),
+        ADDITIONAL (30, "Дополнительные услуги"),
         ;
                 
         int    id;
