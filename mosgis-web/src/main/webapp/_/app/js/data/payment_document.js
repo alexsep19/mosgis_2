@@ -22,6 +22,7 @@ define ([], function () {
         query ({type: 'payment_documents'}, {}, function (data) {        
 
             add_vocabularies (data, {
+                vc_cnsmp_vol_dtrm: 1,
                 vc_pay_doc_types: 1,
                 vc_gis_status: 1,
                 vc_actions: 1,
