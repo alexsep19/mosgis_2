@@ -85,9 +85,8 @@ public class OverhaulRegionalProgramLog extends GisWsLogTable {
             document.put ("files", db.getList (db.getModel ()
                     .select  (OverhaulRegionalProgramFile.class, "*")
                     .where   ("uuid_oh_reg_pr_doc", document.get ("uuid"))
-                    .toOne   (OverhaulRegionalProgramFileLog.class, "AS log", "ts_start_sending", "err_text")
-                        .where ("id_status", 1)
-                        .on    ()
+                    .and     ("id_status", 1)
+                    .toOne   (OverhaulRegionalProgramFileLog.class, "AS log", "ts_start_sending", "err_text").on ()
             ));
             
         }
