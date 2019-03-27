@@ -97,13 +97,16 @@ public class PaymentDocument extends EnTable {
         );                
         
         trigger ("AFTER INSERT", ""
-
-            + "DECLARE" 
-//            + "  PRAGMA AUTONOMOUS_TRANSACTION; "
                 
             + " BEGIN "
                 
             + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, CODE_VC_NSI_50) VALUES (:NEW.UUID, :NEW.UUID_ORG, " + VocChargeInfoType.i.HOUSING + ", 1);"
+                    
+            + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_GEN_NEED_RES) SELECT :NEW.UUID UUID_PAY_DOC, mms.UUID_ORG, " + VocChargeInfoType.i.GENERAL + " ID_TYPE, mms.UUID"
+                + " FROM  " + ActualBuildingGeneralNeedsMunicipalResource.TABLE_NAME + " mms "
+                + " WHERE FIASHOUSEGUID = (SELECT FIASHOUSEGUID"
+                + " FROM " + Account.TABLE_NAME 
+                + " WHERE uuid=:NEW.UUID_ACCOUNT);"
 
             + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_M_M_SERVICE) SELECT :NEW.UUID UUID_PAY_DOC, mms.UUID_ORG, " + VocChargeInfoType.i.MUNICIPAL + " ID_TYPE, mms.UUID_M_M_SERVICE"
                 + " FROM  " + ActualBuildingMainMunicipalServices.TABLE_NAME + "  mms "

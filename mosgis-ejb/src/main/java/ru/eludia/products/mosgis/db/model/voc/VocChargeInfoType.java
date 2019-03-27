@@ -17,16 +17,17 @@ public class VocChargeInfoType extends Table {
     }
     
     public enum c implements ColEnum {        
-        ID         (Type.NUMERIC, 1, "Идентификатор"),
+        ID         (Type.NUMERIC, 2, "Идентификатор"),
         LABEL      (Type.STRING,     "Наименование");        
                                                                                     @Override public Col getCol () {return col;} private Col col; private c (Type type, Object... p) {col = new Col (this, type, p);}
     }
     
     public enum i {
         
-        HOUSING    (1, "Жилищные услуги"),
-        MUNICIPAL  (2, "Коммунальные услуги"),
-        ADDITIONAL (3, "Дополнительные услуги"),
+        HOUSING    (10, "Жилищные услуги"),
+        GENERAL    (15, ", в том числе коммунальные ресурсы, потребляемые при использовании и содержании общего имущества"),
+        MUNICIPAL  (20, "Коммунальные услуги"),
+        ADDITIONAL (30, "Дополнительные услуги"),
         ;
                 
         int    id;

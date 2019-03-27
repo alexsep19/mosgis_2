@@ -39,10 +39,10 @@ define ([], function () {
 
     return function (done) {        
 
-        query ({type: 'voc_differentiation', id: null}, {}, function (data) {
+        var postData = $_SESSION.delete('voc_differentiation_popup.post_data') || {};
 
-            $('body').data ('data', data)
-            
+        query ({type: 'voc_differentiation', id: null}, postData, function (data) {
+
             add_vocabularies (data, {
                 vc_nsi_268: 1,
                 vc_diff_value_types: 1,
@@ -60,10 +60,16 @@ define ([], function () {
             })
             
             $.each (data.vc_diff_tariff, function () {
+                if(!idx [this.differentiationcode]){
+                    return
+                }
                 idx [this.differentiationcode].idx_tar [this.id] = 1
             })
 
             $.each (data.vc_diff_nsi_268, function () {
+                if (!idx [this.differentiationcode]) {
+                    return
+                }
                 idx [this.differentiationcode].idx_268 [this.code] = 1
             })
             

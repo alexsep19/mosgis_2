@@ -33,17 +33,49 @@ define ([], function () {
                 toolbar: 0,
                 footer: 1,
             },            
+            
+            columnGroups : [
+            
+                {master: true},
+                {master: true},
+                {master: true},
+                
+                {master: true},
+                
+                {span: 2, caption: 'Индивидульное потребление'},
+                {span: 2, caption: 'ОДН'},
 
-            textSearch: 'contains',
+                {master: true},
+                
+                {span: 2, caption: 'Повышающий коэффициент'},
+                {span: 2, caption: 'Корректировки, руб'},
+                
+                {master: true},
+                
+            ], 
 
             columns: [                
+            
                 {field: 'label',        caption: 'Наименование услуги', size: 100},
                 {field: 'totalpayable', caption: 'Итого к оплате за расчетный период', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, keyboard: false, min: 0}},
                 {field: 'accountingperiodtotal', caption: 'Всего начислено за расчетный период (без перерасчетов и льгот)', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, keyboard: false, min: 0}},
 
                 {field: 'rate', caption: 'Тариф', size: 10, editable: {type: 'float', precision: 6, autoFormat: true, keyboard: false, min: 0}},
 
+                {field: 'cons_i_vol', caption: 'Объём', size: 10, editable: {type: 'float', precision: 7, autoFormat: true, keyboard: false, min: 0}},
+                {field: 'cons_i_dtrm_meth', caption: 'Определён по', size: 10, editable: {type: 'list'}, voc: data.vc_cnsmp_vol_dtrm},
+
+                {field: 'cons_o_vol', caption: 'Объём', size: 10, editable: {type: 'float', precision: 7, autoFormat: true, keyboard: false, min: 0}},
+                {field: 'cons_o_dtrm_meth', caption: 'Определён по', size: 10, editable: {type: 'list'}, voc: data.vc_cnsmp_vol_dtrm},
+
                 {field: 'unit', caption: 'Ед. изм.', size: 10},                
+
+                {field: 'ratio', caption: 'Коэффициент', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, keyboard: false, min: 0}},
+                {field: 'amountofexcessfees', caption: 'Размер превышения платы', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, keyboard: false}},
+
+                {field: 'moneyrecalculation', caption: 'Перерасчет', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, keyboard: false}},
+                {field: 'moneydiscount', caption: 'Субсидии, скидки', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, keyboard: false}},
+
                 {field: 'calcexplanation', caption: 'Порядок расчётов', size: 10, editable: {type: 'text'}},
 
             ],
@@ -61,9 +93,7 @@ define ([], function () {
                 var r = grid.get (e.recid)
                 
                 if (!r.id_type) return e.preventDefault ()
-            
-darn (e)                
-            
+
             },            
             
             onRefresh: function (e) {
