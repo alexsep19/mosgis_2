@@ -25,6 +25,7 @@ import ru.gosuslugi.dom.schema.integration.capital_repair.CapRemCommonResultType
 import ru.gosuslugi.dom.schema.integration.capital_repair.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.capital_repair_service_async.Fault;
 import ru.eludia.products.mosgis.ws.soap.clients.WsGisCapitalRepairClient;
+import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 
 @MessageDriven(activationConfig = {
  @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outExportOverhaulRegionalProgramsQueue")
@@ -57,6 +58,10 @@ public class GisPollExportOverhaulRegionalProgramMDB extends GisPollMDB {
         try {
             
             GetStateResult state = getState (orgPPAGuid, r);
+            
+            final ErrorMessageType error = state.getErrorMessage ();
+            
+            if (error != null) throw new GisPollException (error);
             
             final List<CapRemCommonResultType> importResult = state.getImportResult ();
             
