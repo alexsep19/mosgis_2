@@ -8,7 +8,5 @@ import ru.eludia.products.mosgis.rest.api.base.CRUDBackend;
 public interface TarifDiffLocal extends CRUDBackend {
     
     public JsonObject getVocs ();
-//    JsonObject doApprove   (String id, User user);
-//    JsonObject doAlter     (String id, User user);
-        
+
 }
