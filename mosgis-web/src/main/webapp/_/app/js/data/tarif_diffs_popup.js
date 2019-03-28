@@ -16,6 +16,10 @@ define ([], function () {
         var value    = v[field]
         var value_to = v[field_to]
 
+        if(!v.operator && ['Real', 'Integer', 'Enumeration', 'Date', 'Year'].indexOf(id_type) != -1) {
+            die('operator', 'Укажите, пожалуйста, оператор')
+        }
+
         if (!value && value !== 0) die(field, 'Укажите, пожалуйста, значение критерия дифференциации')
 
         if (/Range/.test(v.operator) && !value_to && v.id_type != 'Enumeration') {

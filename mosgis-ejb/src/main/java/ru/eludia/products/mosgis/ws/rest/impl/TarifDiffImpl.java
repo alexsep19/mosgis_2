@@ -5,14 +5,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.UUID;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.json.Json;
-import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -22,8 +20,6 @@ import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.tables.TarifDiff;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
-import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
-import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.TarifDiffFias;
@@ -216,6 +212,7 @@ public class TarifDiffImpl extends BaseCRUD<TarifDiff> implements TarifDiffLocal
                 select.and ("code", token);
             }
             else {
+		sb.append('%');
                 sb.append (token);
                 sb.append ('%');
             }

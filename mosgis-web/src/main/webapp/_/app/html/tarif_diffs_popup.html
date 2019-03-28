@@ -25,6 +25,9 @@
         input.short[data-block-name=tarif_diffs_popup] {
             width: 120px !important;
         }
+        input[data-block-name=tarif_diffs_popup].enum {
+            width: 300px !important;
+        }
     </style>
 
     <div class="w2ui-reset w2ui-form" style="height:190px;margin:8px 0 0 0;" >
@@ -176,7 +179,7 @@
 			<div class="w2ui-field">
 			    <label>Значение</label>
 			    <div>
-				<input name=enumeration />
+				<input name=enumeration class=enum />
 			    </div>
 			</div>
 		    </td>

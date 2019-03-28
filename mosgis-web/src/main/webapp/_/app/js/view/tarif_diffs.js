@@ -25,7 +25,7 @@ define ([], function () {
                 footer: 1,
                 toolbarSearch: false,
                 toolbarInput: false,
-                toolbarColumns: false
+                toolbarColumns: true
             },
 
             toolbar: {
