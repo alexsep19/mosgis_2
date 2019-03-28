@@ -1,13 +1,19 @@
 package ru.eludia.products.mosgis.ws.rest.impl;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.UUID;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
@@ -19,7 +25,9 @@ import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.TarifDiffFias;
+import ru.eludia.products.mosgis.db.model.tables.TarifDiffNsi;
 import ru.eludia.products.mosgis.db.model.tables.TarifDiffOktmo;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingAddress;
 import ru.eludia.products.mosgis.db.model.voc.VocDifferentiation;
@@ -104,6 +112,8 @@ public class TarifDiffImpl extends BaseCRUD<TarifDiff> implements TarifDiffLocal
 	selectFias(db, job, select);
 
 	selectOktmo(db, job, select);
+
+	selectEnumeration(db, job, select);
     });}
 
     @Override
@@ -154,6 +164,8 @@ public class TarifDiffImpl extends BaseCRUD<TarifDiff> implements TarifDiffLocal
 
 	storeOktmo(db, p, insertId);
 
+	storeEnumeration(db, p, insertId);
+
 	logAction(db, user, insertId, VocAction.i.CREATE);
 
     });}
@@ -171,10 +183,53 @@ public class TarifDiffImpl extends BaseCRUD<TarifDiff> implements TarifDiffLocal
 
 	storeOktmo(db, p, id);
 
+	storeEnumeration(db, p, id);
+
 	logAction(db, user, id, VocAction.i.UPDATE);
     });}
 
-    private void storeFias(DB db, JsonObject p, Object insertId) throws SQLException {
+    private static final Pattern RE_CODE = Pattern.compile("[0-9]+");
+
+    @Override
+    public JsonObject getEnumeration (JsonObject p) {return fetchData ((db, job) -> {
+
+	JsonObject data = p.getJsonObject("data");
+
+	NsiTable nsi = NsiTable.getNsiTable(data.getInt("registrynumber"));
+
+	String label = nsi.getLabelField().getfName();
+
+	Select select = db.getModel ()
+            .select  (nsi, "AS root", "code AS id", label + " AS label")
+	    .where("isactual", 1)
+            .orderBy ("code")
+            .limit (0, 50);
+
+        StringBuilder sb = new StringBuilder ();
+        StringTokenizer st = new StringTokenizer (p.getString ("search", ""));
+
+        while (st.hasMoreTokens ()) {
+
+            final String token = st.nextToken ();
+
+            if (sb.length () == 0 && RE_CODE.matcher (token).matches ()) {
+                select.and ("code", token);
+            }
+            else {
+                sb.append (token);
+                sb.append ('%');
+            }
+        }
+
+        if (sb.length () > 0) {
+            select.and (label + " LIKE", sb.toString ());
+        }
+
+        db.addJsonArrays (job, select);
+
+    });}
+
+    private void storeFias(DB db, JsonObject p, Object id) throws SQLException {
 
 	JsonObject data = p.getJsonObject("data");
 
@@ -182,7 +237,7 @@ public class TarifDiffImpl extends BaseCRUD<TarifDiff> implements TarifDiffLocal
 	    return;
 	}
 
-	TarifDiffFias.store(db, insertId.toString(),
+	TarifDiffFias.store(db, id.toString(),
 	     data.getJsonArray("fias").getValuesAs(JsonString.class).stream()
 		.map((t) -> {
 		    return DB.HASH("id", t.getString());
@@ -205,7 +260,7 @@ public class TarifDiffImpl extends BaseCRUD<TarifDiff> implements TarifDiffLocal
 	);
     }
 
-    private void storeOktmo(DB db, JsonObject p, Object insertId) throws SQLException {
+    private void storeOktmo(DB db, JsonObject p, Object id) throws SQLException {
 
 	JsonObject data = p.getJsonObject("data");
 
@@ -213,7 +268,7 @@ public class TarifDiffImpl extends BaseCRUD<TarifDiff> implements TarifDiffLocal
 	    return;
 	}
 
-	TarifDiffOktmo.store(db, insertId.toString(),
+	TarifDiffOktmo.store(db, id.toString(),
 	    data.getJsonArray("oktmo").getValuesAs(JsonString.class).stream()
 		.map((t) -> {
 		    return DB.HASH("id", t.getString());
@@ -236,4 +291,68 @@ public class TarifDiffImpl extends BaseCRUD<TarifDiff> implements TarifDiffLocal
 	);
     }
 
+
+    private void storeEnumeration(DB db, JsonObject p, Object id) throws SQLException {
+	JsonObject data = p.getJsonObject("data");
+
+	if (!data.containsKey("enumeration") || data.isNull("enumeration")) {
+	    return;
+	}
+
+	TarifDiffNsi.store(db, id.toString(),
+	    data.getJsonArray("enumeration").getValuesAs(JsonString.class).stream()
+		.map((t) -> {
+		    return DB.HASH("code", t.getString());
+		})
+		.collect(Collectors.toList())
+	);
+    }
+
+    private void selectEnumeration(DB db, JsonObjectBuilder job, Select select) throws SQLException {
+
+	final Model m = db.getModel();
+
+	Map<Integer, Map<String, Object>> nsi2o = new HashMap<>();
+	Map<UUID, Map<String, Object>> idx = new HashMap<>();
+
+	db.forEach(select, (rs) -> {
+		Map<String, Object> r = db.HASH(rs);
+
+		Object nsiitem = r.get("vc_diff.nsiitem");
+
+		if (nsiitem == null) {
+		    return;
+		}
+
+		Integer registrynumber = ((Long) nsiitem).intValue();
+
+		nsi2o.put(registrynumber, r);
+		idx.put((UUID) r.get("uuid"), r);
+	    }
+	);
+
+	JsonArrayBuilder nsi = Json.createArrayBuilder();
+
+	for (Map.Entry<Integer, Map<String, Object>> entry : nsi2o.entrySet()) {
+
+	    Integer registrynumber = entry.getKey();
+
+	    NsiTable nsiTable = NsiTable.getNsiTable(registrynumber);
+
+	    db.forEach(
+		m.select(TarifDiffNsi.class, "AS root", "*")
+		    .toOne(nsiTable, "AS enumeration", "code AS id", nsiTable.getLabelField().getfName() + " AS label")
+			.where("isactual", 1)
+			.on("root.code_vc_nsi = enumeration.code")
+		    .where("uuid IN", idx.keySet().toArray())
+		    .orderBy("enumeration.code")
+		, (t) -> {
+		    Map<String, Object> r = db.HASH(t);
+		    nsi.add(DB.to.json(r));
+		}
+	    );
+	}
+
+	job.add("enumeration", nsi);
+    }
 }

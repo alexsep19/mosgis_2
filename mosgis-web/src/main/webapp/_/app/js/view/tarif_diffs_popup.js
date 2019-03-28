@@ -21,6 +21,7 @@ define ([], function () {
                 '#tr_valueyear'       : id_type == 'Year',
                 '#tr_fias'            : id_type == 'FIAS',
                 '#tr_oktmo'           : id_type == 'OKTMO',
+                '#tr_enumeration'     : id_type == 'Enumeration',
                 '#tr_operator'        : ['Real', 'Integer', 'Enumeration', 'Date', 'Year'].indexOf(id_type) != -1,
                 '.from,.to': /Range/.test(operator),
             }
@@ -53,7 +54,10 @@ define ([], function () {
                     {name: 'operator', type: 'list', options: {
                             items: data.vc_diff_value_ops.items.filter((i) => {
                                 switch(data.record.id_type) {
-                                    case 'Enumeration': return /Range/.test(i.id)
+                                    case 'Enumeration':
+                                        i.text = i.text.replace('Диапазон значений', 'Включая значения')
+                                        i.text = i.text.replace('Исключая диапазон значений', 'Исключая значения')
+                                        return /Range/.test(i.id)
                                     default: return true
                                 }
                             })
@@ -132,6 +136,31 @@ define ([], function () {
                                         id: i.id,
                                         code: i.code,
                                         text: i.code + ' ' + i.site_name
+                                    }
+                                })
+                            }
+                        }
+                    }},
+                    {name: 'enumeration', type: 'enum', options: {
+                        url: '/mosgis/_rest/?type=tarif_diffs&part=enumeration',
+                        items:  data.record.enumeration,
+                        selected: data.record.enumeration,
+//                        renderItem: function (i, idx, remove) {
+//                            return '<span title="' + i.text + '" >' + i.text + '</span>' + remove
+//                        },
+                        openOnFocus: true,
+                        filter: false,
+                        cacheMax: 50,
+                        postData: {data: {
+                            registrynumber: data.record.registrynumber
+                        }},
+                        onLoad: function (e) {
+                            e.data = {
+                                status: "success",
+                                records: e.data.content.root.map(function (i) {
+                                    return {
+                                        id: i.id,
+                                        text: i.label
                                     }
                                 })
                             }
