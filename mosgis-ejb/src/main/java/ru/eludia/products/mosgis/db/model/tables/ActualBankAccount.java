@@ -17,9 +17,12 @@ import ru.eludia.products.mosgis.db.ModelHolder;
 
 public class ActualBankAccount extends View {
     
+    public static final String TABLE_NAME = "vw_bnk_accts";
+       
     public enum c implements ColEnum {
         
 	UUID_ORG_CUSTOMER (VocOrganization.class, "Организация, способная указывать данный счёт как платёжный реквизит в договоре"),
+        LABEL             (Type.STRING,           "Наименование"),
         ;
 
         @Override public Col getCol () {return col;} private Col col; private c (Type type, Object... p) {col = new Col (this, type, p);} private c (Class c,   Object... p) {col = new Ref (this, c, p);}
@@ -27,51 +30,49 @@ public class ActualBankAccount extends View {
     }    
 
     public ActualBankAccount () {
-        super  ("vw_bnk_accts", "Список действующих платёжных реквизитов");
+        super  (TABLE_NAME, "Список действующих платёжных реквизитов");
         cols   (c.class);
         cols   (EnTable.c.class);
         cols   (BankAccount.c.class);
         pk     (EnTable.c.UUID);
     }
 
-    @Override
+ @Override
     public final String getSQL () {
         
-        StringBuilder sb = new StringBuilder ();
-        StringBuilder osb = new StringBuilder ();
+        StringBuilder osb = new StringBuilder (" ");
+        osb.append (c.UUID_ORG_CUSTOMER.lc ());
+        osb.append (", o.");
+        osb.append (BankAccount.c.ACCOUNTNUMBER.lc ());
+        osb.append (" || ' ' ||");
+        osb.append (VocBic.c.NAMEP.lc ());
+        osb.append (" ");
+        osb.append (c.LABEL.lc ());
         
         for (EnTable.c i: EnTable.c.values ()) {
-            
-            sb.append (',');
-            sb.append (i.lc ());
-            
             osb.append (',');
             osb.append ("o.");
             osb.append (i.lc ());
-            
         }
         
         for (BankAccount.c i: BankAccount.c.values ()) {
-            
-            sb.append (',');
-            sb.append (i.lc ());
-            
             osb.append (',');
             osb.append ("o.");
             osb.append (i.lc ());
-            
         }        
 
         return 
                 
-            "(SELECT " + BankAccount.c.UUID_ORG.lc () + " " + c.UUID_ORG_CUSTOMER.lc () + sb 
-                + " FROM " + getName (BankAccount.class) 
-                + " WHERE " + EnTable.c.IS_DELETED.lc () + "=0"
+            "(SELECT " + BankAccount.c.UUID_ORG.lc () + osb
+                + " FROM " + BankAccount.TABLE_NAME + " o"
+                + " INNER JOIN " + VocBic.TABLE_NAME + " v ON o. " + BankAccount.c.BIKCREDORG + "=v." + VocBic.c.BIC.lc ()
+                + " WHERE o." + EnTable.c.IS_DELETED.lc () + "=0"
 
             + ") UNION" +
-                
-            "(SELECT c." + RcContract.c.UUID_ORG_CUSTOMER.lc () + " " + c.UUID_ORG_CUSTOMER.lc () + osb 
-                + " FROM " + getName (BankAccount.class) + " o"
+
+            "(SELECT c." + RcContract.c.UUID_ORG_CUSTOMER.lc () + osb
+                + " FROM " + BankAccount.TABLE_NAME + " o"
+                + " INNER JOIN " + VocBic.TABLE_NAME + " v ON o. " + BankAccount.c.BIKCREDORG + "=v." + VocBic.c.BIC.lc ()
                 + " INNER JOIN " + getName (ActualRcContract.class) + " c ON "
                     + "c." + RcContract.c.UUID_ORG.lc () + "=o." + BankAccount.c.UUID_ORG.lc ()
                     + " AND o." + EnTable.c.IS_DELETED.lc () + "=0"

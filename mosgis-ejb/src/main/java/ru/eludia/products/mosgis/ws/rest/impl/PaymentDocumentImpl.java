@@ -22,6 +22,7 @@ import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.Account;
 import ru.eludia.products.mosgis.db.model.tables.AccountItem;
+import ru.eludia.products.mosgis.db.model.tables.ActualBankAccount;
 import ru.eludia.products.mosgis.db.model.tables.AnyChargeInfo;
 import ru.eludia.products.mosgis.db.model.tables.ChargeInfo;
 import ru.eludia.products.mosgis.db.model.tables.House;
@@ -143,7 +144,8 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
         );
 
         job.add ("item", item);
-        
+        ActualBankAccount.addTo (job, db, item.getString (PaymentDocument.c.UUID_ORG.lc ()));
+
         db.addJsonArrays (job, 
                 
             ModelHolder.getModel ().select (AccountItem.class, "AS acct_items", "*", "uuid AS id")
