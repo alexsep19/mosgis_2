@@ -62,7 +62,17 @@ public class TarifDiffs extends EJBResource <TarifDiffLocal> {
     public JsonObject getVocs () { 
         return back.getVocs (); 
     }
-    
+
+    @POST
+    @Path("enumeration")
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject getEnumeration (JsonObject p) {
+//        final JsonObject item = getInnerItem (id);
+//        checkOrg (item);
+        return back.getEnumeration (p);
+    }
+
     @POST
     @Path("create") 
     @Produces (APPLICATION_JSON)

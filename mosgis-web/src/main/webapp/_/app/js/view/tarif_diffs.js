@@ -82,6 +82,13 @@ define ([], function () {
                         case 'OKTMO':
                             value = i.oktmo.map((f) => f.text).join('; ')
                             break;
+                        case 'Enumeration':
+                            value = i.enumeration.map((f) => f.text).join('; ')
+                            switch(i['op.id']) {
+                                case 'Range': return 'включая значения: ' + value
+                                case 'ExcludingRange': return 'исключая значения: ' + value
+                            }
+                            break;
                     }
 
                     if (!i['op.id']) {
@@ -142,6 +149,7 @@ define ([], function () {
             $.each(rs, function () {
                 this.idx_fias  = {}
                 this.idx_oktmo = {}
+                this.idx_enumeration = {}
                 idx[this.uuid] = this
             })
 
@@ -160,12 +168,24 @@ define ([], function () {
                 }
             })
 
-            $.each(rs, function () {
-                if (this.id_type == 'FIAS') {
-                    this.fias = Object.values(this.idx_fias) || []
+            $.each(content.enumeration, function () {
+                idx[this.uuid].idx_enumeration[this.id] = {
+                    id: this.id,
+                    text: this.label
                 }
-                if (this.id_type == 'OKTMO') {
-                    this.oktmo = Object.values(this.idx_oktmo) || []
+            })
+
+            $.each(rs, function () {
+                switch (this.id_type) {
+                    case 'FIAS':
+                        this.fias = Object.values(this.idx_fias) || []
+                        break;
+                    case 'OKTMO':
+                        this.oktmo = Object.values(this.idx_oktmo) || []
+                        break;
+                    case 'Enumeration':
+                        this.enumeration = Object.values(this.idx_enumeration) || []
+                        this.registrynumber = this['vc_diff.nsiitem']
                 }
             })
         }

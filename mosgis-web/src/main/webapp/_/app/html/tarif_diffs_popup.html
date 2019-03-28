@@ -60,7 +60,7 @@
 			    <label>Значение</label>
 			    <div>
 				<span class=from>от</span>
-				<input name=valuereal class="short" maxlength=20 />
+				<input name=valuereal class="short" maxlength=20 autofocus />
 				<span class=to>до
 				    <input name=valuereal_to class="short" maxlength=20 />
 				</span>
@@ -74,7 +74,7 @@
 			    <label>Значение</label>
 			    <div>
 				<span class=from>от</span>
-				<input name=valueinteger class="short" maxlength=20 />
+				<input name=valueinteger class="short" maxlength=20 autofocus />
 				<span class=to>до
 				    <input name=valueinteger_to class="short" maxlength=20 />
 				</span>
@@ -97,7 +97,7 @@
 			<div class="w2ui-field" >
 			    <label>Значение</label>
 			    <div>
-				<input name=valuestring maxlength=4000>
+				<input name=valuestring maxlength=4000 autofocus />
 			    </div>
 			</div>
 		    </td>
@@ -108,7 +108,7 @@
 			<div class="w2ui-field">
 			    <label>Наименование критерия</label>
 			    <div>
-				<input name=label />
+				<input name=label autofocus />
 			    </div>
 			</div>
 		    </td>
@@ -129,7 +129,7 @@
 			    <label>Значение</label>
 			    <div>
 				<span class=from>от</span>
-				<input name=valuedate class="short" maxlength=20 />
+				<input name=valuedate class="short" maxlength=20 autofocus />
 				<span class=to>до
 				    <input name=valuedate_to class="short" maxlength=20 />
 				</span>
@@ -143,7 +143,7 @@
 			    <label>Значение</label>
 			    <div>
 				<span class=from>от</span>
-				<input name=valueyear class="short" maxlength=4 />
+				<input name=valueyear class="short" maxlength=4 autofocus />
 				<span class=to>до
 				    <input name=valueyear_to class="short" maxlength=4 />
 				</span>
@@ -167,6 +167,16 @@
 			    <label>ОКТМО</label>
 			    <div>
 				<input name=oktmo />
+			    </div>
+			</div>
+		    </td>
+		</tr>
+		<tr style="display:none" id="tr_enumeration">
+		    <td>
+			<div class="w2ui-field">
+			    <label>Значение</label>
+			    <div>
+				<input name=enumeration />
 			    </div>
 			</div>
 		    </td>

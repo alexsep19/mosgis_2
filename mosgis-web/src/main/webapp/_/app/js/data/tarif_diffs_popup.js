@@ -11,14 +11,14 @@ define ([], function () {
         }
 
         var field    = 'value' + v.id_type.toLowerCase()
-        field = field == 'valuefias'? 'fias' : field == 'valueoktmo'? 'oktmo' : field
+        field = field == ['Fias', 'OKTMO', 'Enumeration'].indexOf(v.id_type) != -1? v.id_type.toLowerCase() : field
         var field_to = field + '_to'
         var value    = v[field]
         var value_to = v[field_to]
 
         if (!value && value !== 0) die(field, 'Укажите, пожалуйста, значение критерия дифференциации')
 
-        if (/Range/.test(v.operator) && !value_to) {
+        if (/Range/.test(v.operator) && !value_to && v.id_type != 'Enumeration') {
             die(field_to, 'Укажите, пожалуйста, конец диапазона значения критерия дифференциации')
         }
 

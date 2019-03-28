@@ -16,7 +16,8 @@ define ([], function () {
             $_SESSION.set('record', {
                 uuid_tf   : saved.uuid_tf,
                 id_type   : saved.id_type,
-                code_diff : saved.code_diff
+                code_diff : saved.code_diff,
+                registrynumber: saved.registrynumber,
             })
             use.block('tarif_diffs_popup')
         }
@@ -28,6 +29,7 @@ define ([], function () {
 
             saved.code_diff = r.differentiationcode
             saved.id_type = r.differentiationvaluekind
+            saved.registrynumber = r.nsiitem
 
             done()
 
