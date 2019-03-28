@@ -98,23 +98,29 @@ public class PaymentDocument extends EnTable {
         
         trigger ("AFTER INSERT", ""
                 
+            + " DECLARE" 
+            + "  l_uuid_bnk_acct RAW (16);" 
+            + "  cnt NUMBER;" 
             + " BEGIN "
                 
-            + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, CODE_VC_NSI_50) VALUES (:NEW.UUID, :NEW.UUID_ORG, " + VocChargeInfoType.i.HOUSING + ", 1);"
+            + "  SELECT MIN(uuid), COUNT(*) cnt INTO l_uuid_bnk_acct, cnt FROM " + ActualBankAccount.TABLE_NAME + " WHERE uuid_org=:NEW.uuid_org;"
+            + "  IF cnt <> 1 THEN l_uuid_bnk_acct := NULL; END IF;"
                     
-            + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_GEN_NEED_RES) SELECT :NEW.UUID UUID_PAY_DOC, mms.UUID_ORG, " + VocChargeInfoType.i.GENERAL + " ID_TYPE, mms.UUID"
+            + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_BNK_ACCT, CODE_VC_NSI_50) VALUES (:NEW.UUID, :NEW.UUID_ORG, " + VocChargeInfoType.i.HOUSING + ", l_uuid_bnk_acct, 1);"
+                    
+            + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_BNK_ACCT, UUID_GEN_NEED_RES) SELECT :NEW.UUID UUID_PAY_DOC, mms.UUID_ORG, " + VocChargeInfoType.i.GENERAL + " ID_TYPE, l_uuid_bnk_acct, mms.UUID"
                 + " FROM  " + ActualBuildingGeneralNeedsMunicipalResource.TABLE_NAME + " mms "
                 + " WHERE FIASHOUSEGUID = (SELECT FIASHOUSEGUID"
                 + " FROM " + Account.TABLE_NAME 
                 + " WHERE uuid=:NEW.UUID_ACCOUNT);"
 
-            + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_M_M_SERVICE) SELECT :NEW.UUID UUID_PAY_DOC, mms.UUID_ORG, " + VocChargeInfoType.i.MUNICIPAL + " ID_TYPE, mms.UUID_M_M_SERVICE"
+            + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_BNK_ACCT, UUID_M_M_SERVICE) SELECT :NEW.UUID UUID_PAY_DOC, mms.UUID_ORG, " + VocChargeInfoType.i.MUNICIPAL + " ID_TYPE, l_uuid_bnk_acct, mms.UUID_M_M_SERVICE"
                 + " FROM  " + ActualBuildingMainMunicipalServices.TABLE_NAME + "  mms "
                 + " WHERE FIASHOUSEGUID = (SELECT FIASHOUSEGUID"
                 + " FROM " + Account.TABLE_NAME 
                 + " WHERE uuid=:NEW.UUID_ACCOUNT) AND :NEW.dt_period BETWEEN STARTDATE AND ENDDATE;"
 
-            + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_ADD_SERVICE) SELECT :NEW.UUID UUID_PAY_DOC, ads.UUID_ORG, " + VocChargeInfoType.i.ADDITIONAL + " ID_TYPE, ads.UUID_ADD_SERVICE"
+            + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_BNK_ACCT, UUID_ADD_SERVICE) SELECT :NEW.UUID UUID_PAY_DOC, ads.UUID_ORG, " + VocChargeInfoType.i.ADDITIONAL + " ID_TYPE, l_uuid_bnk_acct, ads.UUID_ADD_SERVICE"
                 + " FROM  " + ActualBuildingAdditionalServices.TABLE_NAME + " ads "
                 + " WHERE FIASHOUSEGUID = (SELECT FIASHOUSEGUID"
                 + " FROM " + Account.TABLE_NAME 

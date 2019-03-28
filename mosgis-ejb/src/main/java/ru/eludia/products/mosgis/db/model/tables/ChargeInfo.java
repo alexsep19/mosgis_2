@@ -19,7 +19,7 @@ public class ChargeInfo extends EnTable {
         ID_TYPE               (VocChargeInfoType.class,                         "Тип услуги"),
         
         UUID_ORG              (VocOrganization.class,                           "Организация-исполнитель услуги"),
-        UUID_BNK_ACCT         (BankAccount.class,                               "Платёжные реквизиты"),
+        UUID_BNK_ACCT         (BankAccount.class, null,                         "Платёжные реквизиты"),
 
         CODE_VC_NSI_50        (Type.STRING,  20,    null,                       "Вид жилищной услуги (НСИ 50)"),
         UUID_M_M_SERVICE      (MainMunicipalService.class, null,                "Коммунальная услуга"),

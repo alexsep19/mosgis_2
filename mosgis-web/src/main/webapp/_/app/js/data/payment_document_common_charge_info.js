@@ -8,7 +8,7 @@ define ([], function () {
 
         var v = normalizeValue (e.value_new, col.editable.type)
 
-        var data = {}; data [col.field] = v == null ? v : String (v)
+        var data = {}; data [col.field] = v == null ? null : String (v)
 
         grid.lock ()
 

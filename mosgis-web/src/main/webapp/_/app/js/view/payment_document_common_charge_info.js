@@ -51,7 +51,8 @@ define ([], function () {
                 {span: 2, caption: 'Корректировки, руб'},
                 
                 {master: true},
-                
+                {master: true},
+
             ], 
 
             columns: [                
@@ -77,6 +78,8 @@ define ([], function () {
                 {field: 'moneydiscount', caption: 'Субсидии, скидки', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, keyboard: false}},
 
                 {field: 'calcexplanation', caption: 'Порядок расчётов', size: 10, editable: {type: 'text'}},
+                
+                {field: 'uuid_bnk_acct', caption: 'Пл. рекв.', size: 10, editable: {type: 'list'}, voc: data.tb_bnk_accts},
 
             ],
 
