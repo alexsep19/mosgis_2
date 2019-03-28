@@ -2,22 +2,18 @@ package ru.eludia.products.mosgis.db.model.tables;
 
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
-import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.Type.DATE;
-import static ru.eludia.base.model.Type.STRING;
-import static ru.eludia.base.model.Type.NUMERIC;
-import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Num;
-import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
-import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 
 public class RcContractObject extends EnTable {
+
+    public static final String TABLE_NAME = "tb_rc_ctr_obj";
 
     public enum c implements EnColEnum {
 
@@ -62,7 +58,7 @@ public class RcContractObject extends EnTable {
 
     public RcContractObject () {
 
-        super ("tb_rc_ctr_obj", "Объект жилищного фонда договора РЦ");
+        super (TABLE_NAME, "Объект жилищного фонда договора РЦ");
 
         cols  (c.class);
 
