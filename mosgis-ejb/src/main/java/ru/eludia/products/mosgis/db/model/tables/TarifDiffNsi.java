@@ -15,7 +15,7 @@ public class TarifDiffNsi extends Table {
         super ("tb_tf_diff_nsi", "Значения перечислимого типа критериев дифференциации");
 
         pkref ("uuid",  TarifDiff.class, "Критерий дифференциации");
-        col   ("code_vc_nsi", Type.STRING, 20, null, "Код элемента справочника");
+        pk    ("code_vc_nsi", Type.STRING, 20, "Код элемента справочника");
     }
 
     public static void store(DB db, String id, List<Map<String, Object>> nsi_elements) throws SQLException {
