@@ -60,5 +60,32 @@ public class PremiseUsageTarif extends EnTable  {
 	    + " :NEW.ID_CTR_STATUS := " + VocGisStatus.i.MUTATING.getId()
 	    + "; END IF; "
         + "END;");
+
+	trigger("BEFORE INSERT OR UPDATE", ""
+	    + "DECLARE"
+	    + " PRAGMA AUTONOMOUS_TRANSACTION; "
+	    + "BEGIN "
+	    + " IF :NEW.is_deleted = 0 THEN BEGIN "
+		+ " FOR i IN ("
+		    + "SELECT "
+		    + " o.name     label "
+		    + " , o.datefrom dt_from "
+		    + " , o.dateto   dt_to "
+		    + "FROM "
+		    + TABLE_NAME + " o "
+		    + "WHERE o.is_deleted = 0 "
+		    + " AND o.uuid <> :NEW.uuid "
+		    + " AND (o.datefrom <= :NEW.dateto   OR :NEW.dateto IS NULL) "
+		    + " AND (o.dateto   >= :NEW.datefrom OR o.dateto IS NULL) "
+		+ ") LOOP"
+		    + " raise_application_error (-20000, "
+		    + "'Указанный период пересекается с другой информацией о размере платы за пользование жилым помещением ' || i.label "
+		    + "|| ' с ' "
+		    + "|| TO_CHAR (i.dt_from, 'DD.MM.YYYY')"
+		    + "|| CASE WHEN i.dt_to IS NOT NULL THEN ' по ' || TO_CHAR (i.dt_to, 'DD.MM.YYYY') ELSE '' END "
+		    + "); "
+		+ " END LOOP; "
+	    + " END; END IF; "
+	    + "END;");
     }
 }
