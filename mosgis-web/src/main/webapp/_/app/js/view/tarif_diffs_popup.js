@@ -110,7 +110,7 @@ define ([], function () {
                         selected: data.record.oktmo,
                         maxDropWidth: 800,
                         renderItem: function (i, idx, remove) {
-                            return '<span title="' + i.text + '" >' + i.code + '</span>' + remove
+                            return remove + '<span title="' + i.text + '" >' + i.code + '</span>'
                         },
                         url: '/mosgis/_rest/?type=voc_oktmo',
                         openOnFocus: true,
@@ -145,9 +145,9 @@ define ([], function () {
                         url: '/mosgis/_rest/?type=tarif_diffs&part=enumeration',
                         items:  data.record.enumeration,
                         selected: data.record.enumeration,
-//                        renderItem: function (i, idx, remove) {
-//                            return '<span title="' + i.text + '" >' + i.text + '</span>' + remove
-//                        },
+                        renderItem: function (i, idx, remove) {
+                            return remove + '<span class=ms_value title="' + i.text + '" >' + i.text + '</span>'
+                        },
                         openOnFocus: true,
                         filter: false,
                         cacheMax: 50,
