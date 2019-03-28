@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
@@ -513,9 +514,11 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 
 	for (int i = 1; i <= sheet.getLastRowNum(); i++) {
 	    XSSFRow row = sheet.getRow(i);
-	    Object label = EnTable.toString(row, 0, "Не указано Название(столбец A)");
-	    Object code = EnTable.toString(row, 1, "Не указан Код(столбец B)");
-	    r.put(label.toString(), code.toString());
+	    String label = EnTable.toString(row, 0);
+	    String code = EnTable.toString(row, 1);
+	    if(DB.ok(label) && DB.ok(code)) {
+		r.put(label, code);
+	    }
 	}
 
 	return r;
@@ -527,10 +530,14 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 
 	for (int i = 0; i <= sheet.getLastRowNum(); i++) {
 	    XSSFRow row = sheet.getRow(i);
-	    Object label = EnTable.toString(row, 0, "Не указано Название(столбец A)");
-	    Object code = EnTable.toString(row, 1, "Не указан Код(столбец B)");
-	    code = code.toString().replace("\u00a0", " ").trim(); // nbsp;
-	    r.put(label.toString(), code.toString());
+	    String label = EnTable.toString(row, 0);
+	    String code = EnTable.toString(row, 1);
+	    if (DB.ok(code)) {
+		code = code.toString().replace("\u00a0", " ").trim(); // nbsp;
+	    }
+	    if (DB.ok(label) && DB.ok(code)) {
+		r.put(label, code);
+	    }
 	}
 
 	return r;
@@ -542,9 +549,11 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 
 	for (int i = 0; i <= sheet.getLastRowNum(); i++) {
 	    XSSFRow row = sheet.getRow(i);
-	    Object label = EnTable.toString(row, 0, "Не указано Название(столбец A)");
-	    Object code = EnTable.toString(row, 1, "Не указан Код(столбец B)");
-	    r.put(label.toString(), code.toString());
+	    String label = EnTable.toString(row, 0);
+	    String code = EnTable.toString(row, 1);
+	    if (DB.ok(label) && DB.ok(code)) {
+		r.put(label, code);
+	    }
 	}
 
 	return r;
@@ -556,9 +565,11 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 
 	for (int i = 1; i <= sheet.getLastRowNum(); i++) {
 	    XSSFRow row = sheet.getRow(i);
-	    Object label = EnTable.toString(row, 0, "Не указано Название(столбец A)");
-	    Object code = EnTable.toString(row, 1, "Не указан Код(столбец B)");
-	    r.put(label.toString(), code.toString());
+	    String label = EnTable.toString(row, 0);
+	    String code = EnTable.toString(row, 1);
+	    if (DB.ok(label) && DB.ok(code)) {
+		r.put(label, code);
+	    }
 	}
 
 	return r;
@@ -570,9 +581,11 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 
 	for (int i = 1; i <= sheet.getLastRowNum(); i++) {
 	    XSSFRow row = sheet.getRow(i);
-	    Object label = EnTable.toString(row, 0, "Не указано Название(столбец A)");
-	    Object code = EnTable.toString(row, 1, "Не указан Код(столбец B)");
-	    r.put(label.toString(), code.toString());
+	    String label = EnTable.toString(row, 0);
+	    String code = EnTable.toString(row, 1);
+	    if (DB.ok(label) && DB.ok(code)) {
+		r.put(label, code);
+	    }
 	}
 
 	return r;
@@ -733,41 +746,46 @@ public class ParseSupplyResourceContractsMDB extends XLMDB {
 	);
     }
 
-    protected Map<String, Map<String, Object>> processVocLines(XSSFWorkbook wb, UUID uuid, DB db) throws XLException {
+    protected Map<String, Map<String, Object>> processVocLines(XSSFWorkbook wb, UUID uuid, DB db) throws Exception {
 
 	Map<String, Map<String, Object>> vocs = new HashMap<String, Map<String, Object>> ();
 
+	try {
 
-	final XSSFSheet sheetVocNsi58  = wb.getSheet("Справочник оснований заключения");
-	final XSSFSheet sheetVocNsi95  = wb.getSheet("Справочник видов документов");
-	final XSSFSheet sheetVocNsi3   = wb.getSheet("Справочник КУ");
-	final XSSFSheet sheetVocNsi236 = wb.getSheet("Справочник КР");
-	final XSSFSheet sheetVocNsi276 = wb.getSheet("Справочник показателей качества");
+	    final XSSFSheet sheetVocNsi58  = wb.getSheet("Справочник оснований заключения");
+	    final XSSFSheet sheetVocNsi95  = wb.getSheet("Справочник видов документов");
+	    final XSSFSheet sheetVocNsi3   = wb.getSheet("Справочник КУ");
+	    final XSSFSheet sheetVocNsi236 = wb.getSheet("Справочник КР");
+	    final XSSFSheet sheetVocNsi276 = wb.getSheet("Справочник показателей качества");
 
-	if (sheetVocNsi58 == null) {
-	    throw new XLException("Отсутствует лист Справочник оснований заключения");
-	}
-	if (sheetVocNsi95 == null) {
-	    throw new XLException("Отсутствует лист Справочник видов документов");
-	}
-	if (sheetVocNsi3 == null) {
-	    throw new XLException("Отсутствует лист Справочник КУ");
-	}
-	if (sheetVocNsi236 == null) {
-	    throw new XLException("Отсутствует лист Справочник КР");
-	}
-	if (sheetVocNsi276 == null) {
-	    throw new XLException("Отсутствует лист Справочник показателей качества");
+	    if (sheetVocNsi58 == null) {
+		throw new XLException("Отсутствует лист Справочник оснований заключения");
+	    }
+	    if (sheetVocNsi95 == null) {
+		throw new XLException("Отсутствует лист Справочник видов документов");
+	    }
+	    if (sheetVocNsi3 == null) {
+		throw new XLException("Отсутствует лист Справочник КУ");
+	    }
+	    if (sheetVocNsi236 == null) {
+		throw new XLException("Отсутствует лист Справочник КР");
+	    }
+	    if (sheetVocNsi276 == null) {
+		throw new XLException("Отсутствует лист Справочник показателей качества");
+	    }
+
+	    vocs.put("vc_nsi_95",  processIDLines(sheetVocNsi95));
+	    vocs.put("vc_nsi_3",   processVocNsi3Lines(sheetVocNsi3));
+	    vocs.put("vc_nsi_58",  processVocNsi58Lines(sheetVocNsi58));
+	    vocs.put("vc_nsi_236", processVocNsi236Lines(sheetVocNsi236));
+	    vocs.put("vc_nsi_239", vocs.get("vc_nsi_236"));
+	    vocs.put("vc_nsi_276", processVocNsi276Lines(sheetVocNsi276));
+
+	} catch (XLException e) {
+	    throw new Exception(e.getMessage());
 	}
 
-	vocs.put("vc_nsi_95",  processIDLines(sheetVocNsi95));
-	vocs.put("vc_nsi_3",   processVocNsi3Lines(sheetVocNsi3));
-	vocs.put("vc_nsi_58",  processVocNsi58Lines(sheetVocNsi58));
-	vocs.put("vc_nsi_236", processVocNsi236Lines(sheetVocNsi236));
-	vocs.put("vc_nsi_239", vocs.get("vc_nsi_236"));
-	vocs.put("vc_nsi_276", processVocNsi276Lines(sheetVocNsi276));
-
-	logger.info("vocs=" + DB.to.json(vocs));
+	logger.log(Level.INFO, "vocs=" + DB.to.json(vocs));
 
 	return vocs;
     }

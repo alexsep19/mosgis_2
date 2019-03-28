@@ -64,6 +64,10 @@ public abstract class EnTable extends Table {
 
     public static BigDecimal toNumeric(XSSFRow row, int col) throws XLException {
 
+	if (row == null) {
+	    return null;
+	}
+
 	try {
 	    final XSSFCell cell = row.getCell(col);
 	    if (cell == null) {
@@ -105,6 +109,10 @@ public abstract class EnTable extends Table {
 
     public static String toString(XSSFRow row, int col) throws XLException {
 
+	if (row == null) {
+	    return null;
+	}
+
 	String s;
 
 	try {
@@ -134,6 +142,10 @@ public abstract class EnTable extends Table {
     
     public static Integer toBool(XSSFRow row, int col, Object error) throws XLException {
 
+	if (row == null) {
+	    return null;
+	}
+
 	Integer result = toBool(row, col);
 
 	if (result == null) {
@@ -145,6 +157,10 @@ public abstract class EnTable extends Table {
     }
 
     public static Integer toBool(XSSFRow row, int col) throws XLException {
+
+	if (row == null) {
+	    return null;
+	}
 
 	String s;
 
@@ -179,6 +195,10 @@ public abstract class EnTable extends Table {
     }
 
     public static Object toDate(XSSFRow row, int col) throws XLException {
+
+	if (row == null) {
+	    return null;
+	}
 
 	Date d;
 

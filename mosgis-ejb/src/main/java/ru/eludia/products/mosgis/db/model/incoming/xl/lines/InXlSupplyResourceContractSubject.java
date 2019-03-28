@@ -27,8 +27,8 @@ public class InXlSupplyResourceContractSubject extends EnTable {
 	CODE_SR_CTR             (Type.STRING, null, "Иной код договора"),
         UUID_SR_CTR             (Type.UUID, null, "Договор"),
 
-	SERVICETYPE             (Type.STRING, 255, "Вид коммунальной услуги"),
-	MUNICIPALRESOURCE       (Type.STRING, 255, "Тарифицируемый ресурс"),
+	SERVICETYPE             (Type.STRING, null, "Вид коммунальной услуги"),
+	MUNICIPALRESOURCE       (Type.STRING, null, "Тарифицируемый ресурс"),
 
 	ERR                     (Type.STRING,  null, "Ошибка"),
         ;
