@@ -10,5 +10,6 @@ public interface VocOverhaulWorkTypesLocal extends CRUDBackend {
     
     JsonObject getVocs ();
     JsonObject doImport (User user);
+    JsonObject doAlter(String id, JsonObject p, User user);
     
 }

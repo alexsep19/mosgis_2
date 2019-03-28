@@ -52,6 +52,7 @@ public class ExportOverhaulWorkTypesMDB extends GisExportMDB <VocOverhaulWorkTyp
             
         switch (action) {
             case PLACING:     return wsGisNsiClient.importCapitalRepairWork(orgPPAGuid, messageGUID, r);
+            
             default: throw new IllegalArgumentException ("No action implemented for " + action);
         }
 

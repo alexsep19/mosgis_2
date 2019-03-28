@@ -30,7 +30,8 @@ public class VocOverhaulWorkTypeLog extends GisWsLogTable {
     private static ImportCapitalRepairWorkType toImportCapitalRepairWork(Map<String, Object> r) {
         final ImportCapitalRepairWorkType result = DB.to.javaBean (ImportCapitalRepairWorkType.class, r);
         result.setTransportGUID (UUID.randomUUID ().toString ());
-        //result.setElementGuid (r.get ("guid").toString ());
+        if (r.containsKey("guid") && r.get ("guid") != null)
+            result.setElementGuid (r.get ("guid").toString ());
         result.setServiceName (r.get ("servicename").toString ());
         result.setWorkGroupRef (NsiTable.toDom(r, "vc_nsi_218"));
         return result;

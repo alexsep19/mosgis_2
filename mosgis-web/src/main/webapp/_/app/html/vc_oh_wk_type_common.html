@@ -12,6 +12,9 @@
                 .w2ui-field label {
                     width: 200px;
                 }
+                .w2ui-field input {
+                    width: 300px !important;
+                }
             </style>
 
             <div class="w2ui-field">
@@ -21,12 +24,16 @@
 
             <div class="w2ui-field">
                 <label>Наименование: </label>
-                    <div data-text="servicename"/>
+                <div>
+                    <input name=servicename maxlength=500>
+                </div>
             </div>
 
             <div class="w2ui-field">
                 <label>Группа работ: </label>
-                <div data-text="work_group"/>
+                <div>
+                    <input name=code_vc_nsi_218>
+                </div>
             </div>
 
             <div class="w2ui-field">
@@ -39,6 +46,16 @@
                 <div data-text="status_label"/>
             </div>
 
+        </div>
+
+        <div class="w2ui-buttons">
+            <span>
+                <button class=w2ui-btn name=edit    data-on=__read_only>Редактировать</button>
+                <button class=w2ui-btn name=update  data-off=__read_only>Сохранить</button>
+                <button class=w2ui-btn name=cancel  data-off=__read_only>Отменить</button>
+                <button class=w2ui-btn name=delete  data-on=__read_only>Удалить</button>
+                <button class=w2ui-btn name=alter   data-on=__read_only>Изменить</button>
+            </span>
         </div>
 
     </div>

@@ -32,9 +32,31 @@ define ([], function () {
             data.item.status_label = data.vc_gis_status [data.item.id_owt_status]
             data.item.org_label = data.item ['vc_orgs.label']
             data.item.voc_code = data.item.code ? data.item.code : 'Отсутствует'
-            data.item.servicename = '"' + data.item.servicename + '"'
-            data.item.work_group = data.vc_nsi_218 [data.item.code_vc_nsi_218]
             data.item.actuality = data.item.isactual ? 'Актуально' : 'Не актуально'
+
+            var it = data.item
+
+            it._can = {cancel: 1}
+
+            var is_locked = it.is_deleted || !$_USER.role.nsi_20_7
+
+            if (!is_locked) {
+
+                switch (it.id_owt_status) {
+                    case 11:
+                    case 14:
+                    case 34:
+                        it._can.edit = 1
+                }
+
+                it._can.delete = it._can.update = it._can.edit
+
+                switch (it.id_owt_status) {
+                    case 40:
+                        it._can.alter = 1
+                }
+                
+            }
 
             $('body').data ('data', data)
     
