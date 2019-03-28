@@ -6,6 +6,7 @@ import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.voc.VocAccountType;
 import ru.eludia.products.mosgis.db.model.voc.VocChargeInfoType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -97,39 +98,43 @@ public class PaymentDocument extends EnTable {
         );                
         
         trigger ("AFTER INSERT", ""
-                
+
             + " DECLARE" 
             + "  l_uuid_bnk_acct RAW (16);" 
             + "  l_uuid_ins_product RAW (16);" 
-            + "  l_fiashouseguid RAW (16);" 
+            + "  l_acct " + Account.TABLE_NAME + " %ROWTYPE; "                
             + "  cnt NUMBER;" 
             + " BEGIN "
-                
-            + "  SELECT MIN(FIASHOUSEGUID) INTO l_fiashouseguid FROM " + Account.TABLE_NAME + " WHERE uuid=:NEW.UUID_ACCOUNT;"
-                
+
+            + "  SELECT * INTO l_acct FROM " + Account.TABLE_NAME + " WHERE uuid=:NEW.UUID_ACCOUNT;"
+
             + "  SELECT MIN(uuid), COUNT(*) cnt INTO l_uuid_bnk_acct, cnt FROM " + ActualBankAccount.TABLE_NAME + " WHERE uuid_org=:NEW.uuid_org;"
             + "  IF cnt <> 1 THEN l_uuid_bnk_acct := NULL; END IF;"
-                    
-            + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_BNK_ACCT, CODE_VC_NSI_50) VALUES (:NEW.UUID, :NEW.UUID_ORG, " + VocChargeInfoType.i.HOUSING + ", l_uuid_bnk_acct, 1);"
-                    
-            + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_BNK_ACCT, UUID_GEN_NEED_RES) SELECT :NEW.UUID UUID_PAY_DOC, mms.UUID_ORG, " + VocChargeInfoType.i.GENERAL + " ID_TYPE, l_uuid_bnk_acct, mms.UUID"
-                + " FROM  " + ActualBuildingGeneralNeedsMunicipalResource.TABLE_NAME + " mms "
-                + " WHERE FIASHOUSEGUID=l_fiashouseguid;"
 
-            + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_BNK_ACCT, UUID_M_M_SERVICE) SELECT :NEW.UUID UUID_PAY_DOC, mms.UUID_ORG, " + VocChargeInfoType.i.MUNICIPAL + " ID_TYPE, l_uuid_bnk_acct, mms.UUID_M_M_SERVICE"
-                + " FROM  " + ActualBuildingMainMunicipalServices.TABLE_NAME + "  mms "
-                + " WHERE FIASHOUSEGUID=l_fiashouseguid;"
+            + "  IF l_acct.id_type = " + VocAccountType.i.UO + " THEN BEGIN "
 
-            + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_BNK_ACCT, UUID_ADD_SERVICE) SELECT :NEW.UUID UUID_PAY_DOC, ads.UUID_ORG, " + VocChargeInfoType.i.ADDITIONAL + " ID_TYPE, l_uuid_bnk_acct, ads.UUID_ADD_SERVICE"
-                + " FROM  " + ActualBuildingAdditionalServices.TABLE_NAME + " ads "
-                + " WHERE FIASHOUSEGUID=l_fiashouseguid;"
-                        
-            + "  SELECT MIN(uuid), COUNT(*) cnt INTO l_uuid_ins_product, cnt FROM " + InsuranceProduct.TABLE_NAME + " WHERE uuid_org=:NEW.uuid_org;"
-//            + "  IF cnt <> 1 THEN l_uuid_bnk_acct := NULL; END IF;"
+                + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_BNK_ACCT, CODE_VC_NSI_50) VALUES (:NEW.UUID, :NEW.UUID_ORG, " + VocChargeInfoType.i.HOUSING + ", l_uuid_bnk_acct, 1);"
 
-            + "  IF l_uuid_ins_product IS NOT NULL THEN "
-            + "    INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_BNK_ACCT, UUID_INS_PRODUCT) VALUES (:NEW.UUID, :NEW.UUID_ORG, " + VocChargeInfoType.i.INSURANCE + ", l_uuid_bnk_acct, l_uuid_ins_product);"
-            + "  END IF; "                    
+                + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_BNK_ACCT, UUID_GEN_NEED_RES) SELECT :NEW.UUID UUID_PAY_DOC, t.UUID_ORG, " + VocChargeInfoType.i.GENERAL + " ID_TYPE, l_uuid_bnk_acct, t.UUID"
+                    + " FROM  " + ActualBuildingGeneralNeedsMunicipalResource.TABLE_NAME + " t "
+                    + " WHERE FIASHOUSEGUID=l_acct.fiashouseguid AND uuid_org=l_acct.uuid_org;"
+
+                + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_BNK_ACCT, UUID_M_M_SERVICE) SELECT :NEW.UUID UUID_PAY_DOC, t.UUID_ORG, " + VocChargeInfoType.i.MUNICIPAL + " ID_TYPE, l_uuid_bnk_acct, t.UUID_M_M_SERVICE"
+                    + " FROM  " + ActualBuildingMainMunicipalServices.TABLE_NAME + "  t "
+                    + " WHERE FIASHOUSEGUID=l_acct.fiashouseguid AND uuid_org=l_acct.uuid_org;"
+
+                + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_BNK_ACCT, UUID_ADD_SERVICE) SELECT :NEW.UUID UUID_PAY_DOC, t.UUID_ORG, " + VocChargeInfoType.i.ADDITIONAL + " ID_TYPE, l_uuid_bnk_acct, t.UUID_ADD_SERVICE"
+                    + " FROM  " + ActualBuildingAdditionalServices.TABLE_NAME + " t "
+                    + " WHERE FIASHOUSEGUID=l_acct.fiashouseguid AND uuid_org=l_acct.uuid_org;"
+
+                + "  SELECT MIN(uuid), COUNT(*) cnt INTO l_uuid_ins_product, cnt FROM " + InsuranceProduct.TABLE_NAME + " WHERE uuid_org=l_acct.uuid_org;"
+                // + "  IF cnt <> 1 THEN l_uuid_bnk_acct := NULL; END IF;"
+
+                + "  IF l_uuid_ins_product IS NOT NULL THEN "
+                + "    INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_BNK_ACCT, UUID_INS_PRODUCT) VALUES (:NEW.UUID, :NEW.UUID_ORG, " + VocChargeInfoType.i.INSURANCE + ", l_uuid_bnk_acct, l_uuid_ins_product);"
+                + "  END IF; "
+
+            + "  END; END IF; "
 
             + " END; "
 
