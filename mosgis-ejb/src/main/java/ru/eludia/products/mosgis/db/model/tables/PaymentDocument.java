@@ -111,6 +111,30 @@ public class PaymentDocument extends EnTable {
             + "  SELECT MIN(uuid), COUNT(*) cnt INTO l_uuid_bnk_acct, cnt FROM " + ActualBankAccount.TABLE_NAME + " WHERE uuid_org=:NEW.uuid_org;"
             + "  IF cnt <> 1 THEN l_uuid_bnk_acct := NULL; END IF;"
 
+//////// CR                    
+                    
+            + "  IF l_acct.id_type = " + VocAccountType.i.CR + " THEN BEGIN "
+
+                + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_BNK_ACCT) VALUES (:NEW.UUID, :NEW.UUID_ORG, " + VocChargeInfoType.i.OVERHAUL + ", l_uuid_bnk_acct);"
+
+            + "  END; END IF; "                                        
+
+//////// RSO
+
+            + "  IF l_acct.id_type = " + VocAccountType.i.RSO + " THEN BEGIN "
+
+                + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_BNK_ACCT, UUID_M_M_SERVICE) SELECT :NEW.UUID UUID_PAY_DOC, t.UUID_ORG, " + VocChargeInfoType.i.MUNICIPAL + " ID_TYPE, l_uuid_bnk_acct, t.UUID_M_M_SERVICE"
+                    + " FROM  " + ActualBuildingMainMunicipalServices.TABLE_NAME + " t "
+                    + " WHERE FIASHOUSEGUID=l_acct.fiashouseguid AND uuid_org=l_acct.uuid_org;"
+
+                + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_BNK_ACCT, UUID_ADD_SERVICE) SELECT :NEW.UUID UUID_PAY_DOC, t.UUID_ORG, " + VocChargeInfoType.i.ADDITIONAL + " ID_TYPE, l_uuid_bnk_acct, t.UUID_ADD_SERVICE"
+                    + " FROM  " + ActualBuildingAdditionalServices.TABLE_NAME + " t "
+                    + " WHERE FIASHOUSEGUID=l_acct.fiashouseguid AND uuid_org=l_acct.uuid_org;"
+
+            + "  END; END IF; "         
+
+//////// UO
+                    
             + "  IF l_acct.id_type = " + VocAccountType.i.UO + " THEN BEGIN "
 
                 + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_BNK_ACCT, CODE_VC_NSI_50) VALUES (:NEW.UUID, :NEW.UUID_ORG, " + VocChargeInfoType.i.HOUSING + ", l_uuid_bnk_acct, 1);"
@@ -120,7 +144,7 @@ public class PaymentDocument extends EnTable {
                     + " WHERE FIASHOUSEGUID=l_acct.fiashouseguid AND uuid_org=l_acct.uuid_org;"
 
                 + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_BNK_ACCT, UUID_M_M_SERVICE) SELECT :NEW.UUID UUID_PAY_DOC, t.UUID_ORG, " + VocChargeInfoType.i.MUNICIPAL + " ID_TYPE, l_uuid_bnk_acct, t.UUID_M_M_SERVICE"
-                    + " FROM  " + ActualBuildingMainMunicipalServices.TABLE_NAME + "  t "
+                    + " FROM  " + ActualBuildingMainMunicipalServices.TABLE_NAME + " t "
                     + " WHERE FIASHOUSEGUID=l_acct.fiashouseguid AND uuid_org=l_acct.uuid_org;"
 
                 + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_BNK_ACCT, UUID_ADD_SERVICE) SELECT :NEW.UUID UUID_PAY_DOC, t.UUID_ORG, " + VocChargeInfoType.i.ADDITIONAL + " ID_TYPE, l_uuid_bnk_acct, t.UUID_ADD_SERVICE"
@@ -134,7 +158,7 @@ public class PaymentDocument extends EnTable {
                 + "    INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_BNK_ACCT, UUID_INS_PRODUCT) VALUES (:NEW.UUID, :NEW.UUID_ORG, " + VocChargeInfoType.i.INSURANCE + ", l_uuid_bnk_acct, l_uuid_ins_product);"
                 + "  END IF; "
 
-            + "  END; END IF; "
+            + "  END; END IF; "                        
 
             + " END; "
 
