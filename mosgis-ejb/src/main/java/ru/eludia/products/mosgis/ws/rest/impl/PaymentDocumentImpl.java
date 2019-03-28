@@ -20,12 +20,14 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.Account;
 import ru.eludia.products.mosgis.db.model.tables.AccountItem;
 import ru.eludia.products.mosgis.db.model.tables.ActualBankAccount;
 import ru.eludia.products.mosgis.db.model.tables.AnyChargeInfo;
 import ru.eludia.products.mosgis.db.model.tables.ChargeInfo;
 import ru.eludia.products.mosgis.db.model.tables.House;
+import ru.eludia.products.mosgis.db.model.tables.InsuranceProduct;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocConsumptionVolumeDeterminingMethod;
@@ -123,7 +125,9 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
     @Override
     public JsonObject getItem (String id, User user) {return fetchData ((db, job) -> {
         
-        final JsonObject item = db.getJsonObject (ModelHolder.getModel ()
+        final MosGisModel m = ModelHolder.getModel ();
+        
+        final JsonObject item = db.getJsonObject (m
             .get (getTable (), id, "AS root", "*")
             .toOne (Account.class, "AS acct"
                 , Account.c.ACCOUNTNUMBER.lc ()
@@ -144,19 +148,26 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
         );
 
         job.add ("item", item);
-        ActualBankAccount.addTo (job, db, item.getString (PaymentDocument.c.UUID_ORG.lc ()));
+        
+        final String uuidOrg = item.getString (PaymentDocument.c.UUID_ORG.lc ());
+        ActualBankAccount.addTo (job, db, uuidOrg);
 
-        db.addJsonArrays (job, 
-                
-            ModelHolder.getModel ().select (AccountItem.class, "AS acct_items", "*", "uuid AS id")
+        db.addJsonArrays (job
+
+            , m.select (AccountItem.class, "AS acct_items", "*", "uuid AS id")
                 .toOne (VocBuilding.class, "AS addr", "label").on ()
                 .toMaybeOne (Premise.class, "AS prem", "label", Premise.c.TOTALAREA.lc ()).on ()                
                 .toOne (House.class, "AS house", "uuid").on ("addr.houseguid=house.fiashouseguid")
                 .where (AccountItem.c.UUID_ACCOUNT, item.getString (PaymentDocument.c.UUID_ACCOUNT.lc ()))
                 .where (EnTable.c.IS_DELETED, 0)
                 .orderBy ("prem.label")
-                
-        );        
+
+            , m.select (InsuranceProduct.class, "*", "uuid AS id")
+                .where ("uuid_org", uuidOrg)
+                .where (EnTable.c.IS_DELETED, 0)
+                .orderBy ("label")
+
+        );
         
         VocPaymentDocumentType.addTo (job);
         VocGisStatus.addTo (job);

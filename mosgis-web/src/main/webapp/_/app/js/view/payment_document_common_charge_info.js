@@ -56,8 +56,9 @@ define ([], function () {
             ], 
 
             columns: [                
-            
-                {field: 'label',        caption: 'Наименование услуги', size: 100},
+
+                {field: 'uuid_ins_product', caption: 'Наименование услуги', size: 50, editable: {type: 'list', items: data.tb_ins_products.items}, render: function (r, y, z, v) {return r.id_type == 50 ? data.tb_ins_products [v] : r.label}},
+                
                 {field: 'totalpayable', caption: 'Итого к оплате за расчетный период', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, keyboard: false, min: 0}},
                 {field: 'accountingperiodtotal', caption: 'Всего начислено за расчетный период (без перерасчетов и льгот)', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, keyboard: false, min: 0}},
 
@@ -90,12 +91,14 @@ define ([], function () {
             onChange: $_DO.patch_payment_document_common_charge_info,
             
             onEditField: function (e) {
-            
+
                 var grid = this
                 
                 var r = grid.get (e.recid)
                 
                 if (!r.id_type) return e.preventDefault ()
+                
+                if (e.column == 0 && r.id_type != 50) return e.preventDefault ()
 
             },            
             

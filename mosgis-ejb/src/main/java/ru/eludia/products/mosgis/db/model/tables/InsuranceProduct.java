@@ -13,9 +13,11 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganizationInsurance;
 
 public class InsuranceProduct extends Table {
 
+    public static final String TABLE_NAME = "tb_ins_products";
+
     public InsuranceProduct () {
 
-        super ("tb_ins_products",                                                       "Страховой продукт");
+        super (TABLE_NAME,                                                       "Страховой продукт");
 
         pk    ("uuid",                      Type.UUID,             NEW_UUID,            "Ключ");
         fk    ("uuid_org",                  VocOrganization.class,                      "Организация");

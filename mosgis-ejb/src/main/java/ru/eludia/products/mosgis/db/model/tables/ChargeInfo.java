@@ -25,6 +25,7 @@ public class ChargeInfo extends EnTable {
         UUID_M_M_SERVICE      (MainMunicipalService.class, null,                "Коммунальная услуга"),
         UUID_ADD_SERVICE      (AdditionalService.class, null,                   "Дополнительная услуга"),
         UUID_GEN_NEED_RES     (GeneralNeedsMunicipalResource.class, null,       "Коммунальный ресурс, потребляемый при использовании и содержании общего имущества в многоквартирном доме (НСИ 337)"),
+        UUID_INS_PRODUCT      (InsuranceProduct.class, null,                    "Страховой продукт"),
 
         RATE                  (Type.NUMERIC, 14, 6, null,   "Тариф"),
         TOTALPAYABLE          (Type.NUMERIC, 13, 2, null,   "Итого к оплате за расчетный период, руб."),
