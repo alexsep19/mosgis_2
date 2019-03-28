@@ -25,7 +25,7 @@ define ([], function () {
                 footer: 1,
                 toolbarSearch: false,
                 toolbarInput: false,
-                toolbarColumns: false
+                toolbarColumns: true
             },
 
             toolbar: {
@@ -133,7 +133,7 @@ define ([], function () {
                 e.xhr.responseText = JSON.stringify (data)
             },
 
-            onDblClick: $_DO.edit_tarif_diffs,
+            onDblClick: data._can.edit? $_DO.edit_tarif_diffs : null,
 
             onAdd: $_DO.create_tarif_diffs,
 
