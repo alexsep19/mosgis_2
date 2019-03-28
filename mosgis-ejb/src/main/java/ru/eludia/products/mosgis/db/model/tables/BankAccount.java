@@ -65,6 +65,7 @@ public class BankAccount extends EnTable {
                         + TABLE_NAME + "  o "
                         + " LEFT JOIN " + VocOrganization.TABLE_NAME +  " org ON o.UUID_ORG = org.uuid"
                         + " WHERE o.is_deleted = 0"
+                        + " AND o.uuid <> :NEW.UUID "
                         + " AND o.ACCOUNTNUMBER = :NEW.ACCOUNTNUMBER "
                         + " AND o.BIKCREDORG = :NEW.BIKCREDORG "
                         + ") LOOP"
