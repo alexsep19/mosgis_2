@@ -40,6 +40,8 @@ define ([], function () {
             grid.records = data.lines
             
             $.each (grid.records, function () {
+darn (this)            
+            
 //                if (this.w2ui) delete this.w2ui.changes
 //                delete this.value
             })
