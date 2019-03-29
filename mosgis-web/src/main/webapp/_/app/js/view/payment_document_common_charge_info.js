@@ -52,9 +52,20 @@ define ([], function () {
 
             grid.records = data.lines
             
-            $.each (grid.records, function () {            
-//                if (this.w2ui) delete this.w2ui.changes
-//                delete this.value
+            $.each (grid.records, function () {
+            
+                if (!this.w2ui) return
+                var chg = this.w2ui.changes
+                if (!chg) return
+                
+                for (var field in chg) {
+                    var col = grid.getColumn (field)
+                    var editable = col.editable
+                    if (!editable || editable.type != 'list') continue
+                    this [field] = chg [field].uuid
+                    delete this.w2ui.changes
+                }
+                
             })
 
             grid.refresh ()
