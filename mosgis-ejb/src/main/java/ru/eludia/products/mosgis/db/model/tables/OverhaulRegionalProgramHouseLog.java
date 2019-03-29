@@ -1,9 +1,9 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
 import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.LogTable;
+import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 
-public class OverhaulRegionalProgramHouseLog extends LogTable {
+public class OverhaulRegionalProgramHouseLog extends GisWsLogTable {
     
     public OverhaulRegionalProgramHouseLog () {
         

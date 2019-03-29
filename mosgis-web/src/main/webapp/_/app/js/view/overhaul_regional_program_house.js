@@ -2,9 +2,11 @@ define ([], function () {
 
     return function (data, view) {
         
+        console.log (data)
+
         var it = data.item
 
-        $('title').text ('Дои по адресу ' + it.address + ', включенный в РПКР ' + it['program.startyear'] + '-' + it['program.endyear'])
+        $('title').text ('Дом по адресу ' + it.address + ', включенный в РПКР ' + it.startyear + '-' + it.endyear)
         
         fill (view, it, $('#body'))
 

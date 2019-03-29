@@ -5,6 +5,7 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.Type.DATE;
 import static ru.eludia.base.model.Type.NUMERIC;
+import static ru.eludia.base.model.Type.STRING;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
@@ -21,7 +22,7 @@ public class OverhaulRegionalProgramHouseWork extends EnTable {
         
         HOUSE_UUID            (OverhaulRegionalProgramHouse.class, "Дом, к которому привязан вид работы"),
 
-        WORK                  (VocOverhaulWorkType.class, "Вид работы"),
+        WORK                  (STRING, 20, "Вид работы (НСИ 219)"),
         
         STARTMONTH            (NUMERIC, 2, "Месяц начала периода"),
         STARTYEAR             (NUMERIC, 4, "Год начала периода"),

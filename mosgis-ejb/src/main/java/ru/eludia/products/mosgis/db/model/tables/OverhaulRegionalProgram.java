@@ -13,8 +13,8 @@ public class OverhaulRegionalProgram extends EnTable {
     
     public enum c implements EnColEnum {
         
-        ID_ORP_STATUS       (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус вида работ капитального ремонта с точки зрения mosgis"),
-        ID_ORP_STATUS_GIS   (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус вида работ капитального ремонта с точки зрения ГИС ЖКХ"),
+        ID_ORP_STATUS       (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус региональной программы капитального ремонта с точки зрения mosgis"),
+        ID_ORP_STATUS_GIS   (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус региональной программы капитального ремонта с точки зрения ГИС ЖКХ"),
         
         ORG_UUID            (VocOrganization.class, null, "Поставщик информации"),
         

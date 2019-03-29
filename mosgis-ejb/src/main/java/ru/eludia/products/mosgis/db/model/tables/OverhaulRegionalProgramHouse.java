@@ -7,11 +7,13 @@ import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
-import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 
 public class OverhaulRegionalProgramHouse extends EnTable {
     
     public enum c implements EnColEnum {
+        
+        ID_ORPH_STATUS       (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус записи с точки зрения mosgis"),
+        ID_ORPH_STATUS_GIS   (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус записи с точки зрения ГИС ЖКХ"),
         
         PROGRAM_UUID         (OverhaulRegionalProgram.class, "Региональная программа"),
         
