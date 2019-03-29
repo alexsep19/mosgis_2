@@ -2,6 +2,16 @@ define ([], function () {
 
     var form_name = 'overhaul_regional_program_common_form'
 
+    $_DO.approve_overhaul_regional_program_common = function (e) {
+        if (!confirm ('Разместить эти данные в ГИС ЖКХ?')) return
+        query ({type: 'overhaul_regional_programs', action: 'approve'}, {}, reload_page)
+    }
+
+    $_DO.alter_overhaul_regional_program_common = function (e) {
+        if (!confirm ('Открыть эту карточку на редактирование?')) return
+        query ({type: 'overhaul_regional_programs', action: 'alter'}, {}, reload_page)
+    }
+
     $_DO.cancel_overhaul_regional_program_common = function (e) {
         
         if (!confirm ('Отменить несохранённые правки?')) return

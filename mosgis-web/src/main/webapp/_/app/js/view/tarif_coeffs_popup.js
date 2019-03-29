@@ -14,12 +14,11 @@ define ([], function () {
                 record: data.record,
 
                 fields : [
-                    {name: 'uuid_tf', type: 'text'},
                     {name: 'coefficientvalue', type: 'float', options: {min: 0, autoFormat: false}},
                     {name: 'coefficientdescription', type: 'textarea'},
                 ],
 
-                focus: 1,
+                focus: 0,
             })
 
        })

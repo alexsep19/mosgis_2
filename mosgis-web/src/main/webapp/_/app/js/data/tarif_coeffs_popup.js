@@ -6,6 +6,8 @@ define ([], function () {
 
         var v = form.values ()
 
+        v.uuid_tf = $_REQUEST.id
+
         if (!v.coefficientvalue || !(0 <= v.coefficientvalue && v.coefficientvalue < 1000))
             die('coefficientvalue', 'Укажите, пожалуйста, значение коэффициента от 0 до 999.999')
 

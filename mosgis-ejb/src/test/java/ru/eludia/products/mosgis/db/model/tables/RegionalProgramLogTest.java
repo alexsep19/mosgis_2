@@ -14,7 +14,7 @@ import ru.gosuslugi.dom.schema.integration.capital_repair.ExportRegionalProgramR
 
 public class RegionalProgramLogTest extends BaseTest {
     
-    private static final String uuid = "1c55e7b3-1f2b-4553-b445-f91d41bebd00";
+    private static final String uuid = "7350e38d-141e-493e-925e-8620a9ed0a45";
     
     private OverhaulRegionalProgram table;
     private OverhaulRegionalProgramLog logTable;
@@ -35,10 +35,7 @@ public class RegionalProgramLogTest extends BaseTest {
         
         try (DB db = model.getDb ()) {
             
-            Map<String, Object> record = 
-                    db.getMap (logTable.getForExport(db, uuid));
-            
-            OverhaulRegionalProgramLog.addDocumentsForImport (db, record);
+            Map<String, Object> record = OverhaulRegionalProgramLog.getForExport (db, uuid);
             
             System.out.println (record);
             

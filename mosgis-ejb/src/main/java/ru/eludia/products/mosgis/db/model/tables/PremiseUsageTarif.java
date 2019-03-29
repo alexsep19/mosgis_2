@@ -86,6 +86,17 @@ public class PremiseUsageTarif extends EnTable  {
 		    + "); "
 		+ " END LOOP; "
 	    + " END; END IF; "
+	    + " COMMIT; "
 	    + "END;");
+
+	trigger ("AFTER UPDATE", ""
+	    + "DECLARE "
+	    + " PRAGMA AUTONOMOUS_TRANSACTION; "
+	    + "BEGIN "
+	    + " IF :NEW.price <> :OLD.price THEN "
+	    + "   UPDATE " + TarifCoeff.TABLE_NAME + " c SET price = c.coefficientvalue * :NEW.price WHERE uuid_tf = :NEW.uuid; "
+	    + "   COMMIT; "
+	    + " END IF; "
+        + "END;");
     }
 }
