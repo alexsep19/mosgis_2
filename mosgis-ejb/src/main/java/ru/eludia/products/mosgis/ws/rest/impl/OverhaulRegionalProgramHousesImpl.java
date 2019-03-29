@@ -8,6 +8,7 @@ import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.House;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgram;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouse;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseWork;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -40,7 +41,8 @@ public class OverhaulRegionalProgramHousesImpl extends BaseCRUD <OverhaulRegiona
     public JsonObject getItem (String id, User user) {return fetchData ((db, job) -> {
         
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
-            .get   (getTable (), id, "*")
+            .get        (getTable (), id, "*")
+            .toOne      (OverhaulRegionalProgram.class, "startyear AS startyear", "endyear AS endyear").on ()
             .toOne      (House.class, "AS house", "address AS address", "fiashouseguid AS fiashouseguid").on ()
             .toOne      (VocBuilding.class, "AS build", "oktmo AS oktmo").on ("build.houseguid = house.fiashouseguid")
         ));

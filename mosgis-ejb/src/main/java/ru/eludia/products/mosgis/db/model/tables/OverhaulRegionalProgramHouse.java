@@ -40,6 +40,18 @@ public class OverhaulRegionalProgramHouse extends EnTable {
         
         cols  (c.class);
         
+        trigger ("BEFORE INSERT", ""
+                + "DECLARE "
+                    + "PRAGMA AUTONOMOUS_TRANSACTION; "
+                    + "cnt NUMBER; "
+                + "BEGIN "
+                    + "SELECT COUNT(*) INTO cnt FROM tb_oh_reg_pr_houses houses WHERE houses.program_uuid = :NEW.program_uuid AND houses.house = :NEW.house AND :NEW.is_deleted = 0; "
+                    + "IF cnt > 0 THEN "
+                        + "raise_application_error (-20000, 'Данный дом уже включен в региональную программу'); "
+                    + "END IF; "
+                + "END; "
+        );
+        
     }
     
     public enum Action {
