@@ -20,6 +20,7 @@ define ([], function () {
 
                         tabs: [
                             {id: 'overhaul_regional_program_common', caption: 'Программа'},
+                            {id: 'overhaul_regional_program_houses', caption: 'Дома и виды работ'},
                             {id: 'overhaul_regional_program_docs', caption: 'Документы'},
                         ].filter (not_off),
 

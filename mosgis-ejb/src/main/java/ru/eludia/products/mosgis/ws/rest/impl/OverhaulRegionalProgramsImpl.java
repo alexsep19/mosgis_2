@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.ws.rest.impl;
 
+import java.util.Map;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -42,6 +43,14 @@ public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProg
     }
     
     @Override
+    protected Queue getQueue (VocAction.i action) {
+        switch (action) {
+            case APPROVE: return queue;
+            default: return null;
+        }
+    }
+    
+    @Override
     public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
 
         db.update (getTable (), HASH (
@@ -51,6 +60,20 @@ public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProg
 
         logAction (db, user, id, VocAction.i.APPROVE);
 
+    });}
+    
+    @Override
+    public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
+                
+        final Map<String, Object> r = HASH (
+            EnTable.c.UUID,               id,
+            OverhaulRegionalProgram.c.ID_ORP_STATUS,  VocGisStatus.i.PROJECT.getId ()
+        );
+                
+        db.update (getTable (), r);
+        
+        logAction (db, user, id, VocAction.i.ALTER);
+        
     });}
     
     @Override

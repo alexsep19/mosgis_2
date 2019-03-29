@@ -1,18 +1,18 @@
 package ru.eludia.products.mosgis.rest.resources;
 
-import javax.json.JsonObject;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.Path;
+import javax.json.JsonObject;
+import javax.ws.rs.POST;
+import javax.ws.rs.PathParam;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import ru.eludia.products.mosgis.rest.ValidationException;
-import ru.eludia.products.mosgis.rest.api.OverhaulRegionalProgramsLocal;
+import ru.eludia.products.mosgis.rest.api.OverhaulRegionalProgramHousesLocal;
 import ru.eludia.products.mosgis.rest.misc.EJBResource;
 
-@Path("overhaul_regional_programs")
-public class OverhaulRegionalPrograms extends EJBResource <OverhaulRegionalProgramsLocal> {
+@Path("overhaul_regional_program_houses")
+public class OverhaulRegionalProgramHouses extends EJBResource <OverhaulRegionalProgramHousesLocal> {
 
     private void checkGet () {
         if (!securityContext.isUserInRole ("admin")    && 
@@ -39,13 +39,6 @@ public class OverhaulRegionalPrograms extends EJBResource <OverhaulRegionalProgr
     public JsonObject select (JsonObject p) { 
         checkGet ();
         return back.select (p, getUser ());
-    }
-    
-    @POST
-    @Path("vocs") 
-    @Produces (APPLICATION_JSON)
-    public JsonObject getVocs () {
-        return back.getVocs ();
     }
     
     @POST
@@ -80,20 +73,6 @@ public class OverhaulRegionalPrograms extends EJBResource <OverhaulRegionalProgr
     public JsonObject doDelete (@PathParam ("id") String id) {
         checkPost ();
         return back.doDelete (id, getUser ());
-    }
-    
-    @POST
-    @Path("{id}/approve") 
-    @Produces (APPLICATION_JSON)
-    public JsonObject doApprove (@PathParam ("id") String id) { 
-        return back.doApprove (id, getUser ());
-    }
-        
-    @POST
-    @Path("{id}/alter") 
-    @Produces (APPLICATION_JSON)
-    public JsonObject doAlter (@PathParam ("id") String id) { 
-        return back.doAlter (id, getUser ());
     }
     
 }
