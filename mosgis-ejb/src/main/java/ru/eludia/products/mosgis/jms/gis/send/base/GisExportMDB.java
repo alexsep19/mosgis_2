@@ -39,8 +39,11 @@ public abstract class GisExportMDB <LT extends Table> extends UUIDMDB<LT> {
     protected void store (DB db, AckRequest.Ack ack, Map<String, Object> r, VocGisStatus.i nextStatus) throws SQLException {
         
         db.begin ();
-        
-            OutSoap.registerAck (db, ack);
+        	
+        	if (r.containsKey("object_by_transport_guid"))
+        		OutSoap.registerAck (db, ack, r.get("object_by_transport_guid"));
+        	else
+        		OutSoap.registerAck (db, ack);
 
             db.update (getTable (), DB.HASH (
                 "uuid",          r.get ("uuid"),

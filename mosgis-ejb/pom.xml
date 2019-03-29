@@ -191,6 +191,7 @@
                                 <bindingFile>bindings.xjb</bindingFile>
                                 <bindingFile>wsdl/lib/hcs-bills-base.xsd</bindingFile>
                                 <bindingFile>wsdl/lib/hcs-nsi-base.xsd</bindingFile>
+                                <bindingFile>wsdl/inspection/hcs-inspection-types.xsd</bindingFile>
                             </bindingFiles>
                             <xjcArgs>
                               <xjcArg>-Xannotate</xjcArg>

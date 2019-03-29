@@ -75,6 +75,11 @@ define ([], function () {
     
     }
     
+    $_DO.send_check_plan_common = function (e) {   
+        if (!confirm ('Вы действительно хотите разместить план проверок в ГИС ЖКХ?')) return        
+        query ({type: 'check_plans', action: 'send'}, {}, reload_page)
+    }
+    
     return function (done) {
 
         w2ui ['topmost_layout'].unlock ('main')

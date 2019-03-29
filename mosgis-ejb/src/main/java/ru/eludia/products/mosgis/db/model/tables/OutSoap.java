@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.util.UUID;
 import java.util.logging.Logger;
 import ru.eludia.base.DB;
-import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.Table;
 import static ru.eludia.base.model.def.Bool.TRUE;
@@ -96,6 +95,16 @@ public class OutSoap extends Table {
         db.update (OutSoap.class, DB.HASH (
             "uuid",     ack.getRequesterMessageGUID (),
             "uuid_ack", ack.getMessageGUID ()
+        ));
+
+    }
+    
+    public final static void registerAck (DB db, AckRequest.Ack ack, Object objectByTransportGuid) throws SQLException {
+
+        db.update (OutSoap.class, DB.HASH (
+            "uuid",     ack.getRequesterMessageGUID (),
+            "uuid_ack", ack.getMessageGUID (),
+            "object_by_transport_guid", objectByTransportGuid
         ));
 
     }
