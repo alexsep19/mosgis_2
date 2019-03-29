@@ -16,6 +16,8 @@ public class TarifCoeff extends EnTable  {
 
 	COEFFICIENTVALUE       (Type.NUMERIC, 6, 3, "Значение коэффициента"),
 
+	PRICE                  (Type.NUMERIC, 13, 3, "Величина тарифа из коэффициента"),
+
 	COEFFICIENTDESCRIPTION (Type.STRING, 4000, "Описание")
         ;
 
@@ -34,5 +36,10 @@ public class TarifCoeff extends EnTable  {
 	cols   (c.class);
 
 	key    (c.UUID_TF);
+
+        trigger("BEFORE INSERT OR UPDATE", ""
+	    + "BEGIN "
+	    + " SELECT :NEW.coefficientvalue * tf.price INTO :NEW.price FROM vw_tariffs tf WHERE tf.id = :NEW.uuid_tf; "
+	    + "END;");
     }
 }
