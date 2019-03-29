@@ -7,28 +7,22 @@ import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
-import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 
-public class OverhaulRegionalProgram extends EnTable {
+public class OverhaulRegionalProgramHouse extends EnTable {
     
     public enum c implements EnColEnum {
         
-        ID_ORP_STATUS       (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус региональной программы капитального ремонта с точки зрения mosgis"),
-        ID_ORP_STATUS_GIS   (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус региональной программы капитального ремонта с точки зрения ГИС ЖКХ"),
+        ID_ORPH_STATUS       (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус записи с точки зрения mosgis"),
+        ID_ORPH_STATUS_GIS   (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус записи с точки зрения ГИС ЖКХ"),
         
-        ORG_UUID            (VocOrganization.class, null, "Поставщик информации"),
+        PROGRAM_UUID         (OverhaulRegionalProgram.class, "Региональная программа"),
         
-        PROGRAMNAME         (Type.STRING, 1000, "Наименование программы"),
-        STARTYEAR           (Type.NUMERIC, 4, "Год начала периода реализации"),
-        ENDYEAR             (Type.NUMERIC, 4, "Год окончания периода реализации"),
+        HOUSE                (House.class, "Дом (МКД)"),
         
-        ID_LOG              (OverhaulRegionalProgramLog.class, "Последнее событие редактирования"),
-        
-        REGIONALPROGRAMGUID (Type.UUID,       null,                   "Идентификатор региональной программы"),
-        UNIQUENUMBER        (Type.STRING,     null,                   "Уникальный номер")
+        ID_LOG               (OverhaulRegionalProgramHouseLog.class, "Последнее событие редактирования")
         
         ;
-
+        
         @Override public Col getCol () {return col;} private Col col; private c (Type type, Object... p) {col = new Col (this, type, p);} private c (Class c,   Object... p) {col = new Ref (this, c, p);}        
         @Override
         public boolean isLoggable () {
@@ -42,11 +36,23 @@ public class OverhaulRegionalProgram extends EnTable {
         
     }
     
-    public OverhaulRegionalProgram () {
+    public OverhaulRegionalProgramHouse () {
         
-        super ("tb_oh_reg_programs", "Региональные программы капитального ремонта");
+        super ("tb_oh_reg_pr_houses", "Дома региональной программы капитального ремонта");
         
         cols  (c.class);
+        
+        trigger ("BEFORE INSERT", ""
+                + "DECLARE "
+                    + "PRAGMA AUTONOMOUS_TRANSACTION; "
+                    + "cnt NUMBER; "
+                + "BEGIN "
+                    + "SELECT COUNT(*) INTO cnt FROM tb_oh_reg_pr_houses houses WHERE houses.program_uuid = :NEW.program_uuid AND houses.house = :NEW.house AND :NEW.is_deleted = 0; "
+                    + "IF cnt > 0 THEN "
+                        + "raise_application_error (-20000, 'Данный дом уже включен в региональную программу'); "
+                    + "END IF; "
+                + "END; "
+        );
         
     }
     

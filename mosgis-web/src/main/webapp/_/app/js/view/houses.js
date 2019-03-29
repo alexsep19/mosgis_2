@@ -1,10 +1,12 @@
 define ([], function () {
 
     return function (data, view) {
-        
-        $(w2ui ['rosters_layout'].el ('main')).w2regrid ({ 
 
-            name: 'houses_grid',             
+        var is_popup = 1 == $_SESSION.delete ('houses_popup.on')
+        
+        $((w2ui ['popup_layout'] || w2ui ['rosters_layout']).el ('main')).w2regrid ({
+
+            name: 'houses_grid' + (is_popup ? '_popup' : ''),
 
             show: {
                 toolbar: true,
@@ -21,7 +23,7 @@ define ([], function () {
                         caption: 'Импорт паспорта ЖД', 
                         icon: 'w2ui-icon-plus', 
                         onClick: $_DO.import_houses, 
-                        off: !$_USER.role.nsi_20_1 && !$_USER.role.admin
+                        off: is_popup || (!$_USER.role.nsi_20_1 && !$_USER.role.admin)
                     },
                     
                 ].filter (not_off),
@@ -51,9 +53,39 @@ define ([], function () {
             ],
 
             url: '/mosgis/_rest/?type=houses',
+
+            onRequest: function (e) {
+
+                if (is_popup) {
+
+                    var post_data = this.post_data || $_SESSION.delete('houses_popup.post_data');
+
+                    if (post_data) {
+
+                        if (e.postData.search) {
+                            $.each(e.postData.search, function () {
+                                post_data.search.push(this)
+                            })
+                        }
+
+                        $.extend(e.postData, post_data)
+
+                        this.post_data = post_data
+                    }
+                }
+            },
             
             onDblClick: function (e) {
-                openTab ('/house/' + e.recid)
+
+                var r = this.get (e.recid)
+
+                if (is_popup) {
+                    $_SESSION.set ('houses_popup.data', clone (r))
+                    w2popup.close ()
+                }
+                else {
+                    openTab ('/house/' + e.recid)
+                }
             }
 
         }).refresh ();
