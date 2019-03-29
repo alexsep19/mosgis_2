@@ -1,0 +1,65 @@
+<span
+    data-popup-width=540
+    data-popup-height=240
+    data-popup-title='Коэффициент тарифа'
+    >
+
+    <style>
+
+        label[data-block-name=tarif_coeffs_popup] {
+            width: 160px;
+            margin-right: 10px;
+        }
+
+	textarea[data-block-name=tarif_coeffs_popup] {
+	    resize: none;
+	    width: 325px;
+	}
+
+        input[data-block-name=tarif_coeffs_popup] {
+            width: 325px !important;
+        }
+        input.number[data-block-name=tarif_coeffs_popup] {
+            width: 100px !important;
+        }
+        input.short[data-block-name=tarif_coeffs_popup] {
+            width: 120px !important;
+        }
+    </style>
+
+    <div class="w2ui-reset w2ui-form" style="height:190px;margin:8px 0 0 0;" >
+
+        <div class="w2ui-page page-0">
+	    <table width=100% border=0 cellpadding=0 cellspacing=0>
+		<tr>
+		    <td>
+			<div class="w2ui-field">
+			    <label>Значение коэффициента</label>
+			    <div>
+				<input name=uuid_tf type=hidden />
+				<input name=coefficientvalue  />
+			    </div>
+			</div>
+		    </td>
+		</tr>
+		<tr>
+		    <td>
+			<div class="w2ui-field">
+			    <label>Описание коэффициента</label>
+			    <div>
+				<textarea name=coefficientdescription rows=3 cols=50 />
+			    </div>
+			</div>
+
+		    </td>
+		</tr>
+	    </table>
+        </div>
+
+        <div class="w2ui-buttons">
+            <button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+    </div>
+
+</span>
