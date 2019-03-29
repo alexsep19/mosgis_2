@@ -1,17 +1,31 @@
 define ([], function () {
     
     var grid_name = 'payment_document_common_charge_info_grid'
+    
+    function is_yellow (row, col) {
+
+        switch (col.field) {
+
+            case 'accountingperiodtotal':
+                return true
+
+            default:
+                return false
+
+        }
+
+    }
                 
     return function (data, view) {
-    
+
         var it = data.item
         
-        var is_editing = 0
+        var is_editing = false
         
         function setEditig (v) {
 
             is_editing = !!v
-
+            
             var grid = w2ui [grid_name]
 
             grid.show.selectionBorder = is_editing
@@ -26,7 +40,6 @@ define ([], function () {
             else {
                 t.disable ('cancel')
                 t.enable ('edit')
-                grid.select (grid.records [1].recid)
             }
 
             grid.refresh ()
@@ -39,9 +52,7 @@ define ([], function () {
 
             grid.records = data.lines
             
-            $.each (grid.records, function () {
-darn (this)            
-            
+            $.each (grid.records, function () {            
 //                if (this.w2ui) delete this.w2ui.changes
 //                delete this.value
             })
@@ -52,7 +63,7 @@ darn (this)
 
         var layout = w2ui ['passport_layout']
 
-        var $panel = $(layout.el ('main'))
+        var $panel = $(layout.el ('main'))               
 
         $panel.w2regrid ({ 
 
@@ -136,8 +147,11 @@ darn (this)
             onChange: $_DO.patch_payment_document_common_charge_info,
             
             onEditField: function (e) {
-            
-                if (!is_editing) e.preventDefault ()
+                        
+                if (!is_editing) {
+                    if (it._can.edit) alert ('Чтобы менять содержимое строк начисления, сдедует перейти в режим правки (кнопка "Редактировать")')
+                    e.preventDefault ()                    
+                }
 
                 var grid = this
                 
@@ -151,15 +165,20 @@ darn (this)
             
             onRefresh: function (e) {
             
+                var grid = this
+            
                 e.done (function () {
                     
                     var last = null
 
                     $.each (data.lines, function () {
+                    
+                        var row = this
+
+                        var sel = 'tr[recid=' + this.recid + ']'
 
                         if (!('id_type' in this)) {
 
-                            var sel = 'tr[recid=' + this.recid + ']'
 
                             $(sel + ' td.w2ui-grid-data:not(:last-child)').css ({
                                 'font-weight': 'bold',
@@ -177,10 +196,23 @@ darn (this)
                             }
                         
                         }
+                        else if (is_editing) {
+                        
+                            $(sel + ' td.w2ui-grid-data').each (function () {
+
+                                var $this = $(this)
+                                var col = grid.columns [$this.attr ('col')]
+                                
+                                if (is_yellow (row, col)) $this.css ({background: '#ffffcc'})
+
+                            })
+                        
+                        }
                         
                         last = this.id                        
 
                     })
+                    
 
                 }) 
             
