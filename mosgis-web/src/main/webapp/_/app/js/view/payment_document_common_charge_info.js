@@ -10,25 +10,28 @@ define ([], function () {
         
         function setEditig (v) {
 
-            is_editing = v
+            is_editing = !!v
 
-            var g = w2ui [grid_name]
-            var t = g.toolbar
+            var grid = w2ui [grid_name]
+
+            grid.show.selectionBorder = is_editing
+
+            var t = grid.toolbar            
 
             if (is_editing) {
                 t.enable ('cancel')
                 t.disable ('edit')
+                grid.selectNone ()
             }
             else {
                 t.disable ('cancel')
                 t.enable ('edit')
+                grid.select (grid.records [1].recid)
             }
-            
+
             grid.refresh ()
 
         }
-
-//        function recalcToolbar (e) {e.done (function () {
 
         $_F5 = function () {
 
@@ -54,6 +57,7 @@ define ([], function () {
             name: grid_name,
             
             selectType: 'cell',
+            multiSelect: false,
 
             show: {
                 toolbar: it._can.edit,
@@ -61,6 +65,7 @@ define ([], function () {
                 toolbarReload: 0,
                 toolbarColumns: 0,
                 footer: 1,
+                selectionBorder: false,
             },            
             
             toolbar: {
