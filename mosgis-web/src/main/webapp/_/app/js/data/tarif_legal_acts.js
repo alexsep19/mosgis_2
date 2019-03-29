@@ -62,7 +62,10 @@ define ([], function () {
 
             add_vocabularies (d, d)
 
-            for (k in d) data [k] = d [k]
+            for (k in d) {
+                if (k == 'item') continue
+                data [k] = d [k]
+            }
 
             $('body').data('data', data)
 
