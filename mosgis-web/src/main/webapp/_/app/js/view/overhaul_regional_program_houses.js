@@ -11,7 +11,7 @@ define ([], function () {
             show: {
                 toolbar: true,
                 toolbarInput: false,
-                toolbarAdd: $_USER.role.nsi_20_7 || $_USER.role.admin, // !!!!!!!!!!!!!!!!!!!!! data.item._can.edit
+                toolbarAdd: data.item._can.edit && ($_USER.role.nsi_20_7 || $_USER.role.admin),
                 footer: true,
             },
 
