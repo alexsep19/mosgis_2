@@ -19,7 +19,7 @@ define ([], function () {
 
             show: {
                 toolbar: true,
-                toolbarAdd: true,
+                toolbarAdd: data._can.create,
                 toolbarDelete: data._can.delete,
                 toolbarEdit: data._can.edit,
                 footer: 1,

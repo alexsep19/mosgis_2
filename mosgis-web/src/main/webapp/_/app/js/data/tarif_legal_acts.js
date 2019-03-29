@@ -72,7 +72,6 @@ define ([], function () {
             data._can = {
                 create: $_USER.has_nsi_20(7, 10)
             }
-            data._can.edit = data._can.delete = data._can.create
 
             done (data)
         })

@@ -5,11 +5,14 @@ import java.util.stream.Collectors;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.jms.Queue;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
+import javax.annotation.Resource;
 import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
@@ -19,6 +22,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.PremiseUsageTarifOktmo;
 import ru.eludia.products.mosgis.db.model.voc.VocDifferentiation;
 import ru.eludia.products.mosgis.db.model.voc.VocDifferentiationOperator;
@@ -34,15 +38,26 @@ import ru.eludia.products.mosgis.ws.rest.impl.tools.SimpleSearch;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class PremiseUsageTarifImpl extends BaseCRUD<PremiseUsageTarif> implements PremiseUsageTarifLocal {
-/*
-    @Resource (mappedName = "mosgis.inPremiseUsageTarifsQueue")
+
+    @Resource (mappedName = "mosgis.inExportPremiseUsageTarifsQueue")
     Queue queue;
 
     @Override
     public Queue getQueue () {
         return queue;
     }
-*/
+    @Override
+    protected void publishMessage (VocAction.i action, String id_log) {
+
+        switch (action) {
+            case APPROVE:
+            case ANNUL:
+                super.publishMessage (action, id_log);
+            default:
+                return;
+        }
+    }
+
     private void filterOffDeleted (Select select) {
         select.and ("is_deleted", 0);
     }
@@ -206,7 +221,6 @@ public class PremiseUsageTarifImpl extends BaseCRUD<PremiseUsageTarif> implement
 	logAction(db, user, id, VocAction.i.UPDATE);
     });}
 
-/*    
     @Override
     public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
 
@@ -230,6 +244,5 @@ public class PremiseUsageTarifImpl extends BaseCRUD<PremiseUsageTarif> implement
         
         logAction (db, user, id, VocAction.i.ALTER);
         
-    });}    
-*/    
+    });}
 }

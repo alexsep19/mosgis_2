@@ -3,6 +3,7 @@ package ru.eludia.products.mosgis.db.model.tables;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
+import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -25,6 +26,10 @@ public class PremiseUsageTarif extends EnTable  {
 	ID_CTR_STATUS          (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения mosgis"),
 	ID_CTR_STATUS_GIS      (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения ГИС ЖКХ"),
 
+	CANCELREASON           (Type.STRING, 4000, null, "Причина аннулирования"),
+	IS_ANNULED             (Type.BOOLEAN, new Virt("DECODE(\"CANCELREASON\",NULL,0,1)"), "1, если запись аннулирована; иначе 0"),
+	TARIFFGUID             (Type.UUID, null, "Идентификатор НПА в ГИС ЖКХ"),
+
 	ID_LOG                 (PremiseUsageTarifLog.class, "Последнее событие редактирования")
         ;
 
@@ -41,6 +46,50 @@ public class PremiseUsageTarif extends EnTable  {
         }
 
     }
+
+    public enum Action {
+        
+        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
+        EDITING     (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_STATE),
+        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT),
+        ;
+        
+        VocGisStatus.i nextStatus;
+        VocGisStatus.i okStatus;
+        VocGisStatus.i failStatus;
+
+        private Action (VocGisStatus.i nextStatus, VocGisStatus.i okStatus, VocGisStatus.i failStatus) {
+            this.nextStatus = nextStatus;
+            this.okStatus = okStatus;
+            this.failStatus = failStatus;
+        }
+
+        public VocGisStatus.i getNextStatus () {
+            return nextStatus;
+        }
+
+        public VocGisStatus.i getFailStatus () {
+            return failStatus;
+        }
+
+        public VocGisStatus.i getOkStatus () {
+            return okStatus;
+        }
+
+        public static Action forStatus (VocGisStatus.i status) {
+            
+            switch (status) {
+                case PENDING_RQ_PLACING:   return PLACING;
+                case PENDING_RP_PLACING:   return PLACING;
+                case PENDING_RQ_EDIT:      return EDITING;
+                case PENDING_RP_EDIT:      return EDITING;
+                case PENDING_RQ_ANNULMENT: return ANNULMENT;
+                case PENDING_RP_ANNULMENT: return ANNULMENT;
+                default: return null;
+            }
+            
+        }
+    };
 
     public PremiseUsageTarif () {
 
@@ -66,6 +115,9 @@ public class PremiseUsageTarif extends EnTable  {
 	    + " PRAGMA AUTONOMOUS_TRANSACTION; "
 	    + "BEGIN "
 	    + " IF :NEW.is_deleted = 0 THEN BEGIN "
+		+ " IF :NEW.datefrom > :NEW.dateto THEN "
+		+ "   raise_application_error (-20000, 'Дата начала действия не может превышать дату окончания действия'); "
+		+ " END IF; "
 		+ " FOR i IN ("
 		    + "SELECT "
 		    + " o.name     label "
@@ -86,6 +138,22 @@ public class PremiseUsageTarif extends EnTable  {
 		    + "); "
 		+ " END LOOP; "
 	    + " END; END IF; "
+	    + " IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING + " THEN "
+		+ " FOR i IN ("
+		    + "SELECT "
+		    + " la.name     label "
+		    + "FROM "
+		    + " tb_tf_legal_acts o "
+		    + " LEFT JOIN " + LegalAct.TABLE_NAME + " la ON la.uuid = o.uuid_legal_act "
+		    + "WHERE "
+		    + " o.uuid = :NEW.uuid "
+		    + " AND la.documentguid IS NULL "
+		+ ") LOOP "
+		    + " raise_application_error (-20000, "
+		    + "'НПА ' || i.label || ' не размещен в ГИС ЖКХ' "
+		    + "); "
+		+ " END LOOP; "
+	    + " END IF; "
 	    + " COMMIT; "
 	    + "END;");
 

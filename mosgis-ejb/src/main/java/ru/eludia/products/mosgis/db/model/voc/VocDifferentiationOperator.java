@@ -62,7 +62,7 @@ public class VocDifferentiationOperator extends Table {
 
         public static i forId (Object id) {
             for (i i: values ()) if (DB.eq (id, i.id)) return i;
-            throw new IllegalArgumentException ("Unknown type id: " + id);
+            throw new IllegalArgumentException ("Unknown VocDifferentiationOperator id: " + id);
         }
 
         @Override

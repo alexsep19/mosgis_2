@@ -1,7 +1,5 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
-import java.util.Map;
-import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
@@ -16,7 +14,6 @@ import ru.eludia.products.mosgis.db.model.voc.VocLegalActLevel;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi237;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi324;
-import ru.gosuslugi.dom.schema.integration.uk.ExportDocumentType;
 
 public class LegalAct extends AttachTable  {
 

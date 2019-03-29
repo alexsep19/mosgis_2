@@ -65,7 +65,7 @@ define ([], function () {
 
         w2ui ['topmost_layout'].unlock ('main')
 
-        var data = {}
+        var data = clone($('body').data('data')) || {}
 
         query ({type: 'legal_acts', id: null, part: 'vocs'}, {}, function (d) {
 

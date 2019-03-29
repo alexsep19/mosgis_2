@@ -18,8 +18,6 @@ define ([], function () {
 
     return function (data, view) {
 
-        var it = data.item
-
         var postData = {data: {uuid_tf: $_REQUEST.id}}
 
         if (!$_USER.role.admin)
@@ -33,7 +31,7 @@ define ([], function () {
 
             show: {
                 toolbar: true,
-                toolbarAdd: true,
+                toolbarAdd: data._can.create,
                 toolbarDelete: false,
                 footer: 1,
                 toolbarSearch: false,
@@ -43,7 +41,9 @@ define ([], function () {
 
             toolbar: {
                 items: [
-                    {type: 'button', id: 'deleteButton', caption: 'Исключить', onClick: $_DO.delete_tarif_legal_acts, icon: 'w2ui-icon-cross', disabled: true},
+                    {type: 'button', id: 'deleteButton', caption: 'Исключить', onClick: $_DO.delete_tarif_legal_acts, icon: 'w2ui-icon-cross', disabled: true
+                        , off: !data._can.create
+                    },
                 ].filter(not_off),
             },
 

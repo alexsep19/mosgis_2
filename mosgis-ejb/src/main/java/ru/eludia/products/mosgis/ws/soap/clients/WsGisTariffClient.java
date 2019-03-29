@@ -9,11 +9,13 @@ import javax.ejb.TransactionAttributeType;
 import javax.jws.HandlerChain;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
+import ru.eludia.products.mosgis.db.model.tables.PremiseUsageTarifLog;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ws.soap.tools.LoggingOutMessageHandler;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.base.GetStateRequest;
 import ru.gosuslugi.dom.schema.integration.tariff.ExportTariffDifferentiationRequest;
+import ru.gosuslugi.dom.schema.integration.tariff.ImportResidentialPremisesUsageRequest;
 import ru.gosuslugi.dom.schema.integration.tariff.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.tariff_service.Fault;
 import ru.gosuslugi.dom.schema.integration.tariff_service.TariffAsyncPort;
@@ -47,5 +49,9 @@ public class WsGisTariffClient {
         final ExportTariffDifferentiationRequest rq = new ExportTariffDifferentiationRequest ();
         return getPort (orgPPAGuid, messageGUID).exportTariffDifferentiation (rq).getAck ();
     }
-    
+
+    public AckRequest.Ack importResidentialPremisesUsage(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+	final ImportResidentialPremisesUsageRequest rq = new ImportResidentialPremisesUsageRequest();
+	return getPort(orgPPAGuid, messageGUID).importResidentialPremisesUsage(PremiseUsageTarifLog.toImportResidentialPremisesUsageRequest(r)).getAck();
+    }
 }
