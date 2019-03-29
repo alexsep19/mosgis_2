@@ -3,21 +3,37 @@ package ru.eludia.products.mosgis.db.model.tables;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
+import static ru.eludia.base.model.Type.DATE;
+import static ru.eludia.base.model.Type.NUMERIC;
+import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
-import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocOverhaulWorkType;
 
-public class OverhaulRegionalProgramHouse extends EnTable {
+public class OverhaulRegionalProgramHouseWork extends EnTable {
     
     public enum c implements EnColEnum {
         
-        PROGRAM_UUID         (OverhaulRegionalProgram.class, "Региональная программа"),
+        ID_ORPHW_STATUS       (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус вида работы капитального ремонта с точки зрения mosgis"),
+        ID_ORPHW_STATUS_GIS   (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус вида работы капитального ремонта с точки зрения ГИС ЖКХ"),
         
-        HOUSE                (House.class, "Дом (МКД)"),
+        HOUSE_UUID            (OverhaulRegionalProgramHouse.class, "Дом, к которому привязан вид работы"),
+
+        WORK                  (VocOverhaulWorkType.class, "Вид работы"),
         
-        ID_LOG               (OverhaulRegionalProgramHouseLog.class, "Последнее событие редактирования")
+        STARTMONTH            (NUMERIC, 2, "Месяц начала периода"),
+        STARTYEAR             (NUMERIC, 4, "Год начала периода"),
+        
+        STARTYEARMONTH        (DATE, new Virt ("TO_DATE(\"STARTYEAR\" || '-' || \"STARTMONTH\", 'YYYY-MM')"), "Дата начала периода (gYearMonth)"),
+        
+        ENDMONTH              (NUMERIC, 2, "Месяц окончания периода"),
+        ENDYEAR               (NUMERIC, 4, "Год окончания периода"),
+        
+        ENDYEARMONTH          (DATE, new Virt ("TO_DATE(\"ENDYEAR\" || '-' || \"ENDMONTH\", 'YYYY-MM')"), "Дата окончания периода (gYearMonth)"),
+        
+        ID_LOG                (OverhaulRegionalProgramHouseWorkLog.class, "Последнее событие редактирования")
         
         ;
         
@@ -34,9 +50,9 @@ public class OverhaulRegionalProgramHouse extends EnTable {
         
     }
     
-    public OverhaulRegionalProgramHouse () {
+    public OverhaulRegionalProgramHouseWork () {
         
-        super ("tb_oh_reg_pr_houses", "Дома региональной программы капитального ремонта");
+        super ("tb_oh_reg_pr_house_work", "Вид работ по дому РПКР");
         
         cols  (c.class);
         
