@@ -77,19 +77,10 @@ public class TarifLegalActs extends EJBResource <TarifLegalActLocal> {
     @POST
     @Path("{id}/delete") 
     @Produces (APPLICATION_JSON)
-    public JsonObject doDelete (@PathParam ("id") String id) { 
+    public JsonObject doDelete (@PathParam ("id") String id, JsonObject p) {
 //        final JsonObject item = getInnerItem (id);
 //        checkOrg (item);
-        return back.doDelete (id, getUser ());
-    }
-    
-    @POST
-    @Path("{id}/undelete") 
-    @Produces (APPLICATION_JSON)
-    public JsonObject doUndelete (@PathParam ("id") String id) { 
-//        final JsonObject item = getInnerItem (id);
-//        checkOrg (item);
-        return back.doUndelete (id, getUser ());
+        return back.doDelete (id, p, getUser ());
     }
         
     @POST

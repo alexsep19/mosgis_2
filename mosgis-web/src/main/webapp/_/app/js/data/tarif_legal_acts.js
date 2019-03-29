@@ -5,7 +5,7 @@ define ([], function () {
     $_DO.create_tarif_legal_acts = function (e) {
 
         var saved = {
-            uuid_tf: $_REQUEST.id
+            uuid: $_REQUEST.id
         }
 
         function done() {
@@ -38,17 +38,15 @@ define ([], function () {
 
     $_DO.delete_tarif_legal_acts = function (e) {
 
-        var grid = w2ui [grid_name]
-        var id = grid.getSelection () [0]
-        var r = grid.get (id)
+        var grid = w2ui[grid_name]
 
         query({
 
             type: 'tarif_legal_acts',
-            id: r['tla.uuid'],
+            id: grid.getSelection() [0],
             action: 'delete',
 
-        }, {}, function(){
+        }, {data:{uuid_tf: $_REQUEST.id}}, function(){
             use.block('tarif_legal_acts')
         })
 

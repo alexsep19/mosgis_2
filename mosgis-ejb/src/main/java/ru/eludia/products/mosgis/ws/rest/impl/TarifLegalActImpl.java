@@ -5,8 +5,10 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.json.JsonObject;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.tables.TarifLegalAct;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.ModelHolder;
@@ -23,27 +25,19 @@ import ru.eludia.products.mosgis.rest.api.TarifLegalActLocal;
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class TarifLegalActImpl extends BaseCRUD<TarifLegalAct> implements TarifLegalActLocal {
 
-    private void filterOffDeleted (Select select) {
-        select.and ("is_deleted", 0);
-    }
-
     private void applyComplexSearch (final ComplexSearch search, Select select) {
 
         search.filter (select, "");
-        
-        if (!search.getFilters ().containsKey ("is_deleted")) filterOffDeleted (select);
 
     }
 
     private void applySimpleSearch (final SimpleSearch search, Select select) {
 
-        filterOffDeleted (select);
-
         final String searchString = search.getSearchString ();
         
         if (searchString == null || searchString.isEmpty ()) return;
 
-//        select.and (LegalAct.c.DOCNUMBER.lc () + " LIKE ?%", searchString.toUpperCase ());
+        select.and (LegalAct.c.DOCNUMBER.lc () + " LIKE ?%", searchString.toUpperCase ());
         
     }
     
@@ -55,17 +49,6 @@ public class TarifLegalActImpl extends BaseCRUD<TarifLegalAct> implements TarifL
         else if (search instanceof ComplexSearch) {
             applyComplexSearch ((ComplexSearch) search, select);
         }
-        else {
-            filterOffDeleted (select);
-        }
-
-    }
-    
-    private void checkFilter (JsonObject data, TarifLegalAct.c field, Select select) {
-        String key = field.lc ();
-        String value = data.getString (key, null);
-        if (value == null) return;
-        select.and (field, value);
     }
 
     @Override
@@ -77,8 +60,7 @@ public class TarifLegalActImpl extends BaseCRUD<TarifLegalAct> implements TarifL
 
 	Select select = m.select (LegalAct.class, "AS root", "*")
 	    .toOne(TarifLegalAct.class, "AS tla", "*")
-		.where(TarifLegalAct.c.UUID_TF, data.getString(TarifLegalAct.c.UUID_TF.lc(), null))
-		.and(EnTable.c.IS_DELETED, 0)
+		.where("uuid", data.getString("uuid_tf", null))
 		.on("root.uuid = tla.uuid_legal_act")
 	    .orderBy(LegalAct.c.APPROVEDATE.lc() + " DESC")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
@@ -102,14 +84,29 @@ public class TarifLegalActImpl extends BaseCRUD<TarifLegalAct> implements TarifL
     });}
 
     @Override
+    public JsonObject doCreate (JsonObject p, User user) {return doAction ((db, job) -> {
+
+        Map<String, Object> data = getData (p);
+
+        db.upsert(getTable(), data);
+    });}
+
+    @Override
     public JsonObject doUpdate(String id, JsonObject p, User user) {return doAction(db -> {
 
 	JsonObject data = p.getJsonObject("data");
 
 	Map<String, Object> r = getTable().HASH(data, "uuid", id);
 
-	db.update(TarifLegalAct.class, r);
+	db.upsert(getTable(), r);
+    });}
 
-	logAction(db, user, id, VocAction.i.UPDATE);
+    @Override
+    public JsonObject doDelete (String id, JsonObject p, User user) {return doAction ((db) -> {
+
+        db.delete(db.getModel().select(getTable(), "uuid")
+	    .where("uuid_legal_act", id)
+	    .and("uuid", p.getJsonObject("data").getString("uuid_tf", null))
+        );
     });}
 }
