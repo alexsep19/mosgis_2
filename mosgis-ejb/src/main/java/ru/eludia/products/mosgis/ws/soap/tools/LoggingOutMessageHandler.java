@@ -85,8 +85,8 @@ public abstract class LoggingOutMessageHandler extends BaseLoggingMessageHandler
         SOAPMessage msg = messageContext.getMessage ();
         
         MessageInfo messageInfo = new MessageInfo (messageContext);        
-        byte [] bytes = toBytes (msg);
-        String s = getLoggedMessge (messageInfo, bytes, getCharSetName (msg));
+        
+        final boolean isGetState = "getState".equals (messageInfo.operation);
             
         if (messageInfo.isOut) {
             
@@ -98,19 +98,20 @@ public abstract class LoggingOutMessageHandler extends BaseLoggingMessageHandler
                 SOAPTools.setRequestHeader (msg, rh);
             }
             catch (Exception ex) {
-                Logger.getLogger (LoggingOutMessageHandler.class.getName()).log (Level.SEVERE, null, ex);
+                logger.log (Level.SEVERE, null, ex);
             }
-            
-            if (!"getState".equals (messageInfo.operation)) store (messageInfo, rh, s);
+
+            final String xml = getLoggedMessge (messageInfo, toBytes (msg), getCharSetName (msg)); // MUST be called AFTER setRequestHeader; side effect: logs out the message
+
+            if (!isGetState) store (messageInfo, rh, xml);
 
         }
         else {
-            
-            if ("getState".equals (messageInfo.operation)) {                
-                ResultHeader resultHeader = SOAPTools.getResultHeader (msg);                
-                update (resultHeader, s);            
-            }            
-            
+
+            final String xml = getLoggedMessge (messageInfo, toBytes (msg), getCharSetName (msg)); // side effect: logs out the message
+
+            if (isGetState) update (SOAPTools.getResultHeader (msg), xml);            
+
         }
 
         return true;
