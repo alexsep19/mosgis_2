@@ -16,7 +16,8 @@ define ([], function () {
 
                         tabs: [
                             {id: 'premise_usage_tarif_common', caption: 'Общие'},
-                            {id: 'tarif_diffs',  caption: 'Критерии дифференциации'}
+                            {id: 'tarif_diffs',  caption: 'Критерии дифференциации'},
+                            {id: 'tarif_coeffs', caption: 'Коэффициент тарифа'},
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_premise_usage_tarif
