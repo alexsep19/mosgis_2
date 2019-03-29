@@ -61,8 +61,8 @@ define ([], function () {
         if (v.datefrom > v.dateto)
             die('enddate', 'Дата окончания действия не может предшествовать дате начала')
 
-        if (!v.price)
-            die('price', 'Укажите, пожалуйста, величину')
+        if (!v.price || !(0 <= v.price && v.price <= 10000000))
+            die('price', 'Укажите, пожалуйста, величину от 0 до 9999999.999')
 
         v.oktmo = v.oktmo || []
 
