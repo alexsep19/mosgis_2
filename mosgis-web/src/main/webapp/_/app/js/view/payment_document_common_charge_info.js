@@ -2,6 +2,12 @@ define ([], function () {
     
     var grid_name = 'payment_document_common_charge_info_grid'
     
+    function splash_edit () {
+        var b = $('#tb_payment_document_common_charge_info_grid_toolbar_item_edit')
+        b.animate ({opacity: 0.2}, 400)
+        b.animate ({opacity: 1}, 400)    
+    }
+    
     function is_yellow (row, col) {
 
         switch (col.field) {
@@ -95,7 +101,7 @@ define ([], function () {
             toolbar: {
             
                 items: [
-                    {type: 'button', id: 'edit', caption: 'Редактировать', onClick: function () {setEditig (1)}, disabled: false, icon: 'w2ui-icon-pencil'},
+                    {type: 'button', id: 'edit', caption: 'Редактировать', onClick: splash_edit, _onClick: function () {setEditig (1)}, disabled: false, icon: 'w2ui-icon-pencil'},
                     {type: 'button', id: 'cancel', caption: 'Зафиксировать', onClick: function () {setEditig (0)}, disabled: true, icon: 'w2ui-icon-check'},
                 ],
 
@@ -161,7 +167,8 @@ define ([], function () {
                         
                 if (!is_editing) {
                     if (it._can.edit) alert ('Чтобы менять содержимое строк начисления, сдедует перейти в режим правки (кнопка "Редактировать")')
-                    e.preventDefault ()                    
+                    splash_edit ()
+                    return e.preventDefault ()
                 }
 
                 var grid = this
@@ -223,7 +230,6 @@ define ([], function () {
                         last = this.id                        
 
                     })
-                    
 
                 }) 
             
