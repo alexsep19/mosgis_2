@@ -44,6 +44,9 @@ define ([], function () {
             postData: postData,
 
             url: '/mosgis/_rest/?type=tarif_coeffs',
+            onRefresh: function() {
+                $('div.w2ui-grid-toolbar table td:last').html('<span style="padding: 10px">В случае если при расчете платы за наем жилого помещения к указанной ставке применяется несколько коэффициентов, коэффициенты перемножаются</span>')
+            },
 
             onDblClick: data._can.edit? $_DO.edit_tarif_coeffs : null,
 
