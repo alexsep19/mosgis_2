@@ -4,7 +4,36 @@ define ([], function () {
 
     $_DO.create_tarif_legal_acts = function (e) {
 
-        use.block('tarif_legal_acts_popup')
+        var saved = {
+            uuid_tf: $_REQUEST.id
+        }
+
+        function done() {
+
+            var tia = {type: 'tarif_legal_acts', action: 'create', id: null}
+
+            query (tia, {data: saved}, function () {
+
+                use.block('tarif_legal_acts')
+
+            })
+        }
+
+        $('body').data('legal_acts_popup.callback', function (r) {
+
+            if (!r)
+                return
+
+            saved.uuid_legal_act = r.uuid
+
+            done()
+
+        })
+
+        $_SESSION.set('legal_acts_popup.post_data', {search: [
+            ], searchLogic: "AND"})
+
+        use.block('legal_acts_popup')
     }
 
     $_DO.delete_tarif_legal_acts = function (e) {

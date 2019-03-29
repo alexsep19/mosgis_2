@@ -2,12 +2,12 @@ define ([], function () {
 
     return function (data, view) {
     
-        var callback = $('body').data ('voc_differentiation_popup.callback')
+        var callback = $('body').data ('legal_acts_popup.callback')
 
         $(view).w2uppop ({
         
             onClose: function () {
-                callback ($_SESSION.delete ('voc_differentiation_popup.data'))
+                callback ($_SESSION.delete ('legal_acts_popup.data'))
             }
         
         }, function () {
@@ -21,8 +21,8 @@ define ([], function () {
                 ],
 
                 onRender: function (e) {
-                    $_SESSION.set ('voc_differentiation_popup.on', 1)
-                    use.block ('voc_differentiation')
+                    $_SESSION.set ('legal_acts_popup.on', 1)
+                    use.block ('legal_acts')
                 },
                 
             });

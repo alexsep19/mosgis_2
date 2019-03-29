@@ -11,7 +11,9 @@ define ([], function () {
         if (!$_USER.role.admin)
             postData.data.uuid_org = $_USER.uuid_org
 
-        $(w2ui ['rosters_layout'].el ('main')).w2regrid ({
+        var is_popup = 1 == $_SESSION.delete('legal_acts_popup.on')
+
+        $((w2ui ['popup_layout'] || w2ui ['rosters_layout']).el ('main')).w2regrid ({
 
             multiSelect: false,
 
@@ -19,7 +21,7 @@ define ([], function () {
 
             show: {
                 toolbar: true,
-                toolbarAdd: data._can.create,
+                toolbarAdd: data._can.create && !is_popup,
                 footer: 1,
                 toolbarSearch: true
             },
@@ -33,7 +35,7 @@ define ([], function () {
                         caption: 'Импорт из ГИС ЖКХ',
                         onClick: $_DO.import_legal_acts,
                         icon: 'w2ui-icon-plus',
-                        off: !data._can.create
+                        off: !data._can.create || is_popup
                     },
                 ].filter (not_off),
             },
@@ -79,7 +81,19 @@ define ([], function () {
             url: '/mosgis/_rest/?type=legal_acts',
 
             onDblClick: function (e) {
-                openTab ('/legal_act/' + e.recid)
+
+                var r = this.get (e.recid)
+
+                if (is_popup) {
+
+                    $_SESSION.set ('legal_acts_popup.data', clone (r))
+
+                    w2popup.close ()
+
+                }
+                else {
+                    openTab ('/legal_act/' + e.recid)
+                }
             },
 
             onAdd: $_DO.create_legal_acts,
