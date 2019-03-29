@@ -39,7 +39,7 @@ public class TarifCoeff extends EnTable  {
 
         trigger("BEFORE INSERT OR UPDATE", ""
 	    + "BEGIN "
-	    + " SELECT :NEW.coefficientvalue * tf.price INTO :NEW.price FROM vw_tariffs tf WHERE tf.id = :NEW.uuid_tf; "
+	    + " SELECT :NEW.coefficientvalue * tf.price INTO :NEW.price FROM vw_tarifs tf WHERE tf.id = :NEW.uuid_tf; "
 	    + "END;");
     }
 }

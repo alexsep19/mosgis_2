@@ -24,8 +24,8 @@ public class Tarif extends View {
                 
     }    
 
-    public Tarif () {        
-        super  ("vw_tariffs", "Все тарифы");
+    public Tarif () {
+        super  ("vw_tarifs", "Все тарифы");
         cols   (c.class);
         pk     (c.ID);
     }
@@ -34,7 +34,7 @@ public class Tarif extends View {
     public final String getSQL () {
 
         return ""
-            + "SELECT uuid id, name label, price, 'PremiseUsageTariff' class FROM " + getName (PremiseUsageTarif.class) + " WHERE is_deleted = 0 "
+            + "SELECT uuid id, name label, price, 'PremiseUsageTarif' class FROM " + getName (PremiseUsageTarif.class) + " WHERE is_deleted = 0 "
 //            + " AND is_annuled = 0 UNION "
         ;
 
