@@ -14,13 +14,20 @@ import ru.eludia.products.mosgis.rest.misc.EJBResource;
 @Path("check_plans")
 public class CheckPlans extends EJBResource <CheckPlansLocal> {
 
-    private void check () {
-        
-        if (!securityContext.isUserInRole("nsi_20_4") &&
-            !securityContext.isUserInRole("admin"))
-            throw new ValidationException ("foo", "Доступ запрещён");
-        
-    }
+	private void check() {
+
+		if (!securityContext.isUserInRole("nsi_20_4") 
+				&& !securityContext.isUserInRole("nsi_20_5")
+				&& !securityContext.isUserInRole("admin"))
+			throw new ValidationException("foo", "Доступ запрещён");
+	}
+	
+	private void checkCreate() {
+
+		if (!securityContext.isUserInRole("nsi_20_4") 
+				&& !securityContext.isUserInRole("nsi_20_5"))
+			throw new ValidationException("foo", "Доступ запрещён");
+	}
     
     @POST
     @Consumes (APPLICATION_JSON)
@@ -30,13 +37,13 @@ public class CheckPlans extends EJBResource <CheckPlansLocal> {
         return back.select (p, getUser ()); 
     }
     
-    @POST
-    @Path("create") 
-    @Produces (APPLICATION_JSON)
-    public JsonObject doCreate (JsonObject p) {
-        check ();
-        return back.doCreate (p, getUser ());
-    }
+	@POST
+	@Path("create")
+	@Produces(APPLICATION_JSON)
+	public JsonObject doCreate(JsonObject p) {
+		checkCreate();
+		return back.doCreate(p, getUser());
+	}
     
     @POST
     @Path("{id}/delete") 
@@ -88,4 +95,12 @@ public class CheckPlans extends EJBResource <CheckPlansLocal> {
         check ();
         return back.doImport (p, getUser ());
     }
+    
+	@POST
+	@Path("{id}/send")
+	@Produces(APPLICATION_JSON)
+	public JsonObject doApprove(@PathParam("id") String id) {
+		check();
+		return back.doSend(id, getUser());
+	}
 }

@@ -35,6 +35,7 @@ define ([], function () {
                     delete: perms,
                     update: perms,
                     cancel: perms,
+                    send: perms,
                 }
                                                     
                 $('body').data ('data', data)

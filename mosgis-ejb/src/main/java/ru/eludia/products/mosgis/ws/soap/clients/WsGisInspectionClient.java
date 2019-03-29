@@ -10,12 +10,15 @@ import javax.jws.HandlerChain;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
 
+import ru.eludia.base.db.util.TypeConverter;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ws.soap.tools.LoggingOutMessageHandler;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.base.GetStateRequest;
 import ru.gosuslugi.dom.schema.integration.inspection.ExportInspectionPlansRequest;
 import ru.gosuslugi.dom.schema.integration.inspection.GetStateResult;
+import ru.gosuslugi.dom.schema.integration.inspection.ImportInspectionPlanRequest;
+import ru.gosuslugi.dom.schema.integration.inspection.ImportInspectionPlanRequest.ImportInspectionPlan;
 import ru.gosuslugi.dom.schema.integration.inspection_service_async.Fault;
 import ru.gosuslugi.dom.schema.integration.inspection_service_async.InspectionPortsTypeAsync;
 import ru.gosuslugi.dom.schema.integration.inspection_service_async.InspectionServiceAsync;
@@ -54,6 +57,13 @@ public class WsGisInspectionClient {
     	}
     	
     	return getPort(orgPPAGuid, messageGUID).exportInspectionPlans(request).getAck();
+    }
+    
+    public AckRequest.Ack importInspectionPlan(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+    	ImportInspectionPlanRequest request = new ImportInspectionPlanRequest();
+    	request.getImportInspectionPlan().add(TypeConverter.javaBean(ImportInspectionPlan.class, r));
+    	
+    	return getPort(orgPPAGuid, messageGUID).importInspectionPlan(request).getAck();
     }
 
 }

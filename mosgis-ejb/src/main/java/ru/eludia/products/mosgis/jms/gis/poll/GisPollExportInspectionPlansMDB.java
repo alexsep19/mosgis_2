@@ -29,6 +29,7 @@ import ru.eludia.products.mosgis.db.model.tables.PlannedExamination;
 import ru.eludia.products.mosgis.db.model.tables.PlannedExaminationFile;
 import ru.eludia.products.mosgis.db.model.tables.PlannedExaminationLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPlannedExaminationFileType;
 import ru.eludia.products.mosgis.db.model.voc.VocPlannedExaminationStatus;
@@ -143,7 +144,9 @@ public class GisPollExportInspectionPlansMDB  extends GisPollMDB {
 				CheckPlan.c.SHOULDNOTBEREGISTERED,     inspectionPlan.getInspectionPlan().isShouldNotBeRegistered() != null ? true : false, 
 				CheckPlan.c.SIGN,                      InspectionPlanStateType.SIGNED.equals(inspectionPlan.getPlanState()),
 				CheckPlan.c.URIREGISTRATIONPLANNUMBER, inspectionPlan.getInspectionPlan().getURIRegistrationPlanNumber(), 
-				CheckPlan.c.YEAR,                      inspectionPlan.getInspectionPlan().getYear()
+				CheckPlan.c.YEAR,                      inspectionPlan.getInspectionPlan().getYear(),
+				CheckPlan.c.ID_STATUS,                 VocGisStatus.i.APPROVED.getId(),
+				CheckPlan.c.UUID_ORG,                  orgUuid
 		);
     	
 		db.upsert(CheckPlan.class, checkPlanRecord, CheckPlan.c.INSPECTIONPLANGUID.lc());
@@ -177,7 +180,6 @@ public class GisPollExportInspectionPlansMDB  extends GisPollMDB {
 			ExportPlannedExaminationType.PlannedExaminationInfo plannedExaminationInfo = examinationInfo.getPlannedExaminationInfo();
 			
 			Map<String, Object> examinationRecord = HASH(
-					PlannedExamination.c.REGULATOR_UUID,         orgUuid,
 					PlannedExamination.c.CHECK_PLAN_UUID,        checkPlanRecordId,
 					PlannedExamination.c.CODE_VC_NSI_65,         examinationInfo.getOversightActivitiesRef() != null ? examinationInfo.getOversightActivitiesRef().getCode() : null,
 					PlannedExamination.c.CODE_VC_NSI_68,         plannedExaminationInfo.getBase() != null ? plannedExaminationInfo.getBase().getCode() : null,

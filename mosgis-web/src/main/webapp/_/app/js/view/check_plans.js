@@ -1,6 +1,12 @@
 define ([], function () {
 
-    function recalcToolbar (e) {e.done (function () {
+	function perms () {
+
+        return $_USER.role.nsi_20_4 || $_USER.role.nsi_20_5
+
+    }
+	
+	function recalcToolbar (e) {e.done (function () {
 
         var g = w2ui ['check_plans_grid']
 
@@ -24,16 +30,16 @@ define ([], function () {
 
             show: {
                 toolbar: true,
-                toolbarAdd: true,
                 toolbarInput: false,
                 footer: true,
             },
 
             toolbar: {
                 items: [
+                    {type: 'button', id: 'createButton', caption: 'Добавить', onClick: $_DO.create_check_plans, icon: 'w2ui-icon-plus', off: !perms()},
                     {type: 'button', id: 'deleteButton', caption: 'Удалить', onClick: $_DO.delete_check_plans, icon: 'w2ui-icon-cross', disabled: true},
                     {type: 'button', id: 'importButton', caption: 'Импорт из ГИС ЖКХ', onClick: $_DO.import_check_plans, icon: 'w2ui-icon-plus'},
-                ]
+                ].filter (not_off)
             },
 
             searches: [
@@ -52,8 +58,6 @@ define ([], function () {
             ],
 
             url: '/mosgis/_rest/?type=check_plans',
-            
-            onAdd: $_DO.create_check_plans,
 
             onSelect: recalcToolbar,
             onUnselect: recalcToolbar,

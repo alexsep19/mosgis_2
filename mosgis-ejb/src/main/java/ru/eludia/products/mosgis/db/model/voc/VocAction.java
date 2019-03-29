@@ -69,6 +69,7 @@ public class VocAction extends Table {
         UNDELETE     ("undelete",      "восстановление"),
         UNLOCK       ("unlock",        "разблокировка"),
         UPDATE       ("update",        "редактирование"), 
+        SEND_TO_GIS  ("update",        "размещение в ГИС ЖКХ"), 
         ;
                 
         String name;
