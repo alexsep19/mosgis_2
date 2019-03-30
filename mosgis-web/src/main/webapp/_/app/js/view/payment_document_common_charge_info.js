@@ -3,9 +3,18 @@ define ([], function () {
     var grid_name = 'payment_document_common_charge_info_grid'
     
     function splash_edit () {
+    
+        alert ('Чтобы менять содержимое строк начисления, следует перейти в режим правки (кнопка "Редактировать")')
+
         var b = $('#tb_payment_document_common_charge_info_grid_toolbar_item_edit')
-        b.animate ({opacity: 0.2}, 400)
-        b.animate ({opacity: 1}, 400)    
+                
+        function colorize (now) {
+            b.css ('background-color', 'rgba(255,255,0,' + 0.8 * now + ')')
+        }        
+        
+        b.animate ({aaa: 1}, {step: colorize}, 1000)
+        b.animate ({aaa: 0}, {step: colorize}, 1000)
+                
     }
     
     function is_yellow (row, col) {
@@ -144,8 +153,7 @@ define ([], function () {
             onEditField: function (e) {
                         
                 if (!is_editing) {
-                    if (it._can.edit) alert ('Чтобы менять содержимое строк начисления, сдедует перейти в режим правки (кнопка "Редактировать")')
-                    splash_edit ()
+                    if (it._can.edit) splash_edit ()
                     return e.preventDefault ()
                 }
 
