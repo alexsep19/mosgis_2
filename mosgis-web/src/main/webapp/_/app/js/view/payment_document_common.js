@@ -7,10 +7,12 @@ define ([], function () {
         var it = data.item              
     
         $_F5 = function (data) {
-        
-            data.item.__read_only = data.__read_only
-            
-            var r = clone (data.item)
+darn (222)
+            it.__read_only = data.__read_only
+                        
+            var r = clone (it)
+
+            r.sign = {id: r.debtpreviousperiods > 0 ? -1 : 1}
 
             w2ui [form_name].record = r
             
@@ -98,8 +100,6 @@ define ([], function () {
                 ]}},
                 
             ],
-
-            focus: -1,
             
             onRefresh: function (e) {e.done (function () {
                             

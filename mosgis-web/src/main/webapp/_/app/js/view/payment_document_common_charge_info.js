@@ -52,32 +52,6 @@ define ([], function () {
 
         }
 
-        $_F5 = function () {
-
-            var grid = w2ui [grid_name]
-
-            grid.records = data.lines
-            
-            $.each (grid.records, function () {
-            
-                if (!this.w2ui) return
-                var chg = this.w2ui.changes
-                if (!chg) return
-                
-                for (var field in chg) {
-                    var col = grid.getColumn (field)
-                    var editable = col.editable
-                    if (!editable || editable.type != 'list') continue
-                    this [field] = chg [field].uuid
-                    delete this.w2ui.changes
-                }
-                
-            })
-
-            grid.refresh ()
-
-        }
-
         var layout = w2ui ['passport_layout']
 
         var $panel = $(layout.el ('main'))               
@@ -101,7 +75,7 @@ define ([], function () {
             toolbar: {
             
                 items: [
-                    {type: 'button', id: 'edit', caption: 'Редактировать', onClick: splash_edit, _onClick: function () {setEditig (1)}, disabled: false, icon: 'w2ui-icon-pencil'},
+                    {type: 'button', id: 'edit', caption: 'Редактировать', onClick: function () {setEditig (1)}, disabled: false, icon: 'w2ui-icon-pencil'},
                     {type: 'button', id: 'cancel', caption: 'Зафиксировать', onClick: function () {setEditig (0)}, disabled: true, icon: 'w2ui-icon-check'},
                 ],
 
@@ -157,7 +131,7 @@ define ([], function () {
 
             ],
 
-            records: [],
+            records: data.lines,
             
             onDblClick: null,
             
@@ -184,6 +158,22 @@ define ([], function () {
             onRefresh: function (e) {
             
                 var grid = this
+                
+                $.each (grid.records, function () {
+
+                    if (!this.w2ui) return
+                    var chg = this.w2ui.changes
+                    if (!chg) return
+
+                    for (var field in chg) {
+                        var col = grid.getColumn (field)
+                        var editable = col.editable
+                        if (!editable || editable.type != 'list') continue
+                        this [field] = chg [field].uuid
+                        delete this.w2ui.changes
+                    }
+
+                })
             
                 e.done (function () {
                     
@@ -235,9 +225,7 @@ define ([], function () {
             
             }
 
-        })
-
-        $_F5 ()
+        }).refresh ()
 
     }
     

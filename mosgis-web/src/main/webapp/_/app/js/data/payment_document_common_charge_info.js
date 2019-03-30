@@ -14,7 +14,8 @@ define ([], function () {
 
         query ({type: 'charge_info', id: e.recid, action: 'update'}, {data: data}, function () {
             grid.unlock ()
-            $_F5 ()
+            grid.refresh ()
+//            $_F5 ()
         })
 
     }

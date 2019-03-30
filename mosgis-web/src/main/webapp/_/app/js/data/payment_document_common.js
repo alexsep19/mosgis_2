@@ -31,22 +31,24 @@ define ([], function () {
         })
 
     }
-    
+
     $_DO.edit_payment_document_common = function (e) {
-    
+
         $_SESSION.set ('edit_payment_document_common', 1)
-    
-        w2ui ['passport_layout'].get ('main').tabs.click ('payment_document_common_additional_information')
 
         var data = {item: w2ui [form_name].record}
 
         if (data.item.id_status == 10) die ('foo', 'В настоящий момент данная запись передаётся в ГИС ЖКХ. Операция отменена.')
 
         data.__read_only = false
-        
+
         var $form = w2ui [form_name]
-                
-        $_F5 (data)
+
+//        $_F5 (data)
+
+//        setTimeout (function () {
+            w2ui ['passport_layout'].get ('main').tabs.click ('payment_document_common_additional_information')
+//        }, 10)
 
     }
 
