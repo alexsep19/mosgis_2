@@ -11,9 +11,7 @@ define ([], function () {
             $('textarea').removeAttr ('readonly')
             
             data.__read_only = false
-darn (111)
-darn ($_F5)
-darn (1111)
+
             $_F5 (data)
             
         }

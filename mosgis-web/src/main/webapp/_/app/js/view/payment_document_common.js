@@ -7,7 +7,7 @@ define ([], function () {
         var it = data.item              
     
         $_F5 = function (data) {
-darn (222)
+
             it.__read_only = data.__read_only
                         
             var r = clone (it)

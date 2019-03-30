@@ -25,7 +25,9 @@ define ([], function () {
             var it = data.item
             
             fix (it)
-        
+
+            w2ui ['passport_layout'].get ('main').tabs.enable ('payment_document_common_charge_info', 'payment_document_common_log')
+
             $_F5 (data)
 
         })
@@ -43,14 +45,12 @@ define ([], function () {
         data.__read_only = false
 
         var $form = w2ui [form_name]
+        
+        var tabs = w2ui ['passport_layout'].get ('main').tabs        
+        tabs.disable ('payment_document_common_charge_info', 'payment_document_common_log')
+        tabs.click ('payment_document_common_additional_information')
 
-//        $_F5 (data)
-
-//        setTimeout (function () {
-            w2ui ['passport_layout'].get ('main').tabs.click ('payment_document_common_additional_information')
-//        }, 10)
-
-    }
+    }    
 
     $_DO.update_payment_document_common = function (e) {
     
