@@ -28,11 +28,11 @@ import ru.eludia.products.mosgis.ws.soap.clients.WsGisCapitalRepairClient;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 
 @MessageDriven(activationConfig = {
- @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outExportOverhaulRegionalProgramsQueue")
+ @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outExportOverhaulRegionalProgramProjectsQueue")
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class GisPollExportOverhaulRegionalProgramMDB extends GisPollMDB {
+public class GisPollExportOverhaulRegionalProgramProjectMDB extends GisPollMDB {
     
     @EJB
     WsGisCapitalRepairClient wsGisCapitalRepairClient;

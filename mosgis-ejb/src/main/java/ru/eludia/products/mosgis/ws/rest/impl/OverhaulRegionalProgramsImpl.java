@@ -27,7 +27,7 @@ import ru.eludia.products.mosgis.rest.api.OverhaulRegionalProgramsLocal;
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProgram> implements OverhaulRegionalProgramsLocal {
 
-    @Resource (mappedName = "mosgis.inExportOverhaulRegionalProgramsQueue")
+    @Resource (mappedName = "mosgis.inExportOverhaulRegionalProgramProjectsQueue")
     Queue queue;
     
     @Override

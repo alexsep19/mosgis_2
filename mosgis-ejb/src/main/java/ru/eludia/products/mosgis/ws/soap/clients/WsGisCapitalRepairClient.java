@@ -47,8 +47,8 @@ public class WsGisCapitalRepairClient {
         return getPort (orgPPAGuid, UUID.randomUUID ()).getState (getStateRequest);
     }
     
-    public AckRequest.Ack importRegionalProgram (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
-        return getPort (orgPPAGuid, messageGUID).importRegionalProgram (OverhaulRegionalProgramLog.toImportRegionalProgramRequest (r)).getAck ();
+    public AckRequest.Ack importRegionalProgramProject (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importRegionalProgram (OverhaulRegionalProgramLog.toImportRegionalProgramRequest (r, true)).getAck ();
     }
     
 }

@@ -26,13 +26,31 @@ public class OverhaulRegionalProgramLog extends GisWsLogTable {
         
     }
     
-    public static ImportRegionalProgramRequest toImportRegionalProgramRequest (Map<String, Object> r) {
+    public static ImportRegionalProgramRequest toImportRegionalProgramRequest (Map<String, Object> r, boolean isProject) {
         final ImportRegionalProgramRequest result = new ImportRegionalProgramRequest ();
-        result.setImportRegionalProgram(toImportRegionalProgram (r));
+        if (isProject)
+            result.setImportRegionalProgram (toImportRegionalProgramProject (r));
+        else
+            result.setImportRegionalProgram (toImportRegionalProgramPublish (r));
         return result;
     }
     
-    private static ImportRegionalProgramRequest.ImportRegionalProgram toImportRegionalProgram(Map<String, Object> r) {
+    private static ImportRegionalProgramRequest.ImportRegionalProgram toImportRegionalProgramProject (Map<String, Object> r) {
+        final ImportRegionalProgramRequest.ImportRegionalProgram result = new ImportRegionalProgramRequest.ImportRegionalProgram ();
+        result.setTransportGuid (UUID.randomUUID ().toString ());
+        result.setLoadRegionalProgram(toRegionalProgramPasportType (r));
+        
+        for (Map <String, Object> document: (List <Map <String, Object>>) r.get ("documents")) {
+            RegionalProgramDocument doc = new RegionalProgramDocument ();
+            doc.setTransportGuid (UUID.randomUUID ().toString ());
+            doc.setLoadDocument (toLoadDocument (document));
+            result.getRegionalProgramDocument().add (doc);
+        }
+        
+        return result;
+    }
+    
+    private static ImportRegionalProgramRequest.ImportRegionalProgram toImportRegionalProgramPublish (Map<String, Object> r) {
         final ImportRegionalProgramRequest.ImportRegionalProgram result = new ImportRegionalProgramRequest.ImportRegionalProgram ();
         result.setTransportGuid (UUID.randomUUID ().toString ());
         result.setPublishRegionalProgram(Boolean.TRUE);
@@ -48,7 +66,7 @@ public class OverhaulRegionalProgramLog extends GisWsLogTable {
         return result;
     }
     
-    private static LoadDocument toLoadDocument(Map<String, Object> document) {
+    private static LoadDocument toLoadDocument (Map<String, Object> document) {
         final LoadDocument result = DB.to.javaBean (LoadDocument.class, document);
         result.setKind (NsiTable.toDom (document.get ("nsi_79.id").toString (), UUID.fromString (document.get ("nsi_79.guid").toString ())));
         for (Map <String, Object> file: (List <Map <String, Object>>) document.get ("files")) {
@@ -57,7 +75,7 @@ public class OverhaulRegionalProgramLog extends GisWsLogTable {
         return result;
     }
     
-    private static RegionalProgramPasportType toRegionalProgramPasportType(Map<String, Object> r) {
+    private static RegionalProgramPasportType toRegionalProgramPasportType (Map<String, Object> r) {
         final RegionalProgramPasportType result = DB.to.javaBean (RegionalProgramPasportType.class, r);
         return result;
     }

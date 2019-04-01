@@ -26,17 +26,17 @@ import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.capital_repair_service_async.Fault;
 
 @MessageDriven(activationConfig = {
- @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inExportOverhaulRegionalProgramsQueue")
+ @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inExportOverhaulRegionalProgramProjectsQueue")
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class ExportOverhaulRegionalProgramMDB extends GisExportMDB <OverhaulRegionalProgramLog> {
+public class ExportOverhaulRegionalProgramProjectMDB extends GisExportMDB <OverhaulRegionalProgramLog> {
     
     @EJB
     WsGisCapitalRepairClient wsGisCapitalRepairClient;
     
-    @Resource (mappedName = "mosgis.outExportOverhaulRegionalProgramsQueue")
-    Queue outExportOverhaulRegionalProgramsQueue;
+    @Resource (mappedName = "mosgis.outExportOverhaulRegionalProgramProjectsQueue")
+    Queue outExportOverhaulRegionalProgramProjectsQueue;
     
     @Resource (mappedName = "mosgis.inExportOverhaulRegionalProgramFilesQueue")
     Queue inExportOverhaulRegionalProgramFilesQueue;
@@ -69,7 +69,7 @@ public class ExportOverhaulRegionalProgramMDB extends GisExportMDB <OverhaulRegi
         UUID orgPPAGuid = (UUID) r.get ("orgppaguid");
             
         switch (action) {
-            case PLACING:     return wsGisCapitalRepairClient.importRegionalProgram (orgPPAGuid, messageGUID, r);
+            case PLACING:     return wsGisCapitalRepairClient.importRegionalProgramProject (orgPPAGuid, messageGUID, r);
             default: throw new IllegalArgumentException ("No action implemented for " + action);
         }
 
@@ -110,7 +110,7 @@ public class ExportOverhaulRegionalProgramMDB extends GisExportMDB <OverhaulRegi
     }
     
     Queue getQueue (OverhaulRegionalProgram.Action action) {        
-        return outExportOverhaulRegionalProgramsQueue;        
+        return outExportOverhaulRegionalProgramProjectsQueue;
     }
 
     @Override
