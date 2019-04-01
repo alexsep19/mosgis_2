@@ -54,4 +54,9 @@ public class WsGisTariffClient {
 	final ImportResidentialPremisesUsageRequest rq = new ImportResidentialPremisesUsageRequest();
 	return getPort(orgPPAGuid, messageGUID).importResidentialPremisesUsage(PremiseUsageTarifLog.toImportResidentialPremisesUsageRequest(r)).getAck();
     }
+
+    public AckRequest.Ack deleteResidentialPremisesUsage(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+	final ImportResidentialPremisesUsageRequest rq = new ImportResidentialPremisesUsageRequest();
+	return getPort(orgPPAGuid, messageGUID).importResidentialPremisesUsage(PremiseUsageTarifLog.toDeleteResidentialPremisesUsageRequest(r)).getAck();
+    }
 }

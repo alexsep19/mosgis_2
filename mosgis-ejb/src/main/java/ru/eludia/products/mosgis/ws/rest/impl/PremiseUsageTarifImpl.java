@@ -245,4 +245,18 @@ public class PremiseUsageTarifImpl extends BaseCRUD<PremiseUsageTarif> implement
         logAction (db, user, id, VocAction.i.ALTER);
         
     });}
+
+    @Override
+    public JsonObject doAnnul (String id, JsonObject p, User user) {return doAction ((db) -> {
+
+        final Map<String, Object> r = getData(p,
+            EnTable.c.UUID,               id,
+            PremiseUsageTarif.c.ID_CTR_STATUS,  VocGisStatus.i.PENDING_RQ_ANNULMENT.getId ()
+        );
+
+        db.update (getTable (), r);
+
+        logAction (db, user, id, VocAction.i.ANNUL);
+
+    });}
 }

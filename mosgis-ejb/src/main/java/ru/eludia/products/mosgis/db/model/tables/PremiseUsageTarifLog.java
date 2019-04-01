@@ -26,6 +26,7 @@ import ru.gosuslugi.dom.schema.integration.tariff.ImportResidentialPremisesUsage
 import ru.gosuslugi.dom.schema.integration.tariff.ResidentialPremisesUsageType;
 import ru.gosuslugi.dom.schema.integration.tariff.CoefficientType;
 import ru.gosuslugi.dom.schema.integration.tariff.DifferentiationType;
+import ru.gosuslugi.dom.schema.integration.tariff.ImportResidentialPremisesUsageRequest.ImportResidentialPremisesUsage.CancelResidentialPremisesUsage;
 import ru.gosuslugi.dom.schema.integration.tariff.ValueEnumerationType;
 import ru.gosuslugi.dom.schema.integration.tariff.ValueMultilineType;
 import ru.gosuslugi.dom.schema.integration.tariff.ValueOKTMOType;
@@ -53,6 +54,26 @@ public class PremiseUsageTarifLog extends GisWsLogTable {
 	}
 
 	t.setLoadResidentialPremisesUsage(toLoadResidentialPremisesUsage (r));
+	result.getImportResidentialPremisesUsage().add(t);
+
+	return result;
+    }
+
+    public static ImportResidentialPremisesUsageRequest toDeleteResidentialPremisesUsageRequest(Map<String, Object> r) {
+	ImportResidentialPremisesUsageRequest result = new ImportResidentialPremisesUsageRequest();
+
+	ImportResidentialPremisesUsageRequest.ImportResidentialPremisesUsage t = new ImportResidentialPremisesUsageRequest.ImportResidentialPremisesUsage();
+	t.setTransportGUID(UUID.randomUUID().toString());
+
+	Object ver = r.get(PremiseUsageTarif.c.TARIFFGUID.lc());
+	if (ver != null) {
+	    t.setTariffGUID(ver.toString());
+	}
+
+	CancelResidentialPremisesUsage c = DB.to.javaBean(CancelResidentialPremisesUsage.class, r);
+
+	t.setCancelResidentialPremisesUsage(c);
+
 	result.getImportResidentialPremisesUsage().add(t);
 
 	return result;

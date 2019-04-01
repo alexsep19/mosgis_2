@@ -131,4 +131,11 @@ public class PremiseUsageTarifs extends EJBResource <PremiseUsageTarifLocal> {
     public JsonObject doAlter (@PathParam ("id") String id) { 
         return back.doAlter (id, getUser ());
     }
+
+    @POST
+    @Path("{id}/annul")
+    @Produces(APPLICATION_JSON)
+    public JsonObject doAnnul(@PathParam("id") String id, JsonObject p) {
+	return back.doAnnul(id, p, getUser());
+    }
 }

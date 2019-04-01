@@ -52,7 +52,7 @@ public class ExportPremiseUsageTarifsMDB extends GisExportMDB<PremiseUsageTarifL
             case EDITING:
 		return wsGisTariffClient.importResidentialPremisesUsage(orgPPAGuid, messageGUID, r);
             case ANNULMENT:
-//		return wsGisTariffClient.deleteResidentialPremisesUsage(orgPPAGuid, messageGUID, r);
+		return wsGisTariffClient.deleteResidentialPremisesUsage(orgPPAGuid, messageGUID, r);
             default: 
                 throw new IllegalArgumentException ("No action implemented for " + action.name ());
         }
