@@ -16,6 +16,7 @@ define ([], function () {
 
         query ({type: 'charge_info', id: e.recid, action: 'update'}, {data: data}, function (d) {
             grid.unlock ()
+            delete grid.get (e.recid) ['pp_sum']
             grid.set (e.recid, d.item)
             grid.refresh ()
         })
