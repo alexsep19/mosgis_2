@@ -140,10 +140,17 @@ public class PremiseUsageTarif extends EnTable  {
 		+ " END LOOP; "
 	    + " END; END IF; "
 	    + " IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING + " THEN "
+
+		+ " SELECT COUNT(*) INTO cnt FROM tb_pu_tf_oktmo WHERE uuid=:NEW.uuid; "
+		+ " IF cnt = 0 THEN "
+		+ "   raise_application_error (-20000, 'Укажите территорию действия'); "
+		+ " END IF; "
+
 		+ " SELECT COUNT(*) INTO cnt FROM tb_tf_legal_acts WHERE uuid=:NEW.uuid; "
 		+ " IF cnt = 0 THEN "
 		+ "   raise_application_error (-20000, 'Прикрепите хотя бы один НПА, размещенный в ГИС ЖКХ'); "
 		+ " END IF; "
+
 		+ " FOR i IN ("
 		    + "SELECT "
 		    + " la.name     label "

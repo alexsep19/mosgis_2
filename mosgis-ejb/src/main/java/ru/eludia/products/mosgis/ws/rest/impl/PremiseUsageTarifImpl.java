@@ -184,7 +184,7 @@ public class PremiseUsageTarifImpl extends BaseCRUD<PremiseUsageTarif> implement
 
 	job.add("id", insertId.toString());
 
-	if (p.getJsonObject("data").containsKey("oktmo")) {
+	if (p.getJsonObject("data").containsKey("oktmo") && !p.getJsonObject("data").isNull("oktmo") ) {
 
 	    PremiseUsageTarifOktmo.store(db, insertId.toString()
 		, p.getJsonObject("data").getJsonArray("oktmo").getValuesAs(JsonString.class).stream()
@@ -208,7 +208,7 @@ public class PremiseUsageTarifImpl extends BaseCRUD<PremiseUsageTarif> implement
 
 	db.update(PremiseUsageTarif.class, r);
 
-	if (data.containsKey("oktmo")) {
+	if (data.containsKey("oktmo") && !data.isNull("oktmo")) {
 
 	    PremiseUsageTarifOktmo.store(db, id
 		, data.getJsonArray("oktmo").getValuesAs(JsonString.class).stream()
