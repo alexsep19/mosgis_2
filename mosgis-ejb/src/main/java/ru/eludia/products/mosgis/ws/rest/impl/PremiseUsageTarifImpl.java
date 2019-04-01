@@ -23,6 +23,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.PremiseUsageTarifOktmo;
 import ru.eludia.products.mosgis.db.model.voc.VocDifferentiation;
 import ru.eludia.products.mosgis.db.model.voc.VocDifferentiationOperator;
@@ -139,7 +140,7 @@ public class PremiseUsageTarifImpl extends BaseCRUD<PremiseUsageTarif> implement
 	final JsonObject item = db.getJsonObject (m
             .get (getTable (), id, "AS root", "*")
             .toMaybeOne (PremiseUsageTarifLog.class, "AS log").on ()
-            // .toMaybeOne (OutSoap.class, "err_text").on ("log.uuid_out_soap=out_soap.uuid")
+	    .toMaybeOne (OutSoap.class, "err_text").on ("log.uuid_out_soap=out_soap.uuid")
             .toOne      (VocOrganization.class, "AS org", "label").on ("root.uuid_org=org.uuid")
         );
 
