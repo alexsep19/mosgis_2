@@ -107,11 +107,11 @@ define ([], function () {
             columns: [                
 
                 {field: 'label', caption: 'Наименование услуги', size: 50},
-                {field: 'pp_sum', caption: 'К оплате', tooltip: 'Сумма к оплате с учётом рассрочки платежа и процентов за рассрочку', size: 10, render: 'float:2'},
-                {field: 'pp_pp_sum', caption: 'за этот период', tooltip: 'Сумма платы с учётом рассрочки платежа - от платы за расчётный период, руб', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}},
-                {field: 'pp_ppp_sum', caption: 'за прошлые периоды', tooltip: 'Сумма платы с учётом рассрочки платежа - от платы за предыдущие расчётные периоды, руб', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}},
-                {field: 'pp_rate_rub', caption: 'руб.', tooltip: 'Проценты за рассрочку, руб', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}},
-                {field: 'pp_rate_prc', caption: '%', tooltip: 'Проценты за рассрочку, %', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}},
+                {field: 'pp_sum', caption: 'К оплате', tooltip: 'Сумма к оплате с учётом рассрочки платежа и процентов за рассрочку', size: 10, render: 'float:2', is_to_sum: 1},
+                {field: 'pp_pp_sum', caption: 'за этот период', tooltip: 'Сумма платы с учётом рассрочки платежа - от платы за расчётный период, руб', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}, render: 'float:2', is_to_sum: 1},
+                {field: 'pp_ppp_sum', caption: 'за прошлые периоды', tooltip: 'Сумма платы с учётом рассрочки платежа - от платы за предыдущие расчётные периоды, руб', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}, render: 'float:2', is_to_sum: 1},
+                {field: 'pp_rate_rub', caption: 'руб.', tooltip: 'Проценты за рассрочку, руб', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}, render: 'float:2', is_to_sum: 1},
+                {field: 'pp_rate_prc', caption: '%', tooltip: 'Проценты за рассрочку, %', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}, render: 'float:2'},
 
             ],
 
@@ -142,21 +142,43 @@ define ([], function () {
             
                 var grid = this
                 
+                var sum = {}
+                
+                if (this.recid != 'total') $.each (grid.columns, function () {
+                    if (!this.is_to_sum) return
+                    var k = this.field
+                    sum [k] = sum [k] || 0
+                })
+                
                 $.each (grid.records, function () {
 
-                    if (!this.w2ui) return
-                    var chg = this.w2ui.changes
-                    if (!chg) return
+                    if (this.w2ui) {
+                    
+                        var chg = this.w2ui.changes
+                        if (!chg) return
 
-                    for (var field in chg) {
-                        var col = grid.getColumn (field)
-                        var editable = col.editable
-                        if (!editable || editable.type != 'list') continue
-                        this [field] = chg [field].uuid
-                        delete this.w2ui.changes
+                        for (var field in chg) {
+                            var col = grid.getColumn (field)
+                            var editable = col.editable
+                            if (!editable || editable.type != 'list') continue
+                            this [field] = chg [field].uuid
+                            delete this.w2ui.changes
+                        }
+                        
                     }
+                    
+                    var r = this
+                    
+                    if (this.recid != 'total') $.each (grid.columns, function () {
+                        if (!this.is_to_sum) return
+                        var k = this.field
+                        var v = r [k]
+                        if (v != null) sum [k] += parseFloat (v)
+                    })
 
                 })
+
+                grid.set ('total', sum)
             
                 e.done (function () {
                     
@@ -170,11 +192,10 @@ define ([], function () {
 
                         if (!('id_type' in this)) {
 
-
                             $(sel + ' td.w2ui-grid-data:not(:last-child)').css ({
                                 'font-weight': 'bold',
                                 'border-bottom-width': '1px',
-                            }).css ({'border-right-width': 0})
+                            })
                             
                             if (last) {
                             
