@@ -47,6 +47,12 @@ public class ChargeInfo extends EnTable {
 
         RATIO                 (Type.NUMERIC, 5,  2, null,   "Размер повышающего коэффициента"),
         AMOUNTOFEXCESSFEES    (Type.NUMERIC, 13, 2, null,   "Размер превышения платы, рассчитанной с применением повышающего коэффициента над размером платы, рассчитанной без учета повышающего коэффициента, руб."),
+                
+        PP_SUM                (Type.NUMERIC, 13, 2, null,   "Сумма к оплате с учётом рассрочки платежа и процентов за рассрочку, руб. (piecemealPaymentSum)"),
+        PP_PP_SUM             (Type.NUMERIC, 13, 2, null,   "Сумма платы с учётом рассрочки платежа - от платы за расчётный период, руб. (paymentPeriodPiecemealPaymentSum)"),
+        PP_PPP_SUM            (Type.NUMERIC, 13, 2, null,   "Сумма платы с учётом рассрочки платежа - от платы за предыдущие расчётные периоды, руб. (pastPaymentPeriodPiecemealPaymentSum)"),
+        PP_RATE_RUB           (Type.NUMERIC, 13, 2, null,   "Проценты за рассрочку, руб. (piecemealPaymentPercentRub)"),
+        PP_RATE_PRC           (Type.NUMERIC,  5, 2, null,   "Проценты за рассрочку, %. (piecemealPaymentPercent)"),        
 
         ID_LOG                (ChargeInfoLog.class,         "Последнее событие редактирования"),
 
