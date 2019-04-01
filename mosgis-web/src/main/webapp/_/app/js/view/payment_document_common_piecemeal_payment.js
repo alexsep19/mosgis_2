@@ -46,8 +46,6 @@ define ([], function () {
             
             var grid = w2ui [grid_name]
 
-            grid.show.selectionBorder = is_editing
-
             var t = grid.toolbar            
 
             if (is_editing) {
@@ -58,11 +56,23 @@ define ([], function () {
                 w2ui ['passport_layout'].get ('main').tabs.disable ('payment_document_common_additional_information', 'payment_document_common_log')
             }
             else {
+                var records = grid.records
+                for (var i = 1; i < records.length; i ++) {
+                    var r = records [i]
+                    if (r.pp_rate_rub != null) continue
+                    if (r.pp_pp_sum == null && r.pp_ppp_sum == null) continue
+                    alert ('Вы забыли указать процент за рассрочку в рублях')
+                    is_editing = true
+                    grid.editField (r.recid, 'pp_rate_rub')
+                    return
+                }
                 t.disable ('cancel')
                 t.enable ('edit')
                 w2ui ['payment_document_common_form'].unlock ()
                 w2ui ['passport_layout'].get ('main').tabs.enable ('payment_document_common_additional_information', 'payment_document_common_log')
             }
+
+            grid.show.selectionBorder = is_editing
 
             grid.refresh ()
 
