@@ -15,6 +15,8 @@ define ([], function () {
 
         if (!v.price)           die('price', 'Укажите, пожалуйста, величину')
 
+        if (!v.oktmo)           die('oktmo', 'Укажите, пожалуйста, территорию действия')
+
         query({type: 'premise_usage_tarifs', id: undefined, action: 'create'}, {data: v}, function (data) {
 
             w2popup.close()

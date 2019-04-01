@@ -62,14 +62,16 @@ define ([], function () {
 
             add_vocabularies (d, d)
 
-            for (k in d) data [k] = d [k]
+            for (k in d) {
+                if (k == 'item') continue
+                data [k] = d [k]
+            }
 
             $('body').data('data', data)
 
             data._can = {
                 create: $_USER.has_nsi_20(7, 10)
             }
-            data._can.edit = data._can.delete = data._can.create
 
             done (data)
         })

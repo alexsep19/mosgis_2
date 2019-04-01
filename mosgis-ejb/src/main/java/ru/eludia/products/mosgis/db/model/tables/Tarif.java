@@ -34,8 +34,8 @@ public class Tarif extends View {
     public final String getSQL () {
 
         return ""
-            + "SELECT uuid id, name label, price, 'PremiseUsageTarif' class FROM " + getName (PremiseUsageTarif.class) + " WHERE is_deleted = 0 "
-//            + " AND is_annuled = 0 UNION "
+            + "SELECT uuid id, name label, price, 'PremiseUsageTarif' class FROM " + getName (PremiseUsageTarif.class) + " WHERE is_deleted = 0 AND is_annuled = 0 "
+//            + " UNION "
         ;
 
     }

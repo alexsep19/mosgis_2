@@ -11,7 +11,7 @@ define ([], function () {
         }
 
         var field    = 'value' + v.id_type.toLowerCase()
-        field = ['Fias', 'OKTMO', 'Enumeration'].indexOf(v.id_type) != -1? v.id_type.toLowerCase() : field
+        field = ['FIAS', 'OKTMO', 'Enumeration'].indexOf(v.id_type) != -1? v.id_type.toLowerCase() : field
         var field_to = field + '_to'
         var value    = v[field]
         var value_to = v[field_to]

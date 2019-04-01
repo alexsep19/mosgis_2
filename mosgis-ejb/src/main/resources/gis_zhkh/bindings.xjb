@@ -38,6 +38,19 @@
 				<annox:annotate annox:class="javax.xml.bind.annotation.XmlSchemaType" name="date" />
 			</annox:annotate>
 		</jxb:bindings>
-	</jxb:bindings>    
-    
+	</jxb:bindings>
+
+    <jxb:bindings
+	schemaLocation="wsdl/tariff/hcs-tariff-types.xsd">
+	<jxb:bindings multiple="true" node="//*[@type='tns:Date1900-3000Type']">
+	    <annox:annotate target="field">
+		<annox:annotate annox:class="javax.xml.bind.annotation.XmlSchemaType" name="date" />
+	    </annox:annotate>
+	</jxb:bindings>
+	<jxb:bindings multiple="true" node="//*[@type='tns:ValueDateType']">
+	    <annox:annotate target="field">
+		<annox:annotate annox:class="javax.xml.bind.annotation.XmlSchemaType" name="date" />
+	    </annox:annotate>
+	</jxb:bindings>
+    </jxb:bindings>
 </jxb:bindings>
