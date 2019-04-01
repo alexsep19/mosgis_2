@@ -103,7 +103,7 @@ define ([], function () {
                 {span: 2, caption: 'С учётом рассрочки'},
                 {span: 2, caption: 'Проценты за рассрочку'},
             ], 
-
+            
             columns: [                
 
                 {field: 'label', caption: 'Наименование услуги', size: 50},

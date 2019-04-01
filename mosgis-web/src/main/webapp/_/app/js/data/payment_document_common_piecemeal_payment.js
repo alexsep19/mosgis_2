@@ -8,14 +8,16 @@ define ([], function () {
 
         var v = normalizeValue (e.value_new, col.editable.type)
 
-        var data = {}; data [col.field] = v == null ? null : String (v)
-
+        var data = {}; 
+        
+        data [col.field] = v == null ? null : String (v)
+        
         grid.lock ()
 
-        query ({type: 'charge_info', id: e.recid, action: 'update'}, {data: data}, function () {
+        query ({type: 'charge_info', id: e.recid, action: 'update'}, {data: data}, function (d) {
             grid.unlock ()
+            grid.set (e.recid, d.item)
             grid.refresh ()
-//            $_F5 ()
         })
 
     }

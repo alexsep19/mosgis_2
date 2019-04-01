@@ -137,6 +137,12 @@ public abstract class BaseCRUD <T extends Table> extends Base<T> implements CRUD
         logAction (db, user, id, VocAction.i.UPDATE);
                         
     });}
+    
+    @Override
+    public JsonObject doUpdateAndGet (String id, JsonObject p, User user) {
+        doUpdate (id, p, user);
+        return getItem (id, user);
+    }
 
     @Override
     public JsonObject doDelete (String id, User user) {return doAction ((db) -> {

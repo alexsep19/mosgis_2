@@ -83,6 +83,16 @@ public class ChargeInfo extends EnTable {
 
         key (c.UUID_PAY_DOC);
         
+        trigger ("BEFORE INSERT OR UPDATE", ""
+                  
+            + "BEGIN "
+                
+            + " :NEW.PP_SUM := NVL(:NEW.PP_PP_SUM, 0) + NVL(:NEW.PP_PPP_SUM, 0) + :NEW.PP_RATE_RUB; "
+                
+            + "END;"
+
+        );        
+        
     }    
     
 }
