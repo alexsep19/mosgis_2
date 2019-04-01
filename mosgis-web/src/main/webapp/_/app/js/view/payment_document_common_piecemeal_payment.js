@@ -21,7 +21,10 @@ define ([], function () {
 
         switch (col.field) {
 
-            case 'accountingperiodtotal':
+            case 'pp_pp_sum':
+            case 'pp_ppp_sum':
+            case 'pp_rate_rub':
+            case 'pp_rate_prc':
                 return true
 
             default:
@@ -94,53 +97,21 @@ define ([], function () {
 
             },                        
             
-            columnGroups : [
-            
-                {master: true},
-                {master: true},
-                {master: true},
-                
-                {master: true},
-                
-                {span: 2, caption: 'Индивидульное потребление'},
-                {span: 2, caption: 'ОДН'},
-
-                {master: true},
-                
-                {span: 2, caption: 'Повышающий коэффициент'},
-                {span: 2, caption: 'Корректировки, руб'},
-                
-                {master: true},
-                {master: true},
-
+            columnGroups : [           
+                {master: true},                
+                {master: true},                
+                {span: 2, caption: 'С учётом рассрочки'},
+                {span: 2, caption: 'Проценты за рассрочку'},
             ], 
 
             columns: [                
 
-                {field: 'uuid_ins_product', caption: 'Наименование услуги', size: 50, editable: {type: 'list', items: data.tb_ins_products.items}, render: function (r, y, z, v) {return r.id_type == 50 ? data.tb_ins_products [v] : r.label}},
-                
-                {field: 'totalpayable', caption: 'Итого к оплате за расчетный период', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}},
-                {field: 'accountingperiodtotal', caption: 'Всего начислено за расчетный период (без перерасчетов и льгот)', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}},
-
-                {field: 'rate', caption: 'Тариф', size: 10, editable: {type: 'float', precision: 6, autoFormat: true, min: 0}},
-
-                {field: 'cons_i_vol', caption: 'Объём', size: 10, editable: {type: 'float', precision: 7, autoFormat: true, min: 0}},
-                {field: 'cons_i_dtrm_meth', caption: 'Определён по', size: 10, editable: {type: 'list'}, voc: data.vc_cnsmp_vol_dtrm},
-
-                {field: 'cons_o_vol', caption: 'Объём', size: 10, editable: {type: 'float', precision: 7, autoFormat: true, min: 0}},
-                {field: 'cons_o_dtrm_meth', caption: 'Определён по', size: 10, editable: {type: 'list'}, voc: data.vc_cnsmp_vol_dtrm},
-
-                {field: 'unit', caption: 'Ед. изм.', size: 10},                
-
-                {field: 'ratio', caption: 'Коэффициент', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}},
-                {field: 'amountofexcessfees', caption: 'Размер превышения платы', size: 10, editable: {type: 'float', precision: 2, autoFormat: true}},
-
-                {field: 'moneyrecalculation', caption: 'Перерасчет', size: 10, editable: {type: 'float', precision: 2, autoFormat: true}},
-                {field: 'moneydiscount', caption: 'Субсидии, скидки', size: 10, editable: {type: 'float', precision: 2, autoFormat: true}},
-
-                {field: 'calcexplanation', caption: 'Порядок расчётов', size: 10, editable: {type: 'text'}},
-                
-                {field: 'uuid_bnk_acct', caption: 'Пл. рекв.', size: 10, editable: {type: 'list'}, voc: data.tb_bnk_accts},
+                {field: 'label', caption: 'Наименование услуги', size: 50},
+                {field: 'pp_sum', caption: 'К оплате', tooltip: 'Сумма к оплате с учётом рассрочки платежа и процентов за рассрочку', size: 10, render: 'float:2'},
+                {field: 'pp_pp_sum', caption: 'за этот период', tooltip: 'Сумма платы с учётом рассрочки платежа - от платы за расчётный период, руб', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}},
+                {field: 'pp_ppp_sum', caption: 'за прошлые периоды', tooltip: 'Сумма платы с учётом рассрочки платежа - от платы за предыдущие расчётные периоды, руб', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}},
+                {field: 'pp_rate_rub', caption: 'руб.', tooltip: 'Проценты за рассрочку, руб', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}},
+                {field: 'pp_rate_prc', caption: '%', tooltip: 'Проценты за рассрочку, %', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}},
 
             ],
 
