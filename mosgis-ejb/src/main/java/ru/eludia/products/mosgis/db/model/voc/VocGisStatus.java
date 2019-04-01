@@ -87,6 +87,7 @@ public class VocGisStatus extends Table {
         FAILED_STATE         (34,  "_failed_state", "ошибка обмена"),
         
         APPROVED             (40,  "Approved",        "утвержден"),
+        SIGNED               (41,  "Signed",          "подписан"),
         
         PENDING_RQ_EDIT      (42,  "_pending_rq_edit", "ожидание переразмещения"),
         PENDING_RP_EDIT      (43,  "_pending_rp_edit", "ожидание подтверждения переразмещения"),

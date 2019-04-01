@@ -14,7 +14,6 @@ public class CheckPlan extends EnTable {
     public enum c implements EnColEnum {
         
         YEAR                        (Type.NUMERIC, 4, "Год плана"),
-        SIGN                        (Type.BOOLEAN, "Признак подписания"),
         SHOULDNOTBEREGISTERED       (Type.BOOLEAN, "Не должен быть зарегестрирован в ЕРП"),
         
         SHOULDBEREGISTERED          (Type.BOOLEAN,     new Virt ("DECODE(\"SHOULDNOTBEREGISTERED\",1,0,1)"), "Должен быть зарегестрирован в ЕРП"),
@@ -23,7 +22,7 @@ public class CheckPlan extends EnTable {
         INSPECTIONPLANGUID          (Type.UUID,        null, "Идентификатор плана проверок в ГИС ЖКХ"),
         REGISTRYNUMBER              (Type.STRING, 255, null, "Реестровый номер плана проверок"),
         
-        ID_STATUS                   (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус"),
+        ID_CTR_STATUS               (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус"),
         UUID_ORG                    (VocOrganization.class,  "Организация, создавшая план"),
         GIS_UPDATE_DATE             (Type.DATETIME,   null,  "Дата изменения в ГИС ЖКХ"),
         
@@ -59,7 +58,7 @@ public class CheckPlan extends EnTable {
     
 	public enum Action {
 
-		SEND_TO_GIS(VocGisStatus.i.PENDING_RP_PLACING, VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING);
+		SEND_TO_GIS(VocGisStatus.i.PENDING_RP_PLACING, VocGisStatus.i.SIGNED, VocGisStatus.i.FAILED_PLACING);
 
 		VocGisStatus.i nextStatus;
 		VocGisStatus.i okStatus;

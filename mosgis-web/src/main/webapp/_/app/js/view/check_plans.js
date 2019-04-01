@@ -16,9 +16,9 @@ define ([], function () {
 
         if (g.getSelection ().length != 1) return
 
-        var status = g.get (g.getSelection () [0]).sign
+        var status = g.get (g.getSelection () [0]).id_ctr_status
 
-        if (!status) t.enable ('deleteButton')
+        if (status != 41) t.enable ('deleteButton')
 
     })}
 
@@ -52,9 +52,7 @@ define ([], function () {
                 {field: 'shouldberegistered', caption: 'Должен быть зарегистрирован в ЕРП', size: 10, render: function (r) {
                     return r.shouldberegistered ? 'Да' : 'Нет'
                 }},
-                {field: 'sign', caption: 'Подписан', size: 10, render: function (r) {
-                    return r.sign ? 'Да' : 'Нет'
-                }}
+                {field: 'id_ctr_status', caption: 'Статус', size: 10, size: 10, voc: data.vc_gis_status}
             ],
 
             url: '/mosgis/_rest/?type=check_plans',

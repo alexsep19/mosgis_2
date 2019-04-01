@@ -47,7 +47,6 @@ import ru.gosuslugi.dom.schema.integration.inspection.ExportInspectionPlanResult
 import ru.gosuslugi.dom.schema.integration.inspection.ExportInspectionPlanResultType.PlannedExamination.PlannedExaminationInfo;
 import ru.gosuslugi.dom.schema.integration.inspection.ExportPlannedExaminationType;
 import ru.gosuslugi.dom.schema.integration.inspection.GetStateResult;
-import ru.gosuslugi.dom.schema.integration.inspection.InspectionPlanStateType;
 import ru.gosuslugi.dom.schema.integration.inspection.ScheduledExaminationSubjectInPlanInfoType;
 import ru.gosuslugi.dom.schema.integration.inspection_service_async.Fault;
 
@@ -142,10 +141,9 @@ public class GisPollExportInspectionPlansMDB  extends GisPollMDB {
 				CheckPlan.c.INSPECTIONPLANGUID,        uuid, 
 				CheckPlan.c.REGISTRYNUMBER,            inspectionPlan.getRegistryNumber(), 
 				CheckPlan.c.SHOULDNOTBEREGISTERED,     inspectionPlan.getInspectionPlan().isShouldNotBeRegistered() != null ? true : false, 
-				CheckPlan.c.SIGN,                      InspectionPlanStateType.SIGNED.equals(inspectionPlan.getPlanState()),
 				CheckPlan.c.URIREGISTRATIONPLANNUMBER, inspectionPlan.getInspectionPlan().getURIRegistrationPlanNumber(), 
 				CheckPlan.c.YEAR,                      inspectionPlan.getInspectionPlan().getYear(),
-				CheckPlan.c.ID_STATUS,                 VocGisStatus.i.APPROVED.getId(),
+				CheckPlan.c.ID_CTR_STATUS,             VocGisStatus.i.forName(inspectionPlan.getPlanState().value()).getId(),
 				CheckPlan.c.UUID_ORG,                  orgUuid
 		);
     	

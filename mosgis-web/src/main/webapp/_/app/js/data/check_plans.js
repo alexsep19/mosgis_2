@@ -39,7 +39,15 @@ define ([], function () {
             
         if (layout) layout.unlock ('main')
         
-        done ({})
+        query ({type: 'check_plans', part: 'vocs', id: undefined}, {}, function (data) {
+
+            add_vocabularies (data, data)
+
+            $('body').data ('data', data)
+
+            done (data)
+
+        })
         
     }
     

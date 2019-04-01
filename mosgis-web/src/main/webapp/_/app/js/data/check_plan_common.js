@@ -1,7 +1,5 @@
 define ([], function () {
 
-    var plan_status = ['Проект', 'Подписан']
-
     var form_name = 'check_plan_common_form'    
 
     $_DO.cancel_check_plan_common = function (e) {
@@ -86,11 +84,13 @@ define ([], function () {
         
         var data = clone ($('body').data ('data'))
 
-        data.item.status_label = plan_status[data.item.sign]
+        data.item.status_label = $('body').data ('data').vc_gis_status [data.item.id_ctr_status]
 
         data.active_tab = localStorage.getItem ('check_plan_common.active_tab') || 'check_plan_common_log'
 
         data.__read_only = 1
+        
+        data.item.err_text = data.item ['out_soap.err_text'] 
         
         done (data)                  
         
