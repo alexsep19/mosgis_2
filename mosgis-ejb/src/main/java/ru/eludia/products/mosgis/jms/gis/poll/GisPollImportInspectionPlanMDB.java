@@ -50,7 +50,7 @@ public class GisPollImportInspectionPlanMDB  extends GisPollMDB {
     @Override
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
-            .toOne (CheckPlanLog.class,     "AS log", "uuid", "action", "id_status", "uuid_object").on ("log.uuid_out_soap=root.uuid")
+            .toOne (CheckPlanLog.class,     "AS log", "uuid", "action", "id_ctr_status", "uuid_object").on ("log.uuid_out_soap=root.uuid")
             .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("log.uuid_org=org.uuid")
         ;
     }
@@ -62,11 +62,13 @@ public class GisPollImportInspectionPlanMDB  extends GisPollMDB {
         
         UUID orgPPAGuid = (UUID) r.get ("org.orgppaguid");
         
-        CheckPlan.Action action = CheckPlan.Action.forStatus (VocGisStatus.i.forId (r.get ("log.id_status")));
+        CheckPlan.Action action = CheckPlan.Action.forStatus (VocGisStatus.i.forId (r.get ("log.id_ctr_status")));
                 
         try {
             
             GetStateResult state = getState (orgPPAGuid, r);
+            
+            if (state.getErrorMessage() != null) throw new GisPollException (state.getErrorMessage());
             
             final List<CommonResultType> commonResultList = state.getCommonResult();
             
@@ -110,7 +112,7 @@ public class GisPollImportInspectionPlanMDB  extends GisPollMDB {
             	
             	if (CheckPlan.Objects.INSPECTION_PLAN.equals(planObject)) {
             		updateCheckPlan (db, uuid, r, HASH(
-            			CheckPlan.c.ID_STATUS,          action.getOkStatus().getId(),
+            			CheckPlan.c.ID_CTR_STATUS,      action.getOkStatus().getId(),
             			CheckPlan.c.INSPECTIONPLANGUID, commonResult.getGUID(),
             			CheckPlan.c.REGISTRYNUMBER,     commonResult.getUniqueNumber(),  
             			CheckPlan.c.GIS_UPDATE_DATE,    commonResult.getUpdateDate()));
@@ -138,7 +140,7 @@ public class GisPollImportInspectionPlanMDB  extends GisPollMDB {
             return;
         }
 		catch (GisPollException ex) {
-			updateCheckPlan(db, uuid, r, HASH(CheckPlan.c.ID_STATUS, action.getFailStatus().getId()));
+			updateCheckPlan(db, uuid, r, HASH(CheckPlan.c.ID_CTR_STATUS, action.getFailStatus().getId()));
 			ex.register(db, uuid, r);
 		}
         

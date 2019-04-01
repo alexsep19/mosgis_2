@@ -96,17 +96,19 @@ public class ImportInspectionPlanMDB extends GisExportMDB<CheckPlanLog> {
     	JsonObjectBuilder objectByTransportGuid = Json.createObjectBuilder();
         r.put("object_by_transport_guid", objectByTransportGuid);
     	
-    	InspectionPlanType inspectionPlan = new InspectionPlanType();
-    	if (TypeConverter.Boolean(r.get(CheckPlan.c.SHOULDNOTBEREGISTERED.lc())))
-    		inspectionPlan.setShouldNotBeRegistered(true);
-    	else {
-    		inspectionPlan.setShouldBeRegistered(true);
-    		inspectionPlan.setURIRegistrationPlanNumber(new BigInteger(r.get(CheckPlan.c.URIREGISTRATIONPLANNUMBER.lc()).toString()));
-    	}
-    	inspectionPlan.setSign(true);
-    	inspectionPlan.setYear(Short.valueOf(r.get(CheckPlan.c.YEAR.lc()).toString()));
-    	
-    	r.put("inspectionplan", inspectionPlan);
+        if (r.get(CheckPlan.c.INSPECTIONPLANGUID.lc()) == null) {
+	    	InspectionPlanType inspectionPlan = new InspectionPlanType();
+	    	if (TypeConverter.Boolean(r.get(CheckPlan.c.SHOULDNOTBEREGISTERED.lc())))
+	    		inspectionPlan.setShouldNotBeRegistered(true);
+	    	else {
+	    		inspectionPlan.setShouldBeRegistered(true);
+	    		inspectionPlan.setURIRegistrationPlanNumber(new BigInteger(r.get(CheckPlan.c.URIREGISTRATIONPLANNUMBER.lc()).toString()));
+	    	}
+	    	inspectionPlan.setSign(true);
+	    	inspectionPlan.setYear(Short.valueOf(r.get(CheckPlan.c.YEAR.lc()).toString()));
+	    	
+	    	r.put("inspectionplan", inspectionPlan);
+        }
     	r.put("transportguid", r.get("uuid_object"));
     	
 		objectByTransportGuid.add(r.get("uuid_object").toString(),
@@ -169,7 +171,7 @@ public class ImportInspectionPlanMDB extends GisExportMDB<CheckPlanLog> {
 	@Override
 	protected void handleRecord(DB db, UUID uuid, Map<String, Object> r) throws SQLException {
 
-		VocGisStatus.i status = VocGisStatus.i.forId(r.get(CheckPlan.c.ID_STATUS.lc()));
+		VocGisStatus.i status = VocGisStatus.i.forId(r.get(CheckPlan.c.ID_CTR_STATUS.lc()));
 
 		CheckPlan.Action action = CheckPlan.Action.forStatus(status);
 
@@ -205,6 +207,6 @@ public class ImportInspectionPlanMDB extends GisExportMDB<CheckPlanLog> {
 
 	@Override
 	protected Col getStatusCol() {
-		return CheckPlan.c.ID_STATUS.getCol();
+		return CheckPlan.c.ID_CTR_STATUS.getCol();
 	}
 }

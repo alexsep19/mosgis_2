@@ -24,6 +24,8 @@ import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.incoming.InInspectionPlans;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.CheckPlan;
+import ru.eludia.products.mosgis.db.model.tables.CheckPlanLog;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.rest.User;
@@ -119,20 +121,26 @@ public class CheckPlansImpl extends BaseCRUD<CheckPlan> implements CheckPlansLoc
         
     });}
 
-    @Override
-    public JsonObject getItem (String id, User user) {return fetchData ((db, job) -> {
-        
-        JsonObject item = db.getJsonObject(ModelHolder.getModel ().get (CheckPlan.class, id, "AS root", "*"));
-        
-        job.add ("item", item);
-        
-    });}
+	@Override
+	public JsonObject getItem(String id, User user) {
+		return fetchData((db, job) -> {
+
+			JsonObject item = db.getJsonObject(ModelHolder.getModel()
+					.get(CheckPlan.class, id, "AS root", "*")
+					.toMaybeOne(CheckPlanLog.class, "AS log").on()
+					.toMaybeOne(OutSoap.class, "err_text").on("log.uuid_out_soap=out_soap.uuid"));
+
+			job.add("item", item);
+
+		});
+	}
     
     @Override
     public JsonObject getVocs () {
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();
         
+        VocGisStatus.addLiteTo (jb);
         VocAction.addTo (jb);
         
         final MosGisModel model = ModelHolder.getModel ();
@@ -185,7 +193,7 @@ public class CheckPlansImpl extends BaseCRUD<CheckPlan> implements CheckPlansLoc
 
 	        db.update (getTable (), HASH (
 	            EnTable.c.UUID,         id,
-	            CheckPlan.c.ID_STATUS,  VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+	            CheckPlan.c.ID_CTR_STATUS,  VocGisStatus.i.PENDING_RQ_PLACING.getId ()
 	        ));
 	        
 	        logAction (db, user, id, VocAction.i.SEND_TO_GIS);
