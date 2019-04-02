@@ -10,6 +10,7 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocOverhaulWorkType;
 import ru.gosuslugi.dom.schema.integration.capital_repair.ImportRegionalProgramWorkRequest;
@@ -48,6 +49,7 @@ public class OverhaulRegionalProgramHouseWorkLog extends GisWsLogTable {
     private static RegionalProgramWorkType toRegionalProgramWorkLoad(Map<String, Object> work) {
         RegionalProgramWorkType result = DB.to.javaBean (RegionalProgramWorkType.class, work);
         result.setWorkType (NsiTable.toDom (work, "nsi_219"));
+        result.setOKTMO (VocOktmo.createOKTMORef ((Long) work.get ("oktmo")));
         return result;
     }
     
@@ -59,16 +61,25 @@ public class OverhaulRegionalProgramHouseWorkLog extends GisWsLogTable {
                 .select (OverhaulRegionalProgramHouseWork.class, "AS oh_work", "*")
                     .toOne  (OverhaulRegionalProgramHouse.class, "AS oh_house").on ()
                         .toOne  (House.class, "AS in_house", "fiashouseguid AS fiashouseguid").on ("oh_house.house=in_house.uuid")
-                            .toOne  (VocBuilding.class, "AS build", "oktmo AS oktmo").on ("oh_house.fiashouseguid=build.houseguid")
+                            .toOne  (VocBuilding.class, "AS build", "oktmo AS oktmo").on ("in_house.fiashouseguid=build.houseguid")
                         .toOne  (OverhaulRegionalProgram.class, "AS program").on ("oh_house.program_uuid=program.uuid")
                             .toOne  (VocOrganization.class, "orgppaguid AS orgppaguid").on ()
-                            .toOne  (OverhaulRegionalProgramLog.class, "AS log").on ("program.id_log=log.uuid")
+                            .toOne  (OverhaulRegionalProgramLog.class, "AS log").where ("uuid", id).on ("program.id_log=log.uuid")
                     .toOne  (VocOverhaulWorkType.class, "AS nsi_219", "code", "guid").on ("oh_work.work=nsi_219.code")
-                .where  ("log.uuid", id)
-                .and    ("oh_work.is_deleted", 0)
+                .and    ("is_deleted", 0)
         );
         
         record.put ("works", works);
+        
+        Map <String, Object> programData = db.getMap (db.getModel ()
+                .get   (OverhaulRegionalProgramLog.class, id)
+                .toOne (OverhaulRegionalProgram.class, "regionalprogramguid AS regionalprogramguid").on ()
+                .toOne (VocOrganization.class, "orgppaguid AS orgppaguid").on ()
+        );
+        
+        record.put ("orgppaguid", programData.get ("orgppaguid"));
+        record.put ("regionalprogramguid", programData.get ("regionalprogramguid"));
+        record.put ("uuid", id);
         
         return record;
         

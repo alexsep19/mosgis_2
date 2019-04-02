@@ -94,20 +94,6 @@ public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProg
     });}
     
     @Override
-    public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
-                
-        final Map<String, Object> r = HASH (
-            EnTable.c.UUID,               id,
-            OverhaulRegionalProgram.c.ID_ORP_STATUS,  VocGisStatus.i.PROJECT.getId ()
-        );
-                
-        db.update (getTable (), r);
-        
-        logAction (db, user, id, VocAction.i.ALTER);
-        
-    });}
-    
-    @Override
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
         
         Select select = ModelHolder.getModel ().select (OverhaulRegionalProgram.class, "AS root", "*")

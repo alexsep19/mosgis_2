@@ -28,33 +28,30 @@ define ([], function () {
             
             var it = data.item
 
+            console.log (it)
+
             it.status_label = data.vc_gis_status[it.id_orp_status]
 
-            it._can = {cancel: 1}
+            it._can = {cancel: 1, delete: 1}
 
             if (!it.is_deleted && ($_USER.role.admin || it.org_uuid == $_USER.uuid_org)) {
 
                 switch (it.id_orp_status) {
-                    case 10:
-                    case 11:
-                        it._can.edit = 1
+                    case -24:
+                    case  10:
+                    case  14:
+                    case  34:
+                    case 124:
                         it._can.approve = 1
                 }
 
                 switch (it.id_orp_status) {
                     case 10:
-                    case 14:
-                        it._can.delete = 1
-                }
-
-                switch (it.id_orp_status) {
-                    case 14:
-                    case 34:
-                    case 40:
-                        it._can.alter = 1
+                        it._can.edit = 1
                 }
 
                 it._can.update = it._can.edit
+                it._can.delete = it._can.approve
 
             }
 

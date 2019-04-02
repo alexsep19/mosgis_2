@@ -80,30 +80,15 @@ public class GisPollExportOverhaulRegionalProgramsMDB extends GisPollMDB {
             
             for (CapRemCommonResultType.Error err: importResult.get (0).getError ()) throw new GisPollException (err);
             
-            String regionalProgramGUID = importResult.get (0).getGUID ();
-            String uniqueNumber = importResult.get (0).getUniqueNumber ();
-            
-            try {
-                UUID.fromString (regionalProgramGUID);
-            }
-            catch (Exception e) {
-                throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул некорректный regionalProgramGUID: '" + regionalProgramGUID + "'");
-            }
-            
             final Map<String, Object> h = statusHash (action.getOkStatus ());
-            String nextLogId = null;
             Queue nextQueue = null;
 
             switch (action) {            
                 case PROJECT_PUBLISH:
+                    String regionalProgramGUID = importResult.get (0).getGUID ();
+                    String uniqueNumber = importResult.get (0).getUniqueNumber ();
                     h.put (c.REGIONALPROGRAMGUID.lc (), regionalProgramGUID);
                     h.put (c.UNIQUENUMBER.lc (), uniqueNumber);
-                    nextLogId = db.insertId (OverhaulRegionalProgramLog.class, HASH (
-                        "action", action.getOkStatus (),
-                        "uuid_object", r.get ("program.uuid"),
-                        "uuid_user", r.get ("user")
-                    )).toString ();
-                    h.put (OverhaulRegionalProgram.c.ID_LOG.lc (), nextLogId);
                     nextQueue = inExportOverhaulRegionalProgramHouseWorksQueue;
                 case PLACING:
                     h.put (c.LAST_SUCCESFULL_STATUS.lc (), action.getOkStatus ());
@@ -115,8 +100,18 @@ public class GisPollExportOverhaulRegionalProgramsMDB extends GisPollMDB {
                     break;
             }
 
-            if (nextQueue != null)
+            if (nextQueue != null) {
+                String nextLogId = db.insertId (OverhaulRegionalProgramLog.class, HASH (
+                    "action", VocAction.i.PLACE_REG_PLAN_HOUSE_WORKS.getName (),
+                    "uuid_object", r.get ("program.uuid"),
+                    "uuid_user", r.get ("user")
+                )).toString ();
+                db.update (OverhaulRegionalProgram.class, HASH (
+                    "uuid", r.get ("program.uuid"),
+                    "id_log", nextLogId
+                ));
                 UUIDPublisher.publish (nextQueue, nextLogId);
+            }
 
         }
         catch (GisPollRetryException ex) {

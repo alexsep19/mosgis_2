@@ -25,7 +25,7 @@ import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.capital_repair_service_async.Fault;
 
 @MessageDriven(activationConfig = {
- @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inExportOverhaulRegionalProgramHousesQueue")
+ @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inExportOverhaulRegionalProgramHouseWorksQueue")
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
@@ -34,8 +34,8 @@ public class ExportOverhaulRegionalProgramHouseWorksMDB extends GisExportMDB <Ov
     @EJB
     WsGisCapitalRepairClient wsGisCapitalRepairClient;
     
-    @Resource (mappedName = "mosgis.outExportOverhaulRegionalProgramHousesQueue")
-    Queue outExportOverhaulRegionalProgramHousesQueue;
+    @Resource (mappedName = "mosgis.outExportOverhaulRegionalProgramHouseWorksQueue")
+    Queue outExportOverhaulRegionalProgramHouseWorksQueue;
     
     AckRequest.Ack invoke (DB db, OverhaulRegionalProgram.Action action, UUID messageGUID,  Map<String, Object> r) throws Fault, SQLException {
         
@@ -68,7 +68,7 @@ public class ExportOverhaulRegionalProgramHouseWorksMDB extends GisExportMDB <Ov
         try {            
             AckRequest.Ack ack = invoke (db, action, uuid, r);
             store (db, ack, r, action.getNextStatus ());
-            uuidPublisher.publish (outExportOverhaulRegionalProgramHousesQueue, ack.getRequesterMessageGUID ());
+            uuidPublisher.publish (outExportOverhaulRegionalProgramHouseWorksQueue, ack.getRequesterMessageGUID ());
         }
         catch (Fault ex) {
             logger.log (Level.SEVERE, "Can't place voting protocol", ex);

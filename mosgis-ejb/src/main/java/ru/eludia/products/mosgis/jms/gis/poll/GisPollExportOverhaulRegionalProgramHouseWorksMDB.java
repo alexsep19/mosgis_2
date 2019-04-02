@@ -17,6 +17,7 @@ import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgram;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgram.c;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramLog;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -50,9 +51,9 @@ public class GisPollExportOverhaulRegionalProgramHouseWorksMDB extends GisPollMD
     protected Get get (UUID uuid) {
         
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
-            .toOne (OverhaulRegionalProgramLog.class,     "AS log", "uuid", "action", "id_orp_status", "uuid_user AS user").on ("log.uuid_out_soap=root.uuid")
-            .toOne (OverhaulRegionalProgram.class,        "AS program", "uuid").on ()
-            .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("program.org_uuid=org.uuid")
+            .toOne (OverhaulRegionalProgramLog.class, "AS log", "uuid", "action", "id_orp_status", "uuid_user AS user").on ("log.uuid_out_soap=root.uuid")
+                .toOne (OverhaulRegionalProgram.class, "AS program", "uuid").on ("log.uuid_object=program.uuid")
+                    .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("program.org_uuid=org.uuid")
         ;
         
     }
@@ -78,30 +79,23 @@ public class GisPollExportOverhaulRegionalProgramHouseWorksMDB extends GisPollMD
             
             for (CapRemCommonResultType.Error err: importResult.get (0).getError ()) throw new GisPollException (err);
             
-            String regionalProgramGUID = importResult.get (0).getGUID ();
-            String uniqueNumber = importResult.get (0).getUniqueNumber ();
-            
-            try {
-                UUID.fromString (regionalProgramGUID);
-            }
-            catch (Exception e) {
-                throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул некорректный regionalProgramGUID: '" + regionalProgramGUID + "'");
-            }
-            
             final Map<String, Object> h = statusHash (action.getOkStatus ());
             h.put (c.LAST_SUCCESFULL_STATUS.lc (), action.getOkStatus ());
-            
-            String nextLogId = db.insertId (OverhaulRegionalProgramLog.class, HASH (
-                "action", action.getOkStatus (),
-                "uuid_object", r.get ("program.uuid"),
-                "uuid_user", r.get ("user")
-            )).toString ();
-            h.put (OverhaulRegionalProgram.c.ID_LOG.lc (), nextLogId);
 
             update (db, uuid, r, h);
             db.update (OutSoap.class, HASH (
                 "uuid", getUuid (),
                 "id_status", DONE.getId ()
+            ));
+            
+            String nextLogId = db.insertId (OverhaulRegionalProgramLog.class, HASH (
+                "action", VocAction.i.APPROVE.getName (),
+                "uuid_object", r.get ("program.uuid"),
+                "uuid_user", r.get ("user")
+            )).toString ();
+            db.update (OverhaulRegionalProgram.class, HASH (
+                "uuid", r.get ("program.uuid"),
+                "id_log", nextLogId
             ));
             
             UUIDPublisher.publish (inExportOverhaulRegionalProgramsQueue, nextLogId);
