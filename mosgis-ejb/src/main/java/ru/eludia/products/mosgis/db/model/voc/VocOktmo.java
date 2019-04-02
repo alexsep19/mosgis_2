@@ -10,7 +10,9 @@ import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.gosuslugi.dom.schema.integration.base.OKTMORefType;
 
 public class VocOktmo extends Table {
-    
+
+    public static final String TABLE_NAME = "vc_oktmo";
+
     public enum c implements EnColEnum {
 
         AREA_CODE       (Type.STRING,   3,       "Код района/города МО"),
@@ -49,7 +51,7 @@ public class VocOktmo extends Table {
     
     public VocOktmo () {
         
-        super ("vc_oktmo", "Общероссийский классификатор территорий муниципальных образований");
+        super (TABLE_NAME, "Общероссийский классификатор территорий муниципальных образований");
         
         cols (c.class);
         

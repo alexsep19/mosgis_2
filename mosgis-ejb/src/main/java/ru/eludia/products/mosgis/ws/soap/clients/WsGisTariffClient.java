@@ -10,12 +10,14 @@ import javax.jws.HandlerChain;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
 import ru.eludia.products.mosgis.db.model.tables.PremiseUsageTarifLog;
+import ru.eludia.products.mosgis.db.model.tables.SocialNormTarifLog;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ws.soap.tools.LoggingOutMessageHandler;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.base.GetStateRequest;
 import ru.gosuslugi.dom.schema.integration.tariff.ExportTariffDifferentiationRequest;
 import ru.gosuslugi.dom.schema.integration.tariff.ImportResidentialPremisesUsageRequest;
+import ru.gosuslugi.dom.schema.integration.tariff.ImportSocialNormsRequest;
 import ru.gosuslugi.dom.schema.integration.tariff.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.tariff_service.Fault;
 import ru.gosuslugi.dom.schema.integration.tariff_service.TariffAsyncPort;
@@ -51,12 +53,18 @@ public class WsGisTariffClient {
     }
 
     public AckRequest.Ack importResidentialPremisesUsage(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
-	final ImportResidentialPremisesUsageRequest rq = new ImportResidentialPremisesUsageRequest();
 	return getPort(orgPPAGuid, messageGUID).importResidentialPremisesUsage(PremiseUsageTarifLog.toImportResidentialPremisesUsageRequest(r)).getAck();
     }
 
     public AckRequest.Ack deleteResidentialPremisesUsage(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
-	final ImportResidentialPremisesUsageRequest rq = new ImportResidentialPremisesUsageRequest();
 	return getPort(orgPPAGuid, messageGUID).importResidentialPremisesUsage(PremiseUsageTarifLog.toDeleteResidentialPremisesUsageRequest(r)).getAck();
+    }
+
+    public AckRequest.Ack importSocialNorms(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+	return getPort(orgPPAGuid, messageGUID).importSocialNorms(SocialNormTarifLog.toImportSocialNormsRequest(r)).getAck();
+    }
+
+    public AckRequest.Ack deleteSocialNorms(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+	return getPort(orgPPAGuid, messageGUID).importSocialNorms(SocialNormTarifLog.toDeleteSocialNormsRequest(r)).getAck();
     }
 }

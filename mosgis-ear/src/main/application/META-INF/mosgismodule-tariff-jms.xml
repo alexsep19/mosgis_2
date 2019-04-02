@@ -36,5 +36,25 @@
    </delivery-params-overrides>
    <jndi-name>mosgis.outExportPremiseUsageTarifsQueue</jndi-name>
  </uniform-distributed-queue>
+    
+ <!-- очередь обработки запросов на экспорт тарифов социальная норма потребления ЭЭ -->
+ <uniform-distributed-queue name="inExportSocialNormTarifsQueue">
+   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+   <delivery-params-overrides>
+       <time-to-deliver>2000</time-to-deliver>
+       <redelivery-delay>10000</redelivery-delay>
+   </delivery-params-overrides>
+   <jndi-name>mosgis.inExportSocialNormTarifsQueue</jndi-name>
+ </uniform-distributed-queue>
+ 
+ <!-- очередь опроса статуса исходящих запросов на экспорт тарифов социальная норма потребления ЭЭ -->
+ <uniform-distributed-queue name="outExportSocialNormTarifsQueue">
+   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>    
+   <delivery-params-overrides>
+       <time-to-deliver>2000</time-to-deliver>
+       <redelivery-delay>10000</redelivery-delay>
+   </delivery-params-overrides>
+   <jndi-name>mosgis.outExportSocialNormTarifsQueue</jndi-name>
+ </uniform-distributed-queue>
 
 </weblogic-jms>
