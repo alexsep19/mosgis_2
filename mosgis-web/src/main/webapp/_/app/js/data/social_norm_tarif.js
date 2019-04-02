@@ -32,7 +32,7 @@ define ([], function () {
 
                 it._can = {cancel: 1}
 
-                if (!it.is_deleted && $_USER.has_nsi_20(7, 8, 10)) {
+                if (!it.is_deleted && $_USER.has_nsi_20(10)) {
 
                     switch (it.id_ctr_status) {
                         case 10:
