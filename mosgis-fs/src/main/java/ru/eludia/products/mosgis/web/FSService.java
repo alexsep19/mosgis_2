@@ -14,7 +14,7 @@ import java.util.Base64;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-@Path("fs")
+@Path("/")
 public class FSService {
     private static final Logger logger = Logger.getLogger(FileSvcServlet.class.getName());
 
@@ -29,7 +29,6 @@ public class FSService {
     FileStoreLocal back;
 
     @PUT
-    @Path("upload")
     public Response uploadFile(@Context HttpServletRequest request) throws IOException {
         if (request.getContentLengthLong() <= 0) return Response.status(Response.Status.LENGTH_REQUIRED).build();
         UUID senderUuid;
@@ -53,7 +52,6 @@ public class FSService {
     }
 
     @GET
-    @Path("download")
     public Response downloadFile() {
         return Response.status(Response.Status.NOT_IMPLEMENTED).build();
     }
