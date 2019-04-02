@@ -116,9 +116,15 @@ public class PremiseUsageTarif extends EnTable  {
 	    + " cnt NUMBER; "
 	    + "BEGIN "
 	    + " IF :NEW.is_deleted = 0 THEN BEGIN "
+
 		+ " IF :NEW.datefrom > :NEW.dateto THEN "
 		+ "   raise_application_error (-20000, 'Дата начала действия не может превышать дату окончания действия'); "
 		+ " END IF; "
+
+		+ " IF :NEW.price IS NULL THEN "
+		+ "   raise_application_error (-20000, 'Укажите величину'); "
+		+ " END IF; "
+
 		+ " FOR i IN ("
 		    + "SELECT "
 		    + " o.name     label "
@@ -128,6 +134,7 @@ public class PremiseUsageTarif extends EnTable  {
 		    + TABLE_NAME + " o "
 		    + "WHERE o.is_deleted = 0 "
 		    + " AND o.uuid <> :NEW.uuid "
+		    + " AND o.price = :NEW.price "
 		    + " AND (o.datefrom <= :NEW.dateto   OR :NEW.dateto IS NULL) "
 		    + " AND (o.dateto   >= :NEW.datefrom OR o.dateto IS NULL) "
 		+ ") LOOP"
