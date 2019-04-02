@@ -6,13 +6,13 @@
 	 version="3.1">
 
     <servlet>
-        <servlet-name>FileSvcServlet</servlet-name>
-        <servlet-class>ru.eludia.products.mosgis.web.FileSvcServlet</servlet-class>
+        <servlet-name>ru.eludia.products.mosgis.web.FSApplication</servlet-name>
+        <init-param>
+            <param-name>jersey.config.server.provider.classnames</param-name>
+            <param-value>org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
     </servlet>
-    <servlet-mapping>
-        <servlet-name>FileSvcServlet</servlet-name>
-        <url-pattern>/rest/*</url-pattern>
-    </servlet-mapping>
 
     <session-config>
         <session-timeout>
