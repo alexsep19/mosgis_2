@@ -12,7 +12,7 @@ public class PenaltiesAndCourtCosts extends EnTable {
     
     public enum c implements EnColEnum {
         
-        UUID_CHARGE_INFO      (ChargeInfo.class,                                "Строка начисления в платёжном документе"),
+        UUID_PAY_DOC          (PaymentDocument.class,                           "Платёжный документ"),
         
         CODE_VC_NSI_329       (Type.STRING,  20,    null,                       "Вид неустойки и судебных расходов (НСИ 329)"),
         CAUSE                 (Type.STRING,  null,                              "Основания начислений"),
@@ -30,7 +30,7 @@ public class PenaltiesAndCourtCosts extends EnTable {
         public boolean isLoggable () {
             switch (this) {
                 case ID_LOG:
-                case UUID_CHARGE_INFO:
+                case UUID_PAY_DOC:
                     return false;
                 default:
                     return true;
@@ -43,7 +43,7 @@ public class PenaltiesAndCourtCosts extends EnTable {
         
         super  (TABLE_NAME, "Неустойки и судебные расходы");
         cols   (c.class);        
-        key    (c.UUID_CHARGE_INFO);
+        key    (c.UUID_PAY_DOC);
                 
     }    
     

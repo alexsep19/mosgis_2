@@ -28,10 +28,12 @@ import ru.eludia.products.mosgis.db.model.tables.AnyChargeInfo;
 import ru.eludia.products.mosgis.db.model.tables.ChargeInfo;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.InsuranceProduct;
+import ru.eludia.products.mosgis.db.model.tables.PenaltiesAndCourtCosts;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocConsumptionVolumeDeterminingMethod;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
+import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi329;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.PaymentDocumentLocal;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
@@ -166,6 +168,8 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
                 .where ("uuid_org", uuidOrg)
                 .where (EnTable.c.IS_DELETED, 0)
                 .orderBy ("label")
+                
+            , Nsi329.getVocSelect ()
 
         );
         
@@ -227,4 +231,15 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
         db.addJsonArrays (job, select);
 
     });}}
+    
+    @Override
+    public JsonObject getPenaltiesAndCourtCosts (String id, User user) {{return fetchData ((db, job) -> {
+
+        db.addJsonArrays (job, ModelHolder.getModel ()
+            .select (PenaltiesAndCourtCosts.class, "AS root", "*")
+            .where  (PenaltiesAndCourtCosts.c.UUID_PAY_DOC, id)
+        );
+
+    });}}
+    
 }

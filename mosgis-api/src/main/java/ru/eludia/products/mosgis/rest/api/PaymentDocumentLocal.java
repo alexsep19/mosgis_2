@@ -10,6 +10,7 @@ public interface PaymentDocumentLocal extends CRUDBackend {
     
     public JsonObject getVocs ();
     public JsonObject getChargeInfo (String id, User user);
+    public JsonObject getPenaltiesAndCourtCosts (String id, User user);
 //    JsonObject doApprove   (String id, User user);
 //    JsonObject doAlter     (String id, User user);
         
