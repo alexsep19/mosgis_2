@@ -145,7 +145,7 @@ define ([], function () {
                 var grid = this
                                                 
                 var sum = {}
-darn (sum)
+
                 $.each (grid.records, function () {
 
                     if (this.w2ui) {
