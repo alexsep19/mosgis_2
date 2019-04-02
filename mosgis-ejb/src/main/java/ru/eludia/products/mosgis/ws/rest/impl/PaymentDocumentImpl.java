@@ -223,6 +223,8 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
 
         Select select = ModelHolder.getModel ().select (AnyChargeInfo.class, "AS root", "*")
             .toMaybeOne (VocOkei.class, VocOkei.c.NATIONAL.lc () + " AS unit").on ()
+            .toMaybeOne (ActualBankAccount.class, "AS ba", ActualBankAccount.c.LABEL.lc ()).on ("ba.uuid=root." + ChargeInfo.c.UUID_BNK_ACCT.lc ())
+            .toMaybeOne (VocOrganization.class, "AS org_bank_acct", "label").on ("ba.uuid_org=org_bank_acct.uuid")
             .where   (ChargeInfo.c.UUID_PAY_DOC, id)
             .orderBy ("root." + ChargeInfo.c.ID_TYPE)
             .orderBy ("root." + AnyChargeInfo.c.LABEL.lc ())
@@ -241,5 +243,20 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
         );
 
     });}}
+
+    @Override
+    public JsonObject doPatchPenaltiesAndCourtCosts (String id, JsonObject p, User user) {return doAction ((db) -> {
+        
+        db.upsert (PenaltiesAndCourtCosts.class, getData (p,
+            PenaltiesAndCourtCosts.c.UUID_PAY_DOC, id
+        )
+            , PenaltiesAndCourtCosts.c.UUID_PAY_DOC.lc ()
+            , PenaltiesAndCourtCosts.c.CODE_VC_NSI_329.lc ()
+            , PenaltiesAndCourtCosts.c.UUID_BNK_ACCT.lc ()
+        );
+        
+//        logAction (db, user, id, VocAction.i.UPDATE);
+                        
+    });}
     
 }

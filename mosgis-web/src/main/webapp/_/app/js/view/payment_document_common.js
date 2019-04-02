@@ -53,6 +53,7 @@ define ([], function () {
                         tabs:    [
                             {id: 'payment_document_common_charge_info', caption: 'Текущие начисления', off: it.id_type != 0},
                             {id: 'payment_document_common_piecemeal_payment', caption: 'Рассрочка платежей', off: it.id_type != 0},
+                            {id: 'payment_document_common_penalties', caption: 'Неустойки и судебные расходы', off: it.id_type != 0},
                             {id: 'payment_document_common_additional_information', caption: 'Дополнительная информация'},
                             {id: 'payment_document_common_log', caption: 'История изменений'},
                         ].filter (not_off),
