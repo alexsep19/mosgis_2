@@ -76,7 +76,7 @@ define ([], function () {
             url: '/mosgis/_rest/?type=social_norm_tarifs',
 
             onDblClick: function (e) {
-                openTab ('/premise_usage_tarif/' + e.recid)
+                openTab ('/social_norm_tarif/' + e.recid)
             },
 
             onAdd: $_DO.create_social_norm_tarifs,
