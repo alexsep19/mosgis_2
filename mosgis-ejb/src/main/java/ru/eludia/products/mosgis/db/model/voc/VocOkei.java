@@ -11,6 +11,8 @@ public class VocOkei extends Table {
 
     public static final String TABLE_NAME = "vc_okei";
 
+    public static final String CODES_ENERGY_WT = "243,245"; // Ватт-час, Киловатт-час
+
     public enum c implements ColEnum {
 
         CODE         (Type.STRING,  "Код"),
