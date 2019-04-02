@@ -54,15 +54,7 @@ public class OverhaulRegionalProgramLog extends GisWsLogTable {
         final ImportRegionalProgramRequest.ImportRegionalProgram result = new ImportRegionalProgramRequest.ImportRegionalProgram ();
         result.setTransportGuid (UUID.randomUUID ().toString ());
         result.setPublishRegionalProgram(Boolean.TRUE);
-        result.setLoadRegionalProgram(toRegionalProgramPasportType (r));
-        
-        for (Map <String, Object> document: (List <Map <String, Object>>) r.get ("documents")) {
-            RegionalProgramDocument doc = new RegionalProgramDocument ();
-            doc.setTransportGuid (UUID.randomUUID ().toString ());
-            doc.setLoadDocument (toLoadDocument (document));
-            result.getRegionalProgramDocument().add (doc);
-        }
-        
+        result.setRegionalProgramGuid (r.get ("regionalprogramguid").toString ());
         return result;
     }
     

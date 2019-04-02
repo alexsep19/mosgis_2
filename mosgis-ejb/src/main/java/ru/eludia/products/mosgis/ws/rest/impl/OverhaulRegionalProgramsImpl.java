@@ -27,13 +27,18 @@ import ru.eludia.products.mosgis.rest.api.OverhaulRegionalProgramsLocal;
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProgram> implements OverhaulRegionalProgramsLocal {
 
-    @Resource (mappedName = "mosgis.inExportOverhaulRegionalProgramProjectsQueue")
-    Queue queue;
+    @Resource (mappedName = "mosgis.inExportOverhaulRegionalProgramsQueue")
+    Queue inExportOverhaulRegionalProgramsQueue;
+    
+    @Resource (mappedName = "mosgis.inExportOverhaulRegionalProgramHouseWorksQueue")
+    Queue inExportOverhaulRegionalProgramHouseWorksQueue;
     
     @Override
     protected void publishMessage (VocAction.i action, String id_log) {
         
         switch (action) {
+            case PUBLISHANDPROJECT:
+            case PLACE_REG_PLAN_HOUSE_WORKS:
             case APPROVE:
                 super.publishMessage (action, id_log);
             default:
@@ -45,20 +50,46 @@ public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProg
     @Override
     protected Queue getQueue (VocAction.i action) {
         switch (action) {
-            case APPROVE: return queue;
+            case PUBLISHANDPROJECT:
+            case APPROVE:
+                return inExportOverhaulRegionalProgramsQueue;
+            case PLACE_REG_PLAN_HOUSE_WORKS: 
+                return inExportOverhaulRegionalProgramHouseWorksQueue;
             default: return null;
         }
     }
     
     @Override
     public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
-
+        
+        VocGisStatus.i lastOkStatus = VocGisStatus.i.forId (db.getString (db.getModel ()
+                .get(getTable (), id, OverhaulRegionalProgram.c.LAST_SUCCESFULL_STATUS.lc ())));
+        
+        VocGisStatus.i nextStatus;
+        VocAction.i action;
+        
+        switch (lastOkStatus) {
+            case PROJECT:
+                nextStatus = VocGisStatus.i.PENDING_RQ_PUBLISHANDPROJECT;
+                action = VocAction.i.PUBLISHANDPROJECT;
+                break;
+            case PENDING_RQ_PLACE_REGIONAL_PROGRAM_WORKS:
+                nextStatus = VocGisStatus.i.PENDING_RQ_PLACE_REGIONAL_PROGRAM_WORKS;
+                action = VocAction.i.PLACE_REG_PLAN_HOUSE_WORKS;
+                break;
+            case PENDING_RQ_PLACING:
+                nextStatus = VocGisStatus.i.PENDING_RQ_PLACING;
+                action = VocAction.i.APPROVE;
+                break;
+            default:
+                throw new Exception ("Операция запрещена");
+        }
+        
         db.update (getTable (), HASH (
             EnTable.c.UUID,               id,
-            OverhaulRegionalProgram.c.ID_ORP_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+            OverhaulRegionalProgram.c.ID_ORP_STATUS, nextStatus.getId ()
         ));
-
-        logAction (db, user, id, VocAction.i.APPROVE);
+        logAction (db, user, id, action);
 
     });}
     

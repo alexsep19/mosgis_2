@@ -47,7 +47,7 @@ public class RegionalProgramLogTest extends BaseTest {
     
     private void checkImport (final Map<String, Object> r) throws IllegalStateException {
         dump (r);
-        validate (OverhaulRegionalProgramLog.toImportRegionalProgramRequest (r));
+        validate (OverhaulRegionalProgramLog.toImportRegionalProgramRequest (r, false));
     }
     
     //@Ignore

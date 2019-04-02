@@ -26,17 +26,17 @@ import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.capital_repair_service_async.Fault;
 
 @MessageDriven(activationConfig = {
- @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inExportOverhaulRegionalProgramProjectsQueue")
+ @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inExportOverhaulRegionalProgramsQueue")
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class ExportOverhaulRegionalProgramProjectMDB extends GisExportMDB <OverhaulRegionalProgramLog> {
+public class ExportOverhaulRegionalProgramsMDB extends GisExportMDB <OverhaulRegionalProgramLog> {
     
     @EJB
     WsGisCapitalRepairClient wsGisCapitalRepairClient;
     
-    @Resource (mappedName = "mosgis.outExportOverhaulRegionalProgramProjectsQueue")
-    Queue outExportOverhaulRegionalProgramProjectsQueue;
+    @Resource (mappedName = "mosgis.outExportOverhaulRegionalProgramsQueue")
+    Queue outExportOverhaulRegionalProgramsQueue;
     
     @Resource (mappedName = "mosgis.inExportOverhaulRegionalProgramFilesQueue")
     Queue inExportOverhaulRegionalProgramFilesQueue;
@@ -69,7 +69,9 @@ public class ExportOverhaulRegionalProgramProjectMDB extends GisExportMDB <Overh
         UUID orgPPAGuid = (UUID) r.get ("orgppaguid");
             
         switch (action) {
-            case PLACING:     return wsGisCapitalRepairClient.importRegionalProgramProject (orgPPAGuid, messageGUID, r);
+            case PROJECT_PUBLISH: return wsGisCapitalRepairClient.importRegionalProgramProject (orgPPAGuid, messageGUID, r);
+            case PLACING_HOUSE_WORKS: return wsGisCapitalRepairClient.importRegionalProgramWork (orgPPAGuid, messageGUID, r);
+            case PLACING:     return wsGisCapitalRepairClient.importRegionalProgram (orgPPAGuid, messageGUID, r);
             default: throw new IllegalArgumentException ("No action implemented for " + action);
         }
 
@@ -110,7 +112,7 @@ public class ExportOverhaulRegionalProgramProjectMDB extends GisExportMDB <Overh
     }
     
     Queue getQueue (OverhaulRegionalProgram.Action action) {        
-        return outExportOverhaulRegionalProgramProjectsQueue;
+        return outExportOverhaulRegionalProgramsQueue;
     }
 
     @Override
