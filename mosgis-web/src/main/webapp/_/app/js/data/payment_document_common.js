@@ -25,30 +25,32 @@ define ([], function () {
             var it = data.item
             
             fix (it)
-        
+
+            w2ui ['passport_layout'].get ('main').tabs.enable ('payment_document_common_charge_info', 'payment_document_common_log')
+
             $_F5 (data)
 
         })
 
     }
-    
+
     $_DO.edit_payment_document_common = function (e) {
-    
+
         $_SESSION.set ('edit_payment_document_common', 1)
-    
-        w2ui ['passport_layout'].get ('main').tabs.click ('payment_document_common_additional_information')
 
         var data = {item: w2ui [form_name].record}
 
         if (data.item.id_status == 10) die ('foo', 'В настоящий момент данная запись передаётся в ГИС ЖКХ. Операция отменена.')
 
         data.__read_only = false
-        
-        var $form = w2ui [form_name]
-                
-        $_F5 (data)
 
-    }
+        var $form = w2ui [form_name]
+        
+        var tabs = w2ui ['passport_layout'].get ('main').tabs        
+        tabs.disable ('payment_document_common_charge_info', 'payment_document_common_log')
+        tabs.click ('payment_document_common_additional_information')
+
+    }    
 
     $_DO.update_payment_document_common = function (e) {
     

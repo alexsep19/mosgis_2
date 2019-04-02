@@ -38,10 +38,30 @@ public class TarifCoeff extends EnTable  {
 	key    (c.UUID_TF);
 
         trigger("BEFORE INSERT OR UPDATE", ""
+	    + "DECLARE"
+	    + " PRAGMA AUTONOMOUS_TRANSACTION; "
 	    + "BEGIN "
+
+	    + " FOR i IN ("
+		+ "SELECT "
+		+ " o.coefficientdescription label "
+		+ "FROM "
+		+ TABLE_NAME + " o "
+		+ "WHERE o.is_deleted = 0 "
+		+ " AND o.uuid <> :NEW.uuid "
+		+ " AND o.uuid_tf = :NEW.uuid_tf "
+		+ " AND (o.coefficientvalue = :NEW.coefficientvalue) "
+		+ " AND (o.coefficientdescription = :NEW.coefficientdescription) "
+	    + ") LOOP"
+		+ " raise_application_error (-20000, "
+		+ "'В этом тарифе уже есть коэффициент с таким же значением и названием: ' || i.label "
+		+ "); "
+	    + " END LOOP; "
+
 	    + " IF :NEW.coefficientvalue <> :OLD.coefficientvalue OR INSERTING THEN "
 	    + "   SELECT :NEW.coefficientvalue * tf.price INTO :NEW.price FROM vw_tarifs tf WHERE tf.id = :NEW.uuid_tf; "
 	    + " END IF; "
+	    + " COMMIT; "
 	    + "END;");
     }
 }

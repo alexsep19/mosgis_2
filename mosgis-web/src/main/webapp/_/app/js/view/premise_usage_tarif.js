@@ -18,6 +18,7 @@ define ([], function () {
                             {id: 'premise_usage_tarif_common', caption: 'Общие'},
                             {id: 'tarif_diffs',  caption: 'Критерии дифференциации'},
                             {id: 'tarif_coeffs', caption: 'Коэффициент тарифа'},
+                            {id: 'tarif_legal_acts', caption: 'НПА'},
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_premise_usage_tarif

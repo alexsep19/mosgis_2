@@ -34,7 +34,7 @@ define ([], function () {
             name: 'passport_layout',
 
             panels: [
-                {type: 'top', size: 240},
+                {type: 'top', size: 245},
                 {type: 'main', size: 400,
                     tabs: {
                         tabs: [

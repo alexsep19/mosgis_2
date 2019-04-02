@@ -19,11 +19,13 @@ public class ChargeInfo extends EnTable {
         ID_TYPE               (VocChargeInfoType.class,                         "Тип услуги"),
         
         UUID_ORG              (VocOrganization.class,                           "Организация-исполнитель услуги"),
+        UUID_BNK_ACCT         (BankAccount.class, null,                         "Платёжные реквизиты"),
 
         CODE_VC_NSI_50        (Type.STRING,  20,    null,                       "Вид жилищной услуги (НСИ 50)"),
         UUID_M_M_SERVICE      (MainMunicipalService.class, null,                "Коммунальная услуга"),
         UUID_ADD_SERVICE      (AdditionalService.class, null,                   "Дополнительная услуга"),
         UUID_GEN_NEED_RES     (GeneralNeedsMunicipalResource.class, null,       "Коммунальный ресурс, потребляемый при использовании и содержании общего имущества в многоквартирном доме (НСИ 337)"),
+        UUID_INS_PRODUCT      (InsuranceProduct.class, null,                    "Страховой продукт"),
 
         RATE                  (Type.NUMERIC, 14, 6, null,   "Тариф"),
         TOTALPAYABLE          (Type.NUMERIC, 13, 2, null,   "Итого к оплате за расчетный период, руб."),
@@ -45,6 +47,12 @@ public class ChargeInfo extends EnTable {
 
         RATIO                 (Type.NUMERIC, 5,  2, null,   "Размер повышающего коэффициента"),
         AMOUNTOFEXCESSFEES    (Type.NUMERIC, 13, 2, null,   "Размер превышения платы, рассчитанной с применением повышающего коэффициента над размером платы, рассчитанной без учета повышающего коэффициента, руб."),
+                
+        PP_SUM                (Type.NUMERIC, 13, 2, null,   "Сумма к оплате с учётом рассрочки платежа и процентов за рассрочку, руб. (piecemealPaymentSum)"),
+        PP_PP_SUM             (Type.NUMERIC, 13, 2, null,   "Сумма платы с учётом рассрочки платежа - от платы за расчётный период, руб. (paymentPeriodPiecemealPaymentSum)"),
+        PP_PPP_SUM            (Type.NUMERIC, 13, 2, null,   "Сумма платы с учётом рассрочки платежа - от платы за предыдущие расчётные периоды, руб. (pastPaymentPeriodPiecemealPaymentSum)"),
+        PP_RATE_RUB           (Type.NUMERIC, 13, 2, null,   "Проценты за рассрочку, руб. (piecemealPaymentPercentRub)"),
+        PP_RATE_PRC           (Type.NUMERIC,  5, 2, null,   "Проценты за рассрочку, %. (piecemealPaymentPercent)"),        
 
         ID_LOG                (ChargeInfoLog.class,         "Последнее событие редактирования"),
 
@@ -74,6 +82,16 @@ public class ChargeInfo extends EnTable {
         cols   (c.class);        
 
         key (c.UUID_PAY_DOC);
+        
+        trigger ("BEFORE INSERT OR UPDATE", ""
+                  
+            + "BEGIN "
+                
+            + " :NEW.PP_SUM := NVL(:NEW.PP_PP_SUM, 0) + NVL(:NEW.PP_PPP_SUM, 0) + :NEW.PP_RATE_RUB; "
+                
+            + "END;"
+
+        );        
         
     }    
     

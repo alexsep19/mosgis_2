@@ -1,5 +1,8 @@
 package ru.eludia.products.mosgis.ws.rest.impl;
 
+import static ru.eludia.base.DB.HASH;
+
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
 
@@ -16,13 +19,19 @@ import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.incoming.InInspectionPlans;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.CheckPlan;
+import ru.eludia.products.mosgis.db.model.tables.CheckPlanLog;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.rest.User;
+import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.rest.api.CheckPlansLocal;
+import ru.eludia.products.mosgis.util.StringUtils;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
 import ru.eludia.products.mosgis.ws.rest.impl.tools.ComplexSearch;
 import ru.eludia.products.mosgis.ws.rest.impl.tools.Search;
@@ -34,6 +43,20 @@ public class CheckPlansImpl extends BaseCRUD<CheckPlan> implements CheckPlansLoc
 
 	@Resource (mappedName = "mosgis.inExportInspectionPlansQueue")
     private Queue inExportInspectionPlansQueue;
+	
+	@Resource (mappedName = "mosgis.inImportInspectionPlanQueue")
+    private Queue inImportInspectionPlanQueue;
+	
+	@Override
+    public Queue getQueue (VocAction.i action) {
+		switch (action) {
+        case SEND_TO_GIS:
+            return inImportInspectionPlanQueue;
+        default:
+            return getQueue();
+    }
+    }
+	
 	
 	private void filterOffDeleted (Select select) {
         select.and ("is_deleted", 0);
@@ -98,20 +121,26 @@ public class CheckPlansImpl extends BaseCRUD<CheckPlan> implements CheckPlansLoc
         
     });}
 
-    @Override
-    public JsonObject getItem (String id, User user) {return fetchData ((db, job) -> {
-        
-        JsonObject item = db.getJsonObject(ModelHolder.getModel ().get (CheckPlan.class, id, "AS root", "*"));
-        
-        job.add ("item", item);
-        
-    });}
+	@Override
+	public JsonObject getItem(String id, User user) {
+		return fetchData((db, job) -> {
+
+			JsonObject item = db.getJsonObject(ModelHolder.getModel()
+					.get(CheckPlan.class, id, "AS root", "*")
+					.toMaybeOne(CheckPlanLog.class, "AS log").on()
+					.toMaybeOne(OutSoap.class, "err_text").on("log.uuid_out_soap=out_soap.uuid"));
+
+			job.add("item", item);
+
+		});
+	}
     
     @Override
     public JsonObject getVocs () {
         
         JsonObjectBuilder jb = Json.createObjectBuilder ();
         
+        VocGisStatus.addLiteTo (jb);
         VocAction.addTo (jb);
         
         final MosGisModel model = ModelHolder.getModel ();
@@ -154,6 +183,37 @@ public class CheckPlansImpl extends BaseCRUD<CheckPlan> implements CheckPlansLoc
         catch (Exception ex) {
             throw new InternalServerErrorException (ex);
         }
+	}
+
+	@Override
+	public JsonObject doSend(String id, User user) {
+		checkPermissionToSend(id, user);
+		
+		return doAction ((db) -> {
+
+	        db.update (getTable (), HASH (
+	            EnTable.c.UUID,         id,
+	            CheckPlan.c.ID_CTR_STATUS,  VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+	        ));
+	        
+	        logAction (db, user, id, VocAction.i.SEND_TO_GIS);
+	        
+	    });
+	}
+	
+	private void checkPermissionToSend(String id, User user) {
+		MosGisModel m = ModelHolder.getModel();
+
+		try (DB db = m.getDb()) {
+			Map<String, Object> checkPlan = db.getMap(CheckPlan.class, id);
+			Object uuidOrg = checkPlan.get(CheckPlan.c.UUID_ORG.lc());
+			if (uuidOrg == null)
+				throw new ValidationException("foo", "Доступ запрещён. Не указана организация, которой принадлежит план проверок");
+			if (StringUtils.isNotBlank(user.getUuidOrg()) && !uuidOrg.toString().equals(user.getUuidOrg()))
+				throw new ValidationException("foo", "Доступ запрещён. План проверок принадлежит другой организации");
+		} catch (SQLException ex) {
+			throw new InternalServerErrorException(ex);
+		}
 	}
 
 }

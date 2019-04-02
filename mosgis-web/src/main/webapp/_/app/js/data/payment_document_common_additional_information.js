@@ -6,7 +6,7 @@ define ([], function () {
 
         if (layout) layout.unlock ('main')
 
-        done ($('body').data ('data'))
+        done (clone ($('body').data ('data')))
                 
     }
 

@@ -63,7 +63,7 @@ public class ChargeInfo extends EJBResource <ChargeInfoLocal> {
     public JsonObject doUpdate (@PathParam ("id") String id, JsonObject p) {
 //        final JsonObject item = getInnerItem (id);
 //        checkOrg (item);
-        return back.doUpdate (id, p, getUser ());
+        return back.doUpdateAndGet (id, p, getUser ());
     }        
 
 }

@@ -2,7 +2,7 @@ define ([], function () {
 
     function perms () {
 
-        var signed = clone ($('body').data ('data')).item.sign
+        var signed = clone ($('body').data ('data')).item.id_ctr_status == 41
 
         return $_USER.role.nsi_20_4 && !signed
 
@@ -18,9 +18,9 @@ define ([], function () {
 
         if (g.getSelection ().length != 1) return
 
-        var status = g.get (g.getSelection () [0]).sign
+        var status = g.get (g.getSelection () [0]).id_ctr_status
 
-        if (!status) t.enable ('deleteButton')
+        if (status != 41) t.enable ('deleteButton')
 
     })}
 

@@ -12,3 +12,4 @@ nb-configuration.xml
 *.settings
 *.classpath
 bin
+/mosgis-fs/target/

@@ -63,6 +63,7 @@ public class PlannedExamination extends EnTable {
         CANCELDATE                      (Type.DATE,             null, "Дата изменения проверки"),
         CANCEL_ORG_UUID                 (VocOrganization.class, null, "Субъект проверки"),
         ADDITIONCANCELINFO              (Type.STRING, 2000,     null, "Дополнительная информация"),
+        GIS_UPDATE_DATE                 (Type.DATETIME,         null, "Дата изменения в ГИС ЖКХ"),
         
         ID_LOG                          (PlannedExaminationLog.class, "Последнее событие редактирования")
 

@@ -26,6 +26,8 @@ define ([], function () {
                 vc_pay_doc_types: 1,
                 vc_gis_status: 1,
                 vc_actions: 1,
+                tb_bnk_accts: 1,
+                tb_ins_products: 1,
             })
             
             var it = data.item

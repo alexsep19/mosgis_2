@@ -16,5 +16,25 @@
    </delivery-params-overrides>
    <jndi-name>mosgis.outExportDiffQueue</jndi-name>
  </uniform-distributed-queue>
+    
+ <!-- очередь обработки запросов на экспорт тарифов за пользование ЖП -->
+ <uniform-distributed-queue name="inExportPremiseUsageTarifsQueue">
+   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+   <delivery-params-overrides>
+       <time-to-deliver>2000</time-to-deliver>
+       <redelivery-delay>10000</redelivery-delay>
+   </delivery-params-overrides>
+   <jndi-name>mosgis.inExportPremiseUsageTarifsQueue</jndi-name>
+ </uniform-distributed-queue>
+ 
+ <!-- очередь опроса статуса исходящих запросов на экспорт тарифов за пользование ЖП -->
+ <uniform-distributed-queue name="outExportPremiseUsageTarifsQueue">
+   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>    
+   <delivery-params-overrides>
+       <time-to-deliver>2000</time-to-deliver>
+       <redelivery-delay>10000</redelivery-delay>
+   </delivery-params-overrides>
+   <jndi-name>mosgis.outExportPremiseUsageTarifsQueue</jndi-name>
+ </uniform-distributed-queue>
 
 </weblogic-jms>

@@ -1,6 +1,12 @@
 define ([], function () {
 
-    function recalcToolbar (e) {e.done (function () {
+	function perms () {
+
+        return $_USER.role.nsi_20_4 || $_USER.role.nsi_20_5
+
+    }
+	
+	function recalcToolbar (e) {e.done (function () {
 
         var g = w2ui ['check_plans_grid']
 
@@ -10,9 +16,9 @@ define ([], function () {
 
         if (g.getSelection ().length != 1) return
 
-        var status = g.get (g.getSelection () [0]).sign
+        var status = g.get (g.getSelection () [0]).id_ctr_status
 
-        if (!status) t.enable ('deleteButton')
+        if (status != 41) t.enable ('deleteButton')
 
     })}
 
@@ -24,16 +30,16 @@ define ([], function () {
 
             show: {
                 toolbar: true,
-                toolbarAdd: true,
                 toolbarInput: false,
                 footer: true,
             },
 
             toolbar: {
                 items: [
+                    {type: 'button', id: 'createButton', caption: 'Добавить', onClick: $_DO.create_check_plans, icon: 'w2ui-icon-plus', off: !perms()},
                     {type: 'button', id: 'deleteButton', caption: 'Удалить', onClick: $_DO.delete_check_plans, icon: 'w2ui-icon-cross', disabled: true},
                     {type: 'button', id: 'importButton', caption: 'Импорт из ГИС ЖКХ', onClick: $_DO.import_check_plans, icon: 'w2ui-icon-plus'},
-                ]
+                ].filter (not_off)
             },
 
             searches: [
@@ -46,14 +52,10 @@ define ([], function () {
                 {field: 'shouldberegistered', caption: 'Должен быть зарегистрирован в ЕРП', size: 10, render: function (r) {
                     return r.shouldberegistered ? 'Да' : 'Нет'
                 }},
-                {field: 'sign', caption: 'Подписан', size: 10, render: function (r) {
-                    return r.sign ? 'Да' : 'Нет'
-                }}
+                {field: 'id_ctr_status', caption: 'Статус', size: 10, size: 10, voc: data.vc_gis_status}
             ],
 
             url: '/mosgis/_rest/?type=check_plans',
-            
-            onAdd: $_DO.create_check_plans,
 
             onSelect: recalcToolbar,
             onUnselect: recalcToolbar,

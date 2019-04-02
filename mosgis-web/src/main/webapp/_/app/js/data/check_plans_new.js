@@ -17,7 +17,6 @@ define ([], function () {
 
         }
 
-        v.sign = 0
         v.shouldnotberegistered = 1 - v.shouldberegistered
         delete v.shouldberegistered
         

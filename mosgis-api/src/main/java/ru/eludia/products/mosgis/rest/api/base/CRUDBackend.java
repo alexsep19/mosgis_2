@@ -14,5 +14,7 @@ public interface CRUDBackend {
     JsonObject getLog     (String id, JsonObject p, User user);
     JsonObject getCach    (String fiashouseguid);
     JsonObject getOktmo   (String fiashouseguid);
+    
+    JsonObject doUpdateAndGet (String id, JsonObject p, User user);
 
 }

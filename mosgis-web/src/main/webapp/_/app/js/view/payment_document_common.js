@@ -7,10 +7,12 @@ define ([], function () {
         var it = data.item              
     
         $_F5 = function (data) {
-        
-            data.item.__read_only = data.__read_only
-            
-            var r = clone (data.item)
+
+            it.__read_only = data.__read_only
+                        
+            var r = clone (it)
+
+            r.sign = {id: r.debtpreviousperiods > 0 ? -1 : 1}
 
             w2ui [form_name].record = r
             
@@ -50,6 +52,7 @@ define ([], function () {
                     tabs: {
                         tabs:    [
                             {id: 'payment_document_common_charge_info', caption: 'Текущие начисления', off: it.id_type != 0},
+                            {id: 'payment_document_common_piecemeal_payment', caption: 'Рассрочка платежей', off: it.id_type != 0},
                             {id: 'payment_document_common_additional_information', caption: 'Дополнительная информация'},
                             {id: 'payment_document_common_log', caption: 'История изменений'},
                         ].filter (not_off),
@@ -98,8 +101,6 @@ define ([], function () {
                 ]}},
                 
             ],
-
-            focus: -1,
             
             onRefresh: function (e) {e.done (function () {
                             

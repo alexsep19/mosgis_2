@@ -11,4 +11,5 @@ public interface CheckPlansLocal extends CRUDBackend {
     
     public JsonObject doImport (JsonObject p, User user);
     
+    public JsonObject doSend (String id, User user);
 }

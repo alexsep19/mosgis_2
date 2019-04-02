@@ -9,7 +9,9 @@ import ru.eludia.products.mosgis.db.model.voc.VocFileStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 
 public class AccountIndividualService extends AttachTable {
-    
+
+    public static final String TABLE_NAME = "tb_account_svc";
+
     public enum c implements EnColEnum {
 
         UUID_ACCOUNT                 (Account.class,                            "Лицевой счёт"),
@@ -50,7 +52,7 @@ public class AccountIndividualService extends AttachTable {
 
     public AccountIndividualService () {
         
-        super  ("tb_account_svc", "Индивидуальные услуги лицевых счетов");
+        super  (TABLE_NAME, "Индивидуальные услуги лицевых счетов");
         
         cols   (c.class);
         
