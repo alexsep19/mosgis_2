@@ -64,4 +64,9 @@ public class TarifCoeff extends EnTable  {
 	    + " COMMIT; "
 	    + "END;");
     }
+
+    public static final String CALC_PRICE = ""
+	+ " IF :NEW.price <> :OLD.price THEN "
+	+ "   UPDATE " + TarifCoeff.TABLE_NAME + " c SET price = c.coefficientvalue * :NEW.price WHERE uuid_tf = :NEW.uuid; "
+	+ " END IF; ";
 }
