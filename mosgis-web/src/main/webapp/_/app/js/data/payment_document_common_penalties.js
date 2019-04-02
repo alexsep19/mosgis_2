@@ -9,18 +9,21 @@ define ([], function () {
         var v = normalizeValue (e.value_new, col.editable.type)
 
         var data = {}; 
-        
+
         data [col.field] = v == null ? null : String (v)
-        
+
+        var nsi329_ba = e.recid.split ('_')
+
+        data.code_vc_nsi_329 = nsi329_ba [0]
+        data.uuid_bnk_acct   = nsi329_ba [1]
+
         grid.lock ()
-/*
-        query ({type: 'charge_info', id: e.recid, action: 'update'}, {data: data}, function (d) {
+
+        query ({type: 'payment_documents', action: 'patch_penalties'}, {data: data}, function (d) {
             grid.unlock ()
-            delete grid.get (e.recid) ['pp_sum']
-            grid.set (e.recid, d.item)
             grid.refresh ()
         })
-*/
+
     }
 
     return function (done) {
@@ -51,14 +54,18 @@ define ([], function () {
         
             var lines = [{recid: 'total', label: 'Итого'}]
             
+            var idx = {}
+            
             $.each (data.vc_nsi_329.items, function () {
             
                 var nsi_329 = this
 
                 $.each (ba, function () {                
                 
-                    lines.push ({
-                        recid: nsi_329.id + '_' + ba.id,
+                    var id = nsi_329.id + '_' + this.id
+                
+                    lines.push (idx [id] = {
+                        recid: id,
                         label: nsi_329.label,
                         acct: this.label,
                         org_label: this.org_label,
@@ -69,6 +76,24 @@ define ([], function () {
                 
             })
             
+            query ({type: 'payment_documents', part: 'penalties'}, {}, function (dd) {
+
+                $.each (dd.root, function () {                
+
+                    var r = idx [this.code_vc_nsi_329 + '_' + this.uuid_bnk_acct]
+
+                    r.totalpayable = this.totalpayable
+                    r.cause = this.cause
+
+                })
+
+                data.lines = lines
+
+                done (data)
+            
+            });
+            
+            
 /*            
             $.each (dia2w2uiRecords (d.root), function () {
                 
@@ -78,9 +103,6 @@ define ([], function () {
             
             })
 */        
-            data.lines = lines
-
-            done (data)
 
         }) 
 

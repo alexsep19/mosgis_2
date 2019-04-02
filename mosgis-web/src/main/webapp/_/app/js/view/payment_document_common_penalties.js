@@ -117,7 +117,7 @@ define ([], function () {
 
             ],
 
-            records: darn (data.lines),
+            records: data.lines,
             
             onDblClick: null,
             
@@ -143,15 +143,9 @@ define ([], function () {
             onRefresh: function (e) {
             
                 var grid = this
-                
+                                                
                 var sum = {}
-                
-                if (this.recid != 'total') $.each (grid.columns, function () {
-                    if (!this.is_to_sum) return
-                    var k = this.field
-                    sum [k] = sum [k] || 0
-                })
-                
+darn (sum)
                 $.each (grid.records, function () {
 
                     if (this.w2ui) {
@@ -162,20 +156,24 @@ define ([], function () {
                         for (var field in chg) {
                             var col = grid.getColumn (field)
                             var editable = col.editable
-                            if (!editable || editable.type != 'list') continue
-                            this [field] = chg [field].uuid
+                            if (!editable) continue
+                            this [field] = chg [field]
                             delete this.w2ui.changes
                         }
                         
                     }
                     
                     var r = this
-                    
-                    if (this.recid != 'total') $.each (grid.columns, function () {
+
+                    if (r.recid != 'total') $.each (grid.columns, function () {
                         if (!this.is_to_sum) return
                         var k = this.field
                         var v = r [k]
-                        if (v != null) sum [k] += parseFloat (v)
+                        if (v == null || v == '') return
+                        v = parseFloat (String (v))
+                        if (isNaN (v)) return
+                        if (!(k in sum)) sum [k] = 0
+                        sum [k] = sum [k] + v
                     })
 
                 })

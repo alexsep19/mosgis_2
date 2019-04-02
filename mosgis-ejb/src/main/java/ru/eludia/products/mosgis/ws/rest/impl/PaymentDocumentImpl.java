@@ -7,6 +7,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.PaymentDocument;
 import ru.eludia.products.mosgis.db.model.tables.PaymentDocumentLog;
@@ -247,7 +248,9 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
     @Override
     public JsonObject doPatchPenaltiesAndCourtCosts (String id, JsonObject p, User user) {return doAction ((db) -> {
         
-        db.upsert (PenaltiesAndCourtCosts.class, getData (p,
+        Table t = ModelHolder.getModel ().get (PenaltiesAndCourtCosts.class);
+
+        db.upsert (t, t.HASH (p.getJsonObject ("data"),
             PenaltiesAndCourtCosts.c.UUID_PAY_DOC, id
         )
             , PenaltiesAndCourtCosts.c.UUID_PAY_DOC.lc ()
