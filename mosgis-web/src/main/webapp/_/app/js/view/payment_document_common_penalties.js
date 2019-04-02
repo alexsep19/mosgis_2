@@ -49,11 +49,15 @@ define ([], function () {
             if (is_editing) {
                 t.enable ('cancel')
                 t.disable ('edit')
-                grid.selectNone ()
+//                grid.selectNone ()
                 w2ui ['payment_document_common_form'].lock ()
                 w2ui ['passport_layout'].get ('main').tabs.disable ('payment_document_common_additional_information', 'payment_document_common_log')
+                grid.records = data.lines
+                grid.refresh ()
             }
             else {
+                reload_page ()
+/*                
                 var records = grid.records
                 for (var i = 1; i < records.length; i ++) {
                     var r = records [i]
@@ -68,6 +72,7 @@ define ([], function () {
                 t.enable ('edit')
                 w2ui ['payment_document_common_form'].unlock ()
                 w2ui ['passport_layout'].get ('main').tabs.enable ('payment_document_common_additional_information', 'payment_document_common_log')
+*/                
             }
 
             grid.show.selectionBorder = is_editing
@@ -117,7 +122,7 @@ define ([], function () {
 
             ],
 
-            records: data.lines,
+            records: data.lines.filter (function (r) {return r.totalpayable || r.recid == 'total'}),
             
             onDblClick: null,
             
@@ -144,7 +149,7 @@ define ([], function () {
             
                 var grid = this
                                                 
-                var sum = {}
+                var sum = 0.0
 
                 $.each (grid.records, function () {
 
@@ -164,21 +169,14 @@ define ([], function () {
                     }
                     
                     var r = this
-
-                    if (r.recid != 'total') $.each (grid.columns, function () {
-                        if (!this.is_to_sum) return
-                        var k = this.field
-                        var v = r [k]
-                        if (v == null || v == '') return
-                        v = parseFloat (String (v))
-                        if (isNaN (v)) return
-                        if (!(k in sum)) sum [k] = 0
-                        sum [k] = sum [k] + v
-                    })
+                    if (r.recid != 'total' && r.totalpayable) {
+                        var totalpayable = parseFloat (r.totalpayable)
+                        if (totalpayable > 0) sum += totalpayable
+                    }
 
                 })
 
-                grid.set ('total', sum)
+                grid.set ('total', {totalpayable: sum})
             
                 e.done (function () {
                     
