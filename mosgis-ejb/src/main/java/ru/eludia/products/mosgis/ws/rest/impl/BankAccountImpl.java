@@ -10,6 +10,10 @@ import ru.eludia.products.mosgis.db.model.tables.BankAccount;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.tables.BankAccountLog;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.voc.VocBic;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.BankAccountLocal;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
@@ -40,7 +44,11 @@ public class BankAccountImpl extends BaseCRUD<BankAccount> implements BankAccoun
     public JsonObject getItem (String id, User user) {return fetchData ((db, job) -> {
 
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
-            .get (getTable (), id, "AS root", "*")
+            .get (BankAccount.class, id, "AS root", "*")
+	    .toMaybeOne(VocOrganization.class, "AS org", "uuid", "label").on()
+	    .toMaybeOne(VocBic.class, "AS bank", "*").on()
+//	    .toOne(BankAccountLog.class, "AS log").on()
+//	    .toMaybeOne(OutSoap.class, "AS soap", "*").on("log.uuid_out_soap=soap.uuid")
         ));
         
         VocGisStatus.addTo (job);

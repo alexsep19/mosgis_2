@@ -1,0 +1,150 @@
+<span>
+
+    <div>
+
+        <div class="w2ui-page page-1 page-0">
+
+            <style>
+
+                .w2ui-field > label {
+                    width: 330px;
+                    margin-right: 10px;
+                }
+
+                .w2ui-field > label.short {
+                    width: 10px;
+                }
+                .w2ui-field > label.short+div {
+                    margin-left: 10px;
+                }
+
+                .w2ui-field > label.medium {
+                    width: 100px;
+                }
+                .w2ui-field > label.medium+div {
+                    margin-left: 100px;
+                }
+
+
+                .w2ui-field input {
+                    width: 300px !important;
+                }
+
+                .w2ui-field input.dt {
+                    width: 70px !important;
+                }
+
+                .w2ui-field input.nxt {
+                    width: 140px !important;
+                }
+
+                .w2ui-field input.long {
+                    width: 600px !important;
+                }
+
+                td:nth-child(2) > .w2ui-field > label {
+                    width: 250px;
+                    margin-right: 10px;
+                }
+
+                .sync b {
+                    color: red;
+                }
+                .w2ui-group-title {
+                    font-weight: bold;
+                }
+                tr span.w2ui-group-title {
+                    line-height: 60px;
+                }
+
+                .w2ui-field div span[data-text] {
+                    line-height: 19px
+                }
+            </style>
+
+            <table border=0 cellpadding=0 cellspacing=0 width=90%>
+
+		<tr>
+
+		    <td class="left-block" width=1 valign=top>
+
+			<div class="w2ui-field">
+			    <label>№ расчетного счёта</label>
+			    <div>
+				<input name=accountnumber maxlength=20>
+			    </div>
+			</div>
+			<div class="w2ui-field">
+			    <label>БИК / банк</label>
+			    <div>
+				<input name=bikcredorg>
+			    </div>
+			</div>
+			<div class="w2ui-field">
+			    <label>Дата открытия</label>
+			    <div>
+				<input name=opendate class=dt placeholder="">
+				закрытия
+				<input name=closedate class=dt placeholder="">
+			    </div>
+			</div>
+		    </td>
+
+		    <td valign=top>
+
+			<table border=0 cellpadding=0 cellspacing=0 width=100% class=sync>
+
+			    <tr>
+				<td>Статус:</td>
+				<td data-text=status_label />
+			    </tr>
+
+			    <tr data-on=is_annuled>
+				<td>Причина аннулирования:</td>
+				<td>
+				    <span data-text=reasonofannulment />
+				    , дата: <span data-text=last_annul.ts data-ts />
+				</td>
+			    </tr>
+
+			    <tr data-on=last_termination>
+				<td>Дата расторжения:</td>
+				<td data-text=last_termination.terminate data-date/>
+			    </tr>
+
+			    <tr data-on=last_termination>
+				<td>Причина:</td>
+				<td data-text=last_termination.reason/>
+			    </tr>
+
+			    <tr>
+				<th colspan=2 data-text=err_text></th>
+			    </tr>
+
+			</table>
+		    </td>
+		</tr>
+            </table>
+
+        </div>
+
+        <div class="w2ui-buttons">
+            <span>
+                
+<!--                <button class=w2ui-btn name=approve   data-on=__read_only>Утвердить</button>
+                <button class=w2ui-btn name=alter   data-on=__read_only>Изменить</button>
+                <button class=w2ui-btn name=annul   data-on=__read_only>Аннулировать</button>
+                <button class=w2ui-btn name=terminate   data-on=__read_only>Расторгнуть</button>-->
+                
+                <button class=w2ui-btn name=edit   data-on=__read_only>Редактировать</button>
+                <button class=w2ui-btn name=update data-off=__read_only>Сохранить</button>
+                <button class=w2ui-btn name=cancel data-off=__read_only>Отменить</button>
+
+                <button class=w2ui-btn name=delete  data-on=__read_only>Удалить</button>
+
+            </span>
+        </div>
+
+    </div>
+
+</span>

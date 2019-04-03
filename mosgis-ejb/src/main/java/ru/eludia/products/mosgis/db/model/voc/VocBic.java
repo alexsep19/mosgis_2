@@ -40,7 +40,8 @@ public class VocBic extends Table {
         
         LABEL_CITY      (Type.STRING,            new Virt ("\"TNP\"||' '||\"NNP\""), "Город"),
         LABEL_ADDRESS   (Type.STRING,            new Virt ("\"TNP\"||' '||\"NNP\"||', '||\"ADR\""), "Адрес"),
-        
+	LABEL           (Type.STRING, new Virt("'' || NAMEP"), "Наименование"),
+
         UUID_IMPORT     (InVocBic.class,         "Последнее событие импорта"),
         ;
                                                                                     @Override public Col getCol () {return col;} private Col col; private c (Type type, Object... p) {col = new Col (this, type, p);} private c(Class c, Object... p) {col = new Ref(this, c, p);}    
