@@ -4,9 +4,9 @@ import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;
 import java.util.UUID;
 
-public class AuthorizationSecurity implements SecurityContext {
+public class AuthorizationContext implements SecurityContext, Principal {
 
-    public AuthorizationSecurity(UUID senderUuid) {
+    public AuthorizationContext(UUID senderUuid) {
         this.senderUuid = senderUuid;
     }
 
@@ -18,7 +18,7 @@ public class AuthorizationSecurity implements SecurityContext {
 
     @Override
     public Principal getUserPrincipal() {
-        return null;
+        return this;
     }
 
     @Override
@@ -28,11 +28,16 @@ public class AuthorizationSecurity implements SecurityContext {
 
     @Override
     public boolean isSecure() {
-        return false;
+        return true;
     }
 
     @Override
     public String getAuthenticationScheme() {
-        return null;
+        return BASIC_AUTH;
+    }
+
+    @Override
+    public String getName() {
+        return senderUuid.toString();
     }
 }

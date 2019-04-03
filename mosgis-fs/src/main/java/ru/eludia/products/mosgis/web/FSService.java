@@ -39,7 +39,7 @@ public class FSService {
         } catch (RestFileException e) {
             return Response.status(Response.Status.BAD_REQUEST).header("X-Upload-Error", e.getClass().getSimpleName()).build();
         }
-        UUID uuid = back.store(((AuthorizationSecurity)crc.getSecurityContext()).getSenderUuid(), fn, request.getInputStream());
+        UUID uuid = back.store(((AuthorizationContext) crc.getSecurityContext().getUserPrincipal()).getSenderUuid(), fn, request.getInputStream());
         return Response.status(Response.Status.OK).header("Location", "homemanagement/" + uuid).header("X-Upload-UploadID", uuid.toString()).build();
     }
 

@@ -44,8 +44,8 @@ public class SecurityFilter implements ContainerRequestFilter {
     public void filter (ContainerRequestContext requestContext) throws IOException {
         try {
             try {
-                requestContext.setSecurityContext(new AuthorizationSecurity(getSengerUuid(httpServletRequest.getHeader("Authorization"),
-                        (FileStoreLocal)ic.lookup("java:app//mosgis-ejb/" + FileStoreLocal.class.getSimpleName().replace ("Local", "Impl")))));
+                requestContext.setSecurityContext(new AuthorizationContext(getSengerUuid(httpServletRequest.getHeader("Authorization"),
+                        (FileStoreLocal) ic.lookup("java:app//mosgis-ejb/" + FileStoreLocal.class.getSimpleName().replace("Local", "Impl")))));
             } catch (AnonException | AuthException e) {
                 requestContext.abortWith (Response.status (Response.Status.UNAUTHORIZED).build());
             }
