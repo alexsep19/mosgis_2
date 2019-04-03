@@ -1,0 +1,60 @@
+<span
+	data-popup-width=620
+	data-popup-height=285
+	data-popup-title='НСИ 302'
+>
+
+	<style>
+
+        label[data-block-name=base_decision_msp_popup] {
+        	width: 170px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=base_decision_msp_popup] {
+        	width: 230px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form">
+
+        <div class="w2ui-page page-0" style="height:340px">
+
+	    <div class="w2ui-field">
+		<label>Наименование</label>
+		<div>
+		    <input name=decisionname maxlength=500>
+		</div>
+	    </div>
+
+	    <div class="w2ui-field">
+		<label>Тип</label>
+		<div>
+		    <input name=code_vc_nsi_301>
+		</div>
+	    </div>
+
+	    <div class="w2ui-field">
+		<label>Применяется для субсидий</label>
+		<div>
+		    <input name=isappliedtosubsidiaries >
+		</div>
+	    </div>
+
+	    <div class="w2ui-field">
+		<label>Применяется для компенсации расходов</label>
+		<div>
+		    <input name=isappliedtorefundofcharges >
+		</div>
+	    </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>

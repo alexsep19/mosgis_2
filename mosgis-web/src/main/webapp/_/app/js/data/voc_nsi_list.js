@@ -7,7 +7,7 @@ define ([], function () {
         var type = 
             parseInt (id) > 0 ? 'voc_nsi' : 
             id
-        
+
         if (!type || /[A-Z]$/.test (type)) return
                 
         w2utils.lock ($(w2ui ['vocs_layout'].el ('main')), {spinner: true})
@@ -83,7 +83,18 @@ define ([], function () {
                 label: 'Тарифы',
                 nodes: tariff_vocs
             })                        
-                                    
+
+            var msp_vocs = []
+            if (one_of_roles (9, 10)) msp_vocs.push ({
+                id: 'base_decision_msps',
+                text: 'Основание принятия решения о мерах социальной поддержки гражданина',
+            })            
+            if (tariff_vocs.length) data.vc_nsi_list_group.push ({
+                name: '_MSP',
+                label: 'Социальная поддержка',
+                nodes: msp_vocs
+            })
+
             var idx = {}; 
 
             $.each (data.vc_nsi_list_group, function () {
