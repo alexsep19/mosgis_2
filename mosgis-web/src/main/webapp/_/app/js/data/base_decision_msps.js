@@ -60,6 +60,10 @@ define ([], function () {
             add_vocabularies (data, data)
 
             $('body').data ('data', data)
+            data._can = {
+                create: $_USER.has_nsi_20(9, 10)
+            }
+            data._can.delete = data._can.edit = data._can.create
 
             done (data)
 

@@ -27,15 +27,15 @@ define ([], function () {
 
             show: {
                 toolbar: true,
-                toolbarAdd: !$_USER.role.admin,
-                toolbarEdit: !$_USER.role.admin,
+                toolbarAdd: data._can.create,
+                toolbarEdit: data._can.edit,
                 footer: true,
             },     
 
             toolbar: {
             
                 items: [
-                    {type: 'button', id: b [0], caption: 'Удалить', onClick: $_DO.delete_base_decision_msps, disabled: true, off: $_USER.role.admin},
+                    {type: 'button', id: b [0], caption: 'Удалить', onClick: $_DO.delete_base_decision_msps, disabled: true, off: !data._can.delete},
 //                    {type: 'button', id: b [1], caption: 'Восстановить', onClick: $_DO.undelete_base_decision_msps, disabled: true, off: $_USER.role.admin},
                 ].filter (not_off),
                 
@@ -66,7 +66,7 @@ define ([], function () {
             postData: {data: {uuid_org: $_USER.uuid_org}},
                         
             onAdd:      $_DO.create_base_decision_msps,            
-            onEdit:     $_DO.edit_base_decision_msps,            
+            onEdit:     $_DO.edit_base_decision_msps,
             onDblClick: function (e) {openTab ('/base_decision_msp/' + e.recid)},
             onRefresh: function (e) {e.done (color_data_mandatory)},            
             onSelect: recalcToolbar,
