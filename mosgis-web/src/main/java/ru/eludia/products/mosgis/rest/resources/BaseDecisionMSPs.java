@@ -8,10 +8,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import ru.eludia.products.mosgis.rest.api.MSPDecisionBaseLocal;
+import ru.eludia.products.mosgis.rest.api.BaseDecisionMSPLocal;
 
 @Path ("msp_decision_bases")
-public class MSPDecisionBases extends EJBResource <MSPDecisionBaseLocal> {
+public class BaseDecisionMSPs extends EJBResource <BaseDecisionMSPLocal> {
 /*    
     private JsonObject getInnerItem (String id) {
         final JsonObject data = back.getItem (id);        

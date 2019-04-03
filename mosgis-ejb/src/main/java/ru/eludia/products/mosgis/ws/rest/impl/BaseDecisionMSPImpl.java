@@ -19,15 +19,15 @@ import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi2;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi301;
 import ru.eludia.products.mosgis.rest.User;
-import ru.eludia.products.mosgis.rest.api.MSPDecisionBaseLocal;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
 import ru.eludia.products.mosgis.ws.rest.impl.tools.ComplexSearch;
 import ru.eludia.products.mosgis.ws.rest.impl.tools.Search;
 import ru.eludia.products.mosgis.ws.rest.impl.tools.SimpleSearch;
+import ru.eludia.products.mosgis.rest.api.BaseDecisionMSPLocal;
 
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-public class MSPDecisionBaseImpl extends BaseCRUD<BaseDecisionMSP> implements MSPDecisionBaseLocal {
+public class BaseDecisionMSPImpl extends BaseCRUD<BaseDecisionMSP> implements BaseDecisionMSPLocal {
 
 //    @Resource (mappedName = "mosgis.inNsiMSPDecisionBasesQueue")
 //    Queue queue;
