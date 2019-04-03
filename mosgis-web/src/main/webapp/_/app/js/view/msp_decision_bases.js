@@ -67,7 +67,7 @@ define ([], function () {
                         
             onAdd:      $_DO.create_msp_decision_bases,            
             onEdit:     $_DO.edit_msp_decision_bases,            
-            onDblClick: function (e) {openTab ('/msp_decision_bases/' + e.recid)},
+            onDblClick: function (e) {openTab ('/msp_decision_base/' + e.recid)},
             onRefresh: function (e) {e.done (color_data_mandatory)},            
             onSelect: recalcToolbar,
             onUnselect: recalcToolbar,
