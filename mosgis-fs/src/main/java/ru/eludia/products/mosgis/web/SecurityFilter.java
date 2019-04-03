@@ -1,8 +1,11 @@
 package ru.eludia.products.mosgis.web;
 
+import ru.eludia.products.mosgis.filestore.FileStoreLocal;
+
 import javax.annotation.Priority;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -10,81 +13,63 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
+import java.util.Base64;
+import java.util.UUID;
 import java.util.logging.Logger;
-
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 public class SecurityFilter implements ContainerRequestFilter {
 
     private final static Logger logger = Logger.getLogger (SecurityFilter.class.getName ());
-    
+    public final static String SENDER_UUID = "sender_uuid";
+
+    private class AnonException extends Exception {}
+    private class AuthException extends Exception {}
+
+    private static final InitialContext ic;
+    static {
+        try {
+            ic = new InitialContext ();
+        }
+        catch (NamingException nex) {
+            throw new IllegalStateException (nex);
+        }
+    }
+
     @Context
-    HttpServletRequest httpServletRequest;    
-    
+    HttpServletRequest httpServletRequest;
+
     @Override
     public void filter (ContainerRequestContext requestContext) throws IOException {
-        
-        String requestURI = httpServletRequest.getRequestURI ();
-        
-        if (requestURI != null && requestURI.endsWith ("/application.wadl")) return;
-        
-        HttpSession session = httpServletRequest.getSession (false);
-
-        if (session == null) {
-            
-            if (!"sessions".equals (httpServletRequest.getParameter ("type"))) {
-                
-                logger.warning (getBlockReason (httpServletRequest));
-                
-                requestContext.abortWith (Response.status (UNAUTHORIZED).build ());
-                
+        try {
+            try {
+                httpServletRequest.getSession (true).setAttribute(SENDER_UUID, getSengerUuid(httpServletRequest.getHeader("Authorization"),
+                        (FileStoreLocal)ic.lookup("java:app//mosgis-ejb/" + FileStoreLocal.class.getSimpleName().replace ("Local", "Impl"))));
+            } catch (AnonException | AuthException e) {
+                requestContext.abortWith (Response.status (Response.Status.UNAUTHORIZED).build ());
             }
-            
-        }
-        else {
 
-            requestContext.setSecurityContext (new SecurityCtx (
-                (String)    session.getAttribute ("user.id"), 
-                (String)    session.getAttribute ("user.label"), 
-                (String)    session.getAttribute ("user.uuid_org"), 
-                (Object []) session.getAttribute ("user.roles"))
-            );
-            
+        } catch (NamingException e) {
+            e.printStackTrace();
         }
-        
+
+
     }
 
-    private static String getBlockReason (HttpServletRequest r) {
-        
-        StringBuilder sb = new StringBuilder ("Blocked ");
-        
-        sb.append (r.getMethod ());
+    private UUID getSengerUuid(String auth, FileStoreLocal back) throws AnonException, AuthException {
 
-        sb.append (' ');
-        
-        sb.append (r.getRequestURI ());
-        
-        String queryString = r.getQueryString ();
-        
-        if (queryString != null && !queryString.isEmpty ()) {
-            sb.append ('?');
-            sb.append (queryString);
-        }
-        
-        sb.append (" by ");
-        
-        String requestedSessionId = r.getRequestedSessionId ();
-        if (requestedSessionId != null && !requestedSessionId.isEmpty ()) {
-            sb.append (requestedSessionId);
-        }
-        else {
-            sb.append ("some anonymous user");
-        }
+        if (auth == null || auth.isEmpty()) throw new AnonException();
 
-        return sb.toString ();
-        
+        String lp = new String(Base64.getDecoder().decode(auth.substring(6).getBytes()));
+        int p = lp.indexOf(':');
+        if (p < 1) throw new AnonException();
+
+        UUID senderUuid = back.getSenderUuid(lp.substring(0, p), lp.substring(p + 1));
+
+        if (senderUuid == null) throw new AuthException();
+
+        return senderUuid;
+
     }
-    
 }
