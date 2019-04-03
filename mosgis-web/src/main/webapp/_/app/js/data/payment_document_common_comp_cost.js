@@ -12,10 +12,7 @@ define ([], function () {
 
         data [col.field] = v == null ? null : String (v)
 
-        var nsi331_ba = e.recid.split ('_')
-
-        data.code_vc_nsi_331 = nsi331_ba [0]
-        data.uuid_bnk_acct   = nsi331_ba [1]
+        data.code_vc_nsi_331 = e.recid
 
         grid.lock ()
 
@@ -28,83 +25,43 @@ define ([], function () {
 
     return function (done) {
 
-        var layout = w2ui ['passport_layout']
+    var layout = w2ui ['passport_layout']
 
-        if (layout) layout.unlock ('main')
+    if (layout) layout.unlock ('main')
 
-        var data = $('body').data ('data')                
+    var data = $('body').data ('data')                
 
-        query ({type: 'payment_documents', part: 'charge_info'}, {}, function (d) {
-
-            var ba = {}
-
-            $.each (d.root, function () {
-            
-                var id = this.uuid_bnk_acct
-
-                ba [id] = {
-                    id: id,
-                    label: this ['ba.label'],
-                    org_label: this ['org_bank_acct.label'],
-                }
-
-            })
-            
-            ba = Object.values (ba).sort (function (a, b) {return a.label < b.label ? -1 : 1})        
+        var lines = [{recid: 'total', label: 'Итого'}]
         
-            var lines = [{recid: 'total', label: 'Итого'}]
-            
-            var idx = {}
-            
-            $.each (data.vc_nsi_331.items, function () {
-            
-                var nsi_331 = this
+        var idx = {}
+        
+        $.each (data.vc_nsi_331.items, function () {
+        
+            var id = this.id
 
-                $.each (ba, function () {                
-                
-                    var id = nsi_331.id + '_' + this.id
-                
-                    lines.push (idx [id] = {
-                        recid: id,
-                        label: nsi_331.label,
-                        acct: this.label,
-                        org_label: this.org_label,
-                        id_type: 1,
-                    })                                
-                
-                })            
-                
+            lines.push (idx [id] = {
+                recid: id,
+                label: this.label,
+                id_type: 1,
             })
-            
-            query ({type: 'payment_documents', part: 'penalties'}, {}, function (dd) {
 
-                $.each (dd.root, function () {                
+        })
+darn (idx)        
+        query ({type: 'payment_documents', part: 'comp_cost'}, {}, function (dd) {
 
-                    var r = idx [this.code_vc_nsi_331 + '_' + this.uuid_bnk_acct]
+            $.each (dd.root, function () {                
 
-                    r.totalpayable = this.totalpayable
-                    r.cause = this.cause
+                var r = idx [this.code_vc_nsi_331]
 
-                })
+                r.cost = this.cost
 
-                data.lines = lines
-
-                done (data)
-            
-            });
-            
-            
-/*            
-            $.each (dia2w2uiRecords (d.root), function () {
-                
-                if (!this.uuid_m_m_service) return
-
-                lines.push (this)
-            
             })
-*/        
 
-        }) 
+            data.lines = lines
+darn (lines)
+            done (data)
+        
+        })
 
     }
 

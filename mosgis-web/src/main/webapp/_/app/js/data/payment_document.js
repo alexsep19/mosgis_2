@@ -27,8 +27,9 @@ define ([], function () {
                 vc_gis_status: 1,
                 vc_actions: 1,
                 vc_nsi_329: 1,
+                vc_nsi_331: 1,
                 tb_bnk_accts: 1,
-                tb_ins_products: 1,                
+                tb_ins_products: 1,
             })
             
             var it = data.item
