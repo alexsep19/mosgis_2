@@ -21,7 +21,6 @@ public class FSService {
 
     private class RestFileException extends Exception {}
     private class FieldValidationException extends RestFileException {}
-    private class InvalidSizeException extends RestFileException {}
     private class ExtensionException extends RestFileException {}
 
     @EJB
