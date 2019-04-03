@@ -4,20 +4,25 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
+import javax.jms.Queue;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgram;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgram.c;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramLog;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.jms.UUIDPublisher;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
@@ -32,16 +37,22 @@ import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class GisPollExportOverhaulRegionalProgramMDB extends GisPollMDB {
+public class GisPollExportOverhaulRegionalProgramsMDB extends GisPollMDB {
+    
+    @EJB
+    protected UUIDPublisher UUIDPublisher;
     
     @EJB
     WsGisCapitalRepairClient wsGisCapitalRepairClient;
+    
+    @Resource (mappedName = "mosgis.inExportOverhaulRegionalProgramHouseWorksQueue")
+    Queue inExportOverhaulRegionalProgramHouseWorksQueue;
     
     @Override
     protected Get get (UUID uuid) {
         
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
-            .toOne (OverhaulRegionalProgramLog.class,     "AS log", "uuid", "action", "id_orp_status").on ("log.uuid_out_soap=root.uuid")
+            .toOne (OverhaulRegionalProgramLog.class,     "AS log", "uuid", "action", "id_orp_status", "uuid_user AS user").on ("log.uuid_out_soap=root.uuid")
             .toOne (OverhaulRegionalProgram.class,        "AS program", "uuid").on ()
             .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("program.org_uuid=org.uuid")
         ;
@@ -69,27 +80,38 @@ public class GisPollExportOverhaulRegionalProgramMDB extends GisPollMDB {
             
             for (CapRemCommonResultType.Error err: importResult.get (0).getError ()) throw new GisPollException (err);
             
-            String regionalProgramGUID = importResult.get (0).getGUID ();
-            String uniqueNumber = importResult.get (0).getUniqueNumber ();
-            
-            try {
-                UUID.fromString (regionalProgramGUID);
-            }
-            catch (Exception e) {
-                throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул некорректный regionalProgramGUID: '" + regionalProgramGUID + "'");
-            }
-            
             final Map<String, Object> h = statusHash (action.getOkStatus ());
+            Queue nextQueue = null;
 
-            h.put (c.REGIONALPROGRAMGUID.lc (), regionalProgramGUID);
-            h.put (c.UNIQUENUMBER.lc (), uniqueNumber);
+            switch (action) {            
+                case PROJECT_PUBLISH:
+                    String regionalProgramGUID = importResult.get (0).getGUID ();
+                    String uniqueNumber = importResult.get (0).getUniqueNumber ();
+                    h.put (c.REGIONALPROGRAMGUID.lc (), regionalProgramGUID);
+                    h.put (c.UNIQUENUMBER.lc (), uniqueNumber);
+                    nextQueue = inExportOverhaulRegionalProgramHouseWorksQueue;
+                case PLACING:
+                    h.put (c.LAST_SUCCESFULL_STATUS.lc (), action.getOkStatus ());
+                    update (db, uuid, r, h);
+                    db.update (OutSoap.class, HASH (
+                        "uuid", getUuid (),
+                        "id_status", DONE.getId ()
+                    ));
+                    break;
+            }
 
-            update (db, uuid, r, h);
-
-            db.update (OutSoap.class, HASH (
-                "uuid", getUuid (),
-                "id_status", DONE.getId ()
-            ));
+            if (nextQueue != null) {
+                String nextLogId = db.insertId (OverhaulRegionalProgramLog.class, HASH (
+                    "action", VocAction.i.PLACE_REG_PLAN_HOUSE_WORKS.getName (),
+                    "uuid_object", r.get ("program.uuid"),
+                    "uuid_user", r.get ("user")
+                )).toString ();
+                db.update (OverhaulRegionalProgram.class, HASH (
+                    "uuid", r.get ("program.uuid"),
+                    "id_log", nextLogId
+                ));
+                UUIDPublisher.publish (nextQueue, nextLogId);
+            }
 
         }
         catch (GisPollRetryException ex) {
@@ -107,8 +129,8 @@ public class GisPollExportOverhaulRegionalProgramMDB extends GisPollMDB {
         final byte id = status.getId ();
         
         return HASH (
-            c.ID_ORP_STATUS,     id,
-            c.ID_ORP_STATUS_GIS, id
+            c.ID_ORP_STATUS,          id,
+            c.ID_ORP_STATUS_GIS,      id
         );
         
     }

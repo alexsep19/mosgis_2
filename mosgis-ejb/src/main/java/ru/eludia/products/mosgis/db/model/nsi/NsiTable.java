@@ -256,7 +256,15 @@ public class NsiTable extends Table {
                 
                 jsonReader.readArray ().forEach (i -> {
 
-                    final NsiField nsiField = NsiField.fromJson ((JsonObject) i);
+                    NsiField nsiField;
+
+                    try {
+                        nsiField = NsiField.fromJson ((JsonObject) i);
+                    }
+                    catch (Exception ex) {
+                        logger.warning ("Something wrong with field definition " + i);
+                        return;
+                    }
 
                     nsiFields.add (nsiField, nsiField.getRemark ());
 

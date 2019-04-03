@@ -77,7 +77,7 @@ public class ChargeInfo extends EnTable {
 
     public ChargeInfo () {
         
-        super  (TABLE_NAME, "Начисления по услугам (строки платёжныхы документов)");
+        super  (TABLE_NAME, "Начисления по услугам (строки платёжных документов)");
 
         cols   (c.class);        
 

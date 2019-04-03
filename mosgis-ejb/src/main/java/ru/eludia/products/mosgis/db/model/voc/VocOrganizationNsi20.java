@@ -6,9 +6,11 @@ import ru.eludia.base.model.def.Bool;
 
 public class VocOrganizationNsi20 extends Table {
 
+    public static final String TABLE_NAME = "vc_orgs_nsi_20";
+
     public VocOrganizationNsi20 () {
 
-        super  ("vc_orgs_nsi_20",  "Полномочия организаций");
+        super  (TABLE_NAME,  "Полномочия организаций");
 
         pkref  ("uuid",       VocOrganization.class, "Организация");
         pk     ("code",       Type.STRING, 20, "Код полномочия (НСИ 20)");

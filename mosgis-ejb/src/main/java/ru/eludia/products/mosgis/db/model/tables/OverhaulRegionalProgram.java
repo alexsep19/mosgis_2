@@ -13,19 +13,20 @@ public class OverhaulRegionalProgram extends EnTable {
     
     public enum c implements EnColEnum {
         
-        ID_ORP_STATUS       (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус региональной программы капитального ремонта с точки зрения mosgis"),
-        ID_ORP_STATUS_GIS   (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус региональной программы капитального ремонта с точки зрения ГИС ЖКХ"),
+        LAST_SUCCESFULL_STATUS  (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Последний успешный статус обмена с ГИС"),
+        ID_ORP_STATUS           (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус региональной программы капитального ремонта с точки зрения mosgis"),
+        ID_ORP_STATUS_GIS       (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус региональной программы капитального ремонта с точки зрения ГИС ЖКХ"),
         
-        ORG_UUID            (VocOrganization.class, null, "Поставщик информации"),
+        ORG_UUID                (VocOrganization.class, null, "Поставщик информации"),
         
-        PROGRAMNAME         (Type.STRING, 1000, "Наименование программы"),
-        STARTYEAR           (Type.NUMERIC, 4, "Год начала периода реализации"),
-        ENDYEAR             (Type.NUMERIC, 4, "Год окончания периода реализации"),
+        PROGRAMNAME             (Type.STRING, 1000, "Наименование программы"),
+        STARTYEAR               (Type.NUMERIC, 4, "Год начала периода реализации"),
+        ENDYEAR                 (Type.NUMERIC, 4, "Год окончания периода реализации"),
         
-        ID_LOG              (OverhaulRegionalProgramLog.class, "Последнее событие редактирования"),
+        ID_LOG                  (OverhaulRegionalProgramLog.class, "Последнее событие редактирования"),
         
-        REGIONALPROGRAMGUID (Type.UUID,       null,                   "Идентификатор региональной программы"),
-        UNIQUENUMBER        (Type.STRING,     null,                   "Уникальный номер")
+        REGIONALPROGRAMGUID     (Type.UUID,       null,                   "Идентификатор региональной программы"),
+        UNIQUENUMBER            (Type.STRING,     null,                   "Уникальный номер")
         
         ;
 
@@ -52,7 +53,10 @@ public class OverhaulRegionalProgram extends EnTable {
     
     public enum Action {
         
-        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING)
+        PROJECT_PUBLISH     (VocGisStatus.i.PENDING_RP_PUBLISHANDPROJECT,            VocGisStatus.i.PENDING_RQ_PLACE_REGIONAL_PROGRAM_WORKS, VocGisStatus.i.FAILED_PUBLISHANDPROJECT),
+        PLACING_HOUSE_WORKS (VocGisStatus.i.PENDING_RP_PLACE_REGIONAL_PROGRAM_WORKS, VocGisStatus.i.PENDING_RQ_PLACING,                      VocGisStatus.i.FAILED_PLACE_REGIONAL_PROGRAM_WORKS),
+        PLACING             (VocGisStatus.i.PENDING_RP_PLACING,                      VocGisStatus.i.APPROVED,                                VocGisStatus.i.FAILED_PLACING)
+        
         ;
         
         VocGisStatus.i nextStatus;
@@ -79,14 +83,24 @@ public class OverhaulRegionalProgram extends EnTable {
 
         public static Action forStatus (VocGisStatus.i status) {
             switch (status) {
-                case PENDING_RQ_PLACING:   return PLACING;
+                case PENDING_RQ_PUBLISHANDPROJECT:
+                    return PROJECT_PUBLISH;
+                case PENDING_RQ_PLACE_REGIONAL_PROGRAM_WORKS:
+                    return PLACING_HOUSE_WORKS;
+                case PENDING_RQ_PLACING:
+                    return PLACING;
                 default: return null;
             }            
         }
 
         public static Action forLogAction (VocAction.i a) {
             switch (a) {
-                case APPROVE: return PLACING;
+                case PUBLISHANDPROJECT:
+                    return PROJECT_PUBLISH;
+                case PLACE_REG_PLAN_HOUSE_WORKS:
+                    return PLACING_HOUSE_WORKS;
+                case APPROVE:
+                    return PLACING;
                 default: return null;
             }
         }

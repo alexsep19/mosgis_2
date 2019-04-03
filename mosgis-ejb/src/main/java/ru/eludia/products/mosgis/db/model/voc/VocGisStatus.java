@@ -123,6 +123,16 @@ public class VocGisStatus extends Table {
         PENDING_RP_CANCEL    (113,  "_pending_rp_cancel", "ожидание подтверждения отмены"),
         FAILED_CANCEL        (114,  "_failed_cancel", "ошибка отмены"),
         CANCELLED            (120,  "C", "отменён"),
+        
+        PENDING_RQ_PUBLISHANDPROJECT (122, "_pending_rq_publishandproject", "ожидание размещения проекта"),
+        PENDING_RP_PUBLISHANDPROJECT (123, "_pending_rp_publishandproject", "ожидание подтверждения размещения проекта"),
+        FAILED_PUBLISHANDPROJECT     (124, "_failed_publishandproject", "ошибка размещения проекта"),
+        
+        PUBLISHEDANDPROJECT  (-20, "PublishedAndProject", "размещен проект"),
+        
+        PENDING_RQ_PLACE_REGIONAL_PROGRAM_WORKS (-22, "_pending_rq_place_regional_program_works", "ожидание размещения видов работ региональной программы"),
+        PENDING_RP_PLACE_REGIONAL_PROGRAM_WORKS (-23, "_pending_rp_place_regional_program_works", "ожидание подтверждения размещения видов работ региональной программы"),
+        FAILED_PLACE_REGIONAL_PROGRAM_WORKS     (-24, "_failed_place_regional_program_works", "ошибка размещения видов работ региональной программы"),
 
         ;
 
@@ -168,7 +178,7 @@ public class VocGisStatus extends Table {
         
         public boolean isInProgress () {
             
-            switch (id % 10) {
+            switch (Math.abs (id) % 10) {
                 case 2:
                 case 3:
                     return true;

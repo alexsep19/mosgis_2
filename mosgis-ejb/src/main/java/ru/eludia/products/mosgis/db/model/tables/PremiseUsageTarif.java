@@ -116,9 +116,15 @@ public class PremiseUsageTarif extends EnTable  {
 	    + " cnt NUMBER; "
 	    + "BEGIN "
 	    + " IF :NEW.is_deleted = 0 THEN BEGIN "
+
 		+ " IF :NEW.datefrom > :NEW.dateto THEN "
 		+ "   raise_application_error (-20000, 'Дата начала действия не может превышать дату окончания действия'); "
 		+ " END IF; "
+
+		+ " IF :NEW.price IS NULL THEN "
+		+ "   raise_application_error (-20000, 'Укажите величину'); "
+		+ " END IF; "
+
 		+ " FOR i IN ("
 		    + "SELECT "
 		    + " o.name     label "
@@ -128,6 +134,7 @@ public class PremiseUsageTarif extends EnTable  {
 		    + TABLE_NAME + " o "
 		    + "WHERE o.is_deleted = 0 "
 		    + " AND o.uuid <> :NEW.uuid "
+		    + " AND o.price = :NEW.price "
 		    + " AND (o.datefrom <= :NEW.dateto   OR :NEW.dateto IS NULL) "
 		    + " AND (o.dateto   >= :NEW.datefrom OR o.dateto IS NULL) "
 		+ ") LOOP"
@@ -139,33 +146,12 @@ public class PremiseUsageTarif extends EnTable  {
 		    + "); "
 		+ " END LOOP; "
 	    + " END; END IF; "
+
 	    + " IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING + " THEN "
-
-		+ " SELECT COUNT(*) INTO cnt FROM tb_pu_tf_oktmo WHERE uuid=:NEW.uuid; "
-		+ " IF cnt = 0 THEN "
-		+ "   raise_application_error (-20000, 'Укажите территорию действия'); "
-		+ " END IF; "
-
-		+ " SELECT COUNT(*) INTO cnt FROM tb_tf_legal_acts WHERE uuid=:NEW.uuid; "
-		+ " IF cnt = 0 THEN "
-		+ "   raise_application_error (-20000, 'Прикрепите хотя бы один НПА, размещенный в ГИС ЖКХ'); "
-		+ " END IF; "
-
-		+ " FOR i IN ("
-		    + "SELECT "
-		    + " la.name     label "
-		    + "FROM "
-		    + " tb_tf_legal_acts o "
-		    + " LEFT JOIN " + LegalAct.TABLE_NAME + " la ON la.uuid = o.uuid_legal_act "
-		    + "WHERE "
-		    + " o.uuid = :NEW.uuid "
-		    + " AND la.documentguid IS NULL "
-		+ ") LOOP "
-		    + " raise_application_error (-20000, "
-		    + "'НПА ' || i.label || ' не размещен в ГИС ЖКХ' "
-		    + "); "
-		+ " END LOOP; "
+		+ PremiseUsageTarifOktmo.CHECK_PENDING_RQ_PLACING
+		+ TarifLegalAct.CHECK_PENDING_RQ_PLACING
 	    + " END IF; "
+
 	    + " COMMIT; "
 	    + "END;");
 

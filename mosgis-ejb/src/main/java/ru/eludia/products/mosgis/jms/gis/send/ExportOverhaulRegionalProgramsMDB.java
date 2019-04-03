@@ -30,7 +30,7 @@ import ru.gosuslugi.dom.schema.integration.capital_repair_service_async.Fault;
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class ExportOverhaulRegionalProgramMDB extends GisExportMDB <OverhaulRegionalProgramLog> {
+public class ExportOverhaulRegionalProgramsMDB extends GisExportMDB <OverhaulRegionalProgramLog> {
     
     @EJB
     WsGisCapitalRepairClient wsGisCapitalRepairClient;
@@ -69,6 +69,8 @@ public class ExportOverhaulRegionalProgramMDB extends GisExportMDB <OverhaulRegi
         UUID orgPPAGuid = (UUID) r.get ("orgppaguid");
             
         switch (action) {
+            case PROJECT_PUBLISH: return wsGisCapitalRepairClient.importRegionalProgramProject (orgPPAGuid, messageGUID, r);
+            case PLACING_HOUSE_WORKS: return wsGisCapitalRepairClient.importRegionalProgramWork (orgPPAGuid, messageGUID, r);
             case PLACING:     return wsGisCapitalRepairClient.importRegionalProgram (orgPPAGuid, messageGUID, r);
             default: throw new IllegalArgumentException ("No action implemented for " + action);
         }
@@ -110,7 +112,7 @@ public class ExportOverhaulRegionalProgramMDB extends GisExportMDB <OverhaulRegi
     }
     
     Queue getQueue (OverhaulRegionalProgram.Action action) {        
-        return outExportOverhaulRegionalProgramsQueue;        
+        return outExportOverhaulRegionalProgramsQueue;
     }
 
     @Override

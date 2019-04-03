@@ -3,6 +3,19 @@ define ([], function () {
     return function (data, view) {
     
         data = $('body').data ('data')
+
+        function canAdd () {
+            
+            if (!data.item.is_deleted && ($_USER.role.nsi_20_7 || $_USER.role.admin)) {
+                switch (data.item.last_succesfull_status) {
+                    case  10:
+                    case -22:
+                        return true
+                }
+            }
+            return false
+
+        }
         
         $(w2ui ['topmost_layout'].el ('main')).w2regrid ({ 
 
@@ -11,7 +24,7 @@ define ([], function () {
             show: {
                 toolbar: true,
                 toolbarInput: false,
-                toolbarAdd: data.item._can.edit && ($_USER.role.nsi_20_7 || $_USER.role.admin),
+                toolbarAdd: canAdd (),
                 footer: true,
             },
 

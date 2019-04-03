@@ -43,13 +43,13 @@ public class VocAction extends Table {
     
     public enum i {
         
-        ALTER        ("alter",         "изменение"),
-        ANNUL        ("annul",         "аннулирование"),
-        APPROVE      ("approve",       "утверждение"),
-        CANCEL       ("cancel",        "отмена"),
-        CREATE       ("create",        "создание"),
-        DELETE       ("delete",        "удаление"),
-        EXPIRE       ("expire",        "проверка на просроченность"),
+        ALTER           ("alter",           "изменение"),
+        ANNUL           ("annul",           "аннулирование"),
+        APPROVE         ("approve",         "утверждение"),
+        CANCEL          ("cancel",          "отмена"),
+        CREATE          ("create",          "создание"),
+        DELETE          ("delete",          "удаление"),
+        EXPIRE          ("expire",          "проверка на просроченность"),
         
         IMPORT_FROM_FILE      ("import_from_file", "импорт из файла"),
         
@@ -58,18 +58,22 @@ public class VocAction extends Table {
         IMPORT_ADD_SERVICES        ("import_add_services", "Импорт справочника дополнительных услуг"),
         IMPORT_OVERHAUL_WORK_TYPES ("import_overhaul_work_types", "Импорт справочника видов работ капитального ремонта"),
 	IMPORT_LEGAL_ACTS          ("import_legal_acts", "Импорт нормативно-правовых актов"),
+
+        LOCK                        ("lock",                       "блокировка"),
+        PROMOTE                     ("promote",                    "утверждение"),
         
-        LOCK         ("lock",          "блокировка"),
-        PROMOTE      ("promote",       "утверждение"),
-        REFRESH      ("refresh",       "обновление статусов"),
-        RELOAD       ("reload",        "обновление данных"),
-        ROLLOVER     ("rollover",      "пролонгирование"),
-        SET_PASSWORD ("set_password",  "установка пароля"),
-        TERMINATE    ("terminate",     "расторжение"),
-        UNDELETE     ("undelete",      "восстановление"),
-        UNLOCK       ("unlock",        "разблокировка"),
-        UPDATE       ("update",        "редактирование"), 
-        SEND_TO_GIS  ("update",        "размещение в ГИС ЖКХ"), 
+        PLACE_REG_PLAN_HOUSE_WORKS  ("place_reg_plan_house_works", "размещение видов работ регионального плана"),
+        
+        PUBLISHANDPROJECT           ("publishandproject",          "размещение проекта"),
+        REFRESH                     ("refresh",                    "обновление статусов"),
+        RELOAD                      ("reload",                     "обновление данных"),
+        ROLLOVER                    ("rollover",                   "пролонгирование"),
+        SET_PASSWORD                ("set_password",               "установка пароля"),
+        TERMINATE                   ("terminate",                  "расторжение"),
+        UNDELETE                    ("undelete",                   "восстановление"),
+        UNLOCK                      ("unlock",                     "разблокировка"),
+        UPDATE                      ("update",                     "редактирование"), 
+        SEND_TO_GIS                 ("update",                     "размещение в ГИС ЖКХ"), 
         ;
                 
         String name;

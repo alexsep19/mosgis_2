@@ -22,7 +22,7 @@ define ([], function () {
                                 , off: false
                             },
                             {id: 'social_norm_tarifs', caption: 'Социальная норма потребления электрической энергии'
-                                , off: !$_USER.has_nsi_20(10)
+                                , off: !($_USER.has_nsi_20(10) || $_USER.role.admin)
                             },
                         ].filter (not_off),
 

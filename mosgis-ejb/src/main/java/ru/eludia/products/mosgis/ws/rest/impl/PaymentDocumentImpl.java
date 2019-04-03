@@ -7,6 +7,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.PaymentDocument;
 import ru.eludia.products.mosgis.db.model.tables.PaymentDocumentLog;
@@ -28,10 +29,12 @@ import ru.eludia.products.mosgis.db.model.tables.AnyChargeInfo;
 import ru.eludia.products.mosgis.db.model.tables.ChargeInfo;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.InsuranceProduct;
+import ru.eludia.products.mosgis.db.model.tables.PenaltiesAndCourtCosts;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocConsumptionVolumeDeterminingMethod;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
+import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi329;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.PaymentDocumentLocal;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
@@ -166,6 +169,8 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
                 .where ("uuid_org", uuidOrg)
                 .where (EnTable.c.IS_DELETED, 0)
                 .orderBy ("label")
+                
+            , Nsi329.getVocSelect ()
 
         );
         
@@ -219,6 +224,8 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
 
         Select select = ModelHolder.getModel ().select (AnyChargeInfo.class, "AS root", "*")
             .toMaybeOne (VocOkei.class, VocOkei.c.NATIONAL.lc () + " AS unit").on ()
+            .toMaybeOne (ActualBankAccount.class, "AS ba", ActualBankAccount.c.LABEL.lc ()).on ("ba.uuid=root." + ChargeInfo.c.UUID_BNK_ACCT.lc ())
+            .toMaybeOne (VocOrganization.class, "AS org_bank_acct", "label").on ("ba.uuid_org=org_bank_acct.uuid")
             .where   (ChargeInfo.c.UUID_PAY_DOC, id)
             .orderBy ("root." + ChargeInfo.c.ID_TYPE)
             .orderBy ("root." + AnyChargeInfo.c.LABEL.lc ())
@@ -227,4 +234,34 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
         db.addJsonArrays (job, select);
 
     });}}
+    
+    @Override
+    public JsonObject getPenaltiesAndCourtCosts (String id, User user) {{return fetchData ((db, job) -> {
+
+        db.addJsonArrays (job, ModelHolder.getModel ()
+            .select (PenaltiesAndCourtCosts.class, "AS root", "*")
+            .where  (PenaltiesAndCourtCosts.c.UUID_PAY_DOC, id)
+        );
+
+    });}}
+
+    @Override
+    public JsonObject doPatchPenaltiesAndCourtCosts (String id, JsonObject p, User user) {return doAction ((db) -> {
+
+        final MosGisModel m = ModelHolder.getModel ();
+
+        Table t = m.get (PenaltiesAndCourtCosts.class);
+
+        String uuid = db.upsertId (t, t.HASH (p.getJsonObject ("data"),
+            PenaltiesAndCourtCosts.c.UUID_PAY_DOC, id
+        )
+            , PenaltiesAndCourtCosts.c.UUID_PAY_DOC.lc ()
+            , PenaltiesAndCourtCosts.c.CODE_VC_NSI_329.lc ()
+            , PenaltiesAndCourtCosts.c.UUID_BNK_ACCT.lc ()
+        );
+
+        m.createIdLog (db, t, user, uuid, VocAction.i.UPDATE);
+
+    });}
+
 }

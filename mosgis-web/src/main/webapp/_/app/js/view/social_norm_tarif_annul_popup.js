@@ -2,14 +2,14 @@ define ([], function () {
 
     return function (data, view) {
     
-        var name = 'premise_usage_tarif_annul_popup_form'
+        var name = 'social_norm_tarif_annul_popup_form'
         
         $(view).w2popup('open', {
 
             width  : 580,
             height : 240,
 
-            title   : 'Аннулирование информации о размере платы за пользование жилым помещением',
+            title   : 'Аннулирование Социальная норма потребления ЭЭ',
 
             onOpen: function (event) {
 
@@ -27,7 +27,7 @@ define ([], function () {
                                                 
                     });
 
-                    clickOn ($('#w2ui-popup button'), $_DO.update_premise_usage_tarif_annul_popup)
+                    clickOn ($('#w2ui-popup button'), $_DO.update_social_norm_tarif_annul_popup)
 
                 }
 

@@ -57,7 +57,7 @@ define ([], function () {
             ].filter (not_off),
 
             columns: [
-
+                {field: 'id_ctr_status', caption: 'Статус', size: 30, voc: data.vc_gis_status},
                 {field: 'name', caption: 'Наименование', size: 100},
                 {field: 'oktmo', caption: 'Территория действия', size: 30, render: function(i){
                         return i.oktmos.map((o) => o['vc_oktmo.code']).join('; ')

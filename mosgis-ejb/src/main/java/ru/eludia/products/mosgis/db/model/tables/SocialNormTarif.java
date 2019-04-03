@@ -49,6 +49,50 @@ public class SocialNormTarif extends EnTable  {
 
     }
 
+    public enum Action {
+        
+        PLACING     (VocGisStatus.i.PENDING_RQ_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
+        EDITING     (VocGisStatus.i.PENDING_RQ_EDIT,      VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_STATE),
+        ANNULMENT   (VocGisStatus.i.PENDING_RQ_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT),
+        ;
+        
+        VocGisStatus.i nextStatus;
+        VocGisStatus.i okStatus;
+        VocGisStatus.i failStatus;
+
+        private Action (VocGisStatus.i nextStatus, VocGisStatus.i okStatus, VocGisStatus.i failStatus) {
+            this.nextStatus = nextStatus;
+            this.okStatus = okStatus;
+            this.failStatus = failStatus;
+        }
+
+        public VocGisStatus.i getNextStatus () {
+            return nextStatus;
+        }
+
+        public VocGisStatus.i getFailStatus () {
+            return failStatus;
+        }
+
+        public VocGisStatus.i getOkStatus () {
+            return okStatus;
+        }
+
+        public static Action forStatus (VocGisStatus.i status) {
+            
+            switch (status) {
+                case PENDING_RQ_PLACING:   return PLACING;
+                case PENDING_RP_PLACING:   return PLACING;
+                case PENDING_RQ_EDIT:      return EDITING;
+                case PENDING_RP_EDIT:      return EDITING;
+                case PENDING_RQ_ANNULMENT: return ANNULMENT;
+                case PENDING_RP_ANNULMENT: return ANNULMENT;
+                default: return null;
+            }
+            
+        }
+    };
+
     public SocialNormTarif () {
 
 	super  (TABLE_NAME, "Тарифы: Социальная норма потребления электрической энергии");
@@ -74,12 +118,19 @@ public class SocialNormTarif extends EnTable  {
 	    + " cnt NUMBER; "
 	    + "BEGIN "
 	    + " IF :NEW.is_deleted = 0 THEN BEGIN "
+
 		+ " IF :NEW.datefrom > :NEW.dateto THEN "
 		+ "   raise_application_error (-20000, 'Дата начала действия не может превышать дату окончания действия'); "
 		+ " END IF; "
+
+		+ " IF :NEW.price IS NULL THEN "
+		+ "   raise_application_error (-20000, 'Укажите величину'); "
+		+ " END IF; "
+
 		+ " IF :NEW.unit NOT IN (" + VocOkei.CODES_ENERGY_WT + ") THEN "
 		+ "   raise_application_error (-20000, 'Укажите единицу измерения электрической энергии'); "
 		+ " END IF; "
+
 		+ " FOR i IN ("
 		    + "SELECT "
 		    + " o.name     label "

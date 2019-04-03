@@ -7,9 +7,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.jms.Queue;
-import javax.json.Json;
 import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
 import javax.annotation.Resource;
 import ru.eludia.base.DB;
@@ -24,12 +22,8 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.SocialNormTarifOktmo;
-import ru.eludia.products.mosgis.db.model.voc.VocDifferentiation;
-import ru.eludia.products.mosgis.db.model.voc.VocDifferentiationOperator;
-import ru.eludia.products.mosgis.db.model.voc.VocDifferentiationValueKindType;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
 import ru.eludia.products.mosgis.rest.User;
@@ -43,13 +37,13 @@ import ru.eludia.products.mosgis.ws.rest.impl.tools.SimpleSearch;
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class SocialNormTarifImpl extends BaseCRUD<SocialNormTarif> implements SocialNormTarifLocal {
 
-//    @Resource (mappedName = "mosgis.inExportSocialNormTarifsQueue")
-//    Queue queue;
-//
-//    @Override
-//    public Queue getQueue () {
-//        return queue;
-//    }
+    @Resource (mappedName = "mosgis.inExportSocialNormTarifsQueue")
+    Queue queue;
+
+    @Override
+    public Queue getQueue () {
+        return queue;
+    }
 
     @Override
     protected void publishMessage (VocAction.i action, String id_log) {

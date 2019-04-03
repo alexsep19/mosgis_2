@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.ws.rest.impl;
 
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
@@ -7,14 +8,21 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.jms.Queue;
 import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
+import static ru.eludia.base.db.util.TypeConverter.JsonArrayBuilder;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgram;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramDocument;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramFile;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouse;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseWork;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -28,12 +36,17 @@ import ru.eludia.products.mosgis.rest.api.OverhaulRegionalProgramsLocal;
 public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProgram> implements OverhaulRegionalProgramsLocal {
 
     @Resource (mappedName = "mosgis.inExportOverhaulRegionalProgramsQueue")
-    Queue queue;
+    Queue inExportOverhaulRegionalProgramsQueue;
+    
+    @Resource (mappedName = "mosgis.inExportOverhaulRegionalProgramHouseWorksQueue")
+    Queue inExportOverhaulRegionalProgramHouseWorksQueue;
     
     @Override
     protected void publishMessage (VocAction.i action, String id_log) {
         
         switch (action) {
+            case PUBLISHANDPROJECT:
+            case PLACE_REG_PLAN_HOUSE_WORKS:
             case APPROVE:
                 super.publishMessage (action, id_log);
             default:
@@ -45,35 +58,47 @@ public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProg
     @Override
     protected Queue getQueue (VocAction.i action) {
         switch (action) {
-            case APPROVE: return queue;
+            case PUBLISHANDPROJECT:
+            case APPROVE:
+                return inExportOverhaulRegionalProgramsQueue;
+            case PLACE_REG_PLAN_HOUSE_WORKS: 
+                return inExportOverhaulRegionalProgramHouseWorksQueue;
             default: return null;
         }
     }
     
     @Override
     public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
-
+        
+        VocGisStatus.i lastOkStatus = VocGisStatus.i.forId (db.getString (db.getModel ()
+                .get(getTable (), id, OverhaulRegionalProgram.c.LAST_SUCCESFULL_STATUS.lc ())));
+        
+        VocGisStatus.i nextStatus;
+        VocAction.i action;
+        
+        switch (lastOkStatus) {
+            case PROJECT:
+                nextStatus = VocGisStatus.i.PENDING_RQ_PUBLISHANDPROJECT;
+                action = VocAction.i.PUBLISHANDPROJECT;
+                break;
+            case PENDING_RQ_PLACE_REGIONAL_PROGRAM_WORKS:
+                nextStatus = VocGisStatus.i.PENDING_RQ_PLACE_REGIONAL_PROGRAM_WORKS;
+                action = VocAction.i.PLACE_REG_PLAN_HOUSE_WORKS;
+                break;
+            case PENDING_RQ_PLACING:
+                nextStatus = VocGisStatus.i.PENDING_RQ_PLACING;
+                action = VocAction.i.APPROVE;
+                break;
+            default:
+                throw new Exception ("Операция запрещена");
+        }
+        
         db.update (getTable (), HASH (
             EnTable.c.UUID,               id,
-            OverhaulRegionalProgram.c.ID_ORP_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+            OverhaulRegionalProgram.c.ID_ORP_STATUS, nextStatus.getId ()
         ));
+        logAction (db, user, id, action);
 
-        logAction (db, user, id, VocAction.i.APPROVE);
-
-    });}
-    
-    @Override
-    public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
-                
-        final Map<String, Object> r = HASH (
-            EnTable.c.UUID,               id,
-            OverhaulRegionalProgram.c.ID_ORP_STATUS,  VocGisStatus.i.PROJECT.getId ()
-        );
-                
-        db.update (getTable (), r);
-        
-        logAction (db, user, id, VocAction.i.ALTER);
-        
     });}
     
     @Override
@@ -99,6 +124,22 @@ public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProg
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
             .get   (getTable (), id, "*")
         ));
+        
+        JsonArray works = db.getJsonArray (ModelHolder.getModel ()
+           .select (OverhaulRegionalProgramHouseWork.class, "AS work", "*")
+                .toOne (OverhaulRegionalProgramHouse.class, "AS house").where ("is_deleted", 0).on ()
+                    .toOne (OverhaulRegionalProgram.class,  "AS program").where ("uuid", id).and ("is_deleted", 0).on ("house.program_uuid=program.uuid")
+            .where ("is_deleted", 0)
+        );
+        
+        JsonArray documents = db.getJsonArray (ModelHolder.getModel ()
+            .select (OverhaulRegionalProgramFile.class, "label")
+                .toOne (OverhaulRegionalProgramDocument.class, "AS document").where ("is_deleted", 0).on ()
+                    .toOne (OverhaulRegionalProgram.class,     "AS program").where ("uuid", id).and ("is_deleted", 0).on ("document.program_uuid=program.uuid")
+        );
+        
+        job.add ("works", works);
+        job.add ("documents", documents);
         
         VocGisStatus.addLiteTo (job);
         VocAction.addTo (job);
