@@ -28,7 +28,7 @@ define ([], function () {
             
             var it = data.item
 
-            console.log (it)
+            console.log (data)
 
             it.status_label = data.vc_gis_status[it.id_orp_status]
 

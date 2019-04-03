@@ -25,6 +25,12 @@ public class OverhaulRegionalPrograms extends EJBResource <OverhaulRegionalProgr
         if (!securityContext.isUserInRole ("admin") && !securityContext.isUserInRole ("nsi_20_7")) throw new ValidationException ("foo", "Доступ запрещен");
     }
     
+    private void checkWorksAndDocuments (String id) {
+        JsonObject object = back.getItem (id, getUser ());
+        if (!object.containsKey ("works") || object.getJsonArray ("works").isEmpty ()) throw new ValidationException ("foo", "К РПКР должен быть привязан хотя бы один вид работ");
+        if (!object.containsKey ("documents") || object.getJsonArray ("documents").isEmpty ()) throw new ValidationException ("foo", "К РПКР должен быть привязан хотя бы один нормативный документ с файлами");
+    }
+    
     @POST
     @Path("{id}") 
     @Produces (APPLICATION_JSON)
@@ -85,7 +91,8 @@ public class OverhaulRegionalPrograms extends EJBResource <OverhaulRegionalProgr
     @POST
     @Path("{id}/approve") 
     @Produces (APPLICATION_JSON)
-    public JsonObject doApprove (@PathParam ("id") String id) { 
+    public JsonObject doApprove (@PathParam ("id") String id) {
+        checkWorksAndDocuments (id);
         return back.doApprove (id, getUser ());
     }
     

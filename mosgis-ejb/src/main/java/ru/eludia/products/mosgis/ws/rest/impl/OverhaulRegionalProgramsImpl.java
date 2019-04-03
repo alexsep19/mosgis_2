@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.ws.rest.impl;
 
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
@@ -7,14 +8,21 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.jms.Queue;
 import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
+import static ru.eludia.base.db.util.TypeConverter.JsonArrayBuilder;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgram;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramDocument;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramFile;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouse;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseWork;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -116,6 +124,22 @@ public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProg
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
             .get   (getTable (), id, "*")
         ));
+        
+        JsonArray works = db.getJsonArray (ModelHolder.getModel ()
+           .select (OverhaulRegionalProgramHouseWork.class, "AS work", "*")
+                .toOne (OverhaulRegionalProgramHouse.class, "AS house").where ("is_deleted", 0).on ()
+                    .toOne (OverhaulRegionalProgram.class,  "AS program").where ("uuid", id).and ("is_deleted", 0).on ("house.program_uuid=program.uuid")
+            .where ("is_deleted", 0)
+        );
+        
+        JsonArray documents = db.getJsonArray (ModelHolder.getModel ()
+            .select (OverhaulRegionalProgramFile.class, "label")
+                .toOne (OverhaulRegionalProgramDocument.class, "AS document").where ("is_deleted", 0).on ()
+                    .toOne (OverhaulRegionalProgram.class,     "AS program").where ("uuid", id).and ("is_deleted", 0).on ("document.program_uuid=program.uuid")
+        );
+        
+        job.add ("works", works);
+        job.add ("documents", documents);
         
         VocGisStatus.addLiteTo (job);
         VocAction.addTo (job);
