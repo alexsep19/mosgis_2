@@ -3,6 +3,7 @@ package ru.eludia.products.mosgis.db.model.tables;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
+import static ru.eludia.base.model.def.Bool.FALSE;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
@@ -11,6 +12,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocChargeInfoType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPaymentDocumentType;
+import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi2;
 
 public class PaymentDocument extends EnTable {
 
@@ -46,6 +48,8 @@ public class PaymentDocument extends EnTable {
 
         DATEOFLASTRECEIVEDPAYMENT     (Type.DATE,           null,   "Дата последней поступившей оплаты"),
         LIMITINDEX                    (Type.NUMERIC,  5, 2, null,   "Предельный (максимальный) индекс изменения размера платы граждан за коммунальные услуги в муниципальном образовании, %"),
+        
+        IS_POWER_SUPPLY               (Type.BOOLEAN,      FALSE,  "1, если это документ РСО, поставляющей электроэнергию; иначе 0"),
         
         ID_CTR_STATUS                 (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения mosgis"),
         ID_CTR_STATUS_GIS             (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения ГИС ЖКХ"),
@@ -83,15 +87,28 @@ public class PaymentDocument extends EnTable {
 
             + "DECLARE" 
             + "  PRAGMA AUTONOMOUS_TRANSACTION; "
+            + "  l_acct " + Account.TABLE_NAME + " %ROWTYPE; "                
             + " BEGIN "
-/*
-            + " IF :NEW.ID_TYPE = " + VocPaymentDocumentType.i.REGULAR + " THEN BEGIN "
-            + "   FOR i IN (SELECT uuid FROM " + TABLE_NAME + " WHERE uuid<>:NEW.uuid AND UUID_ACCOUNT=:NEW.UUID_ACCOUNT AND YEAR=:NEW.YEAR AND MONTH=:NEW.MONTH AND ID_TYPE=:NEW.ID_TYPE AND is_deleted=0 AND ID_CTR_STATUS NOT IN (" + VocGisStatus.i.ANNUL + ")) LOOP"
-            + "     raise_application_error (-20000, 'Текущий платёжный документ на данный период уже зарегистрирован. Операция отменена.'); "
-            + "   END LOOP; "
-            + " END; END IF; "
-*/                    
+
             + " :NEW.dt_period := TO_DATE (:NEW.year || LPAD (:NEW.month, 2, '0') || '01', 'YYYYMMDD'); "
+                    
+            + "  SELECT * INTO l_acct FROM " + Account.TABLE_NAME + " WHERE uuid=:NEW.UUID_ACCOUNT;"
+                
+            + "  IF l_acct.id_type = " + VocAccountType.i.RSO + " THEN "                    
+                + " FOR i IN ("
+                    + "SELECT "
+                    + " * "
+                    + "FROM "
+                    + ActualBuildingMainMunicipalServices.TABLE_NAME + " t "
+                    + " INNER JOIN " + MainMunicipalService.TABLE_NAME + " s ON t." + ActualBuildingMainMunicipalServices.c.UUID_M_M_SERVICE + " = s.uuid "
+                    + "WHERE "
+                    + " t.FIASHOUSEGUID=l_acct.fiashouseguid "
+                    + " AND t.uuid_org=l_acct.uuid_org "
+                    + " AND s.code_vc_nsi_2 = '" + Nsi2.i.POWER.getCode () + "'"
+                    + ") LOOP"
+                + " :NEW.IS_POWER_SUPPLY := 1; "
+                + " END LOOP; "
+            + " END IF; "
 
             + "END; "
 
@@ -122,7 +139,7 @@ public class PaymentDocument extends EnTable {
 //////// RSO
 
             + "  IF l_acct.id_type = " + VocAccountType.i.RSO + " THEN BEGIN "
-
+                    
                 + "  INSERT INTO " + ChargeInfo.TABLE_NAME + " (UUID_PAY_DOC, UUID_ORG, ID_TYPE, UUID_BNK_ACCT, UUID_M_M_SERVICE) SELECT :NEW.UUID UUID_PAY_DOC, t.UUID_ORG, " + VocChargeInfoType.i.MUNICIPAL + " ID_TYPE, l_uuid_bnk_acct, t.UUID_M_M_SERVICE"
                     + " FROM  " + ActualBuildingMainMunicipalServices.TABLE_NAME + " t "
                     + " WHERE FIASHOUSEGUID=l_acct.fiashouseguid AND uuid_org=l_acct.uuid_org;"
