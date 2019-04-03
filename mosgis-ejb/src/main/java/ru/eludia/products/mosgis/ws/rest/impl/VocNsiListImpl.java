@@ -129,6 +129,8 @@ public class VocNsiListImpl implements VocNsiListLocal {
                     continue;
                 }
 
+                if (t == null) continue;
+                
                 NsiStringField labelField = t.getLabelField ();
 
                 if (labelField == null) continue;
