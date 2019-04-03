@@ -47,11 +47,12 @@ define ([], function () {
 
                 switch (it.id_orp_status) {
                     case 10:
+                    case 124:
                         it._can.edit = 1
                 }
 
                 it._can.update = it._can.edit
-                it._can.delete = it._can.approve
+                it._can.delete = it._can.approve || (it.id_orp_status == 40)
 
             }
 
