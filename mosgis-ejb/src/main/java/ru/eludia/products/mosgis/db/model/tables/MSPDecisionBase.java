@@ -15,7 +15,7 @@ public class MSPDecisionBase extends EnTable {
 
     public enum c implements EnColEnum {
 
-        UUID_ORG                     (VocOrganization.class, "Организация, которая создала данную запись"),
+        UUID_ORG                     (VocOrganization.class, null, "Организация, которая создала данную запись"),
 
         DECISIONNAME                 (Type.STRING,  500,    "Наименование основания принятия решения"),
         LABEL_UC                     (Type.STRING,          new Virt  ("UPPER(\"DECISIONNAME\")"), "НАИМЕНОВАНИЕ"),
