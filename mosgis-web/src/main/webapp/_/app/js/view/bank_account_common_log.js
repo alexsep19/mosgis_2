@@ -36,7 +36,7 @@ define ([], function () {
                 {field: 'id_ctr_status',  caption: 'Статус',     size: 10, voc: data.vc_gis_status},
 
                 {field: 'accountnumber', caption: 'Номер', size: 20},
-                {field: 'bikcredorg.label', caption: 'БИК / банк', size: 30},
+                {field: 'bank_label', caption: 'БИК / банк', size: 30},
                 {field: 'opendate', caption: 'Дата открытия', size: 18, render: _dt},
                 {field: 'closedate', caption: 'Дата закрытия', size: 18, render: _dt},
 
@@ -57,8 +57,37 @@ define ([], function () {
                     case 'soap.ts_rp': if (r.uuid_message) return openTab ('/out_soap_rp/' + r.uuid_message)
                 }
 
-            }
+            },
 
+            onLoad: function (e) {
+
+                if (e.xhr.status != 200) return $_DO.apologize ({jqXHR: e.xhr})
+
+                var content = JSON.parse (e.xhr.responseText).content
+
+                var data = {
+                    status : "success",
+                    total  : content.cnt
+                }
+
+                delete content.cnt
+                delete content.portion
+
+                for (key in content) {
+
+                    var rs = dia2w2uiRecords (content [key])
+
+                    $.each (rs, function () {
+                        this['bank_label'] = this['bikcredorg.label']
+                    })
+
+                    data.records = rs
+
+                    e.xhr.responseText = JSON.stringify (data)
+
+                }
+
+            }
         }).refresh ();
 
     }
