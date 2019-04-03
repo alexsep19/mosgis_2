@@ -35,7 +35,7 @@ define ([], function () {
                 {field: 'action', caption: 'Действие',    size: 30, voc: data.vc_actions},
                 {field: 'id_ctr_status',  caption: 'Статус',     size: 10, voc: data.vc_gis_status},
 
-                {field: 'accountnumber', caption: 'Номер', size: 20},
+                {field: 'accountnumber', caption: '№ расчетного счёта', size: 20},
                 {field: 'bank_label', caption: 'БИК / банк', size: 30},
                 {field: 'opendate', caption: 'Дата открытия', size: 18, render: _dt},
                 {field: 'closedate', caption: 'Дата закрытия', size: 18, render: _dt},
