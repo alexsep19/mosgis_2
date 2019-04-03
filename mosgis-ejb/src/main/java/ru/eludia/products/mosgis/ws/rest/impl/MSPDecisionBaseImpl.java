@@ -118,7 +118,7 @@ public class MSPDecisionBaseImpl extends BaseCRUD<MSPDecisionBase> implements MS
             .get (getTable (), id, "AS root", "*")
             .toMaybeOne (MSPDecisionBaseLog.class, "AS log").on ()
             .toMaybeOne (OutSoap.class, "err_text").on ("log.uuid_out_soap=out_soap.uuid")
-            .toOne      (VocOrganization.class, "AS org", "label").on ("root.uuid_org=org.uuid")
+            .toMaybeOne (VocOrganization.class, "AS org", "label").on ("root.uuid_org=org.uuid")
         ));
         
         VocGisStatus.addTo (job);

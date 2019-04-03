@@ -3,6 +3,7 @@ package ru.eludia.products.mosgis.db.model.tables;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
+import ru.eludia.base.model.def.Bool;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
@@ -22,8 +23,8 @@ public class MSPDecisionBase extends EnTable {
 
         CODE_VC_NSI_301              (Type.STRING,  20,      "Тип решения о мерах социальной поддержки (НСИ 301)"),
 
-	ISAPPLIEDTOSUBSIDIARIES      (Type.BOOLEAN, "1, если применяется для субсидий, иначе 0"),
-	ISAPPLIEDTOREFUNDOFCHARGES   (Type.BOOLEAN, "1, если применяется для компенсации расходов, иначе 0"),
+	ISAPPLIEDTOSUBSIDIARIES      (Type.BOOLEAN, Bool.FALSE, "1, если применяется для субсидий, иначе 0"),
+	ISAPPLIEDTOREFUNDOFCHARGES   (Type.BOOLEAN, Bool.FALSE, "1, если применяется для компенсации расходов, иначе 0"),
 
         ELEMENTGUID                  (Type.UUID,             null,  "Идентификатор существующего элемента справочника"),
 //        UNIQUENUMBER                 (Type.STRING,           null,  "Уникальный номер, присвоенный ГИС ЖКХ"),
