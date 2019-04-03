@@ -6,6 +6,7 @@ import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocBic;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 
 public class BankAccount extends EnTable {
@@ -21,7 +22,10 @@ public class BankAccount extends EnTable {
         
         OPENDATE               (Type.DATE,             null, "Дата открытия/изменения реквизитов"),
         CLOSEDATE              (Type.DATE,             null, "Дата закрытия"),
-        
+
+	ID_CTR_STATUS          (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения mosgis"),
+	ID_CTR_STATUS_GIS      (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения ГИС ЖКХ"),
+
         ID_LOG                 (BankAccountLog.class,  null, "Последнее обытие редактирования"),
         
         ;

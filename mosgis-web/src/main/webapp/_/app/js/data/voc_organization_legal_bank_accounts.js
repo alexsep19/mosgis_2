@@ -13,11 +13,8 @@ define ([], function () {
         var r = grid.get (e.recid)
         
         if (r.uuid_org != $_REQUEST.id) die ('foo', 'Владельцем данного счёта является ' + r ['org.label'] + '. Он указан как платёжный реквизит ' + $('body').data ('data').item.label + ' на основании договора услуг РЦ. Редактирование отменено.')
-        
-        $_SESSION.set ('record', r)
 
-        use.block ('bank_account_popup')
-
+        openTab('/bank_account/' + e.recid)
     }
 
     $_DO.delete_voc_organization_legal_bank_accounts = function (e) {    
