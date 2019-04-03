@@ -27,6 +27,7 @@ import ru.eludia.products.mosgis.db.model.tables.AccountItem;
 import ru.eludia.products.mosgis.db.model.tables.ActualBankAccount;
 import ru.eludia.products.mosgis.db.model.tables.AnyChargeInfo;
 import ru.eludia.products.mosgis.db.model.tables.ChargeInfo;
+import ru.eludia.products.mosgis.db.model.tables.ComponentsOfCost;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.InsuranceProduct;
 import ru.eludia.products.mosgis.db.model.tables.PenaltiesAndCourtCosts;
@@ -35,6 +36,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocConsumptionVolumeDeterminingMethod;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi329;
+import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi331;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.PaymentDocumentLocal;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
@@ -171,6 +173,7 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
                 .orderBy ("label")
                 
             , Nsi329.getVocSelect ()
+            , Nsi331.getVocSelect ()
 
         );
         
@@ -258,6 +261,34 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
             , PenaltiesAndCourtCosts.c.UUID_PAY_DOC.lc ()
             , PenaltiesAndCourtCosts.c.CODE_VC_NSI_329.lc ()
             , PenaltiesAndCourtCosts.c.UUID_BNK_ACCT.lc ()
+        );
+
+        m.createIdLog (db, t, user, uuid, VocAction.i.UPDATE);
+
+    });}
+    
+    @Override
+    public JsonObject getComponentsOfCost (String id, User user) {{return fetchData ((db, job) -> {
+
+        db.addJsonArrays (job, ModelHolder.getModel ()
+            .select (ComponentsOfCost.class, "AS root", "*")
+            .where  (ComponentsOfCost.c.UUID_PAY_DOC, id)
+        );
+
+    });}}
+
+    @Override
+    public JsonObject doPatchComponentsOfCost (String id, JsonObject p, User user) {return doAction ((db) -> {
+
+        final MosGisModel m = ModelHolder.getModel ();
+
+        Table t = m.get (ComponentsOfCost.class);
+
+        String uuid = db.upsertId (t, t.HASH (p.getJsonObject ("data"),
+            ComponentsOfCost.c.UUID_PAY_DOC, id
+        )
+            , ComponentsOfCost.c.UUID_PAY_DOC.lc ()
+            , ComponentsOfCost.c.CODE_VC_NSI_331.lc ()
         );
 
         m.createIdLog (db, t, user, uuid, VocAction.i.UPDATE);
