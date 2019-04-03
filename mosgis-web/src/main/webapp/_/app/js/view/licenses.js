@@ -2,8 +2,8 @@ define ([], function () {
 
     return function (data, view) {
 
-        $(w2ui ['rosters_layout'].el ('main')).w2regrid ({ 
-                 
+//        $(w2ui ['rosters_layout'].el ('main')).w2regrid ({ 
+          $(w2ui ['supervision_layout'].el ('main')).w2regrid ({        
             name: 'licenses_grid',
 
             show: {

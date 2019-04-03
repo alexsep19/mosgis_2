@@ -17,6 +17,7 @@ define ([], function () {
                     tabs: {
 
                         tabs: [
+                            {id: 'licenses', caption: 'Лицензии'},
                             {id: 'check_plans',  caption: 'Планы проверок'},
                         ],
 
