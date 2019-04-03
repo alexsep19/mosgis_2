@@ -182,7 +182,7 @@ logger.info ("rq = " + rq);
         return getPort (orgPPAGuid, messageGUID).importGeneralNeedsMunicipalResource (GeneralNeedsMunicipalResourceLog.toImportGeneralNeedsMunicipalResourceRequest (r)).getAck ();
     }
 
-    public AckRequest.Ack importMSPDecisionBase(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+    public AckRequest.Ack importBaseDecisionMSP(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
         return getPort (orgPPAGuid, messageGUID).importBaseDecisionMSP(BaseDecisionMSPLog.toImportBaseDecisionMSPRequest (r)).getAck ();
     }
 }
