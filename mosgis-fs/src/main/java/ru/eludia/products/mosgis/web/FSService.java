@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
@@ -26,6 +27,9 @@ public class FSService {
     @EJB
     FileStoreLocal back;
 
+    @Context
+    ContainerRequestContext crc;
+
     @PUT
     public Response uploadFile(@Context HttpServletRequest request) throws IOException {
         if (request.getContentLengthLong() <= 0) return Response.status(Response.Status.LENGTH_REQUIRED).build();
@@ -35,7 +39,7 @@ public class FSService {
         } catch (RestFileException e) {
             return Response.status(Response.Status.BAD_REQUEST).header("X-Upload-Error", e.getClass().getSimpleName()).build();
         }
-        UUID uuid = back.store((UUID)request.getSession().getAttribute(SecurityFilter.SENDER_UUID), fn, request.getInputStream());
+        UUID uuid = back.store(((AuthorizationSecurity)crc.getSecurityContext()).getSenderUuid(), fn, request.getInputStream());
         return Response.status(Response.Status.OK).header("Location", "homemanagement/" + uuid).header("X-Upload-UploadID", uuid.toString()).build();
     }
 

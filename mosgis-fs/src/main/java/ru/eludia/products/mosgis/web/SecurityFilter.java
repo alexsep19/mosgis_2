@@ -44,17 +44,14 @@ public class SecurityFilter implements ContainerRequestFilter {
     public void filter (ContainerRequestContext requestContext) throws IOException {
         try {
             try {
-                httpServletRequest.getSession (true).setAttribute(SENDER_UUID, getSengerUuid(httpServletRequest.getHeader("Authorization"),
-                        (FileStoreLocal)ic.lookup("java:app//mosgis-ejb/" + FileStoreLocal.class.getSimpleName().replace ("Local", "Impl"))));
+                requestContext.setSecurityContext(new AuthorizationSecurity(getSengerUuid(httpServletRequest.getHeader("Authorization"),
+                        (FileStoreLocal)ic.lookup("java:app//mosgis-ejb/" + FileStoreLocal.class.getSimpleName().replace ("Local", "Impl")))));
             } catch (AnonException | AuthException e) {
-                requestContext.abortWith (Response.status (Response.Status.UNAUTHORIZED).build ());
+                requestContext.abortWith (Response.status (Response.Status.UNAUTHORIZED).build());
             }
-
         } catch (NamingException e) {
             e.printStackTrace();
         }
-
-
     }
 
     private UUID getSengerUuid(String auth, FileStoreLocal back) throws AnonException, AuthException {
