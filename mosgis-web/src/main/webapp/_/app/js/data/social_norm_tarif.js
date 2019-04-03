@@ -1,6 +1,6 @@
 define ([], function () {
 
-    $_DO.choose_tab_premise_usage_tarif = function (e) {
+    $_DO.choose_tab_social_norm_tarif = function (e) {
 
         var name = e.tab.id
 
@@ -11,7 +11,7 @@ define ([], function () {
             layout.lock ('main', 'Загрузка...', true);
         }
 
-        localStorage.setItem ('premise_usage_tarif.active_tab', name)
+        localStorage.setItem ('social_norm_tarif.active_tab', name)
 
         use.block (name)
 
@@ -19,9 +19,9 @@ define ([], function () {
 
     return function (done) {
 
-        query ({type: 'premise_usage_tarifs'}, {}, function (data) {
+        query ({type: 'social_norm_tarifs'}, {}, function (data) {
 
-            query ({type: 'premise_usage_tarifs', part: 'vocs', id: undefined}, {}, function (d) {
+            query ({type: 'social_norm_tarifs', part: 'vocs', id: undefined}, {}, function (d) {
 
                 add_vocabularies(d, d)
 
@@ -32,7 +32,7 @@ define ([], function () {
 
                 it._can = {cancel: 1}
 
-                if (!it.is_deleted && $_USER.has_nsi_20(7, 8, 10)) {
+                if (!it.is_deleted && $_USER.has_nsi_20(10)) {
 
                     switch (it.id_ctr_status) {
                         case 10:

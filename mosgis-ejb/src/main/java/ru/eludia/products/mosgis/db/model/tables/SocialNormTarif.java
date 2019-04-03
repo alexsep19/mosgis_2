@@ -7,11 +7,12 @@ import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 
-public class PremiseUsageTarif extends EnTable  {
+public class SocialNormTarif extends EnTable  {
 
-    public static final String TABLE_NAME = "tb_pu_tfs";
+    public static final String TABLE_NAME = "tb_sn_tfs";
 
     public enum c implements EnColEnum {
 	UUID_ORG               (VocOrganization.class, "Организация, которая завела данный тариф в БД"),
@@ -22,6 +23,7 @@ public class PremiseUsageTarif extends EnTable  {
 	DATETO                 (Type.DATE, null, "Дата окончания действия"),
 
 	PRICE                  (Type.NUMERIC, 15, 3, null, "Величина"),
+	UNIT                   (VocOkei.class, "Единица измерения"),
 
 	ID_CTR_STATUS          (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения mosgis"),
 	ID_CTR_STATUS_GIS      (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения ГИС ЖКХ"),
@@ -30,7 +32,7 @@ public class PremiseUsageTarif extends EnTable  {
 	IS_ANNULED             (Type.BOOLEAN, new Virt("DECODE(\"CANCELREASON\",NULL,0,1)"), "1, если запись аннулирована; иначе 0"),
 	TARIFFGUID             (Type.UUID, null, "Идентификатор НПА в ГИС ЖКХ"),
 
-	ID_LOG                 (PremiseUsageTarifLog.class, "Последнее событие редактирования")
+	ID_LOG                 (SocialNormTarifLog.class, "Последнее событие редактирования")
         ;
 
         @Override public Col getCol () {return col;} private Col col; private c (Type type, Object... p) {col = new Col (this, type, p);} private c (Class c,   Object... p) {col = new Ref (this, c, p);}
@@ -91,9 +93,9 @@ public class PremiseUsageTarif extends EnTable  {
         }
     };
 
-    public PremiseUsageTarif () {
+    public SocialNormTarif () {
 
-	super  (TABLE_NAME, "Тарифы: размер платы за пользование жилым помещением");
+	super  (TABLE_NAME, "Тарифы: Социальная норма потребления электрической энергии");
 
 	cols   (c.class);
 
@@ -119,6 +121,9 @@ public class PremiseUsageTarif extends EnTable  {
 		+ " IF :NEW.datefrom > :NEW.dateto THEN "
 		+ "   raise_application_error (-20000, 'Дата начала действия не может превышать дату окончания действия'); "
 		+ " END IF; "
+		+ " IF :NEW.unit NOT IN (" + VocOkei.CODES_ENERGY_WT + ") THEN "
+		+ "   raise_application_error (-20000, 'Укажите единицу измерения электрической энергии'); "
+		+ " END IF; "
 		+ " FOR i IN ("
 		    + "SELECT "
 		    + " o.name     label "
@@ -139,12 +144,33 @@ public class PremiseUsageTarif extends EnTable  {
 		    + "); "
 		+ " END LOOP; "
 	    + " END; END IF; "
-
 	    + " IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING + " THEN "
-		+ PremiseUsageTarifOktmo.CHECK_PENDING_RQ_PLACING
-		+ TarifLegalAct.CHECK_PENDING_RQ_PLACING
-	    + " END IF; "
 
+		+ " SELECT COUNT(*) INTO cnt FROM tb_sn_tf_oktmo WHERE uuid=:NEW.uuid; "
+		+ " IF cnt = 0 THEN "
+		+ "   raise_application_error (-20000, 'Укажите территорию действия'); "
+		+ " END IF; "
+
+		+ " SELECT COUNT(*) INTO cnt FROM tb_tf_legal_acts WHERE uuid=:NEW.uuid; "
+		+ " IF cnt = 0 THEN "
+		+ "   raise_application_error (-20000, 'Прикрепите хотя бы один НПА, размещенный в ГИС ЖКХ'); "
+		+ " END IF; "
+
+		+ " FOR i IN ("
+		    + "SELECT "
+		    + " la.name     label "
+		    + "FROM "
+		    + " tb_tf_legal_acts o "
+		    + " LEFT JOIN " + LegalAct.TABLE_NAME + " la ON la.uuid = o.uuid_legal_act "
+		    + "WHERE "
+		    + " o.uuid = :NEW.uuid "
+		    + " AND la.documentguid IS NULL "
+		+ ") LOOP "
+		    + " raise_application_error (-20000, "
+		    + "'НПА ' || i.label || ' не размещен в ГИС ЖКХ' "
+		    + "); "
+		+ " END LOOP; "
+	    + " END IF; "
 	    + " COMMIT; "
 	    + "END;");
 

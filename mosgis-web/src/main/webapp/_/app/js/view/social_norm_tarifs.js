@@ -1,6 +1,6 @@
 define ([], function () {
 
-    var grid_name = 'premise_usage_tarifs_grid'
+    var grid_name = 'social_norm_tarifs_grid'
 
     return function (data, view) {
 
@@ -64,20 +64,22 @@ define ([], function () {
                 }},
                 {field: 'datefrom', caption: 'Дата начала действия', size: 30, render: _dt},
                 {field: 'dateto', caption: 'Дата окончания действия', size: 30, render: _dt},
-                {field: 'price', caption: 'Величина, руб./кв.метр', size: 20},
-                {field: 'org.label', caption: 'Организация', size: 50},
+                {field: 'price', caption: 'Величина', size: 20, render: function(i){
+                        return i.price + ' ' + i['okei.national']
+                }},
+                {field: 'org.label', caption: 'Информация создана', size: 50},
 
             ].filter (not_off),
 
             postData: postData,
 
-            url: '/mosgis/_rest/?type=premise_usage_tarifs',
+            url: '/mosgis/_rest/?type=social_norm_tarifs',
 
             onDblClick: function (e) {
-                openTab ('/premise_usage_tarif/' + e.recid)
+                openTab ('/social_norm_tarif/' + e.recid)
             },
 
-            onAdd: $_DO.create_premise_usage_tarifs,
+            onAdd: $_DO.create_social_norm_tarifs,
 
             onLoad: function (e) {
 

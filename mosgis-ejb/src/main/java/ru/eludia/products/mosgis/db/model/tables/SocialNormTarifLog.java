@@ -10,62 +10,41 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
-import ru.gosuslugi.dom.schema.integration.tariff.ImportResidentialPremisesUsageRequest;
-import ru.gosuslugi.dom.schema.integration.tariff.ResidentialPremisesUsageType;
 import ru.gosuslugi.dom.schema.integration.tariff.CoefficientType;
-import ru.gosuslugi.dom.schema.integration.tariff.ImportResidentialPremisesUsageRequest.ImportResidentialPremisesUsage.CancelResidentialPremisesUsage;
+import ru.gosuslugi.dom.schema.integration.tariff.ImportSocialNormsRequest.ImportSocialNorm.CancelSocialNorm;
+import ru.gosuslugi.dom.schema.integration.tariff.ImportSocialNormsRequest;
+import ru.gosuslugi.dom.schema.integration.tariff.SocialNormType;
 
-public class PremiseUsageTarifLog extends GisWsLogTable {
+public class SocialNormTarifLog extends GisWsLogTable {
 
-    public PremiseUsageTarifLog () {
+    public SocialNormTarifLog () {
 
-        super ("tb_pu_tfs__log", "История редактирования тарифов Размер платы за пользование жилым помещением", PremiseUsageTarif.class
+        super ("tb_sn_tfs__log", "История редактирования тарифов Социальная норма потребления электрической энергии", SocialNormTarif.class
             , EnTable.c.class
-            , PremiseUsageTarif.c.class
+            , SocialNormTarif.c.class
         );
     }
 
-    public static ImportResidentialPremisesUsageRequest toImportResidentialPremisesUsageRequest(Map<String, Object> r) {
+    public static ImportSocialNormsRequest toImportSocialNormsRequest(Map<String, Object> r) {
+	ImportSocialNormsRequest result = new ImportSocialNormsRequest();
 
-	ImportResidentialPremisesUsageRequest result = new ImportResidentialPremisesUsageRequest();
-
-	ImportResidentialPremisesUsageRequest.ImportResidentialPremisesUsage t = new ImportResidentialPremisesUsageRequest.ImportResidentialPremisesUsage();
+	ImportSocialNormsRequest.ImportSocialNorm t = new ImportSocialNormsRequest.ImportSocialNorm();
 	t.setTransportGUID(UUID.randomUUID().toString());
 
-	Object ver = r.get(PremiseUsageTarif.c.TARIFFGUID.lc());
+	Object ver = r.get(SocialNormTarif.c.TARIFFGUID.lc());
 	if(ver != null) {
 	    t.setTariffGUID(ver.toString());
 	}
 
-	t.setLoadResidentialPremisesUsage(toLoadResidentialPremisesUsage (r));
-	result.getImportResidentialPremisesUsage().add(t);
+	t.setLoadSocialNorm(toSocialNormType (r));
+	result.getImportSocialNorm().add(t);
 
 	return result;
     }
 
-    public static ImportResidentialPremisesUsageRequest toDeleteResidentialPremisesUsageRequest(Map<String, Object> r) {
-	ImportResidentialPremisesUsageRequest result = new ImportResidentialPremisesUsageRequest();
+    private static SocialNormType toSocialNormType(Map<String, Object> r) {
 
-	ImportResidentialPremisesUsageRequest.ImportResidentialPremisesUsage t = new ImportResidentialPremisesUsageRequest.ImportResidentialPremisesUsage();
-	t.setTransportGUID(UUID.randomUUID().toString());
-
-	Object ver = r.get(PremiseUsageTarif.c.TARIFFGUID.lc());
-	if (ver != null) {
-	    t.setTariffGUID(ver.toString());
-	}
-
-	CancelResidentialPremisesUsage c = DB.to.javaBean(CancelResidentialPremisesUsage.class, r);
-
-	t.setCancelResidentialPremisesUsage(c);
-
-	result.getImportResidentialPremisesUsage().add(t);
-
-	return result;
-    }
-
-    private static ResidentialPremisesUsageType toLoadResidentialPremisesUsage(Map<String, Object> r) {
-
-	ResidentialPremisesUsageType result = DB.to.javaBean(ResidentialPremisesUsageType.class, r);
+	SocialNormType result = DB.to.javaBean(SocialNormType.class, r);
 
 	List<Map<String, Object>> oktmos = (List<Map<String, Object>>) r.get("oktmos");
 	for (Map<String, Object> o : oktmos) {
@@ -100,22 +79,43 @@ public class PremiseUsageTarifLog extends GisWsLogTable {
 	return result;
     }
 
+    public static ImportSocialNormsRequest toDeleteSocialNormsRequest(Map<String, Object> r) {
+
+	ImportSocialNormsRequest result = new ImportSocialNormsRequest();
+
+	ImportSocialNormsRequest.ImportSocialNorm t = new ImportSocialNormsRequest.ImportSocialNorm();
+	t.setTransportGUID(UUID.randomUUID().toString());
+
+	Object ver = r.get(PremiseUsageTarif.c.TARIFFGUID.lc());
+	if (ver != null) {
+	    t.setTariffGUID(ver.toString());
+	}
+
+	CancelSocialNorm c = DB.to.javaBean(CancelSocialNorm.class, r);
+
+	t.setCancelSocialNorm(c);
+
+	result.getImportSocialNorm().add(t);
+
+	return result;
+    }
+
     public static Map<String, Object> getForExport(DB db, String id) throws SQLException {
 
 	final Model m = db.getModel();
 
 	final Map<String, Object> r = db.getMap(m
-	    .get(PremiseUsageTarifLog.class, id, "*")
-	    .toOne(PremiseUsageTarif.class, "AS r",
+	    .get(SocialNormTarifLog.class, id, "*")
+	    .toOne(SocialNormTarif.class, "AS r",
 		 EnTable.c.UUID.lc(),
-		 PremiseUsageTarif.c.ID_CTR_STATUS.lc()
+		 SocialNormTarif.c.ID_CTR_STATUS.lc()
 	    ).on()
 	    .toOne(VocOrganization.class, "AS org", "orgppaguid AS orgppaguid").on("r.uuid_org=org.uuid")
 	);
 
 	r.put("oktmos", db.getList(m
 	    .select(VocOktmo.class, "*")
-	    .where(VocOktmo.c.ID.lc() + " IN", m.select(PremiseUsageTarifOktmo.class, "oktmo")
+	    .where(VocOktmo.c.ID.lc() + " IN", m.select(SocialNormTarifOktmo.class, "oktmo")
 		.where("uuid", r.get("r.uuid"))
 	    )
 	));

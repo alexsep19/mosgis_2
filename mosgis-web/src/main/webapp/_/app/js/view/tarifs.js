@@ -18,7 +18,12 @@ define ([], function () {
                     tabs: {
 
                         tabs: [
-                            {id: 'premise_usage_tarifs', caption: 'Размер платы за пользование жилым помещением', off: 0},
+                            {id: 'premise_usage_tarifs', caption: 'Размер платы за пользование жилым помещением'
+                                , off: false
+                            },
+                            {id: 'social_norm_tarifs', caption: 'Социальная норма потребления электрической энергии'
+                                , off: !($_USER.has_nsi_20(10) || $_USER.role.admin)
+                            },
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_tarifs

@@ -1,0 +1,152 @@
+<span>
+
+    <div>
+
+        <div class="w2ui-page page-1 page-0">
+
+            <style>
+
+                .w2ui-field label {
+                    width: 200px;
+                    margin-right: 10px;
+                }
+
+                .w2ui-field input {
+                    width: 100px !important;
+                }
+                .w2ui-field input.long {
+                    width: 640px !important;
+                }
+
+                .w2ui-field input.dt {
+                    width: 70px !important;
+                }
+
+		textarea[data-block-name=social_norm_tarif_common] {
+		    resize: none
+		}
+
+                .w2ui-field span {
+                    line-height: 19px
+                }
+
+                .w2ui-field div span[data-html] {
+                    line-height: 19px;
+		    padding-right: 5px;
+                }
+            </style>
+
+
+            <table border=0 cellpadding=0 cellspacing=0 width=90%>
+		<tr>
+		    <td class="left-block" width=1 valign=top>
+			<div class="w2ui-field">
+			    <label>Наименование</label>
+			    <div>
+				<textarea name=name maxlength=4000 cols=58 />
+			    </div>
+			</div>
+		    </td>
+
+		    <td valign=top>
+
+			<table border=0 cellpadding=0 cellspacing=0 width=100% class=sync>
+
+			    <tr>
+				<td>Статус:</td>
+				<td data-text=status_label />
+			    </tr>
+
+			    <tr data-on=is_annuled>
+				<td>Причина аннулирования:</td>
+				<td>
+				    <span data-text=cancelreason />
+				</td>
+			    </tr>
+
+			    <tr data-on=err_text >
+				<th colspan=2 data-text=err_text></th>
+			    </tr>
+
+			</table>
+		    </td>
+		</tr>
+		<tr>
+		    <td class="left-block" width=1 valign=top>
+			<div class="w2ui-field">
+			    <label>Дата начала действия</label>
+			    <div>
+				<input name=datefrom placeholder="" class=dt />
+			    </div>
+			</div>
+		    </td>
+		    <td>
+			<div class="w2ui-field">
+			    <label>Дата окончания действия</label>
+			    <div>
+				<input name=dateto placeholder="" class=dt />
+			    </div>
+			</div>
+		    </td>
+		</tr>
+		<tr>
+		    <td class="left-block" width=1 valign=top>
+			<div class="w2ui-field">
+			    <label>Величина</label>
+			    <div>
+				<input name=price>
+			    </div>
+			</div>
+
+		    </td>
+		    <td>
+			<div class="w2ui-field">
+			    <label>Единица измерения</label>
+			    <div>
+				<input name=unit />
+			    </div>
+			</div>
+		    </td>
+		</tr>
+
+		<tr>
+		    <td colspan="2" id="oktmo">
+
+			<div class="w2ui-field" data-off=__read_only>
+			    <label>Территория действия</label>
+			    <div>
+				<input name=oktmo class=long />
+			    </div>
+			</div>
+
+			<div class="w2ui-field" data-on=__read_only>
+			    <label>Территория действия</label>
+			    <div>
+				<span data-list=oktmo_list data-html=html>
+				</span>
+			    </div>
+			</div>
+		    </td>
+		</tr>
+            </table>
+
+        </div>
+
+        <div class="w2ui-buttons">
+            <span>
+
+		<button class=w2ui-btn name=approve      data-on=__read_only>Разместить</button>
+		<button class=w2ui-btn name=alter        data-on=__read_only>Изменить</button>
+		<button class=w2ui-btn name=annul        data-on=__read_only>Аннулировать</button>
+
+                <button class=w2ui-btn name=edit   data-on=__read_only>Редактировать</button>
+                <button class=w2ui-btn name=update data-off=__read_only>Сохранить</button>
+                <button class=w2ui-btn name=cancel data-off=__read_only>Отменить</button>
+                <button class=w2ui-btn name=delete  data-on=__read_only>Удалить</button>
+
+            </span>
+        </div>
+
+    </div>
+
+</span>

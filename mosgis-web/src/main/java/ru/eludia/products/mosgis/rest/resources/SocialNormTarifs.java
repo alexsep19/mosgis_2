@@ -8,10 +8,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import ru.eludia.products.mosgis.rest.api.PaymentDocumentLocal;
+import ru.eludia.products.mosgis.rest.api.SocialNormTarifLocal;
 
-@Path ("payment_documents")
-public class PaymentDocuments extends EJBResource <PaymentDocumentLocal> {
+@Path ("social_norm_tarifs")
+public class SocialNormTarifs extends EJBResource <SocialNormTarifLocal> {
 /*    
     private JsonObject getInnerItem (String id) {
         final JsonObject data = back.getItem (id);        
@@ -37,7 +37,7 @@ public class PaymentDocuments extends EJBResource <PaymentDocumentLocal> {
 
         String itemOrg = item.getString ("uuid_org", null);
 
-        if (itemOrg == null) throw new InternalServerErrorException ("Wrong PaymentDocument, no org: " + item);
+        if (itemOrg == null) throw new InternalServerErrorException ("Wrong SocialNormTarif, no org: " + item);
 
         String userOrg = getUserOrg ();
 
@@ -117,36 +117,7 @@ public class PaymentDocuments extends EJBResource <PaymentDocumentLocal> {
 //        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
         return back.getLog (id, p, getUser ());
     }
-    
-    @POST
-    @Path("{id}/charge_info") 
-    @Produces (APPLICATION_JSON)
-    public JsonObject getChargeInfo (@PathParam ("id") String id) {
-//        final JsonObject item = back.getItem (id);
-//        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
-        return back.getChargeInfo (id, getUser ());
-    }
-    
-    @POST
-    @Path("{id}/penalties")
-    @Produces (APPLICATION_JSON)
-    public JsonObject getPenaltiesAndCourtCosts (@PathParam ("id") String id) {
-//        final JsonObject item = back.getItem (id);
-//        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
-        return back.getPenaltiesAndCourtCosts (id, getUser ());
-    }
-    
-    @POST
-    @Path("{id}/patch_penalties")
-    @Consumes (APPLICATION_JSON)
-    @Produces (APPLICATION_JSON)
-    public JsonObject doPatchPenaltiesAndCourtCosts (@PathParam ("id") String id, JsonObject p) {
-//        final JsonObject item = getInnerItem (id);
-//        checkOrg (item);
-        return back.doPatchPenaltiesAndCourtCosts (id, p, getUser ());
-    }    
 
-/*    
     @POST
     @Path("{id}/approve") 
     @Produces (APPLICATION_JSON)
@@ -160,5 +131,11 @@ public class PaymentDocuments extends EJBResource <PaymentDocumentLocal> {
     public JsonObject doAlter (@PathParam ("id") String id) { 
         return back.doAlter (id, getUser ());
     }
-*/
+
+    @POST
+    @Path("{id}/annul")
+    @Produces(APPLICATION_JSON)
+    public JsonObject doAnnul(@PathParam("id") String id, JsonObject p) {
+	return back.doAnnul(id, p, getUser());
+    }
 }
