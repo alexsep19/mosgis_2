@@ -32,7 +32,7 @@ define ([], function () {
 
     $_DO.create_msp_decision_bases = function (e) {       
         $_SESSION.set ('record', {})
-        use.block ('msp_decision_base')
+        use.block ('msp_decision_base_popup')
     }
 
     $_DO.edit_msp_decision_bases = function (e) {       

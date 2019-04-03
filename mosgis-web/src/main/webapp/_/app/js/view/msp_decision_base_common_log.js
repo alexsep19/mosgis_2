@@ -3,7 +3,12 @@ define ([], function () {
     return function (data, view) {
     
         data = $('body').data ('data')
-        
+
+        data.voc_bool = {
+            0 : "Нет",
+            1 : "Да"
+        }
+
         $(w2ui ['passport_layout'].el ('main')).w2regrid ({ 
 
             name: 'msp_decision_base_common_log',
@@ -16,7 +21,7 @@ define ([], function () {
 
             columnGroups : [
                 {span: 3, caption: 'Событие'},
-                {span: 3, caption: 'Значения полей'},
+                {span: 5, caption: 'Значения полей'},
                 {span: 3, caption: 'Запрос в ГИС ЖКХ'},
             ], 
             
@@ -28,6 +33,8 @@ define ([], function () {
                 {field: 'uniqunumber',  caption: 'Код',     size: 20},
                 {field: 'decisionname', caption: 'Наименование', size: 50},
                 {field: 'code_vc_nsi_301',  caption: 'Тип',     size: 25, voc: data.vc_nsi_301},
+                {field: 'isappliedtosubsidiaries', caption: 'Для субсидий', size: 25, voc: data.voc_bool},
+                {field: 'isappliedtorefundofcharges', caption: 'Для расходов', size: 25, voc: data.voc_bool},
                 
                 {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: 'data-ref=1'},
                 {field: 'soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: 'data-ref=1'},

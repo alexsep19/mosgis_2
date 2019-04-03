@@ -28,7 +28,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 160},
+                {type: 'top', size: 220},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
@@ -50,6 +50,11 @@ define ([], function () {
                 
         fill (view, data.item, $panel)        
 
+        data.voc_bool = [
+            {id: "0", text: "Нет"},
+            {id: "1", text: "Да"}
+        ]
+
         $panel.w2reform ({ 
         
             name   : form_name,
@@ -60,6 +65,8 @@ define ([], function () {
                 {name: 'uniquenumber', type: 'text'},
                 {name: 'decisionname', type: 'text'},
                 {name: 'code_vc_nsi_301', type: 'list', options: {items: data.vc_nsi_301.items}},
+                {name: 'isappliedtosubsidiaries', type: 'list', options: {items: data.voc_bool}},
+                {name: 'isappliedtorefundofcharges', type: 'list', options: {items: data.voc_bool}},
             ],
 
             focus: -1,
