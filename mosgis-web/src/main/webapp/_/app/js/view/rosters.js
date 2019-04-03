@@ -31,7 +31,7 @@ define ([], function () {
                             {id: 'voc_organizations', caption: 'Организации'},                            
                             {id: 'metering_devices', caption: 'ПУ'},
                             {id: 'voc_users', caption: 'УЗ', off: !$_USER.role.admin},
-                            {id: 'licenses', caption: 'Лицензии'},
+//                            {id: 'licenses', caption: 'Лицензии'},
                             {id: 'legal_acts', caption: 'НПА'
                                 , off: !($_USER.role.admin || $_USER.has_nsi_20(7, 10))
                             },
