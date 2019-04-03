@@ -32,7 +32,7 @@ define ([], function () {
 
             it.status_label = data.vc_gis_status[it.id_orp_status]
 
-            it._can = {cancel: 1, delete: 1}
+            it._can = {cancel: 1}
 
             if (!it.is_deleted && ($_USER.role.admin || it.org_uuid == $_USER.uuid_org)) {
 
@@ -52,7 +52,7 @@ define ([], function () {
                 }
 
                 it._can.update = it._can.edit
-                it._can.delete = it._can.approve || (it.id_orp_status == 40)
+                //it._can.delete = it._can.approve || (it.id_orp_status == 40)
 
             }
 
