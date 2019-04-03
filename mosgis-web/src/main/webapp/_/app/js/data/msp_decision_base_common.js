@@ -40,7 +40,6 @@ define ([], function () {
 
         var v = f.values ()
                                 
-//        if (!v.uniquenumber)                   die ('uniquenumber', 'Укажите, пожалуйста, код')
         if (!v.decisionname)                   die ('decisionname', 'Укажите, пожалуйста, наименование')
         if (!v.code_vc_nsi_301)                die ('code_vc_nsi_301', 'Укажите, пожалуйста, тип')
 

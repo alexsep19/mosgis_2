@@ -19,7 +19,7 @@ public class BaseDecisionMSPLogTest extends BaseTest {
 
     @Test (expected = Test.None.class)
     public void test () throws SQLException {
-        Map<String, Object> r = getData ("391B92DDE1A040839CA84DA37CB8B959");
+        Map<String, Object> r = getData ("859FC19226A66348E0530D0B000AA58C");
         dump (r);
         validate (BaseDecisionMSPLog.toImportBaseDecisionMSPRequest (r));
     }
