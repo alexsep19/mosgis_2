@@ -29,22 +29,22 @@ import ru.eludia.products.mosgis.rest.api.BaseDecisionMSPLocal;
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class BaseDecisionMSPImpl extends BaseCRUD<BaseDecisionMSP> implements BaseDecisionMSPLocal {
 
-//    @Resource (mappedName = "mosgis.inNsiMSPDecisionBasesQueue")
-//    Queue queue;
-//
-//    @Override
-//    public Queue getQueue (VocAction.i action) {
-//
-//        switch (action) {
-//            case CREATE:
-//            case UPDATE:
-//            case DELETE:
-//                return queue;
-//            default:
-//                return null;
-//        }
-//
-//    }
+    @Resource (mappedName = "mosgis.inNsiBaseDecisionMSPsQueue")
+    Queue queue;
+
+    @Override
+    public Queue getQueue (VocAction.i action) {
+
+        switch (action) {
+            case CREATE:
+            case UPDATE:
+            case DELETE:
+                return queue;
+            default:
+                return null;
+        }
+
+    }
 
     private void filterOffDeleted (Select select) {
         select.and ("is_deleted", 0);

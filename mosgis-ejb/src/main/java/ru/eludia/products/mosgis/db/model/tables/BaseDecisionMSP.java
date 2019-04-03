@@ -59,5 +59,23 @@ public class BaseDecisionMSP extends EnTable {
         cols (c.class);
 
         key (c.UUID_ORG);
+
+        trigger ("BEFORE INSERT OR UPDATE", ""
+
+            + "BEGIN "
+
+                + " IF :NEW.ID_CTR_STATUS_GIS = " + VocGisStatus.i.PROJECT + " THEN BEGIN "
+
+                    + " IF :NEW.is_deleted=0 THEN :NEW.ID_CTR_STATUS := " + VocGisStatus.i.PENDING_RQ_PLACING
+                    + " ; ELSE :NEW.ID_CTR_STATUS := " + VocGisStatus.i.PENDING_RQ_CANCEL
+                    + " ; END IF;"
+
+                + " END; END IF; "
+
+                + " :NEW.ID_CTR_STATUS_GIS := " + VocGisStatus.i.PROJECT + "; "
+
+            + "END;"
+
+        );
     }
 }
