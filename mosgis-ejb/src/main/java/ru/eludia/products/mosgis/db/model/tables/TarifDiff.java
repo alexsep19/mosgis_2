@@ -361,7 +361,6 @@ public class TarifDiff extends EnTable  {
 
 	Map<Object, Map<String, Object>> nsi2o = db.getIdx(m
 	    .select(TarifDiff.class, "AS root", "*")
-	    .toOne(PremiseUsageTarif.class, "AS tf", "*").on("tf.uuid = root.uuid_tf")
 	    .toOne(VocDifferentiation.class, "AS vc_diff", "*").where(VocDifferentiation.c.NSIITEM.lc() + " IS NOT NULL").on()
 	    .where(TarifDiff.c.UUID_TF.lc(), id)
 	    .and(EnTable.c.IS_DELETED, 0)
