@@ -125,6 +125,8 @@ public class PremiseUsageTarif extends EnTable  {
 		+ "   raise_application_error (-20000, 'Укажите величину'); "
 		+ " END IF; "
 
+	    + " END; END IF; "
+
 	    + " IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING + " THEN "
 		+ PremiseUsageTarifOktmo.CHECK_PENDING_RQ_PLACING
 		+ TarifLegalAct.CHECK_PENDING_RQ_PLACING
