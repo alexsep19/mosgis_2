@@ -45,7 +45,7 @@ define ([], function () {
 
         $_SESSION.set ('record', r)
 
-        use.block ('msp_decision_base')
+        use.block ('msp_decision_base_popup')
 
     }
 
