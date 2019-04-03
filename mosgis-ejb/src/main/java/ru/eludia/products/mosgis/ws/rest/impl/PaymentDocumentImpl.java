@@ -247,19 +247,21 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
 
     @Override
     public JsonObject doPatchPenaltiesAndCourtCosts (String id, JsonObject p, User user) {return doAction ((db) -> {
-        
-        Table t = ModelHolder.getModel ().get (PenaltiesAndCourtCosts.class);
 
-        db.upsert (t, t.HASH (p.getJsonObject ("data"),
+        final MosGisModel m = ModelHolder.getModel ();
+
+        Table t = m.get (PenaltiesAndCourtCosts.class);
+
+        String uuid = db.upsertId (t, t.HASH (p.getJsonObject ("data"),
             PenaltiesAndCourtCosts.c.UUID_PAY_DOC, id
         )
             , PenaltiesAndCourtCosts.c.UUID_PAY_DOC.lc ()
             , PenaltiesAndCourtCosts.c.CODE_VC_NSI_329.lc ()
             , PenaltiesAndCourtCosts.c.UUID_BNK_ACCT.lc ()
         );
-        
-//        logAction (db, user, id, VocAction.i.UPDATE);
-                        
+
+        m.createIdLog (db, t, user, uuid, VocAction.i.UPDATE);
+
     });}
-    
+
 }

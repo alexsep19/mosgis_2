@@ -118,12 +118,19 @@ public class SocialNormTarif extends EnTable  {
 	    + " cnt NUMBER; "
 	    + "BEGIN "
 	    + " IF :NEW.is_deleted = 0 THEN BEGIN "
+
 		+ " IF :NEW.datefrom > :NEW.dateto THEN "
 		+ "   raise_application_error (-20000, 'Дата начала действия не может превышать дату окончания действия'); "
 		+ " END IF; "
+
+		+ " IF :NEW.price IS NULL THEN "
+		+ "   raise_application_error (-20000, 'Укажите величину'); "
+		+ " END IF; "
+
 		+ " IF :NEW.unit NOT IN (" + VocOkei.CODES_ENERGY_WT + ") THEN "
 		+ "   raise_application_error (-20000, 'Укажите единицу измерения электрической энергии'); "
 		+ " END IF; "
+
 		+ " FOR i IN ("
 		    + "SELECT "
 		    + " o.name     label "
