@@ -2,12 +2,12 @@ define ([], function () {
 
     function setDeleted (action) {
 
-        var grid = w2ui ['msp_decision_bases_grid']
+        var grid = w2ui ['base_decision_msps_grid']
         
         var id = grid.getSelection () [0]
 
         var tia = {
-            type:   'msp_decision_bases', 
+            type:   'base_decision_msps', 
             id:     id,
             action: action
         }
@@ -22,20 +22,20 @@ define ([], function () {
 
     }
 
-    $_DO.delete_msp_decision_bases = function () {
+    $_DO.delete_base_decision_msps = function () {
         if (confirm ('Удалить эту запись?')) setDeleted ('delete')
     }
     
-    $_DO.undelete_msp_decision_bases = function (e) {
+    $_DO.undelete_base_decision_msps = function (e) {
         if (confirm ('Восстановить эту запись?')) setDeleted ('undelete')
     }
 
-    $_DO.create_msp_decision_bases = function (e) {       
+    $_DO.create_base_decision_msps = function (e) {       
         $_SESSION.set ('record', {})
-        use.block ('msp_decision_base_popup')
+        use.block ('base_decision_msp_popup')
     }
 
-    $_DO.edit_msp_decision_bases = function (e) {       
+    $_DO.edit_base_decision_msps = function (e) {       
 
         var grid = w2ui [e.target]
 
@@ -45,7 +45,7 @@ define ([], function () {
 
         $_SESSION.set ('record', r)
 
-        use.block ('msp_decision_base_popup')
+        use.block ('base_decision_msp_popup')
 
     }
 
@@ -55,7 +55,7 @@ define ([], function () {
 
         if (layout) layout.unlock ('main')
 
-        query ({type: 'msp_decision_bases', part: 'vocs', id: undefined}, {}, function (data) {
+        query ({type: 'base_decision_msps', part: 'vocs', id: undefined}, {}, function (data) {
 
             add_vocabularies (data, data)
 

@@ -1,6 +1,6 @@
 define ([], function () {
 
-    $_DO.update_msp_decision_base_popup = function (e) {
+    $_DO.update_base_decision_msp_popup = function (e) {
 
         var form = w2ui ['vc_nsi_302_form']
 
@@ -9,13 +9,13 @@ define ([], function () {
         if (!v.decisionname)                   die ('decisionname', 'Укажите, пожалуйста, наименование')
         if (!v.code_vc_nsi_301)                die ('code_vc_nsi_301', 'Укажите, пожалуйста, тип')
         
-        var tia = {type: 'msp_decision_bases'}
+        var tia = {type: 'base_decision_msps'}
         tia.id = form.record.id
         tia.action = tia.id ? 'update' : 'create'
         
         var done = reload_page
 
-        var grid = w2ui ['msp_decision_bases_grid']
+        var grid = w2ui ['base_decision_msps_grid']
 
         query (tia, {data: v}, function () {
         

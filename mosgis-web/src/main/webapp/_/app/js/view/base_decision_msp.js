@@ -17,10 +17,10 @@ define ([], function () {
                     tabs: {
 
                         tabs: [
-                            {id: 'msp_decision_base_common',   caption: 'Общие'},
+                            {id: 'base_decision_msp_common',   caption: 'Общие'},
                         ].filter (not_off),
 
-                        onClick: $_DO.choose_tab_msp_decision_base
+                        onClick: $_DO.choose_tab_base_decision_msp
 
                     }                
                 
@@ -29,7 +29,7 @@ define ([], function () {
             ],
             
             onRender: function (e) {
-                clickActiveTab (this.get ('main').tabs, 'msp_decision_base.active_tab')
+                clickActiveTab (this.get ('main').tabs, 'base_decision_msp.active_tab')
             },
 
         });

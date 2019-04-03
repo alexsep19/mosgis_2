@@ -1,6 +1,6 @@
 define ([], function () {
 
-    $_DO.choose_tab_msp_decision_base = function (e) {
+    $_DO.choose_tab_base_decision_msp = function (e) {
 
         var name = e.tab.id
                 
@@ -11,7 +11,7 @@ define ([], function () {
             layout.lock ('main', 'Загрузка...', true);
         }
             
-        localStorage.setItem ('msp_decision_base.active_tab', name)
+        localStorage.setItem ('base_decision_msp.active_tab', name)
             
         use.block (name)
             
@@ -19,11 +19,11 @@ define ([], function () {
 
     return function (done) {        
 
-        query ({type: 'msp_decision_bases', part: 'vocs', id: undefined}, {}, function (data) {
+        query ({type: 'base_decision_msps', part: 'vocs', id: undefined}, {}, function (data) {
 
             add_vocabularies (data, data)
 
-            query ({type: 'msp_decision_bases'}, {}, function (d) {
+            query ({type: 'base_decision_msps'}, {}, function (d) {
             
                 data.item = d.item
 

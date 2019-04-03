@@ -86,7 +86,7 @@ define ([], function () {
 
             var msp_vocs = []
             if (one_of_roles (9, 10)) msp_vocs.push ({
-                id: 'msp_decision_bases',
+                id: 'base_decision_msps',
                 text: 'Основание принятия решения о мерах социальной поддержки гражданина',
             })            
             if (tariff_vocs.length) data.vc_nsi_list_group.push ({

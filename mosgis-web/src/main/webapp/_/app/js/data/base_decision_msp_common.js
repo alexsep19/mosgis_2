@@ -1,14 +1,14 @@
 define ([], function () {
 
-    var form_name = 'msp_decision_base_common_form'
+    var form_name = 'base_decision_msp_common_form'
     
-    $_DO.cancel_msp_decision_base_common = function (e) {
+    $_DO.cancel_base_decision_msp_common = function (e) {
         
         if (!confirm ('Отменить несохранённые правки?')) return
 
         var data = w2ui [form_name].record
         
-        query ({type: 'msp_decision_bases'}, {}, function (data) {
+        query ({type: 'base_decision_msps'}, {}, function (data) {
 
             data.__read_only = true
 
@@ -18,7 +18,7 @@ define ([], function () {
 
     }
     
-    $_DO.edit_msp_decision_base_common = function (e) {
+    $_DO.edit_base_decision_msp_common = function (e) {
 
         var data = {item: w2ui [form_name].record}
 
@@ -32,7 +32,7 @@ define ([], function () {
 
     }
 
-    $_DO.update_msp_decision_base_common = function (e) {
+    $_DO.update_base_decision_msp_common = function (e) {
     
         if (!confirm ('Сохранить изменения?')) return
         
@@ -43,21 +43,21 @@ define ([], function () {
         if (!v.decisionname)                   die ('decisionname', 'Укажите, пожалуйста, наименование')
         if (!v.code_vc_nsi_301)                die ('code_vc_nsi_301', 'Укажите, пожалуйста, тип')
 
-        query ({type: 'msp_decision_bases', action: 'update'}, {data: v}, reload_page)
+        query ({type: 'base_decision_msps', action: 'update'}, {data: v}, reload_page)
 
     }
     
-    $_DO.delete_msp_decision_base_common = function (e) {   
+    $_DO.delete_base_decision_msp_common = function (e) {   
         if (!confirm ('Удалить эту запись, Вы уверены?')) return        
-        query ({type: 'msp_decision_bases', action: 'delete'}, {}, reload_page)
+        query ({type: 'base_decision_msps', action: 'delete'}, {}, reload_page)
     }
     
-    $_DO.undelete_msp_decision_base_common = function (e) {   
+    $_DO.undelete_base_decision_msp_common = function (e) {   
         if (!confirm ('Восстановить эту запись, Вы уверены?')) return        
-        query ({type: 'msp_decision_bases', action: 'undelete'}, {}, reload_page)
+        query ({type: 'base_decision_msps', action: 'undelete'}, {}, reload_page)
     }
     
-    $_DO.choose_tab_msp_decision_base_common = function (e) {
+    $_DO.choose_tab_base_decision_msp_common = function (e) {
     
         var name = e.tab.id
                 
@@ -68,7 +68,7 @@ define ([], function () {
             layout.lock ('main', 'Загрузка...', true);
         }
             
-        localStorage.setItem ('msp_decision_base_common.active_tab', name)
+        localStorage.setItem ('base_decision_msp_common.active_tab', name)
             
         use.block (name)        
     
@@ -80,7 +80,7 @@ define ([], function () {
         
         var data = clone ($('body').data ('data'))
 
-        data.active_tab = localStorage.getItem ('msp_decision_base_common.active_tab') || 'msp_decision_base_common_log'
+        data.active_tab = localStorage.getItem ('base_decision_msp_common.active_tab') || 'base_decision_msp_common_log'
 
         data.__read_only = 1
 

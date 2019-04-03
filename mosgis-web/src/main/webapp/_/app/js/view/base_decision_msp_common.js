@@ -1,6 +1,6 @@
 define ([], function () {
     
-    var form_name = 'msp_decision_base_common_form'
+    var form_name = 'base_decision_msp_common_form'
 
     return function (data, view) {
     
@@ -12,7 +12,7 @@ define ([], function () {
 
             w2ui [form_name].record = r
             
-            $('div[data-block-name=msp_decision_base_common] input').prop ({disabled: data.__read_only})
+            $('div[data-block-name=base_decision_msp_common] input').prop ({disabled: data.__read_only})
 
             w2ui [form_name].refresh ()
 
@@ -32,9 +32,9 @@ define ([], function () {
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
-                            {id: 'msp_decision_base_common_log', caption: 'История изменений'},
+                            {id: 'base_decision_msp_common_log', caption: 'История изменений'},
                         ],
-                        onClick: $_DO.choose_tab_msp_decision_base_common
+                        onClick: $_DO.choose_tab_base_decision_msp_common
                     }                
                 },
                 

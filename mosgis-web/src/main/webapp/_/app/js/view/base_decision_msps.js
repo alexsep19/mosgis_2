@@ -4,7 +4,7 @@ define ([], function () {
 
     function recalcToolbar (e) {e.done (function () {
 
-        var g = w2ui ['msp_decision_bases_grid']
+        var g = w2ui ['base_decision_msps_grid']
 
         var t = g.toolbar
 
@@ -23,7 +23,7 @@ define ([], function () {
         
         $(w2ui ['vocs_layout'].el ('main')).w2regrid ({ 
 
-            name: 'msp_decision_bases_grid',
+            name: 'base_decision_msps_grid',
 
             show: {
                 toolbar: true,
@@ -35,8 +35,8 @@ define ([], function () {
             toolbar: {
             
                 items: [
-                    {type: 'button', id: b [0], caption: 'Удалить', onClick: $_DO.delete_msp_decision_bases, disabled: true, off: $_USER.role.admin},
-//                    {type: 'button', id: b [1], caption: 'Восстановить', onClick: $_DO.undelete_msp_decision_bases, disabled: true, off: $_USER.role.admin},
+                    {type: 'button', id: b [0], caption: 'Удалить', onClick: $_DO.delete_base_decision_msps, disabled: true, off: $_USER.role.admin},
+//                    {type: 'button', id: b [1], caption: 'Восстановить', onClick: $_DO.undelete_base_decision_msps, disabled: true, off: $_USER.role.admin},
                 ].filter (not_off),
                 
             }, 
@@ -61,13 +61,13 @@ define ([], function () {
 
             ].filter (not_off),
             
-            url: '/mosgis/_rest/?type=msp_decision_bases',
+            url: '/mosgis/_rest/?type=base_decision_msps',
             
             postData: {data: {uuid_org: $_USER.uuid_org}},
                         
-            onAdd:      $_DO.create_msp_decision_bases,            
-            onEdit:     $_DO.edit_msp_decision_bases,            
-            onDblClick: function (e) {openTab ('/msp_decision_base/' + e.recid)},
+            onAdd:      $_DO.create_base_decision_msps,            
+            onEdit:     $_DO.edit_base_decision_msps,            
+            onDblClick: function (e) {openTab ('/base_decision_msp/' + e.recid)},
             onRefresh: function (e) {e.done (color_data_mandatory)},            
             onSelect: recalcToolbar,
             onUnselect: recalcToolbar,

@@ -10,7 +10,7 @@ import javax.ws.rs.Produces;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import ru.eludia.products.mosgis.rest.api.BaseDecisionMSPLocal;
 
-@Path ("msp_decision_bases")
+@Path ("base_decision_msps")
 public class BaseDecisionMSPs extends EJBResource <BaseDecisionMSPLocal> {
 /*    
     private JsonObject getInnerItem (String id) {

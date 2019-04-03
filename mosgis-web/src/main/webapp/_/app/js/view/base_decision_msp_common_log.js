@@ -11,7 +11,7 @@ define ([], function () {
 
         $(w2ui ['passport_layout'].el ('main')).w2regrid ({ 
 
-            name: 'msp_decision_base_common_log',
+            name: 'base_decision_msp_common_log',
 
             show: {
                 toolbar: true,
@@ -42,7 +42,7 @@ define ([], function () {
 
             ],
             
-            url: '/mosgis/_rest/?type=msp_decision_bases&part=log&id=' + $_REQUEST.id,
+            url: '/mosgis/_rest/?type=base_decision_msps&part=log&id=' + $_REQUEST.id,
             
             onClick: function (e) {
             
