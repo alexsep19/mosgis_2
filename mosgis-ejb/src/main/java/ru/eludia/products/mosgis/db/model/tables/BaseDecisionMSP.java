@@ -10,9 +10,9 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 
-public class MSPDecisionBase extends EnTable {
+public class BaseDecisionMSP extends EnTable {
 
-    public static final String TABLE_NAME = "tb_msp_dec_base";
+    public static final String TABLE_NAME = "tb_base_dec_msp";
 
     public enum c implements EnColEnum {
 
@@ -27,9 +27,9 @@ public class MSPDecisionBase extends EnTable {
 	ISAPPLIEDTOREFUNDOFCHARGES   (Type.BOOLEAN, Bool.FALSE, "1, если применяется для компенсации расходов, иначе 0"),
 
         ELEMENTGUID                  (Type.UUID,             null,  "Идентификатор существующего элемента справочника"),
-//        UNIQUENUMBER                 (Type.STRING,           null,  "Уникальный номер, присвоенный ГИС ЖКХ"),
+        UNIQUENUMBER                 (Type.STRING,           null,  "Уникальный номер, присвоенный ГИС ЖКХ"),
 
-        ID_LOG                       (MSPDecisionBaseLog.class, "Последнее событие редактирования"),
+        ID_LOG                       (BaseDecisionMSPLog.class, "Последнее событие редактирования"),
 
         ID_CTR_STATUS                (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения mosgis"),
         ID_CTR_STATUS_GIS            (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения ГИС ЖКХ"),
@@ -52,7 +52,7 @@ public class MSPDecisionBase extends EnTable {
 
     }
 
-    public MSPDecisionBase () {
+    public BaseDecisionMSP () {
 
         super (TABLE_NAME, "Основание принятия решения о мерах социальной поддержки гражданина (НСИ 302)");
 

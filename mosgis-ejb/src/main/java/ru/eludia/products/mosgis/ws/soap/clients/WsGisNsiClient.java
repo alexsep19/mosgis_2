@@ -14,6 +14,7 @@ import javax.xml.ws.WebServiceRef;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.GeneralNeedsMunicipalResourceLog;
+import ru.eludia.products.mosgis.db.model.tables.BaseDecisionMSPLog;
 import ru.eludia.products.mosgis.db.model.voc.VocOverhaulWorkTypeLog;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ws.soap.tools.LoggingOutMessageHandler;
@@ -30,6 +31,7 @@ import ru.gosuslugi.dom.schema.integration.nsi_service_async.NsiPortsTypeAsync;
 import ru.gosuslugi.dom.schema.integration.nsi_service_async.NsiServiceAsync;
 import ru.gosuslugi.dom.schema.integration.nsi.ObjectFactory;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
+import ru.gosuslugi.dom.schema.integration.nsi.ImportBaseDecisionMSPRequest;
 
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
@@ -179,5 +181,8 @@ logger.info ("rq = " + rq);
     public AckRequest.Ack importGeneralNeedsMunicipalResource (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
         return getPort (orgPPAGuid, messageGUID).importGeneralNeedsMunicipalResource (GeneralNeedsMunicipalResourceLog.toImportGeneralNeedsMunicipalResourceRequest (r)).getAck ();
     }
-    
+
+    public AckRequest.Ack importMSPDecisionBase(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importBaseDecisionMSP(BaseDecisionMSPLog.toImportBaseDecisionMSPRequest (r)).getAck ();
+    }
 }

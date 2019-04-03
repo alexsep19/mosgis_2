@@ -8,8 +8,8 @@ import javax.jms.Queue;
 import javax.json.JsonObject;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
-import ru.eludia.products.mosgis.db.model.tables.MSPDecisionBase;
-import ru.eludia.products.mosgis.db.model.tables.MSPDecisionBaseLog;
+import ru.eludia.products.mosgis.db.model.tables.BaseDecisionMSP;
+import ru.eludia.products.mosgis.db.model.tables.BaseDecisionMSPLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -27,7 +27,7 @@ import ru.eludia.products.mosgis.ws.rest.impl.tools.SimpleSearch;
 
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-public class MSPDecisionBaseImpl extends BaseCRUD<MSPDecisionBase> implements MSPDecisionBaseLocal {
+public class MSPDecisionBaseImpl extends BaseCRUD<BaseDecisionMSP> implements MSPDecisionBaseLocal {
 
 //    @Resource (mappedName = "mosgis.inNsiMSPDecisionBasesQueue")
 //    Queue queue;
@@ -66,7 +66,7 @@ public class MSPDecisionBaseImpl extends BaseCRUD<MSPDecisionBase> implements MS
         
         if (searchString == null || searchString.isEmpty ()) return;
 
-        select.and (MSPDecisionBase.c.LABEL_UC.lc () + " LIKE ?%", searchString.toUpperCase ());
+        select.and (BaseDecisionMSP.c.LABEL_UC.lc () + " LIKE ?%", searchString.toUpperCase ());
         
     }
     
@@ -84,7 +84,7 @@ public class MSPDecisionBaseImpl extends BaseCRUD<MSPDecisionBase> implements MS
 
     }
     
-    private void checkFilter (JsonObject data, MSPDecisionBase.c field, Select select) {
+    private void checkFilter (JsonObject data, BaseDecisionMSP.c field, Select select) {
         String key = field.lc ();
         String value = data.getString (key, null);
         if (value == null) return;
@@ -95,15 +95,15 @@ public class MSPDecisionBaseImpl extends BaseCRUD<MSPDecisionBase> implements MS
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {                
 
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
-            .toMaybeOne (MSPDecisionBaseLog.class).on ()
+            .toMaybeOne (BaseDecisionMSPLog.class).on ()
             .toMaybeOne (OutSoap.class,       "err_text").on ()
             .toMaybeOne (VocOrganization.class, "AS org", "label").on ("root.uuid_org=org.uuid")
-            .orderBy ("root." + MSPDecisionBase.c.LABEL_UC.lc ())
+            .orderBy ("root." + BaseDecisionMSP.c.LABEL_UC.lc ())
             .limit (p.getInt ("offset"), p.getInt ("limit"));
         
         JsonObject data = p.getJsonObject ("data");
         
-        checkFilter (data, MSPDecisionBase.c.UUID_ORG, select);
+        checkFilter (data, BaseDecisionMSP.c.UUID_ORG, select);
 
         applySearch (Search.from (p), select);
 
@@ -116,7 +116,7 @@ public class MSPDecisionBaseImpl extends BaseCRUD<MSPDecisionBase> implements MS
 
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
             .get (getTable (), id, "AS root", "*")
-            .toMaybeOne (MSPDecisionBaseLog.class, "AS log").on ()
+            .toMaybeOne (BaseDecisionMSPLog.class, "AS log").on ()
             .toMaybeOne (OutSoap.class, "err_text").on ("log.uuid_out_soap=out_soap.uuid")
             .toMaybeOne (VocOrganization.class, "AS org", "label").on ("root.uuid_org=org.uuid")
         ));
