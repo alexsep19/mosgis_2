@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 @Stateless
 @Path("/")
 public class FSService {
-    private static final Logger logger = Logger.getLogger(FileSvcServlet.class.getName());
+    private static final Logger logger = Logger.getLogger(FSService.class.getName());
 
     private class RestFileException extends Exception {}
     private class FieldValidationException extends RestFileException {}
