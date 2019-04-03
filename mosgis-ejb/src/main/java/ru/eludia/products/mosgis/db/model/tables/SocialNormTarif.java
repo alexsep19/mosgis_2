@@ -130,6 +130,7 @@ public class SocialNormTarif extends EnTable  {
 		+ " IF :NEW.unit NOT IN (" + VocOkei.CODES_ENERGY_WT + ") THEN "
 		+ "   raise_application_error (-20000, 'Укажите единицу измерения электрической энергии'); "
 		+ " END IF; "
+	    + " END; END IF; "
 
 	    + " IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING + " THEN "
 
