@@ -11,7 +11,6 @@ import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
-import ru.eludia.products.mosgis.db.model.voc.VocOverhaulWorkType;
 
 public class OverhaulRegionalProgramHouseWork extends EnTable {
     
@@ -19,6 +18,9 @@ public class OverhaulRegionalProgramHouseWork extends EnTable {
         
         ID_ORPHW_STATUS       (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус вида работы капитального ремонта с точки зрения mosgis"),
         ID_ORPHW_STATUS_GIS   (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус вида работы капитального ремонта с точки зрения ГИС ЖКХ"),
+        
+        IMPORT_UUID           (OverhaulRegionalProgramHouseWorksImport.class, null, "Операция импорта, с которой связана запись"),
+        IMPORT_ERR_TEXT       (STRING, null, "Текст ошибки импорта записи"),
         
         HOUSE_UUID            (OverhaulRegionalProgramHouse.class, "Дом, к которому привязан вид работы"),
 
