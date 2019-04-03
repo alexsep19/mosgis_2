@@ -20,7 +20,8 @@ define ([], function () {
     
         data = $('body').data ('data')
         
-        $(w2ui ['rosters_layout'].el ('main')).w2regrid ({ 
+        $(w2ui ['administr_layout'].el ('main')).w2regrid ({ 
+//        $(w2ui ['rosters_layout'].el ('main')).w2regrid ({ 
 
             name: 'voc_organizations_grid',
 
