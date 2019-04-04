@@ -54,6 +54,15 @@ public class ChargeInfo extends EnTable {
         PP_RATE_RUB           (Type.NUMERIC, 13, 2, null,   "Проценты за рассрочку, руб. (piecemealPaymentPercentRub)"),
         PP_RATE_PRC           (Type.NUMERIC,  5, 2, null,   "Проценты за рассрочку, %. (piecemealPaymentPercent)"),        
 
+        SI_VAL_IND            (Type.NUMERIC, 22, 7, null,   "Текущие показания приборов учёта коммунальных услуг - индивидуальное потребление (individualConsumptionCurrentValue)"),
+        SI_VAL_OVER           (Type.NUMERIC, 22, 7, null,   "Текущие показания приборов учёта коммунальных услуг - общедомовые нужды (houseOverallNeedsCurrentValue)"),
+
+        SI_HT_IND             (Type.NUMERIC, 22, 7, null,   "Суммарный объём коммунальных услуг в доме - индивидуальное потребление (houseTotalIndividualConsumption)"),
+        SI_HT_OVER            (Type.NUMERIC, 22, 7, null,   "Суммарный объём коммунальных услуг в доме - общедомовые нужды (houseTotalHouseOverallNeeds)"),
+
+        SI_IND_NORM           (Type.NUMERIC, 22, 7, null,   "Норматив потребления коммунальных услуг - индивидуальное потребление (individualConsumptionNorm)"),
+        SI_HO_NORM            (Type.NUMERIC, 22, 7, null,   "Норматив потребления коммунальных услуг - общедомовые нужды (houseOverallNeedsNorm)"),
+
         ID_LOG                (ChargeInfoLog.class,         "Последнее событие редактирования"),
 
         ;
