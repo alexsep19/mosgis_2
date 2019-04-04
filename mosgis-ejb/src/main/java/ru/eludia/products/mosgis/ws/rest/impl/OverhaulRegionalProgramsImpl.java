@@ -38,15 +38,11 @@ public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProg
     @Resource (mappedName = "mosgis.inExportOverhaulRegionalProgramsQueue")
     Queue inExportOverhaulRegionalProgramsQueue;
     
-    @Resource (mappedName = "mosgis.inExportOverhaulRegionalProgramHouseWorksQueue")
-    Queue inExportOverhaulRegionalProgramHouseWorksQueue;
-    
     @Override
     protected void publishMessage (VocAction.i action, String id_log) {
         
         switch (action) {
             case PUBLISHANDPROJECT:
-            case PLACE_REG_PLAN_HOUSE_WORKS:
             case APPROVE:
                 super.publishMessage (action, id_log);
             default:
@@ -61,8 +57,6 @@ public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProg
             case PUBLISHANDPROJECT:
             case APPROVE:
                 return inExportOverhaulRegionalProgramsQueue;
-            case PLACE_REG_PLAN_HOUSE_WORKS: 
-                return inExportOverhaulRegionalProgramHouseWorksQueue;
             default: return null;
         }
     }
@@ -81,11 +75,8 @@ public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProg
                 nextStatus = VocGisStatus.i.PENDING_RQ_PUBLISHANDPROJECT;
                 action = VocAction.i.PUBLISHANDPROJECT;
                 break;
-            case PENDING_RQ_PLACE_REGIONAL_PROGRAM_WORKS:
-                nextStatus = VocGisStatus.i.PENDING_RQ_PLACE_REGIONAL_PROGRAM_WORKS;
-                action = VocAction.i.PLACE_REG_PLAN_HOUSE_WORKS;
-                break;
-            case PENDING_RQ_PLACING:
+            case REGIONAL_PROGRAM_WORKS_PLACE_INITIALIZED:
+            case REGIONAL_PROGRAM_WORKS_PLACE_FINISHED:
                 nextStatus = VocGisStatus.i.PENDING_RQ_PLACING;
                 action = VocAction.i.APPROVE;
                 break;

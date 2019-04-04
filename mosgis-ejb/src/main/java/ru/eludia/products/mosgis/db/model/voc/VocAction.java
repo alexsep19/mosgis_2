@@ -62,8 +62,6 @@ public class VocAction extends Table {
         LOCK                        ("lock",                       "блокировка"),
         PROMOTE                     ("promote",                    "утверждение"),
         
-        PLACE_REG_PLAN_HOUSE_WORKS  ("place_reg_plan_house_works", "размещение видов работ регионального плана"),
-        
         PUBLISHANDPROJECT           ("publishandproject",          "размещение проекта"),
         REFRESH                     ("refresh",                    "обновление статусов"),
         RELOAD                      ("reload",                     "обновление данных"),

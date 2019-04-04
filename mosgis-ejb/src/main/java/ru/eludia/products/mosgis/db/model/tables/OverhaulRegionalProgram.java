@@ -53,8 +53,7 @@ public class OverhaulRegionalProgram extends EnTable {
     
     public enum Action {
         
-        PROJECT_PUBLISH     (VocGisStatus.i.PENDING_RP_PUBLISHANDPROJECT,            VocGisStatus.i.PENDING_RQ_PLACE_REGIONAL_PROGRAM_WORKS, VocGisStatus.i.FAILED_PUBLISHANDPROJECT),
-        PLACING_HOUSE_WORKS (VocGisStatus.i.PENDING_RP_PLACE_REGIONAL_PROGRAM_WORKS, VocGisStatus.i.PENDING_RQ_PLACING,                      VocGisStatus.i.FAILED_PLACE_REGIONAL_PROGRAM_WORKS),
+        PROJECT_PUBLISH     (VocGisStatus.i.PENDING_RP_PUBLISHANDPROJECT,            VocGisStatus.i.REGIONAL_PROGRAM_WORKS_PLACE_INITIALIZED, VocGisStatus.i.FAILED_PUBLISHANDPROJECT),
         PLACING             (VocGisStatus.i.PENDING_RP_PLACING,                      VocGisStatus.i.APPROVED,                                VocGisStatus.i.FAILED_PLACING)
         
         ;
@@ -85,8 +84,6 @@ public class OverhaulRegionalProgram extends EnTable {
             switch (status) {
                 case PENDING_RQ_PUBLISHANDPROJECT:
                     return PROJECT_PUBLISH;
-                case PENDING_RQ_PLACE_REGIONAL_PROGRAM_WORKS:
-                    return PLACING_HOUSE_WORKS;
                 case PENDING_RQ_PLACING:
                     return PLACING;
                 default: return null;
@@ -97,8 +94,6 @@ public class OverhaulRegionalProgram extends EnTable {
             switch (a) {
                 case PUBLISHANDPROJECT:
                     return PROJECT_PUBLISH;
-                case PLACE_REG_PLAN_HOUSE_WORKS:
-                    return PLACING_HOUSE_WORKS;
                 case APPROVE:
                     return PLACING;
                 default: return null;

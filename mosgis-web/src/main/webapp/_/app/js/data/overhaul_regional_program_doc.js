@@ -29,6 +29,8 @@ define ([], function () {
             
             var it = data.item
 
+            console.log (it)
+
             it.doctype = data.vc_nsi_79[it.code_nsi_79]
             it.dmy_date = dt_dmy (it.date_)
 
@@ -38,15 +40,15 @@ define ([], function () {
                 ($_USER.role.admin || it['program.org_uuid'] == $_USER.uuid_org)) {
 
                 switch (it['program.id_orp_status']) {
-                    case 10:
-                    case 11:
+                    case  10:
+                    case 124:
                         it._can.edit = 1
                         it._can.update = 1
                 }
 
                 switch (it['program.id_orp_status']) {
-                    case 10:
-                    case 14:
+                    case  10:
+                    case 124:
                         it._can.delete = 1
                 }
 

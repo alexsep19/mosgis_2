@@ -71,8 +71,15 @@ define ([], function () {
             columns: [
                 {field: 'work', caption: 'Вид работы', size: 100, voc: data.vc_oh_wk_types},
                 {field: 'code_nsi_218', caption: 'Группа видов работ', size: 100, voc: data.vc_nsi_218},
-                {field: 'startyearmonth', caption: 'Начало выполнения', size: 20},
-                {field: 'endyearmonth', caption: 'Окончание выполнения', size: 20},
+                {field: 'startyearmonth', caption: 'Начало выполнения', size: 20, render: _dt},
+                {field: 'endyearmonth', caption: 'Окончание выполнения', size: 20, render: _dt},
+                {field: 'import_err_text', caption: 'Ошибка импорта', size: 20, render: 
+                    function (record) {
+                        if (record['id_orphw_status'] == 40)
+                            record['w2ui'] = {'style': 'background-color: #90EE90; color: black;'}
+                        else if (record['import_err_text'] != '')
+                            record['w2ui'] = {'style': 'background-color: #F08080; color: white;'}
+                }},
             ],
             
             postData: {house_uuid: $_REQUEST.id},

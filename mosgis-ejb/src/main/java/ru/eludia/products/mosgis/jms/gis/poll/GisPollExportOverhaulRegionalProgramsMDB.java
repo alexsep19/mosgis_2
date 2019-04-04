@@ -17,6 +17,9 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgram;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgram.c;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouse;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseWork;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseWorksImport;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
@@ -101,16 +104,22 @@ public class GisPollExportOverhaulRegionalProgramsMDB extends GisPollMDB {
             }
 
             if (nextQueue != null) {
-                String nextLogId = db.insertId (OverhaulRegionalProgramLog.class, HASH (
-                    "action", VocAction.i.PLACE_REG_PLAN_HOUSE_WORKS.getName (),
-                    "uuid_object", r.get ("program.uuid"),
-                    "uuid_user", r.get ("user")
+                String importWorksId = db.insertId (OverhaulRegionalProgramHouseWorksImport.class, HASH (
+                    OverhaulRegionalProgramHouseWorksImport.c.PROGRAM_UUID.lc (), r.get ("program.uuid"),
+                    OverhaulRegionalProgramHouseWorksImport.c.ORGPPAGUID.lc (),   orgPPAGuid
                 )).toString ();
-                db.update (OverhaulRegionalProgram.class, HASH (
-                    "uuid", r.get ("program.uuid"),
-                    "id_log", nextLogId
-                ));
-                UUIDPublisher.publish (nextQueue, nextLogId);
+                List <Map <String, Object>> works = db.getList (db.getModel ()
+                    .select (OverhaulRegionalProgramHouseWork.class, "AS works", "*")
+                        .toOne (OverhaulRegionalProgramHouse.class, "AS houses").on ()
+                            .toOne (OverhaulRegionalProgram.class, "AS programs").where ("uuid", r.get ("program.uuid")).on ("programs.uuid=houses.program_uuid")
+                    .where ("is_deleted", 0)
+                    .and   ("id_orphw_status <>", VocGisStatus.i.APPROVED.getId ())
+                );
+                works.stream ().forEach ((map) -> {
+                    map.put (OverhaulRegionalProgramHouseWork.c.IMPORT_UUID.lc (), importWorksId);
+                });
+                db.update (OverhaulRegionalProgramHouseWork.class, works);
+                UUIDPublisher.publish (nextQueue, importWorksId);
             }
 
         }

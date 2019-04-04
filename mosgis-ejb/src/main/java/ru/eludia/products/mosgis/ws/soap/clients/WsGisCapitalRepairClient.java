@@ -9,7 +9,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.jws.HandlerChain;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
-import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseWorkLog;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseWorksImport;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramLog;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ws.soap.tools.LoggingOutMessageHandler;
@@ -57,7 +57,7 @@ public class WsGisCapitalRepairClient {
     }
     
     public AckRequest.Ack importRegionalProgramWork (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
-        return getPort (orgPPAGuid, messageGUID).importRegionalProgramWork(OverhaulRegionalProgramHouseWorkLog.toImportRegionalProgramWorkRequest (r)).getAck ();
+        return getPort (orgPPAGuid, messageGUID).importRegionalProgramWork(OverhaulRegionalProgramHouseWorksImport.toImportRegionalProgramWorkRequest (r)).getAck ();
     }
     
 }

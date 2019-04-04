@@ -38,6 +38,7 @@ define ([], function () {
 
                 switch (it.id_orp_status) {
                     case -24:
+                    case -21:
                     case  10:
                     case  14:
                     case  34:

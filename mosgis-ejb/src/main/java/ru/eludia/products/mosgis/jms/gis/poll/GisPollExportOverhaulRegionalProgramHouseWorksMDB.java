@@ -13,14 +13,10 @@ import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.ModelHolder;
-import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgram;
-import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgram.c;
-import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramLog;
-import ru.eludia.products.mosgis.db.model.voc.VocAction;
-import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseWork;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseWorksImport;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
-import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.jms.UUIDPublisher;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
@@ -51,19 +47,25 @@ public class GisPollExportOverhaulRegionalProgramHouseWorksMDB extends GisPollMD
     protected Get get (UUID uuid) {
         
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
-            .toOne (OverhaulRegionalProgramLog.class, "AS log", "uuid", "action", "id_orp_status", "uuid_user AS user").on ("log.uuid_out_soap=root.uuid")
-                .toOne (OverhaulRegionalProgram.class, "AS program", "uuid").on ("log.uuid_object=program.uuid")
-                    .toOne (VocOrganization.class, "AS org", "orgppaguid").on ("program.org_uuid=org.uuid")
+            .toOne (OverhaulRegionalProgramHouseWorksImport.class, "AS import", "*").on ("import.uuid_out_soap=root.uuid")
         ;
+        
+    }
+    
+    private List <Map <String, Object>> getWorks (DB db, Map <String, Object> r, VocGisStatus.i status) throws SQLException {
+        
+        return db.getList (db.getModel ()
+            .select (OverhaulRegionalProgramHouseWork.class, "AS works", "*")
+            .where  (OverhaulRegionalProgramHouseWork.c.IMPORT_UUID.lc (), r.get ("import.uuid"))
+            .and    (OverhaulRegionalProgramHouseWork.c.ID_ORPHW_STATUS.lc (), status.getId ())
+        );
         
     }
     
     @Override
     protected void handleOutSoapRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
         
-        UUID orgPPAGuid          = (UUID) r.get ("org.orgppaguid");
-        
-        OverhaulRegionalProgram.Action action = OverhaulRegionalProgram.Action.forStatus (VocGisStatus.i.forId (r.get ("log.id_orp_status")));
+        UUID orgPPAGuid = (UUID) r.get ("import.orgppaguid");
         
         try {
             
@@ -71,66 +73,96 @@ public class GisPollExportOverhaulRegionalProgramHouseWorksMDB extends GisPollMD
             
             final ErrorMessageType error = state.getErrorMessage ();
             
-            if (error != null) throw new GisPollException (error);
+            if (error != null) {
+                failWorks (db, r, error.getDescription ());
+                throw new GisPollException (error);
+            }
             
             final List<CapRemCommonResultType> importResult = state.getImportResult ();
             
-            if (importResult == null || importResult.isEmpty ()) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
+            if (importResult == null || importResult.isEmpty ()) {
+                failWorks (db, r, "Сервис ГИС ЖКХ вернул пустой результат");
+                throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
+            }
             
-            for (CapRemCommonResultType.Error err: importResult.get (0).getError ()) throw new GisPollException (err);
+            int okCount = db.getInteger (OverhaulRegionalProgramHouseWorksImport.class, r.get ("import.uuid"), "ok_count");
             
-            final Map<String, Object> h = statusHash (action.getOkStatus ());
-            h.put (c.LAST_SUCCESFULL_STATUS.lc (), action.getOkStatus ());
-
-            update (db, uuid, r, h);
-            db.update (OutSoap.class, HASH (
-                "uuid", getUuid (),
-                "id_status", DONE.getId ()
+            for (CapRemCommonResultType result: importResult) {
+                
+                List <CapRemCommonResultType.Error> err = result.getError ();
+                if (err != null && !err.isEmpty ())
+                    failWork (db, result.getTransportGUID (), err.get (0).getDescription ());
+                else {
+                    successWork (db, result.getTransportGUID (), result.getGUID (), result.getUniqueNumber ());
+                    okCount++;
+                }
+                                
+            }
+            
+            successProgram (db, r.get ("import.program_uuid").toString ());
+            
+            db.update (OverhaulRegionalProgramHouseWorksImport.class, HASH (
+                "uuid", r.get ("import.uuid"),
+                "ok_count", okCount
             ));
             
-            String nextLogId = db.insertId (OverhaulRegionalProgramLog.class, HASH (
-                "action", VocAction.i.APPROVE.getName (),
-                "uuid_object", r.get ("program.uuid"),
-                "uuid_user", r.get ("user")
-            )).toString ();
-            db.update (OverhaulRegionalProgram.class, HASH (
-                "uuid", r.get ("program.uuid"),
-                "id_log", nextLogId
-            ));
-            
-            UUIDPublisher.publish (inExportOverhaulRegionalProgramsQueue, nextLogId);
-
         }
         catch (GisPollRetryException ex) {
             return;
         }
-        catch (GisPollException ex) {            
-            update (db, uuid, r, statusHash (action.getFailStatus ()));            
+        catch (GisPollException ex) {        
             ex.register (db, uuid, r);
         }
         
     }
     
-    private static Map<String, Object> statusHash (VocGisStatus.i status) {
+    private void failWorks (DB db, Map <String, Object> r, String error) throws SQLException {
         
-        final byte id = status.getId ();
+        List <Map <String, Object>> works = getWorks (db, r, VocGisStatus.i.PENDING_RP_PLACING);
         
-        return HASH (
-            OverhaulRegionalProgram.c.ID_ORP_STATUS,          id,
-            OverhaulRegionalProgram.c.ID_ORP_STATUS_GIS,      id
-        );
+        works.stream ()
+                .forEach ((map) -> {
+                    map.put (OverhaulRegionalProgramHouseWork.c.ID_ORPHW_STATUS.lc (),     VocGisStatus.i.FAILED_PLACING.getId ());
+                    map.put (OverhaulRegionalProgramHouseWork.c.ID_ORPHW_STATUS_GIS.lc (), VocGisStatus.i.FAILED_PLACING.getId ());
+                    map.put (OverhaulRegionalProgramHouseWork.c.IMPORT_ERR_TEXT.lc (),     error);
+                });
+        
+        db.update (OverhaulRegionalProgramHouseWork.class, works);
         
     }
-
-    private void update (DB db, UUID uuid, Map<String, Object> r, Map<String, Object> h) throws SQLException {
+    
+    private void failWork (DB db, String transportGUID, String error) throws SQLException {
         
-logger.info ("h=" + h);
+        db.update (OverhaulRegionalProgramHouseWork.class, HASH (
+            "uuid",                                                       transportGUID,
+            OverhaulRegionalProgramHouseWork.c.ID_ORPHW_STATUS.lc (),     VocGisStatus.i.FAILED_PLACING.getId (),
+            OverhaulRegionalProgramHouseWork.c.ID_ORPHW_STATUS_GIS.lc (), VocGisStatus.i.FAILED_PLACING.getId (),
+            OverhaulRegionalProgramHouseWork.c.IMPORT_ERR_TEXT.lc (),     error
+        ));
         
-        h.put ("uuid", r.get ("program.uuid"));
-        db.update (OverhaulRegionalProgram.class, h);
+    }
+    
+    private void successWork (DB db, String transportGUID, String guid, String uniqueNumber) throws SQLException {
         
-        h.put ("uuid", uuid);
-        db.update (OverhaulRegionalProgramLog.class, h);
+        db.update (OverhaulRegionalProgramHouseWork.class, HASH (
+            "uuid", transportGUID,
+            OverhaulRegionalProgramHouseWork.c.ID_ORPHW_STATUS.lc (),     VocGisStatus.i.APPROVED.getId (),
+            OverhaulRegionalProgramHouseWork.c.ID_ORPHW_STATUS_GIS.lc (), VocGisStatus.i.APPROVED.getId (),
+            OverhaulRegionalProgramHouseWork.c.IMPORT_ERR_TEXT.lc (),     null,
+            OverhaulRegionalProgramHouseWork.c.GUID.lc (),                guid,
+            OverhaulRegionalProgramHouseWork.c.UNIQUENUMBER.lc (),        uniqueNumber
+        ));
+        
+    }
+    
+    private void successProgram (DB db, String programUUID) throws SQLException {
+        
+        db.update (OverhaulRegionalProgram.class, HASH (
+            "uuid",                                                 programUUID,
+            OverhaulRegionalProgram.c.ID_ORP_STATUS.lc (),          VocGisStatus.i.REGIONAL_PROGRAM_WORKS_PLACE_FINISHED.getId (),
+            OverhaulRegionalProgram.c.ID_ORP_STATUS_GIS.lc (),      VocGisStatus.i.REGIONAL_PROGRAM_WORKS_PLACE_FINISHED.getId (),
+            OverhaulRegionalProgram.c.LAST_SUCCESFULL_STATUS.lc (), VocGisStatus.i.REGIONAL_PROGRAM_WORKS_PLACE_FINISHED.getId ()
+        ));
         
     }
     
