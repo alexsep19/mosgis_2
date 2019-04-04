@@ -52,9 +52,10 @@ define ([], function () {
                     tabs: {
                         tabs:    [
                             {id: 'payment_document_common_charge_info', caption: 'Текущие начисления', off: it.id_type != 0},
+                            {id: 'payment_document_common_service_info', caption: 'Справочная информация', off: it.id_type != 0},
                             {id: 'payment_document_common_piecemeal_payment', caption: 'Рассрочка платежей', off: it.id_type != 0},
                             {id: 'payment_document_common_penalties', caption: 'Неустойки и судебные расходы', off: it.id_type != 0},
-                            {id: 'payment_document_common_comp_cost', caption: 'Стоимость эл. энергии', off: !it.is_power_supply},
+                            {id: 'payment_document_common_comp_cost', caption: 'Стоимость эл. энергии', off: it.id_type != 0 || !it.is_power_supply},
                             {id: 'payment_document_common_additional_information', caption: 'Дополнительная информация'},
                             {id: 'payment_document_common_log', caption: 'История изменений'},
                         ].filter (not_off),
