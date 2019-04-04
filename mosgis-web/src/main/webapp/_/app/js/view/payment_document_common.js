@@ -47,7 +47,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 250},
+                {type: 'top', size: 280},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
@@ -96,7 +96,7 @@ define ([], function () {
                 {name: 'subsidiescompensation_', type: 'float', options: {min: 0, precision: 2}},
                 {name: 'totalpayablebypdwith_da', type: 'float', options: {min: 0, precision: 2}},
                 {name: 'paidcash', type: 'float', options: {min: 0, precision: 2}},
-//                {name: 'limitindex', type: 'float', options: {min: 0, precision: 2}},
+                {name: 'limitindex', type: 'float', options: {min: 0, precision: 2}},
 
                 {name: 'sign', type: 'list', options: {items: [
                     {id: -1, text: "Задолженность"},
