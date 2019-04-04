@@ -20,9 +20,16 @@ define ([], function () {
     function is_yellow (row, col) {
 
         switch (col.field) {
-
-            case 'accountingperiodtotal':
+        
+            case 'si_ht_over':
+            case 'si_ho_norm':
                 return true
+
+            case 'si_val_ind':
+            case 'si_val_over':
+            case 'si_ht_ind':
+            case 'si_ind_norm':
+                return row.uuid_m_m_service
 
             default:
                 return false
@@ -84,73 +91,38 @@ define ([], function () {
                 footer: 1,
                 selectionBorder: false,
             },            
-            
-            toolbar: {
-            
+
+            toolbar: {            
                 items: [
                     {type: 'button', id: 'edit', caption: 'Редактировать', onClick: function () {setEditig (1)}, disabled: false, icon: 'w2ui-icon-pencil'},
                     {type: 'button', id: 'cancel', caption: 'Зафиксировать', onClick: function () {setEditig (0)}, disabled: true, icon: 'w2ui-icon-check'},
                 ],
-
             },                        
-            
-            columnGroups : [
-            
+
+            columnGroups : [            
                 {master: true},
                 {span: 2, caption: 'Текущие показания ПУ'},
                 {span: 2, caption: 'Суммарный объём коммунальных услуг'},
                 {span: 2, caption: 'Норматив потребления коммунальных услуг'},
+                {span: 2, caption: 'Объем услуги'},
             ], 
 
             columns: [                
 
                 {field: 'label', caption: 'Наименование услуги', size: 50},
                 
-                {field: 'label', caption: 'Наименование услуги', size: 50},
-                {field: 'label', caption: 'Наименование услуги', size: 50},
+                {field: 'si_val_ind', caption: 'инд.', tooltip: 'индивидуальное потребление', size: 10, editable: {type: 'float', precision: 7, autoFormat: true, min: 0}, render: 'float:7'},
+                {field: 'si_val_over', caption: 'ОДН', tooltip: 'общедомовые нужды', size: 10, editable: {type: 'float', precision: 7, autoFormat: true, min: 0}, render: 'float:7'},
 
-                {field: 'label', caption: 'Наименование услуги', size: 50},
-                {field: 'label', caption: 'Наименование услуги', size: 50},
+                {field: 'si_ht_ind', caption: 'инд.', tooltip: 'индивидуальное потребление', size: 10, editable: {type: 'float', precision: 7, autoFormat: true, min: 0}, render: 'float:7'},
+                {field: 'si_ht_over', caption: 'ОДН', tooltip: 'общедомовые нужды', size: 10, editable: {type: 'float', precision: 7, autoFormat: true, min: 0}, render: 'float:7'},
 
-                {field: 'label', caption: 'Наименование услуги', size: 50},
-                {field: 'label', caption: 'Наименование услуги', size: 50},
+                {field: 'si_ind_norm', caption: 'инд.', tooltip: 'индивидуальное потребление', size: 10, editable: {type: 'float', precision: 7, autoFormat: true, min: 0}, render: 'float:7'},
+                {field: 'si_ho_norm', caption: 'ОДН', tooltip: 'общедомовые нужды', size: 10, editable: {type: 'float', precision: 7, autoFormat: true, min: 0}, render: 'float:7'},
 
-/*                
+                {field: 'cons_i_vol', caption: 'инд.', tooltip: 'индивидуальное потребление', size: 10, render: 'float:7'},
+                {field: 'cons_o_vol', caption: 'ОДН', tooltip: 'общедомовые нужды', size: 10, render: 'float:7'},
 
-
-        SI_VAL_IND            (Type.NUMERIC, 22, 7, null,   "Текущие показания приборов учёта коммунальных услуг - индивидуальное потребление (individualConsumptionCurrentValue)"),
-        SI_VAL_OVER           (Type.NUMERIC, 22, 7, null,   "Текущие показания приборов учёта коммунальных услуг - общедомовые нужды (houseOverallNeedsCurrentValue)"),
-
-        SI_HT_IND             (Type.NUMERIC, 22, 7, null,   "Суммарный объём коммунальных услуг в доме - индивидуальное потребление (houseTotalIndividualConsumption)"),
-        SI_HT_OVER            (Type.NUMERIC, 22, 7, null,   "Суммарный объём коммунальных услуг в доме - общедомовые нужды (houseTotalHouseOverallNeeds)"),
-
-        SI_IND_NORM           (Type.NUMERIC, 22, 7, null,   "Норматив потребления коммунальных услуг - индивидуальное потребление (individualConsumptionNorm)"),
-        SI_HO_NORM            (Type.NUMERIC, 22, 7, null,   "Норматив потребления коммунальных услуг - общедомовые нужды (houseOverallNeedsNorm)"),
-
-                
-                {field: 'totalpayable', caption: 'Итого к оплате за расчетный период', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}},
-                {field: 'accountingperiodtotal', caption: 'Всего начислено за расчетный период (без перерасчетов и льгот)', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}},
-
-                {field: 'rate', caption: 'Тариф', size: 10, editable: {type: 'float', precision: 6, autoFormat: true, min: 0}},
-
-                {field: 'cons_i_vol', caption: 'Объём', size: 10, editable: {type: 'float', precision: 7, autoFormat: true, min: 0}},
-                {field: 'cons_i_dtrm_meth', caption: 'Определён по', size: 10, editable: {type: 'list'}, voc: data.vc_cnsmp_vol_dtrm},
-
-                {field: 'cons_o_vol', caption: 'Объём', size: 10, editable: {type: 'float', precision: 7, autoFormat: true, min: 0}},
-                {field: 'cons_o_dtrm_meth', caption: 'Определён по', size: 10, editable: {type: 'list'}, voc: data.vc_cnsmp_vol_dtrm},
-
-                {field: 'unit', caption: 'Ед. изм.', size: 10},                
-
-                {field: 'ratio', caption: 'Коэффициент', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}},
-                {field: 'amountofexcessfees', caption: 'Размер превышения платы', size: 10, editable: {type: 'float', precision: 2, autoFormat: true}},
-
-                {field: 'moneyrecalculation', caption: 'Перерасчет', size: 10, editable: {type: 'float', precision: 2, autoFormat: true}},
-                {field: 'moneydiscount', caption: 'Субсидии, скидки', size: 10, editable: {type: 'float', precision: 2, autoFormat: true}},
-
-                {field: 'calcexplanation', caption: 'Порядок расчётов', size: 10, editable: {type: 'text'}},
-                
-                {field: 'uuid_bnk_acct', caption: 'Пл. рекв.', size: 10, editable: {type: 'list'}, voc: data.tb_bnk_accts},
-*/
             ],
 
             records: data.lines,
@@ -170,6 +142,8 @@ define ([], function () {
                 
                 var r = grid.get (e.recid)
                 
+                if (!is_yellow (r, grid.columns [e.column])) return e.preventDefault ()
+
                 if (!r.id_type) return e.preventDefault ()
                 
                 if (e.column == 0 && r.id_type != 50) return e.preventDefault ()
