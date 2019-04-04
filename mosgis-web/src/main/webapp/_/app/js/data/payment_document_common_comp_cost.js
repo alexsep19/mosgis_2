@@ -46,7 +46,7 @@ define ([], function () {
             })
 
         })
-darn (idx)        
+
         query ({type: 'payment_documents', part: 'comp_cost'}, {}, function (dd) {
 
             $.each (dd.root, function () {                
@@ -58,7 +58,7 @@ darn (idx)
             })
 
             data.lines = lines
-darn (lines)
+
             done (data)
         
         })

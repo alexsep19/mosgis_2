@@ -35,6 +35,8 @@ define ([], function () {
             
             $.each (dia2w2uiRecords (d.root), function () {
             
+                if (!this.uuid_m_m_service && !this.uuid_gen_need_res) return
+            
                 if (last_type != this.label_type) lines.push ({recid: String (Math.random ()).replace ('.', ''), label: last_type = this.label_type})
                 
                 lines.push (this)
