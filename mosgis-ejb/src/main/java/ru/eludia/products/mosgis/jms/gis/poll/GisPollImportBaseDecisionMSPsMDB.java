@@ -9,12 +9,15 @@ import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.incoming.InBaseDecisionMSP;
+import ru.eludia.products.mosgis.db.model.incoming.InVocDiff;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
@@ -31,7 +34,7 @@ import ru.gosuslugi.dom.schema.integration.nsi_base.NsiItemType;
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class GisPollImportBaseDecisionMSPs extends GisPollMDB {
+public class GisPollImportBaseDecisionMSPsMDB extends GisPollMDB {
 
     @EJB
     WsGisNsiClient wsGisNsiClient;
@@ -89,6 +92,10 @@ public class GisPollImportBaseDecisionMSPs extends GisPollMDB {
                 
             }
 
+	    db.update(InBaseDecisionMSP.class, HASH(
+		"uuid", uuid,
+		InBaseDecisionMSP.c.IS_OVER, 1
+	    ));
         }
         catch (GisPollRetryException ex) {
             return;

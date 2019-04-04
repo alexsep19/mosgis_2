@@ -35,7 +35,6 @@ public class BaseDecisionMSP extends EnTable {
 	ISAPPLIEDTOREFUNDOFCHARGES   (Type.BOOLEAN, Bool.FALSE, "1, если применяется для компенсации расходов, иначе 0"),
 
 	ISACTUAL                     (Type.BOOLEAN,     null, "Признак актуальности элемента справочника"),
-        GUID                         (Type.UUID,   null,      "Глобально-уникальный идентификатор элемента справочника"),
         CODE                         (Type.STRING,  20, null, "Код элемента справочника, уникальный в пределах справочника"),
         ELEMENTGUID                  (Type.UUID,             null,  "Идентификатор существующего элемента справочника"),
         UNIQUENUMBER                 (Type.STRING,           null,  "Уникальный номер, присвоенный ГИС ЖКХ"),
@@ -82,8 +81,6 @@ public class BaseDecisionMSP extends EnTable {
                     + " ; END IF;"
 
                 + " END; END IF; "
-
-                + " :NEW.ID_CTR_STATUS_GIS := " + VocGisStatus.i.PROJECT + "; "
 
             + "END;"
 
