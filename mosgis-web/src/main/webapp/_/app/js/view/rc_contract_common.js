@@ -66,9 +66,10 @@ define ([], function () {
             }
         }
 
-        var s = 380 + (it.is_bnk_acct_visible - Object.keys(hidden).length) * 30
+        var s = $('#form_table').height () + 100
         var l = w2ui ['passport_layout']
         var t = l.get('top')
+
         if (t.size != s)
             l.set('top', {size: s})
 
