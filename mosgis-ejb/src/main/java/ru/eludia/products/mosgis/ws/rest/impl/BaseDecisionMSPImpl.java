@@ -40,8 +40,8 @@ public class BaseDecisionMSPImpl extends BaseCRUD<BaseDecisionMSP> implements Ba
     @Resource (mappedName = "mosgis.inNsiBaseDecisionMSPsQueue")
     Queue queue;
 
-    @Resource(mappedName = "mosgis.inImportBaseDecisionMSPsQueue")
-    Queue inImportBaseDecisionMSPsQueue;
+    @Resource(mappedName = "mosgis.inImportNsiBaseDecisionMSPsQueue")
+    Queue inImportNsiBaseDecisionMSPsQueue;
 
     @Override
     public Queue getQueue (VocAction.i action) {
@@ -165,7 +165,7 @@ public class BaseDecisionMSPImpl extends BaseCRUD<BaseDecisionMSP> implements Ba
 
 	    UUID uuid = (UUID) db.insertId(InBaseDecisionMSP.class, data);
 
-	    UUIDPublisher.publish(inImportBaseDecisionMSPsQueue, uuid);
+	    UUIDPublisher.publish(inImportNsiBaseDecisionMSPsQueue, uuid);
 
 	} catch (Exception ex) {
 	    Logger.getLogger(BaseDecisionMSP.class.getName()).log(Level.SEVERE, null, ex);
@@ -173,4 +173,16 @@ public class BaseDecisionMSPImpl extends BaseCRUD<BaseDecisionMSP> implements Ba
 
 	return EMPTY_JSON_OBJECT;
     }
+
+    @Override
+    public JsonObject getLog () {return fetchData ((db, job) -> {
+        
+        final JsonObject log = db.getJsonObject (db.getModel ()
+            .select  (InBaseDecisionMSP.class, "*")
+            .orderBy (InBaseDecisionMSP.c.TS.lc () + " DESC")
+        );
+        
+        job.add ("log", log == null ? EMPTY_JSON_OBJECT : log);
+
+    });}
 }

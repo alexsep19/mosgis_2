@@ -124,4 +124,11 @@ public class BaseDecisionMSPs extends EJBResource <BaseDecisionMSPLocal> {
     public JsonObject doImport () {
         return back.doImport (getUser ());
     }
+
+    @POST
+    @Path("log") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject getLog () { 
+        return back.getLog (); 
+    }
 }

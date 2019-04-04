@@ -10,4 +10,5 @@ public interface BaseDecisionMSPLocal extends CRUDBackend {
     
     public JsonObject getVocs ();
     public JsonObject doImport(User user);
+    public JsonObject getLog();
 }

@@ -37,6 +37,7 @@ define ([], function () {
                 items: [
                     {type: 'button', id: b [0], caption: 'Удалить', onClick: $_DO.delete_base_decision_msps, disabled: true, off: !data._can.delete},
 //                    {type: 'button', id: b [1], caption: 'Восстановить', onClick: $_DO.undelete_base_decision_msps, disabled: true, off: $_USER.role.admin},
+                    {type: 'button', id: 'edit', caption: 'Обновить', onClick: $_DO.import_base_decision_msps, icon: 'w2ui-icon-pencil'}
                 ].filter (not_off),
                 
             }, 

@@ -22,6 +22,44 @@ define ([], function () {
 
     }
 
+    $_DO.import_base_decision_msps = function (e) {
+
+        if (!confirm('Импортировать справочник?'))
+            return
+
+        var grid = w2ui ['base_decision_msps_grid']
+
+        grid.lock()
+        $_SESSION.set('base_decision_msps_importing', 1)
+
+        query({type: 'base_decision_msps', id: null, action: 'import'}, {}, $_DO.check_base_decision_msps)
+
+    }
+
+    $_DO.check_base_decision_msps = function () {
+
+        var grid = w2ui ['base_decision_msps_grid']
+
+        query ({type: 'base_decision_msps', id: null, part: 'log'}, {}, function (d) {
+        
+            var is_importing = $_SESSION.get ('base_decision_msps_importing')
+
+            if (!d.log.uuid) return is_importing ? null : $_DO.import_base_decision_msps ()
+        
+            if (d.log.is_over) {            
+                $_SESSION.delete ('base_decision_msps_importing')
+                if (is_importing && grid) use.block ('base_decision_msps')
+                return
+            }
+                        
+            setTimeout (function () {w2ui ['base_decision_msps_grid'].lock ('Импорт данных...', 1)}, 10)
+
+            setTimeout ($_DO.check_base_decision_msps, 2000)
+
+        })
+
+    }
+
     $_DO.delete_base_decision_msps = function () {
         if (confirm ('Удалить эту запись?')) setDeleted ('delete')
     }
