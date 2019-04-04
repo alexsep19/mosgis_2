@@ -13,3 +13,10 @@ nb-configuration.xml
 *.classpath
 bin
 /mosgis-fs/target/
+*.idea
+mosgis.iml
+/mosgis-api/*.iml
+/mosgis-ejb/*.iml
+/mosgis-web/*.iml
+/mosgis-ear/*.iml
+/mosgis-fs/*.iml
