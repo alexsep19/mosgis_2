@@ -6,11 +6,6 @@ define ([], function () {
         it.is_bnk_acct_visible = it.is_billing || it.id_ctr_status > 10
     }
 
-    function check_is_bnk_acct_visible (it) {
-        it.is_annuled = it.id_ctr_status == 110
-        it.is_terminated = it.id_ctr_status == 100
-    }
-
     function recalc () {
 
         var f = w2ui [form_name]
@@ -95,6 +90,8 @@ define ([], function () {
     return function (data, view) {
     
         var it = data.item
+        it.is_annuled = it.id_ctr_status == 110
+        it.is_terminated = it.id_ctr_status == 100
         
         check_is_bnk_acct_visible (it)
 
