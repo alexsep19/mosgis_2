@@ -47,8 +47,7 @@ public class SecurityFilter implements ContainerRequestFilter {
                 requestContext.setSecurityContext(new AuthorizationContext(getSengerUuid(httpServletRequest.getHeader("Authorization"),
                         (FileStoreLocal) ic.lookup("java:app//mosgis-ejb/" + FileStoreLocal.class.getSimpleName().replace("Local", "Impl")))));
             } catch (AnonException e) {
-                requestContext.getHeaders().add("WWW-Authenticate", "Basic realm=\"mosgis\"");
-                requestContext.abortWith (Response.status (Response.Status.UNAUTHORIZED).build());
+                requestContext.abortWith (Response.status (Response.Status.UNAUTHORIZED).header("WWW-Authenticate", "Basic realm=\"mosgis\"").build());
             } catch (AuthException e) {
                 requestContext.abortWith (Response.status (Response.Status.FORBIDDEN).build());
             }
