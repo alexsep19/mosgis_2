@@ -1,5 +1,8 @@
 define ([], function () {
 
+
+    var grid_name = 'house_living_rooms_grid'
+
     $_DO.create_house_living_rooms = function (e) {
     
         var data = $('body').data ('data')
@@ -13,7 +16,9 @@ define ([], function () {
     }
     
     $_DO.delete_house_living_rooms = function (e) {
-    
+
+        check_rights(grid_name, e, is_own_srca_r)
+
         var grid = w2ui['house_living_rooms_grid']
 
         if (!confirm ('Удалить запись?')) return
@@ -34,7 +39,9 @@ define ([], function () {
     
 
     $_DO.patch_house_living_rooms = function (e) {
-        
+
+        check_rights(grid_name, e, is_own_srca_r)
+
         var grid = this
     
         var col = grid.columns [e.column]

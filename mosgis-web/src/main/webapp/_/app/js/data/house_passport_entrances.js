@@ -1,9 +1,11 @@
 define ([], function () {
 
+    var grid_name = 'house_passport_entrances_grid'
+
     function getGrid () {
-        return w2ui ['house_passport_entrances_grid']
+        return w2ui [grid_name]
     }
-    
+
     function getId () {
         return getGrid ().getSelection () [0]
     }
@@ -20,14 +22,18 @@ define ([], function () {
 
     $_DO.edit_house_passport_entrances = function (e) {
 
-        if (getGrid ().get (getId ()).terminationdate) die ('foo', 'Редактирование аннулированных записей запрещено.')
-        
+        check_rights(grid_name, e, is_own_srca_r)
+
+        if (getGrid ().get(getId ()).terminationdate) die ('foo', 'Редактирование аннулированных записей запрещено.')
+
         use.block ('entrance_popup')
         
     }
 
     $_DO.annul_house_passport_entrances = function (e) {
-    
+
+        check_rights(grid_name, e, is_own_srca_r)
+
         $_SESSION.set ('tia', getTia ())
     
         use.block ('annul_popup')        
@@ -35,6 +41,8 @@ define ([], function () {
     }
 
     $_DO.restore_house_passport_entrances = function (e) {
+
+        check_rights(grid_name, e, is_own_srca_r)
 
         if (!confirm ('Отменить аннулирование записи?')) return
 
@@ -44,10 +52,12 @@ define ([], function () {
 
     $_DO.delete_house_passport_entrances = function (e) {
     
-        var grid = getGrid ()
-        var id   = getId ()
+        check_rights(grid_name, e, is_own_srca_r)
+
+        var grid = w2ui[grid_name]
+        var id   = grid.getSelection() [0]
         var r    = grid.get (id)
-    
+
         if (!confirm ('Удалить запись?')) return 
 
         for (code in $('body').data ('data').vc_nsi_192) {
@@ -77,8 +87,10 @@ define ([], function () {
     
     $_DO.patch_house_passport_entrances = function (e) {
     
+        check_rights(grid_name, e, is_own_srca_r)
+
         var grid = this
-    
+
         var col = grid.columns [e.column]
         
         if (col._is_lift) {

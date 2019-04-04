@@ -457,6 +457,38 @@ function show_popup_progress (file_size) {
 
 }
 
+function is_own_srca(data) {
+
+    var controlled = data.cach && data.cach.is_own && data.cach.id_ctr_status_gis == 40
+
+    return $_USER.role.nsi_20_2 && data.srca && data.srca.uuid_org == $_USER.uuid_org && !controlled
+         && [10, 11, 40].indexOf(data.srca.id_ctr_status) != -1
+}
+
+function is_own_srca_r(r) {
+
+    var parent_data = $('body').data('data')
+
+    return !$_USER.role.nsi_20_2 || parent_data.is_own_srca && r.uuid_org == $_USER.uuid_org
+}
+
+function check_rights(grid_name, e, check_f) {
+
+    var grid = w2ui [grid_name]
+
+    var id = grid.getSelection() [0]
+
+    if (id instanceof Object) {
+        id = id.recid
+    }
+
+    var r = grid.get(id)
+
+    if (check_f && !check_f (r)) {
+        die('foo', 'Редактирование и удаление чужих записей запрещено.')
+    }
+}
+
 requirejs (['elu/elu', 'elu_w2ui/elu_w2ui'], function (jq, elu, elu_w2ui) {
     
     var _redirect = redirect;

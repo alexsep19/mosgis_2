@@ -44,6 +44,7 @@ public class NonResidentialPremisesImpl extends BasePassport<NonResidentialPremi
         job.add ("item", item);                
 
         VocBuilding.addCaCh (db, job, item.getString ("tb_houses.fiashouseguid"));
+	VocBuilding.addSRCa(db, job, item.getString("tb_houses.fiashouseguid"), user.getUuidOrg());
 
         db.addJsonArrays (job, 
             NsiTable.getNsiTable (17).getVocSelect (),

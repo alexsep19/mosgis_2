@@ -45,7 +45,8 @@ public class ResidentialPremisesImpl extends BasePassport<ResidentialPremise> im
 
         job.add ("item", item);                
         
-        VocBuilding.addCaCh (db, job, item.getString ("tb_houses.fiashouseguid"));
+        VocBuilding.addCaCh(db, job, item.getString ("tb_houses.fiashouseguid"));
+	VocBuilding.addSRCa(db, job, item.getString("tb_houses.fiashouseguid"), user.getUuidOrg());
 
         db.addJsonArrays (job, 
                 
