@@ -12,7 +12,6 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
-import java.io.IOException;
 import java.util.Base64;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -41,13 +40,18 @@ public class SecurityFilter implements ContainerRequestFilter {
     HttpServletRequest httpServletRequest;
 
     @Override
-    public void filter (ContainerRequestContext requestContext) throws IOException {
+    public void filter (ContainerRequestContext requestContext) {
+        String requestURI = httpServletRequest.getRequestURI ();
+        if (requestURI != null && requestURI.endsWith ("/application.wadl")) return;
         try {
             try {
                 requestContext.setSecurityContext(new AuthorizationContext(getSengerUuid(httpServletRequest.getHeader("Authorization"),
                         (FileStoreLocal) ic.lookup("java:app//mosgis-ejb/" + FileStoreLocal.class.getSimpleName().replace("Local", "Impl")))));
-            } catch (AnonException | AuthException e) {
+            } catch (AnonException e) {
                 requestContext.abortWith (Response.status (Response.Status.UNAUTHORIZED).build());
+                requestContext.getHeaders().add("WWW-Authenticate", "Basic realm=\"mosgis\"");
+            } catch (AuthException e) {
+                requestContext.abortWith (Response.status (Response.Status.FORBIDDEN).build());
             }
         } catch (NamingException e) {
             e.printStackTrace();
