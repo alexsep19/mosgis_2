@@ -21,7 +21,6 @@ import java.util.logging.Logger;
 public class SecurityFilter implements ContainerRequestFilter {
 
     private final static Logger logger = Logger.getLogger (SecurityFilter.class.getName ());
-    public final static String SENDER_UUID = "sender_uuid";
 
     private class AnonException extends Exception {}
     private class AuthException extends Exception {}
