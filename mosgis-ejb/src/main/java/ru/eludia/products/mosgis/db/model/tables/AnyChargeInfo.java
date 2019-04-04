@@ -57,7 +57,8 @@ public class AnyChargeInfo extends View {
             + " o.uuid id "
             + " , t.label " + c.LABEL_TYPE
             + " , COALESCE (m.label, a.label, n.label, g.generalmunicipalresourcename) " + c.LABEL
-            + " , COALESCE (m.okei,  a.okei,  n.okei,  g.okei) " + c.OKEI
+            + " , o.okei "
+//            + " , COALESCE (m.okei,  a.okei,  n.okei,  g.okei) " + c.OKEI
             + " , COALESCE (m.label, a.label, n.label, g.sortorder) " + c.SORTORDER
             + " FROM " + ChargeInfo.TABLE_NAME + " o"
             + " INNER JOIN " + VocChargeInfoType.TABLE_NAME + " t ON t.id = o." + ChargeInfo.c.ID_TYPE

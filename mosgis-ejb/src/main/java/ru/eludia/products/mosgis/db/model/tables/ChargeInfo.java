@@ -7,7 +7,9 @@ import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocChargeInfoType;
 import ru.eludia.products.mosgis.db.model.voc.VocConsumptionVolumeDeterminingMethod;
+import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi50;
 
 public class ChargeInfo extends EnTable {
     
@@ -25,7 +27,10 @@ public class ChargeInfo extends EnTable {
         UUID_M_M_SERVICE      (MainMunicipalService.class, null,                "Коммунальная услуга"),
         UUID_ADD_SERVICE      (AdditionalService.class, null,                   "Дополнительная услуга"),
         UUID_GEN_NEED_RES     (GeneralNeedsMunicipalResource.class, null,       "Коммунальный ресурс, потребляемый при использовании и содержании общего имущества в многоквартирном доме (НСИ 337)"),
+
         UUID_INS_PRODUCT      (InsuranceProduct.class, null,                    "Страховой продукт"),
+
+        OKEI                  (VocOkei.class, "Единицы измерения (ОКЕИ)"),        
 
         RATE                  (Type.NUMERIC, 14, 6, null,   "Тариф"),
         TOTALPAYABLE          (Type.NUMERIC, 13, 2, null,   "Итого к оплате за расчетный период, руб."),
@@ -64,7 +69,7 @@ public class ChargeInfo extends EnTable {
 
         SI_IND_NORM           (Type.NUMERIC, 22, 7, null,   "Норматив потребления коммунальных услуг - индивидуальное потребление (individualConsumptionNorm)"),
         SI_HO_NORM            (Type.NUMERIC, 22, 7, null,   "Норматив потребления коммунальных услуг - общедомовые нужды (houseOverallNeedsNorm)"),
-
+        
         ID_LOG                (ChargeInfoLog.class,         "Последнее событие редактирования"),
 
         ;
@@ -94,12 +99,34 @@ public class ChargeInfo extends EnTable {
 
         key (c.UUID_PAY_DOC);
         
-        trigger ("BEFORE INSERT OR UPDATE", ""
+        trigger ("BEFORE INSERT", ""
                   
             + "BEGIN "
                 
-            + " :NEW.PP_SUM := NVL(:NEW.PP_PP_SUM, 0) + NVL(:NEW.PP_PPP_SUM, 0) + :NEW.PP_RATE_RUB; "
+            + " IF :NEW.CODE_VC_NSI_50 IS NOT NULL THEN "
+            + "   SELECT okei INTO :NEW.okei FROM " + Nsi50.TABLE_NAME + " WHERE id=:NEW.CODE_VC_NSI_50;"
+            + " END IF; "
                 
+            + " IF :NEW.UUID_M_M_SERVICE IS NOT NULL THEN "
+            + "   SELECT okei INTO :NEW.okei FROM " + MainMunicipalService.TABLE_NAME + " WHERE uuid=:NEW.UUID_M_M_SERVICE;"
+            + " END IF; "
+                    
+            + " IF :NEW.UUID_ADD_SERVICE IS NOT NULL THEN "
+            + "   SELECT okei INTO :NEW.okei FROM " + AdditionalService.TABLE_NAME + " WHERE uuid=:NEW.UUID_M_M_SERVICE;"
+            + " END IF; "
+
+            + " IF :NEW.UUID_GEN_NEED_RES IS NOT NULL THEN "
+            + "   SELECT okei INTO :NEW.okei FROM " + GeneralNeedsMunicipalResource.TABLE_NAME + " WHERE uuid=:NEW.UUID_GEN_NEED_RES;"
+            + " END IF; "
+                    
+            + "END;"
+
+        );        
+        
+        trigger ("BEFORE INSERT OR UPDATE", ""
+
+            + "BEGIN "
+            + " :NEW.PP_SUM := NVL(:NEW.PP_PP_SUM, 0) + NVL(:NEW.PP_PPP_SUM, 0) + :NEW.PP_RATE_RUB; "
             + "END;"
 
         );        

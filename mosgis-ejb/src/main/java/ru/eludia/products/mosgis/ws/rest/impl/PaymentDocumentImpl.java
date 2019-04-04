@@ -174,6 +174,7 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
                 
             , Nsi329.getVocSelect ()
             , Nsi331.getVocSelect ()
+            , VocOkei.getVocSelect ()
 
         );
         
