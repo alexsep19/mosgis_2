@@ -8,6 +8,10 @@ define ([], function () {
         
         if (!v.decisionname)                   die ('decisionname', 'Укажите, пожалуйста, наименование')
         if (!v.code_vc_nsi_301)                die ('code_vc_nsi_301', 'Укажите, пожалуйста, тип')
+        if (!v.isappliedtosubsidiaries)
+            die('isappliedtosubsidiaries', 'Укажите, пожалуйста, применяется для субсидий')
+        if (!v.isappliedtorefundofcharges)
+            die('isappliedtorefundofcharges', 'Укажите, пожалуйста, применяется для компенсации расходов')
         
         var tia = {type: 'base_decision_msps'}
         tia.id = form.record.id

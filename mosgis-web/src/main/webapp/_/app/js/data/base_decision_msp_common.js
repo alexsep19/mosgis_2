@@ -42,6 +42,10 @@ define ([], function () {
                                 
         if (!v.decisionname)                   die ('decisionname', 'Укажите, пожалуйста, наименование')
         if (!v.code_vc_nsi_301)                die ('code_vc_nsi_301', 'Укажите, пожалуйста, тип')
+        if (!v.isappliedtosubsidiaries)
+            die('isappliedtosubsidiaries', 'Укажите, пожалуйста, применяется для субсидий')
+        if (!v.isappliedtorefundofcharges)
+            die('isappliedtorefundofcharges', 'Укажите, пожалуйста, применяется для компенсации расходов')
 
         query ({type: 'base_decision_msps', action: 'update'}, {data: v}, reload_page)
 
@@ -52,9 +56,10 @@ define ([], function () {
         query ({type: 'base_decision_msps', action: 'delete'}, {}, reload_page)
     }
     
-    $_DO.undelete_base_decision_msp_common = function (e) {   
-        if (!confirm ('Восстановить эту запись, Вы уверены?')) return        
-        query ({type: 'base_decision_msps', action: 'undelete'}, {}, reload_page)
+    $_DO.alter_base_decision_msp_common = function (e) {
+        if (!confirm('Открыть эту запись на редактирование?'))
+            return
+        query({type: 'base_decision_msps', action: 'alter'}, {}, reload_page)
     }
     
     $_DO.choose_tab_base_decision_msp_common = function (e) {
@@ -88,13 +93,28 @@ define ([], function () {
         
         data.item.status_label = data.vc_gis_status [data.item.id_ctr_status]
         data.item.err_text = data.item ['out_soap.err_text']
-        
-        data.item._can = $_USER.role.admin /*|| data.item.id_status == 10*/ ? {} : {
-            edit: 1 - data.item.is_deleted,
-            update: 1,
-            cancel: 1,
-            delete: 1 - data.item.is_deleted,
-//            undelete: data.item.is_deleted,
+
+        var it = data.item
+        var is_locked = it.is_deleted || !$_USER.has_nsi_20(9, 10)
+
+        it._can = {cancel: 1}
+
+        if (!is_locked) {
+
+            switch (it.id_ctr_status) {
+                case 11:
+                case 14:
+                case 34:
+                    it._can.edit = 1
+            }
+
+            it._can.delete = it._can.update = it._can.edit
+
+            switch (it.id_ctr_status) {
+                case 40:
+                    it._can.alter = 1
+            }
+
         }
 
         done (data)

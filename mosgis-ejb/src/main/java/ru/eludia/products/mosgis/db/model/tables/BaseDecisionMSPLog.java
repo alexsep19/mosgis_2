@@ -53,7 +53,7 @@ public class BaseDecisionMSPLog extends GisWsLogTable {
         return result;
         
     }
-    
+
     private static ImportBaseDecisionMSPRequest.DeleteBaseDecisionMSP toDeleteBaseDecisionMSP (Map<String, Object> r) {
         final ImportBaseDecisionMSPRequest.DeleteBaseDecisionMSP result = DB.to.javaBean (ImportBaseDecisionMSPRequest.DeleteBaseDecisionMSP.class, r);
         result.setTransportGUID (UUID.randomUUID ().toString ());
