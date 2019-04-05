@@ -53,7 +53,7 @@ define ([], function () {
             columns: [      
             
                 {field: 'org.label', caption: 'Организация', size: 100, off: !$_USER.role.admin},
-                {field: 'uniquenumber', caption: 'Код в ГИС ЖКХ', size: 20},
+                {field: 'code', caption: 'Код', size: 20},
                 {field: 'decisionname', caption: 'Наименование', size: 50},
                 {field: 'code_vc_nsi_301',  caption: 'Тип решения', size: 25, voc: data.vc_nsi_301},
                 {field: 'id_ctr_status',  caption: 'Статус', size: 50, voc: data.vc_gis_status},

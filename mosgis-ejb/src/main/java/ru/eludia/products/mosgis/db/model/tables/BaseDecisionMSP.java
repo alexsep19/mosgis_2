@@ -39,8 +39,7 @@ public class BaseDecisionMSP extends EnTable {
 	CODE                         (Type.STRING,  20, null, "Код элемента справочника, уникальный в пределах справочника"),
 	GUID                         (Type.UUID,             null,  "Глобально-уникальный идентификатор элемента справочника"),
 
-	ELEMENTGUID                  (Type.UUID,             null,  "Идентификатор существующего элемента справочника"),
-        UNIQUENUMBER                 (Type.STRING,           null,  "Уникальный номер, присвоенный ГИС ЖКХ"),
+	UNIQUENUMBER                 (Type.STRING,           null,  "Уникальный номер, присвоенный ГИС ЖКХ"),
 
         ID_LOG                       (BaseDecisionMSPLog.class, "Последнее событие редактирования"),
 
@@ -131,12 +130,8 @@ public class BaseDecisionMSP extends EnTable {
 
 	final Map<String, Object> result = DB.HASH(
 	    c.ISACTUAL.lc(), t.isIsActual() ? 1 : 0,
-
 	    c.CODE.lc(), t.getCode(),
-	    c.UNIQUENUMBER.lc(), t.getCode(), // TODO: same field?
-
-	    c.GUID.lc(), t.getGUID(),
-	    c.ELEMENTGUID.lc(), t.getGUID() // TODO: same field?
+	    c.GUID.lc(), t.getGUID()
 	);
 
 	Logger logger = Logger.getLogger(BaseDecisionMSP.class.getName());
