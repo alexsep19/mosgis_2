@@ -48,10 +48,10 @@ define ([], function () {
             
                 var c = this.columns [e.column]
                 var r = this.get (e.recid)
-                
+
                 switch (c.field) {
                     case 'soap.ts':    if (r.uuid_out_soap) return openTab ('/out_soap_rq/' + r.uuid_out_soap)
-                    case 'soap.ts_rp': if (r.uuid_message) return openTab ('/out_soap_rp/' + r.uuid_message)
+                    case 'soap.ts_rp': if (r['soap.uuid_ack']) return openTab ('/out_soap_rp/' + r['soap.uuid_ack'])
                 }
             
             }

@@ -48,10 +48,9 @@ public class ImportBaseDecisionMSPsMDB extends UUIDMDB<InBaseDecisionMSP> {
     protected void handleRecord (DB db, UUID uuid, Map r) throws SQLException {
                 
         try {
-
-            db.update (OutSoap.class, DB.HASH (
-                "uuid",     uuid,
-                "uuid_ack", wsGisNsiClient.exportDataProviderNsiItem ((UUID) r.get ("ppa"), uuid, 302).getMessageGUID ()
+	    db.update (OutSoap.class, DB.HASH (
+		"uuid",     uuid,
+		"uuid_ack", wsGisNsiClient.exportDataProviderNsiItem((UUID) r.get("ppa"), uuid, 302)
             ));
             
             db.update (getTable (), DB.HASH (

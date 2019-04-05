@@ -26,10 +26,10 @@ public class BaseDecisionMSP extends EnTable {
 
         UUID_ORG                     (VocOrganization.class, null, "Организация, которая создала данную запись"),
 
-        DECISIONNAME                 (Type.STRING,  500,    "Наименование основания принятия решения"),
+        DECISIONNAME                 (Type.STRING,  500,    null, "Наименование основания принятия решения"),
         LABEL_UC                     (Type.STRING,          new Virt  ("UPPER(\"DECISIONNAME\")"), "НАИМЕНОВАНИЕ"),
 
-        CODE_VC_NSI_301              (Type.STRING,  20,      "Тип решения о мерах социальной поддержки (НСИ 301)"),
+        CODE_VC_NSI_301              (Type.STRING,  20,     null, "Тип решения о мерах социальной поддержки (НСИ 301)"),
 
 	ISAPPLIEDTOSUBSIDIARIES      (Type.BOOLEAN, Bool.FALSE, "1, если применяется для субсидий, иначе 0"),
 	ISAPPLIEDTOREFUNDOFCHARGES   (Type.BOOLEAN, Bool.FALSE, "1, если применяется для компенсации расходов, иначе 0"),
