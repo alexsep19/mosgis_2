@@ -227,7 +227,6 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
     public JsonObject getChargeInfo (String id, User user) {{return fetchData ((db, job) -> {                
 
         Select select = ModelHolder.getModel ().select (AnyChargeInfo.class, "AS root", "*")
-            .toMaybeOne (VocOkei.class, VocOkei.c.NATIONAL.lc () + " AS unit").on ()
             .toMaybeOne (ActualBankAccount.class, "AS ba", ActualBankAccount.c.LABEL.lc ()).on ("ba.uuid=root." + ChargeInfo.c.UUID_BNK_ACCT.lc ())
             .toMaybeOne (VocOrganization.class, "AS org_bank_acct", "label").on ("ba.uuid_org=org_bank_acct.uuid")
             .where   (ChargeInfo.c.UUID_PAY_DOC, id)

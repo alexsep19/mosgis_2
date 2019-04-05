@@ -7,7 +7,6 @@ import ru.eludia.base.model.Type;
 import ru.eludia.base.model.View;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocChargeInfoType;
-import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi50;
 
 public class AnyChargeInfo extends View {
@@ -16,7 +15,6 @@ public class AnyChargeInfo extends View {
         ID                   (Type.UUID,     "id"),
         LABEL_TYPE           (Type.STRING,   "Тип"),
         LABEL                (Type.STRING,   "Услуга"),
-        OKEI                 (VocOkei.class, "Единицы измерения (ОКЕИ)"),
         SORTORDER            (Type.STRING,   "Порядок сортировки"),
         ;
 
@@ -58,7 +56,6 @@ public class AnyChargeInfo extends View {
             + " , t.label " + c.LABEL_TYPE
             + " , COALESCE (m.label, a.label, n.label, g.generalmunicipalresourcename) " + c.LABEL
             + " , o.okei "
-//            + " , COALESCE (m.okei,  a.okei,  n.okei,  g.okei) " + c.OKEI
             + " , COALESCE (m.label, a.label, n.label, g.sortorder) " + c.SORTORDER
             + " FROM " + ChargeInfo.TABLE_NAME + " o"
             + " INNER JOIN " + VocChargeInfoType.TABLE_NAME + " t ON t.id = o." + ChargeInfo.c.ID_TYPE
