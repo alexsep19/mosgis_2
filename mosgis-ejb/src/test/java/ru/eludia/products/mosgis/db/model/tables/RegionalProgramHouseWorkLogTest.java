@@ -34,7 +34,7 @@ public class RegionalProgramHouseWorkLogTest extends BaseTest {
         
         try (DB db = model.getDb ()) {
             
-            Map<String, Object> record = OverhaulRegionalProgramHouseWorkLog.getForExport (db, uuid);
+            Map<String, Object> record = OverhaulRegionalProgramHouseWorksImport.getForExport (db, uuid);
             
             System.out.println (record);
             
@@ -46,7 +46,7 @@ public class RegionalProgramHouseWorkLogTest extends BaseTest {
     
     private void checkImport (final Map<String, Object> r) throws IllegalStateException {
         dump (r);
-        validate (OverhaulRegionalProgramHouseWorkLog.toImportRegionalProgramWorkRequest (r));
+        validate (OverhaulRegionalProgramHouseWorksImport.toImportRegionalProgramWorkRequest (r));
     }
     
     //@Ignore

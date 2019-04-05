@@ -36,12 +36,9 @@ define ([], function () {
 
             if (!it.is_deleted && ($_USER.role.admin || it.org_uuid == $_USER.uuid_org)) {
 
-                switch (it.id_orp_status) {
-                    case -24:
+                switch (it.last_succesfull_status) {
                     case  10:
-                    case  14:
-                    case  34:
-                    case 124:
+                    case -31:
                         it._can.approve = 1
                 }
 

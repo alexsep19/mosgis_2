@@ -38,6 +38,9 @@ define ([], function () {
             },
 
         });
+
+        $(('#regional_program_link')).attr({title: 'Перейти на страницу РПКР'})
+        clickOn ($('#regional_program_link'), function () { openTab ('/overhaul_regional_program/' + data.item.program_uuid) })
             
     }
 

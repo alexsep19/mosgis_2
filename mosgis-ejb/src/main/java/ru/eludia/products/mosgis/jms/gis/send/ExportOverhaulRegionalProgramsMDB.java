@@ -70,7 +70,6 @@ public class ExportOverhaulRegionalProgramsMDB extends GisExportMDB <OverhaulReg
             
         switch (action) {
             case PROJECT_PUBLISH: return wsGisCapitalRepairClient.importRegionalProgramProject (orgPPAGuid, messageGUID, r);
-            case PLACING_HOUSE_WORKS: return wsGisCapitalRepairClient.importRegionalProgramWork (orgPPAGuid, messageGUID, r);
             case PLACING:     return wsGisCapitalRepairClient.importRegionalProgram (orgPPAGuid, messageGUID, r);
             default: throw new IllegalArgumentException ("No action implemented for " + action);
         }

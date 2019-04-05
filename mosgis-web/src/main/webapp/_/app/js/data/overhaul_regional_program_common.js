@@ -3,7 +3,10 @@ define ([], function () {
     var form_name = 'overhaul_regional_program_common_form'
 
     $_DO.approve_overhaul_regional_program_common = function (e) {
-        if (!confirm ('Разместить эти данные в ГИС ЖКХ?')) return
+        var data = clone ($('body').data ('data'))
+        var warning = 'Разместить эти данные в ГИС ЖКХ?' + 
+            (data.item.last_succesfull_status == -31 ? '\nДанная операция инициирует публикацию РПКР в ГИС ЖКХ, что делает ее дальнейшее редактирование невозможным' : '')
+        if (!confirm (warning)) return
         query ({type: 'overhaul_regional_programs', action: 'approve'}, {}, reload_page)
     }
 

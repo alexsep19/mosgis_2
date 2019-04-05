@@ -130,9 +130,13 @@ public class VocGisStatus extends Table {
         
         PUBLISHEDANDPROJECT  (-20, "PublishedAndProject", "размещен проект"),
         
-        PENDING_RQ_PLACE_REGIONAL_PROGRAM_WORKS (-22, "_pending_rq_place_regional_program_works", "ожидание размещения видов работ региональной программы"),
-        PENDING_RP_PLACE_REGIONAL_PROGRAM_WORKS (-23, "_pending_rp_place_regional_program_works", "ожидание подтверждения размещения видов работ региональной программы"),
-        FAILED_PLACE_REGIONAL_PROGRAM_WORKS     (-24, "_failed_place_regional_program_works", "ошибка размещения видов работ региональной программы"),
+        REGIONAL_PROGRAM_WORKS_PLACE_INITIALIZED (-21, "_regional_program_works_place_initialized", "инициирована отправка видов работ региональной программы"),
+        
+        PENDING_RQ_PLACE_REGIONAL_PROGRAM_WORKS  (-22, "_pending_rq_place_regional_program_works", "ожидание размещения видов работ региональной программы"),
+        PENDING_RP_PLACE_REGIONAL_PROGRAM_WORKS  (-23, "_pending_rp_place_regional_program_works", "ожидание подтверждения размещения видов работ региональной программы"),
+        FAILED_PLACE_REGIONAL_PROGRAM_WORKS      (-24, "_failed_place_regional_program_works", "ошибка размещения видов работ региональной программы"),
+        
+        REGIONAL_PROGRAM_WORKS_PLACE_FINISHED    (-31, "_regional_program_works_place_finished", "завершена отправка видов работ региональной программы"),
 
         ;
 
