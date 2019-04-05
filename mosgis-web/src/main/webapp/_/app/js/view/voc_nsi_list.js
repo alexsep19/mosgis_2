@@ -23,6 +23,7 @@ define ([], function () {
             name: 'sidebar',
             nodes: data.vc_nsi_list_group,
             onClick: $_DO.open_nsi_list,
+            onRender: function () {use.block ('voc_nsi_grid')},
 
         })
 

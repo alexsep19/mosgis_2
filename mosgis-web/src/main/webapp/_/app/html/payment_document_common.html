@@ -19,13 +19,21 @@
         			width: 70px !important;
         		}
 
+        		td.left {
+        			min-width: 380px;
+        		}
+
+        		td.left .w2ui-field > label {
+        			width: 170px;
+        		}
+
         	</style>
 			<center>
         	<table border=0 cellpadding=0 cellspacing=0 style="min-width:850px;">
 
         		<tr>
 
-					<td style="min-width:520px;" width=1 valign=top>
+					<td class=left width=1 valign=top>
 
 							<div class="w2ui-field">
 								<label>№ документа</label>
@@ -73,7 +81,7 @@
 
 					</td>
 
-					<td style="min-width:520px;" valign=top>
+					<td style="min-width:400px;" valign=top>
 
 
 							<div class="w2ui-field">
@@ -116,7 +124,7 @@
 
 					<td valign=top>
 
-						<table border=0 cellpadding=0 cellspacing=0 width=100% class=sync>
+						<table border=0 cellpadding=0 cellspacing=0 width=100% class=sync style="margin-left:10px;">
 
 							<tr>
 								<td>Статус:</td>
@@ -134,6 +142,19 @@
 
 					</td>
 
+        		</tr>
+
+        		<tr>
+					<td colspan=2 valign=top>
+
+							<div class="w2ui-field" title="Предельный (максимальный) индекс изменения размера платы граждан за коммунальные услуги в муниципальном образовании">
+								<label style="width:680px;">Максимальный индекс изменения размера платы граждан за коммунальные услуги в муниципальном образовании</label>
+								<div style="margin-left:687px;">
+									<input name=limitindex> %
+								</div>
+							</div>
+
+					</td>
         		</tr>
 
         	</table>

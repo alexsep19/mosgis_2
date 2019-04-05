@@ -146,7 +146,26 @@ public class PaymentDocuments extends EJBResource <PaymentDocumentLocal> {
         return back.doPatchPenaltiesAndCourtCosts (id, p, getUser ());
     }    
 
-/*    
+    @POST
+    @Path("{id}/comp_cost")
+    @Produces (APPLICATION_JSON)
+    public JsonObject getComponentsOfCost (@PathParam ("id") String id) {
+//        final JsonObject item = back.getItem (id);
+//        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
+        return back.getComponentsOfCost (id, getUser ());
+    }
+
+    @POST
+    @Path("{id}/patch_comp_cost")
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject doPatchComponentsOfCost (@PathParam ("id") String id, JsonObject p) {
+//        final JsonObject item = getInnerItem (id);
+//        checkOrg (item);
+        return back.doPatchComponentsOfCost (id, p, getUser ());
+    }    
+
+    /*    
     @POST
     @Path("{id}/approve") 
     @Produces (APPLICATION_JSON)

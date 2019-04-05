@@ -18,7 +18,13 @@
     	<type>JMS</type>
         <path>META-INF/mosgismodule-general-needs-municipal-resource-jms.xml</path>        
     </module>
-    
+
+    <module>
+	<name>Workflow-base-decision-msp</name>
+	<type>JMS</type>
+	<path>META-INF/mosgismodule-base-decision-msp-jms.xml</path>
+    </module>
+
     <module>
         <name>Workflow-working-plans</name>
         <type>JMS</type>

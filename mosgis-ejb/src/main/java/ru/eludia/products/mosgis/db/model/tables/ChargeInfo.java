@@ -45,6 +45,8 @@ public class ChargeInfo extends EnTable {
         MONEYRECALCULATION    (Type.NUMERIC, 13, 2, null,   "Перерасчеты, корректировки, руб."),
         MONEYDISCOUNT         (Type.NUMERIC, 13, 2, null,   "Льготы, субсидии, скидки, руб."),
 
+        LIMITINDEX            (Type.NUMERIC, 6,  2, null,   "Предельный (максимальный) индекс изменения размера платы граждан за коммунальные услуги в муниципальном образовании, %"),
+        
         RATIO                 (Type.NUMERIC, 5,  2, null,   "Размер повышающего коэффициента"),
         AMOUNTOFEXCESSFEES    (Type.NUMERIC, 13, 2, null,   "Размер превышения платы, рассчитанной с применением повышающего коэффициента над размером платы, рассчитанной без учета повышающего коэффициента, руб."),
                 
@@ -53,6 +55,15 @@ public class ChargeInfo extends EnTable {
         PP_PPP_SUM            (Type.NUMERIC, 13, 2, null,   "Сумма платы с учётом рассрочки платежа - от платы за предыдущие расчётные периоды, руб. (pastPaymentPeriodPiecemealPaymentSum)"),
         PP_RATE_RUB           (Type.NUMERIC, 13, 2, null,   "Проценты за рассрочку, руб. (piecemealPaymentPercentRub)"),
         PP_RATE_PRC           (Type.NUMERIC,  5, 2, null,   "Проценты за рассрочку, %. (piecemealPaymentPercent)"),        
+
+        SI_VAL_IND            (Type.NUMERIC, 22, 7, null,   "Текущие показания приборов учёта коммунальных услуг - индивидуальное потребление (individualConsumptionCurrentValue)"),
+        SI_VAL_OVER           (Type.NUMERIC, 22, 7, null,   "Текущие показания приборов учёта коммунальных услуг - общедомовые нужды (houseOverallNeedsCurrentValue)"),
+
+        SI_HT_IND             (Type.NUMERIC, 22, 7, null,   "Суммарный объём коммунальных услуг в доме - индивидуальное потребление (houseTotalIndividualConsumption)"),
+        SI_HT_OVER            (Type.NUMERIC, 22, 7, null,   "Суммарный объём коммунальных услуг в доме - общедомовые нужды (houseTotalHouseOverallNeeds)"),
+
+        SI_IND_NORM           (Type.NUMERIC, 22, 7, null,   "Норматив потребления коммунальных услуг - индивидуальное потребление (individualConsumptionNorm)"),
+        SI_HO_NORM            (Type.NUMERIC, 22, 7, null,   "Норматив потребления коммунальных услуг - общедомовые нужды (houseOverallNeedsNorm)"),
 
         ID_LOG                (ChargeInfoLog.class,         "Последнее событие редактирования"),
 

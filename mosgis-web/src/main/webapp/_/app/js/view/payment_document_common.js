@@ -47,13 +47,15 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 250},
+                {type: 'top', size: 280},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
                             {id: 'payment_document_common_charge_info', caption: 'Текущие начисления', off: it.id_type != 0},
+                            {id: 'payment_document_common_service_info', caption: 'Справочная информация', off: it.id_type != 0},
                             {id: 'payment_document_common_piecemeal_payment', caption: 'Рассрочка платежей', off: it.id_type != 0},
                             {id: 'payment_document_common_penalties', caption: 'Неустойки и судебные расходы', off: it.id_type != 0},
+                            {id: 'payment_document_common_comp_cost', caption: 'Стоимость эл. энергии', off: it.id_type != 0 || !it.is_power_supply},
                             {id: 'payment_document_common_additional_information', caption: 'Дополнительная информация'},
                             {id: 'payment_document_common_log', caption: 'История изменений'},
                         ].filter (not_off),
@@ -94,7 +96,7 @@ define ([], function () {
                 {name: 'subsidiescompensation_', type: 'float', options: {min: 0, precision: 2}},
                 {name: 'totalpayablebypdwith_da', type: 'float', options: {min: 0, precision: 2}},
                 {name: 'paidcash', type: 'float', options: {min: 0, precision: 2}},
-//                {name: 'limitindex', type: 'float', options: {min: 0, precision: 2}},
+                {name: 'limitindex', type: 'float', options: {min: 0, precision: 2}},
 
                 {name: 'sign', type: 'list', options: {items: [
                     {id: -1, text: "Задолженность"},
