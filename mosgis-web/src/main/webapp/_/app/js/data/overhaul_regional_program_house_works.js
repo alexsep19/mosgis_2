@@ -2,6 +2,22 @@ define ([], function () {
 
     var grid_name = 'overhaul_regional_program_house_works_grid'
 
+    $_DO.approve_overhaul_regional_program_house_works = function (e) {
+
+        if (!confirm ('Опубликовать эти данные в ГИС ЖКХ?')) return
+
+        var data = clone ($('body').data ('data'))
+
+        query ({
+
+            type: 'overhaul_regional_program_house_works',
+            id: data.item.program_uuid,
+            action: 'approve',
+
+        }, {}, reload_page)
+
+    }
+
     $_DO.create_overhaul_regional_program_house_works = function (e) {
             
         $_SESSION.set ('record', {})

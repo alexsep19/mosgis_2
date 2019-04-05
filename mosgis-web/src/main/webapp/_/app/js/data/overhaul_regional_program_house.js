@@ -35,25 +35,14 @@ define ([], function () {
             if (!it.is_deleted && !it['program.is_deleted'] &&
                 ($_USER.role.admin || it['program.org_uuid'] == $_USER.uuid_org)) {
 
-                switch (it.id_orph_status) {
-                    case 10:
-                    case 11:
+                switch (it.last_succesfull_status) {
+                    case  10:
+                    case -31:
+                    case -21:
                         it._can.edit = 1
                 }
 
                 it._can.update = it._can.edit
-
-                switch (it.id_orph_status) {
-                    case 10:
-                    case 14:
-                    case 40:
-                        it._can.delete = 1
-                }
-
-                switch (it.id_orph_status) {
-                    case 40:
-                        it._can.alter = 1
-                }
 
             }
 

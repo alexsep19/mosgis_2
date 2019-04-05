@@ -75,7 +75,6 @@ public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProg
                 nextStatus = VocGisStatus.i.PENDING_RQ_PUBLISHANDPROJECT;
                 action = VocAction.i.PUBLISHANDPROJECT;
                 break;
-            case REGIONAL_PROGRAM_WORKS_PLACE_INITIALIZED:
             case REGIONAL_PROGRAM_WORKS_PLACE_FINISHED:
                 nextStatus = VocGisStatus.i.PENDING_RQ_PLACING;
                 action = VocAction.i.APPROVE;

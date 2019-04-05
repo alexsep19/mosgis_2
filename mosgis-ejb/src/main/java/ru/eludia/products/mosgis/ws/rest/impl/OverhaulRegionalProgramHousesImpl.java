@@ -51,7 +51,7 @@ public class OverhaulRegionalProgramHousesImpl extends BaseCRUD <OverhaulRegiona
         
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
             .get        (getTable (), id, "*")
-            .toOne      (OverhaulRegionalProgram.class, "AS program", "startyear AS startyear", "endyear AS endyear", "is_deleted", "org_uuid").on ()
+            .toOne      (OverhaulRegionalProgram.class, "AS program", "startyear AS startyear", "endyear AS endyear", "is_deleted", "org_uuid", "last_succesfull_status").on ()
             .toOne      (House.class, "AS house", "address AS address", "fiashouseguid AS fiashouseguid").on ()
             .toOne      (VocBuilding.class, "AS build", "oktmo AS oktmo").on ("build.houseguid = house.fiashouseguid")
         ));
