@@ -58,6 +58,7 @@ public class VocAction extends Table {
         IMPORT_ADD_SERVICES        ("import_add_services", "Импорт справочника дополнительных услуг"),
         IMPORT_OVERHAUL_WORK_TYPES ("import_overhaul_work_types", "Импорт справочника видов работ капитального ремонта"),
 	IMPORT_LEGAL_ACTS          ("import_legal_acts", "Импорт нормативно-правовых актов"),
+	IMPORT_BASE_DECISION_MSPS  ("import_base_decision_msps", "Импорт НСИ 302"),
 
         LOCK                        ("lock",                       "блокировка"),
         PROMOTE                     ("promote",                    "утверждение"),

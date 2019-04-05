@@ -1,11 +1,17 @@
 package ru.eludia.products.mosgis.ws.rest.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.jms.Queue;
 import javax.json.JsonObject;
+import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.BaseDecisionMSP;
@@ -15,10 +21,12 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.incoming.InBaseDecisionMSP;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi2;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi301;
 import ru.eludia.products.mosgis.rest.User;
+import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
 import ru.eludia.products.mosgis.ws.rest.impl.tools.ComplexSearch;
 import ru.eludia.products.mosgis.ws.rest.impl.tools.Search;
@@ -31,6 +39,9 @@ public class BaseDecisionMSPImpl extends BaseCRUD<BaseDecisionMSP> implements Ba
 
     @Resource (mappedName = "mosgis.inNsiBaseDecisionMSPsQueue")
     Queue queue;
+
+    @Resource(mappedName = "mosgis.inImportNsiBaseDecisionMSPsQueue")
+    Queue inImportNsiBaseDecisionMSPsQueue;
 
     @Override
     public Queue getQueue (VocAction.i action) {
@@ -136,4 +147,42 @@ public class BaseDecisionMSPImpl extends BaseCRUD<BaseDecisionMSP> implements Ba
         Nsi301.i.addTo(job);
     });}
 
+    @Override
+    public JsonObject doImport(User user) {
+
+	try (DB db = ModelHolder.getModel().getDb()) {
+
+	    String uuidOrg = user.getUuidOrg();
+
+	    if (uuidOrg == null) {
+		logger.warning("User has no org set, access prohibited");
+		throw new ValidationException("foo", "Отсутствует организация пользователя, доступ запрещен");
+	    }
+
+	    Map<String, Object> data = new HashMap ();
+
+	    data.put(InBaseDecisionMSP.c.UUID_ORG.lc(), uuidOrg);
+
+	    UUID uuid = (UUID) db.insertId(InBaseDecisionMSP.class, data);
+
+	    UUIDPublisher.publish(inImportNsiBaseDecisionMSPsQueue, uuid);
+
+	} catch (Exception ex) {
+	    Logger.getLogger(BaseDecisionMSP.class.getName()).log(Level.SEVERE, null, ex);
+	}
+
+	return EMPTY_JSON_OBJECT;
+    }
+
+    @Override
+    public JsonObject getLog () {return fetchData ((db, job) -> {
+        
+        final JsonObject log = db.getJsonObject (db.getModel ()
+            .select  (InBaseDecisionMSP.class, "*")
+            .orderBy (InBaseDecisionMSP.c.TS.lc () + " DESC")
+        );
+        
+        job.add ("log", log == null ? EMPTY_JSON_OBJECT : log);
+
+    });}
 }
