@@ -130,7 +130,7 @@ define ([], function () {
                 {field: 'cons_o_vol', caption: 'Объём', size: 10, editable: {type: 'float', precision: 7, autoFormat: true, min: 0}},
                 {field: 'cons_o_dtrm_meth', caption: 'Определён по', size: 10, editable: {type: 'list'}, voc: data.vc_cnsmp_vol_dtrm},
 
-                {field: 'unit', caption: 'Ед. изм.', size: 10},                
+                {field: 'okei', caption: 'Ед. изм.', size: 10, editable: {type: 'list'}, voc: data.vc_okei},
 
                 {field: 'ratio', caption: 'Коэффициент', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}},
                 {field: 'amountofexcessfees', caption: 'Размер превышения платы', size: 10, editable: {type: 'float', precision: 2, autoFormat: true}},
