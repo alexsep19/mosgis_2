@@ -22,7 +22,7 @@ define ([], function () {
         switch (col.field) {
                 
             case 'calcexplanation':
-                return 'Для данной строки это поле обязательно'
+                return row.uuid_gen_need_res && !row.calcexplanation ? 'Для данной строки это поле обязательно' : null
 
             default:
                 return null
@@ -273,8 +273,22 @@ define ([], function () {
 
                             }
                             else {
+                            
+                                $(sel + ' td.w2ui-grid-data').each (function () {
 
-//                        get_message
+                                    var $this = $(this)
+                                    var col = grid.columns [$this.attr ('col')]
+                                    
+                                    var m = get_message (row, col)
+
+                                    if (m) {
+                                        $this.css ({background: '#ffcccc'})
+                                        $('div', $this).attr ({title: m})
+                                    }
+
+                                })
+
+                                
 
                             }
 
