@@ -17,12 +17,29 @@ define ([], function () {
                 
     }
     
+    function get_message (row, col) {
+    
+        switch (col.field) {
+                
+            case 'calcexplanation':
+                return 'Для данной строки это поле обязательно'
+
+            default:
+                return null
+
+        }        
+    
+    }
+    
     function is_yellow (row, col) {
 
         switch (col.field) {
 
             case 'accountingperiodtotal':
                 return true
+                
+            case 'calcexplanation':
+                return row.uuid_gen_need_res
 
             default:
                 return false
@@ -48,17 +65,23 @@ define ([], function () {
             var t = grid.toolbar            
 
             if (is_editing) {
-                t.enable ('cancel')
+            
+                t.enable  ('cancel')
                 t.disable ('edit')
                 grid.selectNone ()
+                
                 w2ui ['payment_document_common_form'].lock ()
-                w2ui ['passport_layout'].get ('main').tabs.disable ('payment_document_common_additional_information', 'payment_document_common_log')
+                
+                var tabs = w2ui ['passport_layout'].get ('main').tabs
+                $.each (tabs.tabs, function () {
+                    var id = this.id
+                    if (id == 'payment_document_common_charge_info') return
+                    tabs.disable (id)
+                })
+                
             }
             else {
-                t.disable ('cancel')
-                t.enable ('edit')
-                w2ui ['payment_document_common_form'].unlock ()
-                w2ui ['passport_layout'].get ('main').tabs.enable ('payment_document_common_additional_information', 'payment_document_common_log')
+                reload_page ()
             }
 
             grid.refresh ()
@@ -235,25 +258,34 @@ define ([], function () {
                             }
                         
                         }
-                        else if (is_editing) {
+                        else {
                         
-                            $(sel + ' td.w2ui-grid-data').each (function () {
-
-                                var $this = $(this)
-                                var col = grid.columns [$this.attr ('col')]
-                                
-                                if (is_yellow (row, col)) $this.css ({background: '#ffffcc'})
-
-                            })
+                            if (is_editing) {
                         
+                                $(sel + ' td.w2ui-grid-data').each (function () {
+
+                                    var $this = $(this)
+                                    var col = grid.columns [$this.attr ('col')]
+
+                                    if (is_yellow (row, col)) $this.css ({background: '#ffffcc'})
+
+                                })
+
+                            }
+                            else {
+
+//                        get_message
+
+                            }
+
                         }
-                        
+
                         last = this.id                        
 
                     })
 
                 }) 
-            
+
             }
 
         }).refresh ()
