@@ -42,6 +42,8 @@ public class BaseDecisionMSPLog extends GisWsLogTable {
         
     public static ImportBaseDecisionMSPRequest toImportBaseDecisionMSPRequest (Map<String, Object> r) {
 
+	r.put("elementguid", r.get(BaseDecisionMSP.c.GUID.lc()));
+
         final ImportBaseDecisionMSPRequest result = new ImportBaseDecisionMSPRequest ();
 
 	if (DB.ok(r.get("is_deleted"))) {
@@ -55,9 +57,14 @@ public class BaseDecisionMSPLog extends GisWsLogTable {
     }
 
     private static ImportBaseDecisionMSPRequest.DeleteBaseDecisionMSP toDeleteBaseDecisionMSP (Map<String, Object> r) {
-        final ImportBaseDecisionMSPRequest.DeleteBaseDecisionMSP result = DB.to.javaBean (ImportBaseDecisionMSPRequest.DeleteBaseDecisionMSP.class, r);
-        result.setTransportGUID (UUID.randomUUID ().toString ());
-        return result;
+
+	r.put("elementguid", r.get(BaseDecisionMSP.c.GUID.lc()));
+
+	final ImportBaseDecisionMSPRequest.DeleteBaseDecisionMSP result = DB.to.javaBean (ImportBaseDecisionMSPRequest.DeleteBaseDecisionMSP.class, r);
+
+	result.setTransportGUID (UUID.randomUUID ().toString ());
+
+	return result;
     }
 
     private static ImportBaseDecisionMSPType toImportBaseDecisionMSP (Map<String, Object> r) {
