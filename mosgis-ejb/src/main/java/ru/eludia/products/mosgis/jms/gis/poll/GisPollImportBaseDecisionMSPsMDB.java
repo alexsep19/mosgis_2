@@ -24,6 +24,8 @@ import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.gosuslugi.dom.schema.integration.nsi_service_async.Fault;
 import ru.eludia.products.mosgis.db.model.tables.BaseDecisionMSP;
 import ru.eludia.products.mosgis.db.model.tables.BaseDecisionMSPLog;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.ws.soap.clients.WsGisNsiClient;
 import ru.gosuslugi.dom.schema.integration.nsi.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementType;
@@ -81,16 +83,21 @@ public class GisPollImportBaseDecisionMSPsMDB extends GisPollMDB {
             for (Object uuid_object: idxs.keySet ()) {
                 
                 String id_log = db.insertId(BaseDecisionMSPLog.class, DB.HASH(
-                        "action", VocAction.i.IMPORT_BASE_DECISION_MSPS.getName (),
-                        "uuid_object", uuid_object
+		    "action", VocAction.i.IMPORT_BASE_DECISION_MSPS.getName (),
+		    "uuid_object", uuid_object,
+		    "uuid_out_soap", uuid
                 )).toString ();
                 
                 db.update (BaseDecisionMSP.class, DB.HASH (
                         "uuid", uuid_object,
                         "id_log", id_log
                 ));
-                
             }
+
+	    db.update(OutSoap.class, HASH(
+		"uuid", uuid,
+		"id_status", DONE.getId()
+	    ));
 
 	    db.update(InBaseDecisionMSP.class, HASH(
 		"uuid", uuid,
