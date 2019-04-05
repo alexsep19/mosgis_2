@@ -133,8 +133,10 @@ define ([], function () {
                 {master: true},
                 
                 {span: 2, caption: 'Повышающий коэффициент'},
-                {span: 2, caption: 'Корректировки, руб'},
+//                {span: 2, caption: 'Корректировки, руб'},
                 
+                {master: true},
+                {master: true},
                 {master: true},
                 {master: true},
 
@@ -177,7 +179,7 @@ define ([], function () {
                 {field: 'amountofexcessfees', caption: 'Размер превышения платы', size: 10, editable: {type: 'float', precision: 2, autoFormat: true}},
 
                 {field: 'moneyrecalculation', caption: 'Перерасчет', size: 10, editable: {type: 'float', precision: 2, autoFormat: true}},
-                {field: 'moneydiscount', caption: 'Субсидии, скидки', size: 10, editable: {type: 'float', precision: 2, autoFormat: true}},
+                {field: 'moneydiscount', caption: 'Субсидии, скидки', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}},
 
                 {field: 'calcexplanation', caption: 'Порядок расчётов', size: 10, editable: {type: 'text'}},
                 
