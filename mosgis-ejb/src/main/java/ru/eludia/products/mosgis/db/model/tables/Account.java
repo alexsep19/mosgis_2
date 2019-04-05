@@ -28,7 +28,7 @@ public class Account extends EnTable {
 
 	FIASHOUSEGUID          (VocBuilding.class,   null,   "Глобальный уникальный идентификатор дома по ФИАС"),
 
-        ACCOUNTNUMBER          (Type.STRING,  30,    null,  "Причина закрытия (НСИ 22)"),
+        ACCOUNTNUMBER          (Type.STRING,  30,    null,  "Номер лицевого счёта"),
         
         LIVINGPERSONSNUMBER    (Type.NUMERIC, 4,     null,  "Количество проживающих"),
         TOTALSQUARE            (Type.NUMERIC, 25, 4, null,  "Общая площадь жилого помещения"),
