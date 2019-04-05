@@ -44,8 +44,8 @@ public class ChargeInfo extends EnTable {
         CONS_O_VOL            (Type.NUMERIC, 22, 7, null,   "Потреблённый объём услуги / общедомовые нужды"),
         CONS_O_DTRM_METH      (VocConsumptionVolumeDeterminingMethod.class, "Способ определения объёма / общедомовые нужды"),
 
-//      SUM                   (Type.NUMERIC, 12, 2, null,   "Сумма перерасчётов, руб."),
-//      RECALCULATIONREASON   (Type.STRING,  null,          "Основания перерасчётов"),
+//        SUM                   (Type.NUMERIC, 12, 2, null,   "Сумма перерасчётов, руб."),
+        RECALCULATIONREASON   (Type.STRING,  null,          "Основания перерасчётов"),
 
         MONEYRECALCULATION    (Type.NUMERIC, 13, 2, null,   "Перерасчеты, корректировки, руб."),
         MONEYDISCOUNT         (Type.NUMERIC, 13, 2, null,   "Льготы, субсидии, скидки, руб."),

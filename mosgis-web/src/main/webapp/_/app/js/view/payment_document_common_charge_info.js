@@ -24,6 +24,12 @@ define ([], function () {
             case 'calcexplanation':
                 return row.uuid_gen_need_res && !row.calcexplanation ? 'Для данной строки это поле обязательно' : null
 
+            case 'moneyrecalculation':
+                return !row.moneyrecalculation && row.recalculationreason ? 'Не заполнена сумма' : null
+
+            case 'recalculationreason':
+                return !row.recalculationreason && row.moneyrecalculation ? 'Не заполнено основание' : null
+
             default:
                 return null
 
@@ -133,9 +139,8 @@ define ([], function () {
                 {master: true},
                 
                 {span: 2, caption: 'Повышающий коэффициент'},
-//                {span: 2, caption: 'Корректировки, руб'},
+                {span: 2, caption: 'Перерасчет'},
                 
-                {master: true},
                 {master: true},
                 {master: true},
                 {master: true},
@@ -178,7 +183,9 @@ define ([], function () {
                 {field: 'ratio', caption: 'Коэффициент', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}},
                 {field: 'amountofexcessfees', caption: 'Размер превышения платы', size: 10, editable: {type: 'float', precision: 2, autoFormat: true}},
 
-                {field: 'moneyrecalculation', caption: 'Перерасчет', size: 10, editable: {type: 'float', precision: 2, autoFormat: true}},
+                {field: 'moneyrecalculation', caption: 'Сумма, руб', size: 10, editable: {type: 'float', precision: 2, autoFormat: true}},
+                {field: 'recalculationreason', caption: 'Основание', size: 10, editable: {type: 'text'}},
+                
                 {field: 'moneydiscount', caption: 'Субсидии, скидки', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}},
 
                 {field: 'calcexplanation', caption: 'Порядок расчётов', size: 10, editable: {type: 'text'}},
