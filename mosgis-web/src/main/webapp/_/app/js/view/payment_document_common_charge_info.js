@@ -68,6 +68,8 @@ define ([], function () {
         var layout = w2ui ['passport_layout']
 
         var $panel = $(layout.el ('main'))               
+        
+        var m2 = {id: '055'}; m2.text = data.vc_okei [m2.id]
 
         $panel.w2regrid ({ 
 
@@ -130,7 +132,23 @@ define ([], function () {
                 {field: 'cons_o_vol', caption: 'Объём', size: 10, editable: {type: 'float', precision: 7, autoFormat: true, min: 0}},
                 {field: 'cons_o_dtrm_meth', caption: 'Определён по', size: 10, editable: {type: 'list'}, voc: data.vc_cnsmp_vol_dtrm},
 
-                {field: 'okei', caption: 'Ед. изм.', size: 10, editable: {type: 'list'}, voc: data.vc_okei},
+                {field: 'okei', caption: 'Ед. изм.', size: 10, editable: function (r) {
+                
+                    var okei_orig = r.okei_orig; if (!okei_orig) return null
+                    
+                    var text  = data.vc_okei [okei_orig]                    
+                    var items = [{id: okei_orig, text: text}]
+                    
+                    if (okei_orig != m2.id) {
+                        if (text < m2.text) 
+                            items.unshift (m2)
+                        else
+                            items.push (m2)                            
+                    }
+                    
+                    return {type: 'list', items: items}
+                    
+                }, voc: data.vc_okei},
 
                 {field: 'ratio', caption: 'Коэффициент', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}},
                 {field: 'amountofexcessfees', caption: 'Размер превышения платы', size: 10, editable: {type: 'float', precision: 2, autoFormat: true}},
@@ -180,8 +198,9 @@ define ([], function () {
                     for (var field in chg) {
                         var col = grid.getColumn (field)
                         var editable = col.editable
+                        if (typeof editable === "function") editable = editable (this)
                         if (!editable || editable.type != 'list') continue
-                        this [field] = chg [field].uuid
+                        this [field] = chg [field].uuid || chg [field].id
                         delete this.w2ui.changes
                     }
 

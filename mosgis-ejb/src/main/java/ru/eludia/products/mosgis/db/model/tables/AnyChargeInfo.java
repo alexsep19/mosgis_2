@@ -16,6 +16,7 @@ public class AnyChargeInfo extends View {
         LABEL_TYPE           (Type.STRING,   "Тип"),
         LABEL                (Type.STRING,   "Услуга"),
         SORTORDER            (Type.STRING,   "Порядок сортировки"),
+        OKEI_ORIG            (Type.STRING,   "Единица измерения исходной записи"),
         ;
 
         @Override
@@ -56,6 +57,7 @@ public class AnyChargeInfo extends View {
             + " , t.label " + c.LABEL_TYPE
             + " , COALESCE (m.label, a.label, n.label, g.generalmunicipalresourcename) " + c.LABEL
             + " , COALESCE (m.label, a.label, n.label, g.sortorder) " + c.SORTORDER
+            + " , COALESCE (m.okei,  a.okei,  n.okei,  g.okei) " + c.OKEI_ORIG
             + " FROM " + ChargeInfo.TABLE_NAME + " o"
             + " INNER JOIN " + VocChargeInfoType.TABLE_NAME + " t ON t.id = o." + ChargeInfo.c.ID_TYPE
             + " LEFT  JOIN " + MainMunicipalService.TABLE_NAME + " m ON m.uuid = " + ChargeInfo.c.UUID_M_M_SERVICE
