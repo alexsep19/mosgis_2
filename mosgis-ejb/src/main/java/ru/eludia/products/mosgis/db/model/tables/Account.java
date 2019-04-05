@@ -20,11 +20,12 @@ public class Account extends EnTable {
         
         UUID_ORG               (VocOrganization.class, null, "Организация, которая создала данный счёт"),
         ID_TYPE                (VocAccountType.class,       "Тип ЛС"),
-        
+
 	UUID_CONTRACT          (Contract.class,               null, "Ссылка на договор"),
         UUID_CHARTER           (Charter.class,                null, "Ссылка на устав"),
         UUID_SR_CONTRACT       (SupplyResourceContract.class, null, "Ссылка на договор поставки ресурсов"),
-        
+        UUID_RC_CONTRACT       (RcContract.class,             null, "Договор услуг расчетного центра"),
+
 	FIASHOUSEGUID          (VocBuilding.class,   null,   "Глобальный уникальный идентификатор дома по ФИАС"),
 
         ACCOUNTNUMBER          (Type.STRING,  30,    null,  "Причина закрытия (НСИ 22)"),
