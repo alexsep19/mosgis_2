@@ -28,23 +28,43 @@
  </uniform-distributed-queue>
  
  <!-- очередь обработки запросов на массовый экспорт домов и видов работ региональной программы капитального ремонта -->
- <uniform-distributed-queue name="inExportOverhaulRegionalProgramHouseWorksQueue">
+ <uniform-distributed-queue name="inExportOverhaulRegionalProgramHouseWorksManyQueue">
    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
    <delivery-params-overrides>
        <time-to-deliver>2000</time-to-deliver>
        <redelivery-delay>10000</redelivery-delay>
    </delivery-params-overrides>
-   <jndi-name>mosgis.inExportOverhaulRegionalProgramHouseWorksQueue</jndi-name>
+   <jndi-name>mosgis.inExportOverhaulRegionalProgramHouseWorksManyQueue</jndi-name>
  </uniform-distributed-queue>
  
  <!-- очередь опросов статуса исходящих запросов на массовый экспорт домов и видов работ региональной программы капитального ремонта -->
- <uniform-distributed-queue name="outExportOverhaulRegionalProgramHouseWorksQueue">
+ <uniform-distributed-queue name="outExportOverhaulRegionalProgramHouseWorksManyQueue">
    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
    <delivery-params-overrides>
        <time-to-deliver>2000</time-to-deliver>
        <redelivery-delay>10000</redelivery-delay>
    </delivery-params-overrides>
-   <jndi-name>mosgis.outExportOverhaulRegionalProgramHouseWorksQueue</jndi-name>
+   <jndi-name>mosgis.outExportOverhaulRegionalProgramHouseWorksManyQueue</jndi-name>
+ </uniform-distributed-queue>
+ 
+ <!-- очередь обработки запросов на экспорт домов и видов работ региональной программы капитального ремонта -->
+ <uniform-distributed-queue name="inExportOverhaulRegionalProgramHouseWorksOneQueue">
+   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+   <delivery-params-overrides>
+       <time-to-deliver>2000</time-to-deliver>
+       <redelivery-delay>10000</redelivery-delay>
+   </delivery-params-overrides>
+   <jndi-name>mosgis.inExportOverhaulRegionalProgramHouseWorksOneQueue</jndi-name>
+ </uniform-distributed-queue>
+ 
+ <!-- очередь опросов статуса исходящих запросов на экспорт домов и видов работ региональной программы капитального ремонта -->
+ <uniform-distributed-queue name="outExportOverhaulRegionalProgramHouseWorksOneQueue">
+   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+   <delivery-params-overrides>
+       <time-to-deliver>2000</time-to-deliver>
+       <redelivery-delay>10000</redelivery-delay>
+   </delivery-params-overrides>
+   <jndi-name>mosgis.outExportOverhaulRegionalProgramHouseWorksOneQueue</jndi-name>
  </uniform-distributed-queue>
 
 </weblogic-jms>

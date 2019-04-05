@@ -67,7 +67,7 @@ public class OverhaulRegionalProgramHouseWork extends EnTable {
     
     public enum Action {
         
-        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING)
+        ANNUL     (VocGisStatus.i.PENDING_RP_ANNULMENT,   VocGisStatus.i.ANNUL, VocGisStatus.i.FAILED_ANNULMENT)
         ;
         
         VocGisStatus.i nextStatus;
@@ -94,14 +94,14 @@ public class OverhaulRegionalProgramHouseWork extends EnTable {
 
         public static Action forStatus (VocGisStatus.i status) {
             switch (status) {
-                case PENDING_RQ_PLACING:   return PLACING;
+                case PENDING_RQ_ANNULMENT:   return ANNUL;
                 default: return null;
             }            
         }
 
         public static Action forLogAction (VocAction.i a) {
             switch (a) {
-                case APPROVE: return PLACING;
+                case ANNUL: return ANNUL;
                 default: return null;
             }
         }

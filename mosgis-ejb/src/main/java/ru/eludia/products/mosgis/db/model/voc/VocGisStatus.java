@@ -137,6 +137,12 @@ public class VocGisStatus extends Table {
         FAILED_PLACE_REGIONAL_PROGRAM_WORKS      (-24, "_failed_place_regional_program_works", "ошибка размещения видов работ региональной программы"),
         
         REGIONAL_PROGRAM_WORKS_PLACE_FINISHED    (-31, "_regional_program_works_place_finished", "завершена отправка видов работ региональной программы"),
+        
+        PENDING_RQ_DELETEPROJECT    (-32, "_pending_rq_deleteproject", "ожидание удаления проекта"),
+        PENDING_RP_DELETEPROJECT    (-33, "_pending_rp_deleteproject", "ожидание подтверждения удаления проекта"),
+        FAILED_DELETEPROJECT        (-34, "_failed_deleteproject", "ошибка удаления проекта"),
+        
+        PROJECT_DELETED             (-41, "_project_deleted", "удален проект"),
 
         ;
 

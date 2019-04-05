@@ -15,10 +15,12 @@ import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgram;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouse;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseWork;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseWorksImport;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocOverhaulWorkType;
 import ru.eludia.products.mosgis.rest.User;
+import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.rest.api.OverhaulRegionalProgramHouseWorksLocal;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
 
@@ -26,8 +28,32 @@ import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class OverhaulRegionalProgramHouseWorksImpl extends BaseCRUD<OverhaulRegionalProgramHouseWork> implements OverhaulRegionalProgramHouseWorksLocal {
 
-    @Resource (mappedName = "mosgis.inExportOverhaulRegionalProgramHouseWorksQueue")
-    Queue inExportOverhaulRegionalProgramHouseWorksQueue;
+    @Resource (mappedName = "mosgis.inExportOverhaulRegionalProgramHouseWorksManyQueue")
+    Queue inExportOverhaulRegionalProgramHouseWorksManyQueue;
+    
+    @Resource (mappedName = "mosgis.inExportOverhaulRegionalProgramHouseWorksOneQueue")
+    Queue inExportOverhaulRegionalProgramHouseWorksOneQueue;
+    
+    @Override
+    protected void publishMessage (VocAction.i action, String id_log) {
+        
+        switch (action) {
+            case ANNUL:
+                super.publishMessage (action, id_log);
+            default:
+                return;
+        }
+        
+    }
+    
+    @Override
+    protected Queue getQueue (VocAction.i action) {
+        switch (action) {
+            case ANNUL:
+                return inExportOverhaulRegionalProgramHouseWorksOneQueue;
+            default: return null;
+        }
+    }
     
     @Override
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
@@ -49,6 +75,41 @@ public class OverhaulRegionalProgramHouseWorksImpl extends BaseCRUD<OverhaulRegi
             .get        (getTable (), id, "*")
         ));
         
+    });}
+    
+    @Override
+    public JsonObject doDelete (String id, User user) {return doAction ((db) -> {
+        
+        VocGisStatus.i status = VocGisStatus.i.forId (
+            db.getInteger (OverhaulRegionalProgramHouseWork.class, id, OverhaulRegionalProgramHouseWork.c.ID_ORPHW_STATUS.lc ())
+        );
+        
+        VocGisStatus.i nextStatus;
+        VocAction.i action;
+        
+        switch (status) {
+            case PROJECT:
+                db.update (getTable (), HASH (
+                    "uuid",        id,
+                    "is_deleted",  1
+                ));
+                nextStatus = VocGisStatus.i.PROJECT;
+                action = VocAction.i.DELETE;
+                break;
+            case APPROVED:
+                nextStatus = VocGisStatus.i.PENDING_RQ_ANNULMENT;
+                action = VocAction.i.ANNUL;
+                break;
+            default:
+                throw new ValidationException ("foo", "Операция запрещена");
+        }
+        
+        db.update (OverhaulRegionalProgramHouseWork.class, HASH (
+            "uuid",                                                   id,
+            OverhaulRegionalProgramHouseWork.c.ID_ORPHW_STATUS.lc (), nextStatus.getId ()
+        ));        
+        logAction (db, user, id, action);
+                
     });}
     
     @Override
@@ -74,7 +135,7 @@ public class OverhaulRegionalProgramHouseWorksImpl extends BaseCRUD<OverhaulRegi
             map.put (OverhaulRegionalProgramHouseWork.c.IMPORT_UUID.lc (), importWorksId);
         });
         db.update (OverhaulRegionalProgramHouseWork.class, works);
-        UUIDPublisher.publish (inExportOverhaulRegionalProgramHouseWorksQueue, importWorksId);
+        UUIDPublisher.publish (inExportOverhaulRegionalProgramHouseWorksManyQueue, importWorksId);
         
     });}
     

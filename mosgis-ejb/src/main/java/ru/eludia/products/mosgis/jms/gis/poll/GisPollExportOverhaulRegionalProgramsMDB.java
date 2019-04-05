@@ -13,7 +13,6 @@ import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.ModelHolder;
-import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgram;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgram.c;
@@ -21,7 +20,6 @@ import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouse;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseWork;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseWorksImport;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramLog;
-import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -48,8 +46,8 @@ public class GisPollExportOverhaulRegionalProgramsMDB extends GisPollMDB {
     @EJB
     WsGisCapitalRepairClient wsGisCapitalRepairClient;
     
-    @Resource (mappedName = "mosgis.inExportOverhaulRegionalProgramHouseWorksQueue")
-    Queue inExportOverhaulRegionalProgramHouseWorksQueue;
+    @Resource (mappedName = "mosgis.inExportOverhaulRegionalProgramHouseWorksManyQueue")
+    Queue inExportOverhaulRegionalProgramHouseWorksManyQueue;
     
     @Override
     protected Get get (UUID uuid) {
@@ -92,17 +90,35 @@ public class GisPollExportOverhaulRegionalProgramsMDB extends GisPollMDB {
                     String uniqueNumber = importResult.get (0).getUniqueNumber ();
                     h.put (c.REGIONALPROGRAMGUID.lc (), regionalProgramGUID);
                     h.put (c.UNIQUENUMBER.lc (), uniqueNumber);
-                    nextQueue = inExportOverhaulRegionalProgramHouseWorksQueue;
-                case PLACING:
-                    h.put (c.LAST_SUCCESFULL_STATUS.lc (), action.getOkStatus ());
-                    update (db, uuid, r, h);
-                    db.update (OutSoap.class, HASH (
-                        "uuid", getUuid (),
-                        "id_status", DONE.getId ()
-                    ));
+                    nextQueue = inExportOverhaulRegionalProgramHouseWorksManyQueue;
                     break;
+                case PROJECT_DELETE:
+                case ANNUL:
+                    List <Map <String, Object>> works = db.getList (db.getModel ()
+                        .select (OverhaulRegionalProgramHouseWork.class, "AS works", "*")
+                            .toOne (OverhaulRegionalProgramHouse.class, "AS houses").on ()
+                                .toOne (OverhaulRegionalProgram.class, "AS program").where ("uuid", r.get ("program.uuid")).on ("program.uuid = houses.program_uuid")
+                        .where (OverhaulRegionalProgramHouseWork.c.ID_ORPHW_STATUS.lc (), VocGisStatus.i.APPROVED.getId ())
+                    );
+                    
+                    works.forEach ((map) -> {
+                        map.put (OverhaulRegionalProgramHouseWork.c.ID_ORPHW_STATUS.lc (), VocGisStatus.i.ANNUL.getId ());
+                    });
+                    
+                    db.update (OverhaulRegionalProgramHouseWork.class, works);
+                    db.update (OverhaulRegionalProgram.class, HASH (
+                            "uuid",       r.get ("program.uuid"),
+                            "is_deleted", 1
+                    ));
             }
 
+            h.put (c.LAST_SUCCESFULL_STATUS.lc (), action.getOkStatus ());
+            update (db, uuid, r, h);
+            db.update (OutSoap.class, HASH (
+                "uuid", getUuid (),
+                "id_status", DONE.getId ()
+            ));
+            
             if (nextQueue != null) {
                 String importWorksId = db.insertId (OverhaulRegionalProgramHouseWorksImport.class, HASH (
                     OverhaulRegionalProgramHouseWorksImport.c.PROGRAM_UUID.lc (), r.get ("program.uuid"),

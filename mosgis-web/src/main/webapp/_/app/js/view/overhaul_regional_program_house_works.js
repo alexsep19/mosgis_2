@@ -82,10 +82,13 @@ define ([], function () {
                 {field: 'code_nsi_218', caption: 'Группа видов работ', size: 50, voc: data.vc_nsi_218},
                 {field: 'startyearmonth', caption: 'Начало выполнения', size: 20, render: _dt},
                 {field: 'endyearmonth', caption: 'Окончание выполнения', size: 20, render: _dt},
+                {field: 'id_orphw_status', caption: 'Статус ГИС', size: 20, voc: data.vc_gis_status},
                 {field: 'import_err_text', caption: 'Ошибка импорта', size: 40, render: 
                     function (record) {
                         if (record['id_orphw_status'] == 40)
                             record['w2ui'] = {'style': 'background-color: #90EE90; color: black;'}
+                        else if (record['id_orphw_status'] == 110)
+                            record['w2ui'] = {'style': 'background-color: #808080; color: white;'}
                         else if (record['import_err_text'] !== '')
                             record['w2ui'] = {'style': 'background-color: #F08080; color: white;'}
                         return record['import_err_text']
