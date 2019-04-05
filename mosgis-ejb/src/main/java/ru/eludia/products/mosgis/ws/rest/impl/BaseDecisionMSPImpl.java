@@ -216,7 +216,8 @@ public class BaseDecisionMSPImpl extends BaseCRUD<BaseDecisionMSP> implements Ba
 
 	    db.update(getTable(), HASH (
 		EnTable.c.UUID, id,
-		BaseDecisionMSP.c.ID_CTR_STATUS, VocGisStatus.i.PENDING_RQ_CANCEL.getId()
+		BaseDecisionMSP.c.ID_CTR_STATUS, VocGisStatus.i.PENDING_RQ_CANCEL.getId(),
+		EnTable.c.IS_DELETED, 1
 	    ));
 
 	    logAction(db, user, id, VocAction.i.CANCEL);
