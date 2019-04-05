@@ -28,7 +28,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: 220},
+                {type: 'top', size: 310},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
@@ -62,7 +62,7 @@ define ([], function () {
             record : data.item,                
             
             fields : [                     
-                {name: 'uniquenumber', type: 'text'},
+                {name: 'code', type: 'text'},
                 {name: 'decisionname', type: 'text'},
                 {name: 'code_vc_nsi_301', type: 'list', options: {items: data.vc_nsi_301.items}},
                 {name: 'isappliedtosubsidiaries', type: 'list', options: {items: data.voc_bool}},

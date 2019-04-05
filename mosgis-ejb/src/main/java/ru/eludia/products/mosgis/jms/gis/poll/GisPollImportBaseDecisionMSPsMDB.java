@@ -70,14 +70,14 @@ public class GisPollImportBaseDecisionMSPsMDB extends GisPollMDB {
                 h.put ("id_ctr_status", VocGisStatus.i.APPROVED.getId ());
                 h.put ("id_ctr_status_gis", VocGisStatus.i.APPROVED.getId ());
                 items.add (h);
-                guids.add (h.get ("elementguid").toString ());
+                guids.add (h.get (BaseDecisionMSP.c.GUID.lc()).toString ());
             }
             
-            db.upsert (BaseDecisionMSP.class, items, "elementguid");
+            db.upsert (BaseDecisionMSP.class, items, BaseDecisionMSP.c.GUID.lc());
             
             Map <Object, Map <String, Object>> idxs = db.getIdx(
                     ModelHolder.getModel ().select (BaseDecisionMSP.class, "uuid")
-                                           .where  ("elementguid IN", guids.toArray ())
+                                           .where  (BaseDecisionMSP.c.GUID.lc() + " IN", guids.toArray ())
             );
             
             for (Object uuid_object: idxs.keySet ()) {

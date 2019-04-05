@@ -74,8 +74,8 @@ public class GisPollExportBaseDecisionMSPMDB extends GisPollMDB {
             if (error != null && !error.isEmpty ()) throw new GisPollException (error.get (0));
                     
             final Map<String, Object> h = statusHash (action.getOkStatus ());
-            h.put (c.ELEMENTGUID.lc (), cr.getGUID ());
-            h.put (c.UNIQUENUMBER.lc (), cr.getUniqueNumber ());
+	    h.put (c.GUID.lc (), cr.getGUID ());
+	    h.put (c.CODE.lc(), cr.getUniqueNumber());
             update (db, uuid, r, h);
 
             db.update (OutSoap.class, HASH (

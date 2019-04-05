@@ -27,6 +27,10 @@ define ([], function () {
             
                 data.item = d.item
 
+                data.item.status_label = data.vc_gis_status [data.item.id_ctr_status]
+                data.item.voc_code = data.item.code ? data.item.code : 'Отсутствует'
+                data.item.actuality = data.item.isactual ? 'Актуально' : 'Не актуально'
+
                 $('body').data ('data', data)
     
                 done (data)
