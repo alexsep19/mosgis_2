@@ -42,7 +42,7 @@ public class OverhaulRegionalProgramHouseWorkLog extends GisWsLogTable {
             .get (OverhaulRegionalProgramHouseWorkLog.class, id, "*")
                 .toOne (OverhaulRegionalProgramHouse.class, "AS houses").on ()
                     .toOne (OverhaulRegionalProgram.class, "AS program", "regionalprogramguid AS regionalprogramguid").on ("houses.program_uuid=program.uuid")
-                        .toOne (VocOrganization.class, "AS org", "orgppaguid AS orgppaguid").on ("program.org_uuid=org.orgrootentityguid")
+                        .toOne (VocOrganization.class, "AS org", "orgppaguid AS orgppaguid").on ("program.org_uuid=org.uuid")
         );
         
     }
