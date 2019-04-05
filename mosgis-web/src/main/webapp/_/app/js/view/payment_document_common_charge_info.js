@@ -195,28 +195,35 @@ define ([], function () {
             ],
 
             records: data.lines,
-            
+
             onDblClick: null,
-            
+
             onChange: $_DO.patch_payment_document_common_charge_info,
-            
+
             onEditField: function (e) {
-                        
+
                 if (!is_editing) {
                     if (it._can.edit) splash_edit ()
                     return e.preventDefault ()
                 }
 
                 var grid = this
-                
+
                 var r = grid.get (e.recid)
-                
+
                 if (!r.id_type) return e.preventDefault ()
-                
+
                 if (e.column == 0 && r.id_type != 50) return e.preventDefault ()
 
+                var col = grid.columns [e.column]
+
+                switch (col.field) {
+                    case 'ratio':                                        
+                        if (!(r.uuid_m_m_service && (r.cons_i_dtrm_meth == 'N' || r.cons_o_dtrm_meth == 'N'))) return e.preventDefault ()
+                }
+
             },            
-            
+
             onRefresh: function (e) {
             
                 var grid = this
@@ -291,7 +298,7 @@ define ([], function () {
                                     var m = get_message (row, col)
 
                                     if (m) {
-                                        $this.css ({background: '#ffcccc'})
+                                        $this.css ({background: '#ffcccc'}).attr ({title: m})
                                         $('div', $this).attr ({title: m})
                                     }
 
