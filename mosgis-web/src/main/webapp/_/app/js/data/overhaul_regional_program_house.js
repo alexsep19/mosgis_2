@@ -35,7 +35,7 @@ define ([], function () {
             if (!it.is_deleted && !it['program.is_deleted'] &&
                 ($_USER.role.admin || it['program.org_uuid'] == $_USER.uuid_org)) {
 
-                switch (it.last_succesfull_status) {
+                switch (it['program.last_succesfull_status']) {
                     case  10:
                     case -31:
                     case -21:
