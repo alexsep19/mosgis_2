@@ -17,12 +17,35 @@ define ([], function () {
                 
     }
     
+    function get_message (row, col) {
+    
+        switch (col.field) {
+                
+            case 'calcexplanation':
+                return row.uuid_gen_need_res && !row.calcexplanation ? 'Для данной строки это поле обязательно' : null
+
+            case 'moneyrecalculation':
+                return !row.moneyrecalculation && row.recalculationreason ? 'Не заполнена сумма' : null
+
+            case 'recalculationreason':
+                return !row.recalculationreason && row.moneyrecalculation ? 'Не заполнено основание' : null
+
+            default:
+                return null
+
+        }        
+    
+    }
+    
     function is_yellow (row, col) {
 
         switch (col.field) {
 
             case 'accountingperiodtotal':
                 return true
+                
+            case 'calcexplanation':
+                return row.uuid_gen_need_res
 
             default:
                 return false
@@ -48,17 +71,23 @@ define ([], function () {
             var t = grid.toolbar            
 
             if (is_editing) {
-                t.enable ('cancel')
+            
+                t.enable  ('cancel')
                 t.disable ('edit')
                 grid.selectNone ()
+                
                 w2ui ['payment_document_common_form'].lock ()
-                w2ui ['passport_layout'].get ('main').tabs.disable ('payment_document_common_additional_information', 'payment_document_common_log')
+                
+                var tabs = w2ui ['passport_layout'].get ('main').tabs
+                $.each (tabs.tabs, function () {
+                    var id = this.id
+                    if (id == 'payment_document_common_charge_info') return
+                    tabs.disable (id)
+                })
+                
             }
             else {
-                t.disable ('cancel')
-                t.enable ('edit')
-                w2ui ['payment_document_common_form'].unlock ()
-                w2ui ['passport_layout'].get ('main').tabs.enable ('payment_document_common_additional_information', 'payment_document_common_log')
+                reload_page ()
             }
 
             grid.refresh ()
@@ -68,6 +97,8 @@ define ([], function () {
         var layout = w2ui ['passport_layout']
 
         var $panel = $(layout.el ('main'))               
+        
+        var m2 = {id: '055'}; m2.text = data.vc_okei [m2.id]
 
         $panel.w2regrid ({ 
 
@@ -108,8 +139,9 @@ define ([], function () {
                 {master: true},
                 
                 {span: 2, caption: 'Повышающий коэффициент'},
-                {span: 2, caption: 'Корректировки, руб'},
+                {span: 2, caption: 'Перерасчет'},
                 
+                {master: true},
                 {master: true},
                 {master: true},
 
@@ -130,13 +162,31 @@ define ([], function () {
                 {field: 'cons_o_vol', caption: 'Объём', size: 10, editable: {type: 'float', precision: 7, autoFormat: true, min: 0}},
                 {field: 'cons_o_dtrm_meth', caption: 'Определён по', size: 10, editable: {type: 'list'}, voc: data.vc_cnsmp_vol_dtrm},
 
-                {field: 'unit', caption: 'Ед. изм.', size: 10},                
+                {field: 'okei', caption: 'Ед. изм.', size: 10, editable: function (r) {
+                
+                    var okei_orig = r.okei_orig; if (!okei_orig) return null
+                    
+                    var text  = data.vc_okei [okei_orig]                    
+                    var items = [{id: okei_orig, text: text}]
+                    
+                    if (okei_orig != m2.id) {
+                        if (text < m2.text) 
+                            items.unshift (m2)
+                        else
+                            items.push (m2)                            
+                    }
+                    
+                    return {type: 'list', items: items}
+                    
+                }, voc: data.vc_okei},
 
                 {field: 'ratio', caption: 'Коэффициент', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}},
                 {field: 'amountofexcessfees', caption: 'Размер превышения платы', size: 10, editable: {type: 'float', precision: 2, autoFormat: true}},
 
-                {field: 'moneyrecalculation', caption: 'Перерасчет', size: 10, editable: {type: 'float', precision: 2, autoFormat: true}},
-                {field: 'moneydiscount', caption: 'Субсидии, скидки', size: 10, editable: {type: 'float', precision: 2, autoFormat: true}},
+                {field: 'moneyrecalculation', caption: 'Сумма, руб', size: 10, editable: {type: 'float', precision: 2, autoFormat: true}},
+                {field: 'recalculationreason', caption: 'Основание', size: 10, editable: {type: 'text'}},
+                
+                {field: 'moneydiscount', caption: 'Субсидии, скидки', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}},
 
                 {field: 'calcexplanation', caption: 'Порядок расчётов', size: 10, editable: {type: 'text'}},
                 
@@ -145,28 +195,35 @@ define ([], function () {
             ],
 
             records: data.lines,
-            
+
             onDblClick: null,
-            
+
             onChange: $_DO.patch_payment_document_common_charge_info,
-            
+
             onEditField: function (e) {
-                        
+
                 if (!is_editing) {
                     if (it._can.edit) splash_edit ()
                     return e.preventDefault ()
                 }
 
                 var grid = this
-                
+
                 var r = grid.get (e.recid)
-                
+
                 if (!r.id_type) return e.preventDefault ()
-                
+
                 if (e.column == 0 && r.id_type != 50) return e.preventDefault ()
 
+                var col = grid.columns [e.column]
+
+                switch (col.field) {
+                    case 'ratio':                                        
+                        if (!(r.uuid_m_m_service && (r.cons_i_dtrm_meth == 'N' || r.cons_o_dtrm_meth == 'N'))) return e.preventDefault ()
+                }
+
             },            
-            
+
             onRefresh: function (e) {
             
                 var grid = this
@@ -180,8 +237,9 @@ define ([], function () {
                     for (var field in chg) {
                         var col = grid.getColumn (field)
                         var editable = col.editable
+                        if (typeof editable === "function") editable = editable (this)
                         if (!editable || editable.type != 'list') continue
-                        this [field] = chg [field].uuid
+                        this [field] = chg [field].uuid || chg [field].id
                         delete this.w2ui.changes
                     }
 
@@ -216,25 +274,48 @@ define ([], function () {
                             }
                         
                         }
-                        else if (is_editing) {
+                        else {
                         
-                            $(sel + ' td.w2ui-grid-data').each (function () {
+                            if (is_editing) {
+                        
+                                $(sel + ' td.w2ui-grid-data').each (function () {
 
-                                var $this = $(this)
-                                var col = grid.columns [$this.attr ('col')]
+                                    var $this = $(this)
+                                    var col = grid.columns [$this.attr ('col')]
+
+                                    if (is_yellow (row, col)) $this.css ({background: '#ffffcc'})
+
+                                })
+
+                            }
+                            else {
+                            
+                                $(sel + ' td.w2ui-grid-data').each (function () {
+
+                                    var $this = $(this)
+                                    var col = grid.columns [$this.attr ('col')]
+                                    
+                                    var m = get_message (row, col)
+
+                                    if (m) {
+                                        $this.css ({background: '#ffcccc'}).attr ({title: m})
+                                        $('div', $this).attr ({title: m})
+                                    }
+
+                                })
+
                                 
-                                if (is_yellow (row, col)) $this.css ({background: '#ffffcc'})
 
-                            })
-                        
+                            }
+
                         }
-                        
+
                         last = this.id                        
 
                     })
 
                 }) 
-            
+
             }
 
         }).refresh ()

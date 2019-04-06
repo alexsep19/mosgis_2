@@ -26,6 +26,7 @@ define ([], function () {
                 vc_pay_doc_types: 1,
                 vc_gis_status: 1,
                 vc_actions: 1,
+                vc_okei: 1,
                 vc_nsi_329: 1,
                 vc_nsi_331: 1,
                 tb_bnk_accts: 1,
