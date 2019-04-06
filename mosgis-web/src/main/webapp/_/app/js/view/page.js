@@ -8,7 +8,7 @@ define ([], function () {
         clickOn ($('#logout'), $_DO.logout_page)
         
         clickOn ($('tr.nav td:first-child'), function () {
-            openTab ('/', '/mosgis/')
+            openTab ('/', '/mos/')
         })
 
         if ($_USER.uuid_org) clickOn ($('span#org_label'), function () {

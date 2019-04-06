@@ -23,7 +23,7 @@ define ([], function () {
                
         $_SESSION.end ()
 
-        redirect ('/mosgis/')
+        redirect ('/mos/')
 
     }
 

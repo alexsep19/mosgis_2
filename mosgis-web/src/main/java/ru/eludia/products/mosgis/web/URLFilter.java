@@ -1,8 +1,6 @@
 package ru.eludia.products.mosgis.web;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -43,11 +41,6 @@ public class URLFilter implements Filter {
     public void doFilter (ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         
         final HttpServletRequest hr = (HttpServletRequest) request;
-
-        if (hr.getRequestURI ().startsWith ("/mosgis/svc/")) {
-            chain.doFilter (request, response);
-            return;
-        }
 
         RequestWrapper wrappedRequest = new RequestWrapper (hr);
                         

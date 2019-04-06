@@ -210,7 +210,7 @@ function not_off (i) {return !i.off}
 
 function reload_page () { location.reload () }
 
-var base_href = '/mosgis';
+var base_href = '/mos';
 
 function get_nsi (ids, done) {
 

@@ -8,7 +8,7 @@
   <module>
     <web>
       <web-uri>/mosgis-web-1.0-SNAPSHOT.war</web-uri>
-      <context-root>/mosgis</context-root>
+      <context-root>/mos</context-root>
     </web>
   </module>
   <module>
