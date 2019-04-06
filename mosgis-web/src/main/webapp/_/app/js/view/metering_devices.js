@@ -63,7 +63,7 @@ define ([], function () {
             
             postData: postData,
 
-            url: '/mosgis/_rest/?type=metering_devices',
+            url: '/_back/?type=metering_devices',
             
             onDblClick: function (e) {openTab ('/metering_device/' + e.recid)},
             

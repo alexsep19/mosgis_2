@@ -105,7 +105,7 @@ define ([], function () {
 
             postData: {data: {uuid_meter: $_REQUEST.id}},
 
-            url: '/mosgis/_rest/?type=metering_device_values',
+            url: '/_back/?type=metering_device_values',
 
             onSelect: recalcToolbar,
             onUnselect: recalcToolbar,

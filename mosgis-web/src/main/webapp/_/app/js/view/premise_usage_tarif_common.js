@@ -71,7 +71,7 @@ define ([], function () {
                     renderItem: function (i, idx, remove) {
                         return i.code + remove
                     },
-                    url: '/mosgis/_rest/?type=voc_oktmo',
+                    url: '/_back/?type=voc_oktmo',
                     openOnFocus: true,
                     filter: false,
                     cacheMax: 50,

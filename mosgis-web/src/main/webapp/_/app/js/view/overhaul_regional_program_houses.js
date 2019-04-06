@@ -33,7 +33,7 @@ define ([], function () {
                 {field: 'oktmo', caption: 'Код ОКТМО', size: 10},
             ],
             
-            url: '/mosgis/_rest/?type=overhaul_regional_program_houses',
+            url: '/_back/?type=overhaul_regional_program_houses',
 
             postData: {program_uuid: $_REQUEST.id},
 

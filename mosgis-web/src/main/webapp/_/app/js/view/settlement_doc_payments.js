@@ -50,7 +50,7 @@ define ([], function () {
                 uuid_st_doc: $_REQUEST.id
             }},
 
-            url: '/mosgis/_rest/?type=settlement_doc_payments',
+            url: '/_back/?type=settlement_doc_payments',
 
             onDblClick: !is_editable ? null : function (e) {
 

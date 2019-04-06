@@ -59,7 +59,7 @@ define ([], function () {
                 {name: 'kpp', type: 'text'},
                 {name: 'address', type: 'text'},
                 {name: 'fiashouseguid', type: 'list', hint: 'Глобальный уникальный идентификатор дома по ФИАС', options: {
-                        url: '/mosgis/_rest/?type=voc_building_addresses',
+                        url: '/_back/?type=voc_building_addresses',
                         filter: false,
                         cacheMax: 50,
                         selected: data.selected.address,
@@ -77,7 +77,7 @@ define ([], function () {
                         }
                     }},
                 {name: 'registrationcountry', type: 'list', hint: 'Страна', options: {
-                        url: '/mosgis/_rest/?type=voc_oksm',
+                        url: '/_back/?type=voc_oksm',
                         filter: false,
                         cacheMax: 50,
                         selected: data.selected.registrationcountry,

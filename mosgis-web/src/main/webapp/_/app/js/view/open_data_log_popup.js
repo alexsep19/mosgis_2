@@ -44,7 +44,7 @@ define ([], function () {
                     },
                 ],
 
-                url: '/mosgis/_rest/?type=open_data&part=log',
+                url: '/_back/?type=open_data&part=log',
 
                 onDblClick: null,
 

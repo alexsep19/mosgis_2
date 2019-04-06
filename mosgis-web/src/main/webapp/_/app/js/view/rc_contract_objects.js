@@ -56,7 +56,7 @@ define ([], function () {
                 uuid_rc_ctr: $_REQUEST.id
             }},
 
-            url: '/mosgis/_rest/?type=rc_contract_objects',
+            url: '/_back/?type=rc_contract_objects',
 
             onDblClick: !is_editable ? null : function (e) {
 

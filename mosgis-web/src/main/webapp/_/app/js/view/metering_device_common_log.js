@@ -42,7 +42,7 @@ define ([], function () {
 
             ],
             
-            url: '/mosgis/_rest/?type=metering_devices&part=log&id=' + $_REQUEST.id,            
+            url: '/_back/?type=metering_devices&part=log&id=' + $_REQUEST.id,            
             
             onClick: function (e) {
             

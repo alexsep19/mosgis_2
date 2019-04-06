@@ -40,7 +40,7 @@ define ([], function () {
                 {field: 'err_text', caption: 'Ошибка', size: 10}
             ],
             
-            url: '/mosgis/_rest/?type=voc_overhaul_work_types',
+            url: '/_back/?type=voc_overhaul_work_types',
 
             onAdd: $_DO.create_vc_oh_wk_types,
             

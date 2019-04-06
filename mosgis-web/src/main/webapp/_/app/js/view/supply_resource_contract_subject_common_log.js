@@ -43,7 +43,7 @@ define ([], function () {
                 {field: 'is_deleted',  caption: 'Статус',     size: 20, voc: {0: 'Актуально', 1: 'Удалено'}},
             ],
 
-            url: '/mosgis/_rest/?type=supply_resource_contract_subjects&part=log&id=' + $_REQUEST.id
+            url: '/_back/?type=supply_resource_contract_subjects&part=log&id=' + $_REQUEST.id
 
         }).refresh ();
 

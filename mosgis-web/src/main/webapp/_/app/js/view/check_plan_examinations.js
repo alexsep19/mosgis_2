@@ -57,7 +57,7 @@ define ([], function () {
 
             postData: {data: {'plan_uuid': $_REQUEST.id}},
 
-            url: '/mosgis/_rest/?type=planned_examinations',
+            url: '/_back/?type=planned_examinations',
             
             onAdd: $_DO.create_check_plan_examination,
 

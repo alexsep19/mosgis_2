@@ -42,7 +42,7 @@ define ([], function () {
                 {field: 'code_vc_nsi_237', caption: 'Регион', size: 30, voc: data.vc_nsi_237},
             ],
             
-            url: '/mosgis/_rest/?type=voc_bic',
+            url: '/_back/?type=voc_bic',
 
             onRequest: function (e) {
             

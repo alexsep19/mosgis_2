@@ -1,12 +1,12 @@
 define ([], function () {
 
-	function perms () {
+    function perms () {
 
         return $_USER.role.nsi_20_4 || $_USER.role.nsi_20_5
 
     }
-	
-	function recalcToolbar (e) {e.done (function () {
+    
+    function recalcToolbar (e) {e.done (function () {
 
         var g = w2ui ['check_plans_grid']
 
@@ -55,7 +55,7 @@ define ([], function () {
                 {field: 'id_ctr_status', caption: 'Статус', size: 10, size: 10, voc: data.vc_gis_status}
             ],
 
-            url: '/mosgis/_rest/?type=check_plans',
+            url: '/_back/?type=check_plans',
 
             onSelect: recalcToolbar,
             onUnselect: recalcToolbar,

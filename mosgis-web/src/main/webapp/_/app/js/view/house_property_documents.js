@@ -54,7 +54,7 @@ define ([], function () {
             
             postData: postData,
 
-            url: '/mosgis/_rest/?type=property_documents',
+            url: '/_back/?type=property_documents',
             
             onDblClick: function (e) {openTab ('/property_document/' + e.recid)}
                                                                         

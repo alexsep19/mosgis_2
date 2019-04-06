@@ -58,7 +58,7 @@ define ([], function () {
                 {field: 'issuer', caption: 'Кем выдан документ', size: 20, hidden: 1},
             ].filter (not_off),
             
-            url: '/mosgis/_rest/?type=vc_persons',
+            url: '/_back/?type=vc_persons',
                         
             onAdd:      $_DO.create_vc_persons,
             

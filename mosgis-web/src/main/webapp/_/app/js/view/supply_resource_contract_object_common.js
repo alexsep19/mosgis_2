@@ -104,7 +104,7 @@ define ([], function () {
 
             fields : [
                 {name: 'fiashouseguid', type: 'list', hint: 'Адрес', options: {
-                        url: '/mosgis/_rest/?type=supply_resource_contract_objects&part=buildings',
+                        url: '/_back/?type=supply_resource_contract_objects&part=buildings',
                         filter: false,
                         cacheMax: 50,
                         selected: data.selected.fiashouseguid,

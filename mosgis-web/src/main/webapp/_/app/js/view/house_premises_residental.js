@@ -109,7 +109,7 @@ define ([], function () {
             
             postData: {data: {uuid_house: $_REQUEST.id}},
 
-            url: '/mosgis/_rest/?type=premises_residental',
+            url: '/_back/?type=premises_residental',
             
             onDblClick: function (e) {
                 if (!this.columns [e.column].editable) openTab ('/premise_residental/' + e.recid)

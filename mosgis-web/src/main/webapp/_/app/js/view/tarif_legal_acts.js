@@ -65,7 +65,7 @@ define ([], function () {
 
             postData: postData,
 
-            url: '/mosgis/_rest/?type=tarif_legal_acts',
+            url: '/_back/?type=tarif_legal_acts',
 
             onAdd: $_DO.create_tarif_legal_acts,
 

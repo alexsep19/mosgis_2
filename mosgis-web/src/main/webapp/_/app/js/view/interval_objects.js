@@ -30,7 +30,7 @@ define ([], function () {
 
             postData: {data: {uuid_interval: $_REQUEST.id}},
             
-            url: '/mosgis/_rest/?type=interval_objects',
+            url: '/_back/?type=interval_objects',
             
             onAdd: $_DO.create_interval_objects,
             onEdit: $_DO.edit_interval_objects,

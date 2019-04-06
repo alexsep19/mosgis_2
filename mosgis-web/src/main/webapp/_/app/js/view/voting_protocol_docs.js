@@ -41,7 +41,7 @@ define ([], function () {
                 {field: "uuid_protocol", operator: "is", value: $_REQUEST.id}
             ]},
 
-            url: '/mosgis/_rest/?type=voting_protocol_docs',
+            url: '/_back/?type=voting_protocol_docs',
             
             onDblClick: $_DO.download_voting_protocol_docs,
             

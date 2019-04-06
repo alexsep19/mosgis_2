@@ -39,7 +39,7 @@ define ([], function () {
 
             postData: {data: {uuid_object: $_REQUEST.id}},
 
-            url: '/mosgis/_rest/?type=insurance_product_log',
+            url: '/_back/?type=insurance_product_log',
 
             onClick: function (e) {
 

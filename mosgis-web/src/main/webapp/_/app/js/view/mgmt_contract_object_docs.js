@@ -41,7 +41,7 @@ define ([], function () {
                 {field: "uuid_contract_object", operator: "is", value: $_REQUEST.id},
             ]},
 
-            url: '/mosgis/_rest/?type=contract_docs',
+            url: '/_back/?type=contract_docs',
             
             onDblClick: $_DO.download_mgmt_contract_object_docs,
             

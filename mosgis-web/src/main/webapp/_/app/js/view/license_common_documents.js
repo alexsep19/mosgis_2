@@ -43,7 +43,7 @@ define ([], function () {
                 {field: 'base_doc_decisionorg', caption: 'Организация, принявшая решение',    size: 30},
             ],
             
-            url: '/mosgis/_rest/?type=licenses&part=documents&id=' + $_REQUEST.id,
+            url: '/_back/?type=licenses&part=documents&id=' + $_REQUEST.id,
 
         }).refresh ();
 

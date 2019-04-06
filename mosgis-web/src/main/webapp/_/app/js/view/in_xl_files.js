@@ -31,7 +31,7 @@ define ([], function () {
             
             postData: {data: {uuid_org: $_REQUEST.id}},
 
-            url: '/mosgis/_rest/?type=in_xl_files',
+            url: '/_back/?type=in_xl_files',
 
             onDblClick: function (e) {},
 

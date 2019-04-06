@@ -43,7 +43,7 @@ define ([], function () {
                 {field: 'legislature', caption: 'Орган власти', size: 10},
             ],
             
-            url: '/mosgis/_rest/?type=overhaul_regional_program_documents',
+            url: '/_back/?type=overhaul_regional_program_documents',
 
             postData: {program_uuid: $_REQUEST.id},
 

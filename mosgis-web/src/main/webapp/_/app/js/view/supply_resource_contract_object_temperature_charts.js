@@ -41,7 +41,7 @@ define ([], function () {
                 uuid_sr_ctr_obj: $_REQUEST.id
             }},
 
-            url: '/mosgis/_rest/?type=supply_resource_contract_object_temperature_charts',
+            url: '/_back/?type=supply_resource_contract_object_temperature_charts',
 
             onDblClick: !is_editable? null : function (e) {
 

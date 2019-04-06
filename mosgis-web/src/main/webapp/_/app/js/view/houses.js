@@ -52,7 +52,7 @@ define ([], function () {
                 {field: 'code_vc_nsi_24', caption: 'Состояние', size: 20, voc: data.vc_nsi_24}
             ],
 
-            url: '/mosgis/_rest/?type=houses',
+            url: '/_back/?type=houses',
 
             onRequest: function (e) {
 

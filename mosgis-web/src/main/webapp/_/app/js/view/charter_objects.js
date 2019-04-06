@@ -40,7 +40,7 @@ define ([], function () {
                 {field: "uuid_charter", operator: "is", value: $_REQUEST.id},
             ]},
 
-            url: '/mosgis/_rest/?type=charter_objects',
+            url: '/_back/?type=charter_objects',
                         
             onDblClick: function (e) {openTab ('/charter_object/' + e.recid)},
             

@@ -59,7 +59,7 @@ define ([], function () {
                 {field: "uuid_contract_object", operator: "is", value: $_REQUEST.id},
             ]},
 
-            url: '/mosgis/_rest/?type=contract_object_services',
+            url: '/_back/?type=contract_object_services',
                                     
             onDelete: $_DO.delete_mgmt_contract_object_common_services,
             onEdit: $_DO.edit_mgmt_contract_object_common_services,

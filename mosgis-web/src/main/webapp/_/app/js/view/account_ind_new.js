@@ -30,7 +30,7 @@ define ([], function () {
                     
                     {name: 'uuid_person_customer', type: 'list', options: 
                         {
-                            url: '/mosgis/_rest/?type=vc_persons',
+                            url: '/_back/?type=vc_persons',
                             postData: {
                                 uuid_org: $_USER.uuid_org, 
                                 searchLogic: 'OR',

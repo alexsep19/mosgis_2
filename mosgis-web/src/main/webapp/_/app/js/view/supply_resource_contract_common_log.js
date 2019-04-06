@@ -51,7 +51,7 @@ define ([], function () {
 
             ],
 
-            url: '/mosgis/_rest/?type=supply_resource_contracts&part=log&id=' + $_REQUEST.id,
+            url: '/_back/?type=supply_resource_contracts&part=log&id=' + $_REQUEST.id,
 
             onClick: function (e) {
 

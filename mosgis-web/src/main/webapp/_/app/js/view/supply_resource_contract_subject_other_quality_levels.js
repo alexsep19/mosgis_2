@@ -69,7 +69,7 @@ define ([], function () {
                 uuid_sr_ctr_subj: $_REQUEST.id
             }},
 
-            url: '/mosgis/_rest/?type=supply_resource_contract_other_quality_levels',
+            url: '/_back/?type=supply_resource_contract_other_quality_levels',
 
             onDblClick: $_DO.edit_supply_resource_contract_subject_other_quality_levels,
 

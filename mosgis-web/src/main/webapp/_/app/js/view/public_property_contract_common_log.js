@@ -57,7 +57,7 @@ define ([], function () {
 
             ],
             
-            url: '/mosgis/_rest/?type=public_property_contracts&part=log&id=' + $_REQUEST.id,
+            url: '/_back/?type=public_property_contracts&part=log&id=' + $_REQUEST.id,
             
             onClick: function (e) {
             

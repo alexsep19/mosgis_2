@@ -40,7 +40,7 @@ define ([], function () {
 
             ],
             
-            url: '/mosgis/_rest/?type=municipal_services&part=log&id=' + $_REQUEST.id,            
+            url: '/_back/?type=municipal_services&part=log&id=' + $_REQUEST.id,            
             
             onClick: function (e) {
             

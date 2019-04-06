@@ -72,7 +72,7 @@ define ([], function () {
             
             postData: {data: postData},
 
-            url: '/mosgis/_rest/?type=public_property_contracts',
+            url: '/_back/?type=public_property_contracts',
                         
             onAdd:      $_DO.create_public_property_contracts,            
             

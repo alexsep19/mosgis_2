@@ -47,7 +47,7 @@ define ([], function () {
 
             ],
             
-            url: '/mosgis/_rest/?type=accounts&part=log&id=' + $_REQUEST.id,            
+            url: '/_back/?type=accounts&part=log&id=' + $_REQUEST.id,            
             
             onClick: function (e) {
             

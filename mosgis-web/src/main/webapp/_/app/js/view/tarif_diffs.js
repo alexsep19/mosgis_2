@@ -111,7 +111,7 @@ define ([], function () {
 
             postData: postData,
 
-            url: '/mosgis/_rest/?type=tarif_diffs',
+            url: '/_back/?type=tarif_diffs',
 
             onLoad: function (e) {
 

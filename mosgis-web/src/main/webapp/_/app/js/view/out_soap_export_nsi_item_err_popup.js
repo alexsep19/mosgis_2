@@ -21,7 +21,7 @@ define ([], function () {
                             footer: false,
                         },
 
-                        url: '/mosgis/_rest/?type=out_soap_export_nsi_item&part=errors&id=' + data.dt,
+                        url: '/_back/?type=out_soap_export_nsi_item&part=errors&id=' + data.dt,
 
                         columns: [
                             {field: 'ts_rp',      caption: 'Время и дата получения ошибки', size: 25, render: function (i) {return dt_dmyhms (i.ts_rp)}},

@@ -20,3 +20,4 @@ mosgis.iml
 /mosgis-web/*.iml
 /mosgis-ear/*.iml
 /mosgis-fs/*.iml
+/mosgis-web-rs/target/

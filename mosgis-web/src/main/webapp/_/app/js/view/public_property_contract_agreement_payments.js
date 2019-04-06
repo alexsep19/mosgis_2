@@ -124,7 +124,7 @@ define ([], function () {
             
             postData: {data: {uuid_ctr: $_REQUEST.id}},
 
-            url: '/mosgis/_rest/?type=agreement_payments',
+            url: '/_back/?type=agreement_payments',
                                                 
             onAdd:    $_DO.create_public_property_contract_agreement_payments,            
             onDblClick: function (e) {

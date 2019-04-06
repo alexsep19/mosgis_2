@@ -41,7 +41,7 @@ define ([], function () {
                 {field: 'closedate', caption: 'Закрыт', size: 15, render: _dt},
             ],
 
-            url: '/mosgis/_rest/?type=bank_accounts',
+            url: '/_back/?type=bank_accounts',
             
             postData: {
                 data: {uuid_org: $_REQUEST.id}

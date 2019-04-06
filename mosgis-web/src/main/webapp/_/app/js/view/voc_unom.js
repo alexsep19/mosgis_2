@@ -27,7 +27,7 @@ define ([], function () {
             
             postData: {data: {uuid_org: $_REQUEST.id}},
 
-            url: '/mosgis/_rest/?type=voc_unom',
+            url: '/_back/?type=voc_unom',
                         
             onDblClick: function (e) {
 //                var r = this.get (e.recid)

@@ -51,7 +51,7 @@ define ([], function () {
                 {field: 'kpp', caption: 'КПП',    size: 10},
             ],
 
-            url: '/mosgis/_rest/?type=voc_organization_proposals',
+            url: '/_back/?type=voc_organization_proposals',
 
             toolbar: {
                 items: [

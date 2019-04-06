@@ -95,7 +95,7 @@ define ([], function () {
             
             postData: {data: postData},
 
-            url: '/mosgis/_rest/?type=mgmt_contracts',
+            url: '/_back/?type=mgmt_contracts',
                         
             onAdd:      $_DO.create_mgmt_contracts,            
             

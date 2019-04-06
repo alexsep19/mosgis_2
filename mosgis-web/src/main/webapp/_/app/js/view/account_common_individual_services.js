@@ -115,7 +115,7 @@ define ([], function () {
 
             postData: {data: {uuid_account: $_REQUEST.id}},
 
-            url: '/mosgis/_rest/?type=account_individual_services',
+            url: '/_back/?type=account_individual_services',
 
             onSelect: !can_edit ? null : recalcToolbar,
             onUnselect: !can_edit ? null : recalcToolbar,

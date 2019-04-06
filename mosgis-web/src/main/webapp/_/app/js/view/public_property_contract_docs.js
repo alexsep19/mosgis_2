@@ -42,7 +42,7 @@ define ([], function () {
                 {field: "uuid_ctr", operator: "is", value: $_REQUEST.id}
             ]},
 
-            url: '/mosgis/_rest/?type=public_property_contract_docs',
+            url: '/_back/?type=public_property_contract_docs',
             
             onDblClick: $_DO.download_public_property_contract_docs,
             

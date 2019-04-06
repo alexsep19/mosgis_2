@@ -43,7 +43,7 @@ define ([], function () {
                 {field: "uuid_meter", operator: "is", value: $_REQUEST.id},
             ]},
 
-            url: '/mosgis/_rest/?type=metering_device_docs',
+            url: '/_back/?type=metering_device_docs',
             
             onDblClick: $_DO.download_metering_device_docs,
             

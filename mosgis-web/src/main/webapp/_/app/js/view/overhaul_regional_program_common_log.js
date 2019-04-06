@@ -36,7 +36,7 @@ define ([], function () {
 
             ],
             
-            url: '/mosgis/_rest/?type=overhaul_regional_programs&part=log&id=' + $_REQUEST.id,            
+            url: '/_back/?type=overhaul_regional_programs&part=log&id=' + $_REQUEST.id,            
             
             onClick: function (e) {
             

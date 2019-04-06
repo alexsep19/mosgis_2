@@ -60,7 +60,7 @@ define ([], function () {
             
             postData: {data: {uuid_org: $_REQUEST.id}},
 
-            url: '/mosgis/_rest/?type=voc_users',
+            url: '/_back/?type=voc_users',
             
             onAdd:      $_DO.create_voc_users,
             

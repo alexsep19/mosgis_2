@@ -72,7 +72,7 @@ define ([], function () {
                 }},
             ].filter (not_off),
             
-            url: '/mosgis/_rest/?type=municipal_services',
+            url: '/_back/?type=municipal_services',
                         
             onAdd:      $_DO.create_municipal_services,            
             

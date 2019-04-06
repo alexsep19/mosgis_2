@@ -40,7 +40,7 @@ define ([], function () {
                 {field: 'soap.err_text', caption: 'Ошибка',    size: 30},
             ],
 
-            url: '/mosgis/_rest/?type=settlement_docs&part=log&id=' + $_REQUEST.id,
+            url: '/_back/?type=settlement_docs&part=log&id=' + $_REQUEST.id,
 
             onClick: function (e) {
 

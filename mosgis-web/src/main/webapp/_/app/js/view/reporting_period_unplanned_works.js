@@ -43,7 +43,7 @@ define ([], function () {
                 uuid_reporting_period: $_REQUEST.id
             }},
 
-            url: '/mosgis/_rest/?type=unplanned_works',
+            url: '/_back/?type=unplanned_works',
 
             onAdd: $_DO.create_reporting_period_unplanned_works,
             onEdit: $_DO.edit_reporting_period_unplanned_works,            

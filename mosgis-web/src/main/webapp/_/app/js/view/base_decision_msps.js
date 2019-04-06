@@ -61,7 +61,7 @@ define ([], function () {
 
             ].filter (not_off),
             
-            url: '/mosgis/_rest/?type=base_decision_msps',
+            url: '/_back/?type=base_decision_msps',
             
             postData: {data: {uuid_org: $_USER.uuid_org}},
                         

@@ -87,7 +87,7 @@ define ([], function () {
                         ]
                     }},
                     {name: 'fias', type: 'enum', options: {
-                        url: '/mosgis/_rest/?type=voc_building_addresses',
+                        url: '/_back/?type=voc_building_addresses',
                         items:  data.record.fias,
                         selected: data.record.fias,
                         openOnFocus: true,
@@ -112,7 +112,7 @@ define ([], function () {
                         renderItem: function (i, idx, remove) {
                             return remove + '<span title="' + i.text + '" >' + i.code + '</span>'
                         },
-                        url: '/mosgis/_rest/?type=voc_oktmo',
+                        url: '/_back/?type=voc_oktmo',
                         openOnFocus: true,
                         filter: false,
                         cacheMax: 50,
@@ -142,7 +142,7 @@ define ([], function () {
                         }
                     }},
                     {name: 'enumeration', type: 'enum', options: {
-                        url: '/mosgis/_rest/?type=tarif_diffs&part=enumeration',
+                        url: '/_back/?type=tarif_diffs&part=enumeration',
                         items:  data.record.enumeration,
                         selected: data.record.enumeration,
                         renderItem: function (i, idx, remove) {

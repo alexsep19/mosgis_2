@@ -57,7 +57,7 @@ define ([], function () {
 
             postData: {data: postData},
 
-            url: '/mosgis/_rest/?type=rc_contracts',
+            url: '/_back/?type=rc_contracts',
 
             onAdd:      $_DO.create_rc_contracts,
 

@@ -73,7 +73,7 @@ define ([], function () {
 
             postData: postData,
 
-            url: '/mosgis/_rest/?type=social_norm_tarifs',
+            url: '/_back/?type=social_norm_tarifs',
 
             onDblClick: function (e) {
                 openTab ('/social_norm_tarif/' + e.recid)

@@ -78,7 +78,7 @@ define ([], function () {
 
             postData: postData,
 
-            url: '/mosgis/_rest/?type=legal_acts',
+            url: '/_back/?type=legal_acts',
 
             onDblClick: function (e) {
 

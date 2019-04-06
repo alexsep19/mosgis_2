@@ -59,7 +59,7 @@ define ([], function () {
                 {field: 'dt_to', caption: 'Дата исключения', size: 16},
             ],
 
-            url: '/mosgis/_rest/?type=organization_members',
+            url: '/_back/?type=organization_members',
 
             postData: {data: {"uuid_org": $_REQUEST.id}},
 

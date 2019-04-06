@@ -22,7 +22,7 @@ define ([], function () {
                 {field: 'id_orp_status', caption: 'Статус', size: 10, voc: data.vc_gis_status},
             ],
             
-            url: '/mosgis/_rest/?type=overhaul_regional_programs',
+            url: '/_back/?type=overhaul_regional_programs',
 
             onAdd: $_DO.create_overhaul_regional_program,
             

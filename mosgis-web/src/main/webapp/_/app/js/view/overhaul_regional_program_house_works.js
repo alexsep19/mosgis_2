@@ -95,7 +95,7 @@ define ([], function () {
             
             postData: {house_uuid: $_REQUEST.id},
 
-            url: '/mosgis/_rest/?type=overhaul_regional_program_house_works',
+            url: '/_back/?type=overhaul_regional_program_house_works',
             
             onAdd: $_DO.create_overhaul_regional_program_house_works,
 

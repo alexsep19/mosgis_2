@@ -100,7 +100,7 @@ define ([], function () {
                     maxDropWidth: 800,
                     openOnFocus: true,
                     filter: false,
-                    url: '/mosgis/_rest/?type=voc_oktmo',
+                    url: '/_back/?type=voc_oktmo',
                     cacheMax: 50,
                     postData: {
                         offset: 0,

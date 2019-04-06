@@ -43,7 +43,7 @@ define ([], function () {
                 uuid_sr_ctr_obj: $_REQUEST.id
             }},
 
-            url: '/mosgis/_rest/?type=supply_resource_contract_object_subjects',
+            url: '/_back/?type=supply_resource_contract_object_subjects',
 
             onDblClick: function (e) {
                 openTab ('/supply_resource_contract_object_subject/' + e.recid)

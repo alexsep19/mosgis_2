@@ -122,7 +122,7 @@ define ([], function () {
 
             postData: {data: {uuid_house: $_REQUEST.id}},
 
-            url: '/mosgis/_rest/?type=lifts',
+            url: '/_back/?type=lifts',
             
             onDblClick: null,
             

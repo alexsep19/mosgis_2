@@ -82,7 +82,7 @@ define ([], function () {
             
             postData: {data: {uuid_account: $_REQUEST.id}},
 
-            url: '/mosgis/_rest/?type=payment_documents',
+            url: '/_back/?type=payment_documents',
                                     
             onDblClick: function (e) {openTab ('/payment_document/' + e.recid)},
             

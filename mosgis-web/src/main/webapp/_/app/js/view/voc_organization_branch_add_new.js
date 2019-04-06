@@ -25,7 +25,7 @@ define ([], function () {
                     {name: 'okopf', type: 'text'},
                     {name: 'address', type: 'text'},
                     {name: 'fiashouseguid', type: 'list', hint: 'Глобальный уникальный идентификатор дома по ФИАС', options: {
-                        url: '/mosgis/_rest/?type=voc_building_addresses',
+                        url: '/_back/?type=voc_building_addresses',
                         filter: false,
                         cacheMax: 50,
                         onLoad: function (e) {
