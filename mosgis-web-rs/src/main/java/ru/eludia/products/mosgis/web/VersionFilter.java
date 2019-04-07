@@ -3,8 +3,6 @@ package ru.eludia.products.mosgis.web;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.Filter;
@@ -17,10 +15,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-public class URLFilter implements Filter {
+public class VersionFilter implements Filter {
     
     private FilterConfig filterConfig = null;
-    private final static Logger logger = Logger.getLogger (Filter.class.getName ());
+    private final static Logger logger = Logger.getLogger (VersionFilter.class.getName ());
     private String ver = "";
     
     protected static InitialContext ic;
@@ -34,7 +32,7 @@ public class URLFilter implements Filter {
         }        
     }
 
-    public URLFilter () {
+    public VersionFilter () {
     }    
 
     @Override
@@ -80,8 +78,8 @@ public class URLFilter implements Filter {
 
     @Override
     public String toString () {
-        if (filterConfig == null) return ("URLFilter()");
-        StringBuilder sb = new StringBuilder ("URLFilter(");
+        if (filterConfig == null) return ("VersionFilter()");
+        StringBuilder sb = new StringBuilder ("VersionFilter(");
         sb.append (filterConfig);
         sb.append (")");
         return (sb.toString ());
@@ -92,39 +90,16 @@ public class URLFilter implements Filter {
         filterConfig.getServletContext ().log (msg);        
     }
 
-    private static final Pattern RE_STATIC = Pattern.compile ("/__\\w+(/.*)");
-
     class RequestWrapper extends HttpServletRequestWrapper {
         
-        private boolean isVersionedStatic = false;
         private String result;
-
-        private static final String INDEX_HTML = "/index.html";
-        private static final long MS_IN_YEAR = 365 * 24 * 60 * 60 * 1000L;
         
         void setResponseHeaders (HttpServletResponse hr) {
-            hr.setDateHeader ("Expires", 
-                isVersionedStatic ? System.currentTimeMillis () + MS_IN_YEAR : 
-                0L
-            );
-        }
-
-        private String rewriteStaticPath (String servletPath) {
-            Matcher m = RE_STATIC.matcher (servletPath);
-            return 
-                (isVersionedStatic = m.matches ()) ? "/_" + m.group (1) : 
-                INDEX_HTML;
+            hr.setHeader ("X-Mosgis-Version", ver);            
         }
 
         private String calcResult (String servletPath) {
-            
-            switch (servletPath) {
-                case INDEX_HTML:     return servletPath;
-                case "/favicon.ico": return "/_mandatory_content/favicon.ico";
-                case "/robots.txt":  return "/_mandatory_content/robots.txt";
-                default: return      rewriteStaticPath (servletPath);
-            }
-
+            return servletPath;
         }
         
         public RequestWrapper (HttpServletRequest request) {
