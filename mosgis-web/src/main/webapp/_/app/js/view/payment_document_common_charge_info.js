@@ -32,6 +32,9 @@ define ([], function () {
 
             case 'cons_i_dtrm_meth':
                 return row.uuid_m_m_service && row.cons_i_vol != null && !row.cons_i_dtrm_meth ? 'Не указан способ определения' : null
+
+            case 'cons_o_dtrm_meth':
+                return (row.uuid_m_m_service || row.uuid_add_service || row.uuid_gen_need_res) && row.cons_o_vol != null && !row.cons_o_dtrm_meth ? 'Не указан способ определения' : null
                 
             default:
                 return null
@@ -162,7 +165,7 @@ define ([], function () {
                 {field: 'cons_i_vol', caption: 'Объём', size: 10, editable: {type: 'float', precision: 7, autoFormat: true}, render: function (r, y, z, v) {return r.uuid_m_m_service ? w2utils.formatNumber (v) : '-'}},
                 {field: 'cons_i_dtrm_meth', caption: 'Определён по', size: 10, editable: {type: 'list'}, voc: data.vc_cnsmp_vol_dtrm},
 
-                {field: 'cons_o_vol', caption: 'Объём', size: 10, editable: {type: 'float', precision: 7, autoFormat: true, min: 0}},
+                {field: 'cons_o_vol', caption: 'Объём', size: 10, editable: {type: 'float', precision: 7, autoFormat: true}},
                 {field: 'cons_o_dtrm_meth', caption: 'Определён по', size: 10, editable: {type: 'list'}, voc: data.vc_cnsmp_vol_dtrm},
 
                 {field: 'okei', caption: 'Ед. изм.', size: 10, editable: function (r) {
@@ -227,6 +230,16 @@ define ([], function () {
 
                     case 'cons_i_vol':
                         if (!r.uuid_m_m_service) return e.preventDefault ()
+                        
+                    case 'cons_o_vol':
+                        if (!(r.uuid_m_m_service
+                            && ($_USER.role.nsi_20_2
+//                                || ($_USER.role.nsi_20_36) // ?
+                            )
+                        )
+                            && !r.uuid_add_service 
+                            && !r.uuid_gen_need_res
+                        ) return e.preventDefault ()
 
                 }
 
