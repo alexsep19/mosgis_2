@@ -236,11 +236,17 @@ define ([], function () {
 
                 switch (col.field) {
 
+                    case 'amountofexcessfees':
+                        if (r.ratio == null) return e.preventDefault ()
+                        break
+
                     case 'ratio':
                         if (!(r.uuid_m_m_service && (r.cons_i_dtrm_meth == 'N' || r.cons_o_dtrm_meth == 'N'))) return e.preventDefault ()
+                        break
 
                     case 'cons_i_vol':
                         if (!r.uuid_m_m_service) return e.preventDefault ()
+                        break
                         
                     case 'cons_o_vol':
                         if (!(r.uuid_m_m_service
@@ -251,6 +257,7 @@ define ([], function () {
                             && !r.uuid_add_service 
                             && !r.uuid_gen_need_res
                         ) return e.preventDefault ()
+                        break
 
                 }
 
@@ -263,6 +270,7 @@ define ([], function () {
                 $.each (grid.records, function () {
 
                     if (!this.w2ui) return
+
                     var chg = this.w2ui.changes
                     if (!chg) return
 

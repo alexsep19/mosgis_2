@@ -25,13 +25,22 @@ define ([], function () {
             if (editable.type != 'float') continue
             flds.push (c.field)
         }
-
+darn (flds)
         $.each (flds, function () {if (this != col.field) data [this] = row [this]})
 
-        if (data.accountingperiodtotal == null) {        
-            if (col.field != 'accountingperiodtotal') {
-                data.accountingperiodtotal = parseFloat (data.rate) 
-                    * (parseFloat (data.cons_i_vol || '0') + parseFloat (data.cons_o_vol || '0'))
+        if (data.accountingperiodtotal == null) {
+            data.accountingperiodtotal = parseFloat (data.rate) 
+                * (parseFloat (data.cons_i_vol || '0') + parseFloat (data.cons_o_vol || '0'))
+        }        
+        
+        if (data.ratio == null) {
+            data.amountofexcessfees = null
+        }
+        else {        
+            if (data.amountofexcessfees == null) {
+                data.amountofexcessfees = parseFloat (data.rate)
+                    *  parseFloat (data.cons_i_vol || '0')
+                    * (parseFloat (data.ratio || '0') - 1.0)
             }
         }
 
@@ -40,10 +49,12 @@ define ([], function () {
         query ({type: 'charge_info', id: e.recid, action: 'update'}, {data: data}, function (d) {
             grid.unlock ()
             var row = d.item
-            data = {}
+            data = {w2ui: {changes: {}}}
+darn (data)            
             $.each (flds, function () {data [this] = row [this] || null})
             var fld = col.field
-//            if (fld in data) data [fld].w2ui = {changes: data}
+darn (fld)            
+            if (fld in data) data.w2ui.changes [fld] = data [fld]
             grid.set (e.recid, data)
             grid.refresh ()
         })
@@ -71,7 +82,7 @@ define ([], function () {
             
             })
         
-            data.lines = darn (lines)
+            data.lines = lines
 
             done (data)
 
