@@ -42,7 +42,7 @@ define ([], function () {
             var row = d.item
             data = {}
             $.each (flds, function () {data [this] = row [this] || null})
-//            var fld = col.field
+            var fld = col.field
 //            if (fld in data) data [fld].w2ui = {changes: data}
             grid.set (e.recid, data)
             grid.refresh ()
