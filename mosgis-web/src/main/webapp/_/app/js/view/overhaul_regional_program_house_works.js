@@ -87,7 +87,7 @@ define ([], function () {
                     function (record) {
                         if (record['id_orphw_status'] == 40)
                             record['w2ui'] = {'style': 'background-color: #90EE90; color: black;'}
-                        else if (record['import_err_text'] !== '')
+                        else if (record['id_orphw_status'] != 10)
                             record['w2ui'] = {'style': 'background-color: #F08080; color: white;'}
                         return record['import_err_text']
                 }},
