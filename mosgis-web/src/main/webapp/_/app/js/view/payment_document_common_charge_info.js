@@ -21,6 +21,11 @@ define ([], function () {
     
         switch (col.field) {
 
+            case 'totalpayable':
+                var f = row.totalpayable
+                var p = row.totalpayable_v
+                return f && p && Math.abs (parseFloat (f) - parseFloat (p)) ? 'Значение не сопадает с автоматически рассчитанным: ' + w2utils.formatNumber (p) : null
+
             case 'accountingperiodtotal':
                 var f = row.accountingperiodtotal
                 var p = row.accountingperiodtotal_v

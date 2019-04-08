@@ -25,7 +25,7 @@ define ([], function () {
             if (editable.type != 'float') continue
             flds.push (c.field)
         }
-darn (flds)
+
         $.each (flds, function () {if (this != col.field) data [this] = row [this]})
 
         if (data.accountingperiodtotal == null) {
@@ -33,6 +33,12 @@ darn (flds)
                 * (parseFloat (data.cons_i_vol || '0') + parseFloat (data.cons_o_vol || '0'))
         }        
         
+        if (data.totalpayable == null) {
+            data.totalpayable = parseFloat (data.accountingperiodtotal) 
+                + parseFloat (data.moneyrecalculation || '0') 
+                - parseFloat (data.moneydiscount      || '0')
+        }
+
         if (data.ratio == null) {
             data.amountofexcessfees = null
         }
@@ -50,10 +56,8 @@ darn (flds)
             grid.unlock ()
             var row = d.item
             data = {w2ui: {changes: {}}}
-darn (data)            
             $.each (flds, function () {data [this] = row [this] || null})
             var fld = col.field
-darn (fld)            
             if (fld in data) data.w2ui.changes [fld] = data [fld]
             grid.set (e.recid, data)
             grid.refresh ()
