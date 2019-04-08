@@ -30,6 +30,9 @@ define ([], function () {
             case 'recalculationreason':
                 return !row.recalculationreason && row.moneyrecalculation ? 'Не заполнено основание' : null
 
+            case 'cons_i_dtrm_meth':
+                return row.uuid_m_m_service && row.cons_i_vol != null && !row.cons_i_dtrm_meth ? 'Не указан способ определения' : null
+                
             default:
                 return null
 
@@ -156,7 +159,7 @@ define ([], function () {
 
                 {field: 'rate', caption: 'Тариф', size: 10, editable: {type: 'float', precision: 6, autoFormat: true, min: 0}},
 
-                {field: 'cons_i_vol', caption: 'Объём', size: 10, editable: {type: 'float', precision: 7, autoFormat: true, min: 0}},
+                {field: 'cons_i_vol', caption: 'Объём', size: 10, editable: {type: 'float', precision: 7, autoFormat: true}, render: function (r, y, z, v) {return r.uuid_m_m_service ? w2utils.formatNumber (v) : '-'}},
                 {field: 'cons_i_dtrm_meth', caption: 'Определён по', size: 10, editable: {type: 'list'}, voc: data.vc_cnsmp_vol_dtrm},
 
                 {field: 'cons_o_vol', caption: 'Объём', size: 10, editable: {type: 'float', precision: 7, autoFormat: true, min: 0}},
@@ -218,8 +221,13 @@ define ([], function () {
                 var col = grid.columns [e.column]
 
                 switch (col.field) {
-                    case 'ratio':                                        
+
+                    case 'ratio':
                         if (!(r.uuid_m_m_service && (r.cons_i_dtrm_meth == 'N' || r.cons_o_dtrm_meth == 'N'))) return e.preventDefault ()
+
+                    case 'cons_i_vol':
+                        if (!r.uuid_m_m_service) return e.preventDefault ()
+
                 }
 
             },            
