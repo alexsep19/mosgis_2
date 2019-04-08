@@ -56,55 +56,6 @@ public class OverhaulRegionalProgramHouseWorksImpl extends BaseCRUD<OverhaulRegi
         
     });}
     
-    private void checkDuplicates (JsonObject p) throws SQLException {
-        
-        Map<String, Object> data = getData (p);
-        
-        DB db = ModelHolder.getModel ().getDb ();
-        
-        List <Map <String, Object>> duplicates = db.getList (db.getModel ()
-            .select (OverhaulRegionalProgramHouseWork.class, "*")
-            .where  (OverhaulRegionalProgramHouseWork.c.HOUSE_UUID.lc (), data.get ("house_uuid"))
-            .where  (OverhaulRegionalProgramHouseWork.c.WORK.lc (),       data.get ("work"))
-            .where  (OverhaulRegionalProgramHouseWork.c.ENDMONTH.lc (),   data.get ("endmonth"))
-            .where  (OverhaulRegionalProgramHouseWork.c.ENDYEAR.lc (),    data.get ("endyear"))
-            .where  (OverhaulRegionalProgramHouseWork.c.STARTMONTH.lc (), data.get ("startmonth"))
-            .where  (OverhaulRegionalProgramHouseWork.c.STARTYEAR.lc (),  data.get ("startyear"))
-            .and    ("is_deleted", 0)
-        );
-        
-        if (!duplicates.isEmpty ()) throw new ValidationException ("foo", "Данный вид работ с указанным периодом уже существует");
-        
-    }
-    
-    @Override
-    public JsonObject doCreate (JsonObject p, User user) {return doAction ((db, job) -> {
-
-        Map<String, Object> data = getData (p);
-        
-        checkDuplicates (p);
-
-        Object insertId = db.insertId (getTable (), data);
-        
-        job.add ("id", insertId.toString ());
-        
-        logAction (db, user, insertId, VocAction.i.CREATE);
-
-    });}
-    
-    @Override
-    public JsonObject doUpdate (String id, JsonObject p, User user) {return doAction ((db) -> {
-        
-        checkDuplicates (p);
-        
-        db.update (getTable (), getData (p,
-            "uuid", id
-        ));
-        
-        logAction (db, user, id, VocAction.i.UPDATE);
-                        
-    });}
-    
     @Override
     public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
         
