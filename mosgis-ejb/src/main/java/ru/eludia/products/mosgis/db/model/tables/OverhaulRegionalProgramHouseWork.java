@@ -77,7 +77,7 @@ public class OverhaulRegionalProgramHouseWork extends EnTable {
                         + "works." + OverhaulRegionalProgramHouseWork.c.ENDYEAR.lc ()    + " = :NEW." + OverhaulRegionalProgramHouseWork.c.ENDYEAR.lc ()    + " AND "
                         + "works.is_deleted = 0; "
                     + "IF cnt > 0 THEN "
-                        + "raise_application_exception (-20000, 'Данный вид работ с указанным периодом уже существует для данного дома'); "
+                        + "raise_application_error (-20000, 'Данный вид работ с указанным периодом уже существует для данного дома'); "
                     + "END IF; "
                 + "END; "
         );
