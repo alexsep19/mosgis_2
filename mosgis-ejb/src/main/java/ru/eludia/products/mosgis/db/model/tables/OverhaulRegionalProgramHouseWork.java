@@ -75,6 +75,7 @@ public class OverhaulRegionalProgramHouseWork extends EnTable {
                         + "works." + OverhaulRegionalProgramHouseWork.c.STARTYEAR.lc ()  + " = :NEW." + OverhaulRegionalProgramHouseWork.c.STARTYEAR.lc ()  + " AND "
                         + "works." + OverhaulRegionalProgramHouseWork.c.ENDMONTH.lc ()   + " = :NEW." + OverhaulRegionalProgramHouseWork.c.ENDMONTH.lc ()   + " AND "
                         + "works." + OverhaulRegionalProgramHouseWork.c.ENDYEAR.lc ()    + " = :NEW." + OverhaulRegionalProgramHouseWork.c.ENDYEAR.lc ()    + " AND "
+                        + "works.uuid <> :NEW.uuid AND "
                         + "works.is_deleted = 0; "
                     + "IF cnt > 0 THEN "
                         + "raise_application_error (-20000, 'Данный вид работ с указанным периодом уже существует для данного дома'); "
@@ -86,7 +87,7 @@ public class OverhaulRegionalProgramHouseWork extends EnTable {
     
     public enum Action {
         
-        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING)
+        ANNUL     (VocGisStatus.i.PENDING_RP_ANNULMENT,   VocGisStatus.i.ANNUL, VocGisStatus.i.FAILED_ANNULMENT)
         ;
         
         VocGisStatus.i nextStatus;
@@ -113,14 +114,14 @@ public class OverhaulRegionalProgramHouseWork extends EnTable {
 
         public static Action forStatus (VocGisStatus.i status) {
             switch (status) {
-                case PENDING_RQ_PLACING:   return PLACING;
+                case PENDING_RQ_ANNULMENT:   return ANNUL;
                 default: return null;
             }            
         }
 
         public static Action forLogAction (VocAction.i a) {
             switch (a) {
-                case APPROVE: return PLACING;
+                case ANNUL: return ANNUL;
                 default: return null;
             }
         }

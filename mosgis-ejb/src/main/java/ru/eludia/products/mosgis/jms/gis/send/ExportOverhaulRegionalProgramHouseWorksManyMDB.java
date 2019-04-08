@@ -23,19 +23,19 @@ import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 import ru.gosuslugi.dom.schema.integration.capital_repair_service_async.Fault;
 
 @MessageDriven(activationConfig = {
- @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inExportOverhaulRegionalProgramHouseWorksQueue")
+ @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inExportOverhaulRegionalProgramHouseWorksManyQueue")
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class ExportOverhaulRegionalProgramHouseWorksMDB extends GisExportMDB <OverhaulRegionalProgramHouseWorksImport> {
+public class ExportOverhaulRegionalProgramHouseWorksManyMDB extends GisExportMDB <OverhaulRegionalProgramHouseWorksImport> {
     
     private final int CAPACITY = 500;
     
     @EJB
     WsGisCapitalRepairClient wsGisCapitalRepairClient;
     
-    @Resource (mappedName = "mosgis.outExportOverhaulRegionalProgramHouseWorksQueue")
-    Queue outExportOverhaulRegionalProgramHouseWorksQueue;
+    @Resource (mappedName = "mosgis.outExportOverhaulRegionalProgramHouseWorksManyQueue")
+    Queue outExportOverhaulRegionalProgramHouseWorksManyQueue;
     
     AckRequest.Ack invoke (DB db, UUID messageGUID,  Map<String, Object> r) throws Fault, SQLException {
         
@@ -72,7 +72,7 @@ public class ExportOverhaulRegionalProgramHouseWorksMDB extends GisExportMDB <Ov
             try {            
                 AckRequest.Ack ack = invoke (db, uuid, r);
                 store (db, ack, r);
-                uuidPublisher.publish (outExportOverhaulRegionalProgramHouseWorksQueue, ack.getRequesterMessageGUID ());
+                uuidPublisher.publish (outExportOverhaulRegionalProgramHouseWorksManyQueue, ack.getRequesterMessageGUID ());
             }
             catch (Fault ex) {
                 logger.log (Level.SEVERE, "Can't place regional program works", ex);

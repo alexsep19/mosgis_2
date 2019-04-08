@@ -49,6 +49,9 @@ public class VocAction extends Table {
         CANCEL          ("cancel",          "отмена"),
         CREATE          ("create",          "создание"),
         DELETE          ("delete",          "удаление"),
+        
+        DELETE_PROJECT  ("delete_project",  "удаление проекта"),
+        
         EXPIRE          ("expire",          "проверка на просроченность"),
         
         IMPORT_FROM_FILE      ("import_from_file", "импорт из файла"),

@@ -49,7 +49,7 @@ define ([], function () {
                 }
 
                 it._can.update = it._can.edit
-                //it._can.delete = it._can.approve || (it.id_orp_status == 40)
+                it._can.delete = it._can.approve || (it.id_orp_status == 40)
 
             }
 

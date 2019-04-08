@@ -26,7 +26,19 @@ public class OverhaulRegionalProgramLog extends GisWsLogTable {
         
     }
     
-    public static ImportRegionalProgramRequest toImportRegionalProgramRequest (Map<String, Object> r, boolean isProject) {
+    public static ImportRegionalProgramRequest toAnnulRegionalProgramRequest (Map <String, Object> r) {
+        final ImportRegionalProgramRequest result = new ImportRegionalProgramRequest ();
+        result.setImportRegionalProgram (toImportRegionalProgramAnnul (r));
+        return result;
+    }
+    
+    public static ImportRegionalProgramRequest toDeleteRegionalProgramRequest (Map <String, Object> r) {
+        final ImportRegionalProgramRequest result = new ImportRegionalProgramRequest ();
+        result.setImportRegionalProgram (toImportRegionalProgramDelete (r));
+        return result;
+    }
+    
+    public static ImportRegionalProgramRequest toImportRegionalProgramRequest (Map <String, Object> r, boolean isProject) {
         final ImportRegionalProgramRequest result = new ImportRegionalProgramRequest ();
         if (isProject)
             result.setImportRegionalProgram (toImportRegionalProgramProject (r));
@@ -35,7 +47,7 @@ public class OverhaulRegionalProgramLog extends GisWsLogTable {
         return result;
     }
     
-    private static ImportRegionalProgramRequest.ImportRegionalProgram toImportRegionalProgramProject (Map<String, Object> r) {
+    private static ImportRegionalProgramRequest.ImportRegionalProgram toImportRegionalProgramProject (Map <String, Object> r) {
         final ImportRegionalProgramRequest.ImportRegionalProgram result = new ImportRegionalProgramRequest.ImportRegionalProgram ();
         result.setTransportGuid (UUID.randomUUID ().toString ());
         result.setLoadRegionalProgram(toRegionalProgramPasportType (r));
@@ -50,10 +62,26 @@ public class OverhaulRegionalProgramLog extends GisWsLogTable {
         return result;
     }
     
-    private static ImportRegionalProgramRequest.ImportRegionalProgram toImportRegionalProgramPublish (Map<String, Object> r) {
+    private static ImportRegionalProgramRequest.ImportRegionalProgram toImportRegionalProgramPublish (Map <String, Object> r) {
         final ImportRegionalProgramRequest.ImportRegionalProgram result = new ImportRegionalProgramRequest.ImportRegionalProgram ();
         result.setTransportGuid (UUID.randomUUID ().toString ());
         result.setPublishRegionalProgram(Boolean.TRUE);
+        result.setRegionalProgramGuid (r.get ("regionalprogramguid").toString ());
+        return result;
+    }
+    
+    private static ImportRegionalProgramRequest.ImportRegionalProgram toImportRegionalProgramDelete(Map <String, Object> r) {
+        final ImportRegionalProgramRequest.ImportRegionalProgram result = new ImportRegionalProgramRequest.ImportRegionalProgram ();
+        result.setTransportGuid (UUID.randomUUID ().toString ());
+        result.setDeleteRegionalProgram(Boolean.TRUE);
+        result.setRegionalProgramGuid (r.get ("regionalprogramguid").toString ());
+        return result;
+    }
+    
+    private static ImportRegionalProgramRequest.ImportRegionalProgram toImportRegionalProgramAnnul(Map<String, Object> r) {
+        final ImportRegionalProgramRequest.ImportRegionalProgram result = new ImportRegionalProgramRequest.ImportRegionalProgram ();
+        result.setTransportGuid (UUID.randomUUID ().toString ());
+        result.setCancelRegionalProgram(Boolean.TRUE);
         result.setRegionalProgramGuid (r.get ("regionalprogramguid").toString ());
         return result;
     }
