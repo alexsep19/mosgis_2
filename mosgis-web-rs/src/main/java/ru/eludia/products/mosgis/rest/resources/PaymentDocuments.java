@@ -78,7 +78,7 @@ public class PaymentDocuments extends EJBResource <PaymentDocumentLocal> {
     public JsonObject doUpdate (@PathParam ("id") String id, JsonObject p) {
 //        final JsonObject item = getInnerItem (id);
 //        checkOrg (item);
-        return back.doUpdate (id, p, getUser ());
+        return back.doUpdateAndGet (id, p, getUser ());
     }
     
     @POST
