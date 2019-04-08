@@ -87,7 +87,11 @@ public class VocMeteringDeviceType extends Table {
         public static i fromXL (String s) throws XLException {
             switch (s) {
                 case "Коллективный (общедомовой)": return COLLECTIVE;
-                default: throw new XLException ("Пока поддерживается только тип ПУ 'Коллективный (общедомовой)'");
+                //в триггере может поменяться на NON_RESIDENTIAL_PREMISE
+                case "Индивидуальный": return RESIDENTIAL_PREMISE;
+                case "Общий (квартирный)": return COLLECTIVE_APARTMENT;
+                case "Комнатный": return LIVING_ROOM;
+                default: throw new XLException (s +" пока поддерживается");
             }
         }
 
