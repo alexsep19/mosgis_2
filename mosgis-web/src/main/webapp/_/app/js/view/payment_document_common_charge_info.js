@@ -36,6 +36,9 @@ define ([], function () {
             case 'cons_o_dtrm_meth':
                 return (row.uuid_m_m_service || row.uuid_add_service || row.uuid_gen_need_res) && row.cons_o_vol != null && !row.cons_o_dtrm_meth ? 'Не указан способ определения' : null
                 
+            case 'rate':
+                return (row.accountingperiodtotal || row.cons_i_vol || row.cons_o_vol) && row.rate == null ? 'Не указан тариф' : null
+                                
             default:
                 return null
 
@@ -47,6 +50,9 @@ define ([], function () {
 
         switch (col.field) {
 
+            case 'rate':
+                return !row.uuid_m_m_service
+                
             case 'accountingperiodtotal':
                 return true
                 
