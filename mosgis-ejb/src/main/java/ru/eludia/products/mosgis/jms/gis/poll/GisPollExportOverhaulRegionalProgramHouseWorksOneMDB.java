@@ -11,11 +11,12 @@ import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgram;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouse;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseWork;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseWorkLog;
-import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramLog;
+import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.jms.UUIDPublisher;
@@ -77,6 +78,16 @@ public class GisPollExportOverhaulRegionalProgramHouseWorksOneMDB extends GisPol
             
             final Map<String, Object> h = statusHash (action.getOkStatus ());
             
+            if (action == OverhaulRegionalProgramHouseWork.Action.ANNUL)
+                h.put ("is_deleted", 1);
+            
+            update (db, uuid, r, h);
+
+            db.update (OutSoap.class, HASH (
+                "uuid", getUuid (),
+                "id_status", DONE.getId ()
+            ));
+            
         }
         catch (GisPollRetryException ex) {
             return;
@@ -103,7 +114,7 @@ public class GisPollExportOverhaulRegionalProgramHouseWorksOneMDB extends GisPol
         
 logger.info ("h=" + h);
         
-        h.put ("uuid", r.get ("program.uuid"));
+        h.put ("uuid", r.get ("works.uuid"));
         db.update (OverhaulRegionalProgramHouseWork.class, h);
         
         h.put ("uuid", uuid);
