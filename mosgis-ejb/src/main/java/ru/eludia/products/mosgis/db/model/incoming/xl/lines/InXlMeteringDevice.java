@@ -211,7 +211,7 @@ public class InXlMeteringDevice extends EnTable {
             + "  join tb_houses h on u.FIASHOUSEGUID = h.FIASHOUSEGUID "
             + "  left join tb_premises_res r on h.UUID = r.uuid_house and r.premisesnum = :NEW.PREMISESNUM "
             + "  left join tb_premises_nrs n on h.UUID = n.uuid_house and r.premisesnum = :NEW.PREMISESNUM "
-            + "  where u.FIASHOUSEGUID = :NEW.unom; "
+            + "  where u.unom = :NEW.unom; "
             + "  IF (:NEW.PREMISESTYPE = 'Нежилое' OR :NEW.PREMISESTYPE IS NULL) AND val2 IS NOT NULL THEN "        
             + "   IF :NEW.ID_TYPE = " + VocMeteringDeviceType.i.RESIDENTIAL_PREMISE.getId() +" THEN "       
             + "     :NEW.ID_TYPE := " + VocMeteringDeviceType.i.NON_RESIDENTIAL_PREMISE.getId() +"; "
@@ -219,7 +219,7 @@ public class InXlMeteringDevice extends EnTable {
             + "  ELSIF val1 IS NULL THEN "        
             + "     raise_application_error (-20000, 'Не найдено '|| :NEW.PREMISESTYPE || ' помещение: ' || :NEW.PREMISESNUM);"
             + "  END IF; "
-            + " END IF; "
+            + " END;END IF; "
                     
             + " IF :NEW.ACCOUNTNUMBER IS NOT NULL THEN BEGIN "
             + "  SELECT 1 INTO cnt FROM tb_accounts WHERE ACCOUNTNUMBER = :NEW.ACCOUNTNUMBER; "

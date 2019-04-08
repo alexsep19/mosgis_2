@@ -35,6 +35,12 @@ public class MeteringDevice extends EnTable {
         METERINGDEVICESTAMP    (Type.STRING,  100,                              "Марка ПУ"),
         METERINGDEVICEMODEL    (Type.STRING,  100,                              "Модель ПУ"),
         
+        PREMISESNUM            (Type.STRING, 255,    null,                      "Номер помещения"),
+        PREMISESTYPE           (Type.STRING,  30,    null,                      "Жилое/Нежилое (для проверок tb_premises_res/tb_premises_nrs)" ),
+        ROOMNUMBER             (Type.STRING, 255,    null,                      "Номер комнаты" ),
+        ACCOUNTNUMBER          (Type.STRING,  30,    null,                      "№ лицевого счета"),
+        
+
         INSTALLATIONDATE       (Type.DATE,           null,                      "Дата установки"),
         COMMISSIONINGDATE      (Type.DATE,           null,                      "Дата ввода в эксплуатацию"),
         
