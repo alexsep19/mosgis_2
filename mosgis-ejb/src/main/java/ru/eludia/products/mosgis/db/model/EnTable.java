@@ -95,6 +95,30 @@ public abstract class EnTable extends Table {
 	}
     }
 
+    public static String toNull(XSSFRow row, int col, Object error) throws XLException {
+
+	String result = toString(row, col);
+
+	if (result != null) {
+	    throw new XLException(error.toString());
+	}
+
+	return result;
+        
+    }
+
+    public static String toString(XSSFRow row, int col, String mask, Object error) throws XLException {
+        
+        String result = toString(row, col);
+        
+	if (result == null || !result.matches(mask)) {
+	    throw new XLException(error.toString());
+	}
+        
+	return result;
+        
+    }
+    
     public static String toString(XSSFRow row, int col, Object error) throws XLException {
 
 	String result = toString(row, col);
