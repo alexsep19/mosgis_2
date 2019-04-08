@@ -37,10 +37,20 @@ define ([], function () {
 
         $_SESSION.set('voc_differentiation_popup.post_data', {search: [
                 {field: 'differentiationvaluekind', operator: 'in', value: [saved.id_type]},
-                {field: 'id_tariff_type', operator: 'in', value: ['ResidentialPremisesUsage']}
+                {field: 'id_tariff_type', operator: 'in', value: [voc_tarif_case_type()]}
             ], searchLogic: "AND"})
 
         use.block('voc_differentiation_popup')
+    }
+
+    function voc_tarif_case_type(){
+
+        switch ($_REQUEST.type) {
+            case 'premise_usage_tarif' : return 'ResidentialPremisesUsage';
+            case 'social_norm_tarif' : return 'SocialNorm';
+        }
+
+        return null;
     }
 
     $_DO.edit_tarif_diffs = function (e) {

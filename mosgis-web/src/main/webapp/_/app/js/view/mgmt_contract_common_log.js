@@ -60,7 +60,7 @@ define ([], function () {
 
             ],
             
-            url: '/mosgis/_rest/?type=mgmt_contracts&part=log&id=' + $_REQUEST.id,
+            url: '/_back/?type=mgmt_contracts&part=log&id=' + $_REQUEST.id,
             
             onClick: function (e) {
             

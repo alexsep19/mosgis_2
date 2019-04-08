@@ -58,7 +58,7 @@ define ([], function () {
                 {field: 'has_error', caption: 'Наличие<br>ошибки', size: 10, voc: {1: 'да', 0: ''}},
             ],
 
-            url: '/mosgis/_rest/?type=ws_msgs',
+            url: '/_back/?type=ws_msgs',
             
             onClick: function (e) {
             

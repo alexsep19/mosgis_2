@@ -34,7 +34,7 @@ define ([], function () {
                 {field: 'kpp', caption: 'КПП',    size: 10},
             ],
 
-            url: '/mosgis/_rest/?type=voc_organizations',
+            url: '/_back/?type=voc_organizations',
 
             onRequest: function (e) {
 

@@ -52,7 +52,7 @@ define ([], function () {
                 {name: 'address', type: 'text'},
                 {name: 'fiashouseguid', type: 'list', hint: 'Глобальный уникальный идентификатор дома по ФИАС'
                     , options: {
-                        url: '/mosgis/_rest/?type=voc_building_addresses',
+                        url: '/_back/?type=voc_building_addresses',
                         filter: false,
                         selected: data.selected_address,
                         items: [data.selected_address],

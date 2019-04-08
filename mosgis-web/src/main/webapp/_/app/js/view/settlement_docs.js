@@ -38,7 +38,7 @@ define ([], function () {
                 {field: 'org_customer.label', caption: 'Исполнитель коммунальной услуги', size: 50}
             ].filter (not_off),
 
-            url: '/mosgis/_rest/?type=settlement_docs',
+            url: '/_back/?type=settlement_docs',
 
             postData: {
                 data: {

@@ -36,7 +36,7 @@ define ([], function () {
                 },
             ],
             
-            url: '/mosgis/_rest/?type=vote_decision_lists&part=log&id=' + $_REQUEST.id,            
+            url: '/_back/?type=vote_decision_lists&part=log&id=' + $_REQUEST.id,            
 
         }).refresh ();
 

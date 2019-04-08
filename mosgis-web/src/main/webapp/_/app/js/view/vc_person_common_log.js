@@ -39,7 +39,7 @@ define ([], function () {
 
             ],
             
-            url: '/mosgis/_rest/?type=vc_persons&part=log&id=' + $_REQUEST.id,            
+            url: '/_back/?type=vc_persons&part=log&id=' + $_REQUEST.id,            
 
         }).refresh ();
 

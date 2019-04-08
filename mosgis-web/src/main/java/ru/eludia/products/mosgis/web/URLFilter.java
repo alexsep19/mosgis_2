@@ -1,8 +1,6 @@
 package ru.eludia.products.mosgis.web;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -43,11 +41,6 @@ public class URLFilter implements Filter {
     public void doFilter (ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         
         final HttpServletRequest hr = (HttpServletRequest) request;
-
-        if (hr.getRequestURI ().startsWith ("/mosgis/svc/")) {
-            chain.doFilter (request, response);
-            return;
-        }
 
         RequestWrapper wrappedRequest = new RequestWrapper (hr);
                         
@@ -103,7 +96,6 @@ public class URLFilter implements Filter {
 
     class RequestWrapper extends HttpServletRequestWrapper {
         
-        private boolean isRest = false;
         private boolean isVersionedStatic = false;
         private String result;
 
@@ -111,19 +103,10 @@ public class URLFilter implements Filter {
         private static final long MS_IN_YEAR = 365 * 24 * 60 * 60 * 1000L;
         
         void setResponseHeaders (HttpServletResponse hr) {
-
-            if (isRest) 
-                hr.setHeader ("X-Mosgis-Version", ver);            
-            else 
-                hr.setDateHeader ("Expires", 
-                    isVersionedStatic ? System.currentTimeMillis () + MS_IN_YEAR : 
-                    0L
-                );
-
-        }
-
-        private boolean isRestRequest (String servletPath) {
-            return !"GET".equals (getMethod ()) || servletPath.startsWith ("/_rest");
+            hr.setDateHeader ("Expires", 
+                isVersionedStatic ? System.currentTimeMillis () + MS_IN_YEAR : 
+                0L
+            );
         }
 
         private String rewriteStaticPath (String servletPath) {
@@ -139,11 +122,9 @@ public class URLFilter implements Filter {
                 case INDEX_HTML:     return servletPath;
                 case "/favicon.ico": return "/_mandatory_content/favicon.ico";
                 case "/robots.txt":  return "/_mandatory_content/robots.txt";
-                default: return 
-                    (isRest = isRestRequest (servletPath)) ? servletPath : 
-                    rewriteStaticPath (servletPath);
-            }            
-            
+                default: return      rewriteStaticPath (servletPath);
+            }
+
         }
         
         public RequestWrapper (HttpServletRequest request) {
@@ -159,11 +140,6 @@ public class URLFilter implements Filter {
         @Override
         public String getServletPath () {
             return result;
-        }
-
-        @Override
-        public String toString () {
-            return super.getServletPath () + " .. " + getServletPath () + ", isRest=" + isRest + ", isVersionedStatic=" + isVersionedStatic;
         }
 
         @Override

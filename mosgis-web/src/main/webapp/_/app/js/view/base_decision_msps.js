@@ -36,7 +36,7 @@ define ([], function () {
             
                 items: [
                     {type: 'button', id: b [0], caption: 'Удалить', onClick: $_DO.delete_base_decision_msps, disabled: true, off: !data._can.delete},
-                    {type: 'button', id: 'edit', caption: 'Обновить', onClick: $_DO.import_base_decision_msps, icon: 'w2ui-icon-pencil', off: $_USER.role.admin}
+                    {type: 'button', id: 'edit', caption: 'Импорт справочника из ГИС ЖКХ', onClick: $_DO.import_base_decision_msps, icon: 'w2ui-icon-pencil', off: $_USER.role.admin}
                 ].filter (not_off),
                 
             }, 
@@ -53,7 +53,7 @@ define ([], function () {
             columns: [      
             
                 {field: 'org.label', caption: 'Организация', size: 100, off: !$_USER.role.admin},
-                {field: 'uniquenumber', caption: 'Код в ГИС ЖКХ', size: 20},
+                {field: 'code', caption: 'Код', size: 20},
                 {field: 'decisionname', caption: 'Наименование', size: 50},
                 {field: 'code_vc_nsi_301',  caption: 'Тип решения', size: 25, voc: data.vc_nsi_301},
                 {field: 'id_ctr_status',  caption: 'Статус', size: 50, voc: data.vc_gis_status},
@@ -61,7 +61,7 @@ define ([], function () {
 
             ].filter (not_off),
             
-            url: '/mosgis/_rest/?type=base_decision_msps',
+            url: '/_back/?type=base_decision_msps',
             
             postData: {data: {uuid_org: $_USER.uuid_org}},
                         

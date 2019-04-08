@@ -59,7 +59,7 @@ define ([], function () {
             
             postData: {data: {uuid_charter: $_REQUEST.id}},
 
-            url: '/mosgis/_rest/?type=accounts',
+            url: '/_back/?type=accounts',
                                     
             onDblClick: function (e) {openTab ('/account/' + e.recid)},
             

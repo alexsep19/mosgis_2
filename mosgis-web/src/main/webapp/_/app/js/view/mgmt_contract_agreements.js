@@ -46,7 +46,7 @@ define ([], function () {
                 {field: "id_type",       operator: "is", value: 1}
             ]},
 
-            url: '/mosgis/_rest/?type=contract_docs',
+            url: '/_back/?type=contract_docs',
             
             onDblClick: $_DO.download_mgmt_contract_agreements,
             

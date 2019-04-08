@@ -28,7 +28,7 @@ define ([], function () {
                 {field: 'adop_date', caption: 'Дата принятия', size: 10, render: _dt, hidden: 1},
             ],
             
-            url: '/mosgis/_rest/?type=voc_oktmo',
+            url: '/_back/?type=voc_oktmo',
 
             onDblClick: function (e) {
 

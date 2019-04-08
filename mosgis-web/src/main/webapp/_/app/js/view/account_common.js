@@ -86,7 +86,7 @@ define ([], function () {
                 {name: 'uuid_person_customer', type: 'list', options: 
                     {
                         items: it.persons,
-                        url: '/mosgis/_rest/?type=vc_persons',
+                        url: '/_back/?type=vc_persons',
                         postData: {
                             uuid_org: it.uuid_org, 
                             searchLogic: 'OR',

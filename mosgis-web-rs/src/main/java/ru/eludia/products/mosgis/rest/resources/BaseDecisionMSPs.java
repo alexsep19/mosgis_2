@@ -8,58 +8,39 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.rest.api.BaseDecisionMSPLocal;
 
 @Path ("base_decision_msps")
 public class BaseDecisionMSPs extends EJBResource <BaseDecisionMSPLocal> {
-/*    
-    private JsonObject getInnerItem (String id) {
-        final JsonObject data = back.getItem (id);        
-        final JsonObject item = data.getJsonObject ("item");
-        if (item == null) throw new InternalServerErrorException ("Wrong data from back.getItem (" + id + "), no item: " + data);
-        return item;
-    }    
 
-    private String getUserOrg () {
-
-        String userOrg = getUser ().getUuidOrg ();
-
-        if (userOrg == null) {
-            logger.warning ("User has no org set, access prohibited");
-            throw new ValidationException ("foo", "Доступ запрещён");
-        }
-
-        return userOrg;
-        
-    }    
-    
-    private void checkOrg (JsonObject item) {
-
-        String itemOrg = item.getString ("uuid_org", null);
-
-        if (itemOrg == null) throw new InternalServerErrorException ("Wrong MSPDecisionBase, no org: " + item);
-
-        String userOrg = getUserOrg ();
-
-        if (!userOrg.equals (itemOrg)) {
-            logger.warning ("Org mismatch: " + userOrg + " vs. " + itemOrg);
-            throw new ValidationException ("foo", "Доступ запрещён");
-        }
-
+    private void checkGet() {
+	if (!securityContext.isUserInRole("admin")
+	    && !(securityContext.isUserInRole("nsi_20_9") || securityContext.isUserInRole("nsi_20_10"))
+	) {
+	    throw new ValidationException("foo", "Доступ запрещен");
+	}
     }
-*/
+
+    private void checkPost() {
+	if (!(securityContext.isUserInRole("nsi_20_9") || securityContext.isUserInRole("nsi_20_10"))) {
+	    throw new ValidationException("foo", "Доступ запрещен");
+	}
+    }
 
     @POST
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
-    public JsonObject select (JsonObject p) { 
+    public JsonObject select (JsonObject p) {
+	checkGet();
         return back.select (p, getUser ()); 
     }
 
     @POST
     @Path ("vocs")
     @Produces (APPLICATION_JSON)
-    public JsonObject getVocs () { 
+    public JsonObject getVocs () {
+	checkGet();
         return back.getVocs (); 
     }
     
@@ -67,7 +48,7 @@ public class BaseDecisionMSPs extends EJBResource <BaseDecisionMSPLocal> {
     @Path("create") 
     @Produces (APPLICATION_JSON)
     public JsonObject doCreate (JsonObject p) {
-//        getUserOrg ();
+	checkPost();
         return back.doCreate (p, getUser ());
     }
 
@@ -76,8 +57,7 @@ public class BaseDecisionMSPs extends EJBResource <BaseDecisionMSPLocal> {
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject doUpdate (@PathParam ("id") String id, JsonObject p) {
-//        final JsonObject item = getInnerItem (id);
-//        checkOrg (item);
+	checkPost();
         return back.doUpdate (id, p, getUser ());
     }
     
@@ -85,8 +65,7 @@ public class BaseDecisionMSPs extends EJBResource <BaseDecisionMSPLocal> {
     @Path("{id}/delete") 
     @Produces (APPLICATION_JSON)
     public JsonObject doDelete (@PathParam ("id") String id) { 
-//        final JsonObject item = getInnerItem (id);
-//        checkOrg (item);
+	checkPost();
         return back.doDelete (id, getUser ());
     }
     
@@ -94,8 +73,7 @@ public class BaseDecisionMSPs extends EJBResource <BaseDecisionMSPLocal> {
     @Path("{id}/undelete") 
     @Produces (APPLICATION_JSON)
     public JsonObject doUndelete (@PathParam ("id") String id) { 
-//        final JsonObject item = getInnerItem (id);
-//        checkOrg (item);
+	checkPost();
         return back.doUndelete (id, getUser ());
     }
         
@@ -103,9 +81,8 @@ public class BaseDecisionMSPs extends EJBResource <BaseDecisionMSPLocal> {
     @Path("{id}") 
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) { 
-        final JsonObject item = back.getItem (id, getUser ());
-//        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
-        return item;
+	checkGet();
+        return back.getItem (id, getUser ());
     }
     
     @POST
@@ -113,8 +90,7 @@ public class BaseDecisionMSPs extends EJBResource <BaseDecisionMSPLocal> {
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
-//        final JsonObject item = back.getItem (id);
-//        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
+	checkGet();
         return back.getLog (id, p, getUser ());
     }
 
@@ -122,13 +98,23 @@ public class BaseDecisionMSPs extends EJBResource <BaseDecisionMSPLocal> {
     @Path("import")
     @Produces (APPLICATION_JSON)
     public JsonObject doImport () {
+	checkPost();
         return back.doImport (getUser ());
+    }
+
+    @POST
+    @Path("{id}/alter")
+    @Produces(APPLICATION_JSON)
+    public JsonObject doAlter(@PathParam("id") String id, JsonObject p) {
+	checkPost ();
+	return back.doAlter(id, p, getUser()); 
     }
 
     @POST
     @Path("log") 
     @Produces (APPLICATION_JSON)
     public JsonObject getLog () { 
+	checkGet();
         return back.getLog (); 
     }
 }

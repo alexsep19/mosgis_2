@@ -42,7 +42,7 @@ define ([], function () {
                 {field: 'is_deleted',  caption: 'Статус',     size: 20, voc: {0: 'Актуально', 1: 'Удалено'}},
             ],
 
-            url: '/mosgis/_rest/?type=rc_contracts&part=log&id=' + $_REQUEST.id,
+            url: '/_back/?type=rc_contracts&part=log&id=' + $_REQUEST.id,
 
             onClick: function (e) {
 

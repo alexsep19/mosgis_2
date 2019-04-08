@@ -52,9 +52,9 @@ define ([], function () {
                 return
             }
                         
-            setTimeout (function () {w2ui ['base_decision_msps_grid'].lock ('Импорт данных...', 1)}, 10)
+            setTimeout (function () {w2ui ['base_decision_msps_grid'].lock ('Запрос в ГИС ЖКХ...', 1)}, 10)
 
-            setTimeout ($_DO.check_base_decision_msps, 2000)
+            setTimeout ($_DO.check_base_decision_msps, 5000)
 
         })
 

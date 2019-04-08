@@ -33,7 +33,7 @@ define ([], function () {
 
             ],
 
-            url: '/mosgis/_rest/?type=property_documents&part=log&id=' + $_REQUEST.id,            
+            url: '/_back/?type=property_documents&part=log&id=' + $_REQUEST.id,            
 
         }).refresh ();
 

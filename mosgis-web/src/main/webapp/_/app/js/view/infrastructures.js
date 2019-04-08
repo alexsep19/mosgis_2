@@ -61,7 +61,7 @@ define ([], function () {
                 {field: 'id_is_status', caption: 'Статус', size: 15, voc: data.vc_gis_status},
             ],
 
-            url: '/mosgis/_rest/?type=infrastructures',
+            url: '/_back/?type=infrastructures',
             
             onDblClick: function (e) {
                 openTab ('/infrastructure/' + e.recid)

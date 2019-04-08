@@ -14,7 +14,7 @@ define ([], function () {
 
                 fields : [
                     {name: 'uuid_house', type: 'list', hint: 'Адрес', options: {
-                        url: '/mosgis/_rest/?type=houses',
+                        url: '/_back/?type=houses',
                         filter: false,
                         cacheMax: 50,
                         postData: {offset: 0, limit: 50},

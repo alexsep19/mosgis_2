@@ -53,7 +53,7 @@ define ([], function () {
             
             postData: {search: {"uuid_house": $_REQUEST.id}},
 
-            url: '/mosgis/_rest/?type=house_docs',
+            url: '/_back/?type=house_docs',
             
             onDblClick: $_DO.download_house_docs,
             

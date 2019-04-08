@@ -32,7 +32,7 @@ define ([], function () {
 
             postData: {data: {uuid_account: $_REQUEST.id}},
             
-            url: '/mosgis/_rest/?type=account_items',
+            url: '/_back/?type=account_items',
             
             onAdd: $_DO.create_account_common_items,
             onEdit: $_DO.edit_account_common_items,

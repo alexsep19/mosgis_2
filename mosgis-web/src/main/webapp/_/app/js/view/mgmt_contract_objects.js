@@ -50,7 +50,7 @@ define ([], function () {
                 {field: "uuid_contract", operator: "is", value: $_REQUEST.id},
             ]},
 
-            url: '/mosgis/_rest/?type=contract_objects',
+            url: '/_back/?type=contract_objects',
             
             limit: 100000,
                         

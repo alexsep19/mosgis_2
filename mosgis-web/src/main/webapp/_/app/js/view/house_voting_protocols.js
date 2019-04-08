@@ -72,7 +72,7 @@ define ([], function () {
 
             postData: {data: {"uuid_house": data.item.fiashouseguid}},
 
-            url: '/mosgis/_rest/?type=voting_protocols',
+            url: '/_back/?type=voting_protocols',
            
             onDblClick: function (e) {
                 openTab ('/voting_protocol/' + e.recid)

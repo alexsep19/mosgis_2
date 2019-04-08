@@ -69,7 +69,7 @@ define ([], function () {
                 }},
             ].filter (not_off),
             
-            url: '/mosgis/_rest/?type=org_works',
+            url: '/_back/?type=org_works',
                         
             onAdd:      $_DO.create_org_works,            
             

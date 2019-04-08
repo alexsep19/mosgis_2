@@ -28,7 +28,7 @@ define ([], function () {
             ],
             
             postData: {data: {"uuid_org": $_REQUEST.id}},
-            url: '/mosgis/_rest/?type=voc_organization_territories',
+            url: '/_back/?type=voc_organization_territories',
 
             onAdd: $_DO.create_voc_organization_legal_territories,
             onDelete: $_DO.delete_voc_organization_legal_territories,

@@ -35,7 +35,7 @@ define ([], function () {
             
             postData: {data: {uuid_charter: $_REQUEST.id}},
 
-            url: '/mosgis/_rest/?type=charter_payments',
+            url: '/_back/?type=charter_payments',
                                     
             onDblClick: function (e) {openTab ('/charter_payment/' + e.recid)},
             

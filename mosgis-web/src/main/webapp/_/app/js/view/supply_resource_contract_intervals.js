@@ -35,7 +35,7 @@ define ([], function () {
             
             postData: {data: {uuid_sr_ctr: $_REQUEST.id}},
 
-            url: '/mosgis/_rest/?type=intervals',
+            url: '/_back/?type=intervals',
                                     
             onDblClick: function (e) {openTab ('/interval/' + e.recid)},
             

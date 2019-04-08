@@ -3,10 +3,12 @@ define ([], function () {
     $_DO.patch_payment_document_common_charge_info = function (e) {
 
         var grid = this
-
         var col = grid.columns [e.column]
 
-        var v = normalizeValue (e.value_new, col.editable.type)
+        var editable = col.editable
+        if (typeof editable === "function") editable = editable (grid.get (e.recid))
+
+        var v = normalizeValue (e.value_new, editable.type)
 
         var data = {}; data [col.field] = v == null ? null : String (v)
 

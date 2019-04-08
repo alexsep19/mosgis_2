@@ -39,7 +39,7 @@ define ([], function () {
             
             postData: {data: {uuid_ctr: $_REQUEST.id}},
 
-            url: '/mosgis/_rest/?type=public_property_contract_voting_protocols',
+            url: '/_back/?type=public_property_contract_voting_protocols',
             
             onDblClick: function (e) {openTab ('/voting_protocol/' + e.recid)},
             

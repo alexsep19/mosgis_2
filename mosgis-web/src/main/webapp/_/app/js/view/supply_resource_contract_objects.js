@@ -55,7 +55,7 @@ define ([], function () {
                 this.postData['search'] = e.searchData.concat(search)
             },
 
-            url: '/mosgis/_rest/?type=supply_resource_contract_objects',
+            url: '/_back/?type=supply_resource_contract_objects',
 
             onDblClick: function (e) { openTab ('/supply_resource_contract_object/' + e.recid) },
 

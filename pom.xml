@@ -12,6 +12,7 @@
     <module>mosgis-ejb</module>
     <module>mosgis-api</module>
     <module>mosgis-fs</module>
+    <module>mosgis-web-rs</module>
   </modules>
 
   <scm>

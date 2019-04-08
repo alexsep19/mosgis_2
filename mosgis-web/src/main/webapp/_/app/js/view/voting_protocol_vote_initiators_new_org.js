@@ -28,7 +28,7 @@ define ([], function () {
                         fields : [
                             {name: 'uuid_org', type: 'list', options: 
                                 {
-                                    url: '/mosgis/_rest/?type=voc_organizations&part=list',
+                                    url: '/_back/?type=voc_organizations&part=list',
                                     postData: {'protocol_uuid': data.item.uuid, 'searchLogic': 'OR'},
                                     cacheMax: 10,
                                     filter: false,

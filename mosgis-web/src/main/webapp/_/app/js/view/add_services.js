@@ -66,7 +66,7 @@ define ([], function () {
                 }},
             ].filter (not_off),
             
-            url: '/mosgis/_rest/?type=add_services',
+            url: '/_back/?type=add_services',
                         
             onAdd:      $_DO.create_add_services,            
             onEdit:     $_DO.edit_add_services,

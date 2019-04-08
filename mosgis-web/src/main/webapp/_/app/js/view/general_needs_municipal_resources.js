@@ -66,7 +66,7 @@ define ([], function () {
 
             ].filter (not_off),
             
-            url: '/mosgis/_rest/?type=general_needs_municipal_resources',
+            url: '/_back/?type=general_needs_municipal_resources',
             
             postData: {data: {uuid_org: $_USER.uuid_org}},
                         

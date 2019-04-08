@@ -45,7 +45,7 @@ define ([], function () {
                 {field: "uuid_charter", operator: "is", value: $_REQUEST.id},
             ]},
 
-            url: '/mosgis/_rest/?type=charter_docs',
+            url: '/_back/?type=charter_docs',
             
             onDblClick: $_DO.download_charter_docs,
             

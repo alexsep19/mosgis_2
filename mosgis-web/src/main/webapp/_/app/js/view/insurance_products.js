@@ -68,7 +68,7 @@ define ([], function () {
                 
             ].filter (not_off),
             
-            url: '/mosgis/_rest/?type=insurance_products',
+            url: '/_back/?type=insurance_products',
                         
             onAdd:      $_DO.create_insurance_products,            
             onEdit:     $_DO.edit_insurance_products,

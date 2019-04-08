@@ -71,7 +71,7 @@ define ([], function () {
 
             postData: postData,
 
-            url: '/mosgis/_rest/?type=premise_usage_tarifs',
+            url: '/_back/?type=premise_usage_tarifs',
 
             onDblClick: function (e) {
                 openTab ('/premise_usage_tarif/' + e.recid)

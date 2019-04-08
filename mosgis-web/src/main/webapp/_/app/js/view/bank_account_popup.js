@@ -25,7 +25,7 @@ define ([], function () {
                     {name: 'opendate', type: 'date', options: {end: now}},
                     {name: 'bikcredorg', type: 'list', hint: 'Адрес', options: {
                         
-                        url: '/mosgis/_rest/?type=voc_bic',
+                        url: '/_back/?type=voc_bic',
                         
                         filter: false,
                         

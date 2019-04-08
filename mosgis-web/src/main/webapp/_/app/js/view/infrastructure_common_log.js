@@ -47,7 +47,7 @@ define ([], function () {
                 {field: 'soap.err_text', caption: 'Ошибка',    size: 30},
             ],
             
-            url: '/mosgis/_rest/?type=infrastructures&part=log&id=' + $_REQUEST.id,
+            url: '/_back/?type=infrastructures&part=log&id=' + $_REQUEST.id,
 
             onClick: function (e) {
             

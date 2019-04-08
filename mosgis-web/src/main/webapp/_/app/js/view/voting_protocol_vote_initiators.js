@@ -55,7 +55,7 @@ define ([], function () {
 
             postData: {data: {"protocol_uuid": data.item.uuid, "house_uuid": data.item.house_uuid}},
 
-            url: '/mosgis/_rest/?type=vote_initiators',
+            url: '/_back/?type=vote_initiators',
            
             onDelete: $_DO.delete_voting_protocol_vote_initiators,
 

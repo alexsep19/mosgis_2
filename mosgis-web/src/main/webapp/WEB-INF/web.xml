@@ -16,14 +16,6 @@
         <filter-name>GZIPFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-    <servlet>
-        <servlet-name>ru.eludia.products.mosgis.rest.MosGisApplication</servlet-name>
-        <init-param>
-            <param-name>jersey.config.server.provider.classnames</param-name>
-            <param-value>org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>    
     <session-config>
         <session-timeout>
             30

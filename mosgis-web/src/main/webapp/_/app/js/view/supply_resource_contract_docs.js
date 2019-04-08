@@ -1,4 +1,4 @@
-define ([], function () {
+    define ([], function () {
 
     var grid_name = 'supply_resource_contract_docs_grid'
 
@@ -44,7 +44,7 @@ define ([], function () {
                 {field: "uuid_sr_ctr", operator: "is", value: $_REQUEST.id}
             ]},
 
-            url: '/mosgis/_rest/?type=supply_resource_contract_docs',
+            url: '/_back/?type=supply_resource_contract_docs',
 
             onDblClick: $_DO.download_supply_resource_contract_docs,
 

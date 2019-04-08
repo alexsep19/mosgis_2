@@ -58,7 +58,7 @@ define ([], function () {
             ],
 
             postData: {data: {uuid_oki: $_REQUEST.id}},
-            url: '/mosgis/_rest/?type=infrastructure_resources',
+            url: '/_back/?type=infrastructure_resources',
 
             onSelect: recalcToolbar,
             onUnselect: recalcToolbar,

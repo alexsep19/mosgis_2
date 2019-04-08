@@ -42,7 +42,7 @@ define ([], function () {
                 {field: "uuid_oh_reg_pr_doc", operator: "is", value: $_REQUEST.id},
             ]},
 
-            url: '/mosgis/_rest/?type=overhaul_regional_program_files',
+            url: '/_back/?type=overhaul_regional_program_files',
             
             onDblClick: $_DO.download_overhaul_regional_program_files,
             

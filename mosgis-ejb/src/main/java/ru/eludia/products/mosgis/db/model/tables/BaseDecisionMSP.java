@@ -35,9 +35,11 @@ public class BaseDecisionMSP extends EnTable {
 	ISAPPLIEDTOREFUNDOFCHARGES   (Type.BOOLEAN, Bool.FALSE, "1, если применяется для компенсации расходов, иначе 0"),
 
 	ISACTUAL                     (Type.BOOLEAN,     null, "Признак актуальности элемента справочника"),
-        CODE                         (Type.STRING,  20, null, "Код элемента справочника, уникальный в пределах справочника"),
-        ELEMENTGUID                  (Type.UUID,             null,  "Идентификатор существующего элемента справочника"),
-        UNIQUENUMBER                 (Type.STRING,           null,  "Уникальный номер, присвоенный ГИС ЖКХ"),
+
+	CODE                         (Type.STRING,  20, null, "Код элемента справочника, уникальный в пределах справочника"),
+	GUID                         (Type.UUID,             null,  "Глобально-уникальный идентификатор элемента справочника"),
+
+	UNIQUENUMBER                 (Type.STRING,           null,  "Уникальный номер, присвоенный ГИС ЖКХ"),
 
         ID_LOG                       (BaseDecisionMSPLog.class, "Последнее событие редактирования"),
 
@@ -74,13 +76,13 @@ public class BaseDecisionMSP extends EnTable {
 
             + "BEGIN "
 
-                + " IF :NEW.ID_CTR_STATUS_GIS = " + VocGisStatus.i.PROJECT + " THEN BEGIN "
+	    + " IF :NEW.ISAPPLIEDTOSUBSIDIARIES IS NULL THEN "
+	    + "   raise_application_error (-20000, 'Укажите применяется для субсидий'); "
+	    + " END IF; "
 
-                    + " IF :NEW.is_deleted=0 THEN :NEW.ID_CTR_STATUS := " + VocGisStatus.i.PENDING_RQ_PLACING
-                    + " ; ELSE :NEW.ID_CTR_STATUS := " + VocGisStatus.i.PENDING_RQ_CANCEL
-                    + " ; END IF;"
-
-                + " END; END IF; "
+	    + " IF :NEW.ISAPPLIEDTOREFUNDOFCHARGES IS NULL THEN "
+	    + "   raise_application_error (-20000, 'Укажите применяется для компенсации расходов'); "
+	    + " END IF; "
 
             + "END;"
 
@@ -118,9 +120,7 @@ public class BaseDecisionMSP extends EnTable {
         public static Action forStatus (VocGisStatus.i status) {
             switch (status) {
                 case PENDING_RQ_PLACING:   return PLACING;
-                case PENDING_RP_PLACING:   return PLACING;
                 case PENDING_RQ_CANCEL:    return CANCEL;
-                case PENDING_RP_CANCEL:    return CANCEL;
                 default: return null;
             }            
         }
@@ -131,7 +131,7 @@ public class BaseDecisionMSP extends EnTable {
 	final Map<String, Object> result = DB.HASH(
 	    c.ISACTUAL.lc(), t.isIsActual() ? 1 : 0,
 	    c.CODE.lc(), t.getCode(),
-	    c.ELEMENTGUID.lc(), t.getGUID()
+	    c.GUID.lc(), t.getGUID()
 	);
 
 	Logger logger = Logger.getLogger(BaseDecisionMSP.class.getName());
@@ -139,15 +139,31 @@ public class BaseDecisionMSP extends EnTable {
 	for (NsiElementFieldType f : t.getNsiElementField()) {
 
 	    if (f instanceof NsiElementStringFieldType) {
-		result.put(c.DECISIONNAME.lc(), ((NsiElementStringFieldType) f).getValue());
+
+		switch (((NsiElementStringFieldType) f).getName()) {
+		    case "Описание принятия решения":
+			result.put(c.DECISIONNAME.lc(), ((NsiElementStringFieldType) f).getValue());
+			break;
+		}
+
 	    } else if (f instanceof NsiElementNsiRefFieldType) {
-		result.put(c.CODE_VC_NSI_301.lc(), ((NsiElementNsiRefFieldType) f).getNsiRef().getRef().getCode());
+
+		switch (((NsiElementNsiRefFieldType) f).getName()) {
+		    case "Тип решения":
+			result.put(c.CODE_VC_NSI_301.lc(), ((NsiElementNsiRefFieldType) f).getNsiRef().getRef().getCode());
+			break;
+		}
+
+
 	    } else if (f instanceof NsiElementBooleanFieldType) {
+
 		switch(((NsiElementBooleanFieldType) f).getName()) {
 		    case "Применяется для субсидий" :
 			result.put(c.ISAPPLIEDTOSUBSIDIARIES.lc(), ((NsiElementBooleanFieldType) f).isValue()? 1 : 0);
+			break;
 		    case "Применяется для компенсаций расходов":
 			result.put(c.ISAPPLIEDTOREFUNDOFCHARGES.lc(), ((NsiElementBooleanFieldType) f).isValue()? 1 : 0);
+			break;
 		}
 	    }
 

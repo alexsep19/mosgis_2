@@ -19,7 +19,7 @@ define ([], function () {
 
                 fields : [
                     {name: 'fiashouseguid', type: 'list', hint: 'Адрес', options: {
-                        url: '/mosgis/_rest/?type=rc_contract_objects&part=buildings',
+                        url: '/_back/?type=rc_contract_objects&part=buildings',
                         filter: false,
                         cacheMax: 50,
                         selected: data.selected_address,

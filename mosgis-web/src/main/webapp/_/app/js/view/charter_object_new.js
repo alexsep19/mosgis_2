@@ -59,7 +59,7 @@ define ([], function () {
                     ]}},
 
                     {name: 'fiashouseguid', type: 'list', options: {
-                        url: '/mosgis/_rest/?type=voc_building_addresses',
+                        url: '/_back/?type=voc_building_addresses',
                         filter: false,
                         cacheMax: 50,
                         onLoad: function (e) {

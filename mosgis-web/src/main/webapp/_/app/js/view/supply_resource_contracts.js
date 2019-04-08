@@ -131,7 +131,7 @@ define ([], function () {
 
             postData: {data: postData},
 
-            url: '/mosgis/_rest/?type=supply_resource_contracts',
+            url: '/_back/?type=supply_resource_contracts',
 
             onRequest: function (e) {
 

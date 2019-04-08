@@ -26,7 +26,7 @@ define ([], function () {
             
             postData: {data: {uuid_org: $_REQUEST.id}},
 
-            url: '/mosgis/_rest/?type=senders',
+            url: '/_back/?type=senders',
             
             onAdd:      $_DO.create_senders,
             

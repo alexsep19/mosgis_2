@@ -57,7 +57,7 @@ define([], function () {
                 
             ].filter(not_off),
 
-            url: '/mosgis/_rest/?type=voc_organization_proposals&part=log&id=' + $_REQUEST.id,
+            url: '/_back/?type=voc_organization_proposals&part=log&id=' + $_REQUEST.id,
 
             onClick: function (e) {
 

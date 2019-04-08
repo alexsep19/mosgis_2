@@ -40,7 +40,7 @@ define ([], function () {
                 {field: "uuid_oki", operator: "is", value: $_REQUEST.id}
             ]},
 
-            url: '/mosgis/_rest/?type=infrastructure_docs',
+            url: '/_back/?type=infrastructure_docs',
             
             onDblClick: $_DO.download_infrastructure_docs,
             

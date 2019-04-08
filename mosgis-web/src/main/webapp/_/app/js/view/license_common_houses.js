@@ -19,7 +19,7 @@ define ([], function () {
 
             ],
             
-            url: '/mosgis/_rest/?type=licenses&part=houses&id=' + $_REQUEST.id,            
+            url: '/_back/?type=licenses&part=houses&id=' + $_REQUEST.id,            
 
         }).refresh ();
 

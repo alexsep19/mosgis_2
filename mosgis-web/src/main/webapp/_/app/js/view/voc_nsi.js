@@ -178,7 +178,7 @@ define ([], function () {
                 footer: true,
             },
 
-            url: '/mosgis/_rest/?type=voc_nsi_list&part=lines&id=' + data.id,
+            url: '/_back/?type=voc_nsi_list&part=lines&id=' + data.id,
 
             columns: columns,
 

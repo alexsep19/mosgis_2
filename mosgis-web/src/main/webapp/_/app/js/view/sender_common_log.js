@@ -32,7 +32,7 @@ define ([], function () {
                 
             ],
             
-            url: '/mosgis/_rest/?type=senders&part=log&id=' + $_REQUEST.id,
+            url: '/_back/?type=senders&part=log&id=' + $_REQUEST.id,
 
         }).refresh ();
 

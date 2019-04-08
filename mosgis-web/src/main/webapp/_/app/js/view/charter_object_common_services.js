@@ -59,7 +59,7 @@ define ([], function () {
                 {field: "uuid_charter_object", operator: "is", value: $_REQUEST.id},
             ]},
 
-            url: '/mosgis/_rest/?type=charter_object_services',
+            url: '/_back/?type=charter_object_services',
                                     
             onDelete: $_DO.delete_charter_object_common_services,
             onEdit: $_DO.edit_charter_object_common_services,

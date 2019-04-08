@@ -31,7 +31,7 @@ define ([], function () {
                 {field: 'objective', caption: 'Цель проведения проверки', size: 50},
             ],
 
-            url: '/mosgis/_rest/?type=planned_examinations&part=log&id=' + $_REQUEST.id,
+            url: '/_back/?type=planned_examinations&part=log&id=' + $_REQUEST.id,
 
         }).refresh ();
 

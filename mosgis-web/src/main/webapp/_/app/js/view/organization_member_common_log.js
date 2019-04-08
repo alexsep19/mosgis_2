@@ -40,7 +40,7 @@ define ([], function () {
                 {field: 'dt_to_chairman', caption: 'Период правления по', size: 25, render: _dt},
             ],
 
-            url: '/mosgis/_rest/?type=organization_members&part=log&id=' + $_REQUEST.id,
+            url: '/_back/?type=organization_members&part=log&id=' + $_REQUEST.id,
 
         }).refresh ();
 

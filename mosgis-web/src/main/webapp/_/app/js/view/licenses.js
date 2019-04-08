@@ -27,7 +27,7 @@ define ([], function () {
                 {field: 'licenseable_type_of_activity', caption: 'Лицензируемый вид деятельности',    size: 100},
                 {field: 'fias.label', caption: 'Адрес осуществления лицензируемого вида деятельности',    size: 100},
             ],
-            url: '/mosgis/_rest/?type=licenses',
+            url: '/_back/?type=licenses',
             
             onDblClick: function (e) {
 
