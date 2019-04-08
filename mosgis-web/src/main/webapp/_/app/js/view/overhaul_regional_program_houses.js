@@ -4,7 +4,7 @@ define ([], function () {
     
         data = $('body').data ('data')
 
-        function canAdd () {
+        function canEdit () {
             
             if (!data.item.is_deleted && ($_USER.role.nsi_20_7 || $_USER.role.admin)) {
                 switch (data.item.last_succesfull_status) {
@@ -24,7 +24,8 @@ define ([], function () {
             show: {
                 toolbar: true,
                 toolbarInput: false,
-                toolbarAdd: canAdd (),
+                toolbarAdd: canEdit (),
+                toolbarDelete: canEdit (),
                 footer: true,
             },
 
@@ -38,6 +39,7 @@ define ([], function () {
             postData: {program_uuid: $_REQUEST.id},
 
             onAdd: $_DO.create_overhaul_regional_program_house,
+            onDelete: $_DO.delete_overhaul_regional_program_house,
             
             onDblClick: function (e) {
                 openTab ('/overhaul_regional_program_house/' + e.recid)
