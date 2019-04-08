@@ -63,6 +63,25 @@ public class OverhaulRegionalProgramHouseWork extends EnTable {
         
         cols  (c.class);
         
+        trigger ("BEFORE INSERT OR UPDATE", ""
+                + "DECLARE "
+                    + "PRAGMA AUTONOMOUS_TRANSACTION; "
+                    + "cnt NUMBER; "
+                + "BEGIN "
+                    + "SELECT COUNT (*) INTO cnt FROM tb_oh_reg_pr_house_work works WHERE "
+                        + "works." + OverhaulRegionalProgramHouseWork.c.HOUSE_UUID.lc () + " = :NEW." + OverhaulRegionalProgramHouseWork.c.HOUSE_UUID.lc () + " AND "
+                        + "works." + OverhaulRegionalProgramHouseWork.c.WORK.lc ()       + " = :NEW." + OverhaulRegionalProgramHouseWork.c.WORK.lc ()       + " AND "
+                        + "works." + OverhaulRegionalProgramHouseWork.c.STARTMONTH.lc () + " = :NEW." + OverhaulRegionalProgramHouseWork.c.STARTMONTH.lc () + " AND "
+                        + "works." + OverhaulRegionalProgramHouseWork.c.STARTYEAR.lc ()  + " = :NEW." + OverhaulRegionalProgramHouseWork.c.STARTYEAR.lc ()  + " AND "
+                        + "works." + OverhaulRegionalProgramHouseWork.c.ENDMONTH.lc ()   + " = :NEW." + OverhaulRegionalProgramHouseWork.c.ENDMONTH.lc ()   + " AND "
+                        + "works." + OverhaulRegionalProgramHouseWork.c.ENDYEAR.lc ()    + " = :NEW." + OverhaulRegionalProgramHouseWork.c.ENDYEAR.lc ()    + " AND "
+                        + "works.is_deleted = 0; "
+                    + "IF cnt > 0 THEN "
+                        + "raise_application_error (-20000, 'Данный вид работ с указанным периодом уже существует для данного дома'); "
+                    + "END IF; "
+                + "END; "
+        );
+        
     }
     
     public enum Action {

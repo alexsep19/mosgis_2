@@ -11,6 +11,7 @@ define ([], function () {
             show: {
                 toolbar: true,
                 footer: true,
+                toolbarInput: !is_popup,
             },
 
             toolbar: {
@@ -56,9 +57,11 @@ define ([], function () {
 
             onRequest: function (e) {
 
+                var init_post_data = this.post_data
+
                 if (is_popup) {
 
-                    var post_data = this.post_data || $_SESSION.delete('houses_popup.post_data');
+                    var post_data = this.post_data || $_SESSION.get('houses_popup.post_data');
 
                     if (post_data) {
 
@@ -73,6 +76,10 @@ define ([], function () {
                         this.post_data = post_data
                     }
                 }
+
+                e.done (function () {
+                    this.post_data = init_post_data
+                })
             },
             
             onDblClick: function (e) {
