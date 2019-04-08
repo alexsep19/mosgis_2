@@ -20,7 +20,7 @@
   <module>
     <web>
       <web-uri>/mosgis-fs-1.0-SNAPSHOT.war</web-uri>
-      <context-root>/ext-bus-file-store-service</context-root>
+      <context-root>/_ext-bus-file-store-service</context-root>
     </web>
   </module>
 </application>
