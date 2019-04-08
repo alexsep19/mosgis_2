@@ -80,12 +80,46 @@ define ([], function () {
             }
 
             cach.click = function () {openTab ('/' + cach.type + '/' + cach.uuid)}
-        
         }
         
         if ($_USER.role.nsi_20_8 || data.is_under_nsi_20_8)
             it._can.edit = 1
+
         
+        var srca = it.srca
+
+        if (is_own_srca (it)) {
+
+            srca.org_label = srca ['org.label']
+
+            if (srca ['ctr.uuid']) {
+                srca.type = 'supply_resource_contract'
+                srca.label = 'ДРСО №' + srca ['ctr.contractnumber'] + ' от ' + dt_dmy (srca ['ctr.signingdate'])
+            }
+
+            if (srca ['org.uuid'] == $_USER.uuid_org) {
+
+                switch (srca.id_ctr_status) {
+                    case 10:
+                    case 40:
+                        it._can.edit = 1
+                        srca.label = null
+                        break;
+                    case 100:
+                    case 110:
+                        srca.label = srca.label + ' отклонен'
+                        break;
+                    default:
+                        srca.label = null
+                }
+            }
+            else {
+                srca.label = null
+            }
+
+            srca.click = function () {openTab ('/' + srca.type + '/' + srca['ctr.uuid'])}
+        }
+
         it.status_label = data.vc_house_status[it.id_status] + (it.id_status_gis ? " - " + data.vc_gis_status[it.id_status_gis] : "")
         
         it.err_text = it ['out_soap.err_text']
@@ -123,7 +157,7 @@ define ([], function () {
             
             panels: [
                 
-                {type: 'top', size: data.item.is_condo ? 335 : 365},
+                {type: 'top', size: data.item.is_condo ? 340 : 365},
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    data.tabs.map (function (i) {return {id: i.id, caption: i.label}}),
@@ -182,6 +216,7 @@ define ([], function () {
                     }
                     
                     if (cach) clickOn ($('#cach'), cach.click)
+                    if (srca) clickOn($('#srca'), srca.click)
                     
                 }
 

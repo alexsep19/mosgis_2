@@ -22,6 +22,7 @@ import ru.eludia.products.mosgis.db.model.tables.Block;
 import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
 import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.BlocksLocal;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BasePassport;
@@ -38,7 +39,7 @@ public class BlocksImpl extends BasePassport<Block> implements BlocksLocal {
 
         JsonObject item = db.getJsonObject (ModelHolder.getModel ()
             .get (table, id, "*")
-            .toOne (House.class, "address").on ()
+            .toOne (House.class, "address", "fiashouseguid").on ()
         );
 
         job.add ("item", item);                
@@ -51,7 +52,10 @@ public class BlocksImpl extends BasePassport<Block> implements BlocksLocal {
             NsiTable.getNsiTable (273).getVocSelect () // Основания признания непригодности
                     
         );
-        
+
+	VocBuilding.addCaCh(db, job, item.getString("tb_houses.fiashouseguid"));
+	VocBuilding.addSRCa(db, job, item.getString("tb_houses.fiashouseguid"), user.getUuidOrg());
+
         VocHouseStatus.addTo(job);
         
         for (MultipleRefTable refTable: table.getRefTables ()) {                

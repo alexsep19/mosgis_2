@@ -86,10 +86,10 @@ define ([], function () {
 
             }
 
-            var is_own_srca = data.srca && data.srca.uuid_org == $_USER.uuid_org
+            data.is_own_srca = is_own_srca (data)
 
             data.is_passport_editable = editable ()
-            data.is_premise_editable = data.is_passport_editable || is_own_srca
+            data.is_premise_editable = data.is_passport_editable || data.is_own_srca
 
             data.non_editable_fields = [
                 '20168',

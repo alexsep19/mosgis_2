@@ -79,7 +79,7 @@ define ([], function () {
             multiSelect: false,
 
             show: {
-                toolbar: data.is_passport_editable,
+                toolbar: data.is_passport_editable || data.is_own_srca,
                 footer: true,
                 toolbarAdd: true,
                 toolbarInput: false,
@@ -139,8 +139,8 @@ define ([], function () {
 
                 var grid     = this
                 var record   = grid.get (e.recid)
-                
-                if (record.terminationdate) return e.preventDefault ()
+                record.is_blocked = record.terminationdate || !is_own_srca_r(record)
+                if (record.is_blocked) return e.preventDefault ()
 
                 var col      = grid.columns [e.column]
                 var editable = col.editable

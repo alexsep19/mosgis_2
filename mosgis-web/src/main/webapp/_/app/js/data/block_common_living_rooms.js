@@ -1,5 +1,7 @@
 define ([], function () {
 
+    var grid_name = 'block_common_living_rooms_grid'
+
     $_DO.create_block_common_living_rooms = function (e) {
     
         if ($('body').data ('data').item.is_annuled) die ('foo', 'Создание вложенных объектов запрещено, так как данная запись аннулирована')
@@ -11,7 +13,9 @@ define ([], function () {
     }
     
     $_DO.delete_block_common_living_rooms = function (e) {
-    
+
+        check_rights(grid_name, e, is_own_srca_r)
+
         var grid = w2ui['block_common_living_rooms_grid']
 
         if (!confirm ('Удалить запись?')) return
@@ -32,7 +36,9 @@ define ([], function () {
     
 
     $_DO.patch_block_common_living_rooms = function (e) {
-        
+
+        check_rights(grid_name, e, is_own_srca_r)
+
         var grid = this
     
         var col = grid.columns [e.column]

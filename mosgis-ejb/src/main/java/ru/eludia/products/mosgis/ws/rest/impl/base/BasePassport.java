@@ -108,7 +108,11 @@ public abstract class BasePassport <T extends Table> extends BaseCRUD<T> impleme
         
         final Passport table = getPassport ();
 
-        String id = db.insertId (table, getData (p)).toString ();
+	Map<String, Object> data = getData (p);
+
+        if (table.getColumn (UUID_ORG) != null && !data.containsKey (UUID_ORG)) data.put (UUID_ORG, user.getUuidOrg ());
+
+        String id = db.insertId (table, data).toString ();
         
         setMultipleFields (table, db, id, p);
 
