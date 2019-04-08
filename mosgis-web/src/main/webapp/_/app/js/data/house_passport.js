@@ -123,6 +123,7 @@ define ([], function () {
         data.__read_only = 1
         
         data.item.cach = data.cach
+        data.item.srca = data.srca
 
         if (!data.item.is_condo) return done (data)        
         

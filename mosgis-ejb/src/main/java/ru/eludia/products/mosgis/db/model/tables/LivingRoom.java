@@ -15,6 +15,7 @@ import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
 import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
 import ru.eludia.products.mosgis.db.model.voc.VocRdColType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseESPRequest;
@@ -27,6 +28,7 @@ public class LivingRoom extends Passport {
     public enum c implements ColEnum {
         
         UUID                    (Type.UUID, NEW_UUID, "Ключ"),
+	UUID_ORG                (VocOrganization.class, null, "Организация, которая завела данное помещение в БД"),
         UUID_XL                 (InXlFile.class,            "Файл импорта"),
         TERMINATIONDATE         (Type.DATE, null,           "Дата прекращения существования объекта"),
         IS_DELETED              (Type.BOOLEAN, Bool.FALSE,  "1, если запись удалена; иначе 0"),

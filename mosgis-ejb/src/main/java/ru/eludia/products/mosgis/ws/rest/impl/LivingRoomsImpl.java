@@ -24,6 +24,7 @@ import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
 import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BasePassport;
 import ru.eludia.products.mosgis.ws.rest.impl.tools.Search;
@@ -40,12 +41,15 @@ public class LivingRoomsImpl extends BasePassport<LivingRoom> implements LivingR
 
         JsonObject item = db.getJsonObject (ModelHolder.getModel ()
             .get (table, id, "*")
-            .toOne (House.class, "address").on ()
+            .toOne (House.class, "address", "fiashouseguid").on ()
             .toMaybeOne (ResidentialPremise.class, "premisesnum").on ()
             .toMaybeOne (Block.class, "blocknum").on ()
         );
 
         job.add ("item", item);                
+
+	VocBuilding.addCaCh(db, job, item.getString("tb_houses.fiashouseguid"));
+	VocBuilding.addSRCa(db, job, item.getString("tb_houses.fiashouseguid"), user.getUuidOrg());
 
         db.addJsonArrays (job, 
                 

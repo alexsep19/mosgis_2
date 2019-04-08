@@ -1,18 +1,25 @@
 define ([], function () {
 
+    var grid_name = 'house_premises_residental_grid'
+
     $_DO.create_house_premises_residental = function (e) {
         $_SESSION.set ('record', {uuid_entrance: -1})
         use.block ('premise_residental_popup')
     }
 
     $_DO.edit_house_premises_residental = function (e) {
+
+        check_rights(grid_name, e, is_own_srca_r)
+
         $_SESSION.set ('record', w2ui [e.target].get (e.recid))
         use.block ('premise_residental_popup')
     }
     
     $_DO.delete_house_premises_residental = function (e) {
 
-        var grid = w2ui['house_premises_residental_grid']
+        check_rights(grid_name, e, is_own_srca_r)
+
+        var grid = w2ui [grid_name]
 
         if (!confirm ('Удалить запись?')) return
     
@@ -32,8 +39,10 @@ define ([], function () {
     
 
     $_DO.patch_house_premises_residental = function (e) {
-        
-        var grid = this
+
+        check_rights(grid_name, e, is_own_srca_r)
+
+        var grid = w2ui [grid_name]
     
         var col = grid.columns [e.column]
                 

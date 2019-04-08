@@ -9,6 +9,7 @@ import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseESPRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseOMSRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseRSORequest;
@@ -22,8 +23,10 @@ public class Entrance extends Table {
         
         pk     ("uuid",               Type.UUID,   NEW_UUID, "Ключ");
         
-        ref    ("uuid_house",         House.class, "Дом");
-        
+        ref    ("uuid_org",           VocOrganization.class, null, "Организация, которая завела данный подьезд в БД");
+
+	ref    ("uuid_house",         House.class, "Дом");
+
         col    ("entrancenum",        Type.STRING,  255,        "Номер подъезда");
         col    ("storeyscount",       Type.NUMERIC,   2,  null, "Количество этажей");
         col    ("creationyear",       Type.NUMERIC,   4,  null, "Год постройки");

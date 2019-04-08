@@ -1,18 +1,25 @@
 define ([], function () {
 
+    var grid_name = 'house_premises_nonresidental_grid'
+
     $_DO.create_house_premises_nonresidental = function (e) {
         $_SESSION.set ('record', {iscommonproperty: 0})
         use.block ('premise_nonresidental_popup')
     }
 
     $_DO.edit_house_premises_nonresidental = function (e) {
+
+        check_rights(grid_name, e, is_own_srca_r)
+
         $_SESSION.set ('record', w2ui [e.target].get (e.recid))
         use.block ('premise_nonresidental_popup')
     }
     
     $_DO.delete_house_premises_nonresidental = function (e) {
-    
-        var grid = w2ui['house_premises_nonresidental_grid']
+
+        check_rights(grid_name, e, is_own_srca_r)
+
+        var grid = w2ui[grid_name]
 
         if (!confirm ('Удалить запись?')) return
     
@@ -32,8 +39,10 @@ define ([], function () {
     
 
     $_DO.patch_house_premises_nonresidental = function (e) {
-        
-        var grid = this
+
+        check_rights(grid_name, e, is_own_srca_r)
+
+        var grid = w2ui[grid_name]
     
         var col = grid.columns [e.column]
                 
@@ -61,7 +70,7 @@ define ([], function () {
         query (tia, {data: d}, function () {
             
             grid.unlock ()
-            
+
             grid.reload ()
 
         }, edit_failed (grid, e))
