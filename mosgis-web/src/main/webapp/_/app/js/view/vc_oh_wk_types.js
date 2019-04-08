@@ -3,6 +3,8 @@ define ([], function () {
     return function (data, view) {
     
         data = $('body').data ('data')
+
+        console.log (data)
         
         $(w2ui ['vocs_layout'].el ('main')).w2regrid ({ 
 
@@ -37,6 +39,10 @@ define ([], function () {
                 {field: 'servicename', caption: 'Наименование', size: 10},
                 {field: 'code_vc_nsi_218', caption: 'Группа работ', size: 10, voc: data.vc_nsi_218},
                 {field: 'id_owt_status', caption: 'Статус', size: 10, voc: data.vc_gis_status},
+                {field: 'isactual', caption: 'Актуальность', size: 10, voc: {
+                    1: 'Актуально',
+                    0: 'Не актуально'
+                }},
                 {field: 'err_text', caption: 'Ошибка', size: 10}
             ],
             

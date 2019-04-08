@@ -90,7 +90,7 @@ public class OverhaulRegionalProgramHouseWorksImport extends EnTable {
                 .toOne  (OverhaulRegionalProgramHouse.class, "AS oh_house").on ()
                     .toOne  (House.class, "AS in_house", "fiashouseguid AS fiashouseguid").on ("oh_house.house=in_house.uuid")
                         .toOne  (VocBuilding.class, "AS build", "oktmo AS oktmo").on ("in_house.fiashouseguid=build.houseguid")
-                .toOne  (VocOverhaulWorkType.class, "AS nsi_219", "code", "guid").on ("oh_work.work=nsi_219.code")
+                .toOne  (VocOverhaulWorkType.class, "AS nsi_219", "code", "guid").where ("isactual", 1).on ("oh_work.work=nsi_219.code")
             .and    ("is_deleted", 0)
         );
         

@@ -63,14 +63,12 @@ public class OverhaulRegionalProgramHousesImpl extends BaseCRUD <OverhaulRegiona
             NsiTable.getNsiTable (218).getVocSelect (),
             
             db.getModel ()
-                .select (OverhaulRegionalProgramHouseWork.class, "AS works", "startyearmonth", "endyearmonth")
-                .toOne  (VocOverhaulWorkType.class, "AS type", "code AS code_nsi_219", "code_vc_nsi_218 AS code_nsi_218", "servicename AS servicename").on ("type.uuid = works.work"),
-            
-            db.getModel ()
                 .select (VocOverhaulWorkType.class, "code AS id", "servicename AS label")
                 .where  ("id_owt_status", 40)
-            
+                .and    ("isactual", 1)
+                .and    ("is_deleted", 0)
         );
+            
         
     });}
     
