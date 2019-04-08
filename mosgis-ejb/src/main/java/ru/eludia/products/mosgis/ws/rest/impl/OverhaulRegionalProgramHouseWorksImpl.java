@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.ws.rest.impl;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Resource;
@@ -8,17 +9,21 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.jms.Queue;
 import javax.json.JsonObject;
+import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
+import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgram;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouse;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseWork;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseWorksImport;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocOverhaulWorkType;
 import ru.eludia.products.mosgis.rest.User;
+import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.rest.api.OverhaulRegionalProgramHouseWorksLocal;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
 
@@ -49,6 +54,55 @@ public class OverhaulRegionalProgramHouseWorksImpl extends BaseCRUD<OverhaulRegi
             .get        (getTable (), id, "*")
         ));
         
+    });}
+    
+    private void checkDuplicates (JsonObject p) throws SQLException {
+        
+        Map<String, Object> data = getData (p);
+        
+        DB db = ModelHolder.getModel ().getDb ();
+        
+        List <Map <String, Object>> duplicates = db.getList (db.getModel ()
+            .select (OverhaulRegionalProgramHouseWork.class, "*")
+            .where  (OverhaulRegionalProgramHouseWork.c.HOUSE_UUID.lc (), data.get ("house_uuid"))
+            .where  (OverhaulRegionalProgramHouseWork.c.WORK.lc (),       data.get ("work"))
+            .where  (OverhaulRegionalProgramHouseWork.c.ENDMONTH.lc (),   data.get ("endmonth"))
+            .where  (OverhaulRegionalProgramHouseWork.c.ENDYEAR.lc (),    data.get ("endyear"))
+            .where  (OverhaulRegionalProgramHouseWork.c.STARTMONTH.lc (), data.get ("startmonth"))
+            .where  (OverhaulRegionalProgramHouseWork.c.STARTYEAR.lc (),  data.get ("startyear"))
+            .and    ("is_deleted", 0)
+        );
+        
+        if (!duplicates.isEmpty ()) throw new ValidationException ("foo", "Данный вид работ с указанным периодом уже существует");
+        
+    }
+    
+    @Override
+    public JsonObject doCreate (JsonObject p, User user) {return doAction ((db, job) -> {
+
+        Map<String, Object> data = getData (p);
+        
+        checkDuplicates (p);
+
+        Object insertId = db.insertId (getTable (), data);
+        
+        job.add ("id", insertId.toString ());
+        
+        logAction (db, user, insertId, VocAction.i.CREATE);
+
+    });}
+    
+    @Override
+    public JsonObject doUpdate (String id, JsonObject p, User user) {return doAction ((db) -> {
+        
+        checkDuplicates (p);
+        
+        db.update (getTable (), getData (p,
+            "uuid", id
+        ));
+        
+        logAction (db, user, id, VocAction.i.UPDATE);
+                        
     });}
     
     @Override
