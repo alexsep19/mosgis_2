@@ -37,7 +37,6 @@ public class ChargeInfo extends EnTable {
         TOTALPAYABLE          (Type.NUMERIC, 13, 2, null,   "Итого к оплате за расчетный период, руб."),
         
         ACCOUNTINGPERIODTOTAL (Type.NUMERIC, 13, 2, null,   "Всего начислено за расчетный период (без перерасчетов и льгот), руб."),
-	ACCOUNTINGPERIODTOTAL_V (Type.NUMERIC, 13, 2, new Virt("RATE*(NVL(CONS_I_VOL,0)+NVL(CONS_O_VOL,0))"), "Всего начислено за расчетный период (без перерасчетов и льгот) — расчётное значение"),
         
         CALCEXPLANATION       (Type.STRING,  null,          "Порядок расчетов"),
 

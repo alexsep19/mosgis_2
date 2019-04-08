@@ -71,7 +71,7 @@ define ([], function () {
             
             })
         
-            data.lines = lines
+            data.lines = darn (lines)
 
             done (data)
 

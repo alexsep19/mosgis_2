@@ -20,6 +20,11 @@ define ([], function () {
     function get_message (row, col) {
     
         switch (col.field) {
+
+            case 'accountingperiodtotal':
+                var f = row.accountingperiodtotal
+                var p = row.accountingperiodtotal_v
+                return f && p && Math.abs (parseFloat (f) - parseFloat (p)) ? 'Значение не сопадает с автоматически рассчитанным: ' + w2utils.formatNumber (p) : null
                 
             case 'calcexplanation':
                 return row.uuid_gen_need_res && !row.calcexplanation ? 'Для данной строки это поле обязательно' : null
