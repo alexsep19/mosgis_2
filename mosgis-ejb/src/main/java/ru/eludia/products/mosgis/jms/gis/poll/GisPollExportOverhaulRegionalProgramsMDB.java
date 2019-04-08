@@ -107,8 +107,8 @@ public class GisPollExportOverhaulRegionalProgramsMDB extends GisPollMDB {
                     
                     db.update (OverhaulRegionalProgramHouseWork.class, works);
                     db.update (OverhaulRegionalProgram.class, HASH (
-                            "uuid",       r.get ("program.uuid"),
-                            "is_deleted", 1
+                        "uuid",       r.get ("program.uuid"),
+                        "is_deleted", 1
                     ));
             }
 

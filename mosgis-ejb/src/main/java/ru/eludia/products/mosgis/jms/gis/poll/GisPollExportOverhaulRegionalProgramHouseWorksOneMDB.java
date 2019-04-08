@@ -8,28 +8,32 @@ import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgram;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouse;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseWork;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseWorkLog;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramLog;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.jms.UUIDPublisher;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
+import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.eludia.products.mosgis.ws.soap.clients.WsGisCapitalRepairClient;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.capital_repair.CapRemCommonResultType;
 import ru.gosuslugi.dom.schema.integration.capital_repair.GetStateResult;
+import ru.gosuslugi.dom.schema.integration.capital_repair_service_async.Fault;
 
 @MessageDriven(activationConfig = {
  @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outExportOverhaulRegionalProgramHouseWorksOneQueue")
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class GisPollExportOverhaulregionalProgramHouseWorksOneMDB extends GisPollMDB {
+public class GisPollExportOverhaulRegionalProgramHouseWorksOneMDB extends GisPollMDB {
     
     @EJB
     protected UUIDPublisher UUIDPublisher;
@@ -72,6 +76,58 @@ public class GisPollExportOverhaulregionalProgramHouseWorksOneMDB extends GisPol
             for (CapRemCommonResultType.Error err: importResult.get (0).getError ()) throw new GisPollException (err);
             
             final Map<String, Object> h = statusHash (action.getOkStatus ());
+            
+        }
+        catch (GisPollRetryException ex) {
+            return;
+        }
+        catch (GisPollException ex) {
+            update (db, uuid, r, statusHash (action.getFailStatus ()));            
+            ex.register (db, uuid, r);
+        }
+        
+    }
+    
+    private static Map<String, Object> statusHash (VocGisStatus.i status) {
+        
+        final byte id = status.getId ();
+        
+        return HASH (
+            OverhaulRegionalProgramHouseWork.c.ID_ORPHW_STATUS,          id,
+            OverhaulRegionalProgramHouseWork.c.ID_ORPHW_STATUS_GIS,      id
+        );
+        
+    }
+
+    private void update (DB db, UUID uuid, Map<String, Object> r, Map<String, Object> h) throws SQLException {
+        
+logger.info ("h=" + h);
+        
+        h.put ("uuid", r.get ("program.uuid"));
+        db.update (OverhaulRegionalProgramHouseWork.class, h);
+        
+        h.put ("uuid", uuid);
+        db.update (OverhaulRegionalProgramHouseWorkLog.class, h);
+        
+    }
+    
+    private GetStateResult getState (UUID orgPPAGuid, Map<String, Object> r) throws GisPollRetryException, GisPollException {
+
+        GetStateResult rp;
+        
+        try {
+            rp = wsGisCapitalRepairClient.getState (orgPPAGuid, (UUID) r.get ("uuid_ack"));
+        }
+        catch (Fault ex) {
+            throw new GisPollException (ex.getFaultInfo ());
+        }
+        catch (Throwable ex) {
+            throw new GisPollException (ex);
+        }
+        
+        checkIfResponseReady (rp);
+        
+        return rp;
         
     }
     
