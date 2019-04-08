@@ -47,7 +47,7 @@ public class GisPollExportOverhaulRegionalProgramHouseWorksOneMDB extends GisPol
         
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
             .toOne (OverhaulRegionalProgramHouseWorkLog.class,       "AS log", "uuid", "action", "id_orphw_status", "uuid_user AS user").on ("log.uuid_out_soap=root.uuid")
-                .toOne (OverhaulRegionalProgramHouseWork.class,      "AS works").on ("log.uuid_object=works.uuid")
+                .toOne (OverhaulRegionalProgramHouseWork.class,      "AS works", "uuid").on ("log.uuid_object=works.uuid")
                     .toOne (OverhaulRegionalProgramHouse.class,      "AS houses").on ("works.house_uuid=houses.uuid")
                         .toOne (OverhaulRegionalProgram.class,       "AS program", "uuid").on ("houses.program_uuid=program.uuid")
                             .toOne (VocOrganization.class,           "AS org", "orgppaguid").on ("program.org_uuid=org.uuid")
