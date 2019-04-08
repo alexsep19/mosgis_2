@@ -1,7 +1,5 @@
 package ru.eludia.products.mosgis.ws.rest.impl;
 
-import java.util.List;
-import java.util.Map;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -9,12 +7,10 @@ import javax.ejb.TransactionAttributeType;
 import javax.jms.Queue;
 import javax.json.Json;
 import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
-import static ru.eludia.base.db.util.TypeConverter.JsonArrayBuilder;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
@@ -28,6 +24,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.rest.User;
+import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
 import ru.eludia.products.mosgis.rest.api.OverhaulRegionalProgramsLocal;
 
@@ -44,6 +41,8 @@ public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProg
         switch (action) {
             case PUBLISHANDPROJECT:
             case APPROVE:
+            case DELETE_PROJECT:
+            case ANNUL:
                 super.publishMessage (action, id_log);
             default:
                 return;
@@ -56,6 +55,8 @@ public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProg
         switch (action) {
             case PUBLISHANDPROJECT:
             case APPROVE:
+            case DELETE_PROJECT:
+            case ANNUL:
                 return inExportOverhaulRegionalProgramsQueue;
             default: return null;
         }
@@ -76,11 +77,12 @@ public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProg
                 action = VocAction.i.PUBLISHANDPROJECT;
                 break;
             case REGIONAL_PROGRAM_WORKS_PLACE_FINISHED:
+            case FAILED_DELETEPROJECT:
                 nextStatus = VocGisStatus.i.PENDING_RQ_PLACING;
                 action = VocAction.i.APPROVE;
                 break;
             default:
-                throw new Exception ("Операция запрещена");
+                throw new ValidationException ("foo", "Операция запрещена");
         }
         
         db.update (getTable (), HASH (
@@ -89,6 +91,50 @@ public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProg
         ));
         logAction (db, user, id, action);
 
+    });}
+    
+    @Override
+    public JsonObject doDelete (String id, User user) {return doAction ((db) -> {
+        
+        VocGisStatus.i status = VocGisStatus.i.forId (db.getString (db.getModel ()
+                .get(getTable (), id, OverhaulRegionalProgram.c.ID_ORP_STATUS.lc ())));
+        
+        VocGisStatus.i nextStatus;
+        VocAction.i action;
+        
+        switch (status) {
+            case PROJECT:
+            case FAILED_PUBLISHANDPROJECT:
+                db.update (getTable (), HASH (
+                    "uuid",        id,
+                    "is_deleted",  1
+                ));
+                nextStatus = VocGisStatus.i.PROJECT;
+                action = VocAction.i.DELETE;
+                break;
+            case REGIONAL_PROGRAM_WORKS_PLACE_INITIALIZED:
+            case FAILED_PLACE_REGIONAL_PROGRAM_WORKS:
+            case REGIONAL_PROGRAM_WORKS_PLACE_FINISHED:
+            case FAILED_PLACING:
+            case FAILED_DELETEPROJECT:
+                nextStatus = VocGisStatus.i.PENDING_RQ_DELETEPROJECT;
+                action = VocAction.i.DELETE_PROJECT;
+                break;
+            case APPROVED:
+            case FAILED_ANNULMENT:
+                nextStatus = VocGisStatus.i.PENDING_RQ_ANNULMENT;
+                action = VocAction.i.ANNUL;
+                break;
+            default:
+                throw new ValidationException ("foo", "Операция запрещена");
+        }
+        
+        db.update (getTable (), HASH (
+            EnTable.c.UUID,               id,
+            OverhaulRegionalProgram.c.ID_ORP_STATUS, nextStatus.getId ()
+        ));
+        logAction (db, user, id, action);
+                
     });}
     
     @Override

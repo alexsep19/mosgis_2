@@ -53,8 +53,10 @@ public class OverhaulRegionalProgram extends EnTable {
     
     public enum Action {
         
-        PROJECT_PUBLISH     (VocGisStatus.i.PENDING_RP_PUBLISHANDPROJECT,            VocGisStatus.i.REGIONAL_PROGRAM_WORKS_PLACE_INITIALIZED, VocGisStatus.i.FAILED_PUBLISHANDPROJECT),
-        PLACING             (VocGisStatus.i.PENDING_RP_PLACING,                      VocGisStatus.i.APPROVED,                                VocGisStatus.i.FAILED_PLACING)
+        PROJECT_PUBLISH     (VocGisStatus.i.PENDING_RP_PUBLISHANDPROJECT, VocGisStatus.i.REGIONAL_PROGRAM_WORKS_PLACE_INITIALIZED, VocGisStatus.i.FAILED_PUBLISHANDPROJECT),
+        PLACING             (VocGisStatus.i.PENDING_RP_PLACING,           VocGisStatus.i.APPROVED,                                 VocGisStatus.i.FAILED_PLACING),
+        PROJECT_DELETE      (VocGisStatus.i.PENDING_RP_DELETEPROJECT,     VocGisStatus.i.PROJECT_DELETED,                          VocGisStatus.i.FAILED_DELETEPROJECT),
+        ANNUL               (VocGisStatus.i.PENDING_RP_ANNULMENT,         VocGisStatus.i.ANNUL,                                    VocGisStatus.i.FAILED_ANNULMENT)
         
         ;
         
@@ -86,6 +88,10 @@ public class OverhaulRegionalProgram extends EnTable {
                     return PROJECT_PUBLISH;
                 case PENDING_RQ_PLACING:
                     return PLACING;
+                case PENDING_RQ_DELETEPROJECT:
+                    return PROJECT_DELETE;
+                case PENDING_RQ_ANNULMENT:
+                    return ANNUL;
                 default: return null;
             }            
         }
@@ -96,6 +102,10 @@ public class OverhaulRegionalProgram extends EnTable {
                     return PROJECT_PUBLISH;
                 case APPROVE:
                     return PLACING;
+                case DELETE_PROJECT:
+                    return PROJECT_DELETE;
+                case ANNUL:
+                    return ANNUL;
                 default: return null;
             }
         }

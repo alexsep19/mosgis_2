@@ -28,20 +28,17 @@ import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.capital_repair.CapRemCommonResultType;
 
 @MessageDriven(activationConfig = {
- @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outExportOverhaulRegionalProgramHouseWorksQueue")
+ @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outExportOverhaulRegionalProgramHouseWorksManyQueue")
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class GisPollExportOverhaulRegionalProgramHouseWorksMDB extends GisPollMDB {
+public class GisPollExportOverhaulRegionalProgramHouseWorksManyMDB extends GisPollMDB {
     
     @EJB
     protected UUIDPublisher UUIDPublisher;
     
     @EJB
     WsGisCapitalRepairClient wsGisCapitalRepairClient;
-    
-    @Resource (mappedName = "mosgis.inExportOverhaulRegionalProgramsQueue")
-    Queue inExportOverhaulRegionalProgramsQueue;
     
     @Override
     protected Get get (UUID uuid) {

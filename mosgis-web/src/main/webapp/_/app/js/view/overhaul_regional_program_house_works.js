@@ -19,10 +19,12 @@ define ([], function () {
 
         if (g.getSelection ().length != 1 || data.item['program.is_deleted']) return
 
+        console.log (g.get (g.getSelection () [0]))
+
         var status = g.get (g.getSelection () [0]).id_orphw_status
 
         if (status == 10 || status == 14 || status == 34) t.enable ('editButton')
-        if (status == 10 || status == 14) t.enable ('deleteButton') //|| status == 40
+        if (status == 10 || status == 14 || status == 40) t.enable ('deleteButton')
 
     })}
             

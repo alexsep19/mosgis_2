@@ -9,6 +9,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.jws.HandlerChain;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseWorkLog;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseWorksImport;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramLog;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
@@ -58,6 +59,18 @@ public class WsGisCapitalRepairClient {
     
     public AckRequest.Ack importRegionalProgramWork (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
         return getPort (orgPPAGuid, messageGUID).importRegionalProgramWork(OverhaulRegionalProgramHouseWorksImport.toImportRegionalProgramWorkRequest (r)).getAck ();
+    }
+    
+    public AckRequest.Ack annulRegionalProgramWork (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importRegionalProgramWork(OverhaulRegionalProgramHouseWorkLog.toAnnulRegionalProgramWorkRequest (r)).getAck ();
+    }
+    
+    public AckRequest.Ack deleteRegionalProgramProject (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importRegionalProgram (OverhaulRegionalProgramLog.toDeleteRegionalProgramRequest (r)).getAck ();
+    }
+    
+    public AckRequest.Ack annulRegionalProgram (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importRegionalProgram (OverhaulRegionalProgramLog.toAnnulRegionalProgramRequest (r)).getAck ();
     }
     
 }
