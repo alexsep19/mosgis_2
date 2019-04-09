@@ -46,14 +46,34 @@ public class BaseDecisionMSPLog extends GisWsLogTable {
 
         final ImportBaseDecisionMSPRequest result = new ImportBaseDecisionMSPRequest ();
 
-	if (DB.ok(r.get("is_deleted"))) {
-	    result.getDeleteBaseDecisionMSP().add(toDeleteBaseDecisionMSP(r));
-	} else {
-	    result.getImportBaseDecisionMSP().add(toImportBaseDecisionMSP(r));
-	}
-        
+	result.getImportBaseDecisionMSP().add(toImportBaseDecisionMSP(r));
+
         return result;
         
+    }
+        
+    public static ImportBaseDecisionMSPRequest toDeleteBaseDecisionMSPRequest (Map<String, Object> r) {
+
+	r.put("elementguid", r.get(BaseDecisionMSP.c.GUID.lc()));
+
+        final ImportBaseDecisionMSPRequest result = new ImportBaseDecisionMSPRequest ();
+
+	result.getDeleteBaseDecisionMSP().add(toDeleteBaseDecisionMSP(r));
+
+        return result;
+
+    }
+        
+    public static ImportBaseDecisionMSPRequest toUndeleteBaseDecisionMSPRequest (Map<String, Object> r) {
+
+	r.put("elementguid", r.get(BaseDecisionMSP.c.GUID.lc()));
+
+        final ImportBaseDecisionMSPRequest result = new ImportBaseDecisionMSPRequest ();
+
+	result.getRecoverBaseDecisionMSP().add(toRecoverBaseDecisionMSP(r));
+
+        return result;
+
     }
 
     private static ImportBaseDecisionMSPRequest.DeleteBaseDecisionMSP toDeleteBaseDecisionMSP (Map<String, Object> r) {
@@ -61,6 +81,17 @@ public class BaseDecisionMSPLog extends GisWsLogTable {
 	r.put("elementguid", r.get(BaseDecisionMSP.c.GUID.lc()));
 
 	final ImportBaseDecisionMSPRequest.DeleteBaseDecisionMSP result = DB.to.javaBean (ImportBaseDecisionMSPRequest.DeleteBaseDecisionMSP.class, r);
+
+	result.setTransportGUID (UUID.randomUUID ().toString ());
+
+	return result;
+    }
+
+    private static ImportBaseDecisionMSPRequest.RecoverBaseDecisionMSP toRecoverBaseDecisionMSP (Map<String, Object> r) {
+
+	r.put("elementguid", r.get(BaseDecisionMSP.c.GUID.lc()));
+
+	final ImportBaseDecisionMSPRequest.RecoverBaseDecisionMSP result = DB.to.javaBean (ImportBaseDecisionMSPRequest.RecoverBaseDecisionMSP.class, r);
 
 	result.setTransportGUID (UUID.randomUUID ().toString ());
 

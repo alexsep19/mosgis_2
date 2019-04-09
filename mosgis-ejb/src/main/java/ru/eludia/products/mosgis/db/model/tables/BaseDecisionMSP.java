@@ -10,6 +10,7 @@ import ru.eludia.base.model.def.Bool;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import static ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract.Action.EDITING;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementBooleanFieldType;
@@ -84,6 +85,15 @@ public class BaseDecisionMSP extends EnTable {
 	    + "   raise_application_error (-20000, 'Укажите применяется для компенсации расходов'); "
 	    + " END IF; "
 
+	    + " IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS THEN "
+	    + "   IF :NEW.ID_CTR_STATUS = " + VocGisStatus.i.DELETED + " THEN "
+	    + "     :NEW.ISACTUAL := 0; "
+	    + "   END IF; "
+	    + "   IF :NEW.ID_CTR_STATUS = " + VocGisStatus.i.APPROVED + " THEN "
+	    + "     :NEW.ISACTUAL := 1; "
+	    + "   END IF; "
+	    + " END IF; "
+
 	    + " :NEW.IS_DELETED := 1 - :NEW.ISACTUAL; "
 
             + "END;"
@@ -93,8 +103,10 @@ public class BaseDecisionMSP extends EnTable {
 
     public enum Action {
         
-        PLACING     (VocGisStatus.i.PENDING_RP_PLACING, VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
-        CANCEL      (VocGisStatus.i.PENDING_RP_CANCEL, VocGisStatus.i.CANCELLED, VocGisStatus.i.FAILED_CANCEL),
+	PLACING     (VocGisStatus.i.PENDING_RQ_PLACING, VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
+	EDITING     (VocGisStatus.i.PENDING_RQ_EDIT,      VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_STATE),
+	DELETE      (VocGisStatus.i.PENDING_RQ_DELETE, VocGisStatus.i.DELETED, VocGisStatus.i.FAILED_DELETE),
+	UNDELETE    (VocGisStatus.i.PENDING_RQ_UNDELETE, VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_UNDELETE)
         ;
         
         VocGisStatus.i nextStatus;
@@ -121,8 +133,10 @@ public class BaseDecisionMSP extends EnTable {
         
         public static Action forStatus (VocGisStatus.i status) {
             switch (status) {
-                case PENDING_RQ_PLACING:   return PLACING;
-                case PENDING_RQ_CANCEL:    return CANCEL;
+		case PENDING_RQ_PLACING: return PLACING;
+		case PENDING_RQ_DELETE: return DELETE;
+		case PENDING_RQ_UNDELETE: return UNDELETE;
+		case PENDING_RQ_EDIT: return EDITING;
                 default: return null;
             }            
         }
@@ -170,8 +184,6 @@ public class BaseDecisionMSP extends EnTable {
 	    }
 
 	}
-
-	logger.info("IMPORT RESULT: " + result.toString());
 
 	return result;
     }

@@ -47,8 +47,12 @@ public class ExportBaseDecisionMSPMDB extends GisExportMDB<BaseDecisionMSPLog> {
             
         switch (action) {
             case PLACING: 
-            case CANCEL:
-                return wsGisNsiClient.importBaseDecisionMSP (orgPPAGuid, messageGUID, r);
+	    case EDITING:
+                return wsGisNsiClient.importBaseDecisionMSP(orgPPAGuid, messageGUID, r);
+            case DELETE:
+		return wsGisNsiClient.deleteBaseDecisionMSP(orgPPAGuid, messageGUID, r);
+            case UNDELETE:
+		return wsGisNsiClient.undeleteBaseDecisionMSP(orgPPAGuid, messageGUID, r);
             default: 
                 throw new IllegalArgumentException ("No action implemented for " + action);
         }

@@ -127,7 +127,7 @@ public class VocGisStatus extends Table {
         PENDING_RQ_PUBLISHANDPROJECT (122, "_pending_rq_publishandproject", "ожидание размещения проекта"),
         PENDING_RP_PUBLISHANDPROJECT (123, "_pending_rp_publishandproject", "ожидание подтверждения размещения проекта"),
         FAILED_PUBLISHANDPROJECT     (124, "_failed_publishandproject", "ошибка размещения проекта"),
-        
+
         PUBLISHEDANDPROJECT  (-20, "PublishedAndProject", "размещен проект"),
         
         REGIONAL_PROGRAM_WORKS_PLACE_INITIALIZED (-21, "_regional_program_works_place_initialized", "инициирована отправка видов работ региональной программы"),
@@ -144,6 +144,15 @@ public class VocGisStatus extends Table {
         
         PROJECT_DELETED             (-41, "_project_deleted", "удален проект"),
 
+	PENDING_RQ_DELETE (-52, "_pending_rq_delete", "ожидание удаления"),
+	PENDING_RP_DELETE (-53, "_pending_rp_delete", "ожидание подтверждения удаления"),
+	FAILED_DELETE     (-54, "_failed_delete", "ошибка удаления"),
+
+	DELETED           (-60, "Deleted", "удален"),
+
+	PENDING_RQ_UNDELETE (-62, "_pending_rq_undelete", "ожидание восстановления"),
+	PENDING_RP_UNDELETE (-63, "_pending_rp_undelete", "ожидание подтверждения восстановления"),
+	FAILED_UNDELETE     (-64, "_failed_undelete", "ошибка восстановления"),
         ;
 
         byte id;
