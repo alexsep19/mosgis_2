@@ -59,13 +59,17 @@ define ([], function () {
                 t.disable ('edit')
                 grid.selectNone ()
                 w2ui ['payment_document_common_form'].lock ()
-                w2ui ['passport_layout'].get ('main').tabs.disable ('payment_document_common_additional_information', 'payment_document_common_log')
+                
+                var tabs = w2ui ['passport_layout'].get ('main').tabs
+                $.each (tabs.tabs, function () {
+                    var id = this.id
+                    if (id == 'payment_document_common_service_info') return
+                    tabs.disable (id)
+                })
+                
             }
             else {
-                t.disable ('cancel')
-                t.enable ('edit')
-                w2ui ['payment_document_common_form'].unlock ()
-                w2ui ['passport_layout'].get ('main').tabs.enable ('payment_document_common_additional_information', 'payment_document_common_log')
+                reload_page ()
             }
 
             grid.refresh ()

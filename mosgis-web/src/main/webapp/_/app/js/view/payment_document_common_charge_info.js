@@ -20,6 +20,16 @@ define ([], function () {
     function get_message (row, col) {
     
         switch (col.field) {
+
+            case 'totalpayable':
+                var f = row.totalpayable
+                var p = row.totalpayable_v
+                return f && p && Math.abs (parseFloat (f) - parseFloat (p)) ? 'Значение не сопадает с автоматически рассчитанным: ' + w2utils.formatNumber (p) : null
+
+            case 'accountingperiodtotal':
+                var f = row.accountingperiodtotal
+                var p = row.accountingperiodtotal_v
+                return f && p && Math.abs (parseFloat (f) - parseFloat (p)) ? 'Значение не сопадает с автоматически рассчитанным: ' + w2utils.formatNumber (p) : null
                 
             case 'calcexplanation':
                 return row.uuid_gen_need_res && !row.calcexplanation ? 'Для данной строки это поле обязательно' : null
@@ -30,6 +40,15 @@ define ([], function () {
             case 'recalculationreason':
                 return !row.recalculationreason && row.moneyrecalculation ? 'Не заполнено основание' : null
 
+            case 'cons_i_dtrm_meth':
+                return row.uuid_m_m_service && row.cons_i_vol != null && !row.cons_i_dtrm_meth ? 'Не указан способ определения' : null
+
+            case 'cons_o_dtrm_meth':
+                return (row.uuid_m_m_service || row.uuid_add_service || row.uuid_gen_need_res) && row.cons_o_vol != null && !row.cons_o_dtrm_meth ? 'Не указан способ определения' : null
+                
+            case 'rate':
+                return (row.accountingperiodtotal || row.cons_i_vol || row.cons_o_vol) && row.rate == null ? 'Не указан тариф' : null
+                                
             default:
                 return null
 
@@ -41,6 +60,9 @@ define ([], function () {
 
         switch (col.field) {
 
+            case 'rate':
+                return !row.uuid_m_m_service
+                
             case 'accountingperiodtotal':
                 return true
                 
@@ -156,10 +178,10 @@ define ([], function () {
 
                 {field: 'rate', caption: 'Тариф', size: 10, editable: {type: 'float', precision: 6, autoFormat: true, min: 0}},
 
-                {field: 'cons_i_vol', caption: 'Объём', size: 10, editable: {type: 'float', precision: 7, autoFormat: true, min: 0}},
+                {field: 'cons_i_vol', caption: 'Объём', size: 10, editable: {type: 'float', precision: 7, autoFormat: true}, render: function (r, y, z, v) {return r.uuid_m_m_service ? w2utils.formatNumber (v) : '-'}},
                 {field: 'cons_i_dtrm_meth', caption: 'Определён по', size: 10, editable: {type: 'list'}, voc: data.vc_cnsmp_vol_dtrm},
 
-                {field: 'cons_o_vol', caption: 'Объём', size: 10, editable: {type: 'float', precision: 7, autoFormat: true, min: 0}},
+                {field: 'cons_o_vol', caption: 'Объём', size: 10, editable: {type: 'float', precision: 7, autoFormat: true}},
                 {field: 'cons_o_dtrm_meth', caption: 'Определён по', size: 10, editable: {type: 'list'}, voc: data.vc_cnsmp_vol_dtrm},
 
                 {field: 'okei', caption: 'Ед. изм.', size: 10, editable: function (r) {
@@ -218,8 +240,30 @@ define ([], function () {
                 var col = grid.columns [e.column]
 
                 switch (col.field) {
-                    case 'ratio':                                        
+
+                    case 'amountofexcessfees':
+                        if (r.ratio == null) return e.preventDefault ()
+                        break
+
+                    case 'ratio':
                         if (!(r.uuid_m_m_service && (r.cons_i_dtrm_meth == 'N' || r.cons_o_dtrm_meth == 'N'))) return e.preventDefault ()
+                        break
+
+                    case 'cons_i_vol':
+                        if (!r.uuid_m_m_service) return e.preventDefault ()
+                        break
+                        
+                    case 'cons_o_vol':
+                        if (!(r.uuid_m_m_service
+                            && ($_USER.role.nsi_20_2
+//                                || ($_USER.role.nsi_20_36) // ?
+                            )
+                        )
+                            && !r.uuid_add_service 
+                            && !r.uuid_gen_need_res
+                        ) return e.preventDefault ()
+                        break
+
                 }
 
             },            
@@ -231,6 +275,7 @@ define ([], function () {
                 $.each (grid.records, function () {
 
                     if (!this.w2ui) return
+
                     var chg = this.w2ui.changes
                     if (!chg) return
 

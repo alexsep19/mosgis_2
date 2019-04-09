@@ -39,7 +39,7 @@ define ([], function () {
             },
 
             show: {
-                toolbar: true,
+                toolbar: data.is_passport_editable || data.is_own_srca,
                 footer: true,
                 toolbarAdd: true,
                 toolbarInput: false,
@@ -127,7 +127,8 @@ define ([], function () {
 
                 var grid     = this
                 var record   = grid.get (e.recid)
-                if (record.is_annuled) return e.preventDefault ()
+                record.is_blocked = record.is_annuled || !is_own_srca_r (record)
+                if (record.is_blocked) return e.preventDefault ()
 
                 var col      = grid.columns [e.column]
                 

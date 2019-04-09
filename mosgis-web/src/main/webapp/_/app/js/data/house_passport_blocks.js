@@ -1,13 +1,15 @@
 define ([], function () {
 
+    var grid_name = 'house_passport_blocks_grid'
+
     $_DO.create_house_passport_blocks = function (e) {
         $_SESSION.set ('record', {is_nrs: "0", code_vc_nsi_30: "1"})
         use.block ('block_popup')
     }
     
     $_DO.delete_house_passport_blocks = function (e) {
-    
-        var grid = w2ui['house_passport_blocks_grid']
+
+        check_rights(grid_name, e, is_own_srca_r)
 
         if (!confirm ('Удалить запись?')) return
     
@@ -27,7 +29,9 @@ define ([], function () {
     
 
     $_DO.patch_house_passport_blocks = function (e) {
-        
+
+        check_rights(grid_name, e, is_own_srca_r)
+
         var grid = this
     
         var col = grid.columns [e.column]

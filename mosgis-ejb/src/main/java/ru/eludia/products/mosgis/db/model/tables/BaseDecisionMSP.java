@@ -34,7 +34,7 @@ public class BaseDecisionMSP extends EnTable {
 	ISAPPLIEDTOSUBSIDIARIES      (Type.BOOLEAN, Bool.FALSE, "1, если применяется для субсидий, иначе 0"),
 	ISAPPLIEDTOREFUNDOFCHARGES   (Type.BOOLEAN, Bool.FALSE, "1, если применяется для компенсации расходов, иначе 0"),
 
-	ISACTUAL                     (Type.BOOLEAN,     null, "Признак актуальности элемента справочника"),
+	ISACTUAL                     (Type.BOOLEAN, Bool.TRUE, "Признак актуальности элемента справочника"),
 
 	CODE                         (Type.STRING,  20, null, "Код элемента справочника, уникальный в пределах справочника"),
 	GUID                         (Type.UUID,             null,  "Глобально-уникальный идентификатор элемента справочника"),
@@ -83,6 +83,8 @@ public class BaseDecisionMSP extends EnTable {
 	    + " IF :NEW.ISAPPLIEDTOREFUNDOFCHARGES IS NULL THEN "
 	    + "   raise_application_error (-20000, 'Укажите применяется для компенсации расходов'); "
 	    + " END IF; "
+
+	    + " :NEW.IS_DELETED := 1 - :NEW.ISACTUAL; "
 
             + "END;"
 

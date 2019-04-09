@@ -63,6 +63,7 @@ public class EntrancesImpl extends BasePassport<Entrance> implements EntrancesLo
         
         Select select = ModelHolder.getModel ()
             .select (Entrance.class, "uuid AS id", 
+				     "uuid_org",
                                      "entrancenum", 
                                      "storeyscount", 
                                      "creationyear", 
@@ -70,7 +71,7 @@ public class EntrancesImpl extends BasePassport<Entrance> implements EntrancesLo
                                      "is_annuled",
                                      "is_annuled_in_gis",
                                      "id_status", 
-                                     "code_vc_nsi_330", 
+                                     "code_vc_nsi_330",
                                      "annulmentinfo")
             .where ("uuid_house", uuidHouse)
             .and   ("is_deleted",  0)
@@ -118,7 +119,8 @@ public class EntrancesImpl extends BasePassport<Entrance> implements EntrancesLo
 
         db.insert (getTable (), data.getJsonArray ("nos").getValuesAs (JsonString.class).stream ().map (no -> HASH (
             "uuid_house",  uuidHouse,
-            "entrancenum", no.getString ()
+            "entrancenum", no.getString (),
+	    "uuid_org", user.getUuidOrg ()
         )).collect (Collectors.toList ()));
 
     });}

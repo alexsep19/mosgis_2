@@ -49,30 +49,20 @@ define ([], function () {
             if (is_editing) {
                 t.enable ('cancel')
                 t.disable ('edit')
-//                grid.selectNone ()
                 w2ui ['payment_document_common_form'].lock ()
-                w2ui ['passport_layout'].get ('main').tabs.disable ('payment_document_common_additional_information', 'payment_document_common_log')
                 grid.records = data.lines
                 grid.refresh ()
+                
+                var tabs = w2ui ['passport_layout'].get ('main').tabs
+                $.each (tabs.tabs, function () {
+                    var id = this.id
+                    if (id == 'payment_document_common_penalties') return
+                    tabs.disable (id)
+                })
+                
             }
             else {
                 reload_page ()
-/*                
-                var records = grid.records
-                for (var i = 1; i < records.length; i ++) {
-                    var r = records [i]
-                    if (r.pp_rate_rub != null) continue
-                    if (r.pp_pp_sum == null && r.pp_ppp_sum == null) continue
-                    alert ('Вы забыли указать процент за рассрочку в рублях')
-                    is_editing = true
-                    grid.editField (r.recid, 'pp_rate_rub')
-                    return
-                }
-                t.disable ('cancel')
-                t.enable ('edit')
-                w2ui ['payment_document_common_form'].unlock ()
-                w2ui ['passport_layout'].get ('main').tabs.enable ('payment_document_common_additional_information', 'payment_document_common_log')
-*/                
             }
 
             grid.show.selectionBorder = is_editing

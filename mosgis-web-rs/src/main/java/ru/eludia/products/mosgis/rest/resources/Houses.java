@@ -91,8 +91,11 @@ public class Houses extends EJBResource <HousesLocal> {
             return;
         }
         
-        if (securityContext.isUserInRole("nsi_20_2"))
-            throw new ValidationException("foo", "Доcтуп запрещён. Добавить проверку договора РСО");
+        if (securityContext.isUserInRole("nsi_20_2")
+            && item.containsKey("srca") && getUserOrg().equals(item.getJsonObject("srca").getString("org.uuid"))
+	) {
+	    return;
+	}
                 
         if (securityContext.isUserInRole("nsi_20_34")) {
             throw new ValidationException("foo", "Доступ запрещён. Добавить проверки единоличного собственника МКД");

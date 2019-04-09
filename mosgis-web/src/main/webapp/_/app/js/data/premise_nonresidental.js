@@ -37,7 +37,7 @@ define ([], function () {
 
             it._can = {}
 
-            if (($_USER.role.admin || (data.cach && data.cach.is_own)) && !it.is_deleted) {
+            if (($_USER.role.admin || (data.cach && data.cach.is_own) || is_own_srca(data) && it.uuid_org == $_USER.uuid_org) && !it.is_deleted) {
                 it._can.edit   = 1 - it.is_annuled
                 it._can.delete = it._can.update = it._can.cancel = it._can.edit                
                 it._can.annul = 1 ? !data.item.is_annuled && data.item.id_status == 20 : 0

@@ -14,6 +14,7 @@ import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.tables.dyn.MultipleRefTable;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
 import ru.eludia.products.mosgis.db.model.voc.VocRdColType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseESPRequest;
@@ -28,6 +29,7 @@ public class ResidentialPremise extends Passport {
         super  ("tb_premises_res", "Жилые помещения");
         
         pk     ("uuid",               Type.UUID,   NEW_UUID,           "Ключ");
+	ref    ("uuid_org",           VocOrganization.class, null, "Организация, которая завела данное помещение в БД");
 	fk     ("uuid_xl",            InXlFile.class,      null,       "Источник импорта");
         col    ("terminationdate",    Type.DATE,           null,       "Дата прекращения существования объекта");
         col    ("is_deleted",         Type.BOOLEAN,        Bool.FALSE, "1, если запись удалена; иначе 0");
