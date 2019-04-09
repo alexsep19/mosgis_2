@@ -1,12 +1,18 @@
 define ([], function () {
 
     $_DO.update_payment_document_common_charge_info = function (sum) {
-
-        var f = w2ui ['payment_document_common_form']        
-        var data = {totalpayablebypd: sum}
         
+        var data = {
+            totalpayablebypd: sum,
+            totalpayablebypdwith_da: null,
+        }
+        
+        var f = w2ui ['payment_document_common_form']
+        var r = f.record
+                
         query ({type: 'payment_documents', action: 'update'}, {data: data}, function (d) {
             f.record.totalpayablebypd = d.item.totalpayablebypd
+            f.record.totalpayablebypdwith_da = d.item.totalpayablebypdwith_da            
             f.refresh ()
         })
 

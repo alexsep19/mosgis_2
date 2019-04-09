@@ -72,6 +72,8 @@ define ([], function () {
         
         if (v.additionalinformation.length > 1000) die ('additionalinformation', 'Дополнительная информация не может содержать более 1000 символов')
         
+        v.totalpayablebypdwith_da = null
+        
         query ({type: 'payment_documents', action: 'update'}, {data: v}, reload_page)
 
     }
@@ -99,12 +101,16 @@ define ([], function () {
     }
     
     function fix (it) {
-    
-        it.status_label = $('body').data ('data').vc_gis_status [it.id_ctr_status]
-        
-        it.sign = it.debtpreviousperiods > 0 ? -1 : 1
 
-        it.debtpreviousperiods *= (- it.sign)
+        it.status_label = $('body').data ('data').vc_gis_status [it.id_ctr_status]
+darn (it)        
+        if (it.sign == null) {
+        
+            it.sign = it.debtpreviousperiods > 0 ? -1 : 1
+
+            it.debtpreviousperiods *= (- it.sign)
+            
+        }        
 
     }    
 
