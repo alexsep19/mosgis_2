@@ -75,7 +75,8 @@ define ([], function () {
 
         query ({type: 'payment_documents', part: 'charge_info'}, {}, function (d) {
         
-            var lines = []            
+            var lines = [{recid: 'total', label: 'Всего по документу', id_type: -1}]
+            
             var last_type = ''
             
             $.each (dia2w2uiRecords (d.root), function () {

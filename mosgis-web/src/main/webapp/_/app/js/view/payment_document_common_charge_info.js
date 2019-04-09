@@ -173,8 +173,8 @@ define ([], function () {
 
                 {field: 'uuid_ins_product', caption: 'Наименование услуги', size: 50, editable: {type: 'list', items: data.tb_ins_products.items}, render: function (r, y, z, v) {return r.id_type == 50 ? data.tb_ins_products [v] : r.label}},
                 
-                {field: 'totalpayable', caption: 'Итого к оплате за расчетный период', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}},
-                {field: 'accountingperiodtotal', caption: 'Всего начислено за расчетный период (без перерасчетов и льгот)', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}},
+                {field: 'totalpayable', caption: 'Итого к оплате за расчетный период', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}, is_to_sum: 1},
+                {field: 'accountingperiodtotal', caption: 'Всего начислено за расчетный период (без перерасчетов и льгот)', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}, is_to_sum: 1},
 
                 {field: 'rate', caption: 'Тариф', size: 10, editable: {type: 'float', precision: 6, autoFormat: true, min: 0}},
 
@@ -205,10 +205,10 @@ define ([], function () {
                 {field: 'ratio', caption: 'Коэффициент', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}},
                 {field: 'amountofexcessfees', caption: 'Размер превышения платы', size: 10, editable: {type: 'float', precision: 2, autoFormat: true}},
 
-                {field: 'moneyrecalculation', caption: 'Сумма, руб', size: 10, editable: {type: 'float', precision: 2, autoFormat: true}},
+                {field: 'moneyrecalculation', caption: 'Сумма, руб', size: 10, editable: {type: 'float', precision: 2, autoFormat: true}, is_to_sum: 1},
                 {field: 'recalculationreason', caption: 'Основание', size: 10, editable: {type: 'text'}},
                 
-                {field: 'moneydiscount', caption: 'Субсидии, скидки', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}},
+                {field: 'moneydiscount', caption: 'Субсидии, скидки', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}, is_to_sum: 1},
 
                 {field: 'calcexplanation', caption: 'Порядок расчётов', size: 10, editable: {type: 'text'}},
                 
@@ -233,7 +233,7 @@ define ([], function () {
 
                 var r = grid.get (e.recid)
 
-                if (!r.id_type) return e.preventDefault ()
+                if (!r.id_type || r.id_type < 0) return e.preventDefault ()
 
                 if (e.column == 0 && r.id_type != 50) return e.preventDefault ()
 
@@ -272,23 +272,42 @@ define ([], function () {
             
                 var grid = this
                 
+                var sum = {}                
+                $.each (grid.columns, function () {
+                    if (!this.is_to_sum) return
+                    var k = this.field
+                    sum [k] = 0.0
+                })
+                
                 $.each (grid.records, function () {
 
-                    if (!this.w2ui) return
-
-                    var chg = this.w2ui.changes
-                    if (!chg) return
-
-                    for (var field in chg) {
-                        var col = grid.getColumn (field)
-                        var editable = col.editable
-                        if (typeof editable === "function") editable = editable (this)
-                        if (!editable || editable.type != 'list') continue
-                        this [field] = chg [field].uuid || chg [field].id
-                        delete this.w2ui.changes
+                    if (this.w2ui) {
+                    
+                        var chg = this.w2ui.changes
+                        
+                        if (chg) for (var field in chg) {
+                            var col = grid.getColumn (field)
+                            var editable = col.editable
+                            if (typeof editable === "function") editable = editable (this)
+                            if (!editable || editable.type != 'list') continue
+                            this [field] = chg [field].uuid || chg [field].id
+                            delete this.w2ui.changes
+                        }
+                        
                     }
 
+                    var r = this
+                    
+                    if (this.recid != 'total') $.each (grid.columns, function () {
+                        if (!this.is_to_sum) return
+                        var k = this.field
+                        var v = r [k]
+                        if (v != null) sum [k] += parseFloat (v)
+                    })                    
+
                 })
+                
+                grid.set ('total', sum)
             
                 e.done (function () {
                     
@@ -301,7 +320,6 @@ define ([], function () {
                         var sel = 'tr[recid=' + this.recid + ']'
 
                         if (!('id_type' in this)) {
-
 
                             $(sel + ' td.w2ui-grid-data:not(:last-child)').css ({
                                 'font-weight': 'bold',
@@ -318,6 +336,14 @@ define ([], function () {
                             
                             }
                         
+                        }
+                        else if (this.id_type < 0) {
+
+                            $(sel + ' td.w2ui-grid-data').css ({
+                                'font-weight': 'bold',
+                                'border-bottom-color': '#aaa',
+                            })
+
                         }
                         else {
                         
@@ -347,9 +373,7 @@ define ([], function () {
                                         $('div', $this).attr ({title: m})
                                     }
 
-                                })
-
-                                
+                                })                                
 
                             }
 
