@@ -144,7 +144,8 @@ public class InXlMeteringDevice extends EnTable {
         r.put (c.PREMISESTYPE.lc(),           
                VocMeteringDeviceType.i.COLLECTIVE.equals(vocMeteringDeviceType)? toNull (row, 7, "Указан тип помещения"): toString (row, 7));
         r.put (c.PREMISESNUM.lc(),            
-               VocMeteringDeviceType.i.COLLECTIVE.equals(vocMeteringDeviceType)? toNull (row, 8, "Указан номер помещения"): toString (row, 8, "Не указан номер помещения"));
+               VocMeteringDeviceType.i.COLLECTIVE.equals(vocMeteringDeviceType)? toNull (row, 8, "Указан номер помещения"): 
+                       toString (row, 8, "Не указан номер помещения"));
         r.put (c.ROOMNUMBER.lc(),             
                VocMeteringDeviceType.i.LIVING_ROOM.equals(vocMeteringDeviceType)? 
                        toString (row, 9, "(\\d+,)*\\d", "Не указан или ошибочен номер комнаты"): toNull (row, 9, "Указан номер комнаты") );
@@ -210,14 +211,15 @@ public class InXlMeteringDevice extends EnTable {
             + "  select r.premisesnum, n.premisesnum INTO val1, val2 from vc_unom u "
             + "  join tb_houses h on u.FIASHOUSEGUID = h.FIASHOUSEGUID "
             + "  left join tb_premises_res r on h.UUID = r.uuid_house and r.premisesnum = :NEW.PREMISESNUM "
-            + "  left join tb_premises_nrs n on h.UUID = n.uuid_house and r.premisesnum = :NEW.PREMISESNUM "
+            + "  left join tb_premises_nrs n on h.UUID = n.uuid_house and n.premisesnum = :NEW.PREMISESNUM "
             + "  where u.unom = :NEW.unom; "
-            + "  IF (:NEW.PREMISESTYPE = 'Нежилое' OR :NEW.PREMISESTYPE IS NULL) AND val2 IS NOT NULL THEN "        
-            + "   IF :NEW.ID_TYPE = " + VocMeteringDeviceType.i.RESIDENTIAL_PREMISE.getId() +" THEN "       
+            + "  IF (:NEW.PREMISESTYPE = 'Нежилое' AND val2 IS NOT NULL) OR "
+            + "     (:NEW.PREMISESTYPE IS NULL AND val2 IS NOT NULL AND val1 IS NULL) THEN "        
             + "     :NEW.ID_TYPE := " + VocMeteringDeviceType.i.NON_RESIDENTIAL_PREMISE.getId() +"; "
-            + "   END IF; "
-            + "  ELSIF val1 IS NULL THEN "        
-            + "     raise_application_error (-20000, 'Не найдено '|| :NEW.PREMISESTYPE || ' помещение: ' || :NEW.PREMISESNUM);"
+            + "  ELSIF (:NEW.PREMISESTYPE IS NULL AND val1 IS NOT NULL AND val2 IS NOT NULL) THEN "
+            + "     raise_application_error (-20000, 'Помещение '|| :NEW.PREMISESNUM || ' пустого типа ' || ' присутствует в жилом и не жилом'); "
+            + "  ELSIF (:NEW.PREMISESTYPE IS NOT NULL AND val1 IS NULL) OR (:NEW.PREMISESTYPE IS NULL AND val1 IS NULL and val2 IS NULL) THEN "   
+            + "     raise_application_error (-20000, 'Не найдено '|| nvl(:NEW.PREMISESTYPE, '(тип не указан)') || ' помещение: ' || :NEW.PREMISESNUM); "
             + "  END IF; "
             + " END;END IF; "
                     
