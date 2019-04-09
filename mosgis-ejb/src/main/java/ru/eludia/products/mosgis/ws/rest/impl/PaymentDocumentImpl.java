@@ -191,6 +191,7 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
         JsonObjectBuilder jb = Json.createObjectBuilder ();
         
         VocPaymentDocumentType.addTo (jb);
+	VocGisStatus.addTo(jb);
         VocAction.addTo (jb);
         
         return jb.build ();

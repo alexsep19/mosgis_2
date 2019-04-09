@@ -84,6 +84,7 @@ public class PaymentDocument extends EnTable {
         cols   (c.class);        
 
         key (c.UUID_ACCOUNT);
+	key (c.UUID_ORG);
 
         trigger ("BEFORE INSERT", ""
 
