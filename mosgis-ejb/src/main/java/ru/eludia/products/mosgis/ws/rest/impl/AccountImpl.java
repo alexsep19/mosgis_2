@@ -104,6 +104,7 @@ public class AccountImpl extends BaseCRUD<Account> implements AccountLocal {
         checkFilter (data, Account.c.UUID_CONTRACT, select);
         checkFilter (data, Account.c.UUID_CHARTER, select);
         checkFilter (data, Account.c.UUID_SR_CONTRACT, select);
+	checkFilter (data, Account.c.UUID_ORG, select);
 
         applySearch (Search.from (p), select);
 
