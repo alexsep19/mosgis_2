@@ -83,6 +83,7 @@ public class Account extends EnTable {
         key (c.UUID_CONTRACT);
         key (c.UUID_CHARTER);
         key (c.UUID_SR_CONTRACT);
+	key (c.UUID_ORG);
                
         trigger ("BEFORE UPDATE", 
                 
