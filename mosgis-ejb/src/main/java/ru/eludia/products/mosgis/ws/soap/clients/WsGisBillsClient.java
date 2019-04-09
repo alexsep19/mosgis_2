@@ -13,6 +13,7 @@ import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.tables.SettlementDocLog;
+import ru.eludia.products.mosgis.db.model.tables.PaymentDocumentLog;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ws.soap.tools.LoggingOutMessageHandler;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
@@ -114,4 +115,9 @@ public class WsGisBillsClient {
     public AckRequest.Ack annulSettlementDocUO(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
 	return getPort(orgPPAGuid, messageGUID).importIKUSettlements(SettlementDocLog.toAnnulIKUSettlementsRequest(r)).getAck();
     }
+    
+    public AckRequest.Ack importPaymentDocumentData (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importPaymentDocumentData (PaymentDocumentLog.toImportPaymentDocumentRequest (r)).getAck ();
+    } 
+    
 }
