@@ -144,7 +144,6 @@ public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProg
                 .toMaybeOne (VocOrganization.class, "AS org", "label").on ()
                 .toMaybeOne (OverhaulRegionalProgramLog.class).on ()
                 .toMaybeOne (OutSoap.class, "err_text AS err_text").on ()
-                .where      ("is_deleted", 0)
                 .orderBy    ("root.programname")
                 .orderBy    ("root.startyear")
                 .orderBy    ("root.endyear")
