@@ -24,6 +24,9 @@ define ([], function () {
                             {id: 'payment_documents', caption: 'Платежные документы'
                                 , off: false
                             },
+                            {id: 'payments', caption: 'Платежи'
+                                , off: false
+                            },
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_service_payments
