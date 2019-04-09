@@ -306,9 +306,18 @@ define ([], function () {
                     })                    
 
                 })
-                
+
                 grid.set ('total', sum)
-            
+
+                if (is_editing) {                
+                    var old = w2ui ['payment_document_common_form'].record.totalpayablebypd
+                    old = parseFloat (old)
+                    if (isNaN (old)) old = 0.0
+                    var young = sum.totalpayable
+darn ([old, young])
+                    if (Math.abs (young - old) >= 0.01) $_DO.update_payment_document_common_charge_info (young)
+                }
+
                 e.done (function () {
                     
                     var last = null

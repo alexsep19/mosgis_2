@@ -26,7 +26,10 @@ define ([], function () {
             
             fix (it)
 
-            w2ui ['passport_layout'].get ('main').tabs.enable ('payment_document_common_charge_info', 'payment_document_common_log')
+            var tabs = w2ui ['passport_layout'].get ('main').tabs        
+            $.each (tabs.tabs, function () {
+                tabs.enable (this.id)
+            })
 
             $_F5 (data)
 
@@ -47,7 +50,10 @@ define ([], function () {
         var $form = w2ui [form_name]
         
         var tabs = w2ui ['passport_layout'].get ('main').tabs        
-        tabs.disable ('payment_document_common_charge_info', 'payment_document_common_log')
+        $.each (tabs.tabs, function () {
+            if (this.id != 'payment_document_common_additional_information') tabs.disable (this.id)
+        })
+
         tabs.click ('payment_document_common_additional_information')
 
     }    
