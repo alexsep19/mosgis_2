@@ -20,8 +20,20 @@ define ([], function () {
         grid.lock ()
 
         query ({type: 'payment_documents', action: 'patch_penalties'}, {data: data}, function (d) {
-            grid.unlock ()
-            grid.refresh ()
+        
+            var s = 0.0            
+            $.each (grid.records, function () {
+                if (this.recid == 'total') return
+                s += parseFloat (this.totalpayable)
+            })
+            
+            query ({type: 'payment_documents', action: 'update'}, {data: {totalbypenaltiesandcourtcosts: s}}, function (d) {
+darn (d)
+                grid.unlock ()
+                grid.refresh ()
+                
+            })
+            
         })
 
     }
