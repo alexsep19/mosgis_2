@@ -1,5 +1,19 @@
 define ([], function () {
 
+    $_DO.update_payment_document_common_penalties = function (sum) {
+    
+        var k = 'totalbypenaltiesandcourtcosts'
+        
+        var data = {}; data [k] = sum
+
+        query ({type: 'payment_documents', action: 'update'}, {data: data}, function (d) {
+            var f = w2ui ['payment_document_common_form']            
+            f.record [k] = d.item [k]
+            f.refresh ()
+        })
+
+    }
+
     $_DO.patch_payment_document_common_penalties = function (e) {
 
         var grid = this
@@ -20,21 +34,8 @@ define ([], function () {
         grid.lock ()
 
         query ({type: 'payment_documents', action: 'patch_penalties'}, {data: data}, function (d) {
-        
-            var s = 0.0            
-            $.each (grid.records, function () {
-                if (this.recid == 'total') return
-                if (this.totalpayable == null) return
-                s += parseFloat (this.totalpayable)
-            })
-            
-            query ({type: 'payment_documents', action: 'update'}, {data: {totalbypenaltiesandcourtcosts: s}}, function (d) {
-darn (d)
-                grid.unlock ()
-                grid.refresh ()
-                
-            })
-            
+            grid.unlock ()
+            grid.refresh ()            
         })
 
     }
