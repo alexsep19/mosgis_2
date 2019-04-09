@@ -3,7 +3,7 @@ package ru.eludia.products.mosgis.db.model.tables;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 
-class OverhaulShortProgramLog extends GisWsLogTable {
+public class OverhaulShortProgramLog extends GisWsLogTable {
     
     public OverhaulShortProgramLog () {
         
