@@ -10,6 +10,8 @@ define ([], function () {
 
         var it = data.item
 
+        var is_popup = false
+
         $panel.w2regrid ({
 
             multiSelect: false,
@@ -19,10 +21,32 @@ define ([], function () {
             show: {
                 toolbar: true,
                 footer: 1,
-                toolbarAdd: data._can.create,
+                toolbarAdd: false,
                 toolbarReload: true,
                 toolbarColumns: false,
                 toolbarInput: true,
+            },
+            toolbar: {
+                onClick: function (e) {
+                    if (e.subItem && e.subItem.id) {
+                        $_DO [e.subItem.id] ()
+                    }
+                },
+                items: is_popup? [] : [
+                    {
+                        id: 'create',
+                        icon: 'w2ui-icon-plus',
+                        type: 'menu',
+                        text: 'Добавить',
+                        selected: -1,
+                        items: [
+                            {type: 'button', id: 'create_account_payments', caption: 'Основание лицевой счет', off: !data._can.create_account},
+                            {type: 'button', id: 'create_payment_document_payments', caption: 'Основание платежный документ', off: !data._can.create_payment_document},
+                        ],
+                        off: !data._can.create
+                    },
+                ].filter (not_off),
+
             },
 
             textSearch: 'contains',
