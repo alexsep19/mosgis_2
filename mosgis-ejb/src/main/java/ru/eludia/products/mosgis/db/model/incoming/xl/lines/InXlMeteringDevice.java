@@ -196,7 +196,6 @@ public class InXlMeteringDevice extends EnTable {
             + " val2 NUMBER; "
             + " UUID1 RAW(16); "
             + " UUID2 RAW(16); "
-  
             + "BEGIN "
                 
             + " SELECT uuid_org INTO :NEW.uuid_org FROM in_xl_files WHERE uuid=:NEW.uuid_xl; "
