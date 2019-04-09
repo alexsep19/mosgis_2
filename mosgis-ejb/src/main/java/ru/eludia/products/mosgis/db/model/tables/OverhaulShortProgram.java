@@ -3,6 +3,9 @@ package ru.eludia.products.mosgis.db.model.tables;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
+import static ru.eludia.base.model.Type.DATE;
+import static ru.eludia.base.model.Type.NUMERIC;
+import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -20,8 +23,16 @@ public class OverhaulShortProgram extends EnTable {
         ORG_UUID                (VocOrganization.class, null, "Поставщик информации"),
         
         PROGRAMNAME             (Type.STRING, 1000, "Наименование программы"),
-        STARTYEAR               (Type.NUMERIC, 4, "Год начала периода реализации"),
-        ENDYEAR                 (Type.NUMERIC, 4, "Год окончания периода реализации"),
+        
+        STARTMONTH              (NUMERIC, 2, "Месяц начала периода"),
+        STARTYEAR               (NUMERIC, 4, "Год начала периода"),
+        
+        STARTMONTHYEAR          (DATE, new Virt ("TO_DATE(\"STARTYEAR\" || '-' || \"STARTMONTH\", 'YYYY-MM')"), "Дата начала периода (gYearMonth)"),
+        
+        ENDMONTH                (NUMERIC, 2, "Месяц окончания периода"),
+        ENDYEAR                 (NUMERIC, 4, "Год окончания периода"),
+        
+        ENDMONTHYEAR            (DATE, new Virt ("TO_DATE(\"ENDYEAR\" || '-' || \"ENDMONTH\", 'YYYY-MM')"), "Дата окончания периода (gYearMonth)"),
         
         ID_LOG                  (OverhaulShortProgramLog.class, "Последнее событие редактирования"),
         
