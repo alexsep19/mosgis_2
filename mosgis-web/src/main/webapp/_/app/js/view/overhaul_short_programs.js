@@ -17,8 +17,8 @@ define ([], function () {
 
             columns: [
                 {field: 'programname', caption: 'Наименование', size: 10},
-                {field: 'startmonthyear', caption: 'Год начала', size: 10},
-                {field: 'endmonthyear', caption: 'Год окончания', size: 10},
+                {field: 'startmonthyear', caption: 'Дата начала', size: 10, render: _dt},
+                {field: 'endmonthyear', caption: 'Дата окончания', size: 10, render: _dt},
                 {field: 'id_osp_status', caption: 'Статус', size: 10, voc: data.vc_gis_status},
             ],
             

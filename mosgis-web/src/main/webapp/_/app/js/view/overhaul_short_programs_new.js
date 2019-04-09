@@ -1,6 +1,6 @@
 define ([], function () {
 
-    var name = 'overhaul_regional_programs_new_form'
+    var name = 'overhaul_short_programs_new_form'
 
     return function (data, view) {
 
