@@ -5,6 +5,7 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 
@@ -24,8 +25,8 @@ public class OverhaulShortProgram extends EnTable {
         
         ID_LOG                  (OverhaulShortProgramLog.class, "Последнее событие редактирования"),
         
-        REGIONALPROGRAMGUID     (Type.UUID,       null,                   "Идентификатор региональной программы"),
-        UNIQUENUMBER            (Type.STRING,     null,                   "Уникальный номер")
+        PLANGUID                (Type.UUID,   null, "Идентификатор региональной программы"),
+        UNIQUENUMBER            (Type.STRING, null, "Уникальный номер")
         
         ;
 
@@ -41,5 +42,74 @@ public class OverhaulShortProgram extends EnTable {
         }
         
     }
+    
+    public OverhaulShortProgram () {
+        
+        super ("tb_oh_shrt_programs", "Кратскосрочные программы капитального ремонта");
+        
+        cols  (c.class);
+        
+    }
+    
+    public enum Action {
+        
+        PROJECT_PUBLISH     (VocGisStatus.i.PENDING_RP_PUBLISHANDPROJECT, VocGisStatus.i.PROGRAM_WORKS_PLACE_INITIALIZED,          VocGisStatus.i.FAILED_PUBLISHANDPROJECT),
+        PLACING             (VocGisStatus.i.PENDING_RP_PLACING,           VocGisStatus.i.APPROVED,                                 VocGisStatus.i.FAILED_PLACING),
+        PROJECT_DELETE      (VocGisStatus.i.PENDING_RP_DELETEPROJECT,     VocGisStatus.i.PROJECT_DELETED,                          VocGisStatus.i.FAILED_DELETEPROJECT),
+        ANNUL               (VocGisStatus.i.PENDING_RP_ANNULMENT,         VocGisStatus.i.ANNUL,                                    VocGisStatus.i.FAILED_ANNULMENT)
+        
+        ;
+        
+        VocGisStatus.i nextStatus;
+        VocGisStatus.i okStatus;
+        VocGisStatus.i failStatus;
+
+        private Action (VocGisStatus.i nextStatus, VocGisStatus.i okStatus, VocGisStatus.i failStatus) {
+            this.nextStatus = nextStatus;
+            this.okStatus = okStatus;
+            this.failStatus = failStatus;
+        }
+
+        public VocGisStatus.i getNextStatus () {
+            return nextStatus;
+        }
+
+        public VocGisStatus.i getFailStatus () {
+            return failStatus;
+        }
+
+        public VocGisStatus.i getOkStatus () {
+            return okStatus;
+        }
+
+        public static Action forStatus (VocGisStatus.i status) {
+            switch (status) {
+                case PENDING_RQ_PUBLISHANDPROJECT:
+                    return PROJECT_PUBLISH;
+                case PENDING_RQ_PLACING:
+                    return PLACING;
+                case PENDING_RQ_DELETEPROJECT:
+                    return PROJECT_DELETE;
+                case PENDING_RQ_ANNULMENT:
+                    return ANNUL;
+                default: return null;
+            }            
+        }
+
+        public static Action forLogAction (VocAction.i a) {
+            switch (a) {
+                case PUBLISHANDPROJECT:
+                    return PROJECT_PUBLISH;
+                case APPROVE:
+                    return PLACING;
+                case DELETE_PROJECT:
+                    return PROJECT_DELETE;
+                case ANNUL:
+                    return ANNUL;
+                default: return null;
+            }
+        }
+
+    };
     
 }
