@@ -185,4 +185,12 @@ logger.info ("rq = " + rq);
     public AckRequest.Ack importBaseDecisionMSP(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
         return getPort (orgPPAGuid, messageGUID).importBaseDecisionMSP(BaseDecisionMSPLog.toImportBaseDecisionMSPRequest (r)).getAck ();
     }
+
+    public AckRequest.Ack deleteBaseDecisionMSP(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importBaseDecisionMSP(BaseDecisionMSPLog.toDeleteBaseDecisionMSPRequest (r)).getAck ();
+    }
+
+    public AckRequest.Ack undeleteBaseDecisionMSP(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importBaseDecisionMSP(BaseDecisionMSPLog.toUndeleteBaseDecisionMSPRequest (r)).getAck ();
+    }
 }

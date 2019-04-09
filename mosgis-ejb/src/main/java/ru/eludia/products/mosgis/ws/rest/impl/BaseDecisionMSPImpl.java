@@ -53,7 +53,8 @@ public class BaseDecisionMSPImpl extends BaseCRUD<BaseDecisionMSP> implements Ba
 
         switch (action) {
             case APPROVE:
-            case CANCEL:
+            case DELETE:
+	    case UNDELETE:
                 return inNsiBaseDecisionMSPsQueue;
 	    case IMPORT_BASE_DECISION_MSPS:
 		return inImportNsiBaseDecisionMSPsQueue;
@@ -216,11 +217,22 @@ public class BaseDecisionMSPImpl extends BaseCRUD<BaseDecisionMSP> implements Ba
 
 	    db.update(getTable(), HASH (
 		EnTable.c.UUID, id,
-		BaseDecisionMSP.c.ID_CTR_STATUS, VocGisStatus.i.PENDING_RQ_CANCEL.getId(),
-		EnTable.c.IS_DELETED, 1
+		BaseDecisionMSP.c.ID_CTR_STATUS, VocGisStatus.i.PENDING_RQ_DELETE.getId()
 	    ));
 
-	    logAction(db, user, id, VocAction.i.CANCEL);
+	    logAction(db, user, id, VocAction.i.DELETE);
+
+    });}
+
+    @Override
+    public JsonObject doUndelete(String id, User user) { return doAction((db) -> {
+
+	    db.update(getTable(), HASH (
+		EnTable.c.UUID, id,
+		BaseDecisionMSP.c.ID_CTR_STATUS, VocGisStatus.i.PENDING_RQ_UNDELETE.getId()
+	    ));
+
+	    logAction(db, user, id, VocAction.i.UNDELETE);
 
     });}
 

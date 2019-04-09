@@ -55,7 +55,13 @@ define ([], function () {
         if (!confirm ('Удалить эту запись, Вы уверены?')) return        
         query ({type: 'base_decision_msps', action: 'delete'}, {}, reload_page)
     }
-    
+
+    $_DO.undelete_base_decision_msp_common = function (e) {
+        if (!confirm('Восстановить эту запись, Вы уверены?'))
+            return
+        query({type: 'base_decision_msps', action: 'undelete'}, {}, reload_page)
+    }
+
     $_DO.alter_base_decision_msp_common = function (e) {
         if (!confirm('Открыть эту запись на редактирование?'))
             return
@@ -95,11 +101,11 @@ define ([], function () {
         data.item.err_text = data.item ['out_soap.err_text']
 
         var it = data.item
-        var is_locked = it.is_deleted || !$_USER.has_nsi_20(9, 10)
+        var is_locked = !$_USER.has_nsi_20(9, 10)
 
         it._can = {cancel: 1}
 
-        if (!is_locked) {
+        if (!is_locked && !it.is_deleted) {
 
             switch (it.id_ctr_status) {
                 case 11:
@@ -110,11 +116,16 @@ define ([], function () {
 
             it._can.delete = it._can.update = it._can.edit
 
+
             switch (it.id_ctr_status) {
                 case 40:
                     it._can.alter = 1
             }
+        }
 
+        switch (it.id_ctr_status) {
+            case -60:
+                it._can.undelete = !is_locked
         }
 
         done (data)

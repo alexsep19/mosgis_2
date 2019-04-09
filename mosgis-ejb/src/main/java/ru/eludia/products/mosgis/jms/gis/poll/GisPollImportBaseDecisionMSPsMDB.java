@@ -67,8 +67,8 @@ public class GisPollImportBaseDecisionMSPsMDB extends GisPollMDB {
                 final Map<String, Object> h = BaseDecisionMSP.toHASH (nsiElement);
                 h.put ("uuid_org", r.get ("uuid_org"));
                 h.put ("id_status", VocAsyncEntityState.i.OK.getId ());
-                h.put ("id_ctr_status", VocGisStatus.i.APPROVED.getId ());
-                h.put ("id_ctr_status_gis", VocGisStatus.i.APPROVED.getId ());
+                h.put ("id_ctr_status", DB.ok(h.get(BaseDecisionMSP.c.ISACTUAL.lc()))? VocGisStatus.i.APPROVED : VocGisStatus.i.DELETED);
+                h.put ("id_ctr_status_gis", h.get("id_ctr_status"));
                 items.add (h);
                 guids.add (h.get (BaseDecisionMSP.c.GUID.lc()).toString ());
             }

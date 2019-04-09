@@ -30,7 +30,7 @@ define ([], function () {
                 {field: 'action', caption: 'Действие',    size: 30, voc: data.vc_actions},
                 {field: 'vc_users.label', caption: 'Оператор',    size: 30},
 
-                {field: 'uniquenumber',  caption: 'Код в ГИС ЖКХ',     size: 20},
+                {field: 'code',  caption: 'Код в ГИС ЖКХ',     size: 20},
                 {field: 'decisionname', caption: 'Наименование', size: 50},
                 {field: 'code_vc_nsi_301',  caption: 'Тип',     size: 25, voc: data.vc_nsi_301},
                 {field: 'isappliedtosubsidiaries', caption: 'Для субсидий', size: 25, voc: data.voc_bool},
