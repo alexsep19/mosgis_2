@@ -24,6 +24,7 @@ define ([], function () {
             var s = 0.0            
             $.each (grid.records, function () {
                 if (this.recid == 'total') return
+                if (this.totalpayable == null) return
                 s += parseFloat (this.totalpayable)
             })
             
