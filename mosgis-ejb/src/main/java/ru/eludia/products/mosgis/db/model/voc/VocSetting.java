@@ -63,7 +63,7 @@ public class VocSetting extends Table {
         WS_GIS_BASIC_LOGIN    ("ws.gis.basic.login", "Login Basic-аутентификации сервисов GIS", ""),
         WS_GIS_BASIC_PASSWORD ("ws.gis.basic.password", "Пароль Basic-аутентификации сервисов GIS", ""),
         WS_GIS_URL_ROOT       ("ws.gis.url.root", "Корневой URL сервисов GIS", ""),
-        WS_GIS_ASYNC_TTL      ("ws.gis.async.ttl", "Время жизни асинхронных операций в ГИС, мин.", "1"),
+        WS_GIS_ASYNC_TTL      ("ws.gis.async.ttl", "Время жизни асинхронных операций в ГИС, мин.", "30"),
         
         WS_GIS_FILES_URL      ("ws.gis.files.url", "Endpoint URL файлового REST-сервиса ГИС ЖКХ", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-file-store-service/rest/"),
         WS_GIS_FILES_TMT_CONN ("ws.gis.files.timeout.connection", "Время ожидания подключения к файловому REST-сервису ГИС ЖКХ, мс", "10000"),
