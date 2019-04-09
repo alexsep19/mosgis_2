@@ -41,9 +41,8 @@ public class ExportOverhaulRegionalProgramsMDB extends GisExportMDB <OverhaulReg
     @Resource (mappedName = "mosgis.inExportOverhaulRegionalProgramFilesQueue")
     Queue inExportOverhaulRegionalProgramFilesQueue;
     
-    private List <Map <String, Object>> getFiles (UUID uuid) throws SQLException {
-        
-        DB db = ModelHolder.getModel ().getDb ();
+    private List <Map <String, Object>> getFiles (DB db, UUID uuid) throws SQLException {
+
         return db.getList (db.getModel ()
                 .select (OverhaulRegionalProgramFile.class, "*")
                 .toOne  (OverhaulRegionalProgramFileLog.class, "AS log", "ts_start_sending", "err_text").on ()
@@ -55,9 +54,8 @@ public class ExportOverhaulRegionalProgramsMDB extends GisExportMDB <OverhaulReg
         
     }
     
-    private String getStatus (UUID uuid) throws SQLException {
-        
-        DB db = ModelHolder.getModel ().getDb ();
+    private String getStatus (DB db, UUID uuid) throws SQLException {
+
         return db.getString (db.getModel ()
                 .get   (OverhaulRegionalProgramLog.class, uuid, OverhaulRegionalProgram.c.ID_ORP_STATUS.lc ())
         );
@@ -81,14 +79,14 @@ public class ExportOverhaulRegionalProgramsMDB extends GisExportMDB <OverhaulReg
     @Override
     protected void handleRecord(DB db, UUID uuid, Map<String, Object> r) throws Exception {
         
-        VocGisStatus.i status = VocGisStatus.i.forId (getStatus (uuid));
+        VocGisStatus.i status = VocGisStatus.i.forId (getStatus (db, uuid));
         OverhaulRegionalProgram.Action action = OverhaulRegionalProgram.Action.forStatus (status);
         if (action == null) {
             logger.warning ("No action is implemented for " + status);
             return;
         }
         
-        if (isWaiting (getFiles (uuid), db, action.getFailStatus (), r)) return;
+        if (isWaiting (getFiles (db, uuid), db, action.getFailStatus (), r)) return;
         
         r = OverhaulRegionalProgramLog.getForExport (db, uuid.toString ());
         
