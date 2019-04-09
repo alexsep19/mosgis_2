@@ -30,7 +30,8 @@ public class PaymentDocument extends EnTable {
         DT_PERIOD                     (Type.DATE,           null,   "ГГГГ-ММ-01"),
         
         PAYMENTDOCUMENTNUMBER         (Type.STRING,  30,    null,   "Номер платежного документа, по которому внесена плата, присвоенный такому документу исполнителем в целях осуществления расчетов по внесению платы"),
-        
+        PAYMENTDOCUMENTID             (Type.STRING,  18,    null,   "Идентификатор платежного документа"),
+
         ADDITIONALINFORMATION         (Type.STRING,  4000,  null,   "Дополнительная информация"),
         
         DEBTPREVIOUSPERIODS           (Type.NUMERIC, 10, 2, null,   "Задолженность за предыдущие периоды, руб."), 
