@@ -70,7 +70,9 @@ define ([], function () {
 
                 {field: 'amount', caption: 'Сумма, руб.', size: 10, render: 'float:2'},
 
-                {field: 'org.label', caption: 'Плательщик', size: 50},
+                {field: 'org_customer.label', caption: 'Плательщик', size: 50, render: function(i){
+                        return i['org_customer.label'] || i['ind_customer.label']
+                }},
 
                 {field: 'paymentpurpose', caption: 'Назначение', size: 50},
 

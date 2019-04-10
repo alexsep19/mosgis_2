@@ -14,9 +14,19 @@ import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.Account;
+import ru.eludia.products.mosgis.db.model.tables.AccountItem;
+import ru.eludia.products.mosgis.db.model.tables.House;
+import ru.eludia.products.mosgis.db.model.tables.InsuranceProduct;
 import ru.eludia.products.mosgis.db.model.tables.PaymentDocument;
+import ru.eludia.products.mosgis.db.model.tables.Premise;
+import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import ru.eludia.products.mosgis.db.model.voc.VocOkei;
+import ru.eludia.products.mosgis.db.model.voc.VocPerson;
+import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi329;
+import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi331;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.PaymentLocal;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
@@ -87,9 +97,11 @@ public class PaymentImpl extends BaseCRUD<Payment> implements PaymentLocal {
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
             .toMaybeOne (PaymentLog.class               ).on ()
             .toMaybeOne (OutSoap.class,         "err_text").on ()
-            .toMaybeOne (Account.class,         "AS acct", Account.c.ACCOUNTNUMBER.lc ()).on ()
+            .toOne (Account.class,         "AS acct", Account.c.ACCOUNTNUMBER.lc ()).on ()
 	    .toMaybeOne (PaymentDocument.class, "AS pd", PaymentDocument.c.PAYMENTDOCUMENTNUMBER.lc()).on()
             .toMaybeOne (VocOrganization.class, "AS org", "label").on ("acct.uuid_org=org.uuid")
+            .toMaybeOne (VocOrganization.class, "AS org_customer", "label").on ("acct.uuid_org_customer=org_customer.uuid")
+            .toMaybeOne (VocPerson.class,       "AS ind_customer", "label").on ("acct.uuid_person_customer=ind_customer.uuid")
             .orderBy ("root.year DESC")
             .orderBy ("root.month DESC")
             .orderBy ("root.ordernum")
@@ -112,7 +124,7 @@ public class PaymentImpl extends BaseCRUD<Payment> implements PaymentLocal {
 
         final JsonObject item = db.getJsonObject (m
             .get (getTable (), id, "AS root", "*")
-            .toMaybeOne (Account.class, "AS acct"
+            .toOne (Account.class, "AS acct"
                 , Account.c.ACCOUNTNUMBER.lc ()
                 , Account.c.ID_CTR_STATUS.lc ()
                 , Account.c.LIVINGPERSONSNUMBER.lc ()
@@ -127,9 +139,22 @@ public class PaymentImpl extends BaseCRUD<Payment> implements PaymentLocal {
             .toMaybeOne (PaymentLog.class, "AS log").on ()
             .toMaybeOne (OutSoap.class, "err_text").on ("log.uuid_out_soap=out_soap.uuid")
             .toOne      (VocOrganization.class, "AS org", "label").on ("root.uuid_org=org.uuid")
+            .toMaybeOne (VocOrganization.class, "AS org_customer", "label").on ("acct.uuid_org_customer=org_customer.uuid")
+            .toMaybeOne (VocPerson.class,       "AS ind_customer", "label").on ("acct.uuid_person_customer=ind_customer.uuid")
         );
 
         job.add ("item", item);
+
+	db.addJsonArrays (job
+
+            , m.select (AccountItem.class, "AS acct_items", "*", "uuid AS id")
+                .toOne (VocBuilding.class, "AS addr", "label").on ()
+                .toMaybeOne (Premise.class, "AS prem", "label", Premise.c.TOTALAREA.lc ()).on ()
+                .toOne (House.class, "AS house", "uuid").on ("addr.houseguid=house.fiashouseguid")
+                .where (AccountItem.c.UUID_ACCOUNT, item.getString(Payment.c.UUID_ACCOUNT.lc()))
+                .where (EnTable.c.IS_DELETED, 0)
+                .orderBy ("prem.label")
+        );
 
 	VocGisStatus.addTo (job);
         VocAction.addTo (job);
