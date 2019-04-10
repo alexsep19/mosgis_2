@@ -97,7 +97,11 @@ public class PaymentImpl extends BaseCRUD<Payment> implements PaymentLocal {
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
             .toMaybeOne (PaymentLog.class               ).on ()
             .toMaybeOne (OutSoap.class,         "err_text").on ()
-            .toOne (Account.class,         "AS acct", Account.c.ACCOUNTNUMBER.lc ()).on ()
+	    .toOne(Account.class, "AS acct",
+		 Account.c.ACCOUNTNUMBER.lc(),
+		 Account.c.ID_CTR_STATUS.lc(),
+		 Account.c.SERVICEID.lc()
+	    ).on()
 	    .toMaybeOne (PaymentDocument.class, "AS pd", PaymentDocument.c.PAYMENTDOCUMENTNUMBER.lc()).on()
             .toMaybeOne (VocOrganization.class, "AS org", "label").on ("acct.uuid_org=org.uuid")
             .toMaybeOne (VocOrganization.class, "AS org_customer", "label").on ("acct.uuid_org_customer=org_customer.uuid")
@@ -127,10 +131,7 @@ public class PaymentImpl extends BaseCRUD<Payment> implements PaymentLocal {
             .toOne (Account.class, "AS acct"
                 , Account.c.ACCOUNTNUMBER.lc ()
                 , Account.c.ID_CTR_STATUS.lc ()
-                , Account.c.LIVINGPERSONSNUMBER.lc ()
-                , Account.c.TOTALSQUARE.lc ()
-                , Account.c.RESIDENTIALSQUARE.lc ()
-                , Account.c.HEATEDAREA.lc ()
+                , Account.c.SERVICEID.lc ()
             ).on ()
             .toMaybeOne (PaymentDocument.class, "AS pd"
                 , PaymentDocument.c.PAYMENTDOCUMENTNUMBER.lc ()

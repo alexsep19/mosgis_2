@@ -52,23 +52,25 @@ define ([], function () {
             textSearch: 'contains',
 
             searches: [
-//                {field: 'dt_period', caption: 'Период',         type: 'date', operator: 'between', operators: ['between']},
-//                {field: 'id_ctr_status', caption: 'Статус',     type: 'enum', options: {items: data.vc_gis_status.items}},
-//                {field: 'is_deleted', caption: 'Статус записи', type: 'enum', options: {items: [
-//                    {id: "0", text: "Актуальные"},
-//                    {id: "1", text: "Удалённые"},
-//                ]}},
+                {field: 'dt_period', caption: 'Период',         type: 'date', operator: 'between', operators: ['between']},
+                {field: 'id_ctr_status', caption: 'Статус',     type: 'enum', options: {items: data.vc_gis_status.items}},
+                {field: 'is_deleted', caption: 'Статус записи', type: 'enum', options: {items: [
+                    {id: "0", text: "Актуальные"},
+                    {id: "1", text: "Удалённые"},
+                ]}},
             ].filter (not_off),
 
             columns: [
 
-                {field: 'ordernum', caption: 'Номер', size: 20},
+                {field: 'ordernum', caption: 'Номер', size: 10},
 
-                {field: 'dt_period', caption: 'Период', size: 22, render: function (r) {
+                {field: 'orderdate', caption: 'Дата', size: 10, render: _dt},
+
+                {field: 'dt_period', caption: 'Период', size: 12, render: function (r) {
                     return w2utils.settings.fullmonths [r.month - 1] + ' ' + r.year
                 }},
 
-                {field: 'amount', caption: 'Сумма, руб.', size: 10, render: 'float:2'},
+                {field: 'amount', caption: 'Сумма, руб.', size: 15, render: 'float:2'},
 
                 {field: 'org_customer.label', caption: 'Плательщик', size: 50, render: function(i){
                         return i['org_customer.label'] || i['ind_customer.label']
@@ -79,6 +81,10 @@ define ([], function () {
                 {field: 'pd.paymentdocumentnumber', caption: 'Квитаниця', size: 20},
 
                 {field: 'acct.accountnumber', caption: '№ лицевого счета', size: 20},
+
+                {field: 'acct.serviceid', caption: 'Идентификатор поставщика услуг', size: 30},
+
+                {field: 'org.label', caption: 'Организация, принявшая платеж', size: 30},
 
                 {field: 'id_ctr_status', caption: 'Статус', size: 15, voc: data.vc_gis_status},
 
