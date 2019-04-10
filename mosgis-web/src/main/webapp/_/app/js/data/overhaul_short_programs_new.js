@@ -8,6 +8,8 @@ define ([], function () {
 
         var reg_year = /^[1-9][0-9]{3}$/
         var reg_month = /^[1-9][0-2]{0,1}$/
+
+        if (!v.programname) die ('programname', 'Укажите, пожалуйста, наименование КПР')
         
         if (!v.startmonth) die ('startmonth', 'Укажите, пожалуйста, месяц начала')
         if (!reg_month.test (v.startmonth)) die ('startmonth', 'Укажите, пожалуйста, корректное значение месяца начала')
