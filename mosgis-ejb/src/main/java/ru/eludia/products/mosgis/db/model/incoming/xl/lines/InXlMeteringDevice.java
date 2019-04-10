@@ -100,6 +100,10 @@ public class InXlMeteringDevice extends EnTable {
                 case ERR:
                 case UNOM:
                 case VERIF_INT:
+                case PREMISESNUM:
+                case PREMISESTYPE:
+                case ROOMNUMBER:
+                case ACCOUNTNUMBER:
                     return false;                    
                 default:                    
                     return true;
