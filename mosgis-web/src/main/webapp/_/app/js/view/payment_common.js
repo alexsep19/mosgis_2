@@ -51,7 +51,7 @@ define ([], function () {
                 {type: 'main', size: 400,
                     tabs: {
                         tabs:    [
-                            {id: 'payment_common_log', caption: 'История изменений', off: 1},
+                            {id: 'payment_common_log', caption: 'История изменений'},
                         ].filter (not_off),
                         onClick: $_DO.choose_tab_payment_common
                     }
