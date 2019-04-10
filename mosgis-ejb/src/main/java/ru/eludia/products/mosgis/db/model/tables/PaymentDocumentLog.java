@@ -2,6 +2,7 @@ package ru.eludia.products.mosgis.db.model.tables;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import ru.eludia.base.DB;
 import ru.eludia.base.Model;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
+import ru.eludia.products.mosgis.db.model.voc.VocChargeInfoType;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi329;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi331;
 import ru.gosuslugi.dom.schema.integration.bills.ImportPaymentDocumentRequest;
@@ -47,23 +49,38 @@ public class PaymentDocumentLog extends GisWsLogTable {
         
         final Object uuid = r.get ("r.uuid");
         
-        final List<Map<String, Object>> charges = db.getList (m
+        final List<Map<String, Object>> allCharges = db.getList (m
             .select (ChargeInfo.class, "*")
             .where (ChargeInfo.c.UUID_PAY_DOC, uuid)
             .where (ChargeInfo.c.TOTALPAYABLE.lc () + " >", 0)
             .where (EnTable.c.IS_DELETED, 0)
         );
-
-        r.put (ChargeInfo.TABLE_NAME, charges);
         
         Map<UUID, BigDecimal> acct2total = new HashMap<> ();        
-        charges.forEach ((t) -> {
+        allCharges.forEach ((t) -> {
             UUID        acct = (UUID)       t.get (ChargeInfo.c.UUID_BNK_ACCT.lc ());
             BigDecimal total = (BigDecimal) t.get (ChargeInfo.c.TOTALPAYABLE.lc  ());
             BigDecimal     v = acct2total.get (acct);
             if (v == null) v = BigDecimal.ZERO;
             acct2total.put (acct, v.add (total));
         });
+        
+        final List<Map<String, Object>> generalCharges = new ArrayList<> ();
+        final List<Map<String, Object>> charges = new ArrayList<> ();
+        
+        for (Map<String, Object> i: allCharges) {
+            switch (VocChargeInfoType.i.forId (i.get (ChargeInfo.c.ID_TYPE.lc ()))) {
+                case GENERAL:
+                    generalCharges.add (i);
+                    break;
+                case HOUSING:
+                    i.put (ChargeInfo.__GENERAL, generalCharges);
+                default:
+                    charges.add (i);
+            }
+        }        
+        
+        r.put (ChargeInfo.TABLE_NAME, charges);        
         
         r.put (__ACCT2TOTAL, acct2total);
 
