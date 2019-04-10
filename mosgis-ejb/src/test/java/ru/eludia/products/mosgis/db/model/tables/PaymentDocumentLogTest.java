@@ -19,7 +19,7 @@ public class PaymentDocumentLogTest extends BaseTest {
 
     @Test (expected = Test.None.class)
     public void test () throws Exception {
-        Map<String, Object> r = getData ("23f23dd9-d633-4556-a6d7-5ff1f2b840d0");
+        Map<String, Object> r = getData ("a785ce6b-ae53-4045-8291-068bb8754887");
         dump (r);
         validate (PaymentDocumentLog.toImportPaymentDocumentRequest (r));
     }
