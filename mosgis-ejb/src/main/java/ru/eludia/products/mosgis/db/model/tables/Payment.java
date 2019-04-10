@@ -3,16 +3,11 @@ package ru.eludia.products.mosgis.db.model.tables;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
-import static ru.eludia.base.model.def.Bool.FALSE;
-import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.voc.VocAccountType;
-import ru.eludia.products.mosgis.db.model.voc.VocChargeInfoType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
-import ru.eludia.products.mosgis.db.model.voc.VocPaymentDocumentType;
-import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi2;
+import ru.eludia.products.mosgis.db.model.voc.VocPaymentBaseType;
 
 public class Payment extends EnTable {
 
@@ -22,13 +17,15 @@ public class Payment extends EnTable {
 
 	UUID_ORG                      (VocOrganization.class, null, "Организация, которая создала данный платёжный документ"),
 
+	ID_TYPE                       (VocPaymentBaseType.class, VocPaymentBaseType.DEFAULT,  "Тип основания для оплаты"),
+	UUID_ACCOUNT                  (Account.class,         null, "Лицевой счёт основание для оплаты, заполняется всегда"),
+	UUID_PAY_DOC                  (PaymentDocument.class, null, "Платежный документ основание для оплаты, заполняется если основание ПД"),
+
 	YEAR                          (Type.NUMERIC, 4,             "Год периода расчета"),
 	MONTH                         (Type.NUMERIC, 4,             "Месяц периода расчета"),
 	DT_PERIOD                     (Type.DATE,           null,   "ГГГГ-ММ-01"),
 
 	ORDERNUM                      (Type.STRING, 9, null, "Номер платежа"),
-	UUID_ACCOUNT                  (Account.class,         null, "Лицевой счёт основание для оплаты, заполняется всегда"),
-	UUID_PAY_DOC                  (PaymentDocument.class, null, "Платежный документ основание для оплаты, заполняется если основание ПД"),
 
 	ORDERDATE                     (Type.DATE,           "Дата внесения платы"),
 	AMOUNT                        (Type.NUMERIC, 20, 2, "Сумма, руб."),

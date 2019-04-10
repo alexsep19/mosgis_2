@@ -16,6 +16,7 @@ define ([], function () {
                 return done()
 
             $_SESSION.set('record', {
+                id_type: 0,
                 uuid_account: r.uuid,
             })
 
@@ -42,6 +43,7 @@ define ([], function () {
                 return done()
 
             $_SESSION.set('record', {
+                id_type: 1,
                 uuid_pay_doc: r.uuid,
                 year: r.year,
                 month: r.month,

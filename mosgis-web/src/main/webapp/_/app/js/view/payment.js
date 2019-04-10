@@ -9,7 +9,6 @@ define ([], function () {
         var acct_items = data.acct_items
 
         if (acct_items && acct_items.length) {
-
             it.address_label = ', ' + acct_items [0] ['addr.label']
             it.uuid_house = acct_items [0] ['house.uuid']
 

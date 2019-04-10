@@ -11,6 +11,7 @@ define ([], function () {
                 record: data.record,
 
                 fields : [
+                    {name: 'id_type', type: 'int'},
                     {name: 'uuid_account', type: 'text'},
                     {name: 'uuid_pay_doc', type: 'text'},
                     {name: 'ordernum', type: 'text'},
