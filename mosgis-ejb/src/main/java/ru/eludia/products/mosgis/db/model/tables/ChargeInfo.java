@@ -178,6 +178,7 @@ public class ChargeInfo extends EnTable {
         final PDServiceChargeType.AdditionalService result = DB.to.javaBean (PDServiceChargeType.AdditionalService.class, r);
         result.setServiceType (NsiTable.toDom (r, "add_svc"));
         result.setConsumption (toConsumption (r));
+        result.setPaymentRecalculation (toPaymentRecalculation (r));
         return result;
     }
     
@@ -202,5 +203,14 @@ public class ChargeInfo extends EnTable {
         v.setType (DB.to.String (r.get ("cons_" + c + "_dtrm_meth")));
         volume.add (v);
     }
-
+    
+    private static PDServiceChargeType.AdditionalService.PaymentRecalculation toPaymentRecalculation (Map<String, Object> r) {
+        Object sum = r.get (c.MONEYRECALCULATION.lc ());
+        if (!DB.ok (sum)) return null;
+        final PDServiceChargeType.AdditionalService.PaymentRecalculation result = new PDServiceChargeType.AdditionalService.PaymentRecalculation ();
+        result.setSum ((BigDecimal) sum);
+        result.setRecalculationReason (DB.to.String (r.get (c.RECALCULATIONREASON.lc ())));
+        return result;
+    }
+    
 }
