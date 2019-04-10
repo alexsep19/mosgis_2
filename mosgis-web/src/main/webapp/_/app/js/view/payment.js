@@ -22,7 +22,7 @@ define ([], function () {
 
         it.month_label = w2utils.settings.fullmonths [it.month - 1].toLowerCase ()
 
-        $('title').text ('Платёж ' + it.paymentdocumentnumber)
+        $('title').text ('Платёж ' + it.ordernum)
 
         fill (view, it, $('#body'))
 

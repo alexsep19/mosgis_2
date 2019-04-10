@@ -20,43 +20,12 @@ define ([], function () {
 
         if (v.year == dt.getFullYear () && v.month > (1 + dt.getMonth ())) die ('month', 'Этот период ещё не наступил')
 
-        function done () {
-
-            query ({type: 'payments', action: 'create', id: null}, {data: v}, function (data) {
-                w2popup.close ()
-                var grid = w2ui ['payments_grid']
-                grid.reload (grid.refresh)
-                w2confirm ('Платёж зарегистрирован. Открыть его страницу в новой вкладке?').yes (function () {openTab ('/payment/' + data.id)})
-            })
-
-        }
-
-        var dt = v.year + '-' + String (v.month).padStart (2, '0') + '-01'
-
-        query ({type: 'payments', id: null},
-
-            {
-              searchLogic: "AND",
-              limit: 100,
-              offset: 0,
-              data: {uuid_account: v.uuid_account},
-              search: [
-                {field: "dt_period", type: "date", operator: "between", value: [dt, dt]},
-                {field: "id_ctr_status", type: "enum", operator: "in", value: [{id: 10}]},
-                {field: "is_deleted", type: "enum", operator: "in", value: [{id: "0"}]},
-              ],
-            }
-
-            , function (d) {
-
-                if (!d.root.length) return done ()
-                w2popup.close ()
-                w2confirm ('Такой платёжный документ уже зарегистрирован. Открыть его страницу в новой вкладке?').yes (function () {openTab ('/payment/' + d.root [0].id)})
-
-            }
-
-        )
-
+        query ({type: 'payments', action: 'create', id: null}, {data: v}, function (data) {
+            w2popup.close ()
+            var grid = w2ui ['payments_grid']
+            grid.reload (grid.refresh)
+            w2confirm ('Платёж зарегистрирован. Открыть его страницу в новой вкладке?').yes (function () {openTab ('/payment/' + data.id)})
+        })
     }
 
     return function (done) {
@@ -112,7 +81,16 @@ define ([], function () {
 
         data.record = $_SESSION.delete('record') || {}
 
-        data.record.period = periods [0].id
+        var selected_periods = periods;
+
+        if (data.record.year && data.record.month) {
+
+            var id = new Date(data.record.year, data.record.month).toJSON().slice(0, 7)
+
+            selected_periods = periods.filter((i) => i.id == id)
+        }
+
+        data.record.period = selected_periods [0].id
 
         done (data)
 

@@ -97,7 +97,7 @@ define ([], function () {
 
                 if (is_popup) {
 
-                    $_SESSION.set ('accounts_popup.data', clone (r))
+                    $_SESSION.set ('payment_documents_popup.data', clone (r))
 
                     w2popup.close ()
 

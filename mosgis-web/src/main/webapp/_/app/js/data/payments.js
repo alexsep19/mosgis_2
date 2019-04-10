@@ -15,7 +15,9 @@ define ([], function () {
             if (!r)
                 return done()
 
-            $_SESSION.set('record', {uuid_account: r.uuid})
+            $_SESSION.set('record', {
+                uuid_account: r.uuid,
+            })
 
             use.block('payment_new')
         })
@@ -39,7 +41,11 @@ define ([], function () {
             if (!r)
                 return done()
 
-            $_SESSION.set('record', {uuid_payment_document: r.uuid})
+            $_SESSION.set('record', {
+                uuid_payment_document: r.uuid,
+                year: r.year,
+                month: r.month,
+            })
 
             use.block('payment_new')
         })
