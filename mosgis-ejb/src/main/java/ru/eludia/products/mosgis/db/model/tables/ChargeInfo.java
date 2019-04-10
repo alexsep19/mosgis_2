@@ -150,11 +150,9 @@ public class ChargeInfo extends EnTable {
         final VocChargeInfoType.i type = VocChargeInfoType.i.forId (r.get (c.ID_TYPE.lc ()));
         
         switch (type) {
-/*            
             case HOUSING:
                 result.setHousingService (toHousingService (r));
                 break;
-*/
             case MUNICIPAL:
                 result.setMunicipalService (toMunicipalService (r));
                 break;
@@ -163,7 +161,6 @@ public class ChargeInfo extends EnTable {
                 break;
             default: 
                 return null;
-//                throw new IllegalArgumentException (type.name () + " is not supported");
         }        
         
         return result;
@@ -190,6 +187,7 @@ public class ChargeInfo extends EnTable {
     
     private static PDServiceChargeType.HousingService toHousingService (Map<String, Object> r) {
         final PDServiceChargeType.HousingService result = DB.to.javaBean (PDServiceChargeType.HousingService.class, r);
+        result.setServiceType (NsiTable.toDom (r, "vc_nsi_50"));
         return result;
     }
     

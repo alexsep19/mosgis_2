@@ -14,6 +14,7 @@ import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import ru.eludia.products.mosgis.db.model.voc.VocChargeInfoType;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi329;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi331;
+import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi50;
 import ru.gosuslugi.dom.schema.integration.bills.ImportPaymentDocumentRequest;
 import ru.gosuslugi.dom.schema.integration.bills.PaymentDocumentType;
 
@@ -51,7 +52,9 @@ public class PaymentDocumentLog extends GisWsLogTable {
         
         final List<Map<String, Object>> allCharges = db.getList (m
                 
-            .select (ChargeInfo.class, "*")                
+            .select (ChargeInfo.class, "AS root", "*")                
+                
+            .toMaybeOne (VocNsi50.class, "code", "guid").on ("root.code_vc_nsi_50=vc_nsi_50.code AND vc_nsi_50.isactual=1")
                 
             .toMaybeOne (AdditionalService.class, "AS add_svc"
                 , AdditionalService.c.CODE.lc ()
@@ -80,7 +83,7 @@ public class PaymentDocumentLog extends GisWsLogTable {
         
         final List<Map<String, Object>> generalCharges = new ArrayList<> ();
         final List<Map<String, Object>> charges = new ArrayList<> ();
-        
+                
         for (Map<String, Object> i: allCharges) {
             
             i.put ("paymentinformationkey", i.get (ChargeInfo.c.UUID_BNK_ACCT.lc ()));
@@ -94,8 +97,9 @@ public class PaymentDocumentLog extends GisWsLogTable {
                 default:
                     charges.add (i);
             }
+            
         }        
-        
+                
         r.put (ChargeInfo.TABLE_NAME, charges);        
         
         r.put (__ACCT2TOTAL, acct2total);
@@ -150,11 +154,10 @@ public class PaymentDocumentLog extends GisWsLogTable {
         list.forEach ((t) -> сomponentsOfCost.add (ComponentsOfCost.toComponentsOfCost (t)));
     }    
     
-    private static void addChargeInfo (List<PaymentDocumentType.ChargeInfo> сomponentsOfCost, List<Map<String, Object>> list) {
+    private static void addChargeInfo (List<PaymentDocumentType.ChargeInfo> chargeInfo, List<Map<String, Object>> list) {
         
         list.forEach ((t) -> {
-            final PaymentDocumentType.ChargeInfo chargeInfo = ChargeInfo.toChargeInfo (t);
-            if (chargeInfo != null) сomponentsOfCost.add (chargeInfo);
+            chargeInfo.add (ChargeInfo.toChargeInfo (t));
         });
         
     }    
