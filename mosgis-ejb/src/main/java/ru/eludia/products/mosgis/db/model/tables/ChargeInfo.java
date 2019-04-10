@@ -1,9 +1,10 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Map;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
-import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocChargeInfoType;
@@ -11,6 +12,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocConsumptionVolumeDeterminingMet
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi50;
+import ru.gosuslugi.dom.schema.integration.bills.PaymentDocumentType;
 
 public class ChargeInfo extends EnTable {
     
@@ -134,5 +136,18 @@ public class ChargeInfo extends EnTable {
         );        
         
     }    
+    
+    static PaymentDocumentType.ChargeInfo toChargeInfo (Map<String, Object> r) {
+        
+        final PaymentDocumentType.ChargeInfo result = DB.to.javaBean (PaymentDocumentType.ChargeInfo.class, r);
+        
+        switch (VocChargeInfoType.i.forId (r.get (c.ID_TYPE.lc ()))) {
+            case ADDITIONAL:
+            default: throw new IllegalArgumentException ("")
+        }
+        
+        return result;
+        
+    }
     
 }

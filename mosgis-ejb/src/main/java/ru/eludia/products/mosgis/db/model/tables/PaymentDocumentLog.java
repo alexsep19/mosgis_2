@@ -10,7 +10,6 @@ import ru.eludia.base.DB;
 import ru.eludia.base.Model;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
-import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi2;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi329;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi331;
 import ru.gosuslugi.dom.schema.integration.bills.ImportPaymentDocumentRequest;
@@ -118,6 +117,10 @@ public class PaymentDocumentLog extends GisWsLogTable {
         list.forEach ((t) -> сomponentsOfCost.add (ComponentsOfCost.toComponentsOfCost (t)));
     }    
     
+    private static void addChargeInfo (List<PaymentDocumentType.ChargeInfo> сomponentsOfCost, List<Map<String, Object>> list) {
+        list.forEach ((t) -> сomponentsOfCost.add (ChargeInfo.toChargeInfo (t)));
+    }    
+    
     private static ImportPaymentDocumentRequest.PaymentDocument toPaymentDocument (Map<String, Object> r) {
         
         final ImportPaymentDocumentRequest.PaymentDocument result = DB.to.javaBean (ImportPaymentDocumentRequest.PaymentDocument.class, r);
@@ -131,6 +134,7 @@ public class PaymentDocumentLog extends GisWsLogTable {
             detailsPaymentInformation.clear ();
         }
         
+        addChargeInfo             (result.getChargeInfo (),             (List <Map <String, Object>>) r.get (ChargeInfo.TABLE_NAME));
         addPenaltiesAndCourtCosts (result.getPenaltiesAndCourtCosts (), (List <Map <String, Object>>) r.get (PenaltiesAndCourtCosts.TABLE_NAME));
         addComponentsOfCost       (result.getComponentsOfCost (),       (List <Map <String, Object>>) r.get (ComponentsOfCost.TABLE_NAME));
         
