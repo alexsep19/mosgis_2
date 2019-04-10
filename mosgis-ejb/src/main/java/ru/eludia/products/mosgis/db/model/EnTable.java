@@ -3,6 +3,7 @@ package ru.eludia.products.mosgis.db.model;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import org.apache.poi.ss.usermodel.CellType;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
@@ -95,6 +96,30 @@ public abstract class EnTable extends Table {
 	}
     }
 
+    public static String toNull(XSSFRow row, int col, Object error) throws XLException {
+
+	String result = toString(row, col);
+
+	if (result != null) {
+	    throw new XLException(error.toString());
+	}
+
+	return result;
+        
+    }
+
+    public static String toString(XSSFRow row, int col, Pattern mask, Object error) throws XLException {
+        
+        String result = toString(row, col);
+        
+	if (result == null || !mask.matcher(result).matches() ) {
+	    throw new XLException(error.toString());
+	}
+        
+	return result;
+        
+    }
+    
     public static String toString(XSSFRow row, int col, Object error) throws XLException {
 
 	String result = toString(row, col);
