@@ -109,7 +109,12 @@ public class PaymentDocumentLog extends GisWsLogTable {
         
         result.setTransportGUID (r.get ("uuid").toString ());
         
-        addDetailsPaymentInformation (result.getDetailsPaymentInformation (), (Map<UUID, BigDecimal>) r.get (__ACCT2TOTAL));
+        final List<ImportPaymentDocumentRequest.PaymentDocument.DetailsPaymentInformation> detailsPaymentInformation = result.getDetailsPaymentInformation ();        
+        addDetailsPaymentInformation (detailsPaymentInformation, (Map<UUID, BigDecimal>) r.get (__ACCT2TOTAL));
+        if (detailsPaymentInformation.size () == 1) {
+            result.setPaymentInformationKey (detailsPaymentInformation.get (0).getPaymentInformationKey ());
+            detailsPaymentInformation.clear ();
+        }
         
         return result;
         
