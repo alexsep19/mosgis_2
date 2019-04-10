@@ -50,6 +50,7 @@ public class Account extends EnTable {
         UUID_PERSON_CUSTOMER   (VocPerson.class,       null, "Физическое лицо/индивидуальный предприниматель."),
         
         ACCOUNTGUID            (Type.UUID,             null,    "Идентификатор ЛС в ГИС ЖКХ (при обновлении данных ЛС)"),        
+        SERVICEID              (Type.STRING,           null,    "Идентификатор жилищно-коммунальной услуги"),
 
         ID_LOG                 (AccountLog.class,                    "Последнее событие редактирования"),
         
