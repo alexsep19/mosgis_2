@@ -23,6 +23,7 @@ define ([], function () {
                         tabs: [
                             {id: 'account_common',   caption: 'Общие'},
                             {id: 'account_payment_documents', caption: 'Платёжные документы'},
+                            {id: 'account_payments', caption: 'Платежи'},
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_account

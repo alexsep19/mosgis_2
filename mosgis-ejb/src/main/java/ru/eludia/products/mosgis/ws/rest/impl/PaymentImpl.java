@@ -19,14 +19,10 @@ import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.Account;
 import ru.eludia.products.mosgis.db.model.tables.AccountItem;
 import ru.eludia.products.mosgis.db.model.tables.House;
-import ru.eludia.products.mosgis.db.model.tables.InsuranceProduct;
 import ru.eludia.products.mosgis.db.model.tables.PaymentDocument;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
-import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
-import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi329;
-import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi331;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.PaymentLocal;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
@@ -114,6 +110,8 @@ public class PaymentImpl extends BaseCRUD<Payment> implements PaymentLocal {
         JsonObject data = p.getJsonObject ("data");
 
         checkFilter (data, Payment.c.UUID_ORG, select);
+
+	checkFilter (data, Payment.c.UUID_ACCOUNT, select);
 
         applySearch (Search.from (p), select);
 
