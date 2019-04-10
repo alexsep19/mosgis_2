@@ -11,7 +11,7 @@ public class OverhaulShortProgramDocument extends EnTable {
     
     public enum c implements EnColEnum {
         
-        PROGRAM_UUID        (OverhaulRegionalProgram.class, "Краткосрочная программа"),
+        PROGRAM_UUID        (OverhaulShortProgram.class, "Краткосрочная программа"),
         
         CODE_NSI_79         (Type.STRING, 20, "Вид документа"),
         
