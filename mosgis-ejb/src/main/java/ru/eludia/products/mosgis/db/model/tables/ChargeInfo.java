@@ -17,6 +17,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi50;
 import ru.gosuslugi.dom.schema.integration.bills.PDServiceChargeType;
 import ru.gosuslugi.dom.schema.integration.bills.PaymentDocumentType;
+import ru.gosuslugi.dom.schema.integration.bills.ServiceChargeImportType;
 
 public class ChargeInfo extends EnTable {
     
@@ -178,6 +179,7 @@ public class ChargeInfo extends EnTable {
         final PDServiceChargeType.AdditionalService result = DB.to.javaBean (PDServiceChargeType.AdditionalService.class, r);
         result.setServiceType (NsiTable.toDom (r, "add_svc"));
         result.setConsumption (toConsumption (r));
+        result.setServiceCharge (toServiceCharge (r));
         result.setPaymentRecalculation (toPaymentRecalculation (r));
         return result;
     }
@@ -213,4 +215,12 @@ public class ChargeInfo extends EnTable {
         return result;
     }
     
+    private static ServiceChargeImportType toServiceCharge (Map<String, Object> r) {
+        Object sum = r.get (c.MONEYDISCOUNT.lc ());
+        if (!DB.ok (sum)) return null;
+        final ServiceChargeImportType result = new ServiceChargeImportType ();
+        result.setMoneyDiscount ((BigDecimal) sum);
+        return result;
+    }
+
 }
