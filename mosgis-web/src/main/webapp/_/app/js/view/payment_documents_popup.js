@@ -2,13 +2,13 @@ define ([], function () {
 
     return function (data, view) {
 
-        var callback = $('body').data ('accounts_popup.callback')
+        var callback = $('body').data ('payment_documents_popup.callback')
 
         $(view).w2uppop ({
 
             onClose: function () {
-                $('body').data('accounts_popup.post_data', null)
-                callback ($_SESSION.delete('accounts_popup.data'))
+                $('body').data('payment_documents_popup.post_data', null)
+                callback ($_SESSION.delete('payment_documents_popup.data'))
             }
 
         }, function () {
@@ -22,8 +22,8 @@ define ([], function () {
                 ],
 
                 onRender: function (e) {
-                    $_SESSION.set ('accounts_popup.on', 1)
-                    use.block ('accounts')
+                    $_SESSION.set ('payment_documents_popup.on', 1)
+                    use.block ('payment_documents')
                 },
 
             });

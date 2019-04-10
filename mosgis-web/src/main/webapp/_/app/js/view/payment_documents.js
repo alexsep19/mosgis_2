@@ -1,20 +1,22 @@
 define ([], function () {
-    
+
     var grid_name = 'payment_documents_grid'
-                
+
     return function (data, view) {
-    
-        var layout = w2ui ['service_payments_layout']
+
+        var is_popup = 1 == $_SESSION.delete('payment_documents_popup.on')
+
+        var layout = w2ui ['popup_layout'] || w2ui ['service_payments_layout']
 
         var $panel = $(layout.el ('main'))
-        
+
         var it = data.item
 
-        $panel.w2regrid ({ 
-        
+        $panel.w2regrid ({
+
             multiSelect: false,
 
-            name: grid_name,
+            name: grid_name + (is_popup ? '_popup' : ''),
 
             show: {
                 toolbar: true,
@@ -34,19 +36,19 @@ define ([], function () {
                 {master: true},
                 {master: true},
                 {master: true},
-            ],            
-            
-            searches: [            
+            ],
+
+            searches: [
 //                {field: 'dt_period', caption: 'Период',         type: 'date', operator: 'between', operators: ['between']},
 //                {field: 'id_ctr_status', caption: 'Статус',     type: 'enum', options: {items: data.vc_gis_status.items}},
 //                {field: 'is_deleted', caption: 'Статус записи', type: 'enum', options: {items: [
 //                    {id: "0", text: "Актуальные"},
 //                    {id: "1", text: "Удалённые"},
 //                ]}},
-            ].filter (not_off),            
-            
-            columns: [              
-            
+            ].filter (not_off),
+
+            columns: [
+
                 {field: 'paymentdocumentnumber', caption: 'Номер', size: 20},
                 {field: 'id_type', caption: 'Тип', size: 10, voc: data.vc_pay_doc_types},
 
@@ -61,23 +63,56 @@ define ([], function () {
                 {field: 'debtpreviousperiods_p', caption: 'Задолженность', size: 10, render: function (r) {
                     return r.debtpreviousperiods > 0 ?   r.debtpreviousperiods : ''
                 }},
-                
+
                 {field: 'totalpayablebypd', caption: 'Сумма документа, руб.', size: 10, render: 'float:2'},
                 {field: 'advancebllingperiod', caption: 'Оплачено в периоде, руб.', size: 10, render: 'float:2'},
                 {field: 'totalpayablebypdwith_da', caption: 'К оплате по документу, руб.', size: 10, render: 'float:2'},
-                
+
                 {field: 'id_ctr_status', caption: 'Статус', size: 15, voc: data.vc_gis_status},
 
             ],
-            
+
+            onRequest: function (e) {
+
+                if (is_popup) {
+
+                    var post_data = $('body').data('accounts_popup.post_data')
+
+                    if (post_data) {
+
+                        if (e.postData.search) {
+                            $.each(e.postData.search, function () {
+                                post_data.search.push(this)
+                            })
+                        }
+
+                        $.extend(e.postData, post_data)
+                    }
+                }
+            },
+
             postData: {data: {uuid_org: $_USER.uuid_org}},
 
             url: '/_back/?type=payment_documents',
-                                    
-            onDblClick: function (e) {openTab ('/payment_document/' + e.recid)}
-            
+
+            onDblClick: function (e) {
+
+                var r = this.get (e.recid)
+
+                if (is_popup) {
+
+                    $_SESSION.set ('accounts_popup.data', clone (r))
+
+                    w2popup.close ()
+
+                }
+                else {
+                    openTab ('/payment_document/' + e.recid)
+                }
+            }
+
         })
 
     }
-    
+
 })

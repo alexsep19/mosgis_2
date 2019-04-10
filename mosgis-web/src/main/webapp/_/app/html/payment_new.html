@@ -1,0 +1,66 @@
+<span
+	data-popup-width=360
+	data-popup-height=285
+	data-popup-title='Платёж'
+>
+
+	<style>
+
+        label[data-block-name=payment_new] {
+        	width: 130px;
+        	margin-right: 10px;
+        }
+
+        label[data-block-name=payment_new]+div {
+        	margin-left: 10px;
+        }
+
+        input[data-block-name=payment_new] {
+        	width: 174px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form">
+
+        <div class="w2ui-page page-0" style="height:260px;">
+
+            <div class="w2ui-field">
+                <label>Номер</label>
+                <div>
+		    <input name=uuid_account type=hidden />
+		    <input name=uuid_payment_document type=hidden />
+		    <input name=ordernum maxlength=9 />
+                </div>
+            </div>
+
+            <div class="w2ui-field" title="В случае отсутствия: дата поступления средств">
+                <label>Дата внесения платы</label>
+                <div>
+		    <input name=orderdate class=dt />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Сумма, руб.</label>
+                <div>
+		    <input name=amount />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Период расчета</label>
+                <div>
+		    <input name=period>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>

@@ -25,7 +25,26 @@ define ([], function () {
 
     $_DO.create_payment_document_payments = function (e) {
 
-        alert('create_payment_document_payments')
+
+        function done() {
+            use.block('payments')
+        }
+
+        $('body').data('payment_documents_popup.post_data', {search: [
+                {field: 'id_ctr_status', operator: 'in', value: [{id: "11"}, {id: "40"}]},
+            ], searchLogic: "AND"})
+
+        $('body').data('payment_documents_popup.callback', function (r) {
+
+            if (!r)
+                return done()
+
+            $_SESSION.set('record', {uuid_payment_document: r.uuid})
+
+            use.block('payment_new')
+        })
+
+        use.block('payment_documents_popup')
 
     }
 
