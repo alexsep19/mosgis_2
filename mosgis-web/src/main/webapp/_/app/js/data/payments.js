@@ -42,7 +42,7 @@ define ([], function () {
                 return done()
 
             $_SESSION.set('record', {
-                uuid_payment_document: r.uuid,
+                uuid_pay_doc: r.uuid,
                 year: r.year,
                 month: r.month,
             })

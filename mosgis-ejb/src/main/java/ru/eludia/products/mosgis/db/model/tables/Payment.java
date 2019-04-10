@@ -28,7 +28,7 @@ public class Payment extends EnTable {
 
 	ORDERNUM                      (Type.STRING, 9, null, "Номер платежа"),
 	UUID_ACCOUNT                  (Account.class,         null, "Лицевой счёт основание для оплаты, заполняется всегда"),
-	UUID_PAYMENT_DOCUMENT         (PaymentDocument.class, null, "Платежный документ основание для оплаты, заполняется если основание ПД"),
+	UUID_PAY_DOC                  (PaymentDocument.class, null, "Платежный документ основание для оплаты, заполняется если основание ПД"),
 
 	ORDERDATE                     (Type.DATE,           "Дата внесения платы"),
 	AMOUNT                        (Type.NUMERIC, 20, 2, "Сумма, руб."),
@@ -51,7 +51,7 @@ public class Payment extends EnTable {
 		case ID_LOG:
 		case UUID_ORG:
 		case UUID_ACCOUNT:
-		case UUID_PAYMENT_DOCUMENT:
+		case UUID_PAY_DOC:
 		    return false;
 		default:
 		    return true;
@@ -67,7 +67,7 @@ public class Payment extends EnTable {
 	cols   (c.class);
 
 	key (c.UUID_ACCOUNT);
-	key (c.UUID_PAYMENT_DOCUMENT);
+	key (c.UUID_PAY_DOC);
 
 	trigger ("BEFORE INSERT", ""
 
@@ -75,12 +75,12 @@ public class Payment extends EnTable {
 //            + "  PRAGMA AUTONOMOUS_TRANSACTION; "
             + " BEGIN "
 
-	    + " IF :NEW.UUID_ACCOUNT IS NULL AND :NEW.UUID_PAYMENT_DOCUMENT IS NULL THEN "
+	    + " IF :NEW.UUID_ACCOUNT IS NULL AND :NEW.UUID_PAY_DOC IS NULL THEN "
 	    + "   raise_application_error (-20000, 'Укажите основание для оплаты'); "
 	    + " END IF; "
 
-	    + " IF :NEW.UUID_ACCOUNT IS NULL AND :NEW.UUID_PAYMENT_DOCUMENT IS NOT NULL THEN "
-	    + "   SELECT UUID_ACCOUNT INTO :NEW.UUID_ACCOUNT FROM " + PaymentDocument.TABLE_NAME + " WHERE uuid = :NEW.UUID_PAYMENT_DOCUMENT; "
+	    + " IF :NEW.UUID_ACCOUNT IS NULL AND :NEW.UUID_PAY_DOC IS NOT NULL THEN "
+	    + "   SELECT UUID_ACCOUNT INTO :NEW.UUID_ACCOUNT FROM " + PaymentDocument.TABLE_NAME + " WHERE uuid = :NEW.UUID_PAY_DOC; "
 	    + " END IF; "
 
             + " :NEW.dt_period := TO_DATE (:NEW.year || LPAD (:NEW.month, 2, '0') || '01', 'YYYYMMDD'); "

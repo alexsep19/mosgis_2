@@ -53,7 +53,7 @@ define ([], function () {
                 clickActiveTab (this.get ('main').tabs, 'payment.active_tab')
 
                 clickOn ($('#account_link'), function () { openTab ('/account/' + it.uuid_account) })
-                clickOn ($('#payment_link'), function () { openTab ('/payment/' + it.uuid_payment) })
+                clickOn ($('#pay_doc_link'), function () { openTab ('/payment_document/' + it.uuid_pay_doc) })
                 clickOn ($('#address_link'), function () { openTab ('/house/' + it.uuid_house) })
             },
 
