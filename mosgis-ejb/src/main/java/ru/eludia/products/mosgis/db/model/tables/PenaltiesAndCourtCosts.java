@@ -1,10 +1,14 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Map;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.gosuslugi.dom.schema.integration.bills.PaymentDocumentType;
 
 public class PenaltiesAndCourtCosts extends EnTable {
     
@@ -45,6 +49,12 @@ public class PenaltiesAndCourtCosts extends EnTable {
         cols   (c.class);        
         key    (c.UUID_PAY_DOC);
                 
+    }    
+    
+    static PaymentDocumentType.PenaltiesAndCourtCosts toPenaltiesAndCourtCosts (Map<String, Object> r) {
+        final PaymentDocumentType.PenaltiesAndCourtCosts result = DB.to.javaBean (PaymentDocumentType.PenaltiesAndCourtCosts.class, r);
+        result.setServiceType (NsiTable.toDom (r, "vc_nsi_329"));
+        return result;
     }    
     
 }

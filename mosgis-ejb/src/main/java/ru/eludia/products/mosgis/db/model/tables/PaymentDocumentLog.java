@@ -10,7 +10,10 @@ import ru.eludia.base.DB;
 import ru.eludia.base.Model;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
+import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi2;
+import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi329;
 import ru.gosuslugi.dom.schema.integration.bills.ImportPaymentDocumentRequest;
+import ru.gosuslugi.dom.schema.integration.bills.PaymentDocumentType;
 
 public class PaymentDocumentLog extends GisWsLogTable {
 
@@ -70,7 +73,8 @@ public class PaymentDocumentLog extends GisWsLogTable {
         ));
         
         r.put (PenaltiesAndCourtCosts.TABLE_NAME, db.getList (m
-            .select (PenaltiesAndCourtCosts.class, "*")
+            .select (PenaltiesAndCourtCosts.class, "AS root", "*")
+            .toOne (VocNsi329.class, "code", "guid").on ("root.code_vc_nsi_329=vc_nsi_329.code AND vc_nsi_329.isactual=1")
             .where (PenaltiesAndCourtCosts.c.UUID_PAY_DOC, uuid)
             .where (EnTable.c.IS_DELETED, 0)
         ));
@@ -103,6 +107,10 @@ public class PaymentDocumentLog extends GisWsLogTable {
         list.forEach ((t) -> paymentInformation.add (BankAccount.toPaymentInformation (t)));
     }
     
+    private static void addPenaltiesAndCourtCosts (List<PaymentDocumentType.PenaltiesAndCourtCosts> penaltiesAndCourtCosts, List<Map<String, Object>> list) {
+        list.forEach ((t) -> penaltiesAndCourtCosts.add (PenaltiesAndCourtCosts.toPenaltiesAndCourtCosts (t)));
+    }    
+    
     private static ImportPaymentDocumentRequest.PaymentDocument toPaymentDocument (Map<String, Object> r) {
         
         final ImportPaymentDocumentRequest.PaymentDocument result = DB.to.javaBean (ImportPaymentDocumentRequest.PaymentDocument.class, r);
@@ -115,6 +123,8 @@ public class PaymentDocumentLog extends GisWsLogTable {
             result.setPaymentInformationKey (detailsPaymentInformation.get (0).getPaymentInformationKey ());
             detailsPaymentInformation.clear ();
         }
+        
+        addPenaltiesAndCourtCosts (result.getPenaltiesAndCourtCosts (), (List <Map <String, Object>>) r.get (PenaltiesAndCourtCosts.TABLE_NAME));
         
         return result;
         
