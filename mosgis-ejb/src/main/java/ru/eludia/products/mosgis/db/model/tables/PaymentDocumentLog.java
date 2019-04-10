@@ -1,8 +1,6 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
 import java.sql.SQLException;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,10 +53,22 @@ public class PaymentDocumentLog extends GisWsLogTable {
             .select (BankAccount.class, "*")
             .where (EnTable.c.UUID, uuidBnkAccts.toArray ())
         ));
-
+        
+        r.put (PenaltiesAndCourtCosts.TABLE_NAME, db.getList (m
+            .select (PenaltiesAndCourtCosts.class, "*")
+            .where (PenaltiesAndCourtCosts.c.UUID_PAY_DOC, uuid)
+            .where (EnTable.c.IS_DELETED, 0)
+        ));
+        
+        r.put (ComponentsOfCost.TABLE_NAME, db.getList (m
+            .select (ComponentsOfCost.class, "*")
+            .where (ComponentsOfCost.c.UUID_PAY_DOC, uuid)
+            .where (EnTable.c.IS_DELETED, 0)
+        ));
+        
         return r;
         
-    }     
+    }
 
     public static ImportPaymentDocumentRequest toImportPaymentDocumentRequest (Map<String, Object> r) {
         final ImportPaymentDocumentRequest result = DB.to.javaBean (ImportPaymentDocumentRequest.class, r);
