@@ -154,10 +154,10 @@ public class ChargeInfo extends EnTable {
             case HOUSING:
                 result.setHousingService (toHousingService (r));
                 break;
+*/
             case MUNICIPAL:
                 result.setMunicipalService (toMunicipalService (r));
                 break;
-*/
             case ADDITIONAL:
                 result.setAdditionalService (toAdditionalService (r));
                 break;
@@ -172,6 +172,9 @@ public class ChargeInfo extends EnTable {
     
     private static PDServiceChargeType.MunicipalService toMunicipalService (Map<String, Object> r) {
         final PDServiceChargeType.MunicipalService result = DB.to.javaBean (PDServiceChargeType.MunicipalService.class, r);
+        result.setConsumption (toMConsumption (r));
+        result.setServiceCharge (toServiceCharge (r));
+        result.setPaymentRecalculation (toMPaymentRecalculation (r));
         return result;
     }
 
@@ -197,6 +200,15 @@ public class ChargeInfo extends EnTable {
         return volume.isEmpty () ? null : result;
     }
     
+    private static PDServiceChargeType.MunicipalService.Consumption toMConsumption (Map<String, Object> r) {
+        final PDServiceChargeType.MunicipalService.Consumption result = new PDServiceChargeType.MunicipalService.Consumption ();
+        List<PDServiceChargeType.MunicipalService.Consumption.Volume> volume = result.getVolume ();
+        addMVolume (volume, r, 'i');
+        addMVolume (volume, r, 'o');
+        return volume.isEmpty () ? null : result;
+    }
+    
+    
     private static void addVolume (List<PDServiceChargeType.AdditionalService.Consumption.Volume> volume, Map<String, Object> r, char c) {
         Object vol = r.get ("cons_" + c + "_vol");
         if (!DB.ok (vol)) return;
@@ -206,6 +218,15 @@ public class ChargeInfo extends EnTable {
         volume.add (v);
     }
     
+    private static void addMVolume (List<PDServiceChargeType.MunicipalService.Consumption.Volume> volume, Map<String, Object> r, char c) {
+        Object vol = r.get ("cons_" + c + "_vol");
+        if (!DB.ok (vol)) return;
+        final PDServiceChargeType.MunicipalService.Consumption.Volume v = new PDServiceChargeType.MunicipalService.Consumption.Volume ();
+        v.setValue ((BigDecimal) vol);
+        v.setType (DB.to.String (r.get ("cons_" + c + "_dtrm_meth")));
+        volume.add (v);
+    }
+
     private static PDServiceChargeType.AdditionalService.PaymentRecalculation toPaymentRecalculation (Map<String, Object> r) {
         Object sum = r.get (c.MONEYRECALCULATION.lc ());
         if (!DB.ok (sum)) return null;
@@ -214,6 +235,15 @@ public class ChargeInfo extends EnTable {
         result.setRecalculationReason (DB.to.String (r.get (c.RECALCULATIONREASON.lc ())));
         return result;
     }
+    
+    private static PDServiceChargeType.MunicipalService.PaymentRecalculation toMPaymentRecalculation (Map<String, Object> r) {
+        Object sum = r.get (c.MONEYRECALCULATION.lc ());
+        if (!DB.ok (sum)) return null;
+        final PDServiceChargeType.MunicipalService.PaymentRecalculation result = new PDServiceChargeType.MunicipalService.PaymentRecalculation ();
+        result.setSum ((BigDecimal) sum);
+        result.setRecalculationReason (DB.to.String (r.get (c.RECALCULATIONREASON.lc ())));
+        return result;
+    }    
     
     private static ServiceChargeImportType toServiceCharge (Map<String, Object> r) {
         Object sum = r.get (c.MONEYDISCOUNT.lc ());

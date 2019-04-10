@@ -50,14 +50,23 @@ public class PaymentDocumentLog extends GisWsLogTable {
         final Object uuid = r.get ("r.uuid");
         
         final List<Map<String, Object>> allCharges = db.getList (m
-            .select (ChargeInfo.class, "*")
+                
+            .select (ChargeInfo.class, "*")                
+                
             .toMaybeOne (AdditionalService.class, "AS add_svc"
                 , AdditionalService.c.CODE.lc ()
                 , AdditionalService.c.GUID.lc ()
             ).on ()
+                
+            .toMaybeOne (MainMunicipalService.class, "AS mm_svc"
+                , MainMunicipalService.c.CODE.lc ()
+                , MainMunicipalService.c.GUID.lc ()
+            ).on ()
+                
             .where (ChargeInfo.c.UUID_PAY_DOC, uuid)
             .where (ChargeInfo.c.TOTALPAYABLE.lc () + " >", 0)
             .where (EnTable.c.IS_DELETED, 0)
+
         );
         
         Map<UUID, BigDecimal> acct2total = new HashMap<> ();        
@@ -73,6 +82,9 @@ public class PaymentDocumentLog extends GisWsLogTable {
         final List<Map<String, Object>> charges = new ArrayList<> ();
         
         for (Map<String, Object> i: allCharges) {
+            
+            i.put ("paymentinformationkey", i.get (ChargeInfo.c.UUID_BNK_ACCT.lc ()));
+            
             switch (VocChargeInfoType.i.forId (i.get (ChargeInfo.c.ID_TYPE.lc ()))) {
                 case GENERAL:
                     generalCharges.add (i);

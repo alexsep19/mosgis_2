@@ -8,7 +8,7 @@ public class AdditionalServiceLog extends GisWsLogTable {
     
     public AdditionalServiceLog () {
 
-        super ("tb_add_services__log", "Дополнительные услуги: история изменения", AdditionalService.class
+        super (AdditionalService.TABLE_NAME + "__log", "Дополнительные услуги: история изменения", AdditionalService.class
             , EnTable.c.class
             , AdditionalService.c.class
         );
