@@ -1,5 +1,7 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
@@ -7,6 +9,7 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.voc.VocChargeInfoType;
 import ru.eludia.products.mosgis.db.model.voc.VocConsumptionVolumeDeterminingMethod;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
@@ -146,17 +149,20 @@ public class ChargeInfo extends EnTable {
         final VocChargeInfoType.i type = VocChargeInfoType.i.forId (r.get (c.ID_TYPE.lc ()));
         
         switch (type) {
+/*            
             case HOUSING:
                 result.setHousingService (toHousingService (r));
                 break;
             case MUNICIPAL:
                 result.setMunicipalService (toMunicipalService (r));
                 break;
+*/
             case ADDITIONAL:
                 result.setAdditionalService (toAdditionalService (r));
                 break;
             default: 
-                throw new IllegalArgumentException (type.name () + " is not supported");
+                return null;
+//                throw new IllegalArgumentException (type.name () + " is not supported");
         }        
         
         return result;
@@ -170,6 +176,8 @@ public class ChargeInfo extends EnTable {
 
     private static PDServiceChargeType.AdditionalService toAdditionalService (Map<String, Object> r) {
         final PDServiceChargeType.AdditionalService result = DB.to.javaBean (PDServiceChargeType.AdditionalService.class, r);
+        result.setServiceType (NsiTable.toDom (r, "add_svc"));
+        result.setConsumption (toConsumption (r));
         return result;
     }
     
@@ -178,4 +186,21 @@ public class ChargeInfo extends EnTable {
         return result;
     }
     
+    private static PDServiceChargeType.AdditionalService.Consumption toConsumption (Map<String, Object> r) {
+        final PDServiceChargeType.AdditionalService.Consumption result = new PDServiceChargeType.AdditionalService.Consumption ();
+        List<PDServiceChargeType.AdditionalService.Consumption.Volume> volume = result.getVolume ();
+        addVolume (volume, r, 'i');
+        addVolume (volume, r, 'o');
+        return volume.isEmpty () ? null : result;
+    }
+    
+    private static void addVolume (List<PDServiceChargeType.AdditionalService.Consumption.Volume> volume, Map<String, Object> r, char c) {
+        Object vol = r.get ("cons_" + c + "_vol");
+        if (!DB.ok (vol)) return;
+        final PDServiceChargeType.AdditionalService.Consumption.Volume v = new PDServiceChargeType.AdditionalService.Consumption.Volume ();
+        v.setValue ((BigDecimal) vol);
+        v.setType (DB.to.String (r.get ("cons_" + c + "_dtrm_meth")));
+        volume.add (v);
+    }
+
 }

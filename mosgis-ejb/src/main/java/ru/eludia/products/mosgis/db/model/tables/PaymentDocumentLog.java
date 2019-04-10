@@ -51,6 +51,10 @@ public class PaymentDocumentLog extends GisWsLogTable {
         
         final List<Map<String, Object>> allCharges = db.getList (m
             .select (ChargeInfo.class, "*")
+            .toMaybeOne (AdditionalService.class, "AS add_svc"
+                , AdditionalService.c.CODE.lc ()
+                , AdditionalService.c.GUID.lc ()
+            ).on ()
             .where (ChargeInfo.c.UUID_PAY_DOC, uuid)
             .where (ChargeInfo.c.TOTALPAYABLE.lc () + " >", 0)
             .where (EnTable.c.IS_DELETED, 0)
@@ -135,7 +139,12 @@ public class PaymentDocumentLog extends GisWsLogTable {
     }    
     
     private static void addChargeInfo (List<PaymentDocumentType.ChargeInfo> сomponentsOfCost, List<Map<String, Object>> list) {
-        list.forEach ((t) -> сomponentsOfCost.add (ChargeInfo.toChargeInfo (t)));
+        
+        list.forEach ((t) -> {
+            final PaymentDocumentType.ChargeInfo chargeInfo = ChargeInfo.toChargeInfo (t);
+            if (chargeInfo != null) сomponentsOfCost.add (chargeInfo);
+        });
+        
     }    
     
     private static ImportPaymentDocumentRequest.PaymentDocument toPaymentDocument (Map<String, Object> r) {
