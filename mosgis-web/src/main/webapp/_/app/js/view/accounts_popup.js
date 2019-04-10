@@ -7,7 +7,9 @@ define ([], function () {
         $(view).w2uppop ({
 
             onClose: function () {
-                $('body').data('accounts_popup.post_data', null)
+
+                if(w2ui['popup_layout']) w2ui['popup_layout'].destroy()
+
                 callback ($_SESSION.delete('accounts_popup.data'))
             }
 

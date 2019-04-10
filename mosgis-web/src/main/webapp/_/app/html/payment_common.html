@@ -1,0 +1,119 @@
+<span>
+
+    <div>
+
+        <div class="w2ui-page page-0 page-1">
+
+        	<style>
+
+        		.w2ui-field > label {
+        			width: 300px;
+        			margin-right: 10px;
+        		}
+
+        		.w2ui-field input {
+        			width: 100px !important;
+        		}
+
+        		.w2ui-field input.dt {
+        			width: 70px !important;
+        		}
+
+        		td.left {
+        			min-width: 400px;
+        		}
+
+			textarea {
+			    resize: none
+			}
+
+        		td.left .w2ui-field > label {
+        			width: 170px;
+        		}
+
+        	</style>
+			<center>
+        	<table border=0 cellpadding=0 cellspacing=0 style="min-width:850px;">
+
+        		<tr>
+
+					<td class=left width=1 valign=top>
+
+							<div class="w2ui-field">
+								<label>№</label>
+								<div>
+									<input name=ordernum maxlength=9>
+									за <span data-text=month_label/> <span data-text=year/> г.
+								</div>
+							</div>
+
+
+							<div class="w2ui-field" title="В случае отсутствия: дата поступления средств">
+							    <label>Дата внесения платы</label>
+							    <div>
+								<input name=orderdate class=dt />
+							    </div>
+							</div>
+
+							<div class="w2ui-field">
+							    <label>Сумма, руб.</label>
+							    <div>
+								<input name=amount maxlength=20 /> руб.
+							    </div>
+							</div>
+
+					</td>
+
+					<td valign=top>
+
+						<table border=0 cellpadding=0 cellspacing=0 width=100% class=sync style="margin-left:10px;">
+
+							<tr>
+								<td>Статус:</td>
+								<td>
+									<span data-text=status_label />
+									<span data-text=err_text />
+								</td>
+							</tr>
+<!--
+							<tr data-on=err_text>
+								<th colspan=2 data-text=err_text></th>
+							</tr>
+-->
+						</table>
+
+					</td>
+
+        		</tr>
+
+        		<tr>
+					<td colspan=2 valign=top class=left >
+
+							<div class="w2ui-field">
+								<label>Назначение платежа</label>
+								<div>
+									<textarea maxlengh=1000 cols=100 name=paymentpurpose />
+								</div>
+							</div>
+
+					</td>
+        		</tr>
+        	</table>
+			</center>
+
+        </div>
+
+        <div class="w2ui-buttons">
+        	<span>
+				<button class=w2ui-btn name=edit    data-on=__read_only>Редактировать</button>
+				<button class=w2ui-btn name=update  data-off=__read_only>Сохранить</button>
+				<button class=w2ui-btn name=cancel  data-off=__read_only>Отменить</button>
+				<button class=w2ui-btn name=delete  data-on=__read_only>Удалить</button>
+				<button class=w2ui-btn name=approve data-on=__read_only>Разместить</button>
+				<button class=w2ui-btn name=alter   data-on=__read_only>Изменить</button>
+            </span>
+        </div>
+
+    </div>
+
+</span>

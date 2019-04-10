@@ -6,13 +6,9 @@ define ([], function () {
 
         var is_popup = 1 == $_SESSION.delete('payment_documents_popup.on')
 
-        var layout = w2ui ['popup_layout'] || w2ui ['service_payments_layout']
-
-        var $panel = $(layout.el ('main'))
-
         var it = data.item
 
-        $panel.w2regrid ({
+        $((w2ui ['popup_layout'] || w2ui ['service_payments_layout']).el('main')).w2regrid({
 
             multiSelect: false,
 
