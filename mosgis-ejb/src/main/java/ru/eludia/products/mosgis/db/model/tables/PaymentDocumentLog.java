@@ -71,9 +71,19 @@ public class PaymentDocumentLog extends GisWsLogTable {
     }
 
     public static ImportPaymentDocumentRequest toImportPaymentDocumentRequest (Map<String, Object> r) {
+        
         final ImportPaymentDocumentRequest result = DB.to.javaBean (ImportPaymentDocumentRequest.class, r);
+        
         result.setConfirmAmountsCorrect (Boolean.TRUE);
+        
+        addPaymentInformation (result.getPaymentInformation (), (List <Map <String, Object>>) r.get (BankAccount.TABLE_NAME));
+        
         return result;
+        
+    }
+    
+    private static void addPaymentInformation (List<ImportPaymentDocumentRequest.PaymentInformation> paymentInformation, List<Map<String, Object>> list) {
+        list.forEach ((t) -> paymentInformation.add (BankAccount.toPaymentInformation (t)));
     }
 
 }
