@@ -19,6 +19,7 @@ define ([], function () {
 
                         tabs: [
                             {id: 'overhaul_regional_programs', caption: 'Региональная программа'},
+                            {id: 'overhaul_short_programs', caption: 'КПР'},
                         ],
 
                         onClick: $_DO.choose_tab_overhauls

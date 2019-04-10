@@ -10,14 +10,14 @@ import javax.ws.rs.InternalServerErrorException;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.ModelHolder;
-import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgram;
-import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramDocument;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulShortProgram;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulShortProgramDocument;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi79;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.ValidationException;
-import ru.eludia.products.mosgis.rest.api.OverhaulRegionalProgramDocumentsLocal;
+import ru.eludia.products.mosgis.rest.api.OverhaulShortProgramDocumentsLocal;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
 import ru.eludia.products.mosgis.ws.rest.impl.tools.ComplexSearch;
 import ru.eludia.products.mosgis.ws.rest.impl.tools.Search;
@@ -25,8 +25,8 @@ import ru.eludia.products.mosgis.ws.rest.impl.tools.SimpleSearch;
 
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-public class OverhaulRegionalProgramDocumentsImpl extends BaseCRUD <OverhaulRegionalProgramDocument> implements OverhaulRegionalProgramDocumentsLocal {
-
+public class OverhaulShortProgramDocumentsImpl extends BaseCRUD <OverhaulShortProgramDocument> implements OverhaulShortProgramDocumentsLocal {
+    
     private void filterOffDeleted (Select select) {
         select.and ("is_deleted", 0);
     }
@@ -68,7 +68,7 @@ public class OverhaulRegionalProgramDocumentsImpl extends BaseCRUD <OverhaulRegi
     @Override
     public JsonObject select(JsonObject p, User user) {return fetchData ((db, job) -> {
         
-        Select select = ModelHolder.getModel ().select (OverhaulRegionalProgramDocument.class, "AS root", "*")
+        Select select = ModelHolder.getModel ().select (OverhaulShortProgramDocument.class, "AS root", "*")
                 .where   ("program_uuid", p.getString ("program_uuid"))
                 .orderBy ("number_")
                 .orderBy ("fullname")
@@ -86,12 +86,12 @@ public class OverhaulRegionalProgramDocumentsImpl extends BaseCRUD <OverhaulRegi
         
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
             .get   (getTable (), id, "*")
-            .toOne (OverhaulRegionalProgram.class, "AS program", "is_deleted", "org_uuid", "id_orp_status").on ()
+            .toOne (OverhaulShortProgram.class, "AS program", "is_deleted", "org_uuid", "id_osp_status").on ()
         ));
         
         VocGisStatus.addLiteTo (job);
         VocAction.addTo (job);
-        VocNsi79.addToOverhaulRegionalProgramDocument (db, job);
+        VocNsi79.addToOverhaulShortProgramDocument (db, job);
         
     });}
 
@@ -100,10 +100,10 @@ public class OverhaulRegionalProgramDocumentsImpl extends BaseCRUD <OverhaulRegi
         
         JsonObjectBuilder job = Json.createObjectBuilder ();
         
-        try (DB db = ModelHolder.getModel ().getDb ()) {
+        try (DB db = ModelHolder.getModel ().getDb ()) {            
             VocGisStatus.addLiteTo (job);
             VocAction.addTo (job);
-            VocNsi79.addToOverhaulRegionalProgramDocument (db, job);
+            VocNsi79.addToOverhaulShortProgramDocument (db, job);
         }
         catch (ValidationException ex) {
             throw ex;
