@@ -1,11 +1,13 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
 import java.util.Map;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.gosuslugi.dom.schema.integration.bills.PaymentDocumentType;
 
 public class ComponentsOfCost extends EnTable {
@@ -47,8 +49,10 @@ public class ComponentsOfCost extends EnTable {
                 
     }    
     
-    static PaymentDocumentType.ComponentsOfCost toComponentsOfCost (Map<String, Object> t) {
-        return new PaymentDocumentType.ComponentsOfCost ();
+    static PaymentDocumentType.ComponentsOfCost toComponentsOfCost (Map<String, Object> r) {
+        final PaymentDocumentType.ComponentsOfCost result = DB.to.javaBean (PaymentDocumentType.ComponentsOfCost.class, r);
+        result.setNameComponent (NsiTable.toDom (r, "vc_nsi_331"));
+        return result;
     }
     
 }

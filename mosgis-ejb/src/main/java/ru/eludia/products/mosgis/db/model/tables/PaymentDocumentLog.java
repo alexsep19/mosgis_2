@@ -115,7 +115,7 @@ public class PaymentDocumentLog extends GisWsLogTable {
     }    
     
     private static void addComponentsOfCost (List<PaymentDocumentType.ComponentsOfCost> сomponentsOfCost, List<Map<String, Object>> list) {
-        list.forEach ((t) -> penaltiesAndCourtCosts.add (ComponentsOfCost.toComponentsOfCost (t)));
+        list.forEach ((t) -> сomponentsOfCost.add (ComponentsOfCost.toComponentsOfCost (t)));
     }    
     
     private static ImportPaymentDocumentRequest.PaymentDocument toPaymentDocument (Map<String, Object> r) {
@@ -132,7 +132,7 @@ public class PaymentDocumentLog extends GisWsLogTable {
         }
         
         addPenaltiesAndCourtCosts (result.getPenaltiesAndCourtCosts (), (List <Map <String, Object>>) r.get (PenaltiesAndCourtCosts.TABLE_NAME));
-        addComponentsOfCost       (result.getComponentsOfCost (), (List <Map <String, Object>>) r.get (ComponentsOfCost.TABLE_NAME));
+        addComponentsOfCost       (result.getComponentsOfCost (),       (List <Map <String, Object>>) r.get (ComponentsOfCost.TABLE_NAME));
         
         return result;
         
