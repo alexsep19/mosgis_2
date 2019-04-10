@@ -1,10 +1,12 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Map;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.gosuslugi.dom.schema.integration.bills.PaymentDocumentType;
 
 public class ComponentsOfCost extends EnTable {
     
@@ -44,5 +46,9 @@ public class ComponentsOfCost extends EnTable {
         key    (c.UUID_PAY_DOC);
                 
     }    
+    
+    static PaymentDocumentType.ComponentsOfCost toComponentsOfCost (Map<String, Object> t) {
+        return new PaymentDocumentType.ComponentsOfCost ();
+    }
     
 }

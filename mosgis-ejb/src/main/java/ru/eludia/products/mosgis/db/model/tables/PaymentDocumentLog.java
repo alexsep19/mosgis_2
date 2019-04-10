@@ -12,6 +12,7 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi2;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi329;
+import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi331;
 import ru.gosuslugi.dom.schema.integration.bills.ImportPaymentDocumentRequest;
 import ru.gosuslugi.dom.schema.integration.bills.PaymentDocumentType;
 
@@ -80,9 +81,11 @@ public class PaymentDocumentLog extends GisWsLogTable {
         ));
         
         r.put (ComponentsOfCost.TABLE_NAME, db.getList (m
-            .select (ComponentsOfCost.class, "*")
+            .select (ComponentsOfCost.class, "AS root", "*")
             .where (ComponentsOfCost.c.UUID_PAY_DOC, uuid)
+            .toOne (VocNsi331.class, "code", "guid").on ("root.code_vc_nsi_331=vc_nsi_331.code AND vc_nsi_331.isactual=1")
             .where (EnTable.c.IS_DELETED, 0)
+            .where (ComponentsOfCost.c.COST.lc () + " >", 0)
         ));
         
         return r;
@@ -111,6 +114,10 @@ public class PaymentDocumentLog extends GisWsLogTable {
         list.forEach ((t) -> penaltiesAndCourtCosts.add (PenaltiesAndCourtCosts.toPenaltiesAndCourtCosts (t)));
     }    
     
+    private static void addComponentsOfCost (List<PaymentDocumentType.ComponentsOfCost> сomponentsOfCost, List<Map<String, Object>> list) {
+        list.forEach ((t) -> penaltiesAndCourtCosts.add (ComponentsOfCost.toComponentsOfCost (t)));
+    }    
+    
     private static ImportPaymentDocumentRequest.PaymentDocument toPaymentDocument (Map<String, Object> r) {
         
         final ImportPaymentDocumentRequest.PaymentDocument result = DB.to.javaBean (ImportPaymentDocumentRequest.PaymentDocument.class, r);
@@ -125,6 +132,7 @@ public class PaymentDocumentLog extends GisWsLogTable {
         }
         
         addPenaltiesAndCourtCosts (result.getPenaltiesAndCourtCosts (), (List <Map <String, Object>>) r.get (PenaltiesAndCourtCosts.TABLE_NAME));
+        addComponentsOfCost       (result.getComponentsOfCost (), (List <Map <String, Object>>) r.get (ComponentsOfCost.TABLE_NAME));
         
         return result;
         
