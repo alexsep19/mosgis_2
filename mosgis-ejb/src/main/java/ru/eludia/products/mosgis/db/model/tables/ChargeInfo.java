@@ -172,6 +172,7 @@ public class ChargeInfo extends EnTable {
     
     private static PDServiceChargeType.MunicipalService toMunicipalService (Map<String, Object> r) {
         final PDServiceChargeType.MunicipalService result = DB.to.javaBean (PDServiceChargeType.MunicipalService.class, r);
+        result.setServiceType (NsiTable.toDom (r, "mm_svc"));
         result.setConsumption (toMConsumption (r));
         result.setServiceCharge (toServiceCharge (r));
         result.setPaymentRecalculation (toMPaymentRecalculation (r));
@@ -214,7 +215,7 @@ public class ChargeInfo extends EnTable {
         if (!DB.ok (vol)) return;
         final PDServiceChargeType.AdditionalService.Consumption.Volume v = new PDServiceChargeType.AdditionalService.Consumption.Volume ();
         v.setValue ((BigDecimal) vol);
-        v.setType (DB.to.String (r.get ("cons_" + c + "_dtrm_meth")));
+        v.setType (("" + c).toUpperCase ());
         volume.add (v);
     }
     
@@ -223,7 +224,8 @@ public class ChargeInfo extends EnTable {
         if (!DB.ok (vol)) return;
         final PDServiceChargeType.MunicipalService.Consumption.Volume v = new PDServiceChargeType.MunicipalService.Consumption.Volume ();
         v.setValue ((BigDecimal) vol);
-        v.setType (DB.to.String (r.get ("cons_" + c + "_dtrm_meth")));
+        v.setType (("" + c).toUpperCase ());
+        v.setDeterminingMethod (DB.to.String (r.get ("cons_" + c + "_dtrm_meth")));
         volume.add (v);
     }
 
