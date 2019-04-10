@@ -90,9 +90,14 @@ public class GisPollExportAccountMDB  extends GisPollMDB {
             
             if (error != null && !error.isEmpty ()) throw new GisPollException (error.get (0));
             
+            ImportResult.CommonResult.ImportAccount importAccount = cr.getImportAccount ();
+            
+            if (importAccount == null) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул результат без элемента importAccount");
+            
             final Map<String, Object> h = statusHash (action.getOkStatus ());
 
             h.put (Account.c.ACCOUNTGUID.lc (), cr.getGUID ());
+            h.put (Account.c.SERVICEID.lc (), importAccount.getServiceID ());
 
             update (db, uuid, r, h);
 

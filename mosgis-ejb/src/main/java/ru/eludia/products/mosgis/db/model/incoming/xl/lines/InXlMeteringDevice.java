@@ -3,6 +3,7 @@ package ru.eludia.products.mosgis.db.model.incoming.xl.lines;
 import java.math.BigInteger;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
@@ -12,6 +13,7 @@ import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.tables.MeteringDevice;
+import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -26,6 +28,7 @@ import ru.eludia.products.mosgis.jms.xl.base.XLException;
 public class InXlMeteringDevice extends EnTable {
 
     public static final String TABLE_NAME = "in_xl_meters";
+    static Pattern MASK_ROOMNUM = Pattern.compile("(\\d+,)*\\d");
 
     public enum c implements ColEnum {
 
@@ -46,6 +49,11 @@ public class InXlMeteringDevice extends EnTable {
         METERINGDEVICENUMBER   (Type.STRING,  50,                               "Заводской (серийный) номер ПУ"),
         METERINGDEVICESTAMP    (Type.STRING,  100,                              "Марка ПУ"),
         METERINGDEVICEMODEL    (Type.STRING,  100,                              "Модель ПУ"),
+        
+        PREMISESNUM            (Type.STRING, 255,    null,                      "Номер помещения"),
+        PREMISESTYPE           (Type.STRING,  30,    null,                      "Жилое/Нежилое (для проверок tb_premises_res/tb_premises_nrs)" ),
+        ROOMNUMBER             (Type.STRING, 255,    null,                      "Номер комнаты" ),
+        ACCOUNTNUMBER          (Type.STRING,  30,    null,                      "№ лицевого счета"),
         
         INSTALLATIONDATE       (Type.DATE,           null,                      "Дата установки"),
         COMMISSIONINGDATE      (Type.DATE,           null,                      "Дата ввода в эксплуатацию"),
@@ -92,6 +100,10 @@ public class InXlMeteringDevice extends EnTable {
                 case ERR:
                 case UNOM:
                 case VERIF_INT:
+                case PREMISESNUM:
+                case PREMISESTYPE:
+                case ROOMNUMBER:
+                case ACCOUNTNUMBER:
                     return false;                    
                 default:                    
                     return true;
@@ -128,11 +140,26 @@ public class InXlMeteringDevice extends EnTable {
     
     private static void setFields (Map<String, Object> r, XSSFRow row, Map<Integer, Integer> resourceMap) throws XLException {
         
-        r.put (c.METERINGDEVICENUMBER.lc (),  toString (row, 1, "Не указан серийный номер"));        
-        r.put (c.ID_TYPE.lc (),               VocMeteringDeviceType.i.fromXL (toString (row, 2, "Не указан тип ПУ").toString ()));      
+        r.put (c.METERINGDEVICENUMBER.lc (),  toString (row, 1, "Не указан серийный номер"));  
+        //для Индивидуальный всегда возвращается RESIDENTIAL_PREMISE, потом в триггере устанавливается правильно
+        VocMeteringDeviceType.i vocMeteringDeviceType = VocMeteringDeviceType.i.fromXL (toString (row, 2, "Не указан тип ПУ").toString ());
+        r.put (c.ID_TYPE.lc (), vocMeteringDeviceType);      
         r.put (c.METERINGDEVICESTAMP.lc (),   toString (row, 3, "Не указана марка"));
         r.put (c.METERINGDEVICEMODEL.lc (),   toString (row, 4, "Не указана модель"));
         r.put (c.UNOM.lc (),                  toNumeric (row, 6, "Не указан UNOM"));
+        
+        r.put (c.PREMISESTYPE.lc(),           
+               VocMeteringDeviceType.i.COLLECTIVE.equals(vocMeteringDeviceType)? toNull (row, 7, "Указан тип помещения"): toString (row, 7));
+        r.put (c.PREMISESNUM.lc(),            
+               VocMeteringDeviceType.i.COLLECTIVE.equals(vocMeteringDeviceType)? toNull (row, 8, "Указан номер помещения"): 
+                       toString (row, 8, "Не указан номер помещения"));
+        r.put (c.ROOMNUMBER.lc(),             
+               VocMeteringDeviceType.i.LIVING_ROOM.equals(vocMeteringDeviceType)? 
+                       toString (row, 9, MASK_ROOMNUM, "Не указан или ошибочен номер комнаты"): toNull (row, 9, "Указан номер комнаты") );
+        r.put (c.ACCOUNTNUMBER.lc(),          
+               VocMeteringDeviceType.i.COLLECTIVE.equals(vocMeteringDeviceType)? 
+                       toNull (row, 10, "Указан лицевой счет"): toString (row, 10, "Не указан лицевой счет"));
+        
         r.put (c.REMOTEMETERINGMODE.lc (),    toBool (row, 11, "Не указано наличие возможности дистанционного снятия показаний"));
         r.put (c.REMOTEMETERINGINFO.lc (),    toString (row, 12));
         r.put (c.NOTLINKEDWITHMETERING.lc (), 1 - toBool (row, 13, "Не указано, определяется ли объём ресурсов несколькими ПУ"));
@@ -169,7 +196,10 @@ public class InXlMeteringDevice extends EnTable {
                 
             + "DECLARE "
             + " cnt NUMBER; "
-  
+            + " val1 NUMBER; "
+            + " val2 NUMBER; "
+            + " UUID1 RAW(16); "
+            + " UUID2 RAW(16); "
             + "BEGIN "
                 
             + " SELECT uuid_org INTO :NEW.uuid_org FROM in_xl_files WHERE uuid=:NEW.uuid_xl; "
@@ -183,6 +213,31 @@ public class InXlMeteringDevice extends EnTable {
             + " IF :NEW.verif_int IS NOT NULL THEN BEGIN "
             + "  SELECT id INTO :NEW.code_vc_nsi_16 FROM vw_nsi_16 WHERE value=:NEW.verif_int; "
             + "  EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Значение межповерочного интервала не найдено в справочнике НСИ 16');"
+            + " END; END IF; "                               
+
+            + " IF :NEW.ID_TYPE != " + VocMeteringDeviceType.i.COLLECTIVE.getId() +" THEN BEGIN "
+            + "  select r.premisesnum, r.UUID, n.premisesnum, n.UUID INTO val1, UUID1, val2, UUID2 from vc_unom u "
+            + "  join tb_houses h on u.FIASHOUSEGUID = h.FIASHOUSEGUID "
+            + "  left join tb_premises_res r on h.UUID = r.uuid_house and r.premisesnum = :NEW.PREMISESNUM "
+            + "  left join tb_premises_nrs n on h.UUID = n.uuid_house and n.premisesnum = :NEW.PREMISESNUM "
+            + "  where u.unom = :NEW.unom; "
+            + "  IF (:NEW.PREMISESTYPE = 'Нежилое' AND val2 IS NOT NULL) OR "
+            + "     (:NEW.PREMISESTYPE IS NULL AND val2 IS NOT NULL AND val1 IS NULL) THEN "        
+            + "    :NEW.ID_TYPE := " + VocMeteringDeviceType.i.NON_RESIDENTIAL_PREMISE.getId() +"; "
+            + "    :NEW.UUID_PREMISE :=  UUID2; "   
+            + "  ELSIF (:NEW.PREMISESTYPE = 'Жилое' AND val1 IS NOT NULL) OR "
+            + "     (:NEW.PREMISESTYPE IS NULL AND val1 IS NOT NULL AND val2 IS NULL) THEN "        
+            + "    :NEW.UUID_PREMISE :=  UUID1; "   
+            + "  ELSIF (:NEW.PREMISESTYPE IS NULL AND val1 IS NOT NULL AND val2 IS NOT NULL) THEN "
+            + "     raise_application_error (-20000, 'Помещение '|| :NEW.PREMISESNUM || ' пустого типа ' || ' присутствует в жилом и не жилом'); "
+            + "  ELSE "        
+            + "     raise_application_error (-20000, 'Не найдено '|| nvl(:NEW.PREMISESTYPE, '(тип не указан)') || ' помещение: ' || :NEW.PREMISESNUM); "
+            + "  END IF; "
+            + " END;END IF; "
+                    
+            + " IF :NEW.ACCOUNTNUMBER IS NOT NULL THEN BEGIN "
+            + "  SELECT 1 INTO cnt FROM tb_accounts WHERE ACCOUNTNUMBER = :NEW.ACCOUNTNUMBER; "
+            + "  EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Лицевой счет '|| :NEW.ACCOUNTNUMBER ||' не найден');"
             + " END; END IF; "                               
                 
             + " EXCEPTION WHEN OTHERS THEN "

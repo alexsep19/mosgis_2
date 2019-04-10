@@ -159,14 +159,21 @@ define ([], function () {
                     }
                     
                     var r = this
-                    if (r.recid != 'total' && r.totalpayable) {
+                    if (r.recid != 'total' && r.totalpayable != null) {
                         var totalpayable = parseFloat (r.totalpayable)
                         if (totalpayable > 0) sum += totalpayable
                     }
 
                 })
-
-                grid.set ('total', {totalpayable: sum})
+                
+                grid.set ('total', {totalpayable: sum})                
+                
+                if (is_editing) {                
+                    var old = w2ui ['payment_document_common_form'].record.totalbypenaltiesandcourtcosts
+                    old = parseFloat (old)
+                    if (isNaN (old)) old = 0.0
+                    if (Math.abs (sum - old) >= 0.01) $_DO.update_payment_document_common_penalties (sum)
+                }                              
             
                 e.done (function () {
                     
@@ -183,6 +190,7 @@ define ([], function () {
                             $(sel + ' td.w2ui-grid-data:not(:last-child)').css ({
                                 'font-weight': 'bold',
                                 'border-bottom-width': '1px',
+                                'border-bottom-color': '#aaa',
                             })
                             
                             if (last) {

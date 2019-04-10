@@ -1,5 +1,23 @@
 define ([], function () {
 
+    $_DO.update_payment_document_common_charge_info = function (sum) {
+        
+        var data = {
+            totalpayablebypd: sum,
+            totalpayablebypdwith_da: null,
+        }
+        
+        var f = w2ui ['payment_document_common_form']
+        var r = f.record
+                
+        query ({type: 'payment_documents', action: 'update'}, {data: data}, function (d) {
+            f.record.totalpayablebypd = d.item.totalpayablebypd
+            f.record.totalpayablebypdwith_da = d.item.totalpayablebypdwith_da            
+            f.refresh ()
+        })
+
+    }
+
     $_DO.patch_payment_document_common_charge_info = function (e) {
 
         var grid = this
@@ -75,7 +93,8 @@ define ([], function () {
 
         query ({type: 'payment_documents', part: 'charge_info'}, {}, function (d) {
         
-            var lines = []            
+            var lines = [{recid: 'total', label: 'Всего по документу', id_type: -1}]
+            
             var last_type = ''
             
             $.each (dia2w2uiRecords (d.root), function () {

@@ -26,7 +26,10 @@ define ([], function () {
             
             fix (it)
 
-            w2ui ['passport_layout'].get ('main').tabs.enable ('payment_document_common_charge_info', 'payment_document_common_log')
+            var tabs = w2ui ['passport_layout'].get ('main').tabs        
+            $.each (tabs.tabs, function () {
+                tabs.enable (this.id)
+            })
 
             $_F5 (data)
 
@@ -47,7 +50,10 @@ define ([], function () {
         var $form = w2ui [form_name]
         
         var tabs = w2ui ['passport_layout'].get ('main').tabs        
-        tabs.disable ('payment_document_common_charge_info', 'payment_document_common_log')
+        $.each (tabs.tabs, function () {
+            if (this.id != 'payment_document_common_additional_information') tabs.disable (this.id)
+        })
+
         tabs.click ('payment_document_common_additional_information')
 
     }    
@@ -65,6 +71,8 @@ define ([], function () {
         v.additionalinformation = $('textarea').val () || ''
         
         if (v.additionalinformation.length > 1000) die ('additionalinformation', 'Дополнительная информация не может содержать более 1000 символов')
+        
+        v.totalpayablebypdwith_da = null
         
         query ({type: 'payment_documents', action: 'update'}, {data: v}, reload_page)
 
@@ -93,12 +101,16 @@ define ([], function () {
     }
     
     function fix (it) {
-    
-        it.status_label = $('body').data ('data').vc_gis_status [it.id_ctr_status]
-        
-        it.sign = it.debtpreviousperiods > 0 ? -1 : 1
 
-        it.debtpreviousperiods *= (- it.sign)
+        it.status_label = $('body').data ('data').vc_gis_status [it.id_ctr_status]
+darn (it)        
+        if (it.sign == null) {
+        
+            it.sign = it.debtpreviousperiods > 0 ? -1 : 1
+
+            it.debtpreviousperiods *= (- it.sign)
+            
+        }        
 
     }    
 
@@ -108,7 +120,7 @@ define ([], function () {
         
         var data = clone ($('body').data ('data'))
 
-        data.active_tab = localStorage.getItem ('payment_document_common.active_tab') || 'payment_document_common_additional_information'
+        data.active_tab = localStorage.getItem ('payment_document_common.active_tab') || 'payment_document_common_charge_info'
 
         data.__read_only = 1
         

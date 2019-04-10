@@ -171,6 +171,7 @@ define ([], function () {
                             $(sel + ' td.w2ui-grid-data:not(:last-child)').css ({
                                 'font-weight': 'bold',
                                 'border-bottom-width': '1px',
+                                'border-bottom-color': '#aaa',
                             })
                             
                             if (last) {

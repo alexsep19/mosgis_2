@@ -12,7 +12,7 @@ define ([], function () {
                         
             var r = clone (it)
 
-            r.sign = {id: r.debtpreviousperiods > 0 ? -1 : 1}
+//            r.sign = {id: r.debtpreviousperiods > 0 ? -1 : 1}
 
             w2ui [form_name].record = r
             

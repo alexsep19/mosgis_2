@@ -87,6 +87,16 @@ public class PaymentDocument extends EnTable {
         key (c.UUID_ACCOUNT);
 	key (c.UUID_ORG);
 
+        trigger ("BEFORE INSERT OR UPDATE", ""
+
+            + "BEGIN "
+            + "  IF :NEW.TOTALPAYABLEBYPDWITH_DA IS NULL THEN "
+            + "    :NEW.TOTALPAYABLEBYPDWITH_DA := NVL (:NEW.TOTALPAYABLEBYPD, 0) - NVL (:NEW.ADVANCEBLLINGPERIOD, 0) + NVL (:NEW.DEBTPREVIOUSPERIODS, 0);"
+            + "  END IF;"                
+            + "END;"
+
+        );
+
         trigger ("BEFORE INSERT", ""
 
             + "DECLARE" 
