@@ -3,30 +3,41 @@ package ru.eludia.products.mosgis.db.model.tables;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
+import static ru.eludia.base.model.Type.DATE;
+import static ru.eludia.base.model.Type.NUMERIC;
+import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 
-public class OverhaulRegionalProgram extends EnTable {
+public class OverhaulShortProgram extends EnTable {
     
     public enum c implements EnColEnum {
         
         LAST_SUCCESFULL_STATUS  (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Последний успешный статус обмена с ГИС"),
-        ID_ORP_STATUS           (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус региональной программы капитального ремонта с точки зрения mosgis"),
-        ID_ORP_STATUS_GIS       (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус региональной программы капитального ремонта с точки зрения ГИС ЖКХ"),
+        ID_OSP_STATUS           (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус краткосрочной программы капитального ремонта с точки зрения mosgis"),
+        ID_OSP_STATUS_GIS       (VocGisStatus.class, VocGisStatus.i.PROJECT.asDef (), "Статус краткосрочной программы капитального ремонта с точки зрения ГИС ЖКХ"),
         
         ORG_UUID                (VocOrganization.class, null, "Поставщик информации"),
         
         PROGRAMNAME             (Type.STRING, 1000, "Наименование программы"),
-        STARTYEAR               (Type.NUMERIC, 4, "Год начала периода реализации"),
-        ENDYEAR                 (Type.NUMERIC, 4, "Год окончания периода реализации"),
         
-        ID_LOG                  (OverhaulRegionalProgramLog.class, "Последнее событие редактирования"),
+        STARTMONTH              (NUMERIC, 2, "Месяц начала периода"),
+        STARTYEAR               (NUMERIC, 4, "Год начала периода"),
         
-        REGIONALPROGRAMGUID     (Type.UUID,       null,                   "Идентификатор региональной программы"),
-        UNIQUENUMBER            (Type.STRING,     null,                   "Уникальный номер")
+        STARTMONTHYEAR          (DATE, new Virt ("TO_DATE(\"STARTYEAR\" || '-' || \"STARTMONTH\", 'YYYY-MM')"), "Дата начала периода (gYearMonth)"),
+        
+        ENDMONTH                (NUMERIC, 2, "Месяц окончания периода"),
+        ENDYEAR                 (NUMERIC, 4, "Год окончания периода"),
+        
+        ENDMONTHYEAR            (DATE, new Virt ("TO_DATE(\"ENDYEAR\" || '-' || \"ENDMONTH\", 'YYYY-MM')"), "Дата окончания периода (gYearMonth)"),
+        
+        ID_LOG                  (OverhaulShortProgramLog.class, "Последнее событие редактирования"),
+        
+        PLANGUID                (Type.UUID,   null, "Идентификатор региональной программы"),
+        UNIQUENUMBER            (Type.STRING, null, "Уникальный номер")
         
         ;
 
@@ -43,9 +54,9 @@ public class OverhaulRegionalProgram extends EnTable {
         
     }
     
-    public OverhaulRegionalProgram () {
+    public OverhaulShortProgram () {
         
-        super ("tb_oh_reg_programs", "Региональные программы капитального ремонта");
+        super ("tb_oh_shrt_programs", "Кратскосрочные программы капитального ремонта");
         
         cols  (c.class);
         

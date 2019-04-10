@@ -76,7 +76,7 @@ public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProg
                 nextStatus = VocGisStatus.i.PENDING_RQ_PUBLISHANDPROJECT;
                 action = VocAction.i.PUBLISHANDPROJECT;
                 break;
-            case REGIONAL_PROGRAM_WORKS_PLACE_FINISHED:
+            case PROGRAM_WORKS_PLACE_FINISHED:
             case FAILED_DELETEPROJECT:
                 nextStatus = VocGisStatus.i.PENDING_RQ_PLACING;
                 action = VocAction.i.APPROVE;
@@ -112,9 +112,9 @@ public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProg
                 nextStatus = VocGisStatus.i.PROJECT;
                 action = VocAction.i.DELETE;
                 break;
-            case REGIONAL_PROGRAM_WORKS_PLACE_INITIALIZED:
-            case FAILED_PLACE_REGIONAL_PROGRAM_WORKS:
-            case REGIONAL_PROGRAM_WORKS_PLACE_FINISHED:
+            case PROGRAM_WORKS_PLACE_INITIALIZED:
+            case FAILED_PLACE_PROGRAM_WORKS:
+            case PROGRAM_WORKS_PLACE_FINISHED:
             case FAILED_PLACING:
             case FAILED_DELETEPROJECT:
                 nextStatus = VocGisStatus.i.PENDING_RQ_DELETEPROJECT;

@@ -58,10 +58,8 @@ public class VocNsi79 extends EnTable {
         pk    (c.GUID);
     }
     
-    public static void addToOverhaulRegionalProgramDocument (JsonObjectBuilder job) throws SQLException {
-        
-        DB db = ModelHolder.getModel ().getDb ();
-        
+    public static void addToOverhaulRegionalProgramDocument (DB db, JsonObjectBuilder job) throws SQLException {
+
         db.addJsonArrays (job,
             db.getModel ()
                 .select    (VocNsi79Ref80.class, "AS vc_nsi_79")
@@ -69,6 +67,21 @@ public class VocNsi79 extends EnTable {
                     .on    ("vc_nsi_79.guid_from = vw_nsi_79.guid")
                 .toOne     ("vc_nsi_80")
                     .where ("code", 2)
+                    .on    ("vc_nsi_79.guid_to = vc_nsi_80.guid")
+                .orderBy   (Nsi79.c.ID)
+        );
+        
+    }
+    
+    public static void addToOverhaulShortProgramDocument (DB db, JsonObjectBuilder job) throws SQLException {
+        
+        db.addJsonArrays (job,
+            db.getModel ()
+                .select    (VocNsi79Ref80.class, "AS vc_nsi_79")
+                .toOne     (Nsi79.class, "label AS label", "id AS id")
+                    .on    ("vc_nsi_79.guid_from = vw_nsi_79.guid")
+                .toOne     ("vc_nsi_80")
+                    .where ("code", 3)
                     .on    ("vc_nsi_79.guid_to = vc_nsi_80.guid")
                 .orderBy   (Nsi79.c.ID)
         );
