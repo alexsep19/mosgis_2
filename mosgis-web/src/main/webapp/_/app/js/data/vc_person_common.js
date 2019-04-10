@@ -46,7 +46,7 @@ define ([], function () {
         if (!re.test (v.firstname)) die ('firstname', 'Имя содержит некорректные символы')
         if (v.patronymic && (!re.test (v.patronymic) || !/[ач]$/.test (v.patronymic))) die ('patronymic', 'Отчество указано некорректно')
 
-        if (v.is_female=="") v.is_female=null
+        if (v.is_female==="") v.is_female=null
         
         var re_dt = /^\d\d\d\d\-\d\d-\d\d$/
         
