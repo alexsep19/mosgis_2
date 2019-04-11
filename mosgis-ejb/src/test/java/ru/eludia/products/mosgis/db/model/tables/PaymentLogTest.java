@@ -38,7 +38,9 @@ public class PaymentLogTest extends BaseTest {
     public void test () throws SQLException {
         
         Map<String, Object> r = getData ();
-        
+	r.put("id_type", 0);
+	r.put("acct.serviceid", "0000000000000");
+
         dump (r);        
         validate (PaymentLog.toImportSupplierNotificationsOfOrderExecutionRequest (r));
         

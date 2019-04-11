@@ -4,15 +4,14 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
 import ru.eludia.base.DB;
-import ru.eludia.base.Model;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPaymentBaseType;
-import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi237;
-import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi324;
 import ru.gosuslugi.dom.schema.integration.payment.ImportSupplierNotificationsOfOrderExecutionRequest;
 import ru.gosuslugi.dom.schema.integration.payment.ImportSupplierNotificationsOfOrderExecutionRequest.SupplierNotificationOfOrderExecution;
+import ru.gosuslugi.dom.schema.integration.payment.ImportNotificationsOfOrderExecutionCancellationRequest;
+import ru.gosuslugi.dom.schema.integration.payments_base.NotificationOfOrderExecutionCancellationType;
 
 public class PaymentLog extends GisWsLogTable {
 
@@ -49,21 +48,27 @@ public PaymentLog () {
     public static ImportSupplierNotificationsOfOrderExecutionRequest toImportSupplierNotificationsOfOrderExecutionRequest(Map<String, Object> r) {
 	final ImportSupplierNotificationsOfOrderExecutionRequest result = new ImportSupplierNotificationsOfOrderExecutionRequest();
 
-	SupplierNotificationOfOrderExecution s = DB.to.javaBean(SupplierNotificationOfOrderExecution.class, r);
+	result.getSupplierNotificationOfOrderExecution().add(toSupplierNotificationOfOrderExecution (r));
 
-	s.setTransportGUID(UUID.randomUUID().toString());
+	return result;
+    }
 
-	s.setOrderPeriod(DB.to.javaBean(SupplierNotificationOfOrderExecution.OrderPeriod.class, r));
+    public static SupplierNotificationOfOrderExecution toSupplierNotificationOfOrderExecution (Map<String, Object> r) {
+
+	SupplierNotificationOfOrderExecution result = DB.to.javaBean(SupplierNotificationOfOrderExecution.class, r);
+
+	result.setTransportGUID(UUID.randomUUID().toString());
+
+	result.setOrderPeriod(DB.to.javaBean(SupplierNotificationOfOrderExecution.OrderPeriod.class, r));
 
 	switch (VocPaymentBaseType.i.forId(r.get(Payment.c.ID_TYPE.lc()))) {
-	    case ACCOUNT:
-		s.setServiceID(DB.to.String(r.get("acct.serviceid")));
-		break;
-	    case PAYMENT_DOCUMENT:
-		s.setPaymentDocumentID(DB.to.String(r.get("pd.paymentdocumentid")));
-		break;
+	case ACCOUNT:
+	    result.setServiceID(DB.to.String(r.get("acct.serviceid")));
+	    break;
+	case PAYMENT_DOCUMENT:
+	    result.setPaymentDocumentID(DB.to.String(r.get("pd.paymentdocumentid")));
+	    break;
 	}
-	result.getSupplierNotificationOfOrderExecution().add(s);
 
 	return result;
     }
