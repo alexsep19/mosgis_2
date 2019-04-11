@@ -6,6 +6,7 @@ import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPaymentBaseType;
@@ -15,6 +16,8 @@ public class Payment extends EnTable {
     public static final String TABLE_NAME = "tb_pays";
 
     public enum c implements EnColEnum {
+
+	UUID_XL                       (InXlFile.class, null, "Источник импорта"),
 
 	UUID_ORG                      (VocOrganization.class, null, "Организация, которая создала данный платёжный документ"),
 
@@ -64,6 +67,19 @@ public class Payment extends EnTable {
 	    }
 	}
 
+	public boolean isToXlImport() {
+
+	    switch (this) {
+		case UUID_ORG:
+		case AMOUNT:
+		case ORDERDATE:
+		case YEAR:
+		case MONTH:
+		    return true;
+	    default:
+		return false;
+	    }
+	}
     }
 
     public Payment () {
