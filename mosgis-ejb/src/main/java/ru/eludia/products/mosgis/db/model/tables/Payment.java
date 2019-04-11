@@ -96,14 +96,17 @@ public class Payment extends EnTable {
             + " BEGIN "
 
 	    + " IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING + " THEN "
+
 		+ " IF :NEW.ID_TYPE = " + VocPaymentBaseType.i.ACCOUNT + " THEN "
 		+ "   SELECT " + Account.c.SERVICEID.lc() + " INTO id_base FROM " + Account.TABLE_NAME + " WHERE UUID = :NEW.UUID_ACCOUNT; "
 		+ "   IF id_base IS NULL THEN raise_application_error (-20000, 'Основание лицевой счет не размещен в ГИС ЖКХ'); END IF; "
 		+ " END IF; "
+
 		+ " IF :NEW.ID_TYPE = " + VocPaymentBaseType.i.PAYMENT_DOCUMENT + " THEN "
 		+ "   SELECT " + PaymentDocument.c.PAYMENTDOCUMENTID.lc() + " INTO id_base FROM " + PaymentDocument.TABLE_NAME + " WHERE UUID = :NEW.UUID_PAY_DOC; "
 		+ "   IF id_base IS NULL THEN raise_application_error (-20000, 'Основание платежный документ не размещен в ГИС ЖКХ');  END IF; "
 		+ " END IF; "
+
 	    + " END IF; "
 
             + "END; "
