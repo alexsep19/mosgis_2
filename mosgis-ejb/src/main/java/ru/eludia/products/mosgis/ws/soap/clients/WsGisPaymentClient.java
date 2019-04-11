@@ -46,4 +46,8 @@ public class WsGisPaymentClient {
     public AckRequest.Ack importSupplierNotificationsOfOrderExecution(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
 	return getPort(orgPPAGuid, messageGUID).importSupplierNotificationsOfOrderExecution(PaymentLog.toImportSupplierNotificationsOfOrderExecutionRequest(r)).getAck();
     }
+
+    public AckRequest.Ack deleteSupplierNotificationsOfOrderExecution(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+	return getPort(orgPPAGuid, messageGUID).importNotificationsOfOrderExecutionCancellation(PaymentLog.toNotificationsOfOrderExecutionCancellationRequest(r)).getAck();
+    }
 }
