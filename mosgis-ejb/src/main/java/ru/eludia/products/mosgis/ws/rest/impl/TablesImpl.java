@@ -8,8 +8,10 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
+import ru.eludia.base.model.View;
 import ru.eludia.base.model.abs.NamedObject;
 import ru.eludia.base.model.phys.PhysicalCol;
 import ru.eludia.products.mosgis.db.ModelHolder;
@@ -31,7 +33,7 @@ public class TablesImpl implements TablesLocal {
                 
         JsonArrayBuilder ab = Json.createArrayBuilder ();
         
-        ModelHolder.getModel ().getTables ().stream ().sorted (byName).forEach ( (t) -> {
+        ModelHolder.getModel ().getTables ().stream ().filter (t -> !(t instanceof View)).sorted (byName).forEach ( (t) -> {
             
             ab.add (Json.createObjectBuilder ()
                 .add ("recid", t.getName ())
@@ -79,7 +81,7 @@ public class TablesImpl implements TablesLocal {
                 job.add ("len", phy.getLength ());
                 job.add ("prc", phy.getPrecision ());
                 job.add ("nil", phy.isNullable ());
-                job.add ("def", phy.getDef ());
+                job.add ("def", DB.to.String (phy.getDef ()));
                 cb.add (job.build ());
             }
             
@@ -87,7 +89,7 @@ public class TablesImpl implements TablesLocal {
 
         JsonArrayBuilder brb = Json.createArrayBuilder ();
 
-        m.getTables ().stream ().sorted (byName).forEach ((tb) -> {
+        m.getTables ().stream ().filter (tt -> !(tt instanceof View)).sorted (byName).forEach ((tb) -> {
             
             tb.getColumns ().values ().stream ().sorted (byName).forEach ((col) -> {
                 
@@ -95,15 +97,17 @@ public class TablesImpl implements TablesLocal {
                 
                 Ref ref = (Ref) col;
                 
-                String tn = ref.getTargetTable ().getName ();
-                String cn = ref.getTargetCol ().getName ();
+                if (!DB.eq (id, ref.getTargetTable ().getName ())) return;
+
+                String tn = tb.getName ();
+                String cn = ref.getName ();
                 
                 brb.add (Json.createObjectBuilder ()
                     .add ("recid", tn + '.' + cn)
                     .add ("tn", tn)
-                    .add ("cn", tn)
-                    .add ("tl", ref.getTargetTable ().getRemark ())
-                    .add ("cl", ref.getTargetCol ().getRemark ())
+                    .add ("cn", cn)
+                    .add ("tl", tb.getRemark ())
+                    .add ("cl", ref.getRemark ())
                 );
                 
             });            
