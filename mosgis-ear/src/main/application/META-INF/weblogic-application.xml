@@ -144,5 +144,10 @@
         <type>JMS</type>
         <path>META-INF/mosgismodule-inspection-jms.xml</path>
     </module>
-    
+
+    <module>
+	<name>Workflow-payment</name>
+	<type>JMS</type>
+	<path>META-INF/mosgismodule-payments-jms.xml</path>
+    </module>
 </weblogic-application>

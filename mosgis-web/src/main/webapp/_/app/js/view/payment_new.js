@@ -20,7 +20,7 @@ define ([], function () {
                     {name: 'period',   type: 'list', options: {items: data.periods}},
                 ],
 
-                focus: 2,
+                focus: 3,
 
             })
 

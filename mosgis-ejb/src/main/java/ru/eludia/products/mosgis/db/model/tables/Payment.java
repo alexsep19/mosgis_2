@@ -3,6 +3,7 @@ package ru.eludia.products.mosgis.db.model.tables;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
+import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -34,6 +35,13 @@ public class Payment extends EnTable {
 
 	ID_CTR_STATUS                 (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения mosgis"),
 	ID_CTR_STATUS_GIS             (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения ГИС ЖКХ"),
+
+//	CANCELLATIONDATE              (Type.DATE, null, "Дата аннулирования"),
+//	CANCELLATIONCOMMENT           (Type.STRING, 210, null, "Причина аннулирования"),
+//	IS_ANNULED                    (Type.BOOLEAN, new Virt("CASE WHEN CANCELLATIONDATE IS NULL THEN 0 ELSE 1 END"), "1, если запись аннулирована; иначе 0"),
+
+	ORDERGUID                     (Type.UUID,   null, "Идентификатор НПА в ГИС ЖКХ, он же NotificationsOfOrderExecutionGUID"),
+	UNIQUENUMBER                  (Type.STRING, null, "Уникальный номер, присвоенный ГИС ЖКХ, он же OrderID"),
 
 	ID_LOG                        (PaymentLog.class, "Последнее событие редактирования"),
 
@@ -67,9 +75,6 @@ public class Payment extends EnTable {
 	key (c.UUID_PAY_DOC);
 
 	trigger ("BEFORE INSERT", ""
-
-            + "DECLARE"
-//            + "  PRAGMA AUTONOMOUS_TRANSACTION; "
             + " BEGIN "
 
 	    + " IF :NEW.UUID_ACCOUNT IS NULL AND :NEW.UUID_PAY_DOC IS NULL THEN "
@@ -84,12 +89,33 @@ public class Payment extends EnTable {
 
             + "END; "
         );
+
+	trigger("BEFORE UPDATE", ""
+            + "DECLARE"
+	    + " id_base varchar(255); "
+            + " BEGIN "
+
+	    + " IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING + " THEN "
+
+		+ " IF :NEW.ID_TYPE = " + VocPaymentBaseType.i.ACCOUNT + " THEN "
+		+ "   SELECT " + Account.c.SERVICEID.lc() + " INTO id_base FROM " + Account.TABLE_NAME + " WHERE UUID = :NEW.UUID_ACCOUNT; "
+		+ "   IF id_base IS NULL THEN raise_application_error (-20000, 'Основание лицевой счет не размещен в ГИС ЖКХ'); END IF; "
+		+ " END IF; "
+
+		+ " IF :NEW.ID_TYPE = " + VocPaymentBaseType.i.PAYMENT_DOCUMENT + " THEN "
+		+ "   SELECT " + PaymentDocument.c.PAYMENTDOCUMENTID.lc() + " INTO id_base FROM " + PaymentDocument.TABLE_NAME + " WHERE UUID = :NEW.UUID_PAY_DOC; "
+		+ "   IF id_base IS NULL THEN raise_application_error (-20000, 'Основание платежный документ не размещен в ГИС ЖКХ');  END IF; "
+		+ " END IF; "
+
+	    + " END IF; "
+
+            + "END; "
+	);
     }
-/*
+
     public enum Action {
 
-        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
-        EDITING     (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_STATE),
+        PLACING     (VocGisStatus.i.PENDING_RQ_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING)
         ;
 
         VocGisStatus.i nextStatus;
@@ -117,13 +143,9 @@ public class Payment extends EnTable {
         public static Action forStatus (VocGisStatus.i status) {
             switch (status) {
                 case PENDING_RQ_PLACING:   return PLACING;
-                case PENDING_RQ_EDIT:      return EDITING;
-                case PENDING_RP_PLACING:   return PLACING;
-                case PENDING_RP_EDIT:      return EDITING;
                 default: return null;
             }
         }
 
     };
-*/
 }
