@@ -11,12 +11,12 @@ import ru.eludia.base.DB;
 import ru.eludia.base.Model;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
+import ru.eludia.products.mosgis.db.model.voc.VocAccountType;
 import ru.eludia.products.mosgis.db.model.voc.VocChargeInfoType;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi2;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi329;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi331;
-import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi50;
 import ru.gosuslugi.dom.schema.integration.bills.ImportPaymentDocumentRequest;
 import ru.gosuslugi.dom.schema.integration.bills.PaymentDocumentType;
 
@@ -87,7 +87,9 @@ public class PaymentDocumentLog extends GisWsLogTable {
         
         final List<Map<String, Object>> generalCharges = new ArrayList<> ();
         final List<Map<String, Object>> charges = new ArrayList<> ();
-                
+
+        boolean isOrgppaguidNeeded = VocAccountType.i.forId (r.get ("acct.id_type")) == VocAccountType.i.RC;
+
         for (Map<String, Object> i: allCharges) {
             
             i.put ("paymentinformationkey", i.get (ChargeInfo.c.UUID_BNK_ACCT.lc ()));
@@ -98,12 +100,14 @@ public class PaymentDocumentLog extends GisWsLogTable {
                     break;
                 case HOUSING:
                     i.put (ChargeInfo.__GENERAL, generalCharges);
-                    i.put ("orgppaguid", orgppaguid);
+                    if (isOrgppaguidNeeded) i.put ("orgppaguid", orgppaguid);
                 default:
                     charges.add (i);
             }
             
-        }        
+            if (!isOrgppaguidNeeded) i.remove ("orgppaguid");
+            
+        }
                 
         r.put (ChargeInfo.TABLE_NAME, charges);        
         
