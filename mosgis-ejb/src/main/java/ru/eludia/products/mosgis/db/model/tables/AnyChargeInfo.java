@@ -78,6 +78,7 @@ public class AnyChargeInfo extends View {
             + " INNER JOIN " + VocChargeInfoType.TABLE_NAME    + " t ON   t.id = o." + ChargeInfo.c.ID_TYPE
 
             + " LEFT  JOIN " + Nsi50.TABLE_NAME                         + " n ON   n.id = " + ChargeInfo.c.CODE_VC_NSI_50
+                
             + " LEFT  JOIN " + MainMunicipalService.TABLE_NAME          + " m ON m.uuid = " + ChargeInfo.c.UUID_M_M_SERVICE
             + " LEFT  JOIN " + AdditionalService.TABLE_NAME             + " a ON a.uuid = " + ChargeInfo.c.UUID_ADD_SERVICE
             + " LEFT  JOIN " + GeneralNeedsMunicipalResource.TABLE_NAME + " g ON g.uuid = " + ChargeInfo.c.UUID_GEN_NEED_RES

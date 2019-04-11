@@ -12,6 +12,7 @@ import ru.eludia.base.Model;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import ru.eludia.products.mosgis.db.model.voc.VocChargeInfoType;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi2;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi329;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi331;
@@ -37,19 +38,30 @@ public class PaymentDocumentLog extends GisWsLogTable {
         final Model m = db.getModel ();
         
         final Map<String, Object> r = db.getMap (m                
+                
             .get (PaymentDocumentLog.class, id, "*")
+                
             .toOne (PaymentDocument.class, "AS r"
                 , EnTable.c.UUID.lc ()
                 , PaymentDocument.c.ID_TYPE.lc ()
                 , PaymentDocument.c.ID_CTR_STATUS.lc ()
             ).on ()
+                
             .toOne (Account.class, "AS acct"
+                , Account.c.ID_TYPE.lc ()
                 , Account.c.ACCOUNTGUID.lc () + " AS accountguid"
             ).on ()
-                
+
+            .toMaybeOne (ActualCaChObject.class, "AS co").on ("acct.fiashouseguid=co.fiashouseguid")
+
+            .toMaybeOne (VocOrganization.class
+                , VocOrganization.c.ORGPPAGUID.lc () + " AS orgppaguid"
+            ).on ()
+
         );
         
         final Object uuid = r.get ("r.uuid");
+        final Object orgppaguid = r.get ("orgppaguid");
         
         final List<Map<String, Object>> allCharges = db.getList (m
                 
@@ -86,6 +98,7 @@ public class PaymentDocumentLog extends GisWsLogTable {
                     break;
                 case HOUSING:
                     i.put (ChargeInfo.__GENERAL, generalCharges);
+                    i.put ("orgppaguid", orgppaguid);
                 default:
                     charges.add (i);
             }
