@@ -207,6 +207,9 @@ public class ChargeInfo extends EnTable {
     private static GeneralMunicipalResourceType toGeneralMunicipalResourceType (Map<String, Object> r) {
         final GeneralMunicipalResourceType result = DB.to.javaBean (GeneralMunicipalResourceType.class, r);
         result.setServiceType (NsiTable.toDom (r, "gen_res"));
+        result.setServiceCharge (toServiceCharge (r));
+        result.setPaymentRecalculation (toGPaymentRecalculation (r));
+        result.setConsumption (toGConsumption (r));
         return result;
     }
         
@@ -226,6 +229,16 @@ public class ChargeInfo extends EnTable {
         return volume.isEmpty () ? null : result;
     }
     
+    private static GeneralMunicipalResourceType.Consumption toGConsumption (Map<String, Object> r) {
+        Object vol = r.get ("cons_o_vol");
+        if (!DB.ok (vol)) return null;        
+        final GeneralMunicipalResourceType.Consumption result = new GeneralMunicipalResourceType.Consumption ();
+        GeneralMunicipalResourceType.Consumption.Volume v = new GeneralMunicipalResourceType.Consumption.Volume ();
+        v.setValue ((BigDecimal) vol);
+        v.setDeterminingMethod (DB.to.String (r.get ("cons_o_dtrm_meth")));
+        result.setVolume (v);
+        return result;
+    }
     
     private static void addVolume (List<PDServiceChargeType.AdditionalService.Consumption.Volume> volume, Map<String, Object> r, char c) {
         Object vol = r.get ("cons_" + c + "_vol");
@@ -263,6 +276,15 @@ public class ChargeInfo extends EnTable {
         result.setRecalculationReason (DB.to.String (r.get (c.RECALCULATIONREASON.lc ())));
         return result;
     }    
+    
+    private static GeneralMunicipalResourceType.PaymentRecalculation toGPaymentRecalculation (Map<String, Object> r) {
+        Object sum = r.get (c.MONEYRECALCULATION.lc ());
+        if (!DB.ok (sum)) return null;
+        final GeneralMunicipalResourceType.PaymentRecalculation result = new GeneralMunicipalResourceType.PaymentRecalculation ();
+        result.setSum ((BigDecimal) sum);
+        result.setRecalculationReason (DB.to.String (r.get (c.RECALCULATIONREASON.lc ())));
+        return result;
+    }
     
     private static ServiceChargeImportType toServiceCharge (Map<String, Object> r) {
         Object sum = r.get (c.MONEYDISCOUNT.lc ());
