@@ -126,7 +126,7 @@ public class GisPollExportOverhaulRegionalProgramsMDB extends GisPollMDB {
                 )).toString ();
                 List <Map <String, Object>> works = db.getList (db.getModel ()
                     .select (OverhaulRegionalProgramHouseWork.class, "AS works", "*")
-                        .toOne (OverhaulRegionalProgramHouse.class, "AS houses").on ()
+                        .toOne (OverhaulRegionalProgramHouse.class, "AS houses").where ("is_deleted", 0).on ()
                             .toOne (OverhaulRegionalProgram.class, "AS programs").where ("uuid", r.get ("program.uuid")).on ("programs.uuid=houses.program_uuid")
                     .where ("is_deleted", 0)
                     .and   ("id_orphw_status <>", VocGisStatus.i.APPROVED.getId ())

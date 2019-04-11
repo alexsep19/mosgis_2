@@ -17,7 +17,7 @@ define ([], function () {
 
         }
         
-        $(w2ui ['topmost_layout'].el ('main')).w2regrid ({ 
+        $(w2ui ['topmost_layout'].el ('main')).w2regrid ({
 
             name: 'overhaul_regional_program_houses_grid',
 
@@ -29,9 +29,16 @@ define ([], function () {
                 footer: true,
             },
 
+            columnGroups : [            
+                {span: 2},                
+                {span: 2, caption: 'Виды работ'}
+            ],
+
             columns: [
                 {field: 'address', caption: 'Адрес', size: 10},
                 {field: 'oktmo', caption: 'Код ОКТМО', size: 10},
+                {field: 'works_approved_cnt', caption: 'Размещено', size: 5},
+                {field: 'works_general_cnt', caption: 'Всего', size: 5},
             ],
             
             url: '/_back/?type=overhaul_regional_program_houses',

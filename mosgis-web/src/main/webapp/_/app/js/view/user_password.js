@@ -4,8 +4,8 @@ define ([], function () {
 
         $(view).w2popup ('open', {
 
-            width  : 250,
-            height : 195,
+            width  : 280,
+            height : 250,
 
             title   : 'Смена пароля',
 
