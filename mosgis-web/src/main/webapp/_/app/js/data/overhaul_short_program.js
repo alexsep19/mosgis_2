@@ -28,6 +28,8 @@ define ([], function () {
             
             var it = data.item
 
+            it.not_all_works_approved = (it.id_osp_status == -31 && data.works_approved_count < data.works_general_count) ? true : false
+
             console.log (data)
 
             it.status_label = data.vc_gis_status[it.id_osp_status]

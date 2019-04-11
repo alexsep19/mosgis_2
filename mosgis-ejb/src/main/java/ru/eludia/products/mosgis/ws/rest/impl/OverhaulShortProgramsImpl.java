@@ -57,11 +57,23 @@ public class OverhaulShortProgramsImpl extends BaseCRUD <OverhaulShortProgram> i
             .where ("is_deleted", 0)
         );
         
+        int generalWorksCnt = works.size ();
+        int approvedWorksCnt = db.getCnt (ModelHolder.getModel ()
+            .select (OverhaulShortProgramHouseWork.class, "AS work", "*")
+                .toOne (OverhaulShortProgramHouse.class, "AS house").where ("is_deleted", 0).on ()
+                    .toOne (OverhaulShortProgram.class,  "AS program").where ("uuid", id).and ("is_deleted", 0).on ("house.program_uuid=program.uuid")
+            .where (OverhaulShortProgramHouseWork.c.ID_OSPHW_STATUS.lc (), VocGisStatus.i.APPROVED.getId ())
+            .and   ("is_deleted", 0)
+        );
+        
         JsonArray documents = db.getJsonArray (ModelHolder.getModel ()
             .select (OverhaulShortProgramFile.class, "label")
                 .toOne (OverhaulShortProgramDocument.class, "AS document").where ("is_deleted", 0).on ()
                     .toOne (OverhaulShortProgram.class,     "AS program").where ("uuid", id).and ("is_deleted", 0).on ("document.program_uuid=program.uuid")
         );
+        
+        job.add ("works_general_count", generalWorksCnt);
+        job.add ("works_approved_count", approvedWorksCnt);
         
         job.add ("works", works);
         job.add ("documents", documents);

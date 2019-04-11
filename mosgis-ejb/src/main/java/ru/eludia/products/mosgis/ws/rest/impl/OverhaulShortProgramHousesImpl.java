@@ -1,9 +1,12 @@
 package ru.eludia.products.mosgis.ws.rest.impl;
 
+import java.util.List;
+import java.util.Map;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.json.JsonObject;
+import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
@@ -12,6 +15,7 @@ import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulShortProgram;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulShortProgramHouse;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulShortProgramHouseLog;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulShortProgramHouseWork;
 import ru.eludia.products.mosgis.db.model.tables.Sender;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
@@ -37,7 +41,29 @@ public class OverhaulShortProgramHousesImpl extends BaseCRUD <OverhaulShortProgr
                 .where      ("is_deleted", 0)
                 .limit      (p.getInt ("offset"), p.getInt ("limit"));
         
-        db.addJsonArrayCnt (job, select);
+        List <Map <String, Object>> houses = db.getList (select);
+        
+        for (Map <String, Object> house: houses) {
+            
+            int genCnt = db.getCnt (ModelHolder.getModel ()
+                    .select (OverhaulShortProgramHouseWork.class, "AS works", "uuid")
+                    .where  (OverhaulShortProgramHouseWork.c.HOUSE_UUID.lc (), house.get ("uuid"))
+                    .and    ("is_deleted", 0)
+            );
+            
+            int approvedCnt = db.getCnt (ModelHolder.getModel ()
+                    .select (OverhaulShortProgramHouseWork.class, "AS works", "uuid")
+                    .where  (OverhaulShortProgramHouseWork.c.HOUSE_UUID.lc (), house.get ("uuid"))
+                    .and    (OverhaulShortProgramHouseWork.c.ID_OSPHW_STATUS.lc (), VocGisStatus.i.APPROVED.getId ())
+            );
+            
+            house.put ("works_general_cnt", genCnt);
+            house.put ("works_approved_cnt", approvedCnt);
+            
+        }
+
+        job.add (select.getTableAlias (), DB.to.JsonArrayBuilder (houses).build ());
+        job.add ("cnt", db.getCnt (select));
             
     });}
     
