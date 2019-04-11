@@ -1,0 +1,91 @@
+<style>
+	.ttt {
+		font-family: Verdana, Arial, sans-serif;
+		font-size: 11px;
+		border-collapse: collapse;
+		margin: 0 0 20px 0;
+	}
+
+	.ttt caption {
+		font-size: 15px;
+		text-align: left;
+		font-weight: bold;
+		background: #ddddff;
+		padding: 10px 0 10px 20px;
+	}
+
+	.ttt td, th {
+		border: solid #ccc 1px;
+		border-collapse: collapse;
+	}
+
+	.ttt td, th {
+		border-top: 0;
+	}
+
+</style>
+
+<table width=100% cellpadding=0 cellspacing=0 border=0 class="w2ui-reset table-page">
+    <tr height=50>
+        <td class="main-title">
+        	Таблица <span data-text=item.recid />: <span data-text=item.label />
+        </td>
+    </tr>
+</table>
+
+<table width=100% cellpadding=5 cellspacing=0 class="ttt">
+	<caption>Скалярные поля</caption>
+	<tr>
+		<th>Имя
+		<th>Комментарий
+		<th>Обязательность
+		<th>Тип
+		<th>Размер
+		<th>Дробная часть
+		<th>Значение по умолчанию
+	</tr>
+	<tr data-list=cols>
+		<td data-text=recid />
+		<td data-text=label />
+		<td><span data-off=nil>ДА</td>
+		<td data-text=type />
+		<td data-text=len />
+		<td data-text=prc />
+		<td data-text=def />
+	</tr>
+</table>
+
+<table width=100% cellpadding=5 cellspacing=0 class="ttt">
+	<caption>Поля-ссылки</caption>
+	<tr>
+		<th>Имя
+		<th>Комментарий
+		<th>Таблица
+	</tr>
+	<tr data-list=refs>
+		<td data-text=recid />
+		<td data-text=label />
+		<td data-text=ref/>
+	</tr>
+</table>
+
+<table width=100% cellpadding=5 cellspacing=0 class="ttt">
+	<caption>Ссылки с других таблиц на эту</caption>
+	<tr>
+		<th colspan=2>Таблица
+		<th colspan=2>Столбец
+	</tr>
+	<tr>
+		<th>Имя
+		<th>Комментарий
+		<th>Имя
+		<th>Комментарий
+	</tr>
+	<tr data-list=back>
+		<td data-text=tn />
+		<td data-text=tl />
+		<td data-text=cn />
+		<td data-text=cl />
+	</tr>
+
+</table>

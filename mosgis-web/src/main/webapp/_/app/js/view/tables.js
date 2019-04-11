@@ -27,7 +27,7 @@ define ([], function () {
             records: data.tables,
             
             onDblClick: function (e) {
-                openTab ('/tables/' + e.recid)
+                openTab ('/table/' + e.recid)
             },                        
             
         }).refresh ()
