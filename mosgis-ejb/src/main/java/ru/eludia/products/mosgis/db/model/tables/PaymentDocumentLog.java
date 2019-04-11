@@ -53,27 +53,11 @@ public class PaymentDocumentLog extends GisWsLogTable {
         
         final List<Map<String, Object>> allCharges = db.getList (m
                 
-            .select (AnyChargeInfo.class, "AS root", "*")                
-                
-            .toMaybeOne (VocNsi50.class, "code", "guid").on ("root.code_vc_nsi_50=vc_nsi_50.code AND vc_nsi_50.isactual=1")
-                
-            .toMaybeOne (AdditionalService.class, "AS add_svc"
-                , AdditionalService.c.CODE.lc ()
-                , AdditionalService.c.GUID.lc ()
-            ).on ()
-                
-            .toMaybeOne (MainMunicipalService.class, "AS mm_svc"
-                , MainMunicipalService.c.CODE.lc ()
-                , MainMunicipalService.c.GUID.lc ()
-            ).on ()
-                
-            .toMaybeOne (GeneralNeedsMunicipalResource.class, "AS gen_res"
-                , GeneralNeedsMunicipalResource.c.CODE.lc ()
-                , GeneralNeedsMunicipalResource.c.GUID.lc ()
-            ).on ()
-                
+            .select (AnyChargeInfo.class, "AS root", "*", "code AS nsi.code", "guid AS nsi.guid")
+
+            .toMaybeOne (GeneralNeedsMunicipalResource.class, "AS gen_res").on ()
             .toMaybeOne (VocNsi2.class, "code", "guid").on ("gen_res.code_vc_nsi_2=vc_nsi_2.code AND vc_nsi_2.isactual=1")
-                
+
             .where (ChargeInfo.c.UUID_PAY_DOC, uuid)
             .where (ChargeInfo.c.TOTALPAYABLE.lc () + " >", 0)
             .where (EnTable.c.IS_DELETED, 0)

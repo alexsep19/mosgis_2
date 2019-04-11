@@ -170,7 +170,7 @@ public class ChargeInfo extends EnTable {
     
     private static PDServiceChargeType.MunicipalService toMunicipalService (Map<String, Object> r) {
         final PDServiceChargeType.MunicipalService result = DB.to.javaBean (PDServiceChargeType.MunicipalService.class, r);
-        result.setServiceType (NsiTable.toDom (r, "mm_svc"));
+        result.setServiceType (NsiTable.toDom (r, "nsi"));
         result.setConsumption (toMConsumption (r));
         result.setServiceCharge (toServiceCharge (r));
         result.setPaymentRecalculation (toMPaymentRecalculation (r));
@@ -179,7 +179,7 @@ public class ChargeInfo extends EnTable {
 
     private static PDServiceChargeType.AdditionalService toAdditionalService (Map<String, Object> r) {
         final PDServiceChargeType.AdditionalService result = DB.to.javaBean (PDServiceChargeType.AdditionalService.class, r);
-        result.setServiceType (NsiTable.toDom (r, "add_svc"));
+        result.setServiceType (NsiTable.toDom (r, "nsi"));
         result.setConsumption (toConsumption (r));
         result.setServiceCharge (toServiceCharge (r));
         result.setPaymentRecalculation (toPaymentRecalculation (r));
@@ -188,7 +188,7 @@ public class ChargeInfo extends EnTable {
     
     private static PDServiceChargeType.HousingService toHousingService (Map<String, Object> r) {
         final PDServiceChargeType.HousingService result = DB.to.javaBean (PDServiceChargeType.HousingService.class, r);
-        result.setServiceType (NsiTable.toDom (r, "vc_nsi_50"));
+        result.setServiceType (NsiTable.toDom (r, "nsi"));
         addMunicipalResources (result.getMunicipalResource (), (List <Map <String, Object>>) r.get (__GENERAL));
         return result;
     }
@@ -209,7 +209,7 @@ public class ChargeInfo extends EnTable {
     
     private static GeneralMunicipalResourceType toGeneralMunicipalResourceType (Map<String, Object> r) {
         final GeneralMunicipalResourceType result = DB.to.javaBean (GeneralMunicipalResourceType.class, r);
-        result.setServiceType (NsiTable.toDom (r, "gen_res"));
+        result.setServiceType (NsiTable.toDom (r, "nsi"));
         result.setServiceCharge (toServiceCharge (r));
         result.setPaymentRecalculation (toGPaymentRecalculation (r));
         result.setConsumption (toGConsumption (r));
