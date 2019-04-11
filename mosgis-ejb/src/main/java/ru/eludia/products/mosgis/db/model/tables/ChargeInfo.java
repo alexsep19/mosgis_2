@@ -15,6 +15,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocConsumptionVolumeDeterminingMet
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi50;
+import ru.gosuslugi.dom.schema.integration.bills.GeneralMunicipalResourceType;
 import ru.gosuslugi.dom.schema.integration.bills.PDServiceChargeType;
 import ru.gosuslugi.dom.schema.integration.bills.PaymentDocumentType;
 import ru.gosuslugi.dom.schema.integration.bills.ServiceChargeImportType;
@@ -188,9 +189,27 @@ public class ChargeInfo extends EnTable {
     private static PDServiceChargeType.HousingService toHousingService (Map<String, Object> r) {
         final PDServiceChargeType.HousingService result = DB.to.javaBean (PDServiceChargeType.HousingService.class, r);
         result.setServiceType (NsiTable.toDom (r, "vc_nsi_50"));
+        addMunicipalResources (result.getMunicipalResource (), (List <Map <String, Object>>) r.get (__GENERAL));
         return result;
     }
     
+    private static void addMunicipalResources (List<PDServiceChargeType.HousingService.MunicipalResource> municipalResource, List<Map<String, Object>> list) {
+        list.forEach ((t) -> municipalResource.add (toMunicipalResource (t)));
+    }
+    
+    private static PDServiceChargeType.HousingService.MunicipalResource toMunicipalResource (Map<String, Object> r) {
+        final PDServiceChargeType.HousingService.MunicipalResource result = DB.to.javaBean (PDServiceChargeType.HousingService.MunicipalResource.class, r);
+        result.setServiceType (NsiTable.toDom (r, "vc_nsi_2"));
+        result.getGeneralMunicipalResource ().add (toGeneralMunicipalResourceType (r));
+        return result;
+    }
+    
+    private static GeneralMunicipalResourceType toGeneralMunicipalResourceType (Map<String, Object> r) {
+        final GeneralMunicipalResourceType result = DB.to.javaBean (GeneralMunicipalResourceType.class, r);
+        result.setServiceType (NsiTable.toDom (r, "gen_res"));
+        return result;
+    }
+        
     private static PDServiceChargeType.AdditionalService.Consumption toConsumption (Map<String, Object> r) {
         final PDServiceChargeType.AdditionalService.Consumption result = new PDServiceChargeType.AdditionalService.Consumption ();
         List<PDServiceChargeType.AdditionalService.Consumption.Volume> volume = result.getVolume ();

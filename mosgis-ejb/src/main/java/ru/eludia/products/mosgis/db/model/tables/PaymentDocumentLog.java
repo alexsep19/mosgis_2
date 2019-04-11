@@ -12,6 +12,7 @@ import ru.eludia.base.Model;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import ru.eludia.products.mosgis.db.model.voc.VocChargeInfoType;
+import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi2;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi329;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi331;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi50;
@@ -65,6 +66,13 @@ public class PaymentDocumentLog extends GisWsLogTable {
                 , MainMunicipalService.c.CODE.lc ()
                 , MainMunicipalService.c.GUID.lc ()
             ).on ()
+                
+            .toMaybeOne (GeneralNeedsMunicipalResource.class, "AS gen_res"
+                , GeneralNeedsMunicipalResource.c.CODE.lc ()
+                , GeneralNeedsMunicipalResource.c.GUID.lc ()
+            ).on ()
+                
+            .toMaybeOne (VocNsi2.class, "code", "guid").on ("gen_res.code_vc_nsi_2=vc_nsi_2.code AND vc_nsi_2.isactual=1")
                 
             .where (ChargeInfo.c.UUID_PAY_DOC, uuid)
             .where (ChargeInfo.c.TOTALPAYABLE.lc () + " >", 0)
@@ -155,11 +163,7 @@ public class PaymentDocumentLog extends GisWsLogTable {
     }    
     
     private static void addChargeInfo (List<PaymentDocumentType.ChargeInfo> chargeInfo, List<Map<String, Object>> list) {
-        
-        list.forEach ((t) -> {
-            chargeInfo.add (ChargeInfo.toChargeInfo (t));
-        });
-        
+        list.forEach ((t) -> chargeInfo.add (ChargeInfo.toChargeInfo (t)));
     }    
     
     private static ImportPaymentDocumentRequest.PaymentDocument toPaymentDocument (Map<String, Object> r) {
