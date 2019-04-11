@@ -118,7 +118,6 @@ public class Payments extends EJBResource <PaymentLocal> {
         return back.getLog (id, p, getUser ());
     }
 
-    /*
     @POST
     @Path("{id}/approve")
     @Produces (APPLICATION_JSON)
@@ -132,5 +131,4 @@ public class Payments extends EJBResource <PaymentLocal> {
     public JsonObject doAlter (@PathParam ("id") String id) {
         return back.doAlter (id, getUser ());
     }
-*/
 }
