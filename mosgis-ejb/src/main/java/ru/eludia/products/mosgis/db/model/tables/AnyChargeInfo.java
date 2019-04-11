@@ -5,9 +5,9 @@ import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.View;
-import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocChargeInfoType;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi50;
 
 public class AnyChargeInfo extends View {
@@ -23,6 +23,7 @@ public class AnyChargeInfo extends View {
         UNIT                 (Type.STRING,   "Единица измерения: (S)quare meter - Кв. м (D)irectory - Из справочник"),
         GUID                 (Type.UUID,    "GUID НСИ"),
         CODE                 (Type.STRING,  "Код НСИ"),
+        ORGPPAGUID           (Type.UUID,   null,           "Идентификатор зарегистрированной организации"),
         ;
 
         @Override
@@ -59,6 +60,7 @@ public class AnyChargeInfo extends View {
         }
 
         return sb.toString ()
+                
             + " o.uuid id "
             + " , t.label " + c.LABEL_TYPE
             + " , COALESCE (m.label, a.label, n.label, g.generalmunicipalresourcename) " + c.LABEL
@@ -69,12 +71,19 @@ public class AnyChargeInfo extends View {
             + " , DECODE (o.okei, COALESCE (m.okei,  a.okei,  n.okei,  g.okei), 'D', '055', 'S', NULL) " + c.UNIT
             + " , COALESCE (m.guid,  a.guid,  n.guid,  g.guid) " + c.GUID
             + " , COALESCE (m.code,  a.code,  n.id,    g.code) " + c.CODE
+            + " , org.orgppaguid " + c.ORGPPAGUID
+
             + " FROM " + ChargeInfo.TABLE_NAME + " o"
-            + " INNER JOIN " + VocChargeInfoType.TABLE_NAME + " t ON t.id = o." + ChargeInfo.c.ID_TYPE
-            + " LEFT  JOIN " + MainMunicipalService.TABLE_NAME + " m ON m.uuid = " + ChargeInfo.c.UUID_M_M_SERVICE
-            + " LEFT  JOIN " + AdditionalService.TABLE_NAME + " a ON a.uuid = " + ChargeInfo.c.UUID_ADD_SERVICE
-            + " LEFT  JOIN " + Nsi50.TABLE_NAME + " n ON n.id = " + ChargeInfo.c.CODE_VC_NSI_50
+
+            + " INNER JOIN " + VocChargeInfoType.TABLE_NAME    + " t ON   t.id = o." + ChargeInfo.c.ID_TYPE
+
+            + " LEFT  JOIN " + Nsi50.TABLE_NAME                         + " n ON   n.id = " + ChargeInfo.c.CODE_VC_NSI_50
+            + " LEFT  JOIN " + MainMunicipalService.TABLE_NAME          + " m ON m.uuid = " + ChargeInfo.c.UUID_M_M_SERVICE
+            + " LEFT  JOIN " + AdditionalService.TABLE_NAME             + " a ON a.uuid = " + ChargeInfo.c.UUID_ADD_SERVICE
             + " LEFT  JOIN " + GeneralNeedsMunicipalResource.TABLE_NAME + " g ON g.uuid = " + ChargeInfo.c.UUID_GEN_NEED_RES
+
+            + " LEFT  JOIN " + VocOrganization.TABLE_NAME + " org ON org.uuid = COALESCE (m.uuid_org, a.uuid_org, g.uuid_org)"
+
         ;
 
     }
