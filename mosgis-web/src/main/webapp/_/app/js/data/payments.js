@@ -7,7 +7,7 @@ define ([], function () {
         }
 
         $('body').data('accounts_popup.post_data', {search: [
-                {field: 'id_ctr_status', operator: 'in', value: [{id: "11"}, {id: "40"}]},
+                {field: 'id_ctr_status', operator: 'in', value: [{id: "11"}, {id: "34"}, {id: "40"}, {id: "42"}, {id: "43"}]},
             ], searchLogic: "AND"})
 
         $('body').data('accounts_popup.callback', function (r) {

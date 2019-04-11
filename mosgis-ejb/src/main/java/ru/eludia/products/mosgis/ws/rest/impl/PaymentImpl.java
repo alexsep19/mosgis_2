@@ -50,10 +50,11 @@ public class PaymentImpl extends BaseCRUD<Payment> implements PaymentLocal {
     protected Queue getQueue(VocAction.i action) {
 
 	switch (action) {
-	case APPROVE:
-	    return queue;
-	default:
-	    return null;
+	    case APPROVE:
+	    case ANNUL:
+		return queue;
+	    default:
+		return null;
 	}
     }
 
@@ -211,4 +212,18 @@ public class PaymentImpl extends BaseCRUD<Payment> implements PaymentLocal {
 
     });}
 */
+    
+    @Override
+    public JsonObject doAnnul (String id, JsonObject p, User user) {return doAction ((db) -> {
+
+        final Map<String, Object> r = getData(p,
+            EnTable.c.UUID,               id,
+            Payment.c.ID_CTR_STATUS,  VocGisStatus.i.PENDING_RQ_ANNULMENT.getId ()
+        );
+
+        db.update (getTable (), r);
+
+        logAction (db, user, id, VocAction.i.ANNUL);
+
+    });}
 }

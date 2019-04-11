@@ -47,6 +47,7 @@ public class ExportPaymentMDB extends GisExportMDB<PaymentLog> {
             
         switch (action) {
             case PLACING:     return wsGisPaymentClient.importSupplierNotificationsOfOrderExecution(orgPPAGuid, messageGUID, r);
+	    case ANNULMENT:   return wsGisPaymentClient.deleteSupplierNotificationsOfOrderExecution(orgPPAGuid, messageGUID, r);
             default: throw new IllegalArgumentException ("No action implemented for " + action);
         }
 

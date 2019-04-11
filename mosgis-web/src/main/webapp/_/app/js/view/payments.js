@@ -4,7 +4,7 @@ define ([], function () {
 
     return function (data, view) {
 
-        $((w2ui ['popup_layout'] || w2ui ['service_payments_layout']).el('main')).w2regrid({
+        $((w2ui ['service_payments_layout']).el('main')).w2regrid({
 
             multiSelect: false,
 

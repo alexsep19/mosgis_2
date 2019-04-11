@@ -15,7 +15,7 @@ import ru.gosuslugi.dom.schema.integration.payments_base.NotificationOfOrderExec
 
 public class PaymentLog extends GisWsLogTable {
 
-public PaymentLog () {
+    public PaymentLog () {
 
         super (Payment.TABLE_NAME + "__log", "История редактирования платежей", Payment.class
             , EnTable.c.class
@@ -49,6 +49,25 @@ public PaymentLog () {
 	final ImportSupplierNotificationsOfOrderExecutionRequest result = new ImportSupplierNotificationsOfOrderExecutionRequest();
 
 	result.getSupplierNotificationOfOrderExecution().add(toSupplierNotificationOfOrderExecution (r));
+
+	return result;
+    }
+
+    public static ImportNotificationsOfOrderExecutionCancellationRequest toNotificationsOfOrderExecutionCancellationRequest(Map<String, Object> r) {
+	final ImportNotificationsOfOrderExecutionCancellationRequest result = new ImportNotificationsOfOrderExecutionCancellationRequest();
+
+	result.getNotificationOfOrderExecutionCancellation().add(toNotificationOfOrderExecutionCancellation(r));
+
+	return result;
+    }
+
+    private static NotificationOfOrderExecutionCancellationType toNotificationOfOrderExecutionCancellation(Map<String, Object> r) {
+
+	r.put("comment", r.get(Payment.c.CANCELLATIONCOMMENT.lc()));
+
+	final NotificationOfOrderExecutionCancellationType result = DB.to.javaBean(NotificationOfOrderExecutionCancellationType.class, r);
+
+	result.setTransportGUID(UUID.randomUUID().toString());
 
 	return result;
     }

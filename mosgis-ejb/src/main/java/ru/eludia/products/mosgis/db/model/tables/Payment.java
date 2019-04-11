@@ -36,12 +36,13 @@ public class Payment extends EnTable {
 	ID_CTR_STATUS                 (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения mosgis"),
 	ID_CTR_STATUS_GIS             (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения ГИС ЖКХ"),
 
-//	CANCELLATIONDATE              (Type.DATE, null, "Дата аннулирования"),
-//	CANCELLATIONCOMMENT           (Type.STRING, 210, null, "Причина аннулирования"),
-//	IS_ANNULED                    (Type.BOOLEAN, new Virt("CASE WHEN CANCELLATIONDATE IS NULL THEN 0 ELSE 1 END"), "1, если запись аннулирована; иначе 0"),
+	CANCELLATIONDATE              (Type.DATE, null, "Дата аннулирования"),
+	CANCELLATIONCOMMENT           (Type.STRING, 210, null, "Причина аннулирования"),
+	IS_ANNULED                    (Type.BOOLEAN, new Virt("CASE WHEN CANCELLATIONDATE IS NULL THEN 0 ELSE 1 END"), "1, если запись аннулирована; иначе 0"),
 
 	ORDERGUID                     (Type.UUID,   null, "Идентификатор НПА в ГИС ЖКХ, он же NotificationsOfOrderExecutionGUID"),
-	UNIQUENUMBER                  (Type.STRING, null, "Уникальный номер, присвоенный ГИС ЖКХ, он же OrderID"),
+	UNIQUENUMBER                  (Type.STRING, null, "Уникальный номер, присвоенный ГИС ЖКХ"),
+	ORDERID                       (Type.STRING, new Virt("'' || UNIQUENUMBER"), "Уникальный номер, присвоенный ГИС ЖКХ (синоним)"),
 
 	ID_LOG                        (PaymentLog.class, "Последнее событие редактирования"),
 
@@ -99,12 +100,12 @@ public class Payment extends EnTable {
 
 		+ " IF :NEW.ID_TYPE = " + VocPaymentBaseType.i.ACCOUNT + " THEN "
 		+ "   SELECT " + Account.c.SERVICEID.lc() + " INTO id_base FROM " + Account.TABLE_NAME + " WHERE UUID = :NEW.UUID_ACCOUNT; "
-		+ "   IF id_base IS NULL THEN raise_application_error (-20000, 'Основание лицевой счет не размещен в ГИС ЖКХ'); END IF; "
+		+ "   IF id_base IS NULL THEN raise_application_error (-20000, 'Основание лицевой счет не размещен в ГИС ЖКХ: отсутствует идентификатор поставщика услуг'); END IF; "
 		+ " END IF; "
 
 		+ " IF :NEW.ID_TYPE = " + VocPaymentBaseType.i.PAYMENT_DOCUMENT + " THEN "
 		+ "   SELECT " + PaymentDocument.c.PAYMENTDOCUMENTID.lc() + " INTO id_base FROM " + PaymentDocument.TABLE_NAME + " WHERE UUID = :NEW.UUID_PAY_DOC; "
-		+ "   IF id_base IS NULL THEN raise_application_error (-20000, 'Основание платежный документ не размещен в ГИС ЖКХ');  END IF; "
+		+ "   IF id_base IS NULL THEN raise_application_error (-20000, 'Основание платежный документ не размещен в ГИС ЖКХ: отсутствует идентификатор платежного документа');  END IF; "
 		+ " END IF; "
 
 	    + " END IF; "
@@ -115,7 +116,8 @@ public class Payment extends EnTable {
 
     public enum Action {
 
-        PLACING     (VocGisStatus.i.PENDING_RQ_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING)
+	PLACING     (VocGisStatus.i.PENDING_RQ_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
+	ANNULMENT   (VocGisStatus.i.PENDING_RQ_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT)
         ;
 
         VocGisStatus.i nextStatus;
@@ -143,6 +145,7 @@ public class Payment extends EnTable {
         public static Action forStatus (VocGisStatus.i status) {
             switch (status) {
                 case PENDING_RQ_PLACING:   return PLACING;
+		case PENDING_RQ_ANNULMENT:   return ANNULMENT;
                 default: return null;
             }
         }
