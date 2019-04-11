@@ -53,7 +53,7 @@ public class PaymentDocumentLog extends GisWsLogTable {
         
         final List<Map<String, Object>> allCharges = db.getList (m
                 
-            .select (ChargeInfo.class, "AS root", "*")                
+            .select (AnyChargeInfo.class, "AS root", "*")                
                 
             .toMaybeOne (VocNsi50.class, "code", "guid").on ("root.code_vc_nsi_50=vc_nsi_50.code AND vc_nsi_50.isactual=1")
                 

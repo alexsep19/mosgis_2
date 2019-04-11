@@ -19,6 +19,7 @@ public class AnyChargeInfo extends View {
         OKEI_ORIG            (Type.STRING,   "Единица измерения исходной записи"),
 	ACCOUNTINGPERIODTOTAL_V (Type.NUMERIC, 13, 2, "Всего начислено за расчетный период (без перерасчетов и льгот) — расчётное значение"),
         TOTALPAYABLE_V          (Type.NUMERIC, 13, 2, "Итого к оплате за расчетный период — расчётное значение"),
+        UNIT                 (Type.STRING,   "Единица измерения: (S)quare meter - Кв. м (D)irectory - Из справочник"),
         ;
 
         @Override
@@ -62,6 +63,7 @@ public class AnyChargeInfo extends View {
             + " , COALESCE (m.okei,  a.okei,  n.okei,  g.okei) " + c.OKEI_ORIG
             + " , CAST (rate * (NVL (cons_i_vol, 0) + NVL (cons_o_vol, 0)) AS NUMBER (13, 2))" + c.ACCOUNTINGPERIODTOTAL_V
             + " , CAST (rate * (NVL (cons_i_vol, 0) + NVL (cons_o_vol, 0)) + NVL (moneyrecalculation, 0) - NVL (moneydiscount, 0) AS NUMBER (13, 2))" + c.TOTALPAYABLE_V
+            + " , DECODE (o.okei, COALESCE (m.okei,  a.okei,  n.okei,  g.okei), 'D', '055', 'S', NULL) " + c.UNIT
             + " FROM " + ChargeInfo.TABLE_NAME + " o"
             + " INNER JOIN " + VocChargeInfoType.TABLE_NAME + " t ON t.id = o." + ChargeInfo.c.ID_TYPE
             + " LEFT  JOIN " + MainMunicipalService.TABLE_NAME + " m ON m.uuid = " + ChargeInfo.c.UUID_M_M_SERVICE

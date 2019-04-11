@@ -201,6 +201,9 @@ public class ChargeInfo extends EnTable {
         final PDServiceChargeType.HousingService.MunicipalResource result = DB.to.javaBean (PDServiceChargeType.HousingService.MunicipalResource.class, r);
         result.setServiceType (NsiTable.toDom (r, "vc_nsi_2"));
         result.getGeneralMunicipalResource ().add (toGeneralMunicipalResourceType (r));
+        result.setServiceCharge (toServiceCharge (r));
+        result.setPaymentRecalculation (toRPaymentRecalculation (r));
+        result.setConsumption (toRConsumption (r));
         return result;
     }
     
@@ -240,6 +243,17 @@ public class ChargeInfo extends EnTable {
         return result;
     }
     
+    private static PDServiceChargeType.HousingService.MunicipalResource.Consumption toRConsumption (Map<String, Object> r) {
+        Object vol = r.get ("cons_o_vol");
+        if (!DB.ok (vol)) return null;
+        final PDServiceChargeType.HousingService.MunicipalResource.Consumption result = new PDServiceChargeType.HousingService.MunicipalResource.Consumption ();
+        PDServiceChargeType.HousingService.MunicipalResource.Consumption.Volume v = new PDServiceChargeType.HousingService.MunicipalResource.Consumption.Volume ();
+        v.setValue ((BigDecimal) vol);
+        v.setDeterminingMethod (DB.to.String (r.get ("cons_o_dtrm_meth")));
+        result.setVolume (v);
+        return result;
+    }
+
     private static void addVolume (List<PDServiceChargeType.AdditionalService.Consumption.Volume> volume, Map<String, Object> r, char c) {
         Object vol = r.get ("cons_" + c + "_vol");
         if (!DB.ok (vol)) return;
@@ -281,6 +295,15 @@ public class ChargeInfo extends EnTable {
         Object sum = r.get (c.MONEYRECALCULATION.lc ());
         if (!DB.ok (sum)) return null;
         final GeneralMunicipalResourceType.PaymentRecalculation result = new GeneralMunicipalResourceType.PaymentRecalculation ();
+        result.setSum ((BigDecimal) sum);
+        result.setRecalculationReason (DB.to.String (r.get (c.RECALCULATIONREASON.lc ())));
+        return result;
+    }
+    
+    private static PDServiceChargeType.HousingService.MunicipalResource.PaymentRecalculation toRPaymentRecalculation (Map<String, Object> r) {
+        Object sum = r.get (c.MONEYRECALCULATION.lc ());
+        if (!DB.ok (sum)) return null;
+        final PDServiceChargeType.HousingService.MunicipalResource.PaymentRecalculation result = new PDServiceChargeType.HousingService.MunicipalResource.PaymentRecalculation ();
         result.setSum ((BigDecimal) sum);
         result.setRecalculationReason (DB.to.String (r.get (c.RECALCULATIONREASON.lc ())));
         return result;
