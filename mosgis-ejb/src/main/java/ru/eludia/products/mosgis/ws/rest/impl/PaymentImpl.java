@@ -170,7 +170,7 @@ public class PaymentImpl extends BaseCRUD<Payment> implements PaymentLocal {
                 .orderBy ("prem.label")
         );
 
-	VocGisStatus.addTo (job);
+	VocGisStatus.addLiteTo(job);
         VocAction.addTo (job);
     });}
 
@@ -179,7 +179,7 @@ public class PaymentImpl extends BaseCRUD<Payment> implements PaymentLocal {
 
         JsonObjectBuilder jb = Json.createObjectBuilder ();
 
-        VocGisStatus.addTo(jb);
+        VocGisStatus.addLiteTo(jb);
         VocAction.addTo (jb);
 
         return jb.build ();

@@ -36,12 +36,12 @@ public class Payment extends EnTable {
 	ID_CTR_STATUS                 (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения mosgis"),
 	ID_CTR_STATUS_GIS             (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения ГИС ЖКХ"),
 
-	CANCELLATIONDATE              (Type.DATE, null, "Дата аннулирования"),
-	CANCELLATIONCOMMENT           (Type.STRING, 210, null, "Причина аннулирования"),
-	IS_ANNULED                    (Type.BOOLEAN, new Virt("CASE WHEN CANCELLATIONDATE IS NULL THEN 0 ELSE 1 END"), "1, если запись аннулирована; иначе 0"),
+//	CANCELLATIONDATE              (Type.DATE, null, "Дата аннулирования"),
+//	CANCELLATIONCOMMENT           (Type.STRING, 210, null, "Причина аннулирования"),
+//	IS_ANNULED                    (Type.BOOLEAN, new Virt("CASE WHEN CANCELLATIONDATE IS NULL THEN 0 ELSE 1 END"), "1, если запись аннулирована; иначе 0"),
 
-	ORDERGUID                     (Type.UUID, null, "Идентификатор НПА в ГИС ЖКХ, NotificationsOfOrderExecutionGUID"),
-	UNIQUENUMBER                  (Type.UUID, null, "Уникальный номер, присвоенный ГИС ЖКХ, OrderID"),
+	ORDERGUID                     (Type.UUID,   null, "Идентификатор НПА в ГИС ЖКХ, он же NotificationsOfOrderExecutionGUID"),
+	UNIQUENUMBER                  (Type.STRING, null, "Уникальный номер, присвоенный ГИС ЖКХ, он же OrderID"),
 
 	ID_LOG                        (PaymentLog.class, "Последнее событие редактирования"),
 
