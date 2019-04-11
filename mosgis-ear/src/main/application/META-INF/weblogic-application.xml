@@ -104,6 +104,12 @@
     </module>
     
     <module>
+        <name>Workflow-payment-documents</name>
+        <type>JMS</type>
+        <path>META-INF/mosgismodule-payment-document-jms.xml</path>
+    </module>
+    
+    <module>
         <name>WS-RegOrgServiceAsync</name>
         <type>JMS</type>
         <path>META-INF/ws-jms/mosgismodule-ws-reg-org-service-async-jms.xml</path>
