@@ -1,10 +1,12 @@
 define ([], function () {
 
     return function (data, view) {
-                
-        var $main = $(w2ui ['administr_layout'].el ('main'))
-                        
-        $main.w2regrid ({
+    
+        var layout = w2ui ['administr_layout']
+
+        layout.unlock ('main')
+
+        $(layout.el ('main')).w2regrid ({
             
             name: 'tables_grid',
                         
