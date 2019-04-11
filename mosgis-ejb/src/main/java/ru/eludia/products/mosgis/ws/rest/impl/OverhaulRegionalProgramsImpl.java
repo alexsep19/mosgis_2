@@ -167,11 +167,23 @@ public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProg
             .where ("is_deleted", 0)
         );
         
+        int generalWorksCnt = works.size ();
+        int approvedWorksCnt = db.getCnt (ModelHolder.getModel ()
+            .select (OverhaulRegionalProgramHouseWork.class, "AS work", "*")
+                .toOne (OverhaulRegionalProgramHouse.class, "AS house").where ("is_deleted", 0).on ()
+                    .toOne (OverhaulRegionalProgram.class,  "AS program").where ("uuid", id).and ("is_deleted", 0).on ("house.program_uuid=program.uuid")
+            .where (OverhaulRegionalProgramHouseWork.c.ID_ORPHW_STATUS.lc (), VocGisStatus.i.APPROVED.getId ())
+            .and   ("is_deleted", 0)
+        );
+        
         JsonArray documents = db.getJsonArray (ModelHolder.getModel ()
             .select (OverhaulRegionalProgramFile.class, "label")
                 .toOne (OverhaulRegionalProgramDocument.class, "AS document").where ("is_deleted", 0).on ()
                     .toOne (OverhaulRegionalProgram.class,     "AS program").where ("uuid", id).and ("is_deleted", 0).on ("document.program_uuid=program.uuid")
         );
+        
+        job.add ("works_general_count", generalWorksCnt);
+        job.add ("works_approved_count", approvedWorksCnt);
         
         job.add ("works", works);
         job.add ("documents", documents);

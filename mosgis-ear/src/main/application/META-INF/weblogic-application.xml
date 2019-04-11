@@ -132,6 +132,12 @@
         <type>JMS</type>
         <path>META-INF/mosgismodule-overhaul-regional-programs-jms.xml</path>
     </module>
+    
+    <module>
+        <name>Workflow-overhaul-short-programs</name>
+        <type>JMS</type>
+        <path>META-INF/mosgismodule-overhaul-short-programs-jms.xml</path>
+    </module>
 
     <module>
         <name>Workflow-inspection</name>
