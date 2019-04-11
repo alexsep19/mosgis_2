@@ -1,17 +1,12 @@
 define ([], function () {
 
     var form_name = 'payment_document_common_form'
-/*    
+
     $_DO.approve_payment_document_common = function (e) {
         if (!confirm ('Разместить эти данные в ГИС ЖКХ?')) return
         query ({type: 'payment_documents', action: 'approve'}, {}, reload_page)
     }
-        
-    $_DO.alter_payment_document_common = function (e) {
-        if (!confirm ('Открыть эту карточку на редактирование?')) return
-        query ({type: 'payment_documents', action: 'alter'}, {}, reload_page)
-    }          
-*/    
+
     $_DO.cancel_payment_document_common = function (e) {
         
         if (!confirm ('Отменить несохранённые правки?')) return
