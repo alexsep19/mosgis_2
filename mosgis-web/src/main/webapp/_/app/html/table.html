@@ -23,6 +23,11 @@
 		border-top: 0;
 	}
 
+	.ttt td.link {
+		color: #0000aa;
+		text-decoration: underline;
+	}
+
 </style>
 
 <table width=100% cellpadding=0 cellspacing=0 border=0 class="w2ui-reset table-page">
@@ -37,6 +42,7 @@
 	<caption>Скалярные поля</caption>
 	<tr>
 		<th>Имя
+		<th>Ссылка на
 		<th>Комментарий
 		<th>Обязательность
 		<th>Тип
@@ -46,6 +52,7 @@
 	</tr>
 	<tr data-list=cols>
 		<td data-text=recid />
+		<td data-text=ref class=link />
 		<td data-text=label />
 		<td><span data-off=nil>ДА</td>
 		<td data-text=type />
@@ -56,21 +63,7 @@
 </table>
 
 <table width=100% cellpadding=5 cellspacing=0 class="ttt">
-	<caption>Поля-ссылки</caption>
-	<tr>
-		<th>Имя
-		<th>Комментарий
-		<th>Таблица
-	</tr>
-	<tr data-list=refs>
-		<td data-text=recid />
-		<td data-text=label />
-		<td data-text=ref/>
-	</tr>
-</table>
-
-<table width=100% cellpadding=5 cellspacing=0 class="ttt">
-	<caption>Ссылки с других таблиц на эту</caption>
+	<caption>Ссылки на эту таблицу</caption>
 	<tr>
 		<th colspan=2>Таблица
 		<th colspan=2>Столбец
@@ -82,7 +75,7 @@
 		<th>Комментарий
 	</tr>
 	<tr data-list=back>
-		<td data-text=tn />
+		<td data-text=tn class=link />
 		<td data-text=tl />
 		<td data-text=cn />
 		<td data-text=cl />

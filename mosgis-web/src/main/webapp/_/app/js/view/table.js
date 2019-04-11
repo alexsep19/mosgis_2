@@ -10,6 +10,13 @@ define ([], function () {
 
         fill (view, data, $('#body'))
         
+        $('td.link').each (function () {
+                
+            clickOn ($(this), function () {            
+                openTab ('/table/' + $(this).text ())
+            })
+        
+        })
 
     }
 

@@ -62,29 +62,31 @@ public class TablesImpl implements TablesLocal {
         .build ();
 
         JsonArrayBuilder cb = Json.createArrayBuilder ();
-        JsonArrayBuilder rb = Json.createArrayBuilder ();
 
         t.getColumns ().values ().stream ().sorted (byName).forEach ((col) -> {
+            
+            PhysicalCol phy = col.toPhysical ();
 
             JsonObjectBuilder job = Json.createObjectBuilder ()
                 .add ("recid", col.getName ())
-                .add ("label", col.getRemark ());
+                .add ("label", col.getRemark ())
+                .add ("type", phy.getType ().getName ())
+                .add ("nil", phy.isNullable ())
+                .add ("def", DB.to.String (phy.getDef ()))
+            ;
+            
+            if (phy.getLength () > 0) {
+                job.add ("len", phy.getLength ());
+                if (phy.getPrecision () > 0) job.add ("prc", phy.getPrecision ());
+            }
             
             if (col instanceof Ref) {
                 Ref ref = (Ref) col;
                 job.add ("ref", ref.getTargetTable ().getName ());
-                rb.add (job.build ());
-            }
-            else {
-                PhysicalCol phy = col.toPhysical ();
-                job.add ("type", phy.getType ().getName ());
-                job.add ("len", phy.getLength ());
-                job.add ("prc", phy.getPrecision ());
-                job.add ("nil", phy.isNullable ());
-                job.add ("def", DB.to.String (phy.getDef ()));
-                cb.add (job.build ());
             }
             
+            cb.add (job.build ());
+                                    
         });
 
         JsonArrayBuilder brb = Json.createArrayBuilder ();
@@ -117,7 +119,6 @@ public class TablesImpl implements TablesLocal {
         return Json.createObjectBuilder ()
             .add ("item", item)
             .add ("cols", cb.build ())
-            .add ("refs", rb.build ())
             .add ("back", brb.build ())
         .build ();
 
