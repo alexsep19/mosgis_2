@@ -2,14 +2,14 @@ define ([], function () {
 
     return function (data, view) {
     
-        var name = 'legal_act_annul_popup_form'
+        var name = 'payment_annul_popup_form'
         
         $(view).w2popup('open', {
 
             width  : 580,
-            height : 240,
+            height : 270,
 
-            title   : 'Аннулирование НПА',
+            title   : 'Аннулирование платежа',
 
             onOpen: function (event) {
 
@@ -21,13 +21,17 @@ define ([], function () {
 
                         name: name,
 
+                        record: data.record,
+
                         fields : [
-                            {name: 'reasonofannulment',  type: 'text'},
+                            {name: 'cancellationdate',  type: 'date'},
+                            {name: 'cancellationcomment', type: 'text'},
                         ],
-                                                
+
+                        focus: 1,
                     });
 
-                    clickOn ($('#w2ui-popup button'), $_DO.update_legal_act_annul_popup)
+                    clickOn ($('#w2ui-popup button'), $_DO.update_payment_annul_popup)
 
                 }
 

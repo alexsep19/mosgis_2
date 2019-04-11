@@ -72,7 +72,7 @@ define ([], function () {
 
                 if (is_popup) {
 
-                    var post_data = $('body').data('accounts_popup.post_data')
+                    var post_data = $('body').data('payment_documents_popup.post_data')
 
                     if (post_data) {
 

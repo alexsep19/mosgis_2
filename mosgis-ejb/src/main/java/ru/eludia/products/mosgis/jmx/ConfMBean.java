@@ -155,4 +155,11 @@ public interface ConfMBean {
     public void   setWsGisUkConnTimeout (int i);
     public int    getWsGisUkRespTimeout ();
     public void   setWsGisUkRespTimeout (int i);
+
+    public String getWsGisPaymentUrl ();
+    public void   setWsGisPaymentUrl (String s);
+    public int    getWsGisPaymentConnTimeout ();
+    public void   setWsGisPaymentConnTimeout (int i);
+    public int    getWsGisPaymentRespTimeout ();
+    public void   setWsGisPaymentRespTimeout (int i);
 }
