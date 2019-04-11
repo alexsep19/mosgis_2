@@ -28,7 +28,7 @@ define ([], function () {
             
             var it = data.item
 
-            it.not_all_works_approved = (it.id_orp_status == -31 && it.works_approved_count < it.works_general_count) ? true : false
+            it.not_all_works_approved = (it.id_orp_status == -31 && data.works_approved_count < data.works_general_count) ? true : false
 
             console.log (data)
 
