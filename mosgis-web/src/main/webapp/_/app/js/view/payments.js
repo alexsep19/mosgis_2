@@ -37,6 +37,14 @@ define ([], function () {
                         ],
                         off: !data._can.create
                     },
+                    {
+                        type: 'button',
+                        id: 'import_objects',
+                        caption: 'Импорт платежей...',
+                        icon: 'w2ui-icon-plus',
+                        onClick: $_DO.import_payments,
+                        off: !$_USER.uuid_org,
+                    },
                 ].filter (not_off),
 
             },

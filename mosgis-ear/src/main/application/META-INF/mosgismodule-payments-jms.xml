@@ -33,4 +33,14 @@
     <jndi-name>mosgis.outImportPaymentsQueue</jndi-name>
   </uniform-distributed-queue>-->
 
+  <!-- очередь запросов на импорт платежей из экселя -->
+  <uniform-distributed-queue name="inXlPaymentsQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <delivery-params-overrides>
+        <time-to-deliver>2000</time-to-deliver>
+        <redelivery-delay>10000</redelivery-delay>
+    </delivery-params-overrides>
+    <jndi-name>mosgis.inXlPaymentsQueue</jndi-name>
+  </uniform-distributed-queue>
+  
 </weblogic-jms>
