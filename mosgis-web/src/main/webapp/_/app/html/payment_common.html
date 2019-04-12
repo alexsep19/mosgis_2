@@ -31,6 +31,9 @@
         			width: 170px;
         		}
 
+			.w2ui-field span {
+			    line-height: 19px;
+			}
         	</style>
 			<center>
         	<table border=0 cellpadding=0 cellspacing=0 style="min-width:850px;">
@@ -80,24 +83,18 @@
 								<th colspan=2 data-text=err_text></th>
 							</tr>
 -->
+							<tr data-on=paymentpurpose >
+								<td>Назначение платежа</td>
+								<td>
+									<span data-text=paymentpurpose />
+								</td>
+							</tr>
 						</table>
 
 					</td>
 
         		</tr>
 
-        		<tr>
-					<td colspan=2 valign=top class=left >
-
-							<div class="w2ui-field">
-								<label>Назначение платежа</label>
-								<div>
-									<textarea maxlengh=1000 cols=100 name=paymentpurpose />
-								</div>
-							</div>
-
-					</td>
-        		</tr>
         	</table>
 			</center>
 
