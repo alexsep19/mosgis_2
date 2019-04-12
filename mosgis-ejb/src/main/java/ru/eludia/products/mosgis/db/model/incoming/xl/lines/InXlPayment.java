@@ -2,6 +2,7 @@ package ru.eludia.products.mosgis.db.model.incoming.xl.lines;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
@@ -52,7 +53,7 @@ public class InXlPayment extends EnTable {
 
     }
     
-    public static Map<String, Object> toHash (UUID uuid, int ord, XSSFRow row, Map<Integer, Integer> resourceMap) {
+    public static Map<String, Object> toHash (UUID uuid, int ord, XSSFRow row) {
         
         Map<String, Object> r = DB.HASH (
             EnTable.c.IS_DELETED, 1,
@@ -61,7 +62,7 @@ public class InXlPayment extends EnTable {
         );
         
         try {
-            setFields (r, row, resourceMap);
+            setFields (r, row);
         }         
         catch (XLException ex) {
             r.put (c.ERR.lc (), ex.getMessage ());
@@ -71,11 +72,24 @@ public class InXlPayment extends EnTable {
         
     }
 
-    private static void setFields (Map<String, Object> r, XSSFRow row, Map<Integer, Integer> resourceMap) throws XLException {
+    private static void setFields (Map<String, Object> r, XSSFRow row) throws XLException {
 
-	r.put (c.ORD.lc (),                toNumeric (row, 1, "Не указан номер строки"));
-        r.put (Payment.c.AMOUNT.lc (),     toNumeric (row, 2, "Не указана сумма"));
-        r.put (Payment.c.ORDERDATE.lc (),  toDate (row, 3, "Не указана Дата"));
+	r.put (Payment.c.AMOUNT.lc (),     toNumeric (row, 1, "Не указана сумма"));
+        r.put (Payment.c.ORDERDATE.lc (),  toDate (row, 2, "Не указана дата"));
+
+	String period = toString(row, 3, "Не указан период оплаты");
+	try {
+	    String[] p = period.split(".");
+	    Integer month = Integer.parseInt(p[0]);
+	    Integer year = Integer.parseInt(p[1]);
+	    r.put(Payment.c.MONTH.lc(), month);
+	    r.put(Payment.c.YEAR.lc(), year);
+	} catch (Exception e) {
+	    throw new XLException (e.getMessage());
+	}
+
+	r.put(c.PAYMENTDOCUMENTID.lc(), toDate(row, 4));
+	r.put(c.SERVICEID.lc(), toDate(row, 5));
     }
 
     public InXlPayment () {
@@ -123,10 +137,14 @@ public class InXlPayment extends EnTable {
             + "   IF cnt>1 THEN raise_application_error (-20000, 'Идентификатору платежного документа ' || :NEW.paymentdocumentid || ' соответствует не одна запись ПД, а ' || cnt); END IF; "
 	    + " END IF; "
 
-	    + " IF :NEW.serviceid IS NOT NULL THEN "                
+	    + " IF :NEW.serviceid IS NOT NULL THEN "
             + "   SELECT COUNT(*), MIN(serviceid) INTO cnt, :NEW.serviceid FROM tb_accounts WHERE is_deleted=0 AND serviceid=:NEW.serviceid; "
             + "   IF cnt=0 THEN raise_application_error (-20000, 'Неизвестное значение идентификатора поставщика услуг ЛС: ' || :NEW.paymentdocumentid); END IF; "
             + "   IF cnt>1 THEN raise_application_error (-20000, 'Идентификатору поставщика услуг' || :NEW.paymentdocumentid || ' соответствует не одна запись ЛС, а ' || cnt); END IF; "
+	    + " END IF; "
+
+	    + " IF :NEW.serviceid IS NULL AND :NEW.paymentdocumentid IS NULL THEN "
+	    + "   raise_application_error (-20000, 'Не указан ни идентификатор платежного документа, ни идентификатор поставщика услуг'); "
 	    + " END IF; "
 
 	    + " EXCEPTION WHEN OTHERS THEN "

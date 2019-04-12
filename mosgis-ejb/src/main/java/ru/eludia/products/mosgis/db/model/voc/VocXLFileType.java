@@ -33,6 +33,7 @@ public class VocXLFileType extends Table {
 	HOUSE_PASSPORTS  (2, "Паспорта ЖД"),
 	SR_CTR           (3, "Договоры ресурсоснабжения"),
 	METERING_DEVICES (4, "Приборы учёта"),
+	PAYMENTS         (6, "Платежи"),
         ;
                 
         int    id;
