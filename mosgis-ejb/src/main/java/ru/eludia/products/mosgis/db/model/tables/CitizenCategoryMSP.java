@@ -3,12 +3,14 @@ package ru.eludia.products.mosgis.db.model.tables;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
+import ru.eludia.base.model.def.Bool;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocBudgetLevel;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi237;
 
 public class CitizenCategoryMSP extends EnTable {
 
@@ -28,6 +30,9 @@ public class CitizenCategoryMSP extends EnTable {
 	BUDGETLEVEL                  (VocBudgetLevel.class, "Бюджет, за счет которого осуществляются выплаты. Возможные значения:"),
 
 	// Territory - Территория предоставления компенсации расходов:
+	SCOPE                        (Type.BOOLEAN, Bool.FALSE, "1, если действует в заданном ОКТМО, 0, если действует по всей Москве"),
+	CODE_VC_NSI_237              (Nsi237.class, 20, new ru.eludia.base.model.def.String("77"), "Сфера действия НПА региональный уровень (НСИ 237)"),
+	OKTMO_CODE                   (Type.STRING,  11,   null, "Код ОКТМО"),
 
 	CATEGORYGUID                 (Type.UUID,             null,  "Глобально-уникальный идентификатор элемента справочника"),
 	ID_LOG                       (CitizenCategoryMSPLog.class, "Последнее событие редактирования"),
