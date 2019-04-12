@@ -34,6 +34,14 @@ define ([], function () {
                         onClick: $_DO.import_metering_devices,
                         off: !$_USER.uuid_org,
                     },
+                    {
+                        type: 'button',
+                        id: 'import_values',
+                        caption: 'Импорт показаний ПУ',
+                        icon: 'w2ui-icon-plus',
+                        onClick: $_DO.import_metering_values,
+                        off: !$_USER.uuid_org,
+                    },
                     
                 ].filter (not_off),
                 

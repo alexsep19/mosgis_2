@@ -92,6 +92,12 @@
     </module>
 
     <module>
+        <name>Workflow-metering-values</name>
+        <type>JMS</type>
+        <path>META-INF/mosgismodule-metering-values-jms.xml</path>
+    </module>
+
+    <module>
         <name>Workflow-metering-devices</name>
         <type>JMS</type>
         <path>META-INF/mosgismodule-metering-devices-jms.xml</path>

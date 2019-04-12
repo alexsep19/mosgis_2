@@ -2,6 +2,11 @@ define ([], function () {
 
     $_DO.import_metering_devices = function (e) {
         use.block ('metering_devices_import_popup')
+
+    }
+
+    $_DO.import_metering_values = function (e) {
+        use.block ('metering_values_import_popup')
     }
 
     return function (done) {
