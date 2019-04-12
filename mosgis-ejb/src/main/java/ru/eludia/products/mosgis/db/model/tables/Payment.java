@@ -29,7 +29,7 @@ public class Payment extends EnTable {
 	MONTH                         (Type.NUMERIC, 4,             "Месяц периода расчета"),
 	DT_PERIOD                     (Type.DATE,           null,   "ГГГГ-ММ-01"),
 
-	ORDERNUM                      (Type.STRING, 9, null, "Номер платежа"),
+	ORDERNUM                      (Type.STRING, null, "Номер платежа"),
 
 	ORDERDATE                     (Type.DATE,           "Дата внесения платы"),
 	AMOUNT                        (Type.NUMERIC, 20, 2, "Сумма, руб."),
