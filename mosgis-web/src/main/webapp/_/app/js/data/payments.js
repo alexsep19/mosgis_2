@@ -56,6 +56,10 @@ define ([], function () {
 
     }
 
+    $_DO.import_payments = function (e) {
+        use.block ('payments_import_popup')
+    }
+
     return function (done) {
 
         w2ui ['service_payments_layout'].unlock ('main')
