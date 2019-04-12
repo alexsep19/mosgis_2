@@ -32,7 +32,9 @@ define ([], function () {
 
                 it._can = {cancel: 1}
 
-                if (!it.is_deleted && $_USER.has_nsi_20(7, 8, 10)) {
+                var is_locked = it.is_deleted || (it.uuid_org != $_USER.uuid_org) || !$_USER.has_nsi_20(7, 8, 10)
+
+                if (!is_locked) {
 
                     switch (it.id_ctr_status) {
                         case 10:
