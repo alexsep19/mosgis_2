@@ -23,6 +23,7 @@ define ([], function () {
 
             columns: [                
                 {field: 'label', caption: 'ФИО',    size: 100},
+                {field: 'position', caption: 'Должность',    size: 100},
                 {field: 'login', caption: 'login',  size: 100},
                 {field: 'lockreason', caption: 'Причина запрета',  size: 100, hidden: true},
             ],
