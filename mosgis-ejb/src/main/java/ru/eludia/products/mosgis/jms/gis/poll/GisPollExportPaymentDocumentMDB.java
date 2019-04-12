@@ -74,8 +74,8 @@ public class GisPollExportPaymentDocumentMDB  extends GisPollMDB {
             if (error != null && !error.isEmpty ()) throw new GisPollException (error.get (0));
             
             final Map<String, Object> h = statusHash (action.getOkStatus ());
-            h.put (c.PAYMENTDOCUMENTID.lc (), cr.getGUID ());
-            h.put (c.PAYMENTDOCUMENTNUMBER.lc (), cr.getUniqueNumber ());
+            h.put (c.PAYMENTDOCUMENTID.lc (), cr.getUniqueNumber ());
+            h.put (c.GIS_GUID.lc (), cr.getGUID ());
             update (db, uuid, r, h);
 
             db.update (OutSoap.class, HASH (
