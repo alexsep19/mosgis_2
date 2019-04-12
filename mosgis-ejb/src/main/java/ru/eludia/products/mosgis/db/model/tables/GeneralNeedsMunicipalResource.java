@@ -69,8 +69,8 @@ public class GeneralNeedsMunicipalResource extends EnTable {
         trigger ("BEFORE INSERT OR UPDATE", ""
             
             + "BEGIN "
-                
-                + " IF :NEW.ID_CTR_STATUS_GIS = 10 THEN BEGIN "
+
+                + " IF :NEW.ID_CTR_STATUS <> " + VocGisStatus.i.FAILED_STATE + " AND :NEW.ID_CTR_STATUS_GIS = 10 THEN BEGIN "
                 
                     + " IF :NEW.is_deleted=0 THEN :NEW.ID_CTR_STATUS := " + VocGisStatus.i.PENDING_RQ_PLACING
                     + " ; ELSE :NEW.ID_CTR_STATUS := " + VocGisStatus.i.PENDING_RQ_CANCEL
