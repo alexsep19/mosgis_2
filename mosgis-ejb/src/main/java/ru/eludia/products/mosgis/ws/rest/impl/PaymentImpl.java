@@ -197,7 +197,7 @@ public class PaymentImpl extends BaseCRUD<Payment> implements PaymentLocal {
         logAction (db, user, id, VocAction.i.APPROVE);
 
     });}
-/*
+
     @Override
     public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
 
@@ -211,7 +211,6 @@ public class PaymentImpl extends BaseCRUD<Payment> implements PaymentLocal {
         logAction (db, user, id, VocAction.i.ALTER);
 
     });}
-*/
     
     @Override
     public JsonObject doAnnul (String id, JsonObject p, User user) {return doAction ((db) -> {
