@@ -142,6 +142,7 @@ public class InXlPayment extends EnTable {
 	    + "   raise_application_error (-20000, 'Укажите или идентификатор платежного документа, или идентификатор поставщика услуг, но не оба сразу'); "
 	    + " END IF; "
 
+
 	    + " IF :NEW.paymentdocumentid IS NOT NULL THEN "
             + "   SELECT COUNT(*), MIN(paymentdocumentid) INTO cnt, :NEW.paymentdocumentid FROM " + PaymentDocument.TABLE_NAME + " WHERE is_deleted=0 AND paymentdocumentid=:NEW.paymentdocumentid; "
             + "   IF cnt=0 THEN raise_application_error (-20000, 'Неизвестное значение идентификатора платежного документа: ' || :NEW.paymentdocumentid); END IF; "
