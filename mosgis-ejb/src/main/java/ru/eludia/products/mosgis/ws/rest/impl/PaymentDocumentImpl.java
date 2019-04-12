@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.ws.rest.impl;
 
+import java.util.Map;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -211,9 +212,7 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
         logAction (db, user, id, VocAction.i.APPROVE);
 
     });}
-    
-/*    
-    
+        
     @Override
     public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
                 
@@ -226,8 +225,7 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
         
         logAction (db, user, id, VocAction.i.ALTER);
         
-    });}    
-*/    
+    });}
 
     @Override
     public JsonObject getChargeInfo (String id, User user) {{return fetchData ((db, job) -> {                
