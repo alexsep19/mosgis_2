@@ -32,6 +32,9 @@ public class GeneralNeedsMunicipalResource extends EnTable {
         ELEMENTGUID                  (Type.UUID,             null,  "Идентификатор существующего элемента справочника"),
         UNIQUENUMBER                 (Type.STRING,           null,  "Уникальный номер, присвоенный ГИС ЖКХ"),
 
+        GUID                         (Type.UUID,    new Virt ("HEXTORAW(''||RAWTOHEX(\"ELEMENTGUID\"))"),  "GUID НСИ"),
+        CODE                         (Type.STRING,  new Virt ("(''||\"UNIQUENUMBER\")"),  "Код НСИ"),
+        
         ID_LOG                       (GeneralNeedsMunicipalResourceLog.class, "Последнее событие редактирования"),
         
         ID_CTR_STATUS                (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения mosgis"),

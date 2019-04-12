@@ -16,6 +16,7 @@ public class Nsi50 extends View {
         ID     (Type.STRING, 20, null, "Код"),
         LABEL  (Type.STRING,     null, "Наименование"),
         OKEI   (VocOkei.class,         "Единицы измерения (ОКЕИ)"),
+        GUID   (Type.UUID,             "Глобально-уникальный идентификатор элемента справочника"),        
         ;
 
         @Override
@@ -27,7 +28,7 @@ public class Nsi50 extends View {
     }
 
     public Nsi50 () {
-        super  (TABLE_NAME, "Коды субъектов Российской Федерации (регионов)");
+        super  (TABLE_NAME, "Вид жилищной услуги");
         cols   (c.class);
         pk     (c.ID);
     }
@@ -39,6 +40,7 @@ public class Nsi50 extends View {
             + "code" + " " + c.ID
             + ", " + VocNsi50.c.F_C5BA794FD6 + " " + c.LABEL
             + ", " + VocNsi50.c.F_C6E5A29665 + " " + c.OKEI
+            + ", guid" + " " + c.GUID
             + " FROM "
             + "  vc_nsi_50 "
             + " WHERE"
