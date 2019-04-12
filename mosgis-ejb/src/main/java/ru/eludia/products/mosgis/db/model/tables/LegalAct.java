@@ -87,14 +87,21 @@ public class LegalAct extends AttachTable  {
 	    + "    END IF; "
 	    + "  END IF; "
 	    + "END IF; "
+
+	    + "IF "
+		+ "     :OLD.ID_CTR_STATUS = " + VocGisStatus.i.MUTATING
+		+ " AND :NEW.ID_CTR_STATUS = " + VocGisStatus.i.PENDING_RQ_PLACING
+	    + " THEN "
+		+ " :NEW.ID_CTR_STATUS := " + VocGisStatus.i.PENDING_RQ_EDIT
+	    + "; END IF; "
         + "END;");
     }
     
     public enum Action {
         
-        PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
-        EDITING     (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_STATE),
-        ANNULMENT   (VocGisStatus.i.PENDING_RP_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT),
+        PLACING     (VocGisStatus.i.PENDING_RQ_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
+        EDITING     (VocGisStatus.i.PENDING_RQ_EDIT,      VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_STATE),
+        ANNULMENT   (VocGisStatus.i.PENDING_RQ_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT),
         ;
         
         VocGisStatus.i nextStatus;
