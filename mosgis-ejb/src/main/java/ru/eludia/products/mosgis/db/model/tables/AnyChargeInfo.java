@@ -23,7 +23,8 @@ public class AnyChargeInfo extends View {
         UNIT                 (Type.STRING,   "Единица измерения: (S)quare meter - Кв. м (D)irectory - Из справочник"),
         GUID                 (Type.UUID,    "GUID НСИ"),
         CODE                 (Type.STRING,  "Код НСИ"),
-        ORGPPAGUID           (Type.UUID,   null,           "Идентификатор зарегистрированной организации"),
+        ORGPPAGUID           (Type.UUID,   null,           "Идентификатор зарегистрированной организации"),        
+        INSURANCEPRODUCTGUID (Type.UUID,   null,           "Идентификатор страхового продукта"),
         ;
 
         @Override
@@ -72,6 +73,7 @@ public class AnyChargeInfo extends View {
             + " , COALESCE (m.guid,  a.guid,  n.guid,  g.guid) " + c.GUID
             + " , COALESCE (m.code,  a.code,  n.id,    g.code) " + c.CODE
             + " , org.orgppaguid " + c.ORGPPAGUID
+            + " , i." + InsuranceProduct.c.INSURANCEPRODUCTGUID.lc () + " " + c.INSURANCEPRODUCTGUID
 
             + " FROM " + ChargeInfo.TABLE_NAME + " o"
 
@@ -82,8 +84,9 @@ public class AnyChargeInfo extends View {
             + " LEFT  JOIN " + MainMunicipalService.TABLE_NAME          + " m ON m.uuid = " + ChargeInfo.c.UUID_M_M_SERVICE
             + " LEFT  JOIN " + AdditionalService.TABLE_NAME             + " a ON a.uuid = " + ChargeInfo.c.UUID_ADD_SERVICE
             + " LEFT  JOIN " + GeneralNeedsMunicipalResource.TABLE_NAME + " g ON g.uuid = " + ChargeInfo.c.UUID_GEN_NEED_RES
+            + " LEFT  JOIN " + InsuranceProduct.TABLE_NAME              + " i ON i.uuid = " + ChargeInfo.c.UUID_INS_PRODUCT
 
-            + " LEFT  JOIN " + VocOrganization.TABLE_NAME + " org ON org.uuid = COALESCE (m.uuid_org, a.uuid_org, g.uuid_org)"
+            + " LEFT  JOIN " + VocOrganization.TABLE_NAME + " org ON org.uuid = COALESCE (m.uuid_org, a.uuid_org, g.uuid_org, i.uuid_org)"
 
         ;
 
