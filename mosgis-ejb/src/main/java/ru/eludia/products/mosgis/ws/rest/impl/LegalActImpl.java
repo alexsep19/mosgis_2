@@ -65,7 +65,6 @@ public class LegalActImpl extends BaseCRUD<LegalAct> implements LegalActLocal  {
 
 	switch (action) {
 	case APPROVE:
-	case ALTER:
 	case ANNUL:
 	    return queue;
 	default:
