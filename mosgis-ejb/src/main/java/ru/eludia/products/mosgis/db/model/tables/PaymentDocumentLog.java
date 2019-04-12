@@ -163,8 +163,16 @@ public class PaymentDocumentLog extends GisWsLogTable {
         list.forEach ((t) -> сomponentsOfCost.add (ComponentsOfCost.toComponentsOfCost (t)));
     }    
     
-    private static void addChargeInfo (List<PaymentDocumentType.ChargeInfo> chargeInfo, List<Map<String, Object>> list) {
-        list.forEach ((t) -> chargeInfo.add (ChargeInfo.toChargeInfo (t)));
+    private static void addChargeInfo (ImportPaymentDocumentRequest.PaymentDocument result, List<Map<String, Object>> list) {
+        list.forEach ((t) -> {            
+            switch (VocChargeInfoType.i.forId (t.get (ChargeInfo.c.ID_TYPE.lc ()))) {
+                case INSURANCE:
+                    result.setInsurance (ChargeInfo.toInsurance (t));
+                    break;
+                default:
+                    result.getChargeInfo ().add (ChargeInfo.toChargeInfo (t));
+            }
+        });
     }    
     
     private static ImportPaymentDocumentRequest.PaymentDocument toPaymentDocument (Map<String, Object> r) {
@@ -180,7 +188,7 @@ public class PaymentDocumentLog extends GisWsLogTable {
             detailsPaymentInformation.clear ();
         }
         
-        addChargeInfo             (result.getChargeInfo (),             (List <Map <String, Object>>) r.get (ChargeInfo.TABLE_NAME));
+        addChargeInfo             (result,                              (List <Map <String, Object>>) r.get (ChargeInfo.TABLE_NAME));
         addPenaltiesAndCourtCosts (result.getPenaltiesAndCourtCosts (), (List <Map <String, Object>>) r.get (PenaltiesAndCourtCosts.TABLE_NAME));
         addComponentsOfCost       (result.getComponentsOfCost (),       (List <Map <String, Object>>) r.get (ComponentsOfCost.TABLE_NAME));
         

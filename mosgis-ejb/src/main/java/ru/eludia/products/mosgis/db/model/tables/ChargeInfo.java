@@ -37,7 +37,6 @@ public class ChargeInfo extends EnTable {
         UUID_M_M_SERVICE      (MainMunicipalService.class, null,                "Коммунальная услуга"),
         UUID_ADD_SERVICE      (AdditionalService.class, null,                   "Дополнительная услуга"),
         UUID_GEN_NEED_RES     (GeneralNeedsMunicipalResource.class, null,       "Коммунальный ресурс, потребляемый при использовании и содержании общего имущества в многоквартирном доме (НСИ 337)"),
-
         UUID_INS_PRODUCT      (InsuranceProduct.class, null,                    "Страховой продукт"),
 
         OKEI                  (VocOkei.class, "Единицы измерения (ОКЕИ)"),        
@@ -314,6 +313,11 @@ public class ChargeInfo extends EnTable {
         if (!DB.ok (sum)) return null;
         final ServiceChargeImportType result = new ServiceChargeImportType ();
         result.setMoneyDiscount ((BigDecimal) sum);
+        return result;
+    }
+    
+    static PaymentDocumentType.Insurance toInsurance (Map<String, Object> r) {
+        final PaymentDocumentType.Insurance result = DB.to.javaBean (PaymentDocumentType.Insurance.class, r);
         return result;
     }
 
