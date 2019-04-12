@@ -96,6 +96,16 @@ public class PaymentDocument extends EnTable {
             + "END;"
 
         );
+        
+        trigger ("BEFORE UPDATE", ""
+
+            + "BEGIN "
+            + "  IF :NEW.TOTALBYPENALTIESANDCOURTCOSTS IS NULL THEN "
+            + "     SELECT SUM(TOTALPAYABLE) INTO :NEW.TOTALBYPENALTIESANDCOURTCOSTS FROM " + PenaltiesAndCourtCosts.TABLE_NAME +  " WHERE UUID_PAY_DOC=:NEW.UUID;"
+            + "  END IF;"                
+            + "END;"
+
+        );
 
         trigger ("BEFORE INSERT", ""
 

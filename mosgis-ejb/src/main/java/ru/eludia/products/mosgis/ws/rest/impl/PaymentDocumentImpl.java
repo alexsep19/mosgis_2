@@ -266,6 +266,11 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
             , PenaltiesAndCourtCosts.c.CODE_VC_NSI_329.lc ()
             , PenaltiesAndCourtCosts.c.UUID_BNK_ACCT.lc ()
         );
+        
+        db.update (PaymentDocument.class, HASH (
+            EnTable.c.UUID, id,
+            PaymentDocument.c.TOTALBYPENALTIESANDCOURTCOSTS, null
+        ));
 
         m.createIdLog (db, t, user, uuid, VocAction.i.UPDATE);
 

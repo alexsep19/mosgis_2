@@ -138,43 +138,7 @@ define ([], function () {
             onRefresh: function (e) {
             
                 var grid = this
-                                                
-                var sum = 0.0
-
-                $.each (grid.records, function () {
-
-                    if (this.w2ui) {
-                    
-                        var chg = this.w2ui.changes
-                        if (!chg) return
-
-                        for (var field in chg) {
-                            var col = grid.getColumn (field)
-                            var editable = col.editable
-                            if (!editable) continue
-                            this [field] = chg [field]
-                            delete this.w2ui.changes
-                        }
-                        
-                    }
-                    
-                    var r = this
-                    if (r.recid != 'total' && r.totalpayable != null) {
-                        var totalpayable = parseFloat (r.totalpayable)
-                        if (totalpayable > 0) sum += totalpayable
-                    }
-
-                })
-                
-                grid.set ('total', {totalpayable: sum})                
-                
-                if (is_editing) {                
-                    var old = w2ui ['payment_document_common_form'].record.totalbypenaltiesandcourtcosts
-                    old = parseFloat (old)
-                    if (isNaN (old)) old = 0.0
-                    if (Math.abs (sum - old) >= 0.01) $_DO.update_payment_document_common_penalties (sum)
-                }                              
-            
+                            
                 e.done (function () {
                     
                     var last = null

@@ -1,19 +1,5 @@
 define ([], function () {
 
-    $_DO.update_payment_document_common_penalties = function (sum) {
-    
-        var k = 'totalbypenaltiesandcourtcosts'
-        
-        var data = {}; data [k] = sum
-
-        query ({type: 'payment_documents', action: 'update'}, {data: data}, function (d) {
-            var f = w2ui ['payment_document_common_form']            
-            f.record [k] = d.item [k]
-            f.refresh ()
-        })
-
-    }
-
     $_DO.patch_payment_document_common_penalties = function (e) {
 
         var grid = this
@@ -34,8 +20,18 @@ define ([], function () {
         grid.lock ()
 
         query ({type: 'payment_documents', action: 'patch_penalties'}, {data: data}, function (d) {
-            grid.unlock ()
-            grid.refresh ()            
+
+            var k = 'totalbypenaltiesandcourtcosts'
+
+            query ({type: 'payment_documents'}, {}, function (d) {
+                var f = w2ui ['payment_document_common_form']            
+                f.record [k] = d.item [k]
+                f.refresh ()
+                grid.set ('total', {totalpayable: d.item [k]})
+                grid.unlock ()
+                grid.refresh ()            
+            })
+
         })
 
     }
@@ -65,9 +61,9 @@ define ([], function () {
             })
             
             ba = Object.values (ba).sort (function (a, b) {return a.label < b.label ? -1 : 1})        
-        
-            var lines = [{recid: 'total', label: 'Итого'}]
-            
+
+            var lines = [{recid: 'total', label: 'Итого', totalpayable: w2ui ['payment_document_common_form'].record.totalbypenaltiesandcourtcosts}]
+
             var idx = {}
             
             $.each (data.vc_nsi_329.items, function () {
@@ -105,18 +101,7 @@ define ([], function () {
 
                 done (data)
             
-            });
-            
-            
-/*            
-            $.each (dia2w2uiRecords (d.root), function () {
-                
-                if (!this.uuid_m_m_service) return
-
-                lines.push (this)
-            
-            })
-*/        
+            });                  
 
         }) 
 
