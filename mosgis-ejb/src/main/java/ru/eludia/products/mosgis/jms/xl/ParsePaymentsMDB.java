@@ -18,6 +18,7 @@ import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlPayment;
 import ru.eludia.products.mosgis.db.model.tables.Payment;
 import ru.eludia.products.mosgis.jms.xl.base.XLMDB;
 import ru.eludia.products.mosgis.jms.xl.base.XLException;
+import static ru.eludia.products.mosgis.jms.xl.base.XLMDB.setCellStringValue;
 
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inXlPaymentsQueue")
@@ -27,6 +28,7 @@ import ru.eludia.products.mosgis.jms.xl.base.XLException;
 public class ParsePaymentsMDB extends XLMDB {
        
     private static final int N_COL_ERR  = 6;
+    private static final int N_COL_UUID  = 7;
 
     protected void addPayments (XSSFSheet sheet, UUID parent, DB db) throws SQLException {
 
@@ -49,6 +51,8 @@ public class ParsePaymentsMDB extends XLMDB {
                     EnTable.c.UUID, uuid,
                     EnTable.c.IS_DELETED, 0
                 ));
+
+		setCellStringValue (row, N_COL_UUID, uuid.toString ());
             }
             catch (SQLException e) {
 
@@ -79,7 +83,7 @@ public class ParsePaymentsMDB extends XLMDB {
         
         for (Map<String, Object> brokenLine: brokenLines) {
             XSSFRow row = sheet.getRow ((int) DB.to.Long (brokenLine.get (InXlPayment.c.ORD.lc ())));
-            XSSFCell cell = row.getLastCellNum () < N_COL_ERR ? row.createCell (N_COL_ERR) : row.getCell (N_COL_ERR);
+            XSSFCell cell = row.getLastCellNum () - 1 < N_COL_ERR ? row.createCell (N_COL_ERR) : row.getCell (N_COL_ERR);
             cell.setCellValue (brokenLine.get (InXlPayment.c.ERR.lc ()).toString ());
         }
 

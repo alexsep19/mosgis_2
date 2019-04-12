@@ -71,6 +71,9 @@ public class Payment extends EnTable {
 
 	    switch (this) {
 		case UUID_ORG:
+		case UUID_PAY_DOC:
+		case UUID_ACCOUNT:
+		case ID_TYPE:
 		case AMOUNT:
 		case ORDERDATE:
 		case YEAR:
@@ -94,12 +97,24 @@ public class Payment extends EnTable {
 	trigger ("BEFORE INSERT", ""
             + " BEGIN "
 
-	    + " IF :NEW.UUID_ACCOUNT IS NULL AND :NEW.UUID_PAY_DOC IS NULL THEN "
-	    + "   raise_application_error (-20000, 'Укажите основание для оплаты'); "
+	    + " IF :NEW.ID_TYPE IS NULL THEN "
+	    + "   raise_application_error (-20000, 'Укажите тип основания для оплаты'); "
+	    + " END IF; "
+
+	    + " IF :NEW.UUID_ACCOUNT IS NULL AND :NEW.ID_TYPE = " + VocPaymentBaseType.i.ACCOUNT + " THEN "
+	    + "   raise_application_error (-20000, 'Укажите ЛС основание для оплаты'); "
+	    + " END IF; "
+
+	    + " IF :NEW.UUID_PAY_DOC IS NULL AND :NEW.ID_TYPE = " + VocPaymentBaseType.i.PAYMENT_DOCUMENT + " THEN "
+	    + "   raise_application_error (-20000, 'Укажите ПД основание для оплаты'); "
 	    + " END IF; "
 
 	    + " IF :NEW.UUID_ACCOUNT IS NULL AND :NEW.UUID_PAY_DOC IS NOT NULL THEN "
 	    + "   SELECT UUID_ACCOUNT INTO :NEW.UUID_ACCOUNT FROM " + PaymentDocument.TABLE_NAME + " WHERE uuid = :NEW.UUID_PAY_DOC; "
+	    + " END IF; "
+
+	    + " IF :NEW.MONTH > 12 OR :NEW.MONTH = 0 THEN "
+	    + "   raise_application_error (-20000, 'Укажите месяц 1..12'); "
 	    + " END IF; "
 
             + " :NEW.dt_period := TO_DATE (:NEW.year || LPAD (:NEW.month, 2, '0') || '01', 'YYYYMMDD'); "
