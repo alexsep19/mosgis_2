@@ -61,9 +61,6 @@ define ([], function () {
 
         if (!v.orderdate) die('orderdate', 'Укажите дату внесения платы')
         if (!v.amount) die('amount', 'Укажите сумму')
-        v.paymentpurpose = $('textarea').val () || ''
-
-        if (v.paymentpurpose.length > 1000) die ('paymentpurpose', 'Назначение платежа не может содержать более 1000 символов')
 
         query ({type: 'payments', action: 'update'}, {data: v}, reload_page)
 
