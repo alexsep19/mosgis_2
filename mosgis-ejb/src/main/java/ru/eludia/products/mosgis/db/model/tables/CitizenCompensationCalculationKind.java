@@ -28,14 +28,11 @@ public class CitizenCompensationCalculationKind extends EnTable {
 
 	ID_TYPE                      (Type.STRING, new Virt("CASE WHEN FIXEDCOMPENSATIONSUM IS NOT NULL THEN 2 ELSE 1 END"), "Тип расчета: 1 - от фактических расходов на оплату ЖКУ, 2 - фиксированный размер"),
 
-	CODE_VC_NSI_295              (Type.STRING,  20, null, "Норматив для начисления компенсации (НСИ 295)"),
+	CODE_VC_NSI_275              (Type.STRING,  20, null, "Норматив для начисления компенсации (НСИ 275)"),
 	APPLIESTOALLFAMILYMEMBERS    (Type.BOOLEAN, null, "Распространяется на всех членов семьи"),
 	DISCOUNTSIZE                 (Type.NUMERIC, 5, 2, null, "Размер, предоставляемой компенсации"),
 	VALIDFROM                    (Type.DATE, null, "Дата начала предоставления компенсации"),
 	VALIDTO                      (Type.DATE, null, "Дата окончания предоставления компенсации"),
-
-	FIXEDCOMPENSATIONSUM         (Type.NUMERIC, 20, 2, null, "Фиксированный размер денежной выплаты, руб."),
-	FIXEDSUMESTABLISHMENTDATE    (Type.DATE, null, "Дата установления фиксированного размера"),
 
 	COMMENT_                     (Type.STRING, null, "Примечание"),
 	DESCRIPTION                  (Type.STRING, null, "Описание порядка расчета"),
@@ -55,7 +52,7 @@ public class CitizenCompensationCalculationKind extends EnTable {
 
     public CitizenCompensationCalculationKind () {
 
-        super (TABLE_NAME, "Перечень отдельных категорий граждан, имеющих право на получение компенсации расходов: порядок расчета компенсации расходов");
+        super (TABLE_NAME, "Перечень отдельных категорий граждан, имеющих право на получение компенсации расходов: порядок расчета компенсации расходов от фактических расходов на оплату жилищно-коммунальных услуг");
 
         cols (c.class);
 

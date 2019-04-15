@@ -44,6 +44,11 @@ public class CitizenCompensationCategory extends EnTable {
 	RECALCULATIONREASONS        (Type.STRING, null, "Основания для перерасчета компенсации"),
 	REFUNDREASONS               (Type.STRING, null, "Основания возврата излишне полученной суммы компенсации"),
 
+	IS_FIXED                     (Type.BOOLEAN, new Virt  ("CASE WHEN FIXEDCOMPENSATIONSUM IS NOT NULL THEN 1 ELSE 0 END"), "Порядок расчета фиксированный"),
+	FIXEDCOMPENSATIONSUM         (Type.NUMERIC, 20, 2, null, "Фиксированный размер денежной выплаты, руб."),
+	FIXEDSUMESTABLISHMENTDATE    (Type.DATE, null, "Дата установления фиксированного размера"),
+	COMMENT_                     (Type.STRING, null, "Примечание"),
+
 	CATEGORYGUID                 (Type.UUID,             null,  "Глобально-уникальный идентификатор элемента справочника"),
 	ID_LOG                       (CitizenCompensationCategoryLog.class, "Последнее событие редактирования"),
 
