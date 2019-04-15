@@ -112,11 +112,11 @@ public class CitizenCompensationCategories extends EJBResource <CitizenCompensat
         return back.getLegalActs (id);
     }
 
-//    @POST
-//    @Path("import")
-//    @Produces (APPLICATION_JSON)
-//    public JsonObject doImport () {
-//	checkPost();
-//        return back.doImport (getUser ());
-//    }
+    @POST
+    @Path("import")
+    @Produces (APPLICATION_JSON)
+    public JsonObject doImport () {
+	checkPost();
+        return back.doImport (getUser ());
+    }
 }

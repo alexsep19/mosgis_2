@@ -156,4 +156,11 @@
 	<type>JMS</type>
 	<path>META-INF/mosgismodule-payments-jms.xml</path>
     </module>
+
+    <module>
+	<name>Workflow-citizen-compensation-categories</name>
+	<type>JMS</type>
+	<path>META-INF/mosgismodule-msp-jms.xml</path>
+    </module>
+
 </weblogic-application>

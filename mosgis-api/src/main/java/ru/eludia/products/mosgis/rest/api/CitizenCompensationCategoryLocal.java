@@ -11,5 +11,5 @@ public interface CitizenCompensationCategoryLocal extends CRUDBackend {
     public JsonObject getVocs ();
     public JsonObject getCalculation (String id);
     public JsonObject getLegalActs (String id);
-//    public JsonObject doImport(User user);
+    public JsonObject doImport(User user);
 }

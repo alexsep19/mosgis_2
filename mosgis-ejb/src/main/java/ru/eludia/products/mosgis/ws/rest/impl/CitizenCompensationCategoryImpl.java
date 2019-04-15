@@ -1,22 +1,28 @@
 package ru.eludia.products.mosgis.ws.rest.impl;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.annotation.Resource;
+import javax.jms.Queue;
+import javax.json.Json;
 import javax.json.JsonObject;
+import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
-import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.CitizenCompensationCategory;
-import ru.eludia.products.mosgis.db.model.tables.CitizenCompensationCategoryLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
-import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.incoming.InCitizenCompensationCategory;
 import ru.eludia.products.mosgis.db.model.tables.CitizenCompensationCalculationKind;
 import ru.eludia.products.mosgis.db.model.tables.CitizenCompensationCategoryLegalAct;
 import ru.eludia.products.mosgis.db.model.tables.LegalAct;
@@ -25,7 +31,6 @@ import ru.eludia.products.mosgis.db.model.voc.VocCitizenCompensationHousing;
 import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
 import ru.eludia.products.mosgis.db.model.voc.VocServiceType;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi275;
-import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi301;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
@@ -38,20 +43,20 @@ import ru.eludia.products.mosgis.rest.api.CitizenCompensationCategoryLocal;
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class CitizenCompensationCategoryImpl extends BaseCRUD<CitizenCompensationCategory> implements CitizenCompensationCategoryLocal {
 
-//    @Resource(mappedName = "mosgis.inImportNsiCitizenCategoryMSPsQueue")
-//    Queue inImportNsiCitizenCategoryMSPsQueue;
-//
-//    @Override
-//    public Queue getQueue (VocAction.i action) {
-//
-//        switch (action) {
-//	    case IMPORT_CITIZEN_CATEGORY_MSPS:
-//		return inImportNsiCitizenCategoryMSPsQueue;
-//            default:
-//                return null;
-//        }
-//
-//    }
+    @Resource(mappedName = "mosgis.inImportCitizenCompensationCategoriesQueue")
+    Queue inImportCitizenCompensationCategoriesQueue;
+
+    @Override
+    public Queue getQueue (VocAction.i action) {
+
+        switch (action) {
+	    case IMPORT_CITIZEN_COMPENSATION_CATEGORIES:
+		return inImportCitizenCompensationCategoriesQueue;
+            default:
+                return null;
+        }
+
+    }
 
     private void filterOffDeleted (Select select) {
         select.and ("is_deleted", 0);
@@ -232,32 +237,32 @@ public class CitizenCompensationCategoryImpl extends BaseCRUD<CitizenCompensatio
 
     });}
 
-//    @Override
-//    public JsonObject doImport(User user) {
-//
-//	try (DB db = ModelHolder.getModel().getDb()) {
-//
-//	    String uuidOrg = user.getUuidOrg();
-//
-//	    if (uuidOrg == null) {
-//		logger.warning("User has no org set, access prohibited");
-//		throw new ValidationException("foo", "Отсутствует организация пользователя, доступ запрещен");
-//	    }
-//
-//	    Map<String, Object> data = new HashMap ();
-//
-//	    data.put(InCitizenCategoryMSP.c.UUID_ORG.lc(), uuidOrg);
-//
-//	    UUID uuid = (UUID) db.insertId(InCitizenCategoryMSP.class, data);
-//
-//	    publishMessage(VocAction.i.IMPORT_CITIZEN_CATEGORY_MSPS, uuid.toString());
-//
-//	    return Json.createObjectBuilder().add("id", uuid.toString()).build();
-//
-//	} catch (Exception ex) {
-//	    Logger.getLogger(CitizenCategoryMSP.class.getName()).log(Level.SEVERE, null, ex);
-//	}
-//
-//	return EMPTY_JSON_OBJECT;
-//    }
+    @Override
+    public JsonObject doImport(User user) {
+
+	try (DB db = ModelHolder.getModel().getDb()) {
+
+	    String uuidOrg = user.getUuidOrg();
+
+	    if (uuidOrg == null) {
+		logger.warning("User has no org set, access prohibited");
+		throw new ValidationException("foo", "Отсутствует организация пользователя, доступ запрещен");
+	    }
+
+	    Map<String, Object> data = new HashMap ();
+
+	    data.put(InCitizenCompensationCategory.c.UUID_ORG.lc(), uuidOrg);
+
+	    UUID uuid = (UUID) db.insertId(InCitizenCompensationCategory.class, data);
+
+	    publishMessage(VocAction.i.IMPORT_CITIZEN_COMPENSATION_CATEGORIES, uuid.toString());
+
+	    return Json.createObjectBuilder().add("id", uuid.toString()).build();
+
+	} catch (Exception ex) {
+	    Logger.getLogger(CitizenCompensationCategory.class.getName()).log(Level.SEVERE, null, ex);
+	}
+
+	return EMPTY_JSON_OBJECT;
+    }
 }
