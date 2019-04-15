@@ -15,13 +15,13 @@ import ru.eludia.products.mosgis.db.model.voc.VocServiceType;
 import ru.eludia.products.mosgis.db.model.voc.VocCitizenCompensationHousing;
 
 
-public class CitizenCategoryMSPCalc extends EnTable {
+public class CitizenCompensationCalculationKind extends EnTable {
 
-    public static final String TABLE_NAME = "tb_cit_cat_msp_calcs";
+    public static final String TABLE_NAME = "tb_cit_comp_calc_kinds";
 
     public enum c implements EnColEnum {
 
-	UUID_CIT_CAT_MSP             (CitizenCategoryMSP.class, "Категория граждан"),
+	UUID_CIT_COMP_CAT            (CitizenCompensationCategory.class, "Категория граждан"),
 
 	SERVICE                      (VocServiceType.class,  null, "На оплату какого значения предоставляется компенсация"),
 	HOUSING                      (VocCitizenCompensationHousing.class,  null, "Тип жилищного фонда"),
@@ -53,12 +53,12 @@ public class CitizenCategoryMSPCalc extends EnTable {
 
     }
 
-    public CitizenCategoryMSPCalc () {
+    public CitizenCompensationCalculationKind () {
 
         super (TABLE_NAME, "Перечень отдельных категорий граждан, имеющих право на получение компенсации расходов: порядок расчета компенсации расходов");
 
         cols (c.class);
 
-        key (c.UUID_CIT_CAT_MSP);
+        key (c.UUID_CIT_COMP_CAT);
     }
 }

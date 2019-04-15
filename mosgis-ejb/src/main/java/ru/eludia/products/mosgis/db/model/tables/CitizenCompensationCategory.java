@@ -12,9 +12,9 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi237;
 
-public class CitizenCategoryMSP extends EnTable {
+public class CitizenCompensationCategory extends EnTable {
 
-    public static final String TABLE_NAME = "tb_cit_cat_msp";
+    public static final String TABLE_NAME = "tb_cit_comp_cats";
 
     public enum c implements EnColEnum {
 
@@ -43,7 +43,7 @@ public class CitizenCategoryMSP extends EnTable {
 	REFUNDREASONS               (Type.STRING, null, "Основания возврата излишне полученной суммы компенсации"),
 
 	CATEGORYGUID                 (Type.UUID,             null,  "Глобально-уникальный идентификатор элемента справочника"),
-	ID_LOG                       (CitizenCategoryMSPLog.class, "Последнее событие редактирования"),
+	ID_LOG                       (CitizenCompensationCategoryLog.class, "Последнее событие редактирования"),
 
 	ID_CTR_STATUS                (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения mosgis"),
 	ID_CTR_STATUS_GIS            (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения ГИС ЖКХ"),
@@ -66,7 +66,7 @@ public class CitizenCategoryMSP extends EnTable {
 
     }
 
-    public CitizenCategoryMSP () {
+    public CitizenCompensationCategory () {
 
         super (TABLE_NAME, "Перечень отдельных категорий граждан, имеющих право на получение компенсации расходов");
 

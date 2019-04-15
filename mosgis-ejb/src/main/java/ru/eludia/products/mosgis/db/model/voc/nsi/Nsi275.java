@@ -12,8 +12,7 @@ public class Nsi275 extends View {
     
     public enum c implements ColEnum {
         
-        CODE   (Type.STRING, 20, null, "Код"),
-        ID     (Type.NUMERIC,    null, "Битовая маска"),
+        ID     (Type.NUMERIC,    null, "Идентификатор"),
         LABEL  (Type.STRING,     null, "Наименование"),
         GUID   (Type.UUID,       null, "Глобально-уникальный идентификатор элемента справочника")
         ;
@@ -36,7 +35,7 @@ public class Nsi275 extends View {
     public final String getSQL () {
 
         return "SELECT "
-            + " v.code "
+            + " v.code id "
             + ", v." + VocNsi275.c.F_FDD6069376.name () + " label "
             + ", v.guid "
             + " FROM "
@@ -50,7 +49,7 @@ public class Nsi275 extends View {
     public static Select getVocSelect () {
         
         return ModelHolder.getModel ().select (Nsi275.class, "AS vc_nsi_275"
-            , c.CODE.lc () + " AS id"
+            , c.ID.lc ()
             , c.LABEL.lc ()
         ).orderBy (c.LABEL);
         
