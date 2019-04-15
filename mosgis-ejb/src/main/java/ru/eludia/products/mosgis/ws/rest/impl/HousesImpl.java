@@ -30,9 +30,7 @@ import static ru.eludia.products.mosgis.PassportKind.COTTAGE;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.rest.api.HousesLocal;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
-import ru.eludia.products.mosgis.db.model.tables.ActualCaChObject;
 import ru.eludia.products.mosgis.db.model.tables.ActualSomeContractObject;
-import ru.eludia.products.mosgis.db.model.tables.ActualSupplyResourceContractObject;
 import ru.eludia.products.mosgis.db.model.tables.Block;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
@@ -58,8 +56,6 @@ import static ru.eludia.products.mosgis.db.model.voc.VocRdColType.i.REF;
 import ru.eludia.products.mosgis.db.model.voc.VocVotingForm;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.tables.AccessRequest;
-import ru.eludia.products.mosgis.db.model.voc.nsi58.VocNsi58;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.ws.rest.impl.tools.Search;
@@ -657,13 +653,16 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
     public JsonObject getContracts (String id, User u) {return fetchData ((db, job) -> {
         
         final Model m = db.getModel ();
+        final NsiTable nsi58 = NsiTable.getNsiTable (58);
+        
+        String fiashouseguid = db.getString (m.get (House.class, id, House.c.FIASHOUSEGUID.lc ()));
         
         Select select = m
             .select (ContractObject.class, "AS mgmt_contracts"
                 , ContractObject.c.ID_CTR_STATUS.lc () + " AS id_obj_status"
             )
             .where (EnTable.c.IS_DELETED, 0)
-            .where (ContractObject.c.FIASHOUSEGUID, id)
+            .where (ContractObject.c.FIASHOUSEGUID, fiashouseguid)
             .toOne (Contract.class, "AS c"
                 , EnTable.c.UUID.lc () + " AS id"
                 , Contract.c.DOCNUM.lc () + " AS no"
@@ -675,12 +674,11 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
             .toOne (VocOrganization.class, "AS org"
                 , VocOrganization.c.LABEL.lc () + " AS org_label"
             ).on ("org.uuid=c." + Contract.c.UUID_ORG.lc ())                
-            .toOne (VocOrganization.class, "AS org_customer"
+            .toMaybeOne (VocOrganization.class, "AS org_customer"
                 , VocOrganization.c.LABEL.lc () + " AS org_customer_label"
             ).on ("org_customer.uuid=c." + Contract.c.UUID_ORG_CUSTOMER.lc ())
-            .toOne (VocNsi58.class, "AS reason"
-                , "label" + " AS reason"
-            ).on ("reason.isactual=1 AND reason.code=c." + Contract.c.CODE_VC_NSI_58.lc ())
+            .toOne (nsi58, nsi58.getLabelField ().getfName () + " AS reason"
+            ).on ("vc_nsi_58.isactual=1 AND vc_nsi_58.code=c." + Contract.c.CODE_VC_NSI_58.lc ())
                 
         ;
         
