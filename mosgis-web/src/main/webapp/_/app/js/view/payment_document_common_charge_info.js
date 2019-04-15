@@ -380,8 +380,12 @@ darn ([old, young])
                                     var m = get_message (row, col)
 
                                     if (m) {
-                                        $this.css ({background: '#ffcccc'}).attr ({title: m})
+                                        $this.css ({background: '#ffffcc'}).attr ({title: m})
                                         $('div', $this).attr ({title: m})
+                                    }
+                                    else if (is_yellow (row, col) && null == row [col.field]) {
+                                        $this.css ({background: '#ffcccc'})
+                                        $('div', $this).attr ({title: 'Обязательно для заполнения'})
                                     }
 
                                 })                                
