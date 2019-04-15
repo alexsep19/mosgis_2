@@ -57,6 +57,9 @@ import ru.eludia.products.mosgis.db.model.voc.VocPropertyDocumentType;
 import static ru.eludia.products.mosgis.db.model.voc.VocRdColType.i.REF;
 import ru.eludia.products.mosgis.db.model.voc.VocVotingForm;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.tables.AccessRequest;
+import ru.eludia.products.mosgis.db.model.voc.nsi58.VocNsi58;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.ws.rest.impl.tools.Search;
@@ -648,6 +651,41 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
         
         logAction (db, user, id, uuidOrg, null, VocAction.i.ALTER);
         
+    });}
+
+    @Override
+    public JsonObject getContracts (String id, User u) {return fetchData ((db, job) -> {
+        
+        final Model m = db.getModel ();
+        
+        Select select = m
+            .select (ContractObject.class, "AS mgmt_contracts"
+                , ContractObject.c.ID_CTR_STATUS.lc () + " AS id_obj_status"
+            )
+            .where (EnTable.c.IS_DELETED, 0)
+            .where (ContractObject.c.FIASHOUSEGUID, id)
+            .toOne (Contract.class, "AS c"
+                , EnTable.c.UUID.lc () + " AS id"
+                , Contract.c.DOCNUM.lc () + " AS no"
+                , Contract.c.SIGNINGDATE.lc () + " AS dt"
+                , Contract.c.EFFECTIVEDATE.lc () + " AS dt_from"
+                , Contract.c.PLANDATECOMPTETION.lc () + " AS dt_to"
+                , Contract.c.ID_CTR_STATUS.lc () + " AS id_ctr_status"
+            ).on ()                
+            .toOne (VocOrganization.class, "AS org"
+                , VocOrganization.c.LABEL.lc () + " AS org_label"
+            ).on ("org.uuid=c." + Contract.c.UUID_ORG.lc ())                
+            .toOne (VocOrganization.class, "AS org_customer"
+                , VocOrganization.c.LABEL.lc () + " AS org_customer_label"
+            ).on ("org_customer.uuid=c." + Contract.c.UUID_ORG_CUSTOMER.lc ())
+            .toOne (VocNsi58.class, "AS reason"
+                , "label" + " AS reason"
+            ).on ("reason.isactual=1 AND reason.code=c." + Contract.c.CODE_VC_NSI_58.lc ())
+                
+        ;
+        
+        db.addJsonArrays (job, select);
+
     });}
     
 }
