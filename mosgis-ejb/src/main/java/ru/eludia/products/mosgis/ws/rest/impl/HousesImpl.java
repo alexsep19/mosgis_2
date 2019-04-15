@@ -656,9 +656,10 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
         final NsiTable nsi58 = NsiTable.getNsiTable (58);
         
         String fiashouseguid = db.getString (m.get (House.class, id, House.c.FIASHOUSEGUID.lc ()));
-        
-        Select select = m
-            .select (ContractObject.class, "AS mgmt_contracts"
+                
+        db.addJsonArrays (job, 
+
+            m.select (ContractObject.class, "AS mgmt_contract"
                 , ContractObject.c.ID_CTR_STATUS.lc () + " AS id_obj_status"
             )
             .where (EnTable.c.IS_DELETED, 0)
@@ -679,10 +680,31 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
             ).on ("org_customer.uuid=c." + Contract.c.UUID_ORG_CUSTOMER.lc ())
             .toOne (nsi58, nsi58.getLabelField ().getfName () + " AS reason"
             ).on ("vc_nsi_58.isactual=1 AND vc_nsi_58.code=c." + Contract.c.CODE_VC_NSI_58.lc ())
+/*                
+            , m.select (ContractObject.class, "AS mgmt_contract"
+                , ContractObject.c.ID_CTR_STATUS.lc () + " AS id_obj_status"
+            )
+            .where (EnTable.c.IS_DELETED, 0)
+            .where (ContractObject.c.FIASHOUSEGUID, fiashouseguid)
+            .toOne (Contract.class, "AS c"
+                , EnTable.c.UUID.lc () + " AS id"
+                , Contract.c.DOCNUM.lc () + " AS no"
+                , Contract.c.SIGNINGDATE.lc () + " AS dt"
+                , Contract.c.EFFECTIVEDATE.lc () + " AS dt_from"
+                , Contract.c.PLANDATECOMPTETION.lc () + " AS dt_to"
+                , Contract.c.ID_CTR_STATUS.lc () + " AS id_ctr_status"
+            ).on ()                
+            .toOne (VocOrganization.class, "AS org"
+                , VocOrganization.c.LABEL.lc () + " AS org_label"
+            ).on ("org.uuid=c." + Contract.c.UUID_ORG.lc ())                
+            .toMaybeOne (VocOrganization.class, "AS org_customer"
+                , VocOrganization.c.LABEL.lc () + " AS org_customer_label"
+            ).on ("org_customer.uuid=c." + Contract.c.UUID_ORG_CUSTOMER.lc ())
+            .toOne (nsi58, nsi58.getLabelField ().getfName () + " AS reason"
+            ).on ("vc_nsi_58.isactual=1 AND vc_nsi_58.code=c." + Contract.c.CODE_VC_NSI_58.lc ())
+*/                
                 
-        ;
-        
-        db.addJsonArrays (job, select);
+        );
 
     });}
     
