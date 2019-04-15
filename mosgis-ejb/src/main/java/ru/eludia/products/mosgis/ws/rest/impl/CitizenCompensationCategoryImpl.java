@@ -99,7 +99,7 @@ public class CitizenCompensationCategoryImpl extends BaseCRUD<CitizenCompensatio
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {                
 
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
-	    .toMaybeOne(VocOktmo.class, "id AS oktmo_id", "code AS code", "site_name AS label").on()
+	    .toMaybeOne(VocOktmo.class, "site_name AS oktmo_label").on()
 	    .toMaybeOne (VocBudgetLevel.class, "AS vc_budget_level", "*").on()
             .orderBy ("root." + CitizenCompensationCategory.c.LABEL_UC.lc ())
             .limit (p.getInt ("offset"), p.getInt ("limit"));
@@ -119,12 +119,13 @@ public class CitizenCompensationCategoryImpl extends BaseCRUD<CitizenCompensatio
 
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
             .get (getTable (), id, "AS root", "*")
-	    .toMaybeOne(VocOktmo.class, "id AS oktmo_id", "code AS code", "site_name AS label").on()
+	    .toMaybeOne(VocOktmo.class, "site_name AS oktmo_label").on()
 	    .toMaybeOne (VocBudgetLevel.class, "AS vc_budget_level", "*").on()
         ));
         
         VocGisStatus.addLiteTo (job);
         VocAction.addTo (job);
+	VocBudgetLevel.addTo(job);
 //        Nsi295.i.addTo (job);
     });}
 
@@ -146,7 +147,8 @@ public class CitizenCompensationCategoryImpl extends BaseCRUD<CitizenCompensatio
 
         VocGisStatus.addLiteTo(job);
         VocAction.addTo (job);
-        Nsi301.i.addTo(job);
+        VocBudgetLevel.addTo(job);
+//        Nsi295.i.addTo (job);
     });}
     
     @Override

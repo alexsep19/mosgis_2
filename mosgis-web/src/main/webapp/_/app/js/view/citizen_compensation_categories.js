@@ -36,9 +36,9 @@ define ([], function () {
             
                 {field: 'categoryname', caption: 'Наименование', size: 100},
                 {field: 'vc_budget_level.label', caption: 'Бюджет', size: 20},
-                {field: 'vc_oktmo.label', caption: 'Территория', size: 20},
-                {field: 'fromdate', caption: 'Дата начала', size: 50, render: _dt},
-                {field: 'todate', caption: 'Дата окончания', size: 50, render: _dt},
+                {field: 'oktmo_label', caption: 'Территория', size: 20},
+                {field: 'fromdate', caption: 'Дата начала', size: 20, render: _dt},
+                {field: 'todate', caption: 'Дата окончания', size: 20, render: _dt},
 
 
             ].filter (not_off),
