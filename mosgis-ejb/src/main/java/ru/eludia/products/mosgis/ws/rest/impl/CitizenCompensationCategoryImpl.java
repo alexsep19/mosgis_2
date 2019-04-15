@@ -18,6 +18,7 @@ import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.CitizenCompensationCalculationKind;
+import ru.eludia.products.mosgis.db.model.voc.VocBudgetLevel;
 import ru.eludia.products.mosgis.db.model.voc.VocCitizenCompensationHousing;
 import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
 import ru.eludia.products.mosgis.db.model.voc.VocServiceType;
@@ -98,10 +99,8 @@ public class CitizenCompensationCategoryImpl extends BaseCRUD<CitizenCompensatio
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {                
 
         Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
-	    .toMaybeOne (VocOktmo.class, "AS o", "*").on ()
-            .toMaybeOne (CitizenCompensationCategoryLog.class).on ()
-            .toMaybeOne (OutSoap.class,       "err_text").on ()
-            .toMaybeOne (VocOrganization.class, "AS org", "label").on ("root.uuid_org=org.uuid")
+	    .toMaybeOne(VocOktmo.class, "id AS oktmo_id", "code AS code", "site_name AS label").on()
+	    .toMaybeOne (VocBudgetLevel.class, "AS vc_budget_level", "*").on()
             .orderBy ("root." + CitizenCompensationCategory.c.LABEL_UC.lc ())
             .limit (p.getInt ("offset"), p.getInt ("limit"));
         
@@ -120,15 +119,13 @@ public class CitizenCompensationCategoryImpl extends BaseCRUD<CitizenCompensatio
 
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
             .get (getTable (), id, "AS root", "*")
-	    .toMaybeOne (VocOktmo.class, "AS o", "*").on ()
-            .toMaybeOne (CitizenCompensationCategoryLog.class, "AS log").on ()
-            .toMaybeOne (OutSoap.class, "err_text").on ("log.uuid_out_soap=out_soap.uuid")
-            .toMaybeOne (VocOrganization.class, "AS org", "label").on ("root.uuid_org=org.uuid")
+	    .toMaybeOne(VocOktmo.class, "id AS oktmo_id", "code AS code", "site_name AS label").on()
+	    .toMaybeOne (VocBudgetLevel.class, "AS vc_budget_level", "*").on()
         ));
         
         VocGisStatus.addLiteTo (job);
         VocAction.addTo (job);
-        Nsi301.i.addTo (job);
+//        Nsi295.i.addTo (job);
     });}
 
     @Override
