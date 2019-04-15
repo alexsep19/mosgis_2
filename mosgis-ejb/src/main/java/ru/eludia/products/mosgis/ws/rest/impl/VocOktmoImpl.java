@@ -3,6 +3,8 @@ package ru.eludia.products.mosgis.ws.rest.impl;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -17,6 +19,7 @@ import ru.eludia.products.mosgis.ws.rest.impl.tools.Search;
 import ru.eludia.products.mosgis.ws.rest.impl.tools.SimpleSearch;
 
 @Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class VocOktmoImpl implements VocOktmoLocal {
 
     private static final Logger logger = Logger.getLogger (VocOktmoImpl.class.getName ());
