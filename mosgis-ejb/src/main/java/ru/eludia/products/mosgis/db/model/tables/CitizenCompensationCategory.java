@@ -11,6 +11,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocBudgetLevel;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi237;
+import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
 
 public class CitizenCompensationCategory extends EnTable {
 
@@ -32,6 +33,7 @@ public class CitizenCompensationCategory extends EnTable {
 	SCOPE                        (Type.BOOLEAN, Bool.FALSE, "1, если действует в заданном ОКТМО, 0, если действует по всей Москве"),
 	CODE_VC_NSI_237              (Nsi237.class, 20, new ru.eludia.base.model.def.String("77"), "Сфера действия НПА региональный уровень (НСИ 237)"),
 	OKTMO_CODE                   (Type.STRING,  11,   null, "Код ОКТМО"),
+	OKTMO                        (VocOktmo.class, null, "ОКТМО"),
 
 	PAYOUTTERM                  (Type.STRING, null, "Срок перечисления компенсации"),
 	PROVISIONDOCUMENTS          (Type.STRING, null, "Перечень документов, необходимых для получения компенсации"),
