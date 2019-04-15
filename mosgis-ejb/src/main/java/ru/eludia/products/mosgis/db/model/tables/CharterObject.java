@@ -6,50 +6,69 @@ import java.util.Map;
 import java.util.UUID;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.util.SyncMap;
+import ru.eludia.base.model.Col;
+import ru.eludia.base.model.ColEnum;
+import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Bool;
 import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Num;
 import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocCharterObjectReason;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportCharterRequest;
 
-public class CharterObject extends Table {
+public class CharterObject extends EnTable {
 
+    public static final String TABLE_NAME = "tb_charter_objects";
+    
+    public enum c implements ColEnum {        
+
+        UUID                      (Type.UUID,             NEW_UUID,     "Ключ"),
+        IS_DELETED                (Type.BOOLEAN,          Bool.FALSE,   "1, если запись удалена; иначе 0"),
+        IS_FROM_GIS               (Type.BOOLEAN,          Bool.FALSE,   "1, если запись импортирована из WS ГИС; иначе (если создана оператором системы) 0"),
+
+        UUID_CHARTER              (Charter.class,                      "Ссылка на договор"),
+
+        FIASHOUSEGUID             (VocBuilding.class,                   "Глобальный уникальный идентификатор дома по ФИАС"),
+
+        ID_REASON                 (VocCharterObjectReason.class, new Num (VocCharterObjectReason.i.CHARTER.getId ()), "Основание"),
+        UUID_CHARTER_FILE         (CharterFile.class,     null,          "Ссылка на протокол"),
+        ISMANAGEDBYCONTRACT       (Type.BOOLEAN,          Bool.FALSE,   "Управление многоквартирным домом осуществляется управляющей организацией по договору управления"),
+
+        STARTDATE                 (Type.DATE,             null,         "Дата начала предоставления услуг"),
+        ENDDATE                   (Type.DATE,             null,         "Дата окончания предоставления услуг"),        
+
+        ANNULMENTINFO             (Type.STRING,           null,       "Причина аннулирования."),
+        IS_ANNULED                (Type.BOOLEAN,          new Virt ("DECODE(\"ANNULMENTINFO\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0"),
+
+        ID_CTR_STATUS             (VocGisStatus.class,                  new Num (VocGisStatus.i.PROJECT.getId ()), "Статус объекта договора с точки зрения mosgis"),
+        ID_CTR_STATUS_GIS         (VocGisStatus.class,                  new Num (VocGisStatus.i.PROJECT.getId ()), "Статус объекта договора с точки зрения ГИС ЖКХ"),
+        IS_TO_IGNORE              (Type.BOOLEAN,         new Virt (isToIgnoreSrc ()), "1, если объект следует игнорировать в контролях на пересечение периодов"),
+
+        CONTRACTOBJECTVERSIONGUID (Type.UUID,       null,          "UUID последней версии данного объекта в ГИС ЖКХ"),
+
+        ID_LOG                    (CharterObjectLog.class,  null,      "Последнее событие редактирования"),
+        ;
+        
+        @Override
+        public Col getCol () {return col;}
+        private Col col;        
+        private c (Type type, Object... p) {col = new Col (this, type, p);}
+        private c (Class c,   Object... p) {col = new Ref (this, c, p);}
+        
+    }
+    
     public CharterObject () {
         
-        super  ("tb_charter_objects", "Объекты уставов");
+        super (TABLE_NAME, "Объекты уставов");        
+        cols (c.class);        
+        key (c.UUID_CHARTER);
         
-        pk     ("uuid",                    Type.UUID,             NEW_UUID,     "Ключ");
-        col    ("is_deleted",              Type.BOOLEAN,          Bool.FALSE,   "1, если запись удалена; иначе 0");
-        col    ("is_from_gis",             Type.BOOLEAN,          Bool.FALSE,   "1, если запись импортирована из WS ГИС; иначе (если создана оператором системы) 0");
-        
-        ref    ("uuid_charter",           Charter.class,                      "Ссылка на договор");
-        
-        fk     ("fiashouseguid",           VocBuilding.class,                   "Глобальный уникальный идентификатор дома по ФИАС");
-        
-        fk     ("id_reason",               VocCharterObjectReason.class, new Num (VocCharterObjectReason.i.CHARTER.getId ()), "Основание");
-        ref    ("uuid_charter_file",       CharterFile.class,     null,          "Ссылка на протокол");
-        col    ("ismanagedbycontract",     Type.BOOLEAN,          Bool.FALSE,   "Управление многоквартирным домом осуществляется управляющей организацией по договору управления");
-
-        col    ("startdate",               Type.DATE,             null,         "Дата начала предоставления услуг");
-        col    ("enddate",                 Type.DATE,             null,         "Дата окончания предоставления услуг");        
-       
-        col    ("annulmentinfo",           Type.STRING,           null,       "Причина аннулирования.");
-        col    ("is_annuled",              Type.BOOLEAN,          new Virt ("DECODE(\"ANNULMENTINFO\",NULL,0,1)"),  "1, если запись аннулирована; иначе 0");
-        
-        fk     ("id_ctr_status",           VocGisStatus.class,                  new Num (VocGisStatus.i.PROJECT.getId ()), "Статус объекта договора с точки зрения mosgis");
-        fk     ("id_ctr_status_gis",       VocGisStatus.class,                  new Num (VocGisStatus.i.PROJECT.getId ()), "Статус объекта договора с точки зрения ГИС ЖКХ");
-        col    ("is_to_ignore",            Type.BOOLEAN,         new Virt (isToIgnoreSrc ()), "1, если объект следует игнорировать в контролях на пересечение периодов");
-
-        col    ("contractobjectversionguid",     Type.UUID,       null,          "UUID последней версии данного объекта в ГИС ЖКХ");
-        
-        fk     ("id_log",                  CharterObjectLog.class,  null,      "Последнее событие редактирования");
- 
         trigger ("BEFORE INSERT OR UPDATE", ""
                 
             + "DECLARE" 
