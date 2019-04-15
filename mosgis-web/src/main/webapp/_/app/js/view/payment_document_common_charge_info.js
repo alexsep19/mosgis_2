@@ -332,6 +332,7 @@ darn ([old, young])
 
                             $(sel + ' td.w2ui-grid-data:not(:last-child)').css ({
                                 'font-weight': 'bold',
+                                'background-color': '#eee',
                                 'border-bottom-width': '1px',
                             }).css ({'border-right-width': 0})
                             
@@ -350,6 +351,7 @@ darn ([old, young])
 
                             $(sel + ' td.w2ui-grid-data').css ({
                                 'font-weight': 'bold',
+                                'background-color': '#eee',
                                 'border-bottom-color': '#aaa',
                             })
 
