@@ -18,6 +18,8 @@ import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.CitizenCompensationCalculationKind;
+import ru.eludia.products.mosgis.db.model.tables.CitizenCompensationCategoryLegalAct;
+import ru.eludia.products.mosgis.db.model.tables.LegalAct;
 import ru.eludia.products.mosgis.db.model.voc.VocBudgetLevel;
 import ru.eludia.products.mosgis.db.model.voc.VocCitizenCompensationHousing;
 import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
@@ -130,7 +132,7 @@ public class CitizenCompensationCategoryImpl extends BaseCRUD<CitizenCompensatio
     });}
 
     @Override
-    public JsonObject getCalculation(String id, User user) {return fetchData ((db, job) -> {
+    public JsonObject getCalculation(String id) {return fetchData ((db, job) -> {
 
         db.addJsonArrays (job, ModelHolder.getModel ()
             .select (CitizenCompensationCalculationKind.class, "AS root", "*")
@@ -138,6 +140,18 @@ public class CitizenCompensationCategoryImpl extends BaseCRUD<CitizenCompensatio
 	    .toMaybeOne(VocCitizenCompensationHousing.class, "*").on()
 	    .toMaybeOne(Nsi275.class, "AS vw_nsi_275", "*").on("root.code_vc_nsi_275 = vw_nsi_275.id")
             .where  (CitizenCompensationCalculationKind.c.UUID_CIT_COMP_CAT, id)
+        );
+    });}
+
+    @Override
+    public JsonObject getLegalActs(String id) {return fetchData ((db, job) -> {
+
+        db.addJsonArrays (job, ModelHolder.getModel ()
+	    .select(LegalAct.class, "AS root", "*")
+            .toOne (CitizenCompensationCategoryLegalAct.class, "AS cla", "*")
+		.where("uuid", id)
+		.on("root.uuid = cla.uuid_legal_act")
+	    .orderBy(LegalAct.c.APPROVEDATE.lc() + " DESC")
         );
     });}
 

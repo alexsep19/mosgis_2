@@ -100,7 +100,16 @@ public class CitizenCompensationCategories extends EJBResource <CitizenCompensat
     @Produces (APPLICATION_JSON)
     public JsonObject getCalculation (@PathParam ("id") String id) {
 	checkGet();
-        return back.getCalculation (id, getUser ());
+        return back.getCalculation (id);
+    }
+    
+    @POST
+    @Path("{id}/legal_acts")
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject getLegalActs (@PathParam ("id") String id) {
+	checkGet();
+        return back.getLegalActs (id);
     }
 
 //    @POST

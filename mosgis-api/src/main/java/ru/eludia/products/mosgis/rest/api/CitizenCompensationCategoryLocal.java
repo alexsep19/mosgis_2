@@ -9,6 +9,7 @@ import ru.eludia.products.mosgis.rest.api.base.CRUDBackend;
 public interface CitizenCompensationCategoryLocal extends CRUDBackend {
     
     public JsonObject getVocs ();
-    public JsonObject getCalculation (String id, User user);
+    public JsonObject getCalculation (String id);
+    public JsonObject getLegalActs (String id);
 //    public JsonObject doImport(User user);
 }
