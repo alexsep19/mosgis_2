@@ -29,10 +29,18 @@ public class CitizenCategoryMSP extends EnTable {
 	TODATE                       (Type.DATE, null, "Дата окончания предоставления компенсаций расходов"),
 	BUDGETLEVEL                  (VocBudgetLevel.class, "Бюджет, за счет которого осуществляются выплаты. Возможные значения:"),
 
-	// Territory - Территория предоставления компенсации расходов:
 	SCOPE                        (Type.BOOLEAN, Bool.FALSE, "1, если действует в заданном ОКТМО, 0, если действует по всей Москве"),
 	CODE_VC_NSI_237              (Nsi237.class, 20, new ru.eludia.base.model.def.String("77"), "Сфера действия НПА региональный уровень (НСИ 237)"),
 	OKTMO_CODE                   (Type.STRING,  11,   null, "Код ОКТМО"),
+
+	PAYOUTTERM                  (Type.STRING, null, "Срок перечисления компенсации"),
+	PROVISIONDOCUMENTS          (Type.STRING, null, "Перечень документов, необходимых для получения компенсации"),
+	DENIALREASONS               (Type.STRING, null, "Основания для отказа в предоставлении компенсации"),
+	SUSPENSIONREASONS           (Type.STRING, null, "Основания для приостановления предоставления компенсации"),
+	TERMINATIONREASONS          (Type.STRING, null, "Основания для прекращения предоставления компенсации"),
+	RESUMPTIONREASONS           (Type.STRING, null, "Основания для возобновления предоставления компенсации"),
+	RECALCULATIONREASONS        (Type.STRING, null, "Основания для перерасчета компенсации"),
+	REFUNDREASONS               (Type.STRING, null, "Основания возврата излишне полученной суммы компенсации"),
 
 	CATEGORYGUID                 (Type.UUID,             null,  "Глобально-уникальный идентификатор элемента справочника"),
 	ID_LOG                       (CitizenCategoryMSPLog.class, "Последнее событие редактирования"),
