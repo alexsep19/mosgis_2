@@ -2,11 +2,11 @@ package ru.eludia.products.mosgis.db.model.voc;
 
 import java.util.Map;
 import java.util.logging.Logger;
+
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
-import static ru.eludia.base.model.Type.STRING;
 import ru.eludia.base.model.def.Num;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
@@ -23,7 +23,6 @@ public class VocOverhaulWorkType extends EnTable {
     public enum c implements EnColEnum {
         
         GUID                (Type.UUID,   null,      "Глобально-уникальный идентификатор элемента справочника"),
-        UNIQUENUMBER        (Type.STRING, null,      "Уникальный реестровый номер в ГИС"),
         
         UUID_ORG            (VocOrganization.class,  "Организация"),
         
@@ -66,6 +65,8 @@ public class VocOverhaulWorkType extends EnTable {
         super ("vc_oh_wk_types", "Справочник типов работ капитального ремонта");
         
         cols  (c.class);
+        
+        key    ("uuid_org", c.UUID_ORG);
         
     }
     
