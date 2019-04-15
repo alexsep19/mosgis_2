@@ -32,7 +32,7 @@ define ([], function () {
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
-//                            {id: 'citizen_compensation_category_common_log', caption: 'История изменений'},
+                            {id: 'citizen_compensation_category_common_log', caption: 'История изменений'},
                         ],
                         onClick: $_DO.choose_tab_citizen_compensation_category_common
                     }                
