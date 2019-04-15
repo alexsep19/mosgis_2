@@ -20,7 +20,12 @@ define ([], function () {
                             {id: 'citizen_compensation_category_common',   caption: 'Общие'},
 //                            {id: 'citizen_compensation_category_reasons', caption: 'Условия предоставления'},
 //                            {id: 'citizen_compensation_category_legal_acts', caption: 'НПА'},
-//                            {id: 'citizen_compensation_category_calculation_kinds', caption: 'Порядок расчета компенсации расходов'},
+                            {id: 'citizen_compensation_category_calculation_kinds', caption: 'Порядок расчета компенсации расходов'
+                                , off: data.item.is_fixed
+                            },
+                            {id: 'citizen_compensation_category_calculation_kind_fixed', caption: 'Порядок расчета компенсации расходов'
+                                , off: !data.item.is_fixed
+                            },
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_citizen_compensation_category
