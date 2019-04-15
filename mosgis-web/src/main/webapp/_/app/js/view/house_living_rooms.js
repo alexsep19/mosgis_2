@@ -41,7 +41,7 @@ define ([], function () {
             show: {
                 toolbar: true,
                 footer: true,
-                toolbarAdd: data.is_passport_editable,
+                toolbarAdd: data.is_passport_editable || data.is_own_srca,
                 toolbarInput: false,
                 toolbarSearch: true,
                 toolbarReload: false,

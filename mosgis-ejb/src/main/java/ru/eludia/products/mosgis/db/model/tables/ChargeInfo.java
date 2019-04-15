@@ -1,20 +1,29 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
-import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.voc.VocChargeInfoType;
 import ru.eludia.products.mosgis.db.model.voc.VocConsumptionVolumeDeterminingMethod;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi50;
+import ru.gosuslugi.dom.schema.integration.bills.GeneralMunicipalResourceType;
+import ru.gosuslugi.dom.schema.integration.bills.PDServiceChargeType;
+import ru.gosuslugi.dom.schema.integration.bills.PaymentDocumentType;
+import ru.gosuslugi.dom.schema.integration.bills.ServiceChargeImportType;
 
 public class ChargeInfo extends EnTable {
     
     public static final String TABLE_NAME = "tb_charge_info";
+    public static final String __GENERAL = "__general";
     
     public enum c implements EnColEnum {
         
@@ -28,7 +37,6 @@ public class ChargeInfo extends EnTable {
         UUID_M_M_SERVICE      (MainMunicipalService.class, null,                "Коммунальная услуга"),
         UUID_ADD_SERVICE      (AdditionalService.class, null,                   "Дополнительная услуга"),
         UUID_GEN_NEED_RES     (GeneralNeedsMunicipalResource.class, null,       "Коммунальный ресурс, потребляемый при использовании и содержании общего имущества в многоквартирном доме (НСИ 337)"),
-
         UUID_INS_PRODUCT      (InsuranceProduct.class, null,                    "Страховой продукт"),
 
         OKEI                  (VocOkei.class, "Единицы измерения (ОКЕИ)"),        
@@ -134,5 +142,183 @@ public class ChargeInfo extends EnTable {
         );        
         
     }    
+            
+    static PaymentDocumentType.ChargeInfo toChargeInfo (Map<String, Object> r) {
+        
+        final PaymentDocumentType.ChargeInfo result = DB.to.javaBean (PaymentDocumentType.ChargeInfo.class, r);
+        
+        final VocChargeInfoType.i type = VocChargeInfoType.i.forId (r.get (c.ID_TYPE.lc ()));
+        
+        switch (type) {
+            case HOUSING:
+                result.setHousingService (toHousingService (r));
+                break;
+            case MUNICIPAL:
+                result.setMunicipalService (toMunicipalService (r));
+                break;
+            case ADDITIONAL:
+                result.setAdditionalService (toAdditionalService (r));
+                break;
+            default: 
+                return null;
+        }        
+        
+        return result;
+        
+    }
     
+    private static PDServiceChargeType.MunicipalService toMunicipalService (Map<String, Object> r) {
+        final PDServiceChargeType.MunicipalService result = DB.to.javaBean (PDServiceChargeType.MunicipalService.class, r);
+        result.setServiceType (NsiTable.toDom (r, "nsi"));
+        result.setConsumption (toMConsumption (r));
+        result.setServiceCharge (toServiceCharge (r));
+        result.setPaymentRecalculation (toMPaymentRecalculation (r));
+        return result;
+    }
+
+    private static PDServiceChargeType.AdditionalService toAdditionalService (Map<String, Object> r) {
+        final PDServiceChargeType.AdditionalService result = DB.to.javaBean (PDServiceChargeType.AdditionalService.class, r);
+        result.setServiceType (NsiTable.toDom (r, "nsi"));
+        result.setConsumption (toConsumption (r));
+        result.setServiceCharge (toServiceCharge (r));
+        result.setPaymentRecalculation (toPaymentRecalculation (r));
+        return result;
+    }
+    
+    private static PDServiceChargeType.HousingService toHousingService (Map<String, Object> r) {
+        final PDServiceChargeType.HousingService result = DB.to.javaBean (PDServiceChargeType.HousingService.class, r);
+        result.setServiceType (NsiTable.toDom (r, "nsi"));
+        addMunicipalResources (result.getMunicipalResource (), (List <Map <String, Object>>) r.get (__GENERAL));
+        return result;
+    }
+    
+    private static void addMunicipalResources (List<PDServiceChargeType.HousingService.MunicipalResource> municipalResource, List<Map<String, Object>> list) {
+        list.forEach ((t) -> municipalResource.add (toMunicipalResource (t)));
+    }
+    
+    private static PDServiceChargeType.HousingService.MunicipalResource toMunicipalResource (Map<String, Object> r) {
+        final PDServiceChargeType.HousingService.MunicipalResource result = DB.to.javaBean (PDServiceChargeType.HousingService.MunicipalResource.class, r);
+        result.setServiceType (NsiTable.toDom (r, "vc_nsi_2"));
+        result.getGeneralMunicipalResource ().add (toGeneralMunicipalResourceType (r));
+        result.setServiceCharge (toServiceCharge (r));
+        result.setPaymentRecalculation (toRPaymentRecalculation (r));
+        result.setConsumption (toRConsumption (r));
+        return result;
+    }
+    
+    private static GeneralMunicipalResourceType toGeneralMunicipalResourceType (Map<String, Object> r) {
+        final GeneralMunicipalResourceType result = DB.to.javaBean (GeneralMunicipalResourceType.class, r);
+        result.setServiceType (NsiTable.toDom (r, "nsi"));
+        result.setServiceCharge (toServiceCharge (r));
+        result.setPaymentRecalculation (toGPaymentRecalculation (r));
+        result.setConsumption (toGConsumption (r));
+        return result;
+    }
+        
+    private static PDServiceChargeType.AdditionalService.Consumption toConsumption (Map<String, Object> r) {
+        final PDServiceChargeType.AdditionalService.Consumption result = new PDServiceChargeType.AdditionalService.Consumption ();
+        List<PDServiceChargeType.AdditionalService.Consumption.Volume> volume = result.getVolume ();
+        addVolume (volume, r, 'i');
+        addVolume (volume, r, 'o');
+        return volume.isEmpty () ? null : result;
+    }
+    
+    private static PDServiceChargeType.MunicipalService.Consumption toMConsumption (Map<String, Object> r) {
+        final PDServiceChargeType.MunicipalService.Consumption result = new PDServiceChargeType.MunicipalService.Consumption ();
+        List<PDServiceChargeType.MunicipalService.Consumption.Volume> volume = result.getVolume ();
+        addMVolume (volume, r, 'i');
+        addMVolume (volume, r, 'o');
+        return volume.isEmpty () ? null : result;
+    }
+    
+    private static GeneralMunicipalResourceType.Consumption toGConsumption (Map<String, Object> r) {
+        Object vol = r.get ("cons_o_vol");
+        if (!DB.ok (vol)) return null;        
+        final GeneralMunicipalResourceType.Consumption result = new GeneralMunicipalResourceType.Consumption ();
+        GeneralMunicipalResourceType.Consumption.Volume v = new GeneralMunicipalResourceType.Consumption.Volume ();
+        v.setValue ((BigDecimal) vol);
+        v.setDeterminingMethod (DB.to.String (r.get ("cons_o_dtrm_meth")));
+        result.setVolume (v);
+        return result;
+    }
+    
+    private static PDServiceChargeType.HousingService.MunicipalResource.Consumption toRConsumption (Map<String, Object> r) {
+        Object vol = r.get ("cons_o_vol");
+        if (!DB.ok (vol)) return null;
+        final PDServiceChargeType.HousingService.MunicipalResource.Consumption result = new PDServiceChargeType.HousingService.MunicipalResource.Consumption ();
+        PDServiceChargeType.HousingService.MunicipalResource.Consumption.Volume v = new PDServiceChargeType.HousingService.MunicipalResource.Consumption.Volume ();
+        v.setValue ((BigDecimal) vol);
+        v.setDeterminingMethod (DB.to.String (r.get ("cons_o_dtrm_meth")));
+        result.setVolume (v);
+        return result;
+    }
+
+    private static void addVolume (List<PDServiceChargeType.AdditionalService.Consumption.Volume> volume, Map<String, Object> r, char c) {
+        Object vol = r.get ("cons_" + c + "_vol");
+        if (!DB.ok (vol)) return;
+        final PDServiceChargeType.AdditionalService.Consumption.Volume v = new PDServiceChargeType.AdditionalService.Consumption.Volume ();
+        v.setValue ((BigDecimal) vol);
+        v.setType (("" + c).toUpperCase ());
+        volume.add (v);
+    }
+    
+    private static void addMVolume (List<PDServiceChargeType.MunicipalService.Consumption.Volume> volume, Map<String, Object> r, char c) {
+        Object vol = r.get ("cons_" + c + "_vol");
+        if (!DB.ok (vol)) return;
+        final PDServiceChargeType.MunicipalService.Consumption.Volume v = new PDServiceChargeType.MunicipalService.Consumption.Volume ();
+        v.setValue ((BigDecimal) vol);
+        v.setType (("" + c).toUpperCase ());
+        v.setDeterminingMethod (DB.to.String (r.get ("cons_" + c + "_dtrm_meth")));
+        volume.add (v);
+    }
+
+    private static PDServiceChargeType.AdditionalService.PaymentRecalculation toPaymentRecalculation (Map<String, Object> r) {
+        Object sum = r.get (c.MONEYRECALCULATION.lc ());
+        if (!DB.ok (sum)) return null;
+        final PDServiceChargeType.AdditionalService.PaymentRecalculation result = new PDServiceChargeType.AdditionalService.PaymentRecalculation ();
+        result.setSum ((BigDecimal) sum);
+        result.setRecalculationReason (DB.to.String (r.get (c.RECALCULATIONREASON.lc ())));
+        return result;
+    }
+    
+    private static PDServiceChargeType.MunicipalService.PaymentRecalculation toMPaymentRecalculation (Map<String, Object> r) {
+        Object sum = r.get (c.MONEYRECALCULATION.lc ());
+        if (!DB.ok (sum)) return null;
+        final PDServiceChargeType.MunicipalService.PaymentRecalculation result = new PDServiceChargeType.MunicipalService.PaymentRecalculation ();
+        result.setSum ((BigDecimal) sum);
+        result.setRecalculationReason (DB.to.String (r.get (c.RECALCULATIONREASON.lc ())));
+        return result;
+    }    
+    
+    private static GeneralMunicipalResourceType.PaymentRecalculation toGPaymentRecalculation (Map<String, Object> r) {
+        Object sum = r.get (c.MONEYRECALCULATION.lc ());
+        if (!DB.ok (sum)) return null;
+        final GeneralMunicipalResourceType.PaymentRecalculation result = new GeneralMunicipalResourceType.PaymentRecalculation ();
+        result.setSum ((BigDecimal) sum);
+        result.setRecalculationReason (DB.to.String (r.get (c.RECALCULATIONREASON.lc ())));
+        return result;
+    }
+    
+    private static PDServiceChargeType.HousingService.MunicipalResource.PaymentRecalculation toRPaymentRecalculation (Map<String, Object> r) {
+        Object sum = r.get (c.MONEYRECALCULATION.lc ());
+        if (!DB.ok (sum)) return null;
+        final PDServiceChargeType.HousingService.MunicipalResource.PaymentRecalculation result = new PDServiceChargeType.HousingService.MunicipalResource.PaymentRecalculation ();
+        result.setSum ((BigDecimal) sum);
+        result.setRecalculationReason (DB.to.String (r.get (c.RECALCULATIONREASON.lc ())));
+        return result;
+    }
+    
+    private static ServiceChargeImportType toServiceCharge (Map<String, Object> r) {
+        Object sum = r.get (c.MONEYDISCOUNT.lc ());
+        if (!DB.ok (sum)) return null;
+        final ServiceChargeImportType result = new ServiceChargeImportType ();
+        result.setMoneyDiscount ((BigDecimal) sum);
+        return result;
+    }
+    
+    static PaymentDocumentType.Insurance toInsurance (Map<String, Object> r) {
+        final PaymentDocumentType.Insurance result = DB.to.javaBean (PaymentDocumentType.Insurance.class, r);
+        return result;
+    }
+
 }

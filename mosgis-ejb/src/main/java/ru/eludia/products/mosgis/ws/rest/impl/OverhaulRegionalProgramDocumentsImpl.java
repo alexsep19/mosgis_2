@@ -7,6 +7,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.InternalServerErrorException;
+import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgram;
@@ -15,6 +16,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi79;
 import ru.eludia.products.mosgis.rest.User;
+import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.rest.api.OverhaulRegionalProgramDocumentsLocal;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
 import ru.eludia.products.mosgis.ws.rest.impl.tools.ComplexSearch;
@@ -89,7 +91,7 @@ public class OverhaulRegionalProgramDocumentsImpl extends BaseCRUD <OverhaulRegi
         
         VocGisStatus.addLiteTo (job);
         VocAction.addTo (job);
-        VocNsi79.addToOverhaulRegionalProgramDocument (job);
+        VocNsi79.addToOverhaulRegionalProgramDocument (db, job);
         
     });}
 
@@ -98,10 +100,13 @@ public class OverhaulRegionalProgramDocumentsImpl extends BaseCRUD <OverhaulRegi
         
         JsonObjectBuilder job = Json.createObjectBuilder ();
         
-        try {
+        try (DB db = ModelHolder.getModel ().getDb ()) {
             VocGisStatus.addLiteTo (job);
             VocAction.addTo (job);
-            VocNsi79.addToOverhaulRegionalProgramDocument (job);
+            VocNsi79.addToOverhaulRegionalProgramDocument (db, job);
+        }
+        catch (ValidationException ex) {
+            throw ex;
         }
         catch (Exception ex) {
             throw new InternalServerErrorException (ex);

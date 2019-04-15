@@ -32,6 +32,9 @@ public class GeneralNeedsMunicipalResource extends EnTable {
         ELEMENTGUID                  (Type.UUID,             null,  "Идентификатор существующего элемента справочника"),
         UNIQUENUMBER                 (Type.STRING,           null,  "Уникальный номер, присвоенный ГИС ЖКХ"),
 
+        GUID                         (Type.UUID,    new Virt ("HEXTORAW(''||RAWTOHEX(\"ELEMENTGUID\"))"),  "GUID НСИ"),
+        CODE                         (Type.STRING,  new Virt ("(''||\"UNIQUENUMBER\")"),  "Код НСИ"),
+        
         ID_LOG                       (GeneralNeedsMunicipalResourceLog.class, "Последнее событие редактирования"),
         
         ID_CTR_STATUS                (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения mosgis"),
@@ -66,8 +69,8 @@ public class GeneralNeedsMunicipalResource extends EnTable {
         trigger ("BEFORE INSERT OR UPDATE", ""
             
             + "BEGIN "
-                
-                + " IF :NEW.ID_CTR_STATUS_GIS = 10 THEN BEGIN "
+
+                + " IF :NEW.ID_CTR_STATUS <> " + VocGisStatus.i.FAILED_STATE + " AND :NEW.ID_CTR_STATUS_GIS = 10 THEN BEGIN "
                 
                     + " IF :NEW.is_deleted=0 THEN :NEW.ID_CTR_STATUS := " + VocGisStatus.i.PENDING_RQ_PLACING
                     + " ; ELSE :NEW.ID_CTR_STATUS := " + VocGisStatus.i.PENDING_RQ_CANCEL

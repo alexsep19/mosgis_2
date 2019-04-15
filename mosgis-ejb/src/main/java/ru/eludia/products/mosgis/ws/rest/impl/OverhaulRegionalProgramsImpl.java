@@ -76,7 +76,7 @@ public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProg
                 nextStatus = VocGisStatus.i.PENDING_RQ_PUBLISHANDPROJECT;
                 action = VocAction.i.PUBLISHANDPROJECT;
                 break;
-            case REGIONAL_PROGRAM_WORKS_PLACE_FINISHED:
+            case PROGRAM_WORKS_PLACE_FINISHED:
             case FAILED_DELETEPROJECT:
                 nextStatus = VocGisStatus.i.PENDING_RQ_PLACING;
                 action = VocAction.i.APPROVE;
@@ -112,9 +112,9 @@ public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProg
                 nextStatus = VocGisStatus.i.PROJECT;
                 action = VocAction.i.DELETE;
                 break;
-            case REGIONAL_PROGRAM_WORKS_PLACE_INITIALIZED:
-            case FAILED_PLACE_REGIONAL_PROGRAM_WORKS:
-            case REGIONAL_PROGRAM_WORKS_PLACE_FINISHED:
+            case PROGRAM_WORKS_PLACE_INITIALIZED:
+            case FAILED_PLACE_PROGRAM_WORKS:
+            case PROGRAM_WORKS_PLACE_FINISHED:
             case FAILED_PLACING:
             case FAILED_DELETEPROJECT:
                 nextStatus = VocGisStatus.i.PENDING_RQ_DELETEPROJECT;
@@ -167,11 +167,23 @@ public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProg
             .where ("is_deleted", 0)
         );
         
+        int generalWorksCnt = works.size ();
+        int approvedWorksCnt = db.getCnt (ModelHolder.getModel ()
+            .select (OverhaulRegionalProgramHouseWork.class, "AS work", "*")
+                .toOne (OverhaulRegionalProgramHouse.class, "AS house").where ("is_deleted", 0).on ()
+                    .toOne (OverhaulRegionalProgram.class,  "AS program").where ("uuid", id).and ("is_deleted", 0).on ("house.program_uuid=program.uuid")
+            .where (OverhaulRegionalProgramHouseWork.c.ID_ORPHW_STATUS.lc (), VocGisStatus.i.APPROVED.getId ())
+            .and   ("is_deleted", 0)
+        );
+        
         JsonArray documents = db.getJsonArray (ModelHolder.getModel ()
             .select (OverhaulRegionalProgramFile.class, "label")
                 .toOne (OverhaulRegionalProgramDocument.class, "AS document").where ("is_deleted", 0).on ()
                     .toOne (OverhaulRegionalProgram.class,     "AS program").where ("uuid", id).and ("is_deleted", 0).on ("document.program_uuid=program.uuid")
         );
+        
+        job.add ("works_general_count", generalWorksCnt);
+        job.add ("works_approved_count", approvedWorksCnt);
         
         job.add ("works", works);
         job.add ("documents", documents);

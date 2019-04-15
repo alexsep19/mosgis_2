@@ -14,6 +14,7 @@ define ([], function () {
                     {name: 'f', type: 'text'},
                     {name: 'i', type: 'text'},
                     {name: 'o', type: 'text'},
+                    {name: 'position', type: 'text'},
                     {name: 'login', type: 'text'},
                 ],
 

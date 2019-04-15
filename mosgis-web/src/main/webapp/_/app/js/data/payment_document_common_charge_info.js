@@ -45,17 +45,45 @@ define ([], function () {
         }
 
         $.each (flds, function () {if (this != col.field) data [this] = row [this]})
+        
+        
+        
+        
+        switch (col.field) {
+            case 'cons_i_vol': 
+            case 'cons_o_vol':
+            case 'rate':
+                data.accountingperiodtotal = null
+                data.totalpayable = null
+        }
 
         if (data.accountingperiodtotal == null) {
             data.accountingperiodtotal = parseFloat (data.rate) 
                 * (parseFloat (data.cons_i_vol || '0') + parseFloat (data.cons_o_vol || '0'))
         }        
         
+        
+        
+        switch (col.field) {
+            case 'moneyrecalculation': 
+            case 'moneydiscount': 
+                data.totalpayable = null
+        }
+
         if (data.totalpayable == null) {
             data.totalpayable = parseFloat (data.accountingperiodtotal) 
                 + parseFloat (data.moneyrecalculation || '0') 
                 - parseFloat (data.moneydiscount      || '0')
         }
+        
+        
+        
+        switch (col.field) {
+            case 'cons_i_vol': 
+            case 'rate':
+            case 'ratio':
+                data.amountofexcessfees = null
+        }        
 
         if (data.ratio == null) {
             data.amountofexcessfees = null
@@ -67,6 +95,9 @@ define ([], function () {
                     * (parseFloat (data.ratio || '0') - 1.0)
             }
         }
+        
+        
+        
 
         grid.lock ()
 

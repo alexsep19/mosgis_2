@@ -128,11 +128,11 @@ public class GisPollExportOverhaulRegionalProgramHouseWorksManyMDB extends GisPo
         
         final int programLastOkStatus = db.getInteger (OverhaulRegionalProgram.class, r.get ("import.program_uuid"), OverhaulRegionalProgram.c.LAST_SUCCESFULL_STATUS.lc ());
         
-        if (programLastOkStatus == VocGisStatus.i.REGIONAL_PROGRAM_WORKS_PLACE_INITIALIZED.getId ())
+        if (programLastOkStatus == VocGisStatus.i.PROGRAM_WORKS_PLACE_INITIALIZED.getId ())
             db.update (OverhaulRegionalProgram.class, HASH (
                 "uuid",                                            r.get ("import.program_uuid"),
-                OverhaulRegionalProgram.c.ID_ORP_STATUS.lc (),     VocGisStatus.i.FAILED_PLACE_REGIONAL_PROGRAM_WORKS.getId (),
-                OverhaulRegionalProgram.c.ID_ORP_STATUS_GIS.lc (), VocGisStatus.i.FAILED_PLACE_REGIONAL_PROGRAM_WORKS.getId ()
+                OverhaulRegionalProgram.c.ID_ORP_STATUS.lc (),     VocGisStatus.i.FAILED_PLACE_PROGRAM_WORKS.getId (),
+                OverhaulRegionalProgram.c.ID_ORP_STATUS_GIS.lc (), VocGisStatus.i.FAILED_PLACE_PROGRAM_WORKS.getId ()
             ));
         
     }
@@ -165,9 +165,9 @@ public class GisPollExportOverhaulRegionalProgramHouseWorksManyMDB extends GisPo
         
         db.update (OverhaulRegionalProgram.class, HASH (
             "uuid",                                                 programUUID,
-            OverhaulRegionalProgram.c.ID_ORP_STATUS.lc (),          VocGisStatus.i.REGIONAL_PROGRAM_WORKS_PLACE_FINISHED.getId (),
-            OverhaulRegionalProgram.c.ID_ORP_STATUS_GIS.lc (),      VocGisStatus.i.REGIONAL_PROGRAM_WORKS_PLACE_FINISHED.getId (),
-            OverhaulRegionalProgram.c.LAST_SUCCESFULL_STATUS.lc (), VocGisStatus.i.REGIONAL_PROGRAM_WORKS_PLACE_FINISHED.getId ()
+            OverhaulRegionalProgram.c.ID_ORP_STATUS.lc (),          VocGisStatus.i.PROGRAM_WORKS_PLACE_FINISHED.getId (),
+            OverhaulRegionalProgram.c.ID_ORP_STATUS_GIS.lc (),      VocGisStatus.i.PROGRAM_WORKS_PLACE_FINISHED.getId (),
+            OverhaulRegionalProgram.c.LAST_SUCCESFULL_STATUS.lc (), VocGisStatus.i.PROGRAM_WORKS_PLACE_FINISHED.getId ()
         ));
         
     }

@@ -1,0 +1,78 @@
+<span>
+
+    <div>
+
+        <div class="w2ui-page page-0 page-1">
+
+        	<style>
+
+        		.w2ui-field > label {
+        			width: 160px;
+        			margin-right: 10px;
+        		}
+	        	.w2ui-field	> label.status {
+        			width: 60px;
+	        		margin-right: 10px;
+        		}
+
+        		.w2ui-field input.year {
+        			width: 40px !important;
+        		}
+
+        		.w2ui-field input.month {
+        			width: 25px !important;
+        		}
+
+        	</style>
+
+        	<table border=0 cellpadding=0 cellspacing=0 width=50%>
+
+        		<tr>
+					<td>
+						<div class="w2ui-field">
+							<label>Период реализации: c </label>
+							<div>
+								<input name=startyear maxlength=4 class=year>
+								<input name=startmonth maxlength=2 class=month>
+								по
+								<input name=endyear maxlength=4 class=year>
+								<input name=endmonth maxlength=2 class=month>
+							</div>
+						</div>
+					</td>
+					<td valign=top>
+                        <div class="w2ui-field">
+                            <label class=status>Статус: </label>
+                        <div id="status" class=name data-text=status_label />
+                    </td>
+				</tr>
+
+				<tr>
+					<td>
+						<div class="w2ui-field">
+							<label>Наименование: </label>
+							<div>
+								<input name=programname maxlength=1000>
+							</div>
+						</div>
+					</td>
+				</tr>
+
+			</table>
+
+        </div>
+
+        <div class="w2ui-buttons">
+        	<span>
+				<button class=w2ui-btn name=edit    data-on=__read_only>Редактировать</button>
+				<button class=w2ui-btn name=update  data-off=__read_only>Сохранить</button>
+				<button class=w2ui-btn name=cancel  data-off=__read_only>Отменить</button>
+				<button class=w2ui-btn name=delete  data-on=__read_only>Удалить</button>
+				<button class=w2ui-btn name=approve data-on=__read_only>Разместить</button>
+				<button class=w2ui-btn name=alter   data-on=__read_only>Изменить</button>
+            </span>
+        </div>
+
+    </div>
+
+</span>

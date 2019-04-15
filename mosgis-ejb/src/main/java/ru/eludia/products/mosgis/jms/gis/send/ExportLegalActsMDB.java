@@ -56,8 +56,8 @@ public class ExportLegalActsMDB extends GisExportMDB<LegalActLog> {
 	VocLegalActLevel.i level = VocLegalActLevel.i.forId(r.get(LegalAct.c.LEVEL_.lc()));
 
         switch (action) {
+	    case EDITING:
             case PLACING:
-            case EDITING:
 		switch (level) {
 		    case MUNICIPAL:
 			return wsGisUkClient.importDocumentsMunicipal(orgPPAGuid, messageGUID, r);

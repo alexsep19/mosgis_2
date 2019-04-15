@@ -44,6 +44,8 @@ public class VocUser extends Table {
         col   ("i",            Type.STRING,             "Имя");
         col   ("o",            Type.STRING, null,       "Отчество");
         
+        col   ("position",     Type.STRING, 200,  null, "Должность" );
+        
         col   ("login",        Type.STRING, null,       "Login");
         col   ("login_uc",     Type.STRING,  new Virt ("UPPER(\"LOGIN\")"),  "LOGIN В ВЕРХНЕМ РЕГИСТРЕ");
         

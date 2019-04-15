@@ -1,50 +1,72 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
-import ru.eludia.base.model.Table;
+import ru.eludia.base.model.Col;
+import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import static ru.eludia.base.model.def.Blob.EMPTY_BLOB;
-import ru.eludia.base.model.def.Bool;
-import static ru.eludia.base.model.def.Def.NEW_UUID;
 import ru.eludia.base.model.def.Num;
 import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.model.EnColEnum;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationInsurance;
 
-public class InsuranceProduct extends Table {
+public class InsuranceProduct extends EnTable {
 
     public static final String TABLE_NAME = "tb_ins_products";
+    
+    public enum c implements EnColEnum {
+        
+        UUID_ORG                  (VocOrganization.class,                      "Организация"),
+
+        INSURANCEORG              (VocOrganizationInsurance.class,             "Корневой идентификатор страховой компании из реестра организаций"),
+        NAME                      (Type.STRING,           1024,        null,   "Наименование вложения"),
+        DESCRIPTION               (Type.STRING,           500,         null,   "Описание вложения"),
+        MIME                      (Type.STRING,                                "Тип содержимого"),
+        LEN                       (Type.INTEGER,                               "Размер, байт"),
+        BODY                      (Type.BLOB,             EMPTY_BLOB,          "Содержимое"),       
+
+        ATTACHMENTGUID            (Type.UUID,                          null,   "Идентификатор сохраненного вложения"),        
+        ATTACHMENTHASH            (Type.BINARY,           32,          null,   "ГОСТ Р 34.11-94"),
+
+        INSURANCEPRODUCTGUID      (Type.UUID,                          null,   "Идентификатор страхового продукта"),
+        UNIQUENUMBER              (Type.STRING,                        null,   "Уникальный реестровый номер"),
+
+        LABEL                     (Type.STRING,  new Virt ("(''||\"DESCRIPTION\")"),  "Наименование"),
+        LABEL_UC                  (Type.STRING,  new Virt ("UPPER(\"DESCRIPTION\")"),  "НАИМЕНОВАНИЕ В ВЕРХНЕМ РЕГИСТРЕ"),
+
+        ID_STATUS                 (VocAsyncEntityState.class,          new Num (VocAsyncEntityState.i.PENDING.getId ()), "Статус синхронизации"),
+        ID_LOG                    (InsuranceProductLog.class,          null, "Последнее событие редактирования"),
+        
+        ;
+
+        @Override public Col getCol () {return col;} private Col col; private c (Type type, Object... p) {col = new Col (this, type, p);} private c (Class c,   Object... p) {col = new Ref (this, c, p);}
+
+        @Override
+        public boolean isLoggable () {
+
+            switch (this) {
+                case UUID_ORG:
+                case ID_LOG:
+                    return false;
+                default:
+                    return true;
+            }
+
+        }
+
+    }    
 
     public InsuranceProduct () {
 
-        super (TABLE_NAME,                                                       "Страховой продукт");
+        super (TABLE_NAME, "Страховой продукт");
 
-        pk    ("uuid",                      Type.UUID,             NEW_UUID,            "Ключ");
-        fk    ("uuid_org",                  VocOrganization.class,                      "Организация");
-        col   ("is_deleted",                Type.BOOLEAN,          Bool.FALSE,          "1, если запись удалена; иначе 0");
-        
-        fk    ("insuranceorg",              VocOrganizationInsurance.class,             "Корневой идентификатор страховой компании из реестра организаций");
-        col   ("name",                      Type.STRING,           1024,        null,   "Наименование вложения");
-        col   ("description",               Type.STRING,           500,         null,   "Описание вложения");
-        col   ("mime",                      Type.STRING,                                "Тип содержимого");
-        col   ("len",                       Type.INTEGER,                               "Размер, байт");
-        col   ("body",                      Type.BLOB,             EMPTY_BLOB,          "Содержимое");       
-        
-        col   ("attachmentguid",            Type.UUID,                          null,   "Идентификатор сохраненного вложения");        
-        col   ("attachmenthash",            Type.BINARY,           32,          null,   "ГОСТ Р 34.11-94");
+        cols (c.class);
 
-        col   ("insuranceproductguid",      Type.UUID,                          null,   "Идентификатор страхового продукта");
-        col   ("uniquenumber",              Type.STRING,                        null,   "Уникальный реестровый номер");
-
-        col   ("label",                     Type.STRING,  new Virt ("(''||\"DESCRIPTION\")"),  "Наименование");
-        col   ("label_uc",                  Type.STRING,  new Virt ("UPPER(\"DESCRIPTION\")"),  "НАИМЕНОВАНИЕ В ВЕРХНЕМ РЕГИСТРЕ");
-
-        fk    ("id_status",                 VocAsyncEntityState.class,          new Num (VocAsyncEntityState.i.PENDING.getId ()), "Статус синхронизации");
-        fk    ("id_log",                    InsuranceProductLog.class,          null, "Последнее событие редактирования");
-
-        key   ("label_uc", "label_uc");
+        key   (c.LABEL_UC);
+        key   (c.INSURANCEORG);        
         key   ("org_label", "uuid_org", "label");
-        key   ("insuranceorg", "insuranceorg");
 
         trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
 

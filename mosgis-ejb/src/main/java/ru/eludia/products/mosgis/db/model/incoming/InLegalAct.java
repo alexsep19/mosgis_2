@@ -62,9 +62,12 @@ public class InLegalAct extends Table {
 
 	final Map<String, Object> result = DB.HASH(
 	    LegalAct.c.DOCUMENTGUID.lc(), UUID.fromString(doc.getDocumentGuid()),
-	    LegalAct.c.UUID_ORG.lc(), null,
+
+	    // ГИС ЖКХ не возвращает статус и организацию
 	    LegalAct.c.ID_CTR_STATUS.lc(), VocGisStatus.i.APPROVED,
-	    LegalAct.c.ID_CTR_STATUS_GIS.lc(), VocGisStatus.i.APPROVED
+	    LegalAct.c.ID_CTR_STATUS_GIS.lc(), VocGisStatus.i.APPROVED,
+	    LegalAct.c.REASONOFANNULMENT.lc(), null,
+	    LegalAct.c.UUID_ORG.lc(), null
 	);
 
 	DocumentRegionExportType dr = doc.getDocumentRegion();

@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<weblogic-jms xmlns="http://xmlns.oracle.com/weblogic/weblogic-jms" xmlns:sec="http://xmlns.oracle.com/weblogic/security" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wls="http://xmlns.oracle.com/weblogic/security/wls" xsi:schemaLocation="http://xmlns.oracle.com/weblogic/weblogic-jms http://xmlns.oracle.com/weblogic/weblogic-jms/1.1/weblogic-jms.xsd">
+ 
+ <!-- очередь обработки запросов на экспорт проекта региональной программы капитального ремонта -->
+ <uniform-distributed-queue name="inExportOverhaulShortProgramsQueue">
+   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+   <delivery-params-overrides>
+       <time-to-deliver>2000</time-to-deliver>
+       <redelivery-delay>10000</redelivery-delay>
+   </delivery-params-overrides>
+   <jndi-name>mosgis.inExportOverhaulShortProgramsQueue</jndi-name>
+ </uniform-distributed-queue>
+ 
+ <!-- очередь обработки запросов на экспорт файлов региональной программы капитального ремонта -->
+ <uniform-distributed-queue name="inExportOverhaulShortProgramFilesQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.inExportOverhaulShortProgramFilesQueue</jndi-name>
+ </uniform-distributed-queue>
+ 
+ <!-- очередь опроса статуса исходящих запросов на экспорт региональной программы капитального ремонта -->
+ <uniform-distributed-queue name="outExportOverhaulShortProgramsQueue">
+   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>    
+   <delivery-params-overrides>
+       <time-to-deliver>2000</time-to-deliver>
+       <redelivery-delay>10000</redelivery-delay>
+   </delivery-params-overrides>
+   <jndi-name>mosgis.outExportOverhaulShortProgramsQueue</jndi-name>
+ </uniform-distributed-queue>
+ 
+ <!-- очередь обработки запросов на массовый экспорт домов и видов работ региональной программы капитального ремонта -->
+ <uniform-distributed-queue name="inExportOverhaulShortProgramHouseWorksManyQueue">
+   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+   <delivery-params-overrides>
+       <time-to-deliver>2000</time-to-deliver>
+       <redelivery-delay>10000</redelivery-delay>
+   </delivery-params-overrides>
+   <jndi-name>mosgis.inExportOverhaulShortProgramHouseWorksManyQueue</jndi-name>
+ </uniform-distributed-queue>
+ 
+ <!-- очередь опросов статуса исходящих запросов на массовый экспорт домов и видов работ региональной программы капитального ремонта -->
+ <uniform-distributed-queue name="outExportOverhaulShortProgramHouseWorksManyQueue">
+   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+   <delivery-params-overrides>
+       <time-to-deliver>2000</time-to-deliver>
+       <redelivery-delay>10000</redelivery-delay>
+   </delivery-params-overrides>
+   <jndi-name>mosgis.outExportOverhaulShortProgramHouseWorksManyQueue</jndi-name>
+ </uniform-distributed-queue>
+ 
+ <!-- очередь обработки запросов на экспорт домов и видов работ региональной программы капитального ремонта -->
+ <uniform-distributed-queue name="inExportOverhaulShortProgramHouseWorksOneQueue">
+   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+   <delivery-params-overrides>
+       <time-to-deliver>2000</time-to-deliver>
+       <redelivery-delay>10000</redelivery-delay>
+   </delivery-params-overrides>
+   <jndi-name>mosgis.inExportOverhaulShortProgramHouseWorksOneQueue</jndi-name>
+ </uniform-distributed-queue>
+ 
+ <!-- очередь опросов статуса исходящих запросов на экспорт домов и видов работ региональной программы капитального ремонта -->
+ <uniform-distributed-queue name="outExportOverhaulShortProgramHouseWorksOneQueue">
+   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+   <delivery-params-overrides>
+       <time-to-deliver>2000</time-to-deliver>
+       <redelivery-delay>10000</redelivery-delay>
+   </delivery-params-overrides>
+   <jndi-name>mosgis.outExportOverhaulShortProgramHouseWorksOneQueue</jndi-name>
+ </uniform-distributed-queue>
+
+</weblogic-jms>

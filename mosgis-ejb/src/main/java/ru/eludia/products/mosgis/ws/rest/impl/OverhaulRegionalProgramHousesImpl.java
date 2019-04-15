@@ -1,13 +1,17 @@
 package ru.eludia.products.mosgis.ws.rest.impl;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
+import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Select;
-import ru.eludia.base.model.Col;
-import ru.eludia.base.model.Ref;
-import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.tables.House;
@@ -16,7 +20,6 @@ import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgram;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouse;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseLog;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseWork;
-import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramLog;
 import ru.eludia.products.mosgis.db.model.tables.Sender;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
@@ -42,7 +45,29 @@ public class OverhaulRegionalProgramHousesImpl extends BaseCRUD <OverhaulRegiona
                 .where      ("is_deleted", 0)
                 .limit      (p.getInt ("offset"), p.getInt ("limit"));
         
-        db.addJsonArrayCnt (job, select);
+        List <Map <String, Object>> houses = db.getList (select);
+        
+        for (Map <String, Object> house: houses) {
+            
+            int genCnt = db.getCnt (ModelHolder.getModel ()
+                    .select (OverhaulRegionalProgramHouseWork.class, "AS works", "uuid")
+                    .where  (OverhaulRegionalProgramHouseWork.c.HOUSE_UUID.lc (), house.get ("uuid"))
+                    .and    ("is_deleted", 0)
+            );
+            
+            int approvedCnt = db.getCnt (ModelHolder.getModel ()
+                    .select (OverhaulRegionalProgramHouseWork.class, "AS works", "uuid")
+                    .where  (OverhaulRegionalProgramHouseWork.c.HOUSE_UUID.lc (), house.get ("uuid"))
+                    .and    (OverhaulRegionalProgramHouseWork.c.ID_ORPHW_STATUS.lc (), VocGisStatus.i.APPROVED.getId ())
+            );
+            
+            house.put ("works_general_cnt", genCnt);
+            house.put ("works_approved_cnt", approvedCnt);
+            
+        }
+
+        job.add (select.getTableAlias (), DB.to.JsonArrayBuilder (houses).build ());
+        job.add ("cnt", db.getCnt (select));
             
     });}
 

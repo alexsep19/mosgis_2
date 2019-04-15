@@ -1,0 +1,43 @@
+<span>
+
+	<style>
+
+        label[data-block-name=payment_annul_popup] {
+        	width: 150px;
+        	margin-right: 10px;
+        }
+
+        textarea[data-block-name=payment_annul_popup] {
+        	width: 350px;
+        	height: 90px;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:215px ">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Дата аннулирования</label>
+                <div>
+		    <input name=cancellationdate />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Причина аннулирования</label>
+                <div>
+		    <textarea name=cancellationcomment maxlength=210 />
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w2ui-buttons">
+			<button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>

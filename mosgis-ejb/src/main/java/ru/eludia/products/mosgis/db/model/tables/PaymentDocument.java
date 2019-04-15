@@ -30,7 +30,8 @@ public class PaymentDocument extends EnTable {
         DT_PERIOD                     (Type.DATE,           null,   "ГГГГ-ММ-01"),
         
         PAYMENTDOCUMENTNUMBER         (Type.STRING,  30,    null,   "Номер платежного документа, по которому внесена плата, присвоенный такому документу исполнителем в целях осуществления расчетов по внесению платы"),
-        PAYMENTDOCUMENTID             (Type.STRING,  18,    null,   "Идентификатор платежного документа"),
+        PAYMENTDOCUMENTID             (Type.STRING,  54,    null,   "Идентификатор платежного документа"),        
+        GIS_GUID                      (Type.UUID,           null,   "GUID в ГИС ЖКХ"),  
 
         ADDITIONALINFORMATION         (Type.STRING,  4000,  null,   "Дополнительная информация"),
         
@@ -92,6 +93,16 @@ public class PaymentDocument extends EnTable {
             + "BEGIN "
             + "  IF :NEW.TOTALPAYABLEBYPDWITH_DA IS NULL THEN "
             + "    :NEW.TOTALPAYABLEBYPDWITH_DA := NVL (:NEW.TOTALPAYABLEBYPD, 0) - NVL (:NEW.ADVANCEBLLINGPERIOD, 0) + NVL (:NEW.DEBTPREVIOUSPERIODS, 0);"
+            + "  END IF;"                
+            + "END;"
+
+        );
+        
+        trigger ("BEFORE UPDATE", ""
+
+            + "BEGIN "
+            + "  IF :NEW.TOTALBYPENALTIESANDCOURTCOSTS IS NULL THEN "
+            + "     SELECT SUM(TOTALPAYABLE) INTO :NEW.TOTALBYPENALTIESANDCOURTCOSTS FROM " + PenaltiesAndCourtCosts.TABLE_NAME +  " WHERE UUID_PAY_DOC=:NEW.UUID;"
             + "  END IF;"                
             + "END;"
 
@@ -253,11 +264,11 @@ public class PaymentDocument extends EnTable {
         
 
     }
-/*
+
     public enum Action {
-        
+
         PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
-        EDITING     (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_STATE),
+//        EDITING     (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_STATE),
         ;
         
         VocGisStatus.i nextStatus;
@@ -283,15 +294,17 @@ public class PaymentDocument extends EnTable {
         }
 
         public static Action forStatus (VocGisStatus.i status) {
+            
             switch (status) {
                 case PENDING_RQ_PLACING:   return PLACING;
-                case PENDING_RQ_EDIT:      return EDITING;
+//                case PENDING_RQ_EDIT:      return EDITING;
                 case PENDING_RP_PLACING:   return PLACING;
-                case PENDING_RP_EDIT:      return EDITING;
+//                case PENDING_RP_EDIT:      return EDITING;
                 default: return null;
-            }            
+            }
+            
         }
 
     };    
-*/
+    
 }

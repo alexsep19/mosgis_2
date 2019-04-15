@@ -12,6 +12,9 @@ import javax.xml.ws.WebServiceRef;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseWorkLog;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseWorksImport;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramLog;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulShortProgramHouseWorkLog;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulShortProgramHouseWorksImport;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulShortProgramLog;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ws.soap.tools.LoggingOutMessageHandler;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
@@ -71,6 +74,30 @@ public class WsGisCapitalRepairClient {
     
     public AckRequest.Ack annulRegionalProgram (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
         return getPort (orgPPAGuid, messageGUID).importRegionalProgram (OverhaulRegionalProgramLog.toAnnulRegionalProgramRequest (r)).getAck ();
+    }
+    
+    public AckRequest.Ack importShortProgramProject (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importPlan (OverhaulShortProgramLog.toImportPlanRequest (r, true)).getAck ();
+    }
+    
+    public AckRequest.Ack importShortProgram (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importPlan (OverhaulShortProgramLog.toImportPlanRequest (r, false)).getAck ();
+    }
+    
+    public AckRequest.Ack importShortProgramWork (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importPlanWork (OverhaulShortProgramHouseWorksImport.toImportPlanWorkRequest (r)).getAck ();
+    }
+    
+    public AckRequest.Ack annulPlanWork (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importPlanWork (OverhaulShortProgramHouseWorkLog.toAnnulPlanWorkRequest (r)).getAck ();
+    }
+    
+    public AckRequest.Ack deleteShortProgramProject (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importPlan (OverhaulShortProgramLog.toDeletePlanRequest (r)).getAck ();
+    }
+    
+    public AckRequest.Ack annulShortProgram (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importPlan (OverhaulShortProgramLog.toAnnulPlanRequest (r)).getAck ();
     }
     
 }
