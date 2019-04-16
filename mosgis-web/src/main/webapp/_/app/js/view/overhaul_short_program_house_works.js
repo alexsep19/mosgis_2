@@ -49,7 +49,7 @@ define ([], function () {
                         id: 'approveButton',
                         caption: 'Импортировать в ГИС ЖКХ',
                         onClick: $_DO.approve_overhaul_short_program_house_works,
-                        disabled: true //!(data.item['program.last_succesfull_status'] == -21) && !(data.item['program.last_succesfull_status'] == -31)
+                        disabled: !(data.item['program.last_succesfull_status'] == -21) && !(data.item['program.last_succesfull_status'] == -31)
                     },
                     {
                         type: 'button', 

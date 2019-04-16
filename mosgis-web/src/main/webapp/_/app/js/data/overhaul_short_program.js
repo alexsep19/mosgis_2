@@ -43,7 +43,7 @@ define ([], function () {
                 switch (it.last_succesfull_status) {
                     case  10:
                     case -31:
-                        //it._can.approve = 1
+                        it._can.approve = 1
                 }
 
                 switch (it.id_osp_status) {
@@ -53,7 +53,7 @@ define ([], function () {
                 }
 
                 it._can.update = it._can.edit
-                //it._can.delete = it._can.approve || (it.id_orp_status == 40)
+                it._can.delete = it._can.approve || (it.id_orp_status == 40)
 
             }
 
