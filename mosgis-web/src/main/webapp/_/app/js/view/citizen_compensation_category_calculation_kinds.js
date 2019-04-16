@@ -29,14 +29,12 @@ define ([], function () {
             columns: [      
             
                 {field: 'vc_svc_types.label', caption: 'Услуга', size: 30},
-                {field: 'vc_cit_comp_housing.label', caption: 'Тип жилищного фонда', size: 30},
                 {field: 'vw_nsi_275.label', caption: 'Норматив', size: 50},
                 {field: 'appliestoallfamilymembers', caption: 'Все члены семьи?', size: 20, voc: {0: 'нет', 1: 'да'}},
                 {field: 'discountsize', caption: 'Размер компенсации, руб.', size: 30},
                 {field: 'validfrom',  caption: 'Дата начала предоставления', size: 25, render: _dt},
                 {field: 'validto', caption: 'Дата окончания предоставления', size: 25, render: _dt},
                 {field: 'comment_', caption: 'Примечание', size: 50},
-                {field: 'description', caption: 'Описание порядка расчета', size: 50},
 
 
             ].filter (not_off),

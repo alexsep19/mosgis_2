@@ -27,7 +27,6 @@ import ru.eludia.products.mosgis.db.model.tables.CitizenCompensationCalculationK
 import ru.eludia.products.mosgis.db.model.tables.CitizenCompensationCategoryLegalAct;
 import ru.eludia.products.mosgis.db.model.tables.LegalAct;
 import ru.eludia.products.mosgis.db.model.voc.VocBudgetLevel;
-import ru.eludia.products.mosgis.db.model.voc.VocCitizenCompensationHousing;
 import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
 import ru.eludia.products.mosgis.db.model.voc.VocServiceType;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi275;
@@ -142,7 +141,6 @@ public class CitizenCompensationCategoryImpl extends BaseCRUD<CitizenCompensatio
         db.addJsonArrays (job, ModelHolder.getModel ()
             .select (CitizenCompensationCalculationKind.class, "AS root", "*")
 	    .toMaybeOne(VocServiceType.class, "*").on()
-	    .toMaybeOne(VocCitizenCompensationHousing.class, "*").on()
 	    .toMaybeOne(Nsi275.class, "AS vw_nsi_275", "*").on("root.code_vc_nsi_275 = vw_nsi_275.id")
             .where  (CitizenCompensationCalculationKind.c.UUID_CIT_COMP_CAT, id)
         );

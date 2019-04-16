@@ -1,5 +1,7 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
@@ -14,6 +16,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi237;
 import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
+import ru.eludia.products.mosgis.db.model.voc.VocServiceType;
 import ru.gosuslugi.dom.schema.integration.msp.ExportCategoryType;
 
 public class CitizenCompensationCategory extends EnTable {
@@ -51,6 +54,7 @@ public class CitizenCompensationCategory extends EnTable {
 	FIXEDCOMPENSATIONSUM         (Type.NUMERIC, 20, 2, null, "Фиксированный размер денежной выплаты, руб."),
 	FIXEDSUMESTABLISHMENTDATE    (Type.DATE, null, "Дата установления фиксированного размера"),
 	COMMENT_                     (Type.STRING, null, "Примечание"),
+	DESCRIPTION                  (Type.STRING, null, "Описание порядка расчета"),
 
 	CATEGORYGUID                 (Type.UUID,             null,  "Глобально-уникальный идентификатор элемента справочника"),
 	ID_LOG                       (CitizenCompensationCategoryLog.class, "Последнее событие редактирования"),
@@ -84,7 +88,7 @@ public class CitizenCompensationCategory extends EnTable {
 
         key (c.UUID_ORG);
 
-	trigger ("BEFORE UPDATE", ""
+	trigger ("BEFORE INSERT OR UPDATE", ""
 	+ "BEGIN "
             + "IF :NEW.OKTMO IS NULL AND :NEW.OKTMO_CODE IS NOT NULL THEN "
 	    + "  SELECT ID INTO :NEW.OKTMO FROM " + VocOktmo.TABLE_NAME + " WHERE CODE = :NEW.OKTMO_CODE AND SECTION_CODE = '1'; "
@@ -99,6 +103,8 @@ public class CitizenCompensationCategory extends EnTable {
 	    c.FROMDATE.lc(), cat.getFromDate(),
 	    c.TODATE.lc(), cat.getToDate(),
 	    c.CATEGORYNAME.lc(), cat.getCategoryName(),
+
+	    c.PAYOUTTERM.lc(), cat.getPayoutTerm(),
 	    c.PROVISIONDOCUMENTS.lc(), cat.getProvisionDocuments(),
 	    c.DENIALREASONS.lc(), cat.getDenialReasons(),
 	    c.SUSPENSIONREASONS.lc(), cat.getSuspensionReasons(),
@@ -106,6 +112,7 @@ public class CitizenCompensationCategory extends EnTable {
 	    c.RESUMPTIONREASONS.lc(), cat.getResumptionReasons(),
 	    c.RECALCULATIONREASONS.lc(), cat.getRecalculationReasons(),
 	    c.REFUNDREASONS.lc(), cat.getRefundReasons(),
+	    c.DESCRIPTION.lc(), cat.getDescription(),
 
 	    c.FIXEDCOMPENSATIONSUM.lc(), cat.getFixedCompensationSum(),
 	    c.FIXEDSUMESTABLISHMENTDATE.lc(), cat.getFixedSumEstablishmentDate(),
@@ -118,13 +125,37 @@ public class CitizenCompensationCategory extends EnTable {
 
 	if (DB.ok(terr.getMunicipality())) {
 	    result.put(c.OKTMO_CODE.lc(), terr.getMunicipality().getCode());
+	    result.put(c.SCOPE.lc(), 1);
 	}
 
 	if (DB.ok(terr.getRegion())) {
 	    if (DB.eq(terr.getRegion().getCode(), "77")) {
 		result.put(c.OKTMO_CODE.lc(), VocOktmo.CODE_MOSCOW);
+	    } else {
+		result.put(c.CODE_VC_NSI_237.lc(), terr.getRegion().getCode());
+	    }
+	    result.put(c.SCOPE.lc(), 0);
+	}
+
+	if (DB.ok(cat.getNsiCategory())) {
+	    result.put(c.CODE_VC_NSI_154.lc(), cat.getNsiCategory().getCode());
+	}
+
+
+
+	List<ExportCategoryType.Actual> actual  = cat.getActual();
+
+	List<Map<String, Object>> discounts = new ArrayList<>();
+
+	if (DB.ok(actual)) {
+	    for (ExportCategoryType.Actual t : actual) {
+		Map<String, Object> d = CitizenCompensationCalculationKind.toHash(t);
+		d.put(CitizenCompensationCalculationKind.c.CATEGORYGUID.lc(), cat.getCategoryGuid());
+		discounts.add(d);
 	    }
 	}
+
+	result.put("discounts", discounts);
 
 	return result;
     }

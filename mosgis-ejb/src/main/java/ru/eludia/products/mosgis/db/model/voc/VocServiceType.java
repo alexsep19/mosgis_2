@@ -11,6 +11,7 @@ import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
+import ru.gosuslugi.dom.schema.integration.msp.ServiceType;
 
 public class VocServiceType extends Table {
 
@@ -71,6 +72,12 @@ public class VocServiceType extends Table {
         public static i forId (Object id) {
             for (i i: values ()) if (DB.eq (id, i.id)) return i;
             throw new IllegalArgumentException ("Unknown VocServiceType id: " + id);
+        }
+
+	public static i forId (ServiceType id) {
+	    String q = id.toString().toUpperCase().replace("_", "");
+            for (i i: values ()) if (DB.eq (q, i.id.toUpperCase())) return i;
+            throw new IllegalArgumentException ("Unknown VocServiceType id: " + q);
         }
 
         @Override

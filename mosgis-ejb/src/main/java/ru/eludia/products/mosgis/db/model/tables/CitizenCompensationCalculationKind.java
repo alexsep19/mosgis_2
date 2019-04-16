@@ -1,5 +1,9 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
@@ -9,6 +13,8 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocServiceType;
 import ru.eludia.products.mosgis.db.model.voc.VocCitizenCompensationHousing;
+import ru.gosuslugi.dom.schema.integration.msp.ExportCategoryType;
+import ru.gosuslugi.dom.schema.integration.msp.ExportCategoryType.Actual;
 
 
 public class CitizenCompensationCalculationKind extends EnTable {
@@ -18,9 +24,9 @@ public class CitizenCompensationCalculationKind extends EnTable {
     public enum c implements EnColEnum {
 
 	UUID_CIT_COMP_CAT            (CitizenCompensationCategory.class, "Категория граждан"),
+	CATEGORYGUID                 (Type.UUID, null, "Категория граждан"),
 
 	SERVICE                      (VocServiceType.class,  null, "На оплату какого значения предоставляется компенсация"),
-	HOUSING                      (VocCitizenCompensationHousing.class,  null, "Тип жилищного фонда"),
 
 	ID_TYPE                      (Type.STRING, new Virt("CASE WHEN FIXEDCOMPENSATIONSUM IS NOT NULL THEN 2 ELSE 1 END"), "Тип расчета: 1 - от фактических расходов на оплату ЖКУ, 2 - фиксированный размер"),
 
@@ -31,7 +37,6 @@ public class CitizenCompensationCalculationKind extends EnTable {
 	VALIDTO                      (Type.DATE, null, "Дата окончания предоставления компенсации"),
 
 	COMMENT_                     (Type.STRING, null, "Примечание"),
-	DESCRIPTION                  (Type.STRING, null, "Описание порядка расчета"),
 
 	ID_CTR_STATUS                (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения mosgis"),
 	ID_CTR_STATUS_GIS            (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения ГИС ЖКХ"),
@@ -53,5 +58,28 @@ public class CitizenCompensationCalculationKind extends EnTable {
         cols (c.class);
 
         key (c.UUID_CIT_COMP_CAT);
+
+	trigger ("BEFORE INSERT OR UPDATE", ""
+	+ "BEGIN "
+            + "IF :NEW.UUID_CIT_COMP_CAT IS NULL AND :NEW.CATEGORYGUID IS NOT NULL THEN "
+	    + "  SELECT UUID INTO :NEW.UUID_CIT_COMP_CAT FROM " + CitizenCompensationCategory.TABLE_NAME + " WHERE CATEGORYGUID = :NEW.CATEGORYGUID; "
+	    + "END IF; "
+        + "END;");
     }
+    
+    public static Map<String, Object> toHash(ExportCategoryType.Actual t) {
+
+	Map<String, Object> result = DB.HASH(
+	    c.SERVICE.lc(), VocServiceType.i.forId(t.getService()),
+	    c.CODE_VC_NSI_275.lc(), t.getNsiDiscountAmountLimitationCode().getCode(),
+	    c.APPLIESTOALLFAMILYMEMBERS.lc(), DB.ok(t.isAppliesToAllFamilyMembers())? 1 : 0,
+	    c.DISCOUNTSIZE.lc(), t.getDiscountSize(),
+	    c.VALIDFROM.lc(), t.getValidFrom(),
+	    c.VALIDTO.lc(), t.getValidTo(),
+	    c.COMMENT_.lc(), t.getComment()
+	);
+
+	return result;
+    }
+
 }

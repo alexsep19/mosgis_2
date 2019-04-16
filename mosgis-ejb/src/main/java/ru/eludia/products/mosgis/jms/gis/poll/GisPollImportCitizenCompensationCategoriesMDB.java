@@ -16,19 +16,19 @@ import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.ModelHolder;
-import ru.eludia.products.mosgis.db.model.incoming.InCitizenCompensationCategory;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.eludia.products.mosgis.db.model.tables.CitizenCompensationCategory;
+import ru.eludia.products.mosgis.db.model.tables.CitizenCompensationCalculationKind;
 import ru.eludia.products.mosgis.db.model.tables.CitizenCompensationCategoryLog;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.incoming.InCitizenCompensationCategory;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.ws.soap.clients.WsGisMSPClient;
 import ru.gosuslugi.dom.schema.integration.msp.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.msp.ExportCategoryType;
 import ru.gosuslugi.dom.schema.integration.msp_service_async.Fault;
-import ru.gosuslugi.dom.schema.integration.uk.ExportDocumentType;
 
 @MessageDriven(activationConfig = {
  @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outImportCitizenCompensationCategoriesQueue")
@@ -98,6 +98,7 @@ public class GisPollImportCitizenCompensationCategoriesMDB extends GisPollMDB {
 
 	List<String> guids = new ArrayList<>();
 	List<Map<String, Object>> items = new ArrayList<>();
+	List<Map<String, Object>> discounts = new ArrayList<>();
 
 	for (ExportCategoryType cat : cats) {
 	    final Map<String, Object> h = CitizenCompensationCategory.toHASH(cat);
@@ -107,9 +108,18 @@ public class GisPollImportCitizenCompensationCategoriesMDB extends GisPollMDB {
 	    h.put("id_ctr_status_gis", h.get("id_ctr_status"));
 	    items.add(h);
 	    guids.add(h.get(CitizenCompensationCategory.c.CATEGORYGUID.lc()).toString());
+
+	    discounts.addAll((List<Map<String, Object>>)h.get("discounts"));
 	}
 
 	db.upsert(CitizenCompensationCategory.class, items, CitizenCompensationCategory.c.CATEGORYGUID.lc());
+
+	db.upsert(
+	    CitizenCompensationCalculationKind.class
+	    , discounts
+	    , CitizenCompensationCalculationKind.c.CATEGORYGUID.lc()
+	    , CitizenCompensationCalculationKind.c.DISCOUNTSIZE.lc()
+	);
 
 	return db.getIdx(
 	    db.getModel().select(CitizenCompensationCategory.class, "uuid")
