@@ -129,7 +129,7 @@ public class OverhaulShortProgramLog extends GisWsLogTable {
             
             document.put ("files", db.getList (db.getModel ()
                     .select  (OverhaulShortProgramFile.class, "*")
-                    .where   ("uuid_oh_reg_pr_doc", document.get ("uuid"))
+                    .where   ("uuid_oh_shrt_pr_doc", document.get ("uuid"))
                     .and     ("id_status", 1)
                     .toOne   (OverhaulShortProgramFileLog.class, "AS log", "ts_start_sending", "err_text").on ()
             ));
