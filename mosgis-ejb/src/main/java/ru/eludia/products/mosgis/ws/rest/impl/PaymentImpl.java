@@ -231,10 +231,18 @@ public class PaymentImpl extends BaseCRUD<Payment> implements PaymentLocal {
     public JsonObject getAcknowledgments (String id) {return fetchData ((db, job) -> {
 
         final MosGisModel m = ModelHolder.getModel ();
-
+/*
+Номер лицевого счета
+Платежный документ
+Тип
+Период
+Сумма документа, руб.
+Оплачено        
+*/
 	db.addJsonArrays (job
 
             , m.select   (Acknowledgment.class, "AS root", "*", "uuid AS id")
+                .toOne   (PaymentDocument.class, "AS pd", "*").on ()
                 .toOne   (PaymentDocument.class, "AS pd", "*").on ()
                 .where   (Acknowledgment.c.UUID_PAY, id)
                 .where   (EnTable.c.IS_DELETED, 0)
