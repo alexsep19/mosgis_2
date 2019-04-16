@@ -72,6 +72,7 @@ public class GisPollExportOverhaulShortProgramHouseWorksManyMDB extends GisPollM
             
             if (error != null) {
                 failWorks (db, r, error.getDescription ());
+                finishProgram (db, r.get ("import.program_uuid").toString ());
                 throw new GisPollException (error);
             }
             
@@ -79,6 +80,7 @@ public class GisPollExportOverhaulShortProgramHouseWorksManyMDB extends GisPollM
             
             if (importResult == null || importResult.isEmpty ()) {
                 failWorks (db, r, "Сервис ГИС ЖКХ вернул пустой результат");
+                finishProgram (db, r.get ("import.program_uuid").toString ());
                 throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
             }
             
@@ -96,7 +98,7 @@ public class GisPollExportOverhaulShortProgramHouseWorksManyMDB extends GisPollM
                                 
             }
             
-            successProgram (db, r.get ("import.program_uuid").toString ());
+            finishProgram (db, r.get ("import.program_uuid").toString ());
             
             db.update (OverhaulShortProgramHouseWorksImport.class, HASH (
                 "uuid", r.get ("import.uuid"),
@@ -126,15 +128,6 @@ public class GisPollExportOverhaulShortProgramHouseWorksManyMDB extends GisPollM
         
         db.update (OverhaulShortProgramHouseWork.class, works);
         
-        final int programLastOkStatus = db.getInteger (OverhaulShortProgram.class, r.get ("import.program_uuid"), OverhaulShortProgram.c.LAST_SUCCESFULL_STATUS.lc ());
-        
-        if (programLastOkStatus == VocGisStatus.i.PROGRAM_WORKS_PLACE_INITIALIZED.getId ())
-            db.update (OverhaulShortProgram.class, HASH (
-                "uuid",                                            r.get ("import.program_uuid"),
-                OverhaulShortProgram.c.ID_OSP_STATUS.lc (),     VocGisStatus.i.FAILED_PLACE_PROGRAM_WORKS.getId (),
-                OverhaulShortProgram.c.ID_OSP_STATUS_GIS.lc (), VocGisStatus.i.FAILED_PLACE_PROGRAM_WORKS.getId ()
-            ));
-        
     }
     
     private void failWork (DB db, String transportGUID, String error) throws SQLException {
@@ -161,7 +154,7 @@ public class GisPollExportOverhaulShortProgramHouseWorksManyMDB extends GisPollM
         
     }
     
-    private void successProgram (DB db, String programUUID) throws SQLException {
+    private void finishProgram (DB db, String programUUID) throws SQLException {
         
         db.update (OverhaulShortProgram.class, HASH (
             "uuid",                                                 programUUID,

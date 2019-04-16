@@ -53,7 +53,7 @@ public class OverhaulRegionalProgram extends EnTable {
     
     public enum Action {
         
-        PROJECT_PUBLISH     (VocGisStatus.i.PENDING_RP_PUBLISHANDPROJECT, VocGisStatus.i.PROGRAM_WORKS_PLACE_INITIALIZED,          VocGisStatus.i.FAILED_PUBLISHANDPROJECT),
+        PROJECT_PUBLISH     (VocGisStatus.i.PENDING_RP_PUBLISHANDPROJECT, VocGisStatus.i.PENDING_RQ_PLACE_PROGRAM_WORKS,           VocGisStatus.i.FAILED_PUBLISHANDPROJECT),
         PLACING             (VocGisStatus.i.PENDING_RP_PLACING,           VocGisStatus.i.APPROVED,                                 VocGisStatus.i.FAILED_PLACING),
         PROJECT_DELETE      (VocGisStatus.i.PENDING_RP_DELETEPROJECT,     VocGisStatus.i.PROJECT_DELETED,                          VocGisStatus.i.FAILED_DELETEPROJECT),
         ANNUL               (VocGisStatus.i.PENDING_RP_ANNULMENT,         VocGisStatus.i.ANNUL,                                    VocGisStatus.i.FAILED_ANNULMENT)

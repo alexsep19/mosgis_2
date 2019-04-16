@@ -168,8 +168,7 @@ public class OverhaulShortProgramsImpl extends BaseCRUD <OverhaulShortProgram> i
                 nextStatus = VocGisStatus.i.PROJECT;
                 action = VocAction.i.DELETE;
                 break;
-            case PROGRAM_WORKS_PLACE_INITIALIZED:
-            case FAILED_PLACE_PROGRAM_WORKS:
+            case PENDING_RQ_PLACE_PROGRAM_WORKS:
             case PROGRAM_WORKS_PLACE_FINISHED:
             case FAILED_PLACING:
             case FAILED_DELETEPROJECT:
