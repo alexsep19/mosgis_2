@@ -451,4 +451,12 @@ public class Houses extends EJBResource <HousesLocal> {
         
         return back.doSend (id, orgUuid, getUser ());
     }
+
+    @POST
+    @Path("{id}/contracts")
+    @Produces (APPLICATION_JSON)
+    public JsonObject getContracts (@PathParam ("id") String id) {
+        return back.getContracts (id, getUser ());
+    }
+
 }

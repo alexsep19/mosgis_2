@@ -155,6 +155,7 @@ define ([], function () {
                                 'font-weight': 'bold',
                                 'border-bottom-width': '1px',
                                 'border-bottom-color': '#aaa',
+                                'background-color': '#eee',
                             })
                             
                             if (last) {

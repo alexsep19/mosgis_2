@@ -66,7 +66,6 @@ public class ExportPaymentDocumentMDB extends GisExportMDB<PaymentDocumentLog> {
             return;
         }
                                         
-        logger.info ("r.toString () = " + r.toString ());
         logger.info ("r=" + DB.to.json (r));
        
         try {            

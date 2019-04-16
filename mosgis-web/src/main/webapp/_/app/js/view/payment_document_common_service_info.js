@@ -189,6 +189,7 @@ define ([], function () {
 
                             $(sel + ' td.w2ui-grid-data:not(:last-child)').css ({
                                 'font-weight': 'bold',
+                                'background-color': '#eee',
                                 'border-bottom-width': '1px',
                             }).css ({'border-right-width': 0})
                             

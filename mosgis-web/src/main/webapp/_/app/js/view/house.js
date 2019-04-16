@@ -51,6 +51,7 @@ define ([], function () {
                             {id: 'house_property_documents', caption: 'Собственники'},
                             {id: 'house_voting_protocols', caption: 'ОСС', tooltip: 'Общие собрания собственников', off: !voting_protocols_view_permit()},
                             {id: 'house_docs',     caption: 'Документы'},
+                            {id: 'house_contracts',     caption: 'Договоры'},
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_house

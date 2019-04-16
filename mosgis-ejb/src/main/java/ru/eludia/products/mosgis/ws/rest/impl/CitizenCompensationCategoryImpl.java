@@ -25,7 +25,6 @@ import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.incoming.InBaseDecisionMSP;
 import ru.eludia.products.mosgis.db.model.incoming.InCitizenCompensationCategory;
 import ru.eludia.products.mosgis.db.model.tables.CitizenCompensationCalculationKind;
-import ru.eludia.products.mosgis.db.model.tables.CitizenCompensationCategoryLegalAct;
 import ru.eludia.products.mosgis.db.model.tables.LegalAct;
 import ru.eludia.products.mosgis.db.model.voc.VocBudgetLevel;
 import ru.eludia.products.mosgis.db.model.voc.VocOktmo;

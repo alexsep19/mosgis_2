@@ -32,6 +32,7 @@ import ru.gosuslugi.dom.schema.integration.nsi_service_async.NsiServiceAsync;
 import ru.gosuslugi.dom.schema.integration.nsi.ObjectFactory;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiRef;
 import ru.gosuslugi.dom.schema.integration.nsi.ImportBaseDecisionMSPRequest;
+import ru.gosuslugi.dom.schema.integration.nsi.ImportCapitalRepairWorkRequest;
 
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
@@ -192,5 +193,9 @@ logger.info ("rq = " + rq);
 
     public AckRequest.Ack undeleteBaseDecisionMSP(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
         return getPort (orgPPAGuid, messageGUID).importBaseDecisionMSP(BaseDecisionMSPLog.toUndeleteBaseDecisionMSPRequest (r)).getAck ();
+    }
+    
+    public AckRequest.Ack importCapitalRepairWork (UUID orgPPAGuid, UUID messageGUID, ImportCapitalRepairWorkRequest request) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importCapitalRepairWork(request).getAck ();
     }
 }
