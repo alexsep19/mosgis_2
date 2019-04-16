@@ -174,7 +174,6 @@
                                 <wsdlFile>licenses/hcs-licenses-service-async.wsdl</wsdlFile>
                                 <wsdlFile>msp/hcs-msp-service-async.wsdl</wsdlFile>
                                 <wsdlFile>nsi/hcs-nsi-service-async.wsdl</wsdlFile>
-                                <wsdlFile>nsi-common/hcs-nsi-common-service.wsdl</wsdlFile>
                                 <wsdlFile>nsi-common/hcs-nsi-common-service-async.wsdl</wsdlFile>
                                 <wsdlFile>organizations-registry/hcs-organizations-registry-service-async.wsdl</wsdlFile>
                                 <wsdlFile>organizations-registry-common/hcs-organizations-registry-common-service-async.wsdl</wsdlFile>
