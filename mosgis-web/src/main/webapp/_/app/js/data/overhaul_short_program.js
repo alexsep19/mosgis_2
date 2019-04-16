@@ -46,9 +46,8 @@ define ([], function () {
                         it._can.approve = 1
                 }
 
-                switch (it.id_osp_status) {
+                switch (it.last_succesfull_status) {
                     case 10:
-                    case 124:
                         it._can.edit = 1
                 }
 

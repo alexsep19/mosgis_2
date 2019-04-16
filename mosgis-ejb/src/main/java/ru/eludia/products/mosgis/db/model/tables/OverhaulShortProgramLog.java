@@ -102,7 +102,7 @@ public class OverhaulShortProgramLog extends GisWsLogTable {
     private static PlanPassportType toPlanPassportType (Map <String, Object> r) {
         PlanPassportType result = DB.to.javaBean (PlanPassportType.class, r);
         result.setName (r.get ("programname").toString ());
-        result.setTerritory (VocOktmo.createOKTMORef (45000000000L));
+        result.setTerritory (VocOktmo.createOKTMORef (45000000L));
         result.setType ("Plan");
         return result;
     }
