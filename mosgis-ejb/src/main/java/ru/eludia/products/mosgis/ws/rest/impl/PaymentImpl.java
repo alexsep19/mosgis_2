@@ -22,6 +22,7 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.Account;
 import ru.eludia.products.mosgis.db.model.tables.AccountItem;
+import ru.eludia.products.mosgis.db.model.tables.Acknowledgment;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.PaymentDocument;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
@@ -225,4 +226,22 @@ public class PaymentImpl extends BaseCRUD<Payment> implements PaymentLocal {
         logAction (db, user, id, VocAction.i.ANNUL);
 
     });}
+
+    @Override
+    public JsonObject getAcknowledgments (String id) {return fetchData ((db, job) -> {
+
+        final MosGisModel m = ModelHolder.getModel ();
+
+	db.addJsonArrays (job
+
+            , m.select   (Acknowledgment.class, "AS root", "*", "uuid AS id")
+                .toOne   (PaymentDocument.class, "AS pd", "*").on ()
+                .where   (Acknowledgment.c.UUID_PAY, id)
+                .where   (EnTable.c.IS_DELETED, 0)
+                .orderBy ("pd.dt_period")
+
+        );
+
+    });}
+
 }

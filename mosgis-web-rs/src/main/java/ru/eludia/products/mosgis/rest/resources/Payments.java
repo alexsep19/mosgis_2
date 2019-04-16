@@ -138,4 +138,12 @@ public class Payments extends EJBResource <PaymentLocal> {
     public JsonObject doAnnul(@PathParam("id") String id, JsonObject p) {
 	return back.doAnnul(id, p, getUser());
     }
+    
+    @POST
+    @Path("{id}/acknowledgments")
+    @Produces(APPLICATION_JSON)
+    public JsonObject getAcknowledgments (@PathParam("id") String id) {
+	return back.getAcknowledgments (id);
+    }
+    
 }
