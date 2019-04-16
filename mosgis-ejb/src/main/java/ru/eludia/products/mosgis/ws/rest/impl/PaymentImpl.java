@@ -1,11 +1,15 @@
 package ru.eludia.products.mosgis.ws.rest.impl;
 
+import java.util.Map;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.jms.Queue;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.Payment;
@@ -33,15 +37,27 @@ import ru.eludia.products.mosgis.ws.rest.impl.tools.SimpleSearch;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class PaymentImpl extends BaseCRUD<Payment> implements PaymentLocal {
-/*
-    @Resource (mappedName = "mosgis.inPaymentsQueue")
+
+    @Resource (mappedName = "mosgis.inExportPaymentsQueue")
     Queue queue;
 
     @Override
     public Queue getQueue () {
         return queue;
     }
-*/
+
+    @Override
+    protected Queue getQueue(VocAction.i action) {
+
+	switch (action) {
+	    case APPROVE:
+	    case ANNUL:
+		return queue;
+	    default:
+		return null;
+	}
+    }
+
     private void filterOffDeleted (Select select) {
         select.and ("is_deleted", 0);
     }
@@ -155,7 +171,7 @@ public class PaymentImpl extends BaseCRUD<Payment> implements PaymentLocal {
                 .orderBy ("prem.label")
         );
 
-	VocGisStatus.addTo (job);
+	VocGisStatus.addLiteTo(job);
         VocAction.addTo (job);
     });}
 
@@ -164,13 +180,13 @@ public class PaymentImpl extends BaseCRUD<Payment> implements PaymentLocal {
 
         JsonObjectBuilder jb = Json.createObjectBuilder ();
 
-        VocGisStatus.addTo(jb);
+        VocGisStatus.addLiteTo(jb);
         VocAction.addTo (jb);
 
         return jb.build ();
 
     }
-/*
+
     @Override
     public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
 
@@ -195,5 +211,18 @@ public class PaymentImpl extends BaseCRUD<Payment> implements PaymentLocal {
         logAction (db, user, id, VocAction.i.ALTER);
 
     });}
-*/
+    
+    @Override
+    public JsonObject doAnnul (String id, JsonObject p, User user) {return doAction ((db) -> {
+
+        final Map<String, Object> r = getData(p,
+            EnTable.c.UUID,               id,
+            Payment.c.ID_CTR_STATUS,  VocGisStatus.i.PENDING_RQ_ANNULMENT.getId ()
+        );
+
+        db.update (getTable (), r);
+
+        logAction (db, user, id, VocAction.i.ANNUL);
+
+    });}
 }

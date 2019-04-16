@@ -1,11 +1,15 @@
 package ru.eludia.products.mosgis.ws.rest.impl;
 
+import java.util.Map;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.jms.Queue;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
@@ -47,15 +51,15 @@ import ru.eludia.products.mosgis.ws.rest.impl.tools.SimpleSearch;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements PaymentDocumentLocal {
-/*
-    @Resource (mappedName = "mosgis.inPaymentDocumentsQueue")
+
+    @Resource (mappedName = "mosgis.inExportPaymentDocumentsQueue")
     Queue queue;
 
     @Override
     public Queue getQueue () {
         return queue;
     }
-*/
+
     private void filterOffDeleted (Select select) {
         select.and ("is_deleted", 0);
     }
@@ -197,7 +201,7 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
         return jb.build ();
         
     }
-/*    
+    
     @Override
     public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
 
@@ -208,7 +212,7 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
         logAction (db, user, id, VocAction.i.APPROVE);
 
     });}
-    
+        
     @Override
     public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
                 
@@ -221,8 +225,7 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
         
         logAction (db, user, id, VocAction.i.ALTER);
         
-    });}    
-*/    
+    });}
 
     @Override
     public JsonObject getChargeInfo (String id, User user) {{return fetchData ((db, job) -> {                
@@ -263,6 +266,11 @@ public class PaymentDocumentImpl extends BaseCRUD<PaymentDocument> implements Pa
             , PenaltiesAndCourtCosts.c.CODE_VC_NSI_329.lc ()
             , PenaltiesAndCourtCosts.c.UUID_BNK_ACCT.lc ()
         );
+        
+        db.update (PaymentDocument.class, HASH (
+            EnTable.c.UUID, id,
+            PaymentDocument.c.TOTALBYPENALTIESANDCOURTCOSTS, null
+        ));
 
         m.createIdLog (db, t, user, uuid, VocAction.i.UPDATE);
 

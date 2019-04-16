@@ -30,9 +30,7 @@ import static ru.eludia.products.mosgis.PassportKind.COTTAGE;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.rest.api.HousesLocal;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
-import ru.eludia.products.mosgis.db.model.tables.ActualCaChObject;
 import ru.eludia.products.mosgis.db.model.tables.ActualSomeContractObject;
-import ru.eludia.products.mosgis.db.model.tables.ActualSupplyResourceContractObject;
 import ru.eludia.products.mosgis.db.model.tables.Block;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.ContractObject;
@@ -57,6 +55,15 @@ import ru.eludia.products.mosgis.db.model.voc.VocPropertyDocumentType;
 import static ru.eludia.products.mosgis.db.model.voc.VocRdColType.i.REF;
 import ru.eludia.products.mosgis.db.model.voc.VocVotingForm;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.tables.RcContract;
+import ru.eludia.products.mosgis.db.model.tables.RcContractObject;
+import ru.eludia.products.mosgis.db.model.tables.Charter;
+import ru.eludia.products.mosgis.db.model.tables.CharterObject;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractObject;
+import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContract;
+import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.ws.rest.impl.tools.Search;
@@ -648,6 +655,127 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
         
         logAction (db, user, id, uuidOrg, null, VocAction.i.ALTER);
         
+    });}
+
+    @Override
+    public JsonObject getContracts (String id, User u) {return fetchData ((db, job) -> {
+        
+        final Model m = db.getModel ();
+        final NsiTable nsi58 = NsiTable.getNsiTable (58);
+        
+        String fiashouseguid = db.getString (m.get (House.class, id, House.c.FIASHOUSEGUID.lc ()));
+                
+        db.addJsonArrays (job, 
+
+            m.select (ContractObject.class, "AS mgmt_contract"
+                , ContractObject.c.ID_CTR_STATUS.lc () + " AS id_obj_status"
+            )
+            .where (EnTable.c.IS_DELETED, 0)
+            .where (ContractObject.c.FIASHOUSEGUID, fiashouseguid)
+            .toOne (Contract.class, "AS c"
+                , EnTable.c.UUID.lc () + " AS id"
+                , Contract.c.DOCNUM.lc () + " AS no"
+                , Contract.c.SIGNINGDATE.lc () + " AS dt"
+                , Contract.c.EFFECTIVEDATE.lc () + " AS dt_from"
+                , Contract.c.PLANDATECOMPTETION.lc () + " AS dt_to"
+                , Contract.c.ID_CTR_STATUS.lc () + " AS id_ctr_status"
+            ).on ()                
+            .toOne (VocOrganization.class, "AS org"
+                , VocOrganization.c.LABEL.lc () + " AS org_label"
+            ).on ("org.uuid=c." + Contract.c.UUID_ORG.lc ())                
+            .toMaybeOne (VocOrganization.class, "AS org_customer"
+                , VocOrganization.c.LABEL.lc () + " AS org_customer_label"
+            ).on ("org_customer.uuid=c." + Contract.c.UUID_ORG_CUSTOMER.lc ())
+            .toOne (nsi58, nsi58.getLabelField ().getfName () + " AS reason"
+            ).on ("vc_nsi_58.isactual=1 AND vc_nsi_58.code=c." + Contract.c.CODE_VC_NSI_58.lc ())
+                
+
+                
+            , m.select (CharterObject.class, "AS charter"
+                , CharterObject.c.ID_CTR_STATUS.lc () + " AS id_obj_status"
+            )
+            .where (EnTable.c.IS_DELETED, 0)
+            .where (CharterObject.c.FIASHOUSEGUID, fiashouseguid)
+            .toOne (Charter.class, "AS c"
+                , EnTable.c.UUID.lc () + " AS id"
+                , Charter.c.DATE_.lc () + " AS dt"
+                , Charter.c.ID_CTR_STATUS.lc () + " AS id_ctr_status"
+            ).on ()                
+            .toOne (VocOrganization.class, "AS org"
+                , VocOrganization.c.LABEL.lc () + " AS org_label"
+            ).on ("org.uuid=c." + Charter.c.UUID_ORG.lc ())
+                
+                
+            , m.select (SupplyResourceContractObject.class, "AS supply_resource_contract"
+                , ContractObject.c.ID_CTR_STATUS.lc () + " AS id_obj_status"
+            )
+            .where (EnTable.c.IS_DELETED, 0)
+            .where (SupplyResourceContractObject.c.FIASHOUSEGUID, fiashouseguid)
+            .toOne (SupplyResourceContract.class, "AS c"
+                , EnTable.c.UUID.lc () + " AS id"
+                , SupplyResourceContract.c.CONTRACTNUMBER.lc () + " AS no"
+                , SupplyResourceContract.c.SIGNINGDATE.lc () + " AS dt"
+                , SupplyResourceContract.c.EFFECTIVEDATE.lc () + " AS dt_from"
+                , SupplyResourceContract.c.COMPLETIONDATE.lc () + " AS dt_to"
+                , SupplyResourceContract.c.ID_CTR_STATUS.lc () + " AS id_ctr_status"
+            ).on ()                
+            .toOne (VocOrganization.class, "AS org"
+                , VocOrganization.c.LABEL.lc () + " AS org_label"
+            ).on ("org.uuid=c." + SupplyResourceContract.c.UUID_ORG.lc ())                
+            .toMaybeOne (VocOrganization.class, "AS org_customer"
+                , VocOrganization.c.LABEL.lc () + " AS org_customer_label"
+            ).on ("org_customer.uuid=c." + SupplyResourceContract.c.UUID_ORG_CUSTOMER.lc ())
+            .toMaybeOne (VocPerson.class, "AS ind_customer"
+                , VocOrganization.c.LABEL.lc () + " AS ind_customer_label"
+            ).on ()
+            .toOne (nsi58, nsi58.getLabelField ().getfName () + " AS reason"
+            ).on ("vc_nsi_58.isactual=1 AND vc_nsi_58.code=c." + Contract.c.CODE_VC_NSI_58.lc ())                                
+                
+                
+            , m.select (PublicPropertyContract.class, "AS public_property_contract"
+                , PublicPropertyContract.c.ID_CTR_STATUS.lc () + " AS id_ctr_status"
+                , EnTable.c.UUID.lc () + " AS id"
+                , PublicPropertyContract.c.CONTRACTNUMBER.lc () + " AS no"
+                , PublicPropertyContract.c.DATE_.lc () + " AS dt"
+                , PublicPropertyContract.c.STARTDATE.lc () + " AS dt_from"
+                , PublicPropertyContract.c.ENDDATE.lc () + " AS dt_to"
+            )
+            .where (EnTable.c.IS_DELETED, 0)
+            .where (PublicPropertyContract.c.FIASHOUSEGUID, fiashouseguid)
+            .toOne (VocOrganization.class, "AS org"
+                , VocOrganization.c.LABEL.lc () + " AS org_label"
+            ).on ("org.uuid=public_property_contract." + PublicPropertyContract.c.UUID_ORG.lc ())                
+            .toMaybeOne (VocOrganization.class, "AS org_customer"
+                , VocOrganization.c.LABEL.lc () + " AS org_customer_label"
+            ).on ("org_customer.uuid=public_property_contract." + PublicPropertyContract.c.UUID_ORG_CUSTOMER.lc ())
+            .toMaybeOne (VocPerson.class, "AS ind_customer"
+                , VocOrganization.c.LABEL.lc () + " AS ind_customer_label"
+            ).on ()
+                
+                
+            , m.select (RcContractObject.class, "AS rc_contract"
+                , RcContractObject.c.ID_CTR_STATUS.lc () + " AS id_obj_status"
+            )
+            .where (EnTable.c.IS_DELETED, 0)
+            .where (RcContractObject.c.FIASHOUSEGUID, fiashouseguid)
+            .toOne (RcContract.class, "AS c"
+                , EnTable.c.UUID.lc () + " AS id"
+                , RcContract.c.CONTRACTNUMBER.lc () + " AS no"
+                , RcContract.c.SIGNINGDATE.lc () + " AS dt"
+                , RcContract.c.EFFECTIVEDATE.lc () + " AS dt_from"
+                , RcContract.c.COMPLETIONDATE.lc () + " AS dt_to"
+                , RcContract.c.ID_CTR_STATUS.lc () + " AS id_ctr_status"
+            ).on ()                
+            .toOne (VocOrganization.class, "AS org"
+                , VocOrganization.c.LABEL.lc () + " AS org_label"
+            ).on ("org.uuid=c." + RcContract.c.UUID_ORG.lc ())                
+            .toMaybeOne (VocOrganization.class, "AS org_customer"
+                , VocOrganization.c.LABEL.lc () + " AS org_customer_label"
+            ).on ("org_customer.uuid=c." + RcContract.c.UUID_ORG_CUSTOMER.lc ())
+                
+                
+        );
+
     });}
     
 }

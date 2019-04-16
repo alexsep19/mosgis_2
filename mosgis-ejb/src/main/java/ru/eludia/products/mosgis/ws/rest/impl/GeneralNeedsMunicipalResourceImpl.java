@@ -137,7 +137,7 @@ public class GeneralNeedsMunicipalResourceImpl extends BaseCRUD<GeneralNeedsMuni
         
         final MosGisModel m = ModelHolder.getModel ();
 
-        VocGisStatus.addTo (job);
+        VocGisStatus.addLiteTo (job);
         VocAction.addTo (job);
         Nsi2.i.addGeneralNeedsTo (job);
         

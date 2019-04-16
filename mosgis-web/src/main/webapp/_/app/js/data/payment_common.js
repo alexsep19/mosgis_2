@@ -1,7 +1,7 @@
 define ([], function () {
 
     var form_name = 'payment_common_form'
-/*
+
     $_DO.approve_payment_common = function (e) {
         if (!confirm ('Разместить эти данные в ГИС ЖКХ?')) return
         query ({type: 'payments', action: 'approve'}, {}, reload_page)
@@ -11,7 +11,11 @@ define ([], function () {
         if (!confirm ('Открыть эту карточку на редактирование?')) return
         query ({type: 'payments', action: 'alter'}, {}, reload_page)
     }
-*/
+
+    $_DO.annul_payment_common = function (e) {
+        use.block('payment_annul_popup')
+    }
+
     $_DO.cancel_payment_common = function (e) {
 
         if (!confirm ('Отменить несохранённые правки?')) return
@@ -57,9 +61,6 @@ define ([], function () {
 
         if (!v.orderdate) die('orderdate', 'Укажите дату внесения платы')
         if (!v.amount) die('amount', 'Укажите сумму')
-        v.paymentpurpose = $('textarea').val () || ''
-
-        if (v.paymentpurpose.length > 1000) die ('paymentpurpose', 'Назначение платежа не может содержать более 1000 символов')
 
         query ({type: 'payments', action: 'update'}, {data: v}, reload_page)
 

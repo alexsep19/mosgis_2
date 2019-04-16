@@ -65,7 +65,6 @@ public class RestGisFilesClient {
             MultivaluedMap<String, Object> headers = requestContext.getHeaders ();
             final String basicAuthentication = getBasicAuthentication ();
             if (basicAuthentication == null) return;
-logger.info ("setting Authorization=" + basicAuthentication);
             headers.add ("Authorization", basicAuthentication);
         }
 
@@ -123,9 +122,12 @@ logger.info ("setting Authorization=" + basicAuthentication);
     }
     
     private WebTarget getWebTarget (Context context, UUID uploadId, String postfix) {
+        
+        final int connectTimeout = Conf.getInt (VocSetting.i.WS_GIS_FILES_TMT_CONN);
+        final int readTimeout = Conf.getInt (VocSetting.i.WS_GIS_FILES_TMT_RESP);
 
-        client.property ("jersey.config.client.connectTimeout", Conf.getInt (VocSetting.i.WS_GIS_FILES_TMT_CONN));
-        client.property ("jersey.config.client.readTimeout", Conf.getInt (VocSetting.i.WS_GIS_FILES_TMT_RESP));
+        client.property ("jersey.config.client.connectTimeout", connectTimeout);
+        client.property ("jersey.config.client.readTimeout", readTimeout);
                 
         StringBuilder sb = new StringBuilder (Conf.get (VocSetting.i.WS_GIS_FILES_URL));
         if (sb.charAt (sb.length () - 1) != '/') sb.append ('/');
@@ -137,8 +139,12 @@ logger.info ("setting Authorization=" + basicAuthentication);
         }
         
         sb.append (postfix);
+        
+        final String url = sb.toString ();
+        
+        logger.info ("Creating RESTful service target with url=" + url + ", connectTimeout=" + connectTimeout + ", readTimeout=" + readTimeout);
 
-        return client.target (sb.toString ());
+        return client.target (url);
 
     }
 

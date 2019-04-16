@@ -11,7 +11,9 @@ import javax.xml.ws.WebFault;
 @WebFault(name = "Fault", targetNamespace = "http://gis.gkh.mos.ru/schema/integration/base/")
 public class Fault extends Exception {
 
-    private ru.gosuslugi.dom.schema.integration.base.Fault faultInfo;
+	private static final long serialVersionUID = -1818905802359262315L;
+	
+	private ru.gosuslugi.dom.schema.integration.base.Fault faultInfo;
     private String faultCode;
     private String faultMessage;
     
@@ -53,6 +55,13 @@ public class Fault extends Exception {
         this.faultInfo = generateDetail(error, cause);
     }
     
+    public Fault(ru.gosuslugi.dom.schema.integration.base.Fault faultInfo) {
+    	super(faultInfo.getErrorCode() + ": " + faultInfo.getErrorCode());
+    	this.faultCode = faultInfo.getErrorCode();
+    	this.faultMessage = faultInfo.getErrorMessage();
+        this.faultInfo = faultInfo;
+    }
+    
     private ru.gosuslugi.dom.schema.integration.base.Fault generateDetail(Errors error, Throwable cause) {
         if (error == null)
             return null;
@@ -81,5 +90,9 @@ public class Fault extends Exception {
     
     public String getFaultMessage() {
         return faultMessage;
+    }
+    
+    public ru.gosuslugi.dom.schema.integration.base.Fault getFaultInfo() {
+        return faultInfo;
     }
 }

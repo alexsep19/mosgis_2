@@ -1,5 +1,7 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Map;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
@@ -8,6 +10,7 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocBic;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.gosuslugi.dom.schema.integration.bills.ImportPaymentDocumentRequest;
 
 public class BankAccount extends EnTable {
 
@@ -125,4 +128,12 @@ public class BankAccount extends EnTable {
 
     }
 
+    static ImportPaymentDocumentRequest.PaymentInformation toPaymentInformation (Map<String, Object> r) {
+        final ImportPaymentDocumentRequest.PaymentInformation result = new ImportPaymentDocumentRequest.PaymentInformation ();
+        result.setBankBIK                (DB.to.String (r.get (c.BIKCREDORG.lc ())));
+        result.setOperatingAccountNumber (DB.to.String (r.get (c.ACCOUNTNUMBER.lc ())));
+        result.setTransportGUID          (DB.to.String (r.get (EnTable.c.UUID.lc ())));
+        return result;
+    }
+    
 }

@@ -133,6 +133,10 @@ public class VocSetting extends Table {
 	WS_GIS_UK_TMT_CONN("ws.gis.uk.timeout.connection", "Время ожидания подключения к сервису обмена сведениями о нормативно-правовых документах ГИС ЖКХ (UkAsyncService), мс", "10000"),
 	WS_GIS_UK_TMT_RESP("ws.gis.uk.timeout.response", "Время ожидания подключения к сервису обмена сведениями об о нормативно-правовых документах ГИС ЖКХ (UkAsyncService), мс", "10000"),
 
+	WS_GIS_PAYMENT_URL("ws.gis.payment.url", "Endpoint URL сервиса обмена сведениями о платежах и ПД ГИС ЖКХ (PaymentAsync)", WS_GIS_URL_ROOT_DEFAULT + "/ext-bus-payment-service/services/PaymentAsync/"),
+	WS_GIS_PAYMENT_TMT_CONN("ws.gis.payment.timeout.connection", "Время ожидания подключения к сервису обмена сведениями платежах и ПД ГИС ЖКХ (PaymentAsync), мс", "10000"),
+	WS_GIS_PAYMENT_TMT_RESP("ws.gis.payment.timeout.response", "Время ожидания подключения к сервису обмена сведениями об о платежах и ПД ГИС ЖКХ (PaymentAsync), мс", "10000"),
+
         GIS_ID_ORGANIZATION ("gis.id.organization", "ГИС-идентификатор организации-отправителя данных", "392cf4d1-3527-4b99-9f60-7c3ecbba11d8"),
         
         URL_BIC ("url.bic", "URL zip-архива с XML-документом, содержащим актуальный реестр БИК финансовых организаций РФ", "http://cbr.ru/s/newbik"),

@@ -47,7 +47,7 @@ define ([], function () {
 
             panels: [
 
-                {type: 'top', size: 230},
+                {type: 'top', size: 190},
                 {type: 'main', size: 400,
                     tabs: {
                         tabs:    [
@@ -79,7 +79,6 @@ define ([], function () {
                 {name: 'ordernum', type: 'text'},
                 {name: 'orderdate', type: 'date'},
                 {name: 'amount', type: 'float', options: {min: 0, precision: 2}},
-                {name: 'paymentpurpose', type: 'textarea'},
             ],
 
             onRefresh: function (e) {e.done (function () {

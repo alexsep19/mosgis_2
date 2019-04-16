@@ -4,15 +4,7 @@ define ([], function () {
 
     return function (data, view) {
 
-        var layout = w2ui ['service_payments_layout']
-
-        var $panel = $(layout.el ('main'))
-
-        var it = data.item
-
-        var is_popup = false
-
-        $panel.w2regrid ({
+        $((w2ui ['service_payments_layout']).el('main')).w2regrid({
 
             multiSelect: false,
 
@@ -32,7 +24,7 @@ define ([], function () {
                         $_DO [e.subItem.id] ()
                     }
                 },
-                items: is_popup? [] : [
+                items: [
                     {
                         id: 'create',
                         icon: 'w2ui-icon-plus',
@@ -44,6 +36,14 @@ define ([], function () {
                             {type: 'button', id: 'create_payment_document_payments', caption: 'Основание платежный документ', off: !data._can.create_payment_document},
                         ],
                         off: !data._can.create
+                    },
+                    {
+                        type: 'button',
+                        id: 'import_objects',
+                        caption: 'Импорт платежей...',
+                        icon: 'w2ui-icon-plus',
+                        onClick: $_DO.import_payments,
+                        off: !$_USER.uuid_org,
                     },
                 ].filter (not_off),
 

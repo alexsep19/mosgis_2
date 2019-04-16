@@ -104,6 +104,12 @@
     </module>
     
     <module>
+        <name>Workflow-payment-documents</name>
+        <type>JMS</type>
+        <path>META-INF/mosgismodule-payment-document-jms.xml</path>
+    </module>
+    
+    <module>
         <name>WS-RegOrgServiceAsync</name>
         <type>JMS</type>
         <path>META-INF/ws-jms/mosgismodule-ws-reg-org-service-async-jms.xml</path>
@@ -143,6 +149,17 @@
         <name>Workflow-inspection</name>
         <type>JMS</type>
         <path>META-INF/mosgismodule-inspection-jms.xml</path>
+    </module>
+
+    <module>
+	<name>Workflow-payment</name>
+	<type>JMS</type>
+	<path>META-INF/mosgismodule-payments-jms.xml</path>
+    </module>
+    <module>
+        <name>WS-NsiServiceAsync</name>
+        <type>JMS</type>
+        <path>META-INF/ws-jms/mosgismodule-ws-nsi-service-async-jms.xml</path>
     </module>
     
 </weblogic-application>

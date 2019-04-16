@@ -9,7 +9,7 @@ define ([], function () {
             width  : 580,
             height : 240,
 
-            title   : 'Аннулирование ДРСО',
+            title   : 'Аннулирование НПА',
 
             onOpen: function (event) {
 

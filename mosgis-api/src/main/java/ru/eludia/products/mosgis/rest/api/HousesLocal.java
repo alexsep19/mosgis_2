@@ -15,6 +15,7 @@ public interface HousesLocal extends CRUDBackend {
     JsonObject doUpdate (String id, JsonObject p);
     JsonObject doPatch  (String id, JsonObject p);
     JsonObject getVocs ();
+    JsonObject getContracts  (String id, User u);
     JsonObject getVocPassportFields (String id, Integer[] ids);
     JsonObject doSetMultiple (String id, JsonObject p);
     JsonObject doCreate (JsonObject p, User user);

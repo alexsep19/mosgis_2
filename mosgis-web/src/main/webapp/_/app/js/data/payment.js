@@ -53,8 +53,6 @@ define ([], function () {
 
                         switch (it.id_ctr_status) {
                             case 14:
-                            case 34:
-                            case 40:
                                 it._can.alter = 1
                         }
 
@@ -64,6 +62,11 @@ define ([], function () {
                                 it._can.delete = 1
                         }
 
+                        switch (it.id_ctr_status) {
+                            case 40:
+                            case 104:
+                                it._can.annul = 1
+                        }
                 }
 
                 it._can.update = it._can.edit

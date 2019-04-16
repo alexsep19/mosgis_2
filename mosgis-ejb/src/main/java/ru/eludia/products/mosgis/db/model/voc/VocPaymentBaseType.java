@@ -70,6 +70,27 @@ public class VocPaymentBaseType extends Table {
             return Integer.toString (id);
         }
 
+	public static i forLabel(String label) {
+	    for (i i : values()) {
+		if (i.label.equals(label)) {
+		    return i;
+		}
+	    }
+	    return null;
+	}
+
+	public static i forId(int id) {
+	    for (i i : values()) {
+		if (i.id == id) {
+		    return i;
+		}
+	    }
+	    return null;
+	}
+
+	public static i forId(Object id) {
+	    return forId(Integer.parseInt(id.toString()));
+	}
     }
 
     private static JsonArray jsonArray = i.toJsonArray ();

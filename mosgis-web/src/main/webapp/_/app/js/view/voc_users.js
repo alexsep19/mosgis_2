@@ -53,6 +53,7 @@ define ([], function () {
 
             columns: [                
                 {field: 'label', caption: 'ФИО',    size: 30},
+                {field: 'position', caption: 'Должность',    size: 30},
                 {field: 'login', caption: 'login',  size: 20},
                 {field: 'vc_orgs.label', caption: 'Огранизация',  size: 100},
                 {field: 'lockreason', caption: 'Причина запрета',  size: 100, hidden: true},

@@ -1,8 +1,11 @@
 package ru.eludia.products.mosgis.ws.soap.tools;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Timestamp;
@@ -13,12 +16,20 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPHeader;
 import javax.xml.soap.SOAPHeaderElement;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import ru.eludia.base.DB;
 import ru.gosuslugi.dom.schema.integration.base.RequestHeader;
@@ -37,10 +48,7 @@ public abstract class SOAPTools {
                     ISRequestHeader.class, 
                     RequestHeader.class, 
                     ResultHeader.class, 
-                    ru.gosuslugi.dom.schema.integration.organizations_registry_common.GetStateResult.class,
-                    ru.gosuslugi.dom.schema.integration.base.ISRequestHeader.class,
-                    ru.gosuslugi.dom.schema.integration.base.RequestHeader.class,
-                    ru.gosuslugi.dom.schema.integration.base.ResultHeader.class
+                    ru.gosuslugi.dom.schema.integration.organizations_registry_common.GetStateResult.class
             );
         }
         catch (JAXBException ex) {
@@ -205,5 +213,50 @@ public abstract class SOAPTools {
     public static XMLGregorianCalendar xmlNow () {
         return DB.to.XMLGregorianCalendar (new Timestamp (System.currentTimeMillis ()));
     }
+    
+	public static Node getSoapBodyNode(String message) throws ParserConfigurationException,
+			UnsupportedEncodingException, SAXException, IOException, SOAPException {
+		
+		DocumentBuilder documentBuilder = getDocumentBuilder();
+		Document document = documentBuilder.parse(new ByteArrayInputStream(message.getBytes("UTF-8")));
+
+		StringBuilder stringBuilder = new StringBuilder();
+		Element root = document.getDocumentElement();
+
+		String rootPrefix = root.getPrefix();
+
+		if (rootPrefix.isEmpty()) {
+			stringBuilder.append("Body");
+		} else {
+			stringBuilder.append(rootPrefix).append(":Body");
+		}
+
+		final String tagName = stringBuilder.toString();
+
+		NodeList nodeList = root.getElementsByTagName(tagName);
+
+		if (nodeList == null || nodeList.item(0) == null) {
+			throw new SOAPException("No Body tag found in document");
+		}
+
+		Node messageNode = nodeList.item(0).getFirstChild();
+
+		while (messageNode != null && !(messageNode instanceof Element)) {
+			messageNode = messageNode.getNextSibling();
+		}
+
+		if (messageNode == null) {
+			throw new SOAPException("Missing message tag");
+		}
+
+		return messageNode;
+	}
+	
+	public static DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		factory.setNamespaceAware(true);
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		return builder;
+	}
     
 }

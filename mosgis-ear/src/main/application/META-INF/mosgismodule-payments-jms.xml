@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<weblogic-jms xmlns="http://xmlns.oracle.com/weblogic/weblogic-jms" xmlns:sec="http://xmlns.oracle.com/weblogic/security" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wls="http://xmlns.oracle.com/weblogic/security/wls" xsi:schemaLocation="http://xmlns.oracle.com/weblogic/weblogic-jms http://xmlns.oracle.com/weblogic/weblogic-jms/1.1/weblogic-jms.xsd">
+
+  <!-- очередь обработки запросов на экспорт платежей -->
+  <uniform-distributed-queue name="inPaymentsQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.inExportPaymentsQueue</jndi-name>
+  </uniform-distributed-queue>
+
+  <!-- очередь опроса статуса исходящих запросов на экспорт платежей -->
+  <uniform-distributed-queue name="outExportPaymentsQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <delivery-params-overrides>
+        <time-to-deliver>2000</time-to-deliver>
+        <redelivery-delay>10000</redelivery-delay>
+    </delivery-params-overrides>
+    <jndi-name>mosgis.outExportPaymentsQueue</jndi-name>
+  </uniform-distributed-queue>
+<!--
+   очередь обработки запросов на импорт платежей
+  <uniform-distributed-queue name="inImportPaymentsQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.inImportPaymentsQueue</jndi-name>
+  </uniform-distributed-queue>
+
+   очередь опроса статуса исходящих запросов на импорт платежей
+  <uniform-distributed-queue name="outImportPaymentsQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <delivery-params-overrides>
+        <time-to-deliver>2000</time-to-deliver>
+        <redelivery-delay>10000</redelivery-delay>
+    </delivery-params-overrides>
+    <jndi-name>mosgis.outImportPaymentsQueue</jndi-name>
+  </uniform-distributed-queue>-->
+
+  <!-- очередь запросов на импорт платежей из экселя -->
+  <uniform-distributed-queue name="inXlPaymentsQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <delivery-params-overrides>
+        <time-to-deliver>2000</time-to-deliver>
+        <redelivery-delay>10000</redelivery-delay>
+    </delivery-params-overrides>
+    <jndi-name>mosgis.inXlPaymentsQueue</jndi-name>
+  </uniform-distributed-queue>
+  
+</weblogic-jms>
