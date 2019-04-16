@@ -40,19 +40,37 @@ define ([], function () {
 
             if (!it.is_deleted && ($_USER.role.admin || it.org_uuid == $_USER.uuid_org)) {
 
-                switch (it.last_succesfull_status) {
+                switch (it.id_osp_status) {
+                    case  14:
+                    case  34:
+                    case 124:
+                        it._can.alter = 1
+                }
+
+                switch (it.id_osp_status) {
                     case  10:
                     case -31:
                         it._can.approve = 1
                 }
 
-                switch (it.last_succesfull_status) {
+                switch (it.id_osp_status) {
                     case 10:
                         it._can.edit = 1
                 }
 
+                switch (it.id_osp_status) {
+                    case  10:
+                    case -34:
+                    case -20:
+                    case -31:
+                    case  14:
+                    case -34:
+                    case  40:
+                    case 104:
+                        it._can.delete = 1
+                }
+
                 it._can.update = it._can.edit
-                it._can.delete = it._can.approve || (it.id_osp_status == 40)
 
             }
 

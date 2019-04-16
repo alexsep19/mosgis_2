@@ -63,10 +63,36 @@ public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProg
     }
     
     @Override
+    public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
+        
+        VocGisStatus.i currentStatus = VocGisStatus.i.forId (db.getString (db.getModel ()
+                .get (getTable (), id, OverhaulRegionalProgram.c.ID_ORP_STATUS.lc ())));
+        
+        VocGisStatus.i lastOkStatus = VocGisStatus.i.forId (db.getString (db.getModel ()
+                .get (getTable (), id, OverhaulRegionalProgram.c.LAST_SUCCESFULL_STATUS.lc ())));
+        
+        switch (currentStatus) {
+            case FAILED_PUBLISHANDPROJECT:
+            case FAILED_PLACING:
+            case FAILED_STATE:
+                db.update (getTable (), HASH (
+                    EnTable.c.UUID,                          id,
+                    OverhaulRegionalProgram.c.ID_ORP_STATUS, lastOkStatus.getId ()
+                ));
+                break;
+            default:
+                throw new ValidationException ("foo", "Операция запрещена");
+        }
+        
+        logAction (db, user, id, VocAction.i.ALTER);
+        
+    });}
+    
+    @Override
     public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
         
         VocGisStatus.i lastOkStatus = VocGisStatus.i.forId (db.getString (db.getModel ()
-                .get(getTable (), id, OverhaulRegionalProgram.c.LAST_SUCCESFULL_STATUS.lc ())));
+                .get (getTable (), id, OverhaulRegionalProgram.c.LAST_SUCCESFULL_STATUS.lc ())));
         
         VocGisStatus.i nextStatus;
         VocAction.i action;
@@ -77,7 +103,6 @@ public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProg
                 action = VocAction.i.PUBLISHANDPROJECT;
                 break;
             case PROGRAM_WORKS_PLACE_FINISHED:
-            case FAILED_DELETEPROJECT:
                 nextStatus = VocGisStatus.i.PENDING_RQ_PLACING;
                 action = VocAction.i.APPROVE;
                 break;
@@ -112,7 +137,7 @@ public class OverhaulRegionalProgramsImpl extends BaseCRUD <OverhaulRegionalProg
                 nextStatus = VocGisStatus.i.PROJECT;
                 action = VocAction.i.DELETE;
                 break;
-            case PENDING_RQ_PLACE_PROGRAM_WORKS:
+            case PUBLISHEDANDPROJECT:
             case PROGRAM_WORKS_PLACE_FINISHED:
             case FAILED_PLACING:
             case FAILED_DELETEPROJECT:
