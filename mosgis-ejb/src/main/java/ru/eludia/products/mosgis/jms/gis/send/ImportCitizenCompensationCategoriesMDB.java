@@ -16,7 +16,7 @@ import ru.eludia.products.mosgis.db.model.incoming.InCitizenCompensationCategory
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.ModelHolder;
-import ru.eludia.products.mosgis.ws.soap.clients.WsGisNsiClient;
+import ru.eludia.products.mosgis.ws.soap.clients.WsGisMSPClient;
 import ru.eludia.products.mosgis.jms.UUIDPublisher;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 
@@ -33,7 +33,7 @@ public class ImportCitizenCompensationCategoriesMDB extends UUIDMDB<InCitizenCom
     protected UUIDPublisher UUIDPublisher;
 
     @EJB
-    WsGisNsiClient wsGisNsiClient;
+    WsGisMSPClient wsGisMSPClient;
 
     @Resource (mappedName = "mosgis.outImportCitizenCompensationCategoriesQueue")
     Queue q;
@@ -51,7 +51,7 @@ public class ImportCitizenCompensationCategoriesMDB extends UUIDMDB<InCitizenCom
         try {
 	    db.update (OutSoap.class, DB.HASH (
 		"uuid",     uuid,
-		"uuid_ack", wsGisNsiClient.exportDataProviderNsiItem((UUID) r.get("ppa"), uuid, 302).getMessageGUID()
+		"uuid_ack", wsGisMSPClient.exportCategories((UUID) r.get("ppa"), uuid, r).getMessageGUID()
             ));
             
             db.update (getTable (), DB.HASH (

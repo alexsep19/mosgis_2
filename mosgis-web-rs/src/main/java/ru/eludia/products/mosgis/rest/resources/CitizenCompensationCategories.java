@@ -115,8 +115,16 @@ public class CitizenCompensationCategories extends EJBResource <CitizenCompensat
     @POST
     @Path("import")
     @Produces (APPLICATION_JSON)
-    public JsonObject doImport () {
+    public JsonObject doImport (JsonObject p) {
 	checkPost();
-        return back.doImport (getUser ());
+        return back.doImport (p, getUser ());
+    }
+
+    @POST
+    @Path("log") 
+    @Produces (APPLICATION_JSON)
+    public JsonObject getLog () { 
+	checkGet();
+        return back.getLog (); 
     }
 }

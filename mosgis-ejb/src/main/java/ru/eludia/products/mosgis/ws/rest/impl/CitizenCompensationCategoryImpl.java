@@ -22,6 +22,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.incoming.InBaseDecisionMSP;
 import ru.eludia.products.mosgis.db.model.incoming.InCitizenCompensationCategory;
 import ru.eludia.products.mosgis.db.model.tables.CitizenCompensationCalculationKind;
 import ru.eludia.products.mosgis.db.model.tables.CitizenCompensationCategoryLegalAct;
@@ -37,6 +38,7 @@ import ru.eludia.products.mosgis.ws.rest.impl.tools.ComplexSearch;
 import ru.eludia.products.mosgis.ws.rest.impl.tools.Search;
 import ru.eludia.products.mosgis.ws.rest.impl.tools.SimpleSearch;
 import ru.eludia.products.mosgis.rest.api.CitizenCompensationCategoryLocal;
+import static ru.eludia.products.mosgis.ws.rest.impl.base.Base.EMPTY_JSON_OBJECT;
 
 @Stateless
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
@@ -236,7 +238,7 @@ public class CitizenCompensationCategoryImpl extends BaseCRUD<CitizenCompensatio
     });}
 
     @Override
-    public JsonObject doImport(User user) {
+    public JsonObject doImport(JsonObject p, User user) {
 
 	try (DB db = ModelHolder.getModel().getDb()) {
 
@@ -247,7 +249,7 @@ public class CitizenCompensationCategoryImpl extends BaseCRUD<CitizenCompensatio
 		throw new ValidationException("foo", "Отсутствует организация пользователя, доступ запрещен");
 	    }
 
-	    Map<String, Object> data = new HashMap ();
+	    Map<String, Object> data = getData(p);
 
 	    data.put(InCitizenCompensationCategory.c.UUID_ORG.lc(), uuidOrg);
 
@@ -263,4 +265,16 @@ public class CitizenCompensationCategoryImpl extends BaseCRUD<CitizenCompensatio
 
 	return EMPTY_JSON_OBJECT;
     }
+
+    @Override
+    public JsonObject getLog () {return fetchData ((db, job) -> {
+        
+        final JsonObject log = db.getJsonObject (db.getModel ()
+            .select  (InBaseDecisionMSP.class, "*")
+            .orderBy (InBaseDecisionMSP.c.TS.lc () + " DESC")
+        );
+        
+        job.add ("log", log == null ? EMPTY_JSON_OBJECT : log);
+
+    });}
 }

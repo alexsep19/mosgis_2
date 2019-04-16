@@ -19,6 +19,10 @@ public class InCitizenCompensationCategory extends Table {
 	UUID          (Type.UUID,      NEW_UUID, "Ключ"),
 	TS            (Type.TIMESTAMP, NOW,      "Дата/время записи в БД"),
 	UUID_ORG      (VocOrganization.class,    "Организация-инициатор импорта"),
+
+	FROMDATE      (Type.DATE, "Дата начала предоставления компенсаций расходов"),
+	TODATE        (Type.DATE, null, "Дата окончания предоставления компенсаций расходов"),
+
 	UUID_OUT_SOAP (OutSoap.class, null,      "Импорт"),
 	IS_OVER      (Type.BOOLEAN,   FALSE,    "1, процесс завершён; иначе 0")
         ;
