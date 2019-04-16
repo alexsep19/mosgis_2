@@ -99,7 +99,7 @@ define ([], function () {
                     function (record) {
                         if (record['id_osphw_status'] == 40)
                             record['w2ui'] = {'style': 'background-color: #90EE90; color: black;'}
-                        else if (record['id_osphw_status'] != 10)
+                        else if (Math.abs (record['id_osphw_status']) % 10 == 4)
                             record['w2ui'] = {'style': 'background-color: #F08080; color: white;'}
                         return record['import_err_text']
                 }},

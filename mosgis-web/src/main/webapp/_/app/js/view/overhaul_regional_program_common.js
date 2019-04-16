@@ -34,6 +34,7 @@ define ([], function () {
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
+                            {id: 'overhaul_regional_program_houses', caption: 'Дома и виды работ'},
                             {id: 'overhaul_regional_program_common_log', caption: 'История изменений'},
                         ].filter (not_off),
                         onClick: $_DO.choose_tab_overhaul_regional_program_common
