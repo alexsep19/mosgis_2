@@ -1,0 +1,91 @@
+<span>
+
+    <div>
+
+        <div class="w2ui-page page-0 page-1">
+
+        	<style>
+
+        		.w2ui-field > label {
+        			width: 300px;
+        			margin-right: 10px;
+        		}
+
+        		.w2ui-field input {
+        			width: 320px !important;
+        		}
+			.w2ui-field div {
+			    line-height: 19px;
+			}
+        	</style>
+
+			<center>
+        	<table border=0 cellpadding=0 cellspacing=0 width=90%>
+
+        		<tr>
+
+					<td style="min-width:550px;" width=1 valign=top>
+					    <div class="w2ui-field">
+						<label>Идентификатор</label>
+						<div>
+						    <div data-text=categoryguid />
+						</div>
+					    </div>
+
+					    <div class="w2ui-field">
+						    <label>Наименование</label>
+						    <div>
+							<div data-text=categoryname />
+						    </div>
+					    </div>
+
+					    <div class="w2ui-field">
+						<label>Дата начала предоставления</label>
+						    <div>
+							<div data-date data-text=fromdate />
+						    </div>
+					    </div>
+
+					    <div class="w2ui-field">
+						<label>Дата окончания предоставления</label>
+						<div>
+						    <div data-date data-text=todate />
+						</div>
+					    </div>
+
+					    <div class="w2ui-field">
+						<label>Территория</label>
+						<div>
+						    <div data-text=oktmo_label />
+						</div>
+					    </div>
+
+					    <div class="w2ui-field">
+						<label>Бюджет, за счет которого осуществляются выплаты</label>
+						<div>
+						    <div data-text=vc_budget_level.label/>
+						</div>
+					    </div>
+					</td>
+
+        		</tr>
+
+        	</table>
+			</center>
+
+        </div>
+
+        <div class="w2ui-buttons">
+        	<span>
+				<button class=w2ui-btn name=edit   data-on=__read_only>Редактировать</button>
+				<button class=w2ui-btn name=update data-off=__read_only>Сохранить</button>
+				<button class=w2ui-btn name=cancel data-off=__read_only>Отменить</button>
+				<button class=w2ui-btn name=delete  data-on=__read_only>Удалить</button>
+				<button class=w2ui-btn name=undelete  data-on=__read_only>Восстановить</button>
+				<button class=w2ui-btn name=alter   data-on=__read_only>Изменить</button>
+            </span>
+        </div>
+
+    </div>
+
+</span>

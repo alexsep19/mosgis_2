@@ -156,10 +156,17 @@
 	<type>JMS</type>
 	<path>META-INF/mosgismodule-payments-jms.xml</path>
     </module>
+
+    <module>
+	<name>Workflow-citizen-compensation-categories</name>
+	<type>JMS</type>
+	<path>META-INF/mosgismodule-msp-jms.xml</path>
+    </module>
+
     <module>
         <name>WS-NsiServiceAsync</name>
         <type>JMS</type>
         <path>META-INF/ws-jms/mosgismodule-ws-nsi-service-async-jms.xml</path>
     </module>
-    
+
 </weblogic-application>

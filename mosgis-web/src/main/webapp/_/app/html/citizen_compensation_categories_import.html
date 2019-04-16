@@ -1,0 +1,42 @@
+<span
+	data-popup-width=400
+	data-popup-height=180
+	data-popup-title='Импорт справочника категорий граждан'
+>
+
+	<style>
+
+	    label[data-block-name=citizen_compensation_categories_import] {
+        	width: 190px;
+        	margin-right: 10px;
+	    }
+
+            input[data-block-name=citizen_compensation_categories_import] {
+        	width: 80px !important;
+	    }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:130px ">
+
+        <div class="w2ui-page page-0" style="height:130px;">
+
+
+            <div class="w2ui-field">
+                <label>Дата начала предоставления</label>
+                <div>
+		    <input name=fromdate class=dt />
+                </div>
+                <label>Дата окончания предоставления</label>
+                <div>
+		    <input name=todate class=dt />
+                </div>
+            </div>
+
+        <div class="w2ui-buttons">
+	    <button class=w2ui-btn name=import>Импорт из ГИС ЖКХ</button>
+        </div>
+
+	</div>
+
+</span>
