@@ -60,6 +60,7 @@ import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractObject;
+import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContract;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.ValidationException;
@@ -727,6 +728,28 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
             ).on ()
             .toOne (nsi58, nsi58.getLabelField ().getfName () + " AS reason"
             ).on ("vc_nsi_58.isactual=1 AND vc_nsi_58.code=c." + Contract.c.CODE_VC_NSI_58.lc ())                                
+                
+                
+            , m.select (PublicPropertyContract.class, "AS public_property_contract"
+                , PublicPropertyContract.c.ID_CTR_STATUS.lc () + " AS id_ctr_status"
+                , EnTable.c.UUID.lc () + " AS id"
+                , PublicPropertyContract.c.CONTRACTNUMBER.lc () + " AS no"
+                , PublicPropertyContract.c.DATE_.lc () + " AS dt"
+                , PublicPropertyContract.c.STARTDATE.lc () + " AS dt_from"
+                , PublicPropertyContract.c.ENDDATE.lc () + " AS dt_to"
+            )
+            .where (EnTable.c.IS_DELETED, 0)
+            .where (PublicPropertyContract.c.FIASHOUSEGUID, fiashouseguid)
+            .toOne (VocOrganization.class, "AS org"
+                , VocOrganization.c.LABEL.lc () + " AS org_label"
+            ).on ("org.uuid=public_property_contract." + PublicPropertyContract.c.UUID_ORG.lc ())                
+            .toMaybeOne (VocOrganization.class, "AS org_customer"
+                , VocOrganization.c.LABEL.lc () + " AS org_customer_label"
+            ).on ("org_customer.uuid=public_property_contract." + PublicPropertyContract.c.UUID_ORG_CUSTOMER.lc ())
+            .toMaybeOne (VocPerson.class, "AS ind_customer"
+                , VocOrganization.c.LABEL.lc () + " AS ind_customer_label"
+            ).on ()
+                
                 
         );
 
