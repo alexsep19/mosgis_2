@@ -28,8 +28,6 @@ public class CharterObject extends EnTable {
     
     public enum c implements ColEnum {        
 
-        UUID                      (Type.UUID,             NEW_UUID,     "Ключ"),
-        IS_DELETED                (Type.BOOLEAN,          Bool.FALSE,   "1, если запись удалена; иначе 0"),
         IS_FROM_GIS               (Type.BOOLEAN,          Bool.FALSE,   "1, если запись импортирована из WS ГИС; иначе (если создана оператором системы) 0"),
 
         UUID_CHARTER              (Charter.class,                      "Ссылка на договор"),
