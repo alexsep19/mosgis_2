@@ -6,6 +6,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.jms.Queue;
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -32,6 +34,7 @@ import ru.eludia.products.mosgis.ws.rest.impl.tools.Search;
 import ru.eludia.products.mosgis.ws.rest.impl.tools.SimpleSearch;
 
 @Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class VocOrganizationProposalsImpl extends BaseCRUD<VocOrganizationProposal> implements VocOrganizationProposalsLocal {
 
     @Resource (mappedName = "mosgis.inVocOrganizationProposalsQueue")

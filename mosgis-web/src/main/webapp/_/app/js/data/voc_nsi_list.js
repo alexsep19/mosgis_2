@@ -88,7 +88,11 @@ define ([], function () {
             if (one_of_roles (9, 10)) msp_vocs.push ({
                 id: 'base_decision_msps',
                 text: 'Основание принятия решения о мерах социальной поддержки гражданина',
-            })            
+            })
+            if (one_of_roles (10)) msp_vocs.push ({
+                id: 'citizen_compensation_categories',
+                text: 'Перечень отдельных категорий граждан',
+            })
             if (tariff_vocs.length) data.vc_nsi_list_group.push ({
                 name: '_MSP',
                 label: 'Социальная поддержка',

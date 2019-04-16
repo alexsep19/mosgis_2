@@ -17,7 +17,7 @@ define ([], function () {
 
         }
         
-        $(w2ui ['topmost_layout'].el ('main')).w2regrid ({ 
+        $(w2ui ['passport_layout'].el ('main')).w2regrid ({ 
 
             name: 'overhaul_short_program_houses_grid',
 

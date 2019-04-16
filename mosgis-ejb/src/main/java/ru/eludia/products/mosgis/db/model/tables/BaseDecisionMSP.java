@@ -1,7 +1,6 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
 import java.util.Map;
-import java.util.logging.Logger;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
@@ -149,8 +148,6 @@ public class BaseDecisionMSP extends EnTable {
 	    c.CODE.lc(), t.getCode(),
 	    c.GUID.lc(), t.getGUID()
 	);
-
-	Logger logger = Logger.getLogger(BaseDecisionMSP.class.getName());
 
 	for (NsiElementFieldType f : t.getNsiElementField()) {
 
