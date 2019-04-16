@@ -27,8 +27,6 @@ public class CitizenCompensationCalculationKind extends EnTable {
 
 	SERVICE                      (VocServiceType.class,  null, "На оплату какого значения предоставляется компенсация"),
 
-	ID_TYPE                      (Type.STRING, new Virt("CASE WHEN FIXEDCOMPENSATIONSUM IS NOT NULL THEN 2 ELSE 1 END"), "Тип расчета: 1 - от фактических расходов на оплату ЖКУ, 2 - фиксированный размер"),
-
 	CODE_VC_NSI_275              (Type.STRING,  20, null, "Норматив для начисления компенсации (НСИ 275)"),
 	APPLIESTOALLFAMILYMEMBERS    (Type.BOOLEAN, null, "Распространяется на всех членов семьи"),
 	DISCOUNTSIZE                 (Type.NUMERIC, 5, 2, null, "Размер, предоставляемой компенсации"),
