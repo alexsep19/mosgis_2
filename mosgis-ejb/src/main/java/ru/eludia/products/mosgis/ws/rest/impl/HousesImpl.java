@@ -56,6 +56,8 @@ import static ru.eludia.products.mosgis.db.model.voc.VocRdColType.i.REF;
 import ru.eludia.products.mosgis.db.model.voc.VocVotingForm;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.tables.RcContract;
+import ru.eludia.products.mosgis.db.model.tables.RcContractObject;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
@@ -749,6 +751,27 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
             .toMaybeOne (VocPerson.class, "AS ind_customer"
                 , VocOrganization.c.LABEL.lc () + " AS ind_customer_label"
             ).on ()
+                
+                
+            , m.select (RcContractObject.class, "AS rc_contract"
+                , RcContractObject.c.ID_CTR_STATUS.lc () + " AS id_obj_status"
+            )
+            .where (EnTable.c.IS_DELETED, 0)
+            .where (RcContractObject.c.FIASHOUSEGUID, fiashouseguid)
+            .toOne (RcContract.class, "AS c"
+                , EnTable.c.UUID.lc () + " AS id"
+                , RcContract.c.CONTRACTNUMBER.lc () + " AS no"
+                , RcContract.c.SIGNINGDATE.lc () + " AS dt"
+                , RcContract.c.EFFECTIVEDATE.lc () + " AS dt_from"
+                , RcContract.c.COMPLETIONDATE.lc () + " AS dt_to"
+                , RcContract.c.ID_CTR_STATUS.lc () + " AS id_ctr_status"
+            ).on ()                
+            .toOne (VocOrganization.class, "AS org"
+                , VocOrganization.c.LABEL.lc () + " AS org_label"
+            ).on ("org.uuid=c." + RcContract.c.UUID_ORG.lc ())                
+            .toMaybeOne (VocOrganization.class, "AS org_customer"
+                , VocOrganization.c.LABEL.lc () + " AS org_customer_label"
+            ).on ("org_customer.uuid=c." + RcContract.c.UUID_ORG_CUSTOMER.lc ())
                 
                 
         );

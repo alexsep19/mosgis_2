@@ -24,6 +24,8 @@ define ([], function () {
                     mgmt_contract: 'Договор управления',
                     charter: 'Устав',
                     supply_resource_contract: 'Договор ресурсноснабжения',
+                    public_property_contract: 'Договор пользования общим имуществом',
+                    rc_contract: 'Договор услуг РЦ',
                 }},
                 {field: 'no', caption: 'Номер', size: 10},
                 {field: 'dt', caption: 'Дата', size: 18, render: _dt},
