@@ -28,6 +28,8 @@ define ([], function () {
             
             var it = data.item
 
+            it.not_all_works_approved = (it.id_osp_status == -31 && data.works_approved_count < data.works_general_count) ? true : false
+
             console.log (data)
 
             it.status_label = data.vc_gis_status[it.id_osp_status]
@@ -41,17 +43,16 @@ define ([], function () {
                 switch (it.last_succesfull_status) {
                     case  10:
                     case -31:
-                        //it._can.approve = 1
+                        it._can.approve = 1
                 }
 
-                switch (it.id_osp_status) {
+                switch (it.last_succesfull_status) {
                     case 10:
-                    case 124:
                         it._can.edit = 1
                 }
 
                 it._can.update = it._can.edit
-                //it._can.delete = it._can.approve || (it.id_orp_status == 40)
+                it._can.delete = it._can.approve || (it.id_osp_status == 40)
 
             }
 

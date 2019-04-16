@@ -88,7 +88,7 @@ public class WsGisCapitalRepairClient {
         return getPort (orgPPAGuid, messageGUID).importPlanWork (OverhaulShortProgramHouseWorksImport.toImportPlanWorkRequest (r)).getAck ();
     }
     
-    public AckRequest.Ack annulPlanWork (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+    public AckRequest.Ack annulShortProgramWork (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
         return getPort (orgPPAGuid, messageGUID).importPlanWork (OverhaulShortProgramHouseWorkLog.toAnnulPlanWorkRequest (r)).getAck ();
     }
     

@@ -8,6 +8,7 @@ import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi79;
 import ru.gosuslugi.dom.schema.integration.capital_repair.ImportDocumentType.LoadDocument;
@@ -100,6 +101,9 @@ public class OverhaulShortProgramLog extends GisWsLogTable {
     
     private static PlanPassportType toPlanPassportType (Map <String, Object> r) {
         PlanPassportType result = DB.to.javaBean (PlanPassportType.class, r);
+        result.setName (r.get ("programname").toString ());
+        result.setTerritory (VocOktmo.createOKTMORef (45000000L));
+        result.setType ("Plan");
         return result;
     }
     
@@ -125,7 +129,7 @@ public class OverhaulShortProgramLog extends GisWsLogTable {
             
             document.put ("files", db.getList (db.getModel ()
                     .select  (OverhaulShortProgramFile.class, "*")
-                    .where   ("uuid_oh_reg_pr_doc", document.get ("uuid"))
+                    .where   ("uuid_oh_shrt_pr_doc", document.get ("uuid"))
                     .and     ("id_status", 1)
                     .toOne   (OverhaulShortProgramFileLog.class, "AS log", "ts_start_sending", "err_text").on ()
             ));
