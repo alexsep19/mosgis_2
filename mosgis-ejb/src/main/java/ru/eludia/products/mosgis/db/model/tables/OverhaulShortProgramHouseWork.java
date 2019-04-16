@@ -33,7 +33,7 @@ public class OverhaulShortProgramHouseWork extends EnTable {
         ENDMONTH              (NUMERIC, 2, "Месяц окончания периода"),
         ENDYEAR               (NUMERIC, 4, "Год окончания периода"),
         
-        ENDYEARMONTH          (DATE, new Virt ("TO_DATE(\"ENDYEAR\" || '-' || \"ENDMONTH\", 'YYYY-MM')"), "Дата окончания периода (gYearMonth)"),
+        ENDMONTHYEAR          (DATE, new Virt ("TO_DATE(\"ENDYEAR\" || '-' || \"ENDMONTH\", 'YYYY-MM')"), "Дата окончания периода (gYearMonth)"),
         
         FUND                  (NUMERIC, 14, 2, "За счет средств Фонда содействия реформированию ЖКХ"),
         REGIONBUDGET          (NUMERIC, 14, 2, "За счет средств бюджета субъекта РФ"),
