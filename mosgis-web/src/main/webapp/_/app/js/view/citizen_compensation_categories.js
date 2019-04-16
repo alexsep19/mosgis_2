@@ -45,7 +45,7 @@ define ([], function () {
             
             url: '/_back/?type=citizen_compensation_categories',
             
-            postData: {data: {uuid_org: $_USER.uuid_org}},
+            postData: {data: {}},
                         
             onAdd:      $_DO.create_citizen_compensation_categories,            
             onEdit:     $_DO.edit_citizen_compensation_categories,

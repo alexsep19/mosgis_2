@@ -17,7 +17,7 @@ public class VocBudgetLevel extends Table {
     private static final String TABLE_NAME = "vc_budget_levels";
 
     public VocBudgetLevel () {
-        super (TABLE_NAME, "Уровень бюджета");
+        super (TABLE_NAME, "Тип услуг");
         cols  (c.class);
         pk    (c.ID);
         data  (i.class);
@@ -25,8 +25,8 @@ public class VocBudgetLevel extends Table {
 
     public enum c implements ColEnum {
 
-        ID             (Type.NUMERIC, 1,            "Идентификатор"),
-        LABEL          (Type.STRING,                "Наименование")
+        ID    (Type.STRING, "Идентификатор"),
+        LABEL (Type.STRING, "Наименование"),
         ;
 
         @Override public Col getCol () {return col;} private Col col; private c (Type type, Object... p) {col = new Col (this, type, p);} private c (Class c,   Object... p) {col = new Ref (this, c, p);}
@@ -34,16 +34,15 @@ public class VocBudgetLevel extends Table {
     }
 
     public enum i {
-
-        MUNICIPAL               (1, "Муниципальный"),
-        REGIONAL                (2, "Региональный"),
-        FEDERAL                 (3, "Федеральный")
+	MUNICIPAL            ("Municipal", "Муниципальный"),
+	REGIONAL             ("Regional", "Региональный"),
+	FEDERAL              ("Federal", "Федеральный")
         ;
 
-        int     id;
+        String  id;
         String  label;
 
-        public int getId () {
+        public String getId () {
             return id;
         }
 
@@ -51,20 +50,19 @@ public class VocBudgetLevel extends Table {
             return label;
         }
 
-        private i (int id, String label) {
+        private i (String id, String label) {
             this.id = id;
             this.label = label;
         }
 
         public static i forId (Object id) {
-            int iid = (int) DB.to.Long (id);
-            for (i i: values ()) if (i.id == iid) return i;
-            throw new IllegalArgumentException ("Unknown legal act level: " + id);
+            for (i i: values ()) if (DB.eq (id, i.id)) return i;
+            throw new IllegalArgumentException ("Unknown VocBudgetLevel id: " + id);
         }
 
         @Override
         public String toString () {
-            return Integer.toString (id);
+            return id;
         }
 
         private JsonObject toJsonObject () {
@@ -75,6 +73,7 @@ public class VocBudgetLevel extends Table {
             ;
 
             return job.build ();
+
         }
 
         public static JsonArray toJsonArray () {
@@ -86,7 +85,8 @@ public class VocBudgetLevel extends Table {
     }
 
     private static JsonArray jsonArray = i.toJsonArray ();
-    public  static final void addTo (JsonObjectBuilder job) {
+
+    public static final void addTo (JsonObjectBuilder job) {
         job.add (TABLE_NAME, jsonArray);
     }
 

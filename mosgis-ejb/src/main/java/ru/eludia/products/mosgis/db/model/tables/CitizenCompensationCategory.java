@@ -1,5 +1,7 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Map;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
@@ -12,6 +14,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi237;
 import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
+import ru.gosuslugi.dom.schema.integration.msp.ExportCategoryType;
 
 public class CitizenCompensationCategory extends EnTable {
 
@@ -80,5 +83,49 @@ public class CitizenCompensationCategory extends EnTable {
         cols (c.class);
 
         key (c.UUID_ORG);
+
+	trigger ("BEFORE UPDATE", ""
+	+ "BEGIN "
+            + "IF :NEW.OKTMO IS NULL AND :NEW.OKTMO_CODE IS NOT NULL THEN "
+	    + "  SELECT ID INTO :NEW.OKTMO FROM " + VocOktmo.TABLE_NAME + " WHERE CODE = :NEW.OKTMO_CODE AND SECTION_CODE = '1'; "
+	    + "END IF; "
+        + "END;");
+    }
+
+    public static Map<String, Object> toHASH(ExportCategoryType cat) {
+
+	final Map<String, Object> result = DB.HASH(
+	    c.CATEGORYGUID.lc(), cat.getCategoryGuid(),
+	    c.FROMDATE.lc(), cat.getFromDate(),
+	    c.TODATE.lc(), cat.getToDate(),
+	    c.CATEGORYNAME.lc(), cat.getCategoryName(),
+	    c.PROVISIONDOCUMENTS.lc(), cat.getProvisionDocuments(),
+	    c.DENIALREASONS.lc(), cat.getDenialReasons(),
+	    c.SUSPENSIONREASONS.lc(), cat.getSuspensionReasons(),
+	    c.TERMINATIONREASONS.lc(), cat.getTerminationReasons(),
+	    c.RESUMPTIONREASONS.lc(), cat.getResumptionReasons(),
+	    c.RECALCULATIONREASONS.lc(), cat.getRecalculationReasons(),
+	    c.REFUNDREASONS.lc(), cat.getRefundReasons(),
+
+	    c.FIXEDCOMPENSATIONSUM.lc(), cat.getFixedCompensationSum(),
+	    c.FIXEDSUMESTABLISHMENTDATE.lc(), cat.getFixedSumEstablishmentDate(),
+	    c.COMMENT_.lc(), cat.getComment()
+	);
+
+	result.put(c.BUDGETLEVEL.lc(), VocBudgetLevel.i.forId(cat.getBudgetLevel()));
+
+	ExportCategoryType.Territory terr = cat.getTerritory();
+
+	if (DB.ok(terr.getMunicipality())) {
+	    result.put(c.OKTMO_CODE.lc(), terr.getMunicipality().getCode());
+	}
+
+	if (DB.ok(terr.getRegion())) {
+	    if (DB.eq(terr.getRegion().getCode(), "77")) {
+		result.put(c.OKTMO_CODE.lc(), VocOktmo.CODE_MOSCOW);
+	    }
+	}
+
+	return result;
     }
 }
