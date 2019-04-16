@@ -58,6 +58,9 @@ import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.CharterObject;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractObject;
+import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.ws.rest.impl.tools.Search;
@@ -700,7 +703,30 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
             ).on ("org.uuid=c." + Charter.c.UUID_ORG.lc ())
                 
                 
-                
+            , m.select (ContractObject.class, "AS supply_resource_contract"
+                , ContractObject.c.ID_CTR_STATUS.lc () + " AS id_obj_status"
+            )
+            .where (EnTable.c.IS_DELETED, 0)
+            .where (SupplyResourceContractObject.c.FIASHOUSEGUID, fiashouseguid)
+            .toOne (SupplyResourceContract.class, "AS c"
+                , EnTable.c.UUID.lc () + " AS id"
+                , SupplyResourceContract.c.CONTRACTNUMBER.lc () + " AS no"
+                , SupplyResourceContract.c.SIGNINGDATE.lc () + " AS dt"
+                , SupplyResourceContract.c.EFFECTIVEDATE.lc () + " AS dt_from"
+                , SupplyResourceContract.c.COMPLETIONDATE.lc () + " AS dt_to"
+                , SupplyResourceContract.c.ID_CTR_STATUS.lc () + " AS id_ctr_status"
+            ).on ()                
+            .toOne (VocOrganization.class, "AS org"
+                , VocOrganization.c.LABEL.lc () + " AS org_label"
+            ).on ("org.uuid=c." + SupplyResourceContract.c.UUID_ORG.lc ())                
+            .toMaybeOne (VocOrganization.class, "AS org_customer"
+                , VocOrganization.c.LABEL.lc () + " AS org_customer_label"
+            ).on ("org_customer.uuid=c." + SupplyResourceContract.c.UUID_ORG_CUSTOMER.lc ())
+            .toMaybeOne (VocPerson.class, "AS ind_customer"
+                , VocOrganization.c.LABEL.lc () + " AS ind_customer_label"
+            ).on ()
+            .toOne (nsi58, nsi58.getLabelField ().getfName () + " AS reason"
+            ).on ("vc_nsi_58.isactual=1 AND vc_nsi_58.code=c." + Contract.c.CODE_VC_NSI_58.lc ())                                
                 
         );
 
