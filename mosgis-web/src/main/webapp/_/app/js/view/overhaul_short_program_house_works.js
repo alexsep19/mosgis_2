@@ -49,7 +49,7 @@ define ([], function () {
                         id: 'approveButton',
                         caption: 'Импортировать в ГИС ЖКХ',
                         onClick: $_DO.approve_overhaul_short_program_house_works,
-                        disabled: true //!(data.item['program.last_succesfull_status'] == -21) && !(data.item['program.last_succesfull_status'] == -31)
+                        disabled: !(data.item['program.last_succesfull_status'] == -21) && !(data.item['program.last_succesfull_status'] == -31)
                     },
                     {
                         type: 'button', 
@@ -88,7 +88,7 @@ define ([], function () {
             columns: [
                 {field: 'work', caption: 'Вид работы', size: 30, voc: data.vc_oh_wk_types},
                 {field: 'code_nsi_218', caption: 'Группа видов работ', size: 30, voc: data.vc_nsi_218},
-                {field: 'endyearmonth', caption: 'Окончание выполнения', size: 20, render: _dt},
+                {field: 'endmonthyear', caption: 'Окончание выполнения', size: 20, render: _dt},
                 {field: 'fund', caption: 'Средства Фонда ЖКХ', size: 20},
                 {field: 'regionbudget', caption: 'Бюджет субъекта РФ', size: 20},
                 {field: 'municipalbudget', caption: 'Местный бюджет', size: 20},

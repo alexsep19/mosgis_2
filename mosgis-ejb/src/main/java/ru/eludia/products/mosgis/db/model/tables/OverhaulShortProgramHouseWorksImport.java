@@ -20,6 +20,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
 import ru.eludia.products.mosgis.db.model.voc.VocOverhaulWorkType;
 import ru.gosuslugi.dom.schema.integration.capital_repair.ImportPlanWorkRequest;
 import ru.gosuslugi.dom.schema.integration.capital_repair.ImportPlanWorkRequest.ImportPlanWork;
+import ru.gosuslugi.dom.schema.integration.capital_repair.WorkFinancingType;
 import ru.gosuslugi.dom.schema.integration.capital_repair.WorkPlanType;
 
 public class OverhaulShortProgramHouseWorksImport extends EnTable {
@@ -77,6 +78,12 @@ public class OverhaulShortProgramHouseWorksImport extends EnTable {
         WorkPlanType result = DB.to.javaBean (WorkPlanType.class, work);
         result.setWorkKind (NsiTable.toDom (work, "nsi_219"));
         result.setOKTMO (VocOktmo.createOKTMORef ((Long) work.get ("oktmo")));
+        result.setFinancing (toWorkFinancingType (work));
+        return result;
+    }
+    
+    private static WorkFinancingType toWorkFinancingType (Map <String, Object> work) {
+        WorkFinancingType result = DB.to.javaBean (WorkFinancingType.class, work);
         return result;
     }
     
