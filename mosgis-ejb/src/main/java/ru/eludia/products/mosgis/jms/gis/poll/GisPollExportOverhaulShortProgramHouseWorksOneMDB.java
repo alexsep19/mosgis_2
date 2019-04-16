@@ -60,7 +60,7 @@ public class GisPollExportOverhaulShortProgramHouseWorksOneMDB extends GisPollMD
         
         UUID orgPPAGuid          = (UUID) r.get ("org.orgppaguid");
         
-        OverhaulShortProgramHouseWork.Action action = OverhaulShortProgramHouseWork.Action.forStatus (VocGisStatus.i.forId (r.get ("log.id_orphw_status")));
+        OverhaulShortProgramHouseWork.Action action = OverhaulShortProgramHouseWork.Action.forStatus (VocGisStatus.i.forId (r.get ("log.id_osphw_status")));
         
         try {
             
