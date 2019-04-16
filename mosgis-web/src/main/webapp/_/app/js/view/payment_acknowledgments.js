@@ -13,27 +13,22 @@ define ([], function () {
                 toolbarInput: false,
                 footer: true,
             },
-
+/*
             columnGroups : [
-                {span: 3, caption: 'Событие'},
                 {span: 4, caption: 'Платёж'},
-                {span: 3, caption: 'Запрос в ГИС ЖКХ'},
             ],
-
+*/
             columns: [
 
-                {field: 'ts', caption: 'Дата/время',    size: 30, render: _ts},
-                {field: 'action', caption: 'Действие',    size: 30, voc: data.vc_actions},
-                {field: 'vc_users.label', caption: 'Оператор/поставщик', size: 30, render: function (r) {return r ['tb_senders.label'] || r ['vc_users.label']}},
-
-                {field: 'ordernum', caption: '№', size: 20},
-                {field: 'orderdate', caption: 'Дата внесения платы',    size: 30, render: _dt},
-                {field: 'amount', caption: 'Сумма, руб.', size: 20, render: 'float:2'},
-                {field: 'paymentpurpose', caption: 'Назначение платежа', size: 50},
-
-                {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: 'data-ref=1'},
-                {field: 'soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: 'data-ref=1'},
-                {field: 'soap.err_text', caption: 'Ошибка',    size: 30},
+                {field: 'acct.accountnumber', caption: 'Номер лицевого счета',    size: 30},
+                {field: 'pd.paymentdocumentnumber', caption: 'Платежный документ',    size: 30},
+                {field: 'pd.id_type', caption: 'Тип',    size: 30, voc: data.vc_pay_doc_types},                
+                {field: 'pd.dt_period', caption: 'Период', size: 22, render: function (r, y, z, v) {
+                    var dt = new Date (v)
+                    return w2utils.settings.fullmonths [dt.getMonth ()] + ' ' + dt.getFullYear ()
+                }},
+                {field: 'pd.totalpayablebypdwith_da', caption: 'Сумма документа, руб.', size: 15, render: 'float:2'},
+                {field: 'amount', caption: 'Оплачено', size: 15, render: 'float:2'},
 
             ],
 

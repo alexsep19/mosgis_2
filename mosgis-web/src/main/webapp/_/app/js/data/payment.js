@@ -22,6 +22,7 @@ define ([], function () {
         query ({type: 'payments'}, {}, function (data) {
 
             add_vocabularies (data, {
+                vc_pay_doc_types: 1,
                 vc_gis_status: 1,
                 vc_actions: 1,
             })
