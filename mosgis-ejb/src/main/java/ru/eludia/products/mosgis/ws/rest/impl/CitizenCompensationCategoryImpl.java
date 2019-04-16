@@ -149,18 +149,6 @@ public class CitizenCompensationCategoryImpl extends BaseCRUD<CitizenCompensatio
     });}
 
     @Override
-    public JsonObject getLegalActs(String id) {return fetchData ((db, job) -> {
-
-        db.addJsonArrays (job, ModelHolder.getModel ()
-	    .select(LegalAct.class, "AS root", "*")
-            .toOne (CitizenCompensationCategoryLegalAct.class, "AS cla", "*")
-		.where("uuid", id)
-		.on("root.uuid = cla.uuid_legal_act")
-	    .orderBy(LegalAct.c.APPROVEDATE.lc() + " DESC")
-        );
-    });}
-
-    @Override
     public JsonObject getVocs () {return fetchData ((db, job) -> {
         
         final MosGisModel m = ModelHolder.getModel ();
