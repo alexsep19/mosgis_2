@@ -18,8 +18,6 @@ define ([], function () {
 
                         tabs: [
                             {id: 'citizen_compensation_category_common',   caption: 'Общие'},
-//                            {id: 'citizen_compensation_category_reasons', caption: 'Условия предоставления'},
-                            {id: 'citizen_compensation_category_legal_acts', caption: 'НПА'},
                             {id: 'citizen_compensation_category_calculation_kinds', caption: 'Порядок расчета компенсации расходов'
                                 , off: data.item.is_fixed
                             },

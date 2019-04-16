@@ -24,40 +24,7 @@ define ([], function () {
 
     $_DO.import_citizen_compensation_categories = function (e) {
 
-        if (!confirm('Импортировать справочник?'))
-            return
-
-        var grid = w2ui ['citizen_compensation_categories_grid']
-
-        grid.lock()
-        $_SESSION.set('citizen_compensation_categories_importing', 1)
-
-        query({type: 'citizen_compensation_categories', id: null, action: 'import'}, {}, $_DO.check_citizen_compensation_categories)
-
-    }
-
-    $_DO.check_citizen_compensation_categories = function () {
-
-        var grid = w2ui ['citizen_compensation_categories_grid']
-
-        query ({type: 'citizen_compensation_categories', id: null, part: 'log'}, {}, function (d) {
-        
-            var is_importing = $_SESSION.get ('citizen_compensation_categories_importing')
-
-            if (!d.log.uuid) return is_importing ? null : $_DO.import_citizen_compensation_categories ()
-        
-            if (d.log.is_over) {            
-                $_SESSION.delete ('citizen_compensation_categories_importing')
-                if (is_importing && grid) use.block ('citizen_compensation_categories')
-                return
-            }
-                        
-            setTimeout (function () {w2ui ['citizen_compensation_categories_grid'].lock ('Запрос в ГИС ЖКХ...', 1)}, 10)
-
-            setTimeout ($_DO.check_citizen_compensation_categories, 5000)
-
-        })
-
+        use.block ('citizen_compensation_categories_import')
     }
 
     $_DO.delete_citizen_compensation_categories = function () {

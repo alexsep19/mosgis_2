@@ -18,18 +18,12 @@ define ([], function () {
             toolbar: {
             
                 items: [
-//                    {type: 'button', id: 'edit', caption: 'Импорт справочника из ГИС ЖКХ', onClick: $_DO.import_citizen_compensation_categories, icon: 'w2ui-icon-pencil', off: $_USER.role.admin}
+                    {type: 'button', id: 'edit', caption: 'Импорт справочника из ГИС ЖКХ', onClick: $_DO.import_citizen_compensation_categories, icon: 'w2ui-icon-pencil', off: $_USER.role.nsi_20_10}
                 ].filter (not_off),
                 
             }, 
 
-            searches: [            
-                {field: 'label_uc',  caption: 'Наименование',  type: 'text'},
-                {field: 'is_deleted', caption: 'Статус записи', type: 'enum', options: {items: [
-                    {id: "0", text: "Актуальные"},
-                    {id: "1", text: "Удалённые"},
-                ]}},
-                {field: 'id_ctr_status', caption: 'Статус синхронизации',     type: 'enum', options: {items: data.vc_gis_status.items}},
+            searches: [
             ].filter (not_off),
 
             columns: [      
