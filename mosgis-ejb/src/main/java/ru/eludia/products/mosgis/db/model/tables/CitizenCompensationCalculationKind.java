@@ -12,7 +12,6 @@ import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocServiceType;
-import ru.eludia.products.mosgis.db.model.voc.VocCitizenCompensationHousing;
 import ru.gosuslugi.dom.schema.integration.msp.ExportCategoryType;
 import ru.gosuslugi.dom.schema.integration.msp.ExportCategoryType.Actual;
 

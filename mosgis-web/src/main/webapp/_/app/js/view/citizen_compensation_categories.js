@@ -18,7 +18,7 @@ define ([], function () {
             toolbar: {
             
                 items: [
-                    {type: 'button', id: 'edit', caption: 'Импорт справочника из ГИС ЖКХ', onClick: $_DO.import_citizen_compensation_categories, icon: 'w2ui-icon-pencil', off: $_USER.role.nsi_20_10}
+                    {type: 'button', id: 'edit', caption: 'Импорт справочника из ГИС ЖКХ', onClick: $_DO.import_citizen_compensation_categories, icon: 'w2ui-icon-pencil', off: !$_USER.role.nsi_20_10}
                 ].filter (not_off),
                 
             }, 
