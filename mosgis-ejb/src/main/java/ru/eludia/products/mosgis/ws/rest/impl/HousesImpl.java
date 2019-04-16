@@ -703,7 +703,7 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
             ).on ("org.uuid=c." + Charter.c.UUID_ORG.lc ())
                 
                 
-            , m.select (ContractObject.class, "AS supply_resource_contract"
+            , m.select (SupplyResourceContractObject.class, "AS supply_resource_contract"
                 , ContractObject.c.ID_CTR_STATUS.lc () + " AS id_obj_status"
             )
             .where (EnTable.c.IS_DELETED, 0)
