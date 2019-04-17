@@ -1,7 +1,9 @@
 define ([], function () {
 
     $_DO.create_payment_acknowledgments = function (e) {
-darn (e)
+    
+        use.block ('payment_acknowledgment_new')
+
     }
 
     return function (done) {        
