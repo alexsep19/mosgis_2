@@ -59,11 +59,6 @@ public class MeteringDeviceValue extends EnTable {
             }
             return false;
         }
-//        public static HashSet<String> enumValues = new HashSet<String>(){{
-//            for (c item: c.values()) {c
-//                add(item.name());
-//            };
-//        }};
 
     }
 

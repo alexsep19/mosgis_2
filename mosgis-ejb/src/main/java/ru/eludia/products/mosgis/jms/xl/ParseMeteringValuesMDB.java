@@ -100,17 +100,17 @@ public class ParseMeteringValuesMDB extends XLMDB {
         
     }
 
-    @Override
-    protected void completeOK (DB db, UUID parent, XSSFWorkbook wb) throws SQLException {
-        
-        super.completeOK (db, parent, wb);
-        
-        db.update (MeteringDeviceValue.class, DB.HASH (
-            MeteringDevice.c.UUID_XL, parent,
-            EnTable.c.IS_DELETED, 0
-        ), MeteringDevice.c.UUID_XL.lc ());
-
-    }
+//    @Override
+//    protected void completeOK (DB db, UUID parent, XSSFWorkbook wb) throws SQLException {
+//        
+//        super.completeOK (db, parent, wb);
+//        
+//        db.update (MeteringDeviceValue.class, DB.HASH (
+//            MeteringDeviceValue.c.UUID_XL, parent,
+//            EnTable.c.IS_DELETED, 0
+//        ), MeteringDeviceValue.c.UUID_XL.lc ());
+//
+//    }
 
     @Override
     protected void completeFail (DB db, UUID parent, XSSFWorkbook wb) throws SQLException {
@@ -124,31 +124,12 @@ public class ParseMeteringValuesMDB extends XLMDB {
         
     }
         
-//    static Map<Integer, Integer> toResourceMap (XSSFSheet sheet) throws XLException {
-//        
-//        final HashMap<Integer, Integer> result = new HashMap<> ();
-//        
-//        for (int i = 1; i <= sheet.getLastRowNum (); i ++) {
-//            XSSFRow row = sheet.getRow (i);           
-//            final int k = EnTable.toNumeric (row, 0, "Некорректный ссылочный номер").intValue ();
-//            result.put (k, InXlMeteringDevice.addResource (result, k, EnTable.toString (row, 2)));
-//        }
-//
-//        return result;
-//
-//    }
-    
     @Override
     protected void processLines (XSSFWorkbook wb, UUID uuid, DB db) throws Exception {
         
         boolean isOk = true;        
-//        
-//        final XSSFSheet sheetAddResources = wb.getSheet ("Доп. комм. ресурсы");        
-//        Map<Integer, Integer> resourceMap = toResourceMap (sheetAddResources);
-//        
+        
         final XSSFSheet sheetValues = wb.getSheet ("Импорт показаний");        
-//        Map<Integer, Integer> resourceMap = toResourceMap (sheetMeters);
-//        addMeters (sheetMeters, uuid, db, resourceMap);
         addValues (sheetValues, uuid, db);
         
         if (!checkMeterLines (sheetValues, db, uuid)) isOk = false;

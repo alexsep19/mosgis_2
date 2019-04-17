@@ -143,72 +143,17 @@ public class InXlMeteringValues extends EnTable {
             + "    EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Устройство '||:NEW.DEVICE_NUMBER||' принадлежит другой организации: UUID_ORG = '||ORG_UUID||' DEVICE_ORG_UUID = '||DEVICE_ORG_UUID); "
             + "  END; "     
               //для каждого устройства: периода показаний в базе не должно быть
-            + "  SELECT count(*) INTO cnt FROM tb_meter_values WHERE UUID_METER = :NEW.UUID_METER AND DT_PERIOD = :NEW.DT_PERIOD; "  
-            + "  IF cnt > 0 THEN raise_application_error (-20000, 'Период показаний '||to_char('dd.mm.yyyy',:NEW.DT_PERIOD) ||' для устройства '||:NEW.DEVICE_NUMBER||' уже есть'); END IF; "
+            + "  SELECT count(*) INTO cnt FROM tb_meter_values WHERE is_deleted=0 AND UUID_METER = :NEW.UUID_METER AND ID_TYPE=:NEW.ID_TYPE AND CODE_VC_NSI_2=:NEW.CODE_VC_NSI_2 AND DT_PERIOD = :NEW.DT_PERIOD; "  
+            + "  IF cnt > 0 THEN raise_application_error (-20000, 'Период показаний '||to_char(:NEW.DT_PERIOD,'dd.mm.yyyy') ||' для устройства '||:NEW.DEVICE_NUMBER||' уже есть'); END IF; "
 
             + "  IF TARIFFCOUNT = 2 AND (:NEW.METERINGVALUET2 is null OR :NEW.METERINGVALUET3 is null) THEN raise_application_error (-20000, 'Не указано значение показания (Т2)'); END IF; "    
             + "  IF TARIFFCOUNT = 3 AND :NEW.METERINGVALUET3 is null THEN raise_application_error (-20000, 'Не указано значение показания (Т3)'); END IF; "    
                 
             + " EXCEPTION WHEN OTHERS THEN "
-            + " :NEW.err := REPLACE(SUBSTR(SQLERRM, 1, 1000), 'ORA-20000: ', ''); "
+            + " :NEW.err := 'Trigger error '||REPLACE(SUBSTR(SQLERRM, 1, 1000), 'ORA-20000: ', ''); "
 
             + "END;"
         );
-
-//        trigger ("BEFORE INSERT", ""
-//                
-//            + "DECLARE "
-//            + " cnt NUMBER; "
-//            + " val1 NUMBER; "
-//            + " val2 NUMBER; "
-//            + " UUID1 RAW(16); "
-//            + " UUID2 RAW(16); "
-//            + "BEGIN "
-//                
-//            + " SELECT uuid_org INTO :NEW.uuid_org FROM in_xl_files WHERE uuid=:NEW.uuid_xl; "
-//
-//            + " IF :NEW.err IS NOT NULL THEN RETURN; END IF; "
-//                
-//            + " SELECT COUNT(*), MIN(fiashouseguid) INTO cnt, :NEW.fiashouseguid FROM vc_unom WHERE id_status=1 AND unom=:NEW.unom; "
-//            + " IF cnt=0 THEN raise_application_error (-20000, 'Неизвестное значение UNOM: ' || :NEW.unom); END IF; "
-//            + " IF cnt>1 THEN raise_application_error (-20000, 'UNOM ' || :NEW.unom || ' соответствует не одна запись ФИАС, а ' || cnt); END IF; "
-//
-//            + " IF :NEW.verif_int IS NOT NULL THEN BEGIN "
-//            + "  SELECT id INTO :NEW.code_vc_nsi_16 FROM vw_nsi_16 WHERE value=:NEW.verif_int; "
-//            + "  EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Значение межповерочного интервала не найдено в справочнике НСИ 16');"
-//            + " END; END IF; "                               
-//
-//            + " IF :NEW.ID_TYPE != " + VocMeteringDeviceType.i.COLLECTIVE.getId() +" THEN BEGIN "
-//            + "  select r.premisesnum, r.UUID, n.premisesnum, n.UUID INTO val1, UUID1, val2, UUID2 from vc_unom u "
-//            + "  join tb_houses h on u.FIASHOUSEGUID = h.FIASHOUSEGUID "
-//            + "  left join tb_premises_res r on h.UUID = r.uuid_house and r.premisesnum = :NEW.PREMISESNUM "
-//            + "  left join tb_premises_nrs n on h.UUID = n.uuid_house and n.premisesnum = :NEW.PREMISESNUM "
-//            + "  where u.unom = :NEW.unom; "
-//            + "  IF (:NEW.PREMISESTYPE = 'Нежилое' AND val2 IS NOT NULL) OR "
-//            + "     (:NEW.PREMISESTYPE IS NULL AND val2 IS NOT NULL AND val1 IS NULL) THEN "        
-//            + "    :NEW.ID_TYPE := " + VocMeteringDeviceType.i.NON_RESIDENTIAL_PREMISE.getId() +"; "
-//            + "    :NEW.UUID_PREMISE :=  UUID2; "   
-//            + "  ELSIF (:NEW.PREMISESTYPE = 'Жилое' AND val1 IS NOT NULL) OR "
-//            + "     (:NEW.PREMISESTYPE IS NULL AND val1 IS NOT NULL AND val2 IS NULL) THEN "        
-//            + "    :NEW.UUID_PREMISE :=  UUID1; "   
-//            + "  ELSIF (:NEW.PREMISESTYPE IS NULL AND val1 IS NOT NULL AND val2 IS NOT NULL) THEN "
-//            + "     raise_application_error (-20000, 'Помещение '|| :NEW.PREMISESNUM || ' пустого типа ' || ' присутствует в жилом и не жилом'); "
-//            + "  ELSE "        
-//            + "     raise_application_error (-20000, 'Не найдено '|| nvl(:NEW.PREMISESTYPE, '(тип не указан)') || ' помещение: ' || :NEW.PREMISESNUM); "
-//            + "  END IF; "
-//            + " END;END IF; "
-//                    
-//            + " IF :NEW.ACCOUNTNUMBER IS NOT NULL THEN BEGIN "
-//            + "  SELECT 1 INTO cnt FROM tb_accounts WHERE ACCOUNTNUMBER = :NEW.ACCOUNTNUMBER; "
-//            + "  EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Лицевой счет '|| :NEW.ACCOUNTNUMBER ||' не найден');"
-//            + " END; END IF; "                               
-//                
-//            + " EXCEPTION WHEN OTHERS THEN "
-//            + " :NEW.err := REPLACE(SUBSTR(SQLERRM, 1, 1000), 'ORA-20000: ', ''); "
-//
-//            + "END;"
-//
-//        );
         
         StringBuilder sb = new StringBuilder ();
         StringBuilder nsb = new StringBuilder ();
@@ -225,7 +170,6 @@ public class InXlMeteringValues extends EnTable {
             + "BEGIN "
             + " IF :NEW.err IS NOT NULL THEN :NEW.is_deleted := 1; END IF; "
             + "END; "
-//ORA-02291: integrity constraint (ALEX.SYS_C0010053) violated - parent key not found ORA-06512: at "ALEX.TR_FD3E3E10BDDD5669FE633454181", line 1 ORA-04088: error during execution of trigger 'ALEX.TR_FD3E3E10BDDD5669FE633454181' 
         );        
         
         trigger ("AFTER UPDATE", ""
