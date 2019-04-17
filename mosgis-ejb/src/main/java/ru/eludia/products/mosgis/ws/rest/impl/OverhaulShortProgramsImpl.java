@@ -63,6 +63,32 @@ public class OverhaulShortProgramsImpl extends BaseCRUD <OverhaulShortProgram> i
     }
     
     @Override
+    public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
+        
+        VocGisStatus.i currentStatus = VocGisStatus.i.forId (db.getString (db.getModel ()
+                .get (getTable (), id, OverhaulShortProgram.c.ID_OSP_STATUS.lc ())));
+        
+        VocGisStatus.i lastOkStatus = VocGisStatus.i.forId (db.getString (db.getModel ()
+                .get (getTable (), id, OverhaulShortProgram.c.LAST_SUCCESFULL_STATUS.lc ())));
+        
+        switch (currentStatus) {
+            case FAILED_PUBLISHANDPROJECT:
+            case FAILED_PLACING:
+            case FAILED_STATE:
+                db.update (getTable (), HASH (
+                    EnTable.c.UUID,                       id,
+                    OverhaulShortProgram.c.ID_OSP_STATUS, lastOkStatus.getId ()
+                ));
+                break;
+            default:
+                throw new ValidationException ("foo", "Операция запрещена");
+        }
+        
+        logAction (db, user, id, VocAction.i.ALTER);
+        
+    });}
+    
+    @Override
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
         
         Select select = ModelHolder.getModel ().select (OverhaulShortProgram.class, "AS root", "*")
@@ -133,7 +159,6 @@ public class OverhaulShortProgramsImpl extends BaseCRUD <OverhaulShortProgram> i
                 action = VocAction.i.PUBLISHANDPROJECT;
                 break;
             case PROGRAM_WORKS_PLACE_FINISHED:
-            case FAILED_DELETEPROJECT:
                 nextStatus = VocGisStatus.i.PENDING_RQ_PLACING;
                 action = VocAction.i.APPROVE;
                 break;
@@ -168,8 +193,7 @@ public class OverhaulShortProgramsImpl extends BaseCRUD <OverhaulShortProgram> i
                 nextStatus = VocGisStatus.i.PROJECT;
                 action = VocAction.i.DELETE;
                 break;
-            case PROGRAM_WORKS_PLACE_INITIALIZED:
-            case FAILED_PLACE_PROGRAM_WORKS:
+            case PUBLISHEDANDPROJECT:
             case PROGRAM_WORKS_PLACE_FINISHED:
             case FAILED_PLACING:
             case FAILED_DELETEPROJECT:

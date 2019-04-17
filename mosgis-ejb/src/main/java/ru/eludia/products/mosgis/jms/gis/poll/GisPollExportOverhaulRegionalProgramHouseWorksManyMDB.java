@@ -72,6 +72,7 @@ public class GisPollExportOverhaulRegionalProgramHouseWorksManyMDB extends GisPo
             
             if (error != null) {
                 failWorks (db, r, error.getDescription ());
+                finishProgram (db, r.get ("import.program_uuid").toString ());
                 throw new GisPollException (error);
             }
             
@@ -79,6 +80,7 @@ public class GisPollExportOverhaulRegionalProgramHouseWorksManyMDB extends GisPo
             
             if (importResult == null || importResult.isEmpty ()) {
                 failWorks (db, r, "Сервис ГИС ЖКХ вернул пустой результат");
+                finishProgram (db, r.get ("import.program_uuid").toString ());
                 throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
             }
             
@@ -96,7 +98,7 @@ public class GisPollExportOverhaulRegionalProgramHouseWorksManyMDB extends GisPo
                                 
             }
             
-            successProgram (db, r.get ("import.program_uuid").toString ());
+            finishProgram (db, r.get ("import.program_uuid").toString ());
             
             db.update (OverhaulRegionalProgramHouseWorksImport.class, HASH (
                 "uuid", r.get ("import.uuid"),
@@ -107,7 +109,7 @@ public class GisPollExportOverhaulRegionalProgramHouseWorksManyMDB extends GisPo
         catch (GisPollRetryException ex) {
             return;
         }
-        catch (GisPollException ex) {        
+        catch (GisPollException ex) {
             ex.register (db, uuid, r);
         }
         
@@ -125,15 +127,6 @@ public class GisPollExportOverhaulRegionalProgramHouseWorksManyMDB extends GisPo
                 });
         
         db.update (OverhaulRegionalProgramHouseWork.class, works);
-        
-        final int programLastOkStatus = db.getInteger (OverhaulRegionalProgram.class, r.get ("import.program_uuid"), OverhaulRegionalProgram.c.LAST_SUCCESFULL_STATUS.lc ());
-        
-        if (programLastOkStatus == VocGisStatus.i.PROGRAM_WORKS_PLACE_INITIALIZED.getId ())
-            db.update (OverhaulRegionalProgram.class, HASH (
-                "uuid",                                            r.get ("import.program_uuid"),
-                OverhaulRegionalProgram.c.ID_ORP_STATUS.lc (),     VocGisStatus.i.FAILED_PLACE_PROGRAM_WORKS.getId (),
-                OverhaulRegionalProgram.c.ID_ORP_STATUS_GIS.lc (), VocGisStatus.i.FAILED_PLACE_PROGRAM_WORKS.getId ()
-            ));
         
     }
     
@@ -161,7 +154,7 @@ public class GisPollExportOverhaulRegionalProgramHouseWorksManyMDB extends GisPo
         
     }
     
-    private void successProgram (DB db, String programUUID) throws SQLException {
+    private void finishProgram (DB db, String programUUID) throws SQLException {
         
         db.update (OverhaulRegionalProgram.class, HASH (
             "uuid",                                                 programUUID,

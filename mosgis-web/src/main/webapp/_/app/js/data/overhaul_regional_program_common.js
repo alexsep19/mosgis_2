@@ -4,6 +4,9 @@ define ([], function () {
 
     $_DO.approve_overhaul_regional_program_common = function (e) {
         var data = clone ($('body').data ('data'))
+
+        if (data.item.not_all_works_approved) die ('foo', 'В региональной программе капитального ремонта присутствуют неразмещенные виды работ')
+
         var warning = 'Разместить эти данные в ГИС ЖКХ?' + 
             (data.item.last_succesfull_status == -31 ? '\nДанная операция инициирует публикацию РПКР в ГИС ЖКХ, что делает ее дальнейшее редактирование невозможным' : '')
         if (!confirm (warning)) return
