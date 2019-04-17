@@ -51,6 +51,24 @@ define ([], function () {
         
         data.accounts = [{id: it.uuid_account, text: it ['acct.accountnumber']}]
 
+        var periods = []
+        
+        var dt = new Date ()
+        dt.setDate (1)
+                
+        while (periods.length < 36) {
+        
+            periods.push ({
+                id: dt.toJSON ().slice (0, 7),
+                text: w2utils.settings.fullmonths [dt.getMonth ()] + ' ' + dt.getFullYear ()
+            })
+            
+            dt.setMonth (dt.getMonth () - 1)
+
+        }        
+        
+        data.periods = periods
+
         done (data)
 
     }

@@ -29,6 +29,47 @@ define ([], function () {
                     selectColumn: 1
                 },     
                 
+                toolbar: {
+                
+                    items: [                        
+                        {
+                            type: 'html',
+                            html: '&nbsp;&nbsp;&nbsp;С:',
+                        },                        
+                        {
+                            type: 'menu',
+                            id: 'period_from',
+                            text: data.periods [35].text,
+                            items: data.periods,
+                            selected: data.periods [35].id,                            
+                        },
+                        {
+                            type: 'html',
+                            html: '&nbsp;&nbsp;&nbsp;по:',
+                        },                        
+                        {
+                            type: 'menu',
+                            id: 'period_to',
+                            text: data.periods [0].text,
+                            items: data.periods,
+                            selected: data.periods [0].id,                            
+                        },
+                    ],
+                    
+                    onClick: function (e) {
+
+                        if (e.item.type == 'menu') {
+                            var s = e.subItem
+                            if (s) e.item.text = s.text
+                            e.done (function () {
+                                thos.owner.reload ()
+                            })
+                        }
+                        
+                    }
+                    
+                },
+                
                 searchData: [
                     {field: 'uuid_account', value: [data.accounts [0]], operator: 'in'}
                 ],
