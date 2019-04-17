@@ -58,7 +58,6 @@ public class InXlFilesImpl extends BaseCRUD<InXlFile> implements InXlFilesLocal 
 
     @Resource(mappedName = "mosgis.inXlPaymentsQueue")
     Queue inXlPaymentsQueue;
-
     @Resource(mappedName = "mosgis.inXlMeteringValuesQueue")
     Queue inXlMeteringValuesQueue;    
 
