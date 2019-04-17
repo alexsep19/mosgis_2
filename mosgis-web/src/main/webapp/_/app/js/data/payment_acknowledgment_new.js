@@ -46,30 +46,10 @@ define ([], function () {
     return function (done) {
 
         var data = clone ($('body').data ('data'))
-/*        
-        data.record = {}
         
-        var idx = {}; $.each (w2ui ['mgmt_contract_objects_grid'].records, function () {idx [this.fiashouseguid] = 1})
+        var it = data.item
         
-        query ({type: 'charter_objects', id: undefined}, {search:[{field: "uuid_charter", operator: "is", value: data.item ['ch.uuid']}], offset: 0, limit: 100000}, function (d) {
- 
-            var a = []
-            
-            $.each (d.root, function () {
-                if (!this.ismanagedbycontract || idx [this.fiashouseguid] || this.is_annuled || this.id_ctr_status_gis == 90 || this.id_ctr_status_gis == 110) return
-                this.label = this ['fias.label']
-                this.recid = this.uuid
-                a.push (this)
-            })
-            
-            if (!a.length) die ('foo', 'В уставе организации-заказчика нет подходящих объектов')
-            
-            data.records = a
- 
-            done (data)
-
-        })            
-*/
+        data.accounts = [{id: it.uuid_account, text: it ['acct.accountnumber']}]
 
         done (data)
 

@@ -14,7 +14,6 @@ define ([], function () {
                 ],
 
             })
-
             
             $('#payment_documents_container').w2regrid ({ 
             
@@ -30,8 +29,17 @@ define ([], function () {
                     selectColumn: 1
                 },     
                 
+                searchData: [
+                    {field: 'uuid_account', value: [data.accounts [0]], operator: 'in'}
+                ],
+                
+                onRefresh: function (e) {
+                    this.last.logic = 'AND'
+                },
+                
                 searches: [
-                    {field: 'id_ctr_status', caption: 'Статус',     type: 'enum', options: {items: data.vc_pay_doc_types.items}},
+                    {field: 'uuid_account', caption: 'Лицевой счёт', type: 'enum', options: {items: data.accounts}},
+                    {field: 'id_ctr_status', caption: 'Статус',      type: 'enum', options: {items: data.vc_pay_doc_types.items}},
                 
     //                {field: 'dt_period', caption: 'Период',         type: 'date', operator: 'between', operators: ['between']},
     //                {field: 'id_ctr_status', caption: 'Статус',     type: 'enum', options: {items: data.vc_gis_status.items}},
