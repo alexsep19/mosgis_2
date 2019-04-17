@@ -276,7 +276,8 @@ public class MeteringDeviceLog extends GisWsLogTable {
     }
 
     private static MeteringDeviceBasicCharacteristicsType.ResidentialPremiseDevice toResidentialPremiseDevice (Map<String, Object> r) {
-        r.putAll ((Map) ((List) r.get ("values")).get (0));
+        final List values = (List) r.get ("values");
+        if (!values.isEmpty ()) r.putAll ((Map) (values).get (0));
         final MeteringDeviceBasicCharacteristicsType.ResidentialPremiseDevice result = DB.to.javaBean (MeteringDeviceBasicCharacteristicsType.ResidentialPremiseDevice.class, r);
         result.getPremiseGUID ().add (DB.to.String (r.get ("premiseguid")));
         for (Object i: (List) r.get ("files")) result.getCertificate ().add (AttachTable.toAttachmentType ((Map<String, Object>) i)); 
@@ -284,7 +285,8 @@ public class MeteringDeviceLog extends GisWsLogTable {
     }
     
     private static MeteringDeviceBasicCharacteristicsType.NonResidentialPremiseDevice toNonResidentialPremiseDevice (Map<String, Object> r) {
-        r.putAll ((Map) ((List) r.get ("values")).get (0));
+        final List values = (List) r.get ("values");
+        if (!values.isEmpty ()) r.putAll ((Map) (values).get (0));
         final MeteringDeviceBasicCharacteristicsType.NonResidentialPremiseDevice result = DB.to.javaBean (MeteringDeviceBasicCharacteristicsType.NonResidentialPremiseDevice.class, r);
         result.getPremiseGUID ().add (DB.to.String (r.get ("premiseguid")));
         for (Object i: (List) r.get ("files")) result.getCertificate ().add (AttachTable.toAttachmentType ((Map<String, Object>) i)); 
