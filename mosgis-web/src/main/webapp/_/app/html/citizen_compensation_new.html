@@ -1,0 +1,70 @@
+<span
+	data-popup-width=600
+	data-popup-height=300
+	data-popup-title='Гражданин, получающий компенсацию расходов'
+>
+
+	<style>
+
+        label[data-block-name=citizen_compensation_new] {
+        	width: 120px;
+        	margin-right: 10px;
+        }
+
+        input[data-block-name=citizen_compensation_new] {
+        	width: 420px !important;
+        }
+
+        input.dt[data-block-name=citizen_compensation_new] {
+        	width: 70px !important;
+        }
+
+	</style>
+
+	<div class="w2ui-reset w2ui-form" style="height:250px ">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Физическое лицо</label>
+                <div>
+                	<input name=uuid_person>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Адрес</label>
+                <div>
+                    <input name=fiashouseguid >
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Тип регистрации</label>
+                <div>
+                    <input name=registrationtype >
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Номер квартиры</label>
+                <div>
+                    <input name=apartmentnumber >
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Номер комнаты</label>
+                <div>
+                    <input name=flatnumber >
+                </div>
+            </div>
+        </div>
+
+        <div class="w2ui-buttons">
+	    <button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+	</div>
+
+</span>

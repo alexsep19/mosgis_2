@@ -14,7 +14,7 @@ import ru.eludia.base.model.Table;
 
 public class VocAddressRegistrationType extends Table {
 
-    private static final String TABLE_NAME = "vc_addr_reg_type";
+    private static final String TABLE_NAME = "vc_addr_reg_types";
 
     public VocAddressRegistrationType () {
         super (TABLE_NAME, "Тип регистрации по месту жительства");

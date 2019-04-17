@@ -21,7 +21,7 @@ public class CitizenCompensation extends EnTable {
 
 	UUID_PERSON                  (VocPerson.class, "Физическое лицо"),
 
-	ADDRESS                      (VocBuilding.class, "Адрес (GUID ФИАС)"),
+	FIASHOUSEGUID                (VocBuilding.class, "Адрес (GUID ФИАС)"),
 	REGISTRATIONTYPE             (VocAddressRegistrationType.class, "Тип регистрации"),
 	APARTMENTNUMBER              (Type.STRING, 36, null, "Номер квартиры"),
 	FLATNUMBER                   (Type.STRING, 36, null, "Номер комнаты"),

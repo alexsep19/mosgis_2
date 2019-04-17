@@ -25,6 +25,7 @@ import ru.eludia.products.mosgis.db.model.tables.AccountItem;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.CitizenCompensation;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
+import ru.eludia.products.mosgis.db.model.voc.VocAddressRegistrationType;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.rest.User;
@@ -146,6 +147,7 @@ public class CitizenCompensationImpl extends BaseCRUD<CitizenCompensation> imple
 
 	VocGisStatus.addLiteTo(job);
         VocAction.addTo (job);
+	VocAddressRegistrationType.addTo(job);
     });}
 
     @Override
@@ -155,6 +157,7 @@ public class CitizenCompensationImpl extends BaseCRUD<CitizenCompensation> imple
 
         VocGisStatus.addLiteTo(jb);
         VocAction.addTo (jb);
+	VocAddressRegistrationType.addTo(jb);
 
         return jb.build ();
 
