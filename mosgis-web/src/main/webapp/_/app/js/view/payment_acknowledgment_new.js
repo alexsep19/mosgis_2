@@ -62,7 +62,7 @@ define ([], function () {
                             var s = e.subItem
                             if (s) e.item.text = s.text
                             e.done (function () {
-                                thos.owner.reload ()
+                                this.owner.reload ()
                             })
                         }
                         
