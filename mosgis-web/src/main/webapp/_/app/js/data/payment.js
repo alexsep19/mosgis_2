@@ -68,6 +68,12 @@ define ([], function () {
                             case 104:
                                 it._can.annul = 1
                         }
+                        
+                        switch (it.id_ctr_status) {
+                            case 40:
+                                it._can.edit_acknowledgments = 1
+                        }
+                        
                 }
 
                 it._can.update = it._can.edit

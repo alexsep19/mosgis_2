@@ -3,6 +3,8 @@ define ([], function () {
     return function (data, view) {
 
         data = $('body').data ('data')
+        
+        var it = data.item
 
         $(w2ui ['passport_layout'].el ('main')).w2regrid ({
 
@@ -10,6 +12,7 @@ define ([], function () {
 
             show: {
                 toolbar: true,
+                toolbarAdd: it._can.edit_acknowledgments,
                 toolbarInput: false,
                 footer: true,
             },
@@ -33,6 +36,8 @@ define ([], function () {
             ],
 
             url: '/_back/?type=payments&part=acknowledgments&id=' + $_REQUEST.id,
+
+            onAdd: $_DO.create_payment_acknowledgments,
 
             onClick: function (e) {
 
