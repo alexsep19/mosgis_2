@@ -44,9 +44,9 @@ define ([], function () {
             textSearch: 'contains',
 
             searches: [
-                {field: 'person.label', caption: 'Ф.И.О', type: 'text'},
-                {field: 'person.snils', caption: 'СНИЛС', type: 'text'},
-                {field: 'vc_building_address.label', caption: 'Адрес', type: 'text'},
+                {field: 'label_uc', caption: 'Ф.И.О', type: 'text'},
+                {field: 'snils', caption: 'СНИЛС', type: 'int'},
+                {field: 'address_uc', caption: 'Адрес', type: 'text'},
                 {field: 'id_ctr_status', caption: 'Статус', type: 'enum'
                     , options: {items: data.vc_gis_status.items.filter(function (i) {
                         switch (i.id) {
@@ -68,12 +68,11 @@ define ([], function () {
             ].filter (not_off),
 
             columns: [
-                {field: 'person.label', caption: 'Ф.И.О.', size: 100},
-                {field: 'person.snils', caption: 'СНИЛС', size: 100},
-                {field: 'addr', caption: 'Адрес', size: 30},
+                {field: 'label', caption: 'Ф.И.О.', size: 100},
+                {field: 'snils', caption: 'СНИЛС', size: 11},
+                {field: 'address', caption: 'Адрес', size: 50},
                 {field: 'org.label', caption: 'Организация', size: 30},
-//                {field: 'id_ctr_status', caption: 'Статус', size: 20, voc: data.vc_gis_status},
-
+                {field: 'id_ctr_status', caption: 'Статус', size: 20, voc: data.vc_gis_status},
             ].filter (not_off),
 
             postData: postData,

@@ -22,6 +22,7 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.Account;
 import ru.eludia.products.mosgis.db.model.tables.AccountItem;
+import ru.eludia.products.mosgis.db.model.tables.AnyCitizenCompensation;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.CitizenCompensation;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
@@ -79,8 +80,7 @@ public class CitizenCompensationImpl extends BaseCRUD<CitizenCompensation> imple
 
         if (searchString == null || searchString.isEmpty ()) return;
 
-        select.and (VocPerson.c.LABEL_UC.lc () + " LIKE ?%", searchString.toUpperCase ());
-
+        select.and ("label_uc LIKE ?%", searchString.toUpperCase ());
     }
 
     private void applySearch (final Search search, Select select) {
@@ -107,12 +107,9 @@ public class CitizenCompensationImpl extends BaseCRUD<CitizenCompensation> imple
     @Override
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
 
-        Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*", "uuid AS id")
-	    .toOne (VocPerson.class, "AS person", "label", "snils").on ()
-	    .toOne (VocBuilding.class, "AS building", "label AS addr").on ()
+        Select select = ModelHolder.getModel ().select (AnyCitizenCompensation.class, "AS root", "*")
             .toMaybeOne (VocOrganization.class, "AS org", "label").on ("root.uuid_org=org.uuid")
-            .toMaybeOne (CitizenCompensationOverviewLog.class, "AS log").on ()
-            .toMaybeOne (OutSoap.class,         "err_text").on ()
+            .toMaybeOne (CitizenCompensationOverviewLog.class, "AS log").on ("root.id_log = log.uuid")
             .orderBy ("log.ts DESC")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 

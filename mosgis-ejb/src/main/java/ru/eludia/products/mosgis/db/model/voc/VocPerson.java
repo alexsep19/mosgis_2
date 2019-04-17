@@ -17,6 +17,8 @@ import ru.gosuslugi.dom.schema.integration.individual_registry_base.ID;
 
 public class VocPerson extends EnTable {
 
+    public static final String TABLE_NAME = "vc_persons";
+
     public enum c implements EnColEnum {
         UUID_XL        (InXlFile.class, null, "Источник импорта"),
 
@@ -90,7 +92,7 @@ public class VocPerson extends EnTable {
 
     public VocPerson () {
         
-        super ("vc_persons", "Физические лица");
+        super (TABLE_NAME, "Физические лица");
         
         cols(c.class);
 

@@ -4,7 +4,7 @@ define ([], function () {
     
         var it = data.item
         
-        $('title').text (dt_dmy (it.begindate) + '-' + dt_dmy (it.enddate) + ' ' + it ['fias.label'])
+        $('title').text ('Гражданин, получающий компенсацию расходов ' + it ['person.label'])
         
         fill (view, it, $('#body'))
 
