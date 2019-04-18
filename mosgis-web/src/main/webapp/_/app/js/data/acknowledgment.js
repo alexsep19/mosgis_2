@@ -33,6 +33,11 @@ define ([], function () {
 
             if (!it.is_deleted && it.uuid_org == $_USER.uuid_org) {
 
+                switch (it.id_ctr_status) {
+                    case 10:
+                        it._can.delete = 1
+                }
+
                 switch (it ['acct.id_ctr_status']) {
 
                         case 40:
@@ -55,12 +60,6 @@ define ([], function () {
                         switch (it.id_ctr_status) {
                             case 14:
                                 it._can.alter = 1
-                        }
-
-                        switch (it.id_ctr_status) {
-                            case 10:
-                            case 14:
-                                it._can.delete = 1
                         }
 
                         switch (it.id_ctr_status) {

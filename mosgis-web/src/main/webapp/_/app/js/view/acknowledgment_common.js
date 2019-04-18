@@ -8,7 +8,7 @@ define ([], function () {
 
         $_F5 = function (data) {
 
-            it.__read_only = data.__read_only
+            it.__read_only = 1// data.__read_only
 
             var r = clone (it)
 
@@ -16,21 +16,8 @@ define ([], function () {
 
             w2ui [form_name].record = r
 
-            function dis (name) {
-
-                switch (name) {
-                    case 'totalpayablebypd':
-                    case 'totalpayablebypdwith_da':
-                    case 'totalbypenaltiesandcourtcosts':
-                        return true
-                    default:
-                        return data.__read_only
-                }
-
-            }
-
             $('div[data-block-name=acknowledgment_common] input, textarea').each (function () {
-                $(this).prop ({disabled: dis (this.name)})
+                $(this).prop ({disabled: 1})
             })
 
             w2ui [form_name].refresh ()
@@ -47,7 +34,7 @@ define ([], function () {
 
             panels: [
 
-                {type: 'top', size: 190},
+                {type: 'top', size: 220},
 /*                
                 {type: 'main', size: 400,
                     tabs: {
@@ -79,9 +66,10 @@ define ([], function () {
             record : it,
 
             fields : [
-                {name: 'ordernum', type: 'text'},
-                {name: 'orderdate', type: 'date'},
+                {name: 'accountnumber', type: 'text'},
+                {name: 'customer_label', type: 'text'},
                 {name: 'amount', type: 'float', options: {min: 0, precision: 2}},
+                {name: 'pay_amount', type: 'float', options: {min: 0, precision: 2}},
             ],
 
             onRefresh: function (e) {e.done (function () {

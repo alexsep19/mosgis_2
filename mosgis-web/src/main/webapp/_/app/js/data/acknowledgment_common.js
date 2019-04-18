@@ -68,7 +68,7 @@ define ([], function () {
 */
     $_DO.delete_acknowledgment_common = function (e) {
         if (!confirm ('Удалить эту запись, Вы уверены?')) return
-        query ({type: 'payments', action: 'delete'}, {}, reload_page)
+        query ({type: 'acknowledgments', action: 'delete'}, {}, reload_page)
     }
 
     $_DO.choose_tab_acknowledgment_common = function (e) {
@@ -91,6 +91,10 @@ define ([], function () {
     function fix (it) {
 
         it.status_label = $('body').data ('data').vc_gis_status [it.id_ctr_status]
+        
+        it.accountnumber  = it ['acct.accountnumber']
+        it.customer_label = it ['org_customer.label'] || it ['ind_customer.label']
+        it.pay_amount     = it ['pay.amount']
 
     }
 
@@ -107,7 +111,7 @@ define ([], function () {
         var it = data.item
 
         fix (it)
-darn (data)
+
         done (data)
 
     }
