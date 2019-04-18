@@ -11,7 +11,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import ru.eludia.products.mosgis.rest.api.AcknowledgmentLocal;
 
 @Path ("acknowledgments")
-public class Acknowledgment extends EJBResource <AcknowledgmentLocal> {
+public class Acknowledgments extends EJBResource <AcknowledgmentLocal> {
 /*    
     private JsonObject getInnerItem (String id) {
         final JsonObject data = back.getItem (id);        

@@ -49,39 +49,21 @@ public class Acknowledgment extends EnTable {
 
         key (c.UUID_PAY);
         key (c.UUID_PAY_DOC);
-/*        
-        trigger ("BEFORE INSERT", ""
-                  
-            + "BEGIN "
-                
-            + " IF :NEW.CODE_VC_NSI_50 IS NOT NULL THEN "
-            + "   SELECT MIN(okei) INTO :NEW.okei FROM " + Nsi50.TABLE_NAME + " WHERE id=:NEW.CODE_VC_NSI_50;"
-            + " END IF; "
-                
-            + " IF :NEW.UUID_M_M_SERVICE IS NOT NULL THEN "
-            + "   SELECT MIN(okei) INTO :NEW.okei FROM " + MainMunicipalService.TABLE_NAME + " WHERE uuid=:NEW.UUID_M_M_SERVICE;"
-            + " END IF; "
-                    
-            + " IF :NEW.UUID_ADD_SERVICE IS NOT NULL THEN "
-            + "   SELECT MIN(okei) INTO :NEW.okei FROM " + AdditionalService.TABLE_NAME + " WHERE uuid=:NEW.UUID_M_M_SERVICE;"
-            + " END IF; "
-
-            + " IF :NEW.UUID_GEN_NEED_RES IS NOT NULL THEN "
-            + "   SELECT MIN(okei) INTO :NEW.okei FROM " + GeneralNeedsMunicipalResource.TABLE_NAME + " WHERE uuid=:NEW.UUID_GEN_NEED_RES;"
-            + " END IF; "
-                    
-            + "END;"
-
-        );        
         
-        trigger ("BEFORE INSERT OR UPDATE", ""
-
+        trigger ("AFTER INSERT OR UPDATE", ""
+            + "DECLARE"
+	    + " l_amount_ack NUMBER(20,2); "
             + "BEGIN "
-            + " :NEW.PP_SUM := NVL(:NEW.PP_PP_SUM, 0) + NVL(:NEW.PP_PPP_SUM, 0) + :NEW.PP_RATE_RUB; "
+                
+            + "  SELECT SUM(AMOUNT) INTO l_amount_ack FROM " + TABLE_NAME + " WHERE is_deleted = 0 AND UUID_PAY_DOC=:NEW.UUID_PAY_DOC;"
+            + "  UPDATE " + PaymentDocument.TABLE_NAME + " SET amount_ack=l_amount_ack WHERE uuid=:NEW.UUID_PAY_DOC; "
+                    
+            + "  SELECT SUM(AMOUNT) INTO l_amount_ack FROM " + TABLE_NAME + " WHERE is_deleted = 0 AND UUID_PAY_DOC=:NEW.UUID_PAY;"
+            + "  UPDATE " + Payment.TABLE_NAME + " SET amount_ack=l_amount_ack WHERE uuid=:NEW.UUID_PAY; "
+                    
             + "END;"
+        );
 
-        );        
-*/        
     }    
 
 }
