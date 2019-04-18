@@ -13,6 +13,9 @@
 
 		<u id=account_link>ЛС №<span data-text=acct.accountnumber /></u>
 
+        	(сквитировано <span data-text=pay.amount_ack data-digits=2 />р.,
+        	остаток      <span data-text=pay.amount_nack data-digits=2 />р.)
+
 <!--
 		<u id=pay_doc_link data-on=id_type >ПД №<span data-text=pd.paymentdocumentnumber /></u>
 -->
@@ -24,6 +27,8 @@
 		<u id=pay_doc_link>
         	ПД №<span data-text=pd.paymentdocumentnumber /> за <span data-text=month_label/> <span data-text=year/> г.
        	</u>
+        	(сквитировано <span data-text=pd.amount_ack data-digits=2 />р.,
+        	остаток      <span data-text=pd.amount_nack data-digits=2 />р.)
 
 
         </td>

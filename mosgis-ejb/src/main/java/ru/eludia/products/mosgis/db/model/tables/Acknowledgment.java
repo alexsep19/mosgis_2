@@ -56,11 +56,17 @@ public class Acknowledgment extends EnTable {
 	    + " l_amount_ack NUMBER(20,2); "
             + "BEGIN "
                 
-            + "  SELECT SUM(AMOUNT) INTO l_amount_ack FROM " + TABLE_NAME + " WHERE is_deleted = 0 AND UUID_PAY_DOC=:NEW.UUID_PAY_DOC;"
+            + "  SELECT SUM(AMOUNT) INTO l_amount_ack FROM " + TABLE_NAME + " WHERE is_deleted = 0 AND UUID_PAY_DOC=:NEW.UUID_PAY_DOC AND uuid <> :NEW.UUID;"
+            + "  IF l_amount_ack IS NULL THEN l_amount_ack := 0; END IF; "
+            + "  IF :NEW.is_deleted = 0 THEN l_amount_ack := l_amount_ack + :NEW.amount; END IF; "
             + "  UPDATE " + PaymentDocument.TABLE_NAME + " SET amount_ack=l_amount_ack WHERE uuid=:NEW.UUID_PAY_DOC; "
                     
-            + "  SELECT SUM(AMOUNT) INTO l_amount_ack FROM " + TABLE_NAME + " WHERE is_deleted = 0 AND UUID_PAY_DOC=:NEW.UUID_PAY;"
+            + "  SELECT SUM(AMOUNT) INTO l_amount_ack FROM " + TABLE_NAME + " WHERE is_deleted = 0 AND UUID_PAY_DOC=:NEW.UUID_PAY AND uuid <> :NEW.UUID;"
+            + "  IF l_amount_ack IS NULL THEN l_amount_ack := 0; END IF; "
+            + "  IF :NEW.is_deleted = 0 THEN l_amount_ack := l_amount_ack + :NEW.amount; END IF; "
             + "  UPDATE " + Payment.TABLE_NAME + " SET amount_ack=l_amount_ack WHERE uuid=:NEW.UUID_PAY; "
+                    
+            + "  COMMIT;"
                     
             + "END;"
         );

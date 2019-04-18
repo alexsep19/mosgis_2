@@ -34,6 +34,8 @@ public class AcknowledgmentImpl extends BaseCRUD<Acknowledgment> implements Ackn
                 , PaymentDocument.c.ID_CTR_STATUS.lc ()
                 , PaymentDocument.c.PAYMENTDOCUMENTNUMBER.lc ()
                 , PaymentDocument.c.DT_PERIOD.lc ()
+                , PaymentDocument.c.AMOUNT_ACK.lc ()
+                , PaymentDocument.c.AMOUNT_NACK.lc ()
             ).on ()
 
             .toOne (Account.class, "AS acct"
@@ -48,6 +50,8 @@ public class AcknowledgmentImpl extends BaseCRUD<Acknowledgment> implements Ackn
                 , Payment.c.DT_PERIOD.lc ()
                 , Payment.c.AMOUNT.lc ()
                 , Payment.c.UUID_ACCOUNT.lc ()
+                , Payment.c.AMOUNT_ACK.lc ()
+                , Payment.c.AMOUNT_NACK.lc ()
                 , Payment.c.UUID_ORG.lc () + " AS uuid_org"
             ).on ()
 
