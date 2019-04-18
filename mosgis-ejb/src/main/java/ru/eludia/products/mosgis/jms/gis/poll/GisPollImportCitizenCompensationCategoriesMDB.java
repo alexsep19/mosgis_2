@@ -118,6 +118,8 @@ public class GisPollImportCitizenCompensationCategoriesMDB extends GisPollMDB {
 	    CitizenCompensationCalculationKind.class
 	    , discounts
 	    , CitizenCompensationCalculationKind.c.CATEGORYGUID.lc()
+	    , CitizenCompensationCalculationKind.c.SERVICE.lc()
+	    , CitizenCompensationCalculationKind.c.CODE_VC_NSI_275.lc()
 	    , CitizenCompensationCalculationKind.c.DISCOUNTSIZE.lc()
 	);
 
