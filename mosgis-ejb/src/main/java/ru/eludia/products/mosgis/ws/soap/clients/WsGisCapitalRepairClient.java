@@ -9,6 +9,9 @@ import javax.ejb.TransactionAttributeType;
 import javax.jws.HandlerChain;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulAddressProgramHouseWorkLog;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulAddressProgramHouseWorksImport;
+import ru.eludia.products.mosgis.db.model.tables.OverhaulAddressProgramLog;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseWorkLog;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramHouseWorksImport;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulRegionalProgramLog;
@@ -76,6 +79,8 @@ public class WsGisCapitalRepairClient {
         return getPort (orgPPAGuid, messageGUID).importRegionalProgram (OverhaulRegionalProgramLog.toAnnulRegionalProgramRequest (r)).getAck ();
     }
     
+    //---SHORT PROGRAM---//
+    
     public AckRequest.Ack importShortProgramProject (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
         return getPort (orgPPAGuid, messageGUID).importPlan (OverhaulShortProgramLog.toImportPlanRequest (r, true)).getAck ();
     }
@@ -98,6 +103,32 @@ public class WsGisCapitalRepairClient {
     
     public AckRequest.Ack annulShortProgram (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
         return getPort (orgPPAGuid, messageGUID).importPlan (OverhaulShortProgramLog.toAnnulPlanRequest (r)).getAck ();
+    }
+    
+    //---ADDRESS PROGRAM---//
+    
+    public AckRequest.Ack importAddressProgramProject (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importPlan (OverhaulAddressProgramLog.toImportPlanRequest (r, true)).getAck ();
+    }
+    
+    public AckRequest.Ack importAddressProgram (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importPlan (OverhaulAddressProgramLog.toImportPlanRequest (r, false)).getAck ();
+    }
+    
+    public AckRequest.Ack importAddressProgramWork (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importPlanWork (OverhaulAddressProgramHouseWorksImport.toImportPlanWorkRequest (r)).getAck ();
+    }
+    
+    public AckRequest.Ack annulAddressProgramWork (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importPlanWork (OverhaulAddressProgramHouseWorkLog.toAnnulPlanWorkRequest (r)).getAck ();
+    }
+    
+    public AckRequest.Ack deleteAddressProgramProject (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importPlan (OverhaulAddressProgramLog.toDeletePlanRequest (r)).getAck ();
+    }
+    
+    public AckRequest.Ack annulAddressProgram (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importPlan (OverhaulAddressProgramLog.toAnnulPlanRequest (r)).getAck ();
     }
     
 }

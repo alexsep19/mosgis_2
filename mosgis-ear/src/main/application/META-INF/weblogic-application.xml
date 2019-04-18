@@ -150,6 +150,12 @@
         <type>JMS</type>
         <path>META-INF/mosgismodule-overhaul-short-programs-jms.xml</path>
     </module>
+    
+    <module>
+        <name>Workflow-overhaul-address-programs</name>
+        <type>JMS</type>
+        <path>META-INF/mosgismodule-overhaul-address-programs-jms.xml</path>
+    </module>
 
     <module>
         <name>Workflow-inspection</name>
