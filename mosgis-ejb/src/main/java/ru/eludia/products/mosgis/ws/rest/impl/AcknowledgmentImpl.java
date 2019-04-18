@@ -39,6 +39,7 @@ public class AcknowledgmentImpl extends BaseCRUD<Acknowledgment> implements Ackn
                 , Payment.c.ORDERNUM.lc ()
                 , Payment.c.ORDERDATE.lc ()
                 , Payment.c.DT_PERIOD.lc ()
+                , Payment.c.UUID_ACCOUNT.lc ()
             ).on ()
         ));
         

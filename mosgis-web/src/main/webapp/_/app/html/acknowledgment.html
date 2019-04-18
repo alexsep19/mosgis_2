@@ -1,25 +1,30 @@
 <table width=100% height=100% cellpadding=0 cellspacing=0 border=0 class="w2ui-reset table-page" >
     <tr height=70>
         <td class="main-title">
-
+<!--
         	<span data-text=type_label/>
+-->
 
-        	Платёжжжжжжжжжжжжжжжж №
-
-        	<span data-text=pay.ordernum />
-
-        	за <span data-text=month_label/> <span data-text=year/> г.
+		<u id=payment_link>
+        	Платёж №<span data-text=pay.ordernum /> от <span data-text=pay.orderdate data-date />
+       	</u>
 
 		по
-		<u id=account_link data-off=id_type >ЛС №<span data-text=acct.accountnumber /></u>
-		<u id=pay_doc_link data-on=id_type >ПД №<span data-text=pd.paymentdocumentnumber /></u>
 
+		<u id=account_link>ЛС №<span data-text=acct.accountnumber /></u>
+
+<!--
+		<u id=pay_doc_link data-on=id_type >ПД №<span data-text=pd.paymentdocumentnumber /></u>
+-->
         	<span data-text=org.label />
 
         	<br>
         	<br>
 
-		Плательщик: <span data-text=customer_label /><u id=address_link><span data-text=address_label /></u>
+		<u id=pay_doc_link>
+        	ПД №<span data-text=pd.paymentdocumentnumber /> за <span data-text=month_label/> <span data-text=year/> г.
+       	</u>
+
 
         </td>
     </tr>

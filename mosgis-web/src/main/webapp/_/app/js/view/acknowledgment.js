@@ -23,7 +23,7 @@ define ([], function () {
         it.year = dt_period.getFullYear ()
         it.month_label = w2utils.settings.fullmonths [dt_period.getMonth ()].toLowerCase ()
 
-        $('title').text ('Платёж ' + it.ordernum)
+        $('title').text ('Квитирование: платёж ' + it ['pay.ordernum'])
 
         fill (view, it, $('#body'))
 
@@ -53,9 +53,10 @@ define ([], function () {
 
                 clickActiveTab (this.get ('main').tabs, 'payment.active_tab')
 
-                clickOn ($('#account_link'), function () { openTab ('/account/' + it.uuid_account) })
+                clickOn ($('#payment_link'), function () { openTab ('/payment/' + it.uuid_pay) })
+                clickOn ($('#account_link'), function () { openTab ('/account/' + it ['pay.uuid_account']) })
                 clickOn ($('#pay_doc_link'), function () { openTab ('/payment_document/' + it.uuid_pay_doc) })
-                clickOn ($('#address_link'), function () { openTab ('/house/' + it.uuid_house) })
+                
             },
 
         });
