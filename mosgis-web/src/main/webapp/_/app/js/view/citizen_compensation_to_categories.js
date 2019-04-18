@@ -53,6 +53,39 @@ define ([], function () {
             onDblClick: $_DO.edit_citizen_compensation_to_categories,
 
             onAdd: $_DO.create_citizen_compensation_to_categories,
+
+            onLoad: function (e) {
+
+                 if (e.xhr.status != 200) return $_DO.apologize ({jqXHR: e.xhr})
+
+                 var content = JSON.parse (e.xhr.responseText).content
+
+                delete content.cnt
+                delete content.portion
+
+                 var data = {
+                     status : "success",
+                     total  : content.cnt
+                 }
+
+                var uuid2svcs = {}
+
+                $.each (content.tb_cit_comp_to_cat_service, function () {
+                    uuid2svcs[this.uuid] = uuid2svcs[this.uuid] || []
+                    uuid2svcs[this.uuid].push(this.id_service)
+                })
+
+                var rs = dia2w2uiRecords (content.root)
+
+                $.each (rs, function () {
+                    this.vc_svc_types = uuid2svcs[this.uuid] || []
+                })
+
+                data.records = rs
+
+                e.xhr.responseText = JSON.stringify (data)
+
+             },
         })
 
     }

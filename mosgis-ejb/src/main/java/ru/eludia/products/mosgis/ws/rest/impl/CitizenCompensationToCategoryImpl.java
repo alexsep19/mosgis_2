@@ -8,6 +8,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import ru.eludia.base.DB;
+import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -77,7 +78,9 @@ public class CitizenCompensationToCategoryImpl extends BaseCRUD<CitizenCompensat
     @Override
     public JsonObject select (JsonObject p, User user) {return fetchData ((db, job) -> {
 
-        Select select = ModelHolder.getModel ().select (getTable (), "AS root", "*")
+	final Model m = db.getModel();
+
+	Select select = m.select (getTable (), "AS root", "*")
 	    .toOne(CitizenCompensationCategory.class, "AS ct", "label").on()
             .orderBy (CitizenCompensationToCategory.c.PERIODFROM.lc() + " DESC")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
@@ -89,6 +92,14 @@ public class CitizenCompensationToCategoryImpl extends BaseCRUD<CitizenCompensat
         applySearch (Search.from (p), select);
 
         db.addJsonArrayCnt (job, select);
+
+
+	Map<Object, Map<String, Object>> idx = db.getIdx(select, "uuid");
+
+	db.addJsonArrayCnt(job
+	    , m.select(CitizenCompensationToCategoryService.class, "uuid", "id_service")
+	    .where("uuid IN", idx.keySet().toArray())
+	);
     });}
 
     @Override
