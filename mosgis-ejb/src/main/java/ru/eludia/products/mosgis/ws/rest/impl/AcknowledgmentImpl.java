@@ -25,9 +25,21 @@ public class AcknowledgmentImpl extends BaseCRUD<Acknowledgment> implements Ackn
 
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
             .get   (getTable (), id, "AS root", "*")
-            .toOne (PaymentDocument.class, "AS pd", "*").on ()
-            .toOne (Account.class, "AS acct", "*").on ()
-            .toOne (Payment.class, "AS pay", "*").on ()
+            .toOne (PaymentDocument.class, "AS pd"
+                , PaymentDocument.c.ID_CTR_STATUS.lc ()
+                , PaymentDocument.c.PAYMENTDOCUMENTNUMBER.lc ()
+                , PaymentDocument.c.DT_PERIOD.lc ()
+            ).on ()
+            .toOne (Account.class, "AS acct"
+                , Account.c.ID_CTR_STATUS.lc ()
+                , Account.c.ACCOUNTNUMBER.lc ()
+            ).on ()
+            .toOne (Payment.class, "AS pay"
+                , Payment.c.ID_CTR_STATUS.lc ()
+                , Payment.c.ORDERNUM.lc ()
+                , Payment.c.ORDERDATE.lc ()
+                , Payment.c.DT_PERIOD.lc ()
+            ).on ()
         ));
         
     });}
