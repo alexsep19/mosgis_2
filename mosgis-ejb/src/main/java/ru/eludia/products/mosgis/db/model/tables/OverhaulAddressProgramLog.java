@@ -23,9 +23,9 @@ public class OverhaulAddressProgramLog extends GisWsLogTable {
     public OverhaulAddressProgramLog () {
         
         super ("tb_oh_addr_programs__log", "Адресные программы капитального ремонта: история изменений",
-                OverhaulShortProgram.class,
+                OverhaulAddressProgram.class,
                 EnTable.c.class,
-                OverhaulShortProgram.c.class
+                OverhaulAddressProgram.c.class
         );
         
     }

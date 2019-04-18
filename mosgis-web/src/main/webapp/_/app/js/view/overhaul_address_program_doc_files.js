@@ -39,7 +39,7 @@ define ([], function () {
             ],
             
             postData: {search: [
-                {field: "uuid_oh_shrt_pr_doc", operator: "is", value: $_REQUEST.id},
+                {field: "uuid_oh_addr_pr_doc", operator: "is", value: $_REQUEST.id},
             ]},
 
             url: '/_back/?type=overhaul_address_program_files',

@@ -22,7 +22,7 @@ define ([], function () {
 
                         tabs: [
                             {id: 'overhaul_address_program_house_common', caption: 'Общие'},
-                            {id: 'overhaul_address_program_house_works', caption: 'Виды работ'},
+                            //{id: 'overhaul_address_program_house_works', caption: 'Виды работ'},
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_overhaul_address_program_house

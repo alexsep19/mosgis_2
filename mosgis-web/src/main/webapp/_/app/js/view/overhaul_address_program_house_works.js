@@ -21,7 +21,7 @@ define ([], function () {
 
         console.log (g.get (g.getSelection () [0]))
 
-        var status = g.get (g.getSelection () [0]).id_osphw_status
+        var status = g.get (g.getSelection () [0]).id_oaphw_status
 
         if (status == 10 || status == 14 || status == 34) t.enable ('editButton')
         if (status == 10 || status == 14 || status == 40) t.enable ('deleteButton')
@@ -30,7 +30,7 @@ define ([], function () {
             
     return function (data, view) {
     
-        var layout = w2ui ['topmost_layout']
+        var layout = w2ui ['passport_layout']
 
         var $panel = $(layout.el ('main'))
         
@@ -81,7 +81,8 @@ define ([], function () {
 
             columnGroups : [            
                 {span: 3, caption: 'Общие сведения'},                
-                {span: 5, caption: 'Финансирование'},                    
+                {span: 5, caption: 'Финансирование'},
+                {span: 2, caption: 'Стоимость работы'},                    
                 {span: 2, caption: 'ГИС ЖКХ'},                
             ],
 
@@ -94,8 +95,8 @@ define ([], function () {
                 {field: 'municipalbudget', caption: 'Местный бюджет', size: 20},
                 {field: 'owners', caption: 'Средства собственников', size: 20},
                 {field: 'total', caption: 'Всего', size: 20},
-                {field: 'specificcost', caption: 'Удельная стоимость работы', size: 20},
-                {field: 'maximumcost', caption: 'Предельная стоимость работы', size: 20},
+                {field: 'specificcost', caption: 'Удельная', size: 20},
+                {field: 'maximumcost', caption: 'Предельная', size: 20},
                 {field: 'id_oaphw_status', caption: 'Статус', size: 20, voc: data.vc_gis_status},
                 {field: 'import_err_text', caption: 'Ошибка импорта', size: 40, render: 
                     function (record) {
