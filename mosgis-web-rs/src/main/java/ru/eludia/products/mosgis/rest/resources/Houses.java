@@ -19,7 +19,8 @@ public class Houses extends EJBResource <HousesLocal> {
         
         if (securityContext.isUserInRole ("admin")    ||
             securityContext.isUserInRole ("nsi_20_4") ||
-            securityContext.isUserInRole ("nsi_20_7"))
+            securityContext.isUserInRole ("nsi_20_7") ||
+            securityContext.isUserInRole ("nsi_20_14"))
             return back.selectAll(p);
         
         if (securityContext.isUserInRole ("nsi_20_8"))
@@ -46,7 +47,8 @@ public class Houses extends EJBResource <HousesLocal> {
         
         if (securityContext.isUserInRole ("admin")    ||
             securityContext.isUserInRole ("nsi_20_4") ||
-            securityContext.isUserInRole ("nsi_20_7"))
+            securityContext.isUserInRole ("nsi_20_7") ||
+            securityContext.isUserInRole ("nsi_20_14"))
             return true;
         
         if (securityContext.isUserInRole ("nsi_20_2"))

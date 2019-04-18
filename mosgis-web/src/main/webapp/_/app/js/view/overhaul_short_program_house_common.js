@@ -20,6 +20,7 @@ define ([], function () {
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
+                            {id: 'overhaul_short_program_house_works', caption: 'Виды работ'},
                             {id: 'overhaul_short_program_house_common_log', caption: 'История изменений'},
                         ].filter (not_off),
                         onClick: $_DO.choose_tab_overhaul_short_program_house_common

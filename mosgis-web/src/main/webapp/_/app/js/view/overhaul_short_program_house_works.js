@@ -30,7 +30,7 @@ define ([], function () {
             
     return function (data, view) {
     
-        var layout = w2ui ['topmost_layout']
+        var layout = w2ui ['passport_layout']
 
         var $panel = $(layout.el ('main'))
         
