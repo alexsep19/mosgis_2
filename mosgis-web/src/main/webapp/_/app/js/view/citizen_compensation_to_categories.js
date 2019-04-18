@@ -13,6 +13,8 @@ define ([], function () {
             show: {
                 toolbar: true,
                 toolbarAdd: data._can.create,
+                toolbarEdit: data._can.update,
+                toolbarDelete: data._can.delete,
                 footer: 1,
                 toolbarSearch: false,
                 toolbarInput: false,
@@ -40,7 +42,7 @@ define ([], function () {
                 {field: 'ct.label', caption: 'Категория', size: 100},
                 {field: 'periodfrom', caption: 'Дата начала', size: 20, render: _dt},
                 {field: 'periodto', caption: 'Дата окончания', size: 20, render: _dt},
-                {field: 'svc_types', caption: 'Расходы, подлежащие компенсации', size: 50, render: (i) => {
+                {field: 'svc_types', caption: 'Расходы, подлежащие компенсации', size: 40, render: (i) => {
                     i.vc_svc_types = i.vc_svc_types || []
                     return i.vc_svc_types.map(id => data.vc_svc_types [id]).join('; ')
                 }},
@@ -50,9 +52,13 @@ define ([], function () {
 
             url: '/_back/?type=citizen_compensation_to_categories',
 
-            onDblClick: $_DO.edit_citizen_compensation_to_categories,
+            onDblClick: data._can.update? $_DO.edit_citizen_compensation_to_categories : null,
+
+            onEdit: $_DO.edit_citizen_compensation_to_categories,
 
             onAdd: $_DO.create_citizen_compensation_to_categories,
+
+            onDelete: $_DO.delete_citizen_compensation_to_categories,
 
             onLoad: function (e) {
 

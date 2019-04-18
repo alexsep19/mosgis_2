@@ -33,7 +33,9 @@ define ([], function () {
             id: w2ui [e.target].getSelection() [0],
             action: 'delete',
 
-        }, {}, reload_page)
+        }, {}, function(data) {
+            use.block('citizen_compensation_to_categories')
+        })
 
     }
 
@@ -41,7 +43,7 @@ define ([], function () {
 
         w2ui ['topmost_layout'].unlock ('main')
 
-        var data = {}
+        var data = clone($('body').data('data'))
 
         query ({type: 'citizen_compensation_to_categories', id: null, part: 'vocs'}, {}, function (d) {
 
@@ -52,8 +54,9 @@ define ([], function () {
             $('body').data('data', data)
 
             data._can = {
-                create: $_USER.has_nsi_20(7, 10)
+                create: data.item._can.update
             }
+            data._can.update = data._can.delete = data._can.create
 
             done (data);
 
