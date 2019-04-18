@@ -29,6 +29,7 @@ public class CitizenCompensationCategory extends EnTable {
 	UUID_ORG                     (VocOrganization.class, null, "Организация, которая создала данную запись"),
 
 	CATEGORYNAME                 (Type.STRING,  500,    null, "Наименование отдельной категории граждан"),
+	LABEL                        (Type.STRING, new Virt("'' || \"CATEGORYNAME\""), "Наименование (синоним)"),
 	LABEL_UC                     (Type.STRING,          new Virt  ("UPPER(\"CATEGORYNAME\")"), "НАИМЕНОВАНИЕ"),
 
 	CODE_VC_NSI_154              (Type.STRING,  20,     null, "Отдельные категории граждан, имеющие право на получение компенсаций расходов (НСИ 154)"),

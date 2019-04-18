@@ -20,27 +20,14 @@ public class CitizenCompensationToCategoryService extends Table {
         pkref ("id_service", VocServiceType.class, "Услуга");
     }
     
-    public static void store(DB db, Object id, JsonArray oktmo) throws SQLException {
-
-	store(
-	    db,
-	    id,
-	    oktmo.getValuesAs(JsonString.class).stream()
-		.map((t) -> {
-		    return DB.HASH("id", t.getString());
-		})
-		.collect(Collectors.toList())
-	);
-    }
-
-    public static void store(DB db, Object id, List<Map<String, Object>> oktmo) throws SQLException {
+    public static void store(DB db, Object id, JsonArray services) throws SQLException {
 
 	db.dupsert(
 	    CitizenCompensationToCategoryService.class,
 	    DB.HASH("uuid", id),
-	    oktmo.stream()
+	    services.getValuesAs(JsonString.class).stream()
 		.map((t) -> {
-		    return DB.HASH("id_service", t.get("id"));
+		    return DB.HASH("id_service", t.getString());
 		})
 		.collect(Collectors.toList()),
 	    "id_service"
