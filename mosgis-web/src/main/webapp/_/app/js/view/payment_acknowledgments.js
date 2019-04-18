@@ -8,7 +8,7 @@ define ([], function () {
 
         $(w2ui ['passport_layout'].el ('main')).w2regrid ({
 
-            name: 'account_common_log',
+            name: 'payment_acknowledgments_grid',
 
             show: {
                 toolbar: true,

@@ -1,46 +1,33 @@
 define ([], function () {
 
     $_DO.update_payment_acknowledgment_new = function (e) {
-/*    
+    
         var g = w2ui ['new_objects_grid']
         
         var ids = g.getSelection ()
         
-        if (!ids.length) die ('foo', 'Вы не выбрали ни одного адреса')
+        if (!ids.length) die ('foo', 'Укажите, пожалуйста, платёжный документ')
         
-        var a = []
-        var data = clone ($('body').data ('data'))
-        var dt_from = data.item.effectivedate
-        var dt_to = data.item.plandatecomptetion
-
-        $.each (ids, function () {
-
-            var r = g.get (this)
-
-            var i = {
-                uuid_contract: $_REQUEST.id,
-                fiashouseguid: r.fiashouseguid, 
-                startdate:     r.startdate,
-                enddate:       r.enddate || dt_to,
-            }
-
-            if (i.startdate < dt_from) i.startdate = dt_from
-            if (i.enddate   > dt_to)   i.enddate = dt_to
-
-            a.push (i)
-
-        })        
-
-        g.lock ()
-        var tia = {type: 'contract_objects', action: 'create', id: undefined}
+        var r = g.get (ids [0])
         
-        function check () {
-            if (!a.length) return reload_page ()
-            query (tia, {data: a.pop ()}, check)        
-        }
+        query ({type: 'acknowledgments', action: 'create', id: null}, {data: {
         
-        check ()
-*/
+            uuid_pay     : $_REQUEST.id,           
+            uuid_pay_doc : r.uuid,
+            amount       : r.totalpayablebypdwith_da
+            
+        }}, function (data) {
+
+            w2popup.close ()
+            
+            if (data.id) w2confirm ('Перейти на страницу квитирования?').yes (function () {openTab ('/acknowledgment/' + data.id)})
+            
+            var grid = w2ui ['payment_acknowledgments_grid']
+
+            grid.reload (grid.refresh)
+            
+        })
+    
     }
 
     return function (done) {
