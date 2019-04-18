@@ -34,7 +34,7 @@ define ([], function () {
                     items: [                        
                         {
                             type: 'html',
-                            html: '&nbsp;&nbsp;&nbsp;С:',
+                            html: '&nbsp;&nbsp;&nbsp;Периоды:',
                         },                        
                         {
                             type: 'menu',
@@ -45,7 +45,7 @@ define ([], function () {
                         },
                         {
                             type: 'html',
-                            html: '&nbsp;&nbsp;&nbsp;по:',
+                            html: '&nbsp;&ndash;&nbsp;',
                         },                        
                         {
                             type: 'menu',
@@ -58,13 +58,19 @@ define ([], function () {
                     
                     onClick: function (e) {
 
-                        if (e.item.type == 'menu') {
-                            var s = e.subItem
-                            if (s) e.item.text = s.text
-                            e.done (function () {
-                                this.owner.reload ()
-                            })
-                        }
+                        if (e.item.type != 'menu') return
+                        
+                        var ni = e.target.split (':')
+                        
+                        if (ni.length < 2) return                            
+                       
+                        var s = e.subItem; if (!s) return
+                        
+                        e.item.text = s.text
+                        
+                        e.done (function () {
+                            this.owner.reload ()
+                        })
                         
                     }
                     
