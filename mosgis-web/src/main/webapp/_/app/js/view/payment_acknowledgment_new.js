@@ -129,6 +129,8 @@ define ([], function () {
                         return w2utils.settings.fullmonths [r.month - 1] + ' ' + r.year
                     }},
                     {field: 'totalpayablebypdwith_da', caption: 'Сумма', size: 20, render: 'money'},
+                    {field: 'amount_ack', caption: 'Сквитировано', size: 20, render: 'money'},
+                    {field: 'amount_nack', caption: 'Остаток', size: 20, render: 'money'},
                 ],
                 
                 postData: {data: {uuid_org: $_USER.uuid_org}},

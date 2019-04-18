@@ -52,6 +52,7 @@ public class Acknowledgment extends EnTable {
         
         trigger ("AFTER INSERT OR UPDATE", ""
             + "DECLARE"
+            + " PRAGMA AUTONOMOUS_TRANSACTION; "
 	    + " l_amount_ack NUMBER(20,2); "
             + "BEGIN "
                 

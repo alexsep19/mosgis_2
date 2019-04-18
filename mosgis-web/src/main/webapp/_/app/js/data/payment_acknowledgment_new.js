@@ -14,7 +14,7 @@ define ([], function () {
         
             uuid_pay     : $_REQUEST.id,           
             uuid_pay_doc : r.uuid,
-            amount       : r.totalpayablebypdwith_da
+            amount       : r.amount_nack
             
         }}, function (data) {
 

@@ -58,7 +58,6 @@ public class Acknowledgments extends EJBResource <AcknowledgmentLocal> {
 
     @POST
     @Path("{id}") 
-    @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
     public JsonObject getItem (@PathParam ("id") String id) {
 //        final JsonObject item = getInnerItem (id);
