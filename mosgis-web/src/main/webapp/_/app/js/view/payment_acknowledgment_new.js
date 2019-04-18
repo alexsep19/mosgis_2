@@ -41,7 +41,7 @@ define ([], function () {
                             id: 'period_from',
                             text: data.periods [35].text,
                             items: data.periods,
-                            selected: data.periods [35].id,                            
+                            selected: data.periods [35].id,
                         },
                         {
                             type: 'html',
@@ -62,22 +62,47 @@ define ([], function () {
                         
                         var ni = e.target.split (':')
                         
-                        if (ni.length < 2) return                            
+                        if (ni.length < 2) return
+                        
+                        var ndx = (function () {switch (ni [0]) {
+                            case 'period_from': return 0
+                            case 'period_to':   return 1
+                        }}) ()
                        
                         var s = e.subItem; if (!s) return
-                        
                         e.item.text = s.text
-                        
+                        e.item.selected = s.id
+                        var grid = this.owner
+
                         e.done (function () {
-                            this.owner.reload ()
+                            grid.reload ()
                         })
-                        
+
                     }
                     
                 },
                 
+                onRequest: function (e) {
+                
+                    var tb = this.toolbar
+                    
+                    var pd = e.postData; if (!pd.search) pd.search = []
+                    
+                    var s = pd.search.filter (function (i) {return i.field == 'dt_period'}) [0]
+
+                    if (!s) pd.search.push (s = {field: 'dt_period', operator: 'between'})
+
+                    s.value = [
+                        tb.get ('period_from').selected, 
+                        tb.get ('period_to').selected, 
+                    ]
+                    
+                    pd.searchLogic = "AND"
+
+                },
+                
                 searchData: [
-                    {field: 'uuid_account', value: [data.accounts [0]], operator: 'in'}
+                    {field: 'uuid_account', value: [data.accounts [0]], operator: 'in'},
                 ],
                 
                 onRefresh: function (e) {

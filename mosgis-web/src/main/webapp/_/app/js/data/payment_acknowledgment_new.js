@@ -59,7 +59,7 @@ define ([], function () {
         while (periods.length < 36) {
         
             periods.push ({
-                id: dt.toJSON ().slice (0, 7),
+                id: dt.toJSON ().slice (0, 7) + '-01',
                 text: w2utils.settings.fullmonths [dt.getMonth ()] + ' ' + dt.getFullYear ()
             })
             
