@@ -5,6 +5,7 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 
 public class Acknowledgment extends EnTable {
     
@@ -16,6 +17,9 @@ public class Acknowledgment extends EnTable {
         UUID_PAY              (Payment.class,               "Платёж"),
         AMOUNT                (Type.NUMERIC, 13, 2, null,   "Размер превышения платы, рассчитанной с применением повышающего коэффициента над размером платы, рассчитанной без учета повышающего коэффициента, руб."),
         
+	ID_CTR_STATUS         (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения mosgis"),
+	ID_CTR_STATUS_GIS     (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения ГИС ЖКХ"),
+
         ID_LOG                (AcknowledgmentLog.class,     "Последнее событие редактирования"),
 
         ;

@@ -38,7 +38,7 @@ define ([], function () {
                     tabs: {
 
                         tabs: [
-                            {id: 'acknowledgment_common', caption: 'Общие'},
+                            {id: 'acknowledgment_common', caption: 'Квитирование'},
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_acknowledgment

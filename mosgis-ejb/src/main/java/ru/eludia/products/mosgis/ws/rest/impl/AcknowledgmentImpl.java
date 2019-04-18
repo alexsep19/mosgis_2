@@ -9,6 +9,7 @@ import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.tables.Account;
 import ru.eludia.products.mosgis.db.model.tables.PaymentDocument;
 import ru.eludia.products.mosgis.db.model.tables.Payment;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.AcknowledgmentLocal;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
@@ -42,6 +43,8 @@ public class AcknowledgmentImpl extends BaseCRUD<Acknowledgment> implements Ackn
                 , Payment.c.UUID_ACCOUNT.lc ()
             ).on ()
         ));
+        
+        VocGisStatus.addTo (job);
         
     });}
 
