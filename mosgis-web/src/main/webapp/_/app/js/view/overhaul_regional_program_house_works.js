@@ -84,6 +84,7 @@ define ([], function () {
                 {field: 'code_nsi_218', caption: 'Группа видов работ', size: 50, voc: data.vc_nsi_218},
                 {field: 'startyearmonth', caption: 'Начало выполнения', size: 20, render: _dt},
                 {field: 'endyearmonth', caption: 'Окончание выполнения', size: 20, render: _dt},
+                {field: 'guid', caption: 'Идентификатор ГИС ЖКХ', size: 30},
                 {field: 'id_orphw_status', caption: 'Статус ГИС', size: 20, voc: data.vc_gis_status},
                 {field: 'import_err_text', caption: 'Ошибка импорта', size: 40, render: 
                     function (record) {

@@ -82,7 +82,7 @@ define ([], function () {
             columnGroups : [            
                 {span: 3, caption: 'Общие сведения'},                
                 {span: 5, caption: 'Финансирование'},                    
-                {span: 2, caption: 'ГИС ЖКХ'},                
+                {span: 3, caption: 'ГИС ЖКХ'},                
             ],
 
             columns: [
@@ -94,6 +94,7 @@ define ([], function () {
                 {field: 'municipalbudget', caption: 'Местный бюджет', size: 20},
                 {field: 'owners', caption: 'Средства собственников', size: 20},
                 {field: 'total', caption: 'Всего', size: 20},
+                {field: 'guid', caption: 'Идентификатор', size: 30},
                 {field: 'id_osphw_status', caption: 'Статус', size: 20, voc: data.vc_gis_status},
                 {field: 'import_err_text', caption: 'Ошибка импорта', size: 40, render: 
                     function (record) {
