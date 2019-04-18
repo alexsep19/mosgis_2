@@ -1,6 +1,8 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.sql.SQLException;
 import java.util.Map;
+import javax.json.JsonObjectBuilder;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
@@ -9,7 +11,6 @@ import ru.eludia.base.model.def.Bool;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
-import static ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract.Action.EDITING;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementBooleanFieldType;
@@ -27,6 +28,7 @@ public class BaseDecisionMSP extends EnTable {
         UUID_ORG                     (VocOrganization.class, null, "Организация, которая создала данную запись"),
 
         DECISIONNAME                 (Type.STRING,  500,    null, "Наименование основания принятия решения"),
+        LABEL                        (Type.STRING,          new Virt  ("'' || \"DECISIONNAME\""), "Наименование (синоним) "),
         LABEL_UC                     (Type.STRING,          new Virt  ("UPPER(\"DECISIONNAME\")"), "НАИМЕНОВАНИЕ"),
 
         CODE_VC_NSI_301              (Type.STRING,  20,     null, "Тип решения о мерах социальной поддержки (НСИ 301)"),
@@ -98,6 +100,15 @@ public class BaseDecisionMSP extends EnTable {
             + "END;"
 
         );
+    }
+
+    public static void addTo(DB db, JsonObjectBuilder job) throws SQLException {
+
+        db.addJsonArrays(job,
+            db.getModel()
+		.select  (BaseDecisionMSP.class, "AS vc_nsi_302", "uuid AS id", "label")
+                .orderBy ("vc_nsi_302.label")
+        );       
     }
 
     public enum Action {
@@ -184,5 +195,4 @@ public class BaseDecisionMSP extends EnTable {
 
 	return result;
     }
-
 }
