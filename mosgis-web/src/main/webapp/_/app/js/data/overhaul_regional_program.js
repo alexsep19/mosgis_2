@@ -21,6 +21,12 @@ define ([], function () {
 
         query ({type: 'overhaul_regional_programs'}, {}, function (data) {        
 
+            data.vc_gis_status = data.vc_gis_status.map (function (status) {
+                if (status['id'] == 40)  return {id: 40,  label: 'размещена'}
+                if (status['id'] == 110) return {id: 110, label: 'аннулирована'}
+                return status
+            })
+
             add_vocabularies (data, {
                 vc_gis_status: 1,
                 vc_actions: 1

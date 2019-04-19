@@ -21,6 +21,12 @@ define ([], function () {
 
         query ({type: 'overhaul_address_programs'}, {}, function (data) {        
 
+            data.vc_gis_status = data.vc_gis_status.map (function (status) {
+                if (status['id'] == 40)  return {id: 40,  label: 'размещена'}
+                if (status['id'] == 110) return {id: 110, label: 'аннулирована'}
+                return status
+            })
+
             add_vocabularies (data, {
                 vc_gis_status: 1,
                 vc_actions: 1
@@ -29,8 +35,6 @@ define ([], function () {
             var it = data.item
 
             it.not_all_works_approved = (it.id_oap_status == -31 && data.works_approved_count < data.works_general_count) ? true : false
-
-            console.log (data)
 
             it.status_label = data.vc_gis_status[it.id_oap_status]
             it.start = it.startmonth + '.' + it.startyear
