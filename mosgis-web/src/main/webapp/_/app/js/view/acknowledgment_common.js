@@ -38,7 +38,7 @@ define ([], function () {
                 {type: 'main', size: 400,
                     tabs: {
                         tabs:    [
-                            {id: 'acknowledgment_items', caption: 'Распределение по услугам'},
+                            {id: 'acknowledgment_common_items', caption: 'Распределение по услугам'},
                             {id: 'acknowledgment_common_log', caption: 'История изменений'},
                         ].filter (not_off),
                         onClick: $_DO.choose_tab_acknowledgment_common

@@ -18,6 +18,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
+import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi329;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.AcknowledgmentLocal;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
@@ -80,16 +81,20 @@ public class AcknowledgmentImpl extends BaseCRUD<Acknowledgment> implements Ackn
         db.addJsonArrays (job
 
             , m
-            .select (AnyChargeInfo.class, "AS root", "*")
-            .toMaybeOne (ActualBankAccount.class, "AS ba", ActualBankAccount.c.LABEL.lc ()).on ("ba.uuid=root." + ChargeInfo.c.UUID_BNK_ACCT.lc ())
+            .select (AnyChargeInfo.class, "AS charges", "*")
+            .toMaybeOne (ActualBankAccount.class, "AS ba", ActualBankAccount.c.LABEL.lc ()).on ("ba.uuid=charges." + ChargeInfo.c.UUID_BNK_ACCT.lc ())
             .toMaybeOne (VocOrganization.class, "AS org_bank_acct", "label").on ("ba.uuid_org=org_bank_acct.uuid")
             .where   (ChargeInfo.c.UUID_PAY_DOC, uuidPayDoc)
-            .orderBy ("root." + ChargeInfo.c.ID_TYPE)
-            .orderBy ("root." + AnyChargeInfo.c.LABEL.lc ())
+            .where   (ChargeInfo.c.TOTALPAYABLE.lc () + ">", 0)
+            .orderBy ("charges." + ChargeInfo.c.ID_TYPE)
+            .orderBy ("charges." + AnyChargeInfo.c.LABEL.lc ())
 
             , m
-            .select (PenaltiesAndCourtCosts.class, "AS root", "*")
+            .select (PenaltiesAndCourtCosts.class, "AS penalties", "*")
             .where  (PenaltiesAndCourtCosts.c.UUID_PAY_DOC, uuidPayDoc)
+            .where  (PenaltiesAndCourtCosts.c.TOTALPAYABLE.lc () + ">", 0)
+                
+            , Nsi329.getVocSelect ()
 
         );        
 
