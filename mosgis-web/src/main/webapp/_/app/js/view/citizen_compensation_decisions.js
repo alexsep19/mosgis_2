@@ -12,7 +12,7 @@ define ([], function () {
 
             show: {
                 toolbar: true,
-                toolbarAdd: data.item._can.create,
+                toolbarAdd: data.item._can.update,
                 toolbarEdit: data.item._can.update,
                 toolbarDelete: data.item._can.delete,
                 footer: 1,

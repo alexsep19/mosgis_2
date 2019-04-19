@@ -4,7 +4,7 @@ define ([], function () {
 
         $_SESSION.set ('record', {})
 
-        use.block('citizen_compensation_decisions_popup')
+        use.block('citizen_compensation_decision_popup')
     }
 
     $_DO.edit_citizen_compensation_decisions = function (e) {
@@ -15,7 +15,7 @@ define ([], function () {
 
         $_SESSION.set('record', r)
 
-        use.block('citizen_compensation_decisions_popup')
+        use.block('citizen_compensation_decision_popup')
     }
 
     $_DO.delete_citizen_compensation_decisions = function (e) {

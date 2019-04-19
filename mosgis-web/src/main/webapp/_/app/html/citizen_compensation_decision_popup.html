@@ -1,0 +1,71 @@
+<span
+    data-popup-width=435
+    data-popup-height=290
+    data-popup-title='Решение'
+    >
+
+    <style>
+
+        label[data-block-name=citizen_compensation_decision_popup] {
+	    width: 120px;
+	    margin-right: 10px;
+        }
+
+        input[data-block-name=citizen_compensation_decision_popup] {
+	    width: 250px !important;
+        }
+
+        input[data-block-name=citizen_compensation_decision_popup].dt {
+	    width: 70px !important;
+        }
+    </style>
+
+    <div class="w2ui-reset w2ui-form" style="height:235px ">
+
+        <div class="w2ui-page page-0">
+
+
+            <div class="w2ui-field">
+                <label>Номер решения</label>
+                <div>
+                    <input name=number_ maxlength=256 />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Дата решения</label>
+                <div>
+                    <input name=decisiondate class=dt />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Тип решения</label>
+                <div>
+                    <input name=code_vc_nsi_301 />
+                </div>
+            </div>
+
+
+            <div class="w2ui-field">
+                <label>Основание решения</label>
+                <div>
+                    <input name=code_vc_nsi_302 />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Дата события</label>
+                <div>
+                    <input name=eventdate class=dt />
+                </div>
+            </div>
+        </div>
+
+        <div class="w2ui-buttons">
+	    <button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+    </div>
+
+</span>
