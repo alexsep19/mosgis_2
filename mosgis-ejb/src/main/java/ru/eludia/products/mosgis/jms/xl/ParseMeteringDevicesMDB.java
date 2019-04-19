@@ -26,8 +26,8 @@ import ru.eludia.products.mosgis.jms.xl.base.XLException;
 })
 public class ParseMeteringDevicesMDB extends XLMDB {
        
-    private static final int N_COL_UUID = 33;
-    private static final int N_COL_ERR  = 34;
+    private static final int N_COL_UUID = 34;
+    private static final int N_COL_ERR  = 35;
 
     protected void addMeters (XSSFSheet sheet, UUID parent, DB db, Map<Integer, Integer> resourceMap) throws SQLException {
 
@@ -84,7 +84,7 @@ public class ParseMeteringDevicesMDB extends XLMDB {
         
         for (Map<String, Object> brokenLine: brokenLines) {
             XSSFRow row = sheet.getRow ((int) DB.to.Long (brokenLine.get (InXlMeteringDevice.c.ORD.lc ())));
-            XSSFCell cell = row.getLastCellNum () < 9 ? row.createCell (9) : row.getCell (9);
+            XSSFCell cell = row.getLastCellNum () <= 9 ? row.createCell (9) : row.getCell (9);
             cell.setCellValue (brokenLine.get (InXlMeteringDevice.c.ERR.lc ()).toString ());
         }
 
@@ -134,10 +134,15 @@ public class ParseMeteringDevicesMDB extends XLMDB {
     protected void processLines (XSSFWorkbook wb, UUID uuid, DB db) throws Exception {
         
         boolean isOk = true;        
-        
+        Map<Integer, Integer> resourceMap = null;
         final XSSFSheet sheetAddResources = wb.getSheet ("Доп. комм. ресурсы");        
-        Map<Integer, Integer> resourceMap = toResourceMap (sheetAddResources);
         
+        try{
+           resourceMap = toResourceMap (sheetAddResources);
+        }catch(XLException e){
+           writeErrorToXls(sheetAddResources, 1, e.getMessage());
+           throw new XLException ();
+        }
         final XSSFSheet sheetMeters = wb.getSheet ("Сведения о ПУ");        
         addMeters (sheetMeters, uuid, db, resourceMap);
         
@@ -147,4 +152,9 @@ public class ParseMeteringDevicesMDB extends XLMDB {
 
     }
 
+    private void writeErrorToXls(XSSFSheet sheet, int numRow, String message){
+        XSSFRow row = sheet.getRow(numRow);
+        XSSFCell cell = row.getLastCellNum () <=5  ? row.createCell (5) : row.getCell (5);
+        cell.setCellValue (message);
+    }
 }
