@@ -121,7 +121,7 @@ public class AcknowledgmentImpl extends BaseCRUD<Acknowledgment> implements Ackn
     };
     
     @Override
-    public JsonObject doPatch (String id, JsonObject p, User user) {return doAction ((db) -> {
+    public JsonObject doPatch (String id, JsonObject p, User user) {return doAction ((db, job) -> {
 
         final MosGisModel m = ModelHolder.getModel ();
 
@@ -144,6 +144,12 @@ public class AcknowledgmentImpl extends BaseCRUD<Acknowledgment> implements Ackn
         ));
 */
         m.createIdLog (db, getTable (), user, id, VocAction.i.UPDATE);
+        
+        final JsonObject item = db.getJsonObject (m
+            .get (getTable (), id, "AS root", "*")
+        );
+
+        job.add ("item", item);
 
     });}
     

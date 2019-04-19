@@ -25,6 +25,12 @@ define ([], function () {
 
         query ({type: 'acknowledgments', action: 'patch'}, {data: data}, function (d) {
         
+            var form = w2ui ['acknowledgment_common_form']
+            
+            form.record.amount = d.item.amount            
+            form.unlock ()
+            form.refresh ()
+        
             grid.unlock ()
 /*            
             var row = d.item            
@@ -50,6 +56,8 @@ define ([], function () {
         
         var lines = [{recid: 'total', label: 'Всего по документу', id_type: -1}]
         
+        var idx = {}
+        
         function addLines (a) {
         
             var last_type = ''
@@ -59,6 +67,8 @@ define ([], function () {
                 if (last_type != this.label_type) lines.push ({recid: String (Math.random ()).replace ('.', ''), label: last_type = this.label_type})
 
                 lines.push (this)
+                
+                idx [this.uuid] = this
 
             })
             
@@ -84,6 +94,10 @@ define ([], function () {
             addLines (penalties)
 
         }
+        
+        $.each (data.items, function () {        
+            idx [this.uuid_charge || this.uuid_penalty].amount = this.amount
+        })
 
         data.lines = lines
 
