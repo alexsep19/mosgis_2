@@ -47,7 +47,7 @@ define ([], function () {
                     {
                         type: 'button',
                         id: 'approveButton',
-                        caption: 'Импортировать в ГИС ЖКХ',
+                        caption: 'Отправить в ГИС ЖКХ',
                         onClick: $_DO.approve_overhaul_address_program_house_works,
                         disabled: !(data.item['program.last_succesfull_status'] == -21) && !(data.item['program.last_succesfull_status'] == -31)
                     },
@@ -83,7 +83,7 @@ define ([], function () {
                 {span: 3, caption: 'Общие сведения'},                
                 {span: 5, caption: 'Финансирование'},
                 {span: 2, caption: 'Стоимость работы'},                    
-                {span: 2, caption: 'ГИС ЖКХ'},                
+                {span: 3, caption: 'ГИС ЖКХ'},                
             ],
 
             columns: [
@@ -97,6 +97,7 @@ define ([], function () {
                 {field: 'total', caption: 'Всего', size: 20},
                 {field: 'specificcost', caption: 'Удельная', size: 20},
                 {field: 'maximumcost', caption: 'Предельная', size: 20},
+                {field: 'guid', caption: 'Идентификатор', size: 30},
                 {field: 'id_oaphw_status', caption: 'Статус', size: 20, voc: data.vc_gis_status},
                 {field: 'import_err_text', caption: 'Ошибка импорта', size: 40, render: 
                     function (record) {

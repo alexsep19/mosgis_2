@@ -36,7 +36,7 @@ public class OverhaulAddressProgramHousesImpl extends BaseCRUD <OverhaulAddressP
         
         Select select = ModelHolder.getModel ().select (OverhaulAddressProgramHouse.class, "AS root", "*")
                 .where      ("program_uuid", p.getString ("program_uuid"))
-                .toOne      (House.class, "AS house", "address AS address").on ()
+                .toOne      (House.class, "AS house", "address AS address", "fiashouseguid AS fiashouseguid").on ()
                 .toOne      (VocBuilding.class, "AS build", "oktmo AS oktmo").on ("build.houseguid = house.fiashouseguid")
                 .where      ("is_deleted", 0)
                 .limit      (p.getInt ("offset"), p.getInt ("limit"));
