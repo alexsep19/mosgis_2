@@ -53,11 +53,6 @@ define ([], function () {
 
             $('body').data('data', data)
 
-            data._can = {
-                create: data.item._can.update
-            }
-            data._can.update = data._can.delete = data._can.create
-
             done (data);
 
         })

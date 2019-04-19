@@ -12,9 +12,9 @@ define ([], function () {
 
             show: {
                 toolbar: true,
-                toolbarAdd: data._can.create,
-                toolbarEdit: data._can.update,
-                toolbarDelete: data._can.delete,
+                toolbarAdd: data.item._can.update,
+                toolbarEdit: data.item._can.update,
+                toolbarDelete: data.item._can.delete,
                 footer: 1,
                 toolbarSearch: false,
                 toolbarInput: false,
@@ -52,7 +52,7 @@ define ([], function () {
 
             url: '/_back/?type=citizen_compensation_to_categories',
 
-            onDblClick: data._can.update? $_DO.edit_citizen_compensation_to_categories : null,
+            onDblClick: data.item._can.update? $_DO.edit_citizen_compensation_to_categories : null,
 
             onEdit: $_DO.edit_citizen_compensation_to_categories,
 
