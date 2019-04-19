@@ -32,14 +32,19 @@ define ([], function () {
             form.refresh ()
         
             grid.unlock ()
-/*            
-            var row = d.item            
-            data = {w2ui: {changes: {}}}
-            $.each (flds, function () {data [this] = row [this] || null})
-            var fld = col.field
-            if (fld in data) data.w2ui.changes [fld] = data [fld]
+            
+            data = {}
+            
+            if ('chg.amount_nack' in d) {
+                data.amount_nack = d ['chg.amount_nack']
+                data.amount_ack  = d ['chg.amount_ack']
+            }
+            else {
+                data.amount_nack = d ['pnl.amount_nack']
+                data.amount_ack  = d ['pnl.amount_ack']
+            }
+
             grid.set (e.recid, data)
-*/            
             grid.refresh ()
             
         })

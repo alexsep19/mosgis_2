@@ -161,6 +161,7 @@ define ([], function () {
                 {field: 'label', caption: 'Наименование услуги', size: 50},
                 
                 {field: 'totalpayable', caption: 'Сумма к оплате с учетом рассрочки платежа и процентов за рассрочку, руб.', size: 10, is_to_sum: 1, render: 'float:2'},
+                {field: 'amount_nack', caption: 'Остаток к оплате, руб.', size: 10, is_to_sum: 1, render: 'float:2'},
                 {field: 'amount', caption: 'Сумма платежа, руб.', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}, render: 'float:2', is_to_sum: 1},
 
             ],

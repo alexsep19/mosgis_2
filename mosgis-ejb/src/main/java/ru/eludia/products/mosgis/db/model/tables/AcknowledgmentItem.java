@@ -59,18 +59,20 @@ public class AcknowledgmentItem extends EnTable {
             + "  IF :NEW.is_deleted = 0 AND :NEW.amount IS NOT NULL THEN l_sum := l_sum + :NEW.amount; END IF; "
             + "  UPDATE " + Acknowledgment.TABLE_NAME + " SET amount=l_sum WHERE uuid=:NEW.UUID_ACK; "
                 
-
-/*                
-            + "  SELECT SUM(AMOUNT) INTO l_amount_ack FROM " + TABLE_NAME + " WHERE is_deleted = 0 AND UUID_PAY_DOC=:NEW.UUID_PAY_DOC AND uuid <> :NEW.UUID;"
-            + "  IF l_amount_ack IS NULL THEN l_amount_ack := 0; END IF; "
-            + "  IF :NEW.is_deleted = 0 THEN l_amount_ack := l_amount_ack + :NEW.amount; END IF; "
-            + "  UPDATE " + PaymentDocument.TABLE_NAME + " SET amount_ack=l_amount_ack WHERE uuid=:NEW.UUID_PAY_DOC; "
+            + " IF :NEW.UUID_CHARGE IS NOT NULL THEN BEGIN"
+            + "  SELECT SUM(AMOUNT) INTO l_sum FROM " + TABLE_NAME + " WHERE is_deleted = 0 AND UUID_CHARGE=:NEW.UUID_CHARGE AND uuid <> :NEW.UUID;"
+            + "  IF l_sum IS NULL THEN l_sum := 0; END IF; "
+            + "  IF :NEW.is_deleted = 0 AND :NEW.amount IS NOT NULL THEN l_sum := l_sum + :NEW.amount; END IF; "
+            + "  UPDATE " + ChargeInfo.TABLE_NAME + " SET amount_ack=l_sum WHERE uuid=:NEW.UUID_CHARGE; "
+            + " END; END IF; "
                     
-            + "  SELECT SUM(AMOUNT) INTO l_amount_ack FROM " + TABLE_NAME + " WHERE is_deleted = 0 AND UUID_PAY_DOC=:NEW.UUID_PAY AND uuid <> :NEW.UUID;"
-            + "  IF l_amount_ack IS NULL THEN l_amount_ack := 0; END IF; "
-            + "  IF :NEW.is_deleted = 0 THEN l_amount_ack := l_amount_ack + :NEW.amount; END IF; "
-            + "  UPDATE " + Payment.TABLE_NAME + " SET amount_ack=l_amount_ack WHERE uuid=:NEW.UUID_PAY; "
-*/                    
+            + " IF :NEW.UUID_PENALTY IS NOT NULL THEN BEGIN"
+            + "  SELECT SUM(AMOUNT) INTO l_sum FROM " + TABLE_NAME + " WHERE is_deleted = 0 AND UUID_PENALTY=:NEW.UUID_PENALTY AND uuid <> :NEW.UUID;"
+            + "  IF l_sum IS NULL THEN l_sum := 0; END IF; "
+            + "  IF :NEW.is_deleted = 0 AND :NEW.amount IS NOT NULL THEN l_sum := l_sum + :NEW.amount; END IF; "
+            + "  UPDATE " + PenaltiesAndCourtCosts.TABLE_NAME + " SET amount_ack=l_sum WHERE uuid=:NEW.UUID_PENALTY; "
+            + " END; END IF; "
+
             + "  COMMIT;"
                     
             + "END;"

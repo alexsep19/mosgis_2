@@ -5,7 +5,6 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.json.JsonObject;
-import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.tables.Acknowledgment;
 import ru.eludia.products.mosgis.db.ModelHolder;
@@ -13,7 +12,6 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.Account;
 import ru.eludia.products.mosgis.db.model.tables.AcknowledgmentItem;
-import ru.eludia.products.mosgis.db.model.tables.ActualBankAccount;
 import ru.eludia.products.mosgis.db.model.tables.AnyChargeInfo;
 import ru.eludia.products.mosgis.db.model.tables.ChargeInfo;
 import ru.eludia.products.mosgis.db.model.tables.PaymentDocument;
@@ -131,9 +129,11 @@ public class AcknowledgmentImpl extends BaseCRUD<Acknowledgment> implements Ackn
             AcknowledgmentItem.c.UUID_ACK, id
         );
         
+        String itemId = null;
+        
         for (AcknowledgmentItem.c key: keys) {
             if (data.get (key.lc ()) == null) continue;            
-            db.upsert (t, data, AcknowledgmentItem.c.UUID_ACK.lc (), key.lc ());
+            itemId = db.upsertId (t, data, AcknowledgmentItem.c.UUID_ACK.lc (), key.lc ());
             break;
         }
 
@@ -146,12 +146,31 @@ public class AcknowledgmentImpl extends BaseCRUD<Acknowledgment> implements Ackn
         m.createIdLog (db, getTable (), user, id, VocAction.i.UPDATE);
         
         final JsonObject item = db.getJsonObject (m
+
             .get (getTable (), id, "AS root", "*")
+
+        );
+        
+        job.add ("item", item);
+        
+        final JsonObject line = db.getJsonObject (m
+
+            .get (AcknowledgmentItem.class, itemId, "AS root", "*")
+
+            .toMaybeOne (ChargeInfo.class, "AS chg"
+                , ChargeInfo.c.AMOUNT_ACK.lc ()
+                , ChargeInfo.c.AMOUNT_NACK.lc ()
+            ).on ()
+
+            .toMaybeOne (PenaltiesAndCourtCosts.class, "AS pnl"
+                , PenaltiesAndCourtCosts.c.AMOUNT_ACK.lc ()
+                , PenaltiesAndCourtCosts.c.AMOUNT_NACK.lc ()
+            ).on ()
+
         );
 
-        job.add ("item", item);
-
+        job.add ("line", line);
+        
     });}
-    
     
 }
