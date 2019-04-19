@@ -20,8 +20,8 @@ define ([], function () {
 
                         tabs: [
                             {id: 'citizen_compensation_common',   caption: 'Общие'},
-//                            {id: 'citizen_compensation_common_', caption: 'Расчеты и перерасчеты'},
-//                            {id: 'citizen_compensation_common_', caption: 'Выплаты'},
+//                            {id: 'citizen_compensation_', caption: 'Расчеты и перерасчеты'},
+                            {id: 'citizen_compensation_payments', caption: 'Выплаты'},
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_citizen_compensation

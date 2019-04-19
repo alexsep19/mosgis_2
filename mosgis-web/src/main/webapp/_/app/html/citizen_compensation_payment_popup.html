@@ -1,0 +1,60 @@
+<span
+    data-popup-width=500
+    data-popup-height=230
+    data-popup-title='Выплата гражданину'
+    >
+
+    <style>
+
+        label[data-block-name=citizen_compensation_payment_popup] {
+	    width: 120px;
+	    margin-right: 10px;
+        }
+
+        input[data-block-name=citizen_compensation_payment_popup] {
+	    width: 320px !important;
+        }
+
+        input[data-block-name=citizen_compensation_payment_popup].dt {
+	    width: 70px !important;
+        }
+
+        input[data-block-name=citizen_compensation_payment_popup].money {
+	    width: 70px !important;
+        }
+    </style>
+
+    <div class="w2ui-reset w2ui-form" style="height:175px ">
+
+        <div class="w2ui-page page-0">
+
+
+            <div class="w2ui-field">
+                <label>Тип выплаты</label>
+                <div>
+                    <input name=paymenttype maxlength=256 />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Дата выплаты</label>
+                <div>
+                    <input name=paymentdate class=dt />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Сумма выплаты</label>
+                <div>
+                    <input name=paymentsum class=money />&nbsp;&nbsp;руб.
+                </div>
+            </div>
+        </div>
+
+        <div class="w2ui-buttons">
+	    <button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+    </div>
+
+</span>
