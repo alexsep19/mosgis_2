@@ -37,7 +37,7 @@ define ([], function () {
                     tabs: {
                         tabs:    [
                             {id: 'citizen_compensation_to_categories', caption: 'Категории'},
-//                            {id: 'citizen_compensation_common_', caption: 'Решение'},
+                            {id: 'citizen_compensation_decisions', caption: 'Решения'},
                             {id: 'citizen_compensation_common_log', caption: 'История изменений'},
                         ],
                         onClick: $_DO.choose_tab_citizen_compensation_common

@@ -102,15 +102,6 @@ public class BaseDecisionMSP extends EnTable {
         );
     }
 
-    public static void addTo(DB db, JsonObjectBuilder job) throws SQLException {
-
-        db.addJsonArrays(job,
-            db.getModel()
-		.select  (BaseDecisionMSP.class, "AS vc_nsi_302", "uuid AS id", "label")
-                .orderBy ("vc_nsi_302.label")
-        );       
-    }
-
     public enum Action {
         
 	PLACING     (VocGisStatus.i.PENDING_RQ_PLACING, VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),

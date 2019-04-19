@@ -11,6 +11,7 @@ import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.BaseDecisionMSP;
 import ru.eludia.products.mosgis.db.model.tables.CitizenCompensationDecision;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi301;
+import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi302;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.CitizenCompensationDecisionLocal;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
@@ -101,7 +102,7 @@ public class CitizenCompensationDecisionImpl extends BaseCRUD<CitizenCompensatio
     public JsonObject getVocs () {return fetchData((db, jb) -> {
 
 	Nsi301.i.addTo (jb);
-	BaseDecisionMSP.addTo(db, jb);
+	Nsi302.addTo(db, jb);
 
     });}
 }
