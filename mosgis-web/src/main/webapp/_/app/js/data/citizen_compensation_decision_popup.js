@@ -7,6 +7,7 @@ define ([], function () {
         var form = w2ui [form_name]
 
         var v = form.values ()
+        v.uuid_cit_comp = $_REQUEST.id
 
         if (!v.decisiondate)    die ('decisiondate', 'Укажите, пожалуйста, дату решения')
         if (!v.code_vc_nsi_301) die ('code_vc_nsi_301', 'Укажите, пожалуйста, тип решения')

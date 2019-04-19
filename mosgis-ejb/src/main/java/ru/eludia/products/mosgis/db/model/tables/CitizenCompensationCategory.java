@@ -103,7 +103,7 @@ public class CitizenCompensationCategory extends EnTable {
 
         db.addJsonArrays(job,
             db.getModel()
-                .select  (CitizenCompensationCategory.class, "uuid AS id", "categoryname AS label")
+                .select  (CitizenCompensationCategory.class, "uuid AS id", "categoryname AS label", "is_fixed")
                 .orderBy (CitizenCompensationCategory.c.CATEGORYNAME)
         );
         

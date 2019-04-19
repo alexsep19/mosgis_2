@@ -7,6 +7,7 @@ define ([], function () {
         var form = w2ui [form_name]
 
         var v = form.values ()
+        v.uuid_cit_comp = $_REQUEST.id
 
         if (!v.paymentdate)    die ('paymentdate', 'Укажите, пожалуйста, дату выплаты')
         if (!v.paymenttype)    die ('paymenttype', 'Укажите, пожалуйста, тип выплаты')
