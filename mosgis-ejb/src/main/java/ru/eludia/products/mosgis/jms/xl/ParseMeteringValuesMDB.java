@@ -28,8 +28,8 @@ import ru.eludia.products.mosgis.jms.xl.base.XLException;
 })
 public class ParseMeteringValuesMDB extends XLMDB {
        
-    private static final int N_COL_UUID = 33;
-    private static final int N_COL_ERR  = 34;
+    private static final int N_COL_UUID = 7;
+    private static final int N_COL_ERR  = 8;
     public static final Date NULL_DATE = new Date(0);
 
     protected void addValues (XSSFSheet sheet, UUID parent, DB db/*, Map<Integer, Integer> resourceMap*/) throws SQLException {
@@ -90,8 +90,8 @@ public class ParseMeteringValuesMDB extends XLMDB {
         
         for (Map<String, Object> brokenLine: brokenLines) {
             XSSFRow row = sheet.getRow ((int) DB.to.Long (brokenLine.get (InXlMeteringValues.c.ORD.lc ())));
-            XSSFCell cell = row.getLastCellNum () < 8 ? row.createCell (7) : row.getCell (7);
-            if (cell == null) cell = row.createCell (7);
+            XSSFCell cell = row.getLastCellNum () <= N_COL_ERR ? row.createCell (N_COL_ERR) : row.getCell (N_COL_ERR);
+            if (cell == null) cell = row.createCell (N_COL_ERR);
             cell.setCellValue (brokenLine.get (InXlMeteringValues.c.ERR.lc ()).toString ());
         }
 
