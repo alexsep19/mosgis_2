@@ -6,9 +6,14 @@ import javax.ejb.TransactionAttributeType;
 import javax.json.JsonObject;
 import ru.eludia.products.mosgis.db.model.tables.Acknowledgment;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.Account;
+import ru.eludia.products.mosgis.db.model.tables.ActualBankAccount;
+import ru.eludia.products.mosgis.db.model.tables.AnyChargeInfo;
+import ru.eludia.products.mosgis.db.model.tables.ChargeInfo;
 import ru.eludia.products.mosgis.db.model.tables.PaymentDocument;
 import ru.eludia.products.mosgis.db.model.tables.Payment;
+import ru.eludia.products.mosgis.db.model.tables.PenaltiesAndCourtCosts;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
@@ -25,9 +30,11 @@ public class AcknowledgmentImpl extends BaseCRUD<Acknowledgment> implements Ackn
 
     @Override
     public JsonObject getItem (String id, User user) {return fetchData ((db, job) -> {
-
-        job.add ("item", db.getJsonObject (ModelHolder.getModel ()
-
+        
+        final MosGisModel m = ModelHolder.getModel ();
+        
+        final JsonObject item = db.getJsonObject (m
+                
             .get   (getTable (), id, "AS root", "*")
 
             .toOne (PaymentDocument.class, "AS pd"
@@ -39,8 +46,8 @@ public class AcknowledgmentImpl extends BaseCRUD<Acknowledgment> implements Ackn
             ).on ()
 
             .toOne (Account.class, "AS acct"
-                , Account.c.ID_CTR_STATUS.lc ()
-                , Account.c.ACCOUNTNUMBER.lc ()
+                    , Account.c.ID_CTR_STATUS.lc ()
+                    , Account.c.ACCOUNTNUMBER.lc ()
             ).on ()
 
             .toOne (Payment.class, "AS pay"
@@ -62,11 +69,31 @@ public class AcknowledgmentImpl extends BaseCRUD<Acknowledgment> implements Ackn
             .toMaybeOne (VocPerson.class, "AS ind_customer"
                 , VocPerson.c.LABEL.lc ()
             ).on ("acct.uuid_person_customer=ind_customer.uuid")
+                
+        );
 
-        ));
+        job.add ("item", item);
+        
+        String uuidPayDoc = item.getString (Acknowledgment.c.UUID_PAY_DOC.lc ());
+        
+        db.addJsonArrays (job
+
+            , m
+            .select (AnyChargeInfo.class, "AS root", "*")
+            .toMaybeOne (ActualBankAccount.class, "AS ba", ActualBankAccount.c.LABEL.lc ()).on ("ba.uuid=root." + ChargeInfo.c.UUID_BNK_ACCT.lc ())
+            .toMaybeOne (VocOrganization.class, "AS org_bank_acct", "label").on ("ba.uuid_org=org_bank_acct.uuid")
+            .where   (ChargeInfo.c.UUID_PAY_DOC, uuidPayDoc)
+            .orderBy ("root." + ChargeInfo.c.ID_TYPE)
+            .orderBy ("root." + AnyChargeInfo.c.LABEL.lc ())
+
+            , m
+            .select (PenaltiesAndCourtCosts.class, "AS root", "*")
+            .where  (PenaltiesAndCourtCosts.c.UUID_PAY_DOC, uuidPayDoc)
+
+        );        
 
         VocGisStatus.addTo (job);
 
     });}
-
+    
 }
