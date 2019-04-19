@@ -27,8 +27,8 @@ public class OverhaulShortPrograms extends EJBResource <OverhaulShortProgramsLoc
     
     private void checkWorksAndDocuments (String id) {
         JsonObject object = back.getItem (id, getUser ());
-        if (!object.containsKey ("works") || object.getJsonArray ("works").isEmpty ()) throw new ValidationException ("foo", "К РПКР должен быть привязан хотя бы один вид работ");
-        if (!object.containsKey ("documents") || object.getJsonArray ("documents").isEmpty ()) throw new ValidationException ("foo", "К РПКР должен быть привязан хотя бы один нормативный документ с файлами");
+        if (!object.containsKey ("works") || object.getJsonArray ("works").isEmpty ()) throw new ValidationException ("foo", "К КПР должен быть привязан хотя бы один вид работ");
+        if (!object.containsKey ("documents") || object.getJsonArray ("documents").isEmpty ()) throw new ValidationException ("foo", "К КПР должен быть привязан хотя бы один нормативный документ с файлами");
     }
     
     @POST
