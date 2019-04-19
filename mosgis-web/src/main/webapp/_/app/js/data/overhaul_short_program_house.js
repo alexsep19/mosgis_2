@@ -33,8 +33,6 @@ define ([], function () {
             it.start = it.startmonth + '.' + it.startyear
             it.end = it.endmonth + '.' + it.endyear
 
-            it.address = it.address + ' (' + it.fiashouseguid + ')'
-
             it._can = {cancel: 1}
 
             if (!it.is_deleted && !it['program.is_deleted'] &&
