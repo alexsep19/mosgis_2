@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.math.BigDecimal;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
@@ -32,7 +33,9 @@ public class Payment extends EnTable {
 	ORDERNUM                      (Type.STRING, null, "Номер платежа"),
 
 	ORDERDATE                     (Type.DATE,           "Дата внесения платы"),
-	AMOUNT                        (Type.NUMERIC, 20, 2, "Сумма, руб."),
+	AMOUNT                        (Type.NUMERIC, 20, 2,                                          "Сумма, руб."),
+        AMOUNT_ACK                    (Type.NUMERIC, 20, 2, BigDecimal.ZERO,                         "Сквитировано, руб."),
+        AMOUNT_NACK                   (Type.NUMERIC, 20, 2, new Virt  ("\"AMOUNT\"-\"AMOUNT_ACK\""), "Не сквитировано, руб."),
 
 	PAYMENTPURPOSE                (Type.STRING, 1000, null, "Назначение платежа"),
 

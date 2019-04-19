@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.math.BigDecimal;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
@@ -40,6 +41,9 @@ public class PaymentDocument extends EnTable {
         
         PAYMENTSTAKEN_DT              (Type.DATE,           null,   "Дата последнего учтенного платежа"),
         PAYMENTSTAKEN                 (Type.NUMERIC,  2, 0, new Virt  ("EXTRACT(DAY FROM\"PAYMENTSTAKEN_DT\")"),   "Учтены платежи, поступившие до указанного числа расчетного периода включительно"),
+        
+        AMOUNT_ACK                    (Type.NUMERIC, 13, 2, BigDecimal.ZERO,                                          "Сквитировано, руб."),
+        AMOUNT_NACK                   (Type.NUMERIC, 13, 2, new Virt  ("\"TOTALPAYABLEBYPDWITH_DA\"-\"AMOUNT_ACK\""), "Не сквитировано, руб."),
         
         TOTALPAYABLEBYCHARGEINFO      (Type.NUMERIC, 13, 2, null,   "Сумма к оплате за расчетный период по услугам, руб."),        
         TOTALBYPENALTIESANDCOURTCOSTS (Type.NUMERIC, 13, 2, null,   "Итого к оплате по неустойкам и судебным издержкам, руб."),        

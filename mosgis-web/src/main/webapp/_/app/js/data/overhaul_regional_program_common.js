@@ -74,6 +74,11 @@ define ([], function () {
         if (!confirm ('Удалить эту запись, Вы уверены?')) return        
         query ({type: 'overhaul_regional_programs', action: 'delete'}, {}, reload_page)
     }
+
+    $_DO.annul_overhaul_regional_program_common = function (e) {   
+        if (!confirm ('Аннулировать эту запись, Вы уверены?')) return        
+        query ({type: 'overhaul_regional_programs', action: 'delete'}, {}, reload_page)
+    }
     
     $_DO.choose_tab_overhaul_regional_program_common = function (e) {
     

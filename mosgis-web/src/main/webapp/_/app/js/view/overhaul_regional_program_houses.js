@@ -35,7 +35,10 @@ define ([], function () {
             ],
 
             columns: [
-                {field: 'address', caption: 'Адрес', size: 10},
+                {field: 'address', caption: 'Адрес', size: 10, render: 
+                    function (record) {
+                        return record['address'] + ' (' + record['fiashouseguid'] + ')'
+                }},
                 {field: 'oktmo', caption: 'Код ОКТМО', size: 10},
                 {field: 'works_general_cnt', caption: 'Всего', size: 5},
                 {field: 'works_approved_cnt', caption: 'Размещено', size: 5},

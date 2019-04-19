@@ -106,7 +106,7 @@ define ([], function () {
 
         NsiListRef: function (o) {
             
-            var fn = "F_" + o.name
+            var fn = "f_" + o.name.toLowerCase ()
 
             return {
                 field: fn,
@@ -116,14 +116,13 @@ define ([], function () {
                 render: function (i) {
                     var v = i [fn]
                     if (!v) return ''
-                    return $('body').data ('vc_nsi_list') [v] || v
+                    var l = $('body').data ('vc_nsi_list') [v]
+                    if (l) v += '. ' + l
+                    return v
                 }
             }
             
-        },
-        
-//            $('body').data ('vc_nsi_list', vc_nsi_list)
-        
+        },                
         
     }
         
@@ -154,13 +153,13 @@ define ([], function () {
         ]
 
         if (data.item.cols && data.item.cols.length) $.each (data.item.cols, function () {
-            
+
             var f = fld [this.type] || fld ['String']
             
             columns.push (f (this))
         
         })
-        
+
         $(layout.el ('main')).w2regrid ({
             
             name: 'nsi_grid_' + data.item.registrynumber,
