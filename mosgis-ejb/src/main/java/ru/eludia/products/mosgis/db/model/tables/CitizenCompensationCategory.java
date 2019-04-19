@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,8 +17,8 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi237;
 import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
-import ru.eludia.products.mosgis.db.model.voc.VocServiceType;
 import ru.gosuslugi.dom.schema.integration.msp.ExportCategoryType;
+import javax.json.JsonObjectBuilder;
 
 public class CitizenCompensationCategory extends EnTable {
 
@@ -28,6 +29,7 @@ public class CitizenCompensationCategory extends EnTable {
 	UUID_ORG                     (VocOrganization.class, null, "Организация, которая создала данную запись"),
 
 	CATEGORYNAME                 (Type.STRING,  500,    null, "Наименование отдельной категории граждан"),
+	LABEL                        (Type.STRING, new Virt("'' || \"CATEGORYNAME\""), "Наименование (синоним)"),
 	LABEL_UC                     (Type.STRING,          new Virt  ("UPPER(\"CATEGORYNAME\")"), "НАИМЕНОВАНИЕ"),
 
 	CODE_VC_NSI_154              (Type.STRING,  20,     null, "Отдельные категории граждан, имеющие право на получение компенсаций расходов (НСИ 154)"),
@@ -95,6 +97,16 @@ public class CitizenCompensationCategory extends EnTable {
 	    + "  SELECT ID INTO :NEW.OKTMO FROM " + VocOktmo.TABLE_NAME + " WHERE CODE = :NEW.OKTMO_CODE AND SECTION_CODE = '1'; "
 	    + "END IF; "
         + "END;");
+    }
+    
+    public static void addTo(DB db, JsonObjectBuilder job) throws SQLException {
+
+        db.addJsonArrays(job,
+            db.getModel()
+                .select  (CitizenCompensationCategory.class, "uuid AS id", "categoryname AS label")
+                .orderBy (CitizenCompensationCategory.c.CATEGORYNAME)
+        );
+        
     }
 
     public static Map<String, Object> toHASH(ExportCategoryType cat) {

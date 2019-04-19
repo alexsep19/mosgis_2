@@ -1,8 +1,10 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.json.JsonObjectBuilder;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
@@ -78,5 +80,17 @@ public class CitizenCompensationCalculationKind extends EnTable {
 
 	return result;
     }
+    
+    public static void addServicesTo(DB db, JsonObjectBuilder job) throws SQLException {
 
+        db.addJsonArrays(job,
+            db.getModel()
+		.select     (VocServiceType.class, "AS vc_svc_types", "*")
+		.toMaybeOne (CitizenCompensationCalculationKind.class, "AS calc_kind"
+		    , CitizenCompensationCalculationKind.c.UUID_CIT_COMP_CAT.lc()
+		).on("vc_svc_types.id = calc_kind.service")
+                .orderBy ("vc_svc_types.label")
+        );
+        
+    }
 }

@@ -1,0 +1,65 @@
+<span
+    data-popup-width=600
+    data-popup-height=330
+    data-popup-title='Категория гражданина, получающего компенсацию расходов'
+    >
+
+    <style>
+
+        label[data-block-name=citizen_compensation_to_categories_popup] {
+	    width: 220px;
+	    margin-right: 10px;
+        }
+
+        input[data-block-name=citizen_compensation_to_categories_popup] {
+	    width: 325px !important;
+        }
+
+        input[data-block-name=citizen_compensation_to_categories_popup].dt {
+	    width: 70px !important;
+        }
+
+	.w2ui-field input.w2ui-grid-select-check {
+	    width: 25px !important;
+	}
+
+    </style>
+
+    <div class="w2ui-reset w2ui-form" style="height:285px ">
+
+        <div class="w2ui-page page-0">
+
+
+            <div class="w2ui-field">
+                <label>Категория</label>
+                <div>
+                    <input name=uuid_cit_comp_cat >
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Период предоставления с</label>
+                <div>
+                    <input name=periodfrom class=dt />
+		    по
+		    <input name=periodto class=dt />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Расходы, подлежащие компенсации</label>
+                <div>
+		    <div id=vc_svc_types_container style="margin:5px 0 0 60px;width:320px;height:125px;" />
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="w2ui-buttons">
+	    <button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+    </div>
+
+</span>

@@ -36,7 +36,7 @@ define ([], function () {
                 {type: 'main', size: 400, 
                     tabs: {
                         tabs:    [
-//                            {id: 'citizen_compensation_common_', caption: 'Категории'},
+                            {id: 'citizen_compensation_to_categories', caption: 'Категории'},
 //                            {id: 'citizen_compensation_common_', caption: 'Решение'},
                             {id: 'citizen_compensation_common_log', caption: 'История изменений'},
                         ],
