@@ -38,7 +38,7 @@ define ([], function () {
                 {field: 'paymentsum', caption: 'Сумма выплаты', size: 20, render: 'money:2'},
             ].filter (not_off),
 
-            postData: {data: {uuid_cit_comp_cat: $_REQUEST.id}},
+            postData: {data: {uuid_cit_comp: $_REQUEST.id}},
 
             url: '/_back/?type=citizen_compensation_payments',
 

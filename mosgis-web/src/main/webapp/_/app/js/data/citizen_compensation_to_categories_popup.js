@@ -8,13 +8,21 @@ define ([], function () {
         var form = w2ui [form_name]
 
         var v = form.values ()
+        v.uuid_cit_comp = $_REQUEST.id
 
         if (!v.uuid_cit_comp_cat) die ('uuid_cit_comp_cat', 'Укажите, пожалуйста, категорию')
         if (!v.periodfrom) die ('periodfrom', 'Укажите, пожалуйста, период')
 
+
         v.vc_service_types = w2ui [grid_name].getSelection ()
-        
-        if (!v.vc_service_types.length) die ('foo', 'Укажите, пожалуйста, по крайней мере один расход, подлежащий компенсации')
+
+        var data = clone($('body').data('data'))
+
+        var cat = data.tb_cit_comp_cats.items.find(x => x.id == v.uuid_cit_comp_cat)
+
+        if (!v.vc_service_types.length && !cat.is_fixed)
+            die ('foo', 'Укажите, пожалуйста, по крайней мере один расход, подлежащий компенсации')
+
 
         var tia = {type: 'citizen_compensation_to_categories'}
         tia.id = form.record.id

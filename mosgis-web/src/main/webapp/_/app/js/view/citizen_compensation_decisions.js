@@ -40,7 +40,7 @@ define ([], function () {
                 {field: 'eventdate', caption: 'Дата события', size: 20, render: _dt},
             ].filter (not_off),
 
-            postData: {data: {uuid_cit_comp_cat: $_REQUEST.id}},
+            postData: {data: {uuid_cit_comp: $_REQUEST.id}},
 
             url: '/_back/?type=citizen_compensation_decisions',
 
