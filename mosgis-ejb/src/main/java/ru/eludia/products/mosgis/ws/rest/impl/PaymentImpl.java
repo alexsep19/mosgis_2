@@ -22,10 +22,12 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.Account;
 import ru.eludia.products.mosgis.db.model.tables.AccountItem;
+import ru.eludia.products.mosgis.db.model.tables.Acknowledgment;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.PaymentDocument;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import ru.eludia.products.mosgis.db.model.voc.VocPaymentDocumentType;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.api.PaymentLocal;
@@ -173,6 +175,8 @@ public class PaymentImpl extends BaseCRUD<Payment> implements PaymentLocal {
 
 	VocGisStatus.addLiteTo(job);
         VocAction.addTo (job);
+        VocPaymentDocumentType.addTo (job);
+        
     });}
 
     @Override
@@ -225,4 +229,30 @@ public class PaymentImpl extends BaseCRUD<Payment> implements PaymentLocal {
         logAction (db, user, id, VocAction.i.ANNUL);
 
     });}
+
+    @Override
+    public JsonObject getAcknowledgments (String id) {return fetchData ((db, job) -> {
+
+        final MosGisModel m = ModelHolder.getModel ();
+
+        db.addJsonArrays (job
+
+            , m.select (Acknowledgment.class, "AS root", "*", "uuid AS id")
+                .toOne (PaymentDocument.class, "AS pd"
+                    , PaymentDocument.c.ID_TYPE.lc ()
+                    , PaymentDocument.c.PAYMENTDOCUMENTNUMBER.lc ()
+                    , PaymentDocument.c.DT_PERIOD.lc ()
+                    , PaymentDocument.c.TOTALPAYABLEBYPDWITH_DA.lc ()
+                ).on ()
+                .toOne (Account.class, "AS acct"
+                    , Account.c.ACCOUNTNUMBER.lc ()
+                ).on ()
+                .where   (Acknowledgment.c.UUID_PAY, id)
+                .where   (EnTable.c.IS_DELETED, 0)
+                .orderBy ("pd.dt_period")
+
+        );
+
+    });}
+
 }

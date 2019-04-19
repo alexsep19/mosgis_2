@@ -1,6 +1,6 @@
 define ([], function () {
 
-    $_DO.choose_tab_payment = function (e) {
+    $_DO.choose_tab_acknowledgment = function (e) {
 
         var name = e.tab.id
 
@@ -19,7 +19,7 @@ define ([], function () {
 
     return function (done) {
 
-        query ({type: 'payments'}, {}, function (data) {
+        query ({type: 'acknowledgments'}, {}, function (data) {
 
             add_vocabularies (data, {
                 vc_pay_doc_types: 1,
@@ -32,6 +32,11 @@ define ([], function () {
             it._can = {cancel: 1}
 
             if (!it.is_deleted && it.uuid_org == $_USER.uuid_org) {
+
+                switch (it.id_ctr_status) {
+                    case 10:
+                        it._can.delete = 1
+                }
 
                 switch (it ['acct.id_ctr_status']) {
 
@@ -58,20 +63,9 @@ define ([], function () {
                         }
 
                         switch (it.id_ctr_status) {
-                            case 10:
-                            case 14:
-                                it._can.delete = 1
-                        }
-
-                        switch (it.id_ctr_status) {
                             case 40:
                             case 104:
                                 it._can.annul = 1
-                        }
-                        
-                        switch (it.id_ctr_status) {
-                            case 40:
-                                it._can.edit_acknowledgments = 1
                         }
                         
                 }

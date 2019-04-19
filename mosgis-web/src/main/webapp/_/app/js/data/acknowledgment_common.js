@@ -1,22 +1,22 @@
 define ([], function () {
 
-    var form_name = 'payment_common_form'
-
-    $_DO.approve_payment_common = function (e) {
+    var form_name = 'acknowledgment_common_form'
+/*
+    $_DO.approve_acknowledgment_common = function (e) {
         if (!confirm ('Разместить эти данные в ГИС ЖКХ?')) return
         query ({type: 'payments', action: 'approve'}, {}, reload_page)
     }
 
-    $_DO.alter_payment_common = function (e) {
+    $_DO.alter_acknowledgment_common = function (e) {
         if (!confirm ('Открыть эту карточку на редактирование?')) return
         query ({type: 'payments', action: 'alter'}, {}, reload_page)
     }
 
-    $_DO.annul_payment_common = function (e) {
+    $_DO.annul_acknowledgment_common = function (e) {
         use.block('payment_annul_popup')
     }
-
-    $_DO.cancel_payment_common = function (e) {
+    
+    $_DO.cancel_acknowledgment_common = function (e) {
 
         if (!confirm ('Отменить несохранённые правки?')) return
 
@@ -30,7 +30,7 @@ define ([], function () {
 
             fix (it)
 
-            w2ui ['passport_layout'].get ('main').tabs.enable ('payment_common_charge_info', 'payment_common_log')
+            w2ui ['passport_layout'].get ('main').tabs.enable ('acknowledgment_common_charge_info', 'acknowledgment_common_log')
 
             $_F5 (data)
 
@@ -38,9 +38,9 @@ define ([], function () {
 
     }
 
-    $_DO.edit_payment_common = function (e) {
+    $_DO.edit_acknowledgment_common = function (e) {
 
-        $_SESSION.set ('edit_payment_common', 1)
+        $_SESSION.set ('edit_acknowledgment_common', 1)
 
         var data = {item: w2ui [form_name].record}
 
@@ -51,7 +51,7 @@ define ([], function () {
         $_F5 (data)
     }
 
-    $_DO.update_payment_common = function (e) {
+    $_DO.update_acknowledgment_common = function (e) {
 
         if (!confirm ('Сохранить изменения?')) return
 
@@ -65,13 +65,13 @@ define ([], function () {
         query ({type: 'payments', action: 'update'}, {data: v}, reload_page)
 
     }
-
-    $_DO.delete_payment_common = function (e) {
+*/
+    $_DO.delete_acknowledgment_common = function (e) {
         if (!confirm ('Удалить эту запись, Вы уверены?')) return
-        query ({type: 'payments', action: 'delete'}, {}, reload_page)
+        query ({type: 'acknowledgments', action: 'delete'}, {}, reload_page)
     }
 
-    $_DO.choose_tab_payment_common = function (e) {
+    $_DO.choose_tab_acknowledgment_common = function (e) {
 
         var name = e.tab.id
 
@@ -82,7 +82,7 @@ define ([], function () {
             layout.lock ('main', 'Загрузка...', true);
         }
 
-        localStorage.setItem ('payment_common.active_tab', name)
+        localStorage.setItem ('acknowledgment_common.active_tab', name)
 
         use.block (name)
 
@@ -91,10 +91,10 @@ define ([], function () {
     function fix (it) {
 
         it.status_label = $('body').data ('data').vc_gis_status [it.id_ctr_status]
-
-        it.sign = it.debtpreviousperiods > 0 ? -1 : 1
-
-        it.debtpreviousperiods *= (- it.sign)
+        
+        it.accountnumber  = it ['acct.accountnumber']
+        it.customer_label = it ['org_customer.label'] || it ['ind_customer.label']
+        it.pay_amount     = it ['pay.amount']
 
     }
 
@@ -104,7 +104,7 @@ define ([], function () {
 
         var data = clone ($('body').data ('data'))
 
-        data.active_tab = localStorage.getItem ('payment_common.active_tab') || 'payment_acknowledgments'
+        data.active_tab = localStorage.getItem ('acknowledgment_common.active_tab') || 'payment_acknowledgments'
 
         data.__read_only = 1
 

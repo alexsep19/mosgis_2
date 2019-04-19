@@ -1,0 +1,115 @@
+<span>
+
+    <div>
+
+        <div class="w2ui-page page-0 page-1">
+
+        	<style>
+
+        		.w2ui-field > label {
+        			width: 300px;
+        			margin-right: 10px;
+        		}
+
+        		.w2ui-field input {
+        			width: 100px !important;
+        		}
+
+        		.w2ui-field input.dt {
+        			width: 70px !important;
+        		}
+
+        		td.left {
+        			min-width: 400px;
+        		}
+
+			textarea {
+			    resize: none
+			}
+
+        		td.left .w2ui-field > label {
+        			width: 170px;
+        		}
+
+			.w2ui-field span {
+			    line-height: 19px;
+			}
+        	</style>
+			<center>
+        	<table border=0 cellpadding=0 cellspacing=0 style="min-width:850px;">
+
+        		<tr>
+
+					<td class=left width=1 valign=top>
+
+							<div class="w2ui-field">
+								<label>Лицевой счет</label>
+								<div>
+									<input name=accountnumber>
+								</div>
+							</div>
+
+							<div class="w2ui-field">
+								<label>Плательщик</label>
+								<div>
+									<input name=customer_label>
+								</div>
+							</div>
+
+							<div class="w2ui-field">
+							    <label>Сумма платежа, руб.</label>
+							    <div>
+								<input name=pay_amount maxlength=20 /> руб.
+							    </div>
+							</div>
+
+							<div class="w2ui-field">
+							    <label>Сумма квитирования, руб.</label>
+							    <div>
+								<input name=amount maxlength=20 /> руб.
+							    </div>
+							</div>
+
+					</td>
+
+					<td valign=top>
+
+						<table border=0 cellpadding=0 cellspacing=0 width=100% class=sync style="margin-left:10px;">
+
+							<tr>
+								<td>Статус:</td>
+								<td>
+									<span data-text=status_label />
+									<span data-text=err_text />
+								</td>
+							</tr>
+						</table>
+
+					</td>
+
+        		</tr>
+
+        	</table>
+			</center>
+
+        </div>
+
+        <div class="w2ui-buttons">
+        	<span>
+<!--
+				<button class=w2ui-btn name=edit    data-on=__read_only>Редактировать</button>
+				<button class=w2ui-btn name=update  data-off=__read_only>Сохранить</button>
+				<button class=w2ui-btn name=cancel  data-off=__read_only>Отменить</button>
+-->
+				<button class=w2ui-btn name=delete  data-on=__read_only>Удалить</button>
+<!--
+				<button class=w2ui-btn name=approve data-on=__read_only>Разместить</button>
+				<button class=w2ui-btn name=alter   data-on=__read_only>Изменить</button>
+				<button class=w2ui-btn name=annul   data-on=__read_only>Аннулировать</button>
+-->
+            </span>
+        </div>
+
+    </div>
+
+</span>
