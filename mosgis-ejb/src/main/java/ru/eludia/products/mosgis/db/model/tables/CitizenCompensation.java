@@ -26,7 +26,8 @@ public class CitizenCompensation extends EnTable {
 	APARTMENTNUMBER              (Type.STRING, 36, null, "Номер квартиры"),
 	FLATNUMBER                   (Type.STRING, 36, null, "Номер комнаты"),
 
-	ID_LOG                       (CitizenCompensationOverviewLog.class, "Последнее событие редактирования"),
+	ID_LOG                       (CitizenCompensationLog.class, "Последнее событие редактирования"),
+	CITIZENCOMPENSATIONGUID      (Type.UUID, null, "Идентификатор в ГИС ЖКХ"),
 
 	ID_CTR_STATUS                (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения mosgis"),
 	ID_CTR_STATUS_GIS            (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения ГИС ЖКХ"),

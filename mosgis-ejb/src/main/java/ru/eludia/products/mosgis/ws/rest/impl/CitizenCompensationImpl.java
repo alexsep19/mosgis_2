@@ -13,7 +13,7 @@ import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.CitizenCompensation;
-import ru.eludia.products.mosgis.db.model.tables.CitizenCompensationOverviewLog;
+import ru.eludia.products.mosgis.db.model.tables.CitizenCompensationLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -109,7 +109,7 @@ public class CitizenCompensationImpl extends BaseCRUD<CitizenCompensation> imple
 
         Select select = ModelHolder.getModel ().select (AnyCitizenCompensation.class, "AS root", "*")
             .toMaybeOne (VocOrganization.class, "AS org", "label").on ("root.uuid_org=org.uuid")
-            .toMaybeOne (CitizenCompensationOverviewLog.class, "AS log").on ("root.id_log = log.uuid")
+            .toMaybeOne (CitizenCompensationLog.class, "AS log").on ("root.id_log = log.uuid")
             .orderBy ("log.ts DESC")
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
@@ -131,7 +131,7 @@ public class CitizenCompensationImpl extends BaseCRUD<CitizenCompensation> imple
             .get (getTable (), id, "AS root", "*")
 	    .toOne (VocPerson.class, "AS person", "*").on()
 	    .toOne (VocBuilding.class, "AS building", "label AS addr").on ()
-            .toMaybeOne (CitizenCompensationOverviewLog.class, "AS log").on ()
+            .toMaybeOne (CitizenCompensationLog.class, "AS log").on ()
             .toMaybeOne (OutSoap.class, "err_text").on ("log.uuid_out_soap=out_soap.uuid")
             .toOne      (VocOrganization.class, "AS org", "label").on ("root.uuid_org=org.uuid")
         );
