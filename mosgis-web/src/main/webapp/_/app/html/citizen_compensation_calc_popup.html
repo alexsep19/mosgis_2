@@ -1,0 +1,66 @@
+<span
+    data-popup-width=390
+    data-popup-height=260
+    data-popup-title='Выплата гражданину'
+    >
+
+    <style>
+
+        label[data-block-name=citizen_compensation_calc_popup] {
+	    width: 220px;
+	    margin-right: 10px;
+        }
+
+        input[data-block-name=citizen_compensation_calc_popup] {
+	    width: 320px !important;
+        }
+
+        input[data-block-name=citizen_compensation_calc_popup].dt {
+	    width: 70px !important;
+        }
+
+        input[data-block-name=citizen_compensation_calc_popup].money {
+	    width: 70px !important;
+        }
+    </style>
+
+    <div class="w2ui-reset w2ui-form" style="height:205px ">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Дата начала расчета</label>
+                <div>
+                    <input name=periodfrom class=dt />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Дата окончания расчета</label>
+                <div>
+                    <input name=periodto class=dt />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Дата расчета</label>
+                <div>
+                    <input name=calculationdate class=dt />
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Размер компенсационной выплаты</label>
+                <div>
+                    <input name=compensationsum class=money />&nbsp;&nbsp;руб.
+                </div>
+            </div>
+        </div>
+
+        <div class="w2ui-buttons">
+	    <button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+    </div>
+
+</span>
