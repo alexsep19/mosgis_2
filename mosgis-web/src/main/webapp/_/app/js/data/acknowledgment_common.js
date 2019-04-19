@@ -104,7 +104,7 @@ define ([], function () {
 
         var data = clone ($('body').data ('data'))
 
-        data.active_tab = localStorage.getItem ('acknowledgment_common.active_tab') || 'payment_acknowledgments'
+        data.active_tab = localStorage.getItem ('acknowledgment_common.active_tab') || 'acknowledgment_items'
 
         data.__read_only = 1
 

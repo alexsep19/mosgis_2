@@ -38,7 +38,7 @@ define ([], function () {
                 {type: 'main', size: 400,
                     tabs: {
                         tabs:    [
-//                            {id: 'payment_acknowledgments', caption: 'Оплаченные квитанции (платежные документы)'},
+                            {id: 'acknowledgment_items', caption: 'Распределение по услугам'},
                             {id: 'acknowledgment_common_log', caption: 'История изменений'},
                         ].filter (not_off),
                         onClick: $_DO.choose_tab_acknowledgment_common
@@ -48,7 +48,7 @@ define ([], function () {
             ],
 
             onRender: function (e) {
-//                this.get ('main').tabs.click (data.active_tab)
+                this.get ('main').tabs.click (data.active_tab)
             },
 
         });
