@@ -1,10 +1,6 @@
 package ru.eludia.products.mosgis.db.model.voc.nsi;
 
 import java.sql.SQLException;
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
@@ -12,7 +8,6 @@ import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.View;
 import ru.eludia.base.model.Type;
-import ru.eludia.base.model.def.Bool;
 import ru.eludia.products.mosgis.db.model.tables.BaseDecisionMSP;
 
 public class Nsi302 extends View {
