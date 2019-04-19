@@ -74,11 +74,14 @@ define ([], function () {
             data.item.type = data.item.is_condo ? 'МКД' : 'ЖД'
             
             data.controlled = data.cach && data.cach.is_own && data.cach.id_ctr_status_gis == 40
+            data.has_srca = data.srca && [10, 11, 40].indexOf (data.srca.id_ctr_status) != -1
             data.is_under_nsi_20_8 = $_USER.role.nsi_20_8 && $_USER.role['oktmo_' + data.item['fias.oktmo']]
 
             function editable () {
 
                 if ($_USER.role.admin) return true
+
+                if ($_USER.role.nsi_20_7) return data.controlled && data.has_srca && data.item.id_status == 20
 
                 if ($_USER.has_nsi_20 (1, 19, 20, 21, 22)) return data.controlled && $_USER.uuid_org == data.cach['org.uuid']
 
