@@ -148,9 +148,10 @@ define ([], function () {
             
             $.each (penalties, function () {
             
-                this.label = data.vc_nsi_329 [this.code_vc_nsi_329] + " " + this.cause
+                this.label = this.cause
             
-                this.id_type = 10
+                this.id_type = this.code_vc_nsi_329
+                this.label_type = data.vc_nsi_329 [this.code_vc_nsi_329]
                 
             })
             

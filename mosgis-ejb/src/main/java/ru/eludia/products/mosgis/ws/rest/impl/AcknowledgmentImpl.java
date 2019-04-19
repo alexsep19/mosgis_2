@@ -6,8 +6,10 @@ import javax.ejb.TransactionAttributeType;
 import javax.json.JsonObject;
 import ru.eludia.products.mosgis.db.model.tables.Acknowledgment;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.Account;
+import ru.eludia.products.mosgis.db.model.tables.AcknowledgmentItem;
 import ru.eludia.products.mosgis.db.model.tables.ActualBankAccount;
 import ru.eludia.products.mosgis.db.model.tables.AnyChargeInfo;
 import ru.eludia.products.mosgis.db.model.tables.ChargeInfo;
@@ -79,13 +81,17 @@ public class AcknowledgmentImpl extends BaseCRUD<Acknowledgment> implements Ackn
         String uuidPayDoc = item.getString (Acknowledgment.c.UUID_PAY_DOC.lc ());
         
         db.addJsonArrays (job
+                
+            , m
+            .select (AcknowledgmentItem.class, "AS items", "*")
+            .where  (AcknowledgmentItem.c.UUID_ACK, id)
+            .where  (EnTable.c.IS_DELETED, 0)
 
             , m
-            .select (AnyChargeInfo.class, "AS charges", "*")
-            .toMaybeOne (ActualBankAccount.class, "AS ba", ActualBankAccount.c.LABEL.lc ()).on ("ba.uuid=charges." + ChargeInfo.c.UUID_BNK_ACCT.lc ())
-            .toMaybeOne (VocOrganization.class, "AS org_bank_acct", "label").on ("ba.uuid_org=org_bank_acct.uuid")
+            .select  (AnyChargeInfo.class, "AS charges", "*")
             .where   (ChargeInfo.c.UUID_PAY_DOC, uuidPayDoc)
             .where   (ChargeInfo.c.TOTALPAYABLE.lc () + ">", 0)
+            .where   (EnTable.c.IS_DELETED, 0)
             .orderBy ("charges." + ChargeInfo.c.ID_TYPE)
             .orderBy ("charges." + AnyChargeInfo.c.LABEL.lc ())
 
@@ -93,7 +99,10 @@ public class AcknowledgmentImpl extends BaseCRUD<Acknowledgment> implements Ackn
             .select (PenaltiesAndCourtCosts.class, "AS penalties", "*")
             .where  (PenaltiesAndCourtCosts.c.UUID_PAY_DOC, uuidPayDoc)
             .where  (PenaltiesAndCourtCosts.c.TOTALPAYABLE.lc () + ">", 0)
-                
+            .where  (EnTable.c.IS_DELETED, 0)
+            .orderBy ("penalties." + PenaltiesAndCourtCosts.c.CODE_VC_NSI_329)
+            .orderBy ("penalties." + PenaltiesAndCourtCosts.c.CAUSE)
+
             , Nsi329.getVocSelect ()
 
         );        
