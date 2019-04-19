@@ -14,6 +14,7 @@ import ru.eludia.products.mosgis.db.model.tables.ChargeInfo;
 import ru.eludia.products.mosgis.db.model.tables.PaymentDocument;
 import ru.eludia.products.mosgis.db.model.tables.Payment;
 import ru.eludia.products.mosgis.db.model.tables.PenaltiesAndCourtCosts;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
@@ -93,6 +94,7 @@ public class AcknowledgmentImpl extends BaseCRUD<Acknowledgment> implements Ackn
         );        
 
         VocGisStatus.addTo (job);
+        VocAction.addTo (job);
 
     });}
     

@@ -35,17 +35,15 @@ define ([], function () {
             panels: [
 
                 {type: 'top', size: 220},
-/*                
                 {type: 'main', size: 400,
                     tabs: {
                         tabs:    [
-                            {id: 'payment_acknowledgments', caption: 'Оплаченные квитанции (платежные документы)'},
+//                            {id: 'payment_acknowledgments', caption: 'Оплаченные квитанции (платежные документы)'},
                             {id: 'acknowledgment_common_log', caption: 'История изменений'},
                         ].filter (not_off),
                         onClick: $_DO.choose_tab_acknowledgment_common
                     }
                 },
-*/                
 
             ],
 
