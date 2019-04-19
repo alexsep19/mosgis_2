@@ -1,9 +1,12 @@
 package ru.eludia.products.mosgis.ws.rest.impl;
 
+import java.util.Map;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.json.JsonObject;
+import static ru.eludia.base.DB.HASH;
+import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.tables.Acknowledgment;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
@@ -111,5 +114,38 @@ public class AcknowledgmentImpl extends BaseCRUD<Acknowledgment> implements Ackn
         VocAction.addTo (job);
 
     });}
+    
+    private static final AcknowledgmentItem.c [] keys = new AcknowledgmentItem.c [] {
+        AcknowledgmentItem.c.UUID_CHARGE, 
+        AcknowledgmentItem.c.UUID_PENALTY
+    };
+    
+    @Override
+    public JsonObject doPatch (String id, JsonObject p, User user) {return doAction ((db) -> {
+
+        final MosGisModel m = ModelHolder.getModel ();
+
+        Table t = m.get (AcknowledgmentItem.class);
+        
+        final Map<String, Object> data = t.HASH (p.getJsonObject ("data"),
+            AcknowledgmentItem.c.UUID_ACK, id
+        );
+        
+        for (AcknowledgmentItem.c key: keys) {
+            if (data.get (key.lc ()) == null) continue;            
+            db.upsert (t, data, AcknowledgmentItem.c.UUID_ACK.lc (), key.lc ());
+            break;
+        }
+
+/*        
+        db.update (PaymentDocument.class, HASH (
+            EnTable.c.UUID, id,
+            PaymentDocument.c.TOTALBYPENALTIESANDCOURTCOSTS, null
+        ));
+*/
+        m.createIdLog (db, getTable (), user, id, VocAction.i.UPDATE);
+
+    });}
+    
     
 }

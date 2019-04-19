@@ -76,6 +76,16 @@ public class Acknowledgments extends EJBResource <AcknowledgmentLocal> {
     }        
     
     @POST
+    @Path("{id}/patch")
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject doPatch (@PathParam ("id") String id, JsonObject p) {
+//        final JsonObject item = getInnerItem (id);
+//        checkOrg (item);
+        return back.doPatch (id, p, getUser ());
+    }
+    
+    @POST
     @Path("{id}/delete") 
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)

@@ -20,7 +20,7 @@ define ([], function () {
     function get_message (row, col) {
     
         switch (col.field) {
-
+/*
             case 'totalpayable':
                 var f = row.totalpayable
                 var p = row.totalpayable_v
@@ -48,7 +48,7 @@ define ([], function () {
                 
             case 'rate':
                 return (row.accountingperiodtotal || row.cons_i_vol || row.cons_o_vol) && row.rate == null ? 'Не указан тариф' : null
-                                
+*/                                
             default:
                 return null
 
@@ -57,23 +57,12 @@ define ([], function () {
     }
     
     function is_yellow (row, col) {
-
         switch (col.field) {
-
-            case 'rate':
-                return !row.uuid_m_m_service
-                
-            case 'accountingperiodtotal':
+            case 'amount':
                 return true
-                
-            case 'calcexplanation':
-                return row.uuid_gen_need_res
-
             default:
                 return false
-
         }
-
     }
                 
     return function (data, view) {
@@ -98,7 +87,7 @@ define ([], function () {
                 t.disable ('edit')
                 grid.selectNone ()
                 
-                w2ui ['payment_document_common_form'].lock ()
+                w2ui ['acknowledgment_common_form'].lock ()
                 
                 var tabs = w2ui ['passport_layout'].get ('main').tabs
                 $.each (tabs.tabs, function () {
@@ -171,30 +160,9 @@ define ([], function () {
 
                 {field: 'label', caption: 'Наименование услуги', size: 50},
                 
-                {field: 'totalpayable', caption: 'Итого к оплате за расчетный период', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}, is_to_sum: 1},
-/*                
-                {field: 'accountingperiodtotal', caption: 'Всего начислено за расчетный период (без перерасчетов и льгот)', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}, is_to_sum: 1},
+                {field: 'totalpayable', caption: 'Сумма к оплате с учетом рассрочки платежа и процентов за рассрочку, руб.', size: 10, is_to_sum: 1, render: 'float:2'},
+                {field: 'amount', caption: 'Сумма платежа, руб.', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}, is_to_sum: 1},
 
-                {field: 'rate', caption: 'Тариф', size: 10, editable: {type: 'float', precision: 6, autoFormat: true, min: 0}},
-
-                {field: 'cons_i_vol', caption: 'Объём', size: 10, editable: {type: 'float', precision: 7, autoFormat: true}, render: function (r, y, z, v) {return r.uuid_m_m_service ? w2utils.formatNumber (v) : '-'}},
-                {field: 'cons_i_dtrm_meth', caption: 'Определён по', size: 10, editable: {type: 'list'}, voc: data.vc_cnsmp_vol_dtrm},
-
-                {field: 'cons_o_vol', caption: 'Объём', size: 10, editable: {type: 'float', precision: 7, autoFormat: true}},
-                {field: 'cons_o_dtrm_meth', caption: 'Определён по', size: 10, editable: {type: 'list'}, voc: data.vc_cnsmp_vol_dtrm},
-
-                {field: 'ratio', caption: 'Коэффициент', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}},
-                {field: 'amountofexcessfees', caption: 'Размер превышения платы', size: 10, editable: {type: 'float', precision: 2, autoFormat: true}},
-
-                {field: 'moneyrecalculation', caption: 'Сумма, руб', size: 10, editable: {type: 'float', precision: 2, autoFormat: true}, is_to_sum: 1},
-                {field: 'recalculationreason', caption: 'Основание', size: 10, editable: {type: 'text'}},
-                
-                {field: 'moneydiscount', caption: 'Субсидии, скидки', size: 10, editable: {type: 'float', precision: 2, autoFormat: true, min: 0}, is_to_sum: 1},
-
-                {field: 'calcexplanation', caption: 'Порядок расчётов', size: 10, editable: {type: 'text'}},
-                
-                {field: 'uuid_bnk_acct', caption: 'Пл. рекв.', size: 10, editable: {type: 'list'}, voc: data.tb_bnk_accts},
-*/
             ],
 
             records: data.lines,
@@ -215,8 +183,6 @@ define ([], function () {
                 var r = grid.get (e.recid)
 
                 if (!r.id_type || r.id_type < 0) return e.preventDefault ()
-
-                if (e.column == 0 && r.id_type != 50) return e.preventDefault ()
 
                 var col = grid.columns [e.column]
 
@@ -289,7 +255,7 @@ define ([], function () {
                 })
 
                 grid.set ('total', sum)
-
+/*
                 if (is_editing) {                
                     var old = w2ui ['payment_document_common_form'].record.totalpayablebypd
                     old = parseFloat (old)
@@ -298,7 +264,7 @@ define ([], function () {
 darn ([old, young])
                     if (Math.abs (young - old) >= 0.01) $_DO.update_acknowledgment_common_items (young)
                 }
-
+*/
                 e.done (function () {
                     
                     var last = null
@@ -365,10 +331,8 @@ darn ([old, young])
                                         $('div', $this).attr ({title: m})
                                     }
                                     else if (is_yellow (row, col) && null == row [col.field]) {
-                                        $this.css ({background: '#ffcccc'})
-                                        $('div', $this).attr ({title: 'Обязательно для заполнения'})
+                                        $this.css ({background: '#ffffcc'})
                                     }
-
                                 })                                
 
                             }
