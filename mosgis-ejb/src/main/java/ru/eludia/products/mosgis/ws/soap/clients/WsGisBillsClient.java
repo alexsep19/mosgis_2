@@ -12,6 +12,7 @@ import javax.jws.HandlerChain;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
 import ru.eludia.base.DB;
+import ru.eludia.products.mosgis.db.model.tables.AcknowledgmentLog;
 import ru.eludia.products.mosgis.db.model.tables.SettlementDocLog;
 import ru.eludia.products.mosgis.db.model.tables.PaymentDocumentLog;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
@@ -118,6 +119,10 @@ public class WsGisBillsClient {
     
     public AckRequest.Ack importPaymentDocumentData (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
         return getPort (orgPPAGuid, messageGUID).importPaymentDocumentData (PaymentDocumentLog.toImportPaymentDocumentRequest (r)).getAck ();
+    } 
+    
+    public AckRequest.Ack importAcknowledgment (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importAcknowledgment (AcknowledgmentLog.toImportAcknowledgment (r)).getAck ();
     } 
     
 }
