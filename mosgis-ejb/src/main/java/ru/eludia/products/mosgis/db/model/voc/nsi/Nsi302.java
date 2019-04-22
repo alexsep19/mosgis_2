@@ -51,7 +51,8 @@ public class Nsi302 extends View {
             + "FROM "
             + BaseDecisionMSP.TABLE_NAME
             + " WHERE"
-            + " isactual=1"
+            + " isactual=1 "
+	    + " AND code IS NOT NULL "
         ;
 
     }
