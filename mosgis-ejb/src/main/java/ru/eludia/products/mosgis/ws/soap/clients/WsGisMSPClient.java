@@ -10,6 +10,7 @@ import javax.jws.HandlerChain;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
 import ru.eludia.base.DB;
+import ru.eludia.products.mosgis.db.model.tables.CitizenCompensationLog;
 
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.ws.soap.tools.LoggingOutMessageHandler;
@@ -50,4 +51,10 @@ public class WsGisMSPClient {
 
 	return getPort(orgPPAGuid, messageGUID).exportCategories(request).getAck();
     }
+
+    public AckRequest.Ack importCitizenCompensation(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+
+	return getPort(orgPPAGuid, messageGUID).importCitizenCompensation(CitizenCompensationLog.toImportCitizenCompensationRequest(r)).getAck();
+    }
+    
 }

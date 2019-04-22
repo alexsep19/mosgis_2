@@ -14,7 +14,7 @@ define ([], function () {
                 toolbar: true,
                 toolbarAdd: data.item._can.update,
                 toolbarEdit: data.item._can.update,
-                toolbarDelete: data.item._can.delete,
+                toolbarDelete: data.item._can.update,
                 footer: 1,
                 toolbarSearch: false,
                 toolbarInput: false,

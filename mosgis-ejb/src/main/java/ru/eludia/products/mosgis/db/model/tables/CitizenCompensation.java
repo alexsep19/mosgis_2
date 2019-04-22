@@ -26,7 +26,8 @@ public class CitizenCompensation extends EnTable {
 	APARTMENTNUMBER              (Type.STRING, 36, null, "Номер квартиры"),
 	FLATNUMBER                   (Type.STRING, 36, null, "Номер комнаты"),
 
-	ID_LOG                       (CitizenCompensationOverviewLog.class, "Последнее событие редактирования"),
+	ID_LOG                       (CitizenCompensationLog.class, "Последнее событие редактирования"),
+	CITIZENCOMPENSATIONGUID      (Type.UUID, null, "Идентификатор в ГИС ЖКХ"),
 
 	ID_CTR_STATUS                (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения mosgis"),
 	ID_CTR_STATUS_GIS            (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения ГИС ЖКХ"),
@@ -57,5 +58,65 @@ public class CitizenCompensation extends EnTable {
         cols (c.class);
 
         key (c.UUID_ORG);
+
+        trigger("BEFORE INSERT OR UPDATE", ""
+                + "DECLARE"
+                + " cnt NUMBER; "
+                + "BEGIN "
+
+	    + " IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING + " THEN "
+
+		+ " SELECT COUNT(*) INTO cnt FROM " + CitizenCompensationDecision.TABLE_NAME + "  WHERE is_deleted = 0 AND uuid_cit_comp = :NEW.uuid; "
+		+ " IF cnt=0 THEN raise_application_error (-20000, 'Укажите хотя бы одно решение'); END IF; "
+
+		+ " SELECT COUNT(*) INTO cnt FROM " + CitizenCompensationToCategory.TABLE_NAME + "  WHERE is_deleted = 0 AND uuid_cit_comp = :NEW.uuid; "
+		+ " IF cnt=0 THEN raise_application_error (-20000, 'Укажите хотя бы одну категорию'); END IF; "
+
+	    + " END IF; " // IF :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING
+	+ "END;");
     }
+
+    public enum Action {
+        
+        PLACING     (VocGisStatus.i.PENDING_RQ_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
+        EDITING     (VocGisStatus.i.PENDING_RQ_EDIT,      VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_STATE),
+        ANNULMENT   (VocGisStatus.i.PENDING_RQ_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT),
+        ;
+        
+        VocGisStatus.i nextStatus;
+        VocGisStatus.i okStatus;
+        VocGisStatus.i failStatus;
+
+        private Action (VocGisStatus.i nextStatus, VocGisStatus.i okStatus, VocGisStatus.i failStatus) {
+            this.nextStatus = nextStatus;
+            this.okStatus = okStatus;
+            this.failStatus = failStatus;
+        }
+
+        public VocGisStatus.i getNextStatus () {
+            return nextStatus;
+        }
+
+        public VocGisStatus.i getFailStatus () {
+            return failStatus;
+        }
+
+        public VocGisStatus.i getOkStatus () {
+            return okStatus;
+        }
+
+        public static Action forStatus (VocGisStatus.i status) {
+            
+            switch (status) {
+                case PENDING_RQ_PLACING:   return PLACING;
+                case PENDING_RP_PLACING:   return PLACING;
+                case PENDING_RQ_EDIT:      return EDITING;
+                case PENDING_RP_EDIT:      return EDITING;
+                case PENDING_RQ_ANNULMENT: return ANNULMENT;
+                case PENDING_RP_ANNULMENT: return ANNULMENT;
+                default: return null;
+            }
+            
+        }
+    };
 }

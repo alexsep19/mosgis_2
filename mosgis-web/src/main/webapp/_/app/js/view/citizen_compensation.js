@@ -20,7 +20,7 @@ define ([], function () {
 
                         tabs: [
                             {id: 'citizen_compensation_common',   caption: 'Общие'},
-//                            {id: 'citizen_compensation_', caption: 'Расчеты и перерасчеты'},
+                            {id: 'citizen_compensation_calcs', caption: 'Расчеты и перерасчеты'},
                             {id: 'citizen_compensation_payments', caption: 'Выплаты'},
                         ].filter (not_off),
 

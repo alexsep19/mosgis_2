@@ -11,7 +11,12 @@ define ([], function () {
                 data.vc_nsi_302.items.filter (x => x.code_vc_nsi_301 == f.record.code_vc_nsi_301.id)
                 || []
             )
-            delete f.record.code_vc_nsi_302
+
+            if (f.record.code_vc_nsi_301.id == 1) {
+                delete f.record.eventdate
+                delete f.record.code_vc_nsi_302
+                f.get('code_vc_nsi_302').options.items = []
+            }
 
             f.refresh ()
         }
@@ -32,7 +37,9 @@ define ([], function () {
                     {name: 'number_', type: 'text'},
                     {name: 'decisiondate', type: 'date'},
                     {name: 'code_vc_nsi_301', type: 'list', options: {items: data.vc_nsi_301.items}},
-                    {name: 'code_vc_nsi_302', type: 'list', options: {items: []}},
+                    {name: 'code_vc_nsi_302', type: 'list', options: {
+                        items: !data.record.code_vc_nsi_302? [] : data.vc_nsi_302.items.filter(x => x.id == data.record.code_vc_nsi_302),
+                    }},
                     {name: 'eventdate', type: 'date'},
                 ],
 
@@ -41,6 +48,7 @@ define ([], function () {
                 onChange: function (e) {
 
                     if (e.target == 'code_vc_nsi_301') e.done (function () {
+                        delete w2ui [form_name].record.code_vc_nsi_302
                         recalc () 
                         this.refresh ()
                     })

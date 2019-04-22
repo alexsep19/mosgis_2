@@ -1,10 +1,15 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Map;
+import java.util.UUID;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.gosuslugi.dom.schema.integration.msp.DecisionType;
 
 public class CitizenCompensationDecision extends EnTable {
 
@@ -39,5 +44,18 @@ public class CitizenCompensationDecision extends EnTable {
         cols (c.class);
 
         key (c.UUID_CIT_COMP);
+    }
+
+    public static DecisionType toDecision(Map<String, Object> r) {
+
+	r.put("number", r.get(c.NUMBER_.lc()));
+
+	final DecisionType result = DB.to.javaBean(DecisionType.class, r);
+
+	result.setDecisionTypeCode(NsiTable.toDom(DB.to.String(r.get("vw_nsi_301.id")), (UUID)r.get("vw_nsi_301.guid")));
+
+	result.setDecisionReasonCode(NsiTable.toDom(DB.to.String(r.get("vw_nsi_302.id")), (UUID) r.get("vw_nsi_302.guid")));
+
+	return result;
     }
 }
