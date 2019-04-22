@@ -51,6 +51,10 @@ public abstract class EnTable extends Table {
 
     private static final Logger logger = Logger.getLogger(EnTable.class.getName());
 
+    public static boolean isEmpty(XSSFRow row, int col){
+        return row == null || row.getCell(col) == null || row.getCell(col).getCellTypeEnum() == CellType.BLANK;
+    }
+    
     public static BigDecimal toNumeric(XSSFRow row, int col, Object error) throws XLException {
 
 	BigDecimal result = toNumeric(row, col);

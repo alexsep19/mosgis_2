@@ -14,7 +14,7 @@ define ([], function () {
 
             })
             
-            $('.w2ui-popup a').first ().attr ({href: sessionStorage.getItem ('staticRoot') + "/libs/mosgis/Шаблон импорта сведений о ПУ.xlsx"})
+            $('.w2ui-popup a').first ().attr ({href: sessionStorage.getItem ('staticRoot') + "/libs/mosgis/Шаблон_импорта_показаний_ПУ.xlsx"})
             $('.w2ui-popup a').last ().attr ({href: sessionStorage.getItem ('staticRoot') + "/libs/mosgis/Описание_шаблона_импорта_показаний_ПУ.docx"})
             
        })       

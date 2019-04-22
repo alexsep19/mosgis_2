@@ -1,6 +1,8 @@
 package ru.eludia.products.mosgis.db.model.incoming.xl.lines;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -113,7 +115,7 @@ public class InXlMeteringDevice extends EnTable {
 
     }
     
-    public static Map<String, Object> toHash (UUID uuid, int ord, XSSFRow row, Map<Integer, Integer> resourceMap) {
+    public static Map<String, Object> toHash (UUID uuid, int ord, XSSFRow row, Map<Integer, Integer> resourceMap, HashSet<Integer> refNums) {
         
         Map<String, Object> r = DB.HASH (
             EnTable.c.IS_DELETED, 1,
@@ -122,7 +124,7 @@ public class InXlMeteringDevice extends EnTable {
         );
         
         try {
-            setFields (r, row, resourceMap);
+            setFields (r, row, resourceMap, refNums);
         }         
         catch (XLException ex) {
             r.put (c.ERR.lc (), ex.getMessage ());
@@ -138,7 +140,7 @@ public class InXlMeteringDevice extends EnTable {
         return result | Nsi2.i.forLabel (label).getId ();
     }    
     
-    private static void setFields (Map<String, Object> r, XSSFRow row, Map<Integer, Integer> resourceMap) throws XLException {
+    private static void setFields (Map<String, Object> r, XSSFRow row, Map<Integer, Integer> resourceMap, HashSet<Integer> refNums) throws XLException {
         
         r.put (c.METERINGDEVICENUMBER.lc (),  toString (row, 1, "Не указан серийный номер"));  
         //для Индивидуальный всегда возвращается RESIDENTIAL_PREMISE, потом в триггере устанавливается правильно
@@ -165,9 +167,16 @@ public class InXlMeteringDevice extends EnTable {
         r.put (c.NOTLINKEDWITHMETERING.lc (), 1 - toBool (row, 13, "Не указано, определяется ли объём ресурсов несколькими ПУ"));
         r.put (c.INSTALLATIONPLACE.lc (),     toString (row, 14));
     
+        BigDecimal refNum;
+        if ((refNum = toNumeric (row, 0)) != null){
+            if (refNums.contains(refNum.intValue())){
+                throw new XLException ("Дублируется ссылочный номер ПУ "+refNum.intValue());
+            }
+            refNums.add(refNum.intValue());
+        }
         try {
             final String resourceLabel = toString (row, 16, "Не указаны виды коммунальных ресурсов");
-            final int mask = addResource (resourceMap, toNumeric (row, 0).intValue (), resourceLabel);            
+            final int mask = addResource (resourceMap, refNum == null? -1: refNum.intValue(), resourceLabel);            
             r.put (c.MASK_VC_NSI_2.lc (), Nsi2.i.forId (mask).getId ());
         }
         catch (Exception ex) {
@@ -202,7 +211,10 @@ public class InXlMeteringDevice extends EnTable {
             + " UUID2 RAW(16); "
             + "BEGIN "
                 
+            + "BEGIN "
             + " SELECT uuid_org INTO :NEW.uuid_org FROM in_xl_files WHERE uuid=:NEW.uuid_xl; "
+            + " EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Организация не найдена'); "
+            + "END; "
 
             + " IF :NEW.err IS NOT NULL THEN RETURN; END IF; "
                 
@@ -233,6 +245,7 @@ public class InXlMeteringDevice extends EnTable {
             + "  ELSE "        
             + "     raise_application_error (-20000, 'Не найдено '|| nvl(:NEW.PREMISESTYPE, '(тип не указан)') || ' помещение: ' || :NEW.PREMISESNUM); "
             + "  END IF; "
+            + "     EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Помещение не найдено'); "  
             + " END;END IF; "
                     
             + " IF :NEW.ACCOUNTNUMBER IS NOT NULL THEN BEGIN "
