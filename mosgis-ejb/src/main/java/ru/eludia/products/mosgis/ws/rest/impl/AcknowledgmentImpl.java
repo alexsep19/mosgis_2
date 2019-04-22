@@ -136,7 +136,21 @@ public class AcknowledgmentImpl extends BaseCRUD<Acknowledgment> implements Ackn
         
         m.createIdLog (db, getTable (), user, id, VocAction.i.UPDATE);
 
-        job.add ("item", db.getJsonObject (m.get (getTable (), id, "AS root", "*")));
+        job.add ("item", db.getJsonObject (m
+        
+            .get   (getTable (), id, "AS root", "*")
+
+            .toOne (PaymentDocument.class, "AS pd"
+                , PaymentDocument.c.AMOUNT_ACK.lc ()
+                , PaymentDocument.c.TOTALPAYABLEBYPDWITH_DA.lc ()
+            ).on ()
+
+            .toOne (Payment.class, "AS pay"
+                , Payment.c.AMOUNT_ACK.lc ()
+                , Payment.c.AMOUNT.lc ()
+            ).on ()
+        
+        ));
 
         if (isCharge) {
             m.createIdLog (db, m.get (ChargeInfo.class), user, uuidLine, VocAction.i.UPDATE);

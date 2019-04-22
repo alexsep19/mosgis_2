@@ -35,8 +35,17 @@ define ([], function () {
             
             data = {}
             
-            var line = d.line
+            var it = d.item 
             
+            it ['pay.amount_ack'] = parseFloat (it ['pay.amount_ack'])
+            it ['pay.amount_nack'] = parseFloat (it ['pay.amount']) - it ['pay.amount_ack']
+            refill (it, $('#pay-amount-ack'))
+            
+            it ['pd.amount_ack'] = parseFloat (it ['pd.amount_ack'])
+            it ['pd.amount_nack'] = parseFloat (it ['pd.totalpayablebypdwith_da']) - it ['pd.amount_ack']
+            refill (it, $('#pd-amount-ack'))
+            
+            var line = d.line           
             data.amount_ack = parseFloat (line.amount_ack)
             data.amount_nack = parseFloat (line.totalpayable) - data.amount_ack
 
