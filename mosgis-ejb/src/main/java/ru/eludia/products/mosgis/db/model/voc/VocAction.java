@@ -77,6 +77,9 @@ public class VocAction extends Table {
         UNLOCK                      ("unlock",                     "разблокировка"),
         UPDATE                      ("update",                     "редактирование"), 
         SEND_TO_GIS                 ("send_to_gis",                "размещение в ГИС ЖКХ"),
+
+        ETL                         ("etl",                        "создание напрямую в БД"),
+
         ;
                 
         String name;
