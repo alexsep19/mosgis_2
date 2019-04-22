@@ -25,9 +25,11 @@ define ([], function () {
                             {id: 'supply_resource_contracts', caption: 'Договоры ресурсоснабжения'
                                 , off: !($_USER.role.admin || $_USER.is_building_society() || $_USER.has_nsi_20(1, 2, 4, 7, 8))
                             },
+/* see tasks/d67edd22-cf6c-4654-9097-5a2c29736851
                             {id: 'rc_contracts', caption: 'Договоры услуг РЦ'
                                 , off: !($_USER.role.admin || $_USER.is_building_society() || $_USER.has_nsi_20(1, 2, 7, 8, 36))
                             },
+*/                            
                             {id: 'voc_organizations', caption: 'Организации'},                            
                             {id: 'metering_devices', caption: 'ПУ'},
 //                            {id: 'voc_users', caption: 'Учетные записи', off: !$_USER.role.admin},
