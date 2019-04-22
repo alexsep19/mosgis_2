@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 import ru.eludia.base.DB;
 import ru.eludia.base.Model;
+import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
@@ -29,16 +30,14 @@ public class CitizenCompensationLog extends GisWsLogTable {
             , CitizenCompensation.c.class
         );
     }
+    
+    public Get getForExport (String id) {
 
-    public static Map<String, Object> getForExport(DB db, String id) throws SQLException {
+	final NsiTable nsi95 = NsiTable.getNsiTable(95);
 
-	final Model m = db.getModel();
-
-	final NsiTable nsi95 = NsiTable.getNsiTable (95);
-
-        final Map<String, Object> r = db.getMap(m
+	return (Get) getModel()
                 
-            .get (CitizenCompensationLog.class, id, "*")
+            .get (this, id, "*")
                 
             .toOne (CitizenCompensation.class, "AS r"
 		, EnTable.c.UUID.lc()
@@ -49,13 +48,18 @@ public class CitizenCompensationLog extends GisWsLogTable {
                 
             .toMaybeOne (VocPerson.class, "AS ind", "*").on ("r.uuid_person=ind.uuid")
             .toMaybeOne (nsi95, nsi95.getLabelField ().getfName () + " AS vc_nsi_95", "code", "guid").on ("(ind.code_vc_nsi_95=vc_nsi_95.code AND vc_nsi_95.isactual=1)")
-	);
+	;
+    }
+
+    public static void addItemsForExport (DB db, Map<String, Object> r) throws SQLException {
+
+	final Model m = db.getModel();
 
 	r.put("decisions", db.getList(m
 	    .select(CitizenCompensationDecision.class, "AS root", "*")
 	    .toOne(Nsi301.class, "AS vw_nsi_301", "id", "guid").on("root.code_vc_nsi_301 = vw_nsi_301.id")
 	    .toMaybeOne(Nsi302.class, "AS vw_nsi_302", "id", "guid").on("root.code_vc_nsi_302 = vw_nsi_302.id")
-	    .where(CitizenCompensationDecision.c.UUID_CIT_COMP, r.get("r.uuid"))
+	    .where(CitizenCompensationDecision.c.UUID_CIT_COMP, r.get("uuid_object"))
 	    .and(EnTable.c.IS_DELETED, 0)
 	));
 
@@ -63,17 +67,15 @@ public class CitizenCompensationLog extends GisWsLogTable {
 
 	r.put("calcs", db.getList(m
 	    .select(CitizenCompensationCalculation.class, "AS root", "*")
-	    .where(CitizenCompensationCalculation.c.UUID_CIT_COMP, r.get("r.uuid"))
+	    .where(CitizenCompensationCalculation.c.UUID_CIT_COMP, r.get("uuid_object"))
 	    .and(EnTable.c.IS_DELETED, 0)
 	));
 
 	r.put("pays", db.getList(m
 	    .select(CitizenCompensationPayment.class, "AS root", "*")
-	    .where(CitizenCompensationPayment.c.UUID_CIT_COMP, r.get("r.uuid"))
+	    .where(CitizenCompensationPayment.c.UUID_CIT_COMP, r.get("uuid_object"))
 	    .and(EnTable.c.IS_DELETED, 0)
 	));
-
-	return r;
     }
     
     public static ImportCitizenCompensationRequest toImportCitizenCompensationRequest(Map<String, Object> r) {
