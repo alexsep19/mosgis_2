@@ -85,6 +85,8 @@ define ([], function () {
             
                 t.enable  ('cancel')
                 t.disable ('edit')
+                t.disable ('distribute')
+                
                 grid.selectNone ()
                 
                 w2ui ['acknowledgment_common_form'].lock ()
@@ -130,6 +132,7 @@ define ([], function () {
                 items: [
                     {type: 'button', id: 'edit', caption: 'Редактировать', onClick: function () {setEditig (1)}, disabled: false, icon: 'w2ui-icon-pencil'},
                     {type: 'button', id: 'cancel', caption: 'Зафиксировать', onClick: function () {setEditig (0)}, disabled: true, icon: 'w2ui-icon-check'},
+                    {type: 'button', id: 'distribute', caption: 'Распределить', onClick: $_DO.distribute_acknowledgment_common_items, disabled: false},
                 ],
 
             },                        

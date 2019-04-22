@@ -29,6 +29,12 @@ define ([], function () {
             })
 
             var it = data.item
+            
+            it ['pay.amount_ack'] = parseFloat (it ['pay.amount_ack'])
+            it ['pay.amount_nack'] = parseFloat (it ['pay.amount']) - it ['pay.amount_ack']
+            
+            it ['pd.amount_ack'] = parseFloat (it ['pd.amount_ack'])
+            it ['pd.amount_nack'] = parseFloat (it ['pd.totalpayablebypdwith_da']) - it ['pd.amount_ack']            
 
             it._can = {cancel: 1}
 

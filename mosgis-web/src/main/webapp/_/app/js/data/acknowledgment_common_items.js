@@ -1,5 +1,19 @@
 define ([], function () {
 
+    $_DO.distribute_acknowledgment_common_items = function (e) {
+    
+        var data = $('body').data ('data')                
+        
+        var it = data.item
+        
+        if (it ['pd.amount_nack'] < 0.01) die ('foo', 'Платёжный документ уже полностью закрыт распределёнными платежами')
+        
+        if (it ['pay.amount_nack'] < it ['pd.amount_nack']) die ('foo', 'Нераспределённый остаток платежа недостаточен для покрытия платёжного документа. Автоматическое распределение невозможно.')
+
+        if (!confirm ('Распределить сумму платежа автоматически?')) die ('foo', 'Операция отменена')
+                            
+    }
+
     $_DO.patch_acknowledgment_common_items = function (e) {
 
         var grid = this
