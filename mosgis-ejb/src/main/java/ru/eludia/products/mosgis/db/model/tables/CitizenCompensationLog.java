@@ -55,9 +55,22 @@ public class CitizenCompensationLog extends GisWsLogTable {
 	    .toOne(Nsi301.class, "AS vw_nsi_301", "id", "guid").on("root.code_vc_nsi_301 = vw_nsi_301.id")
 	    .toMaybeOne(Nsi302.class, "AS vw_nsi_302", "id", "guid").on("root.code_vc_nsi_302 = vw_nsi_302.id")
 	    .where(CitizenCompensationDecision.c.UUID_CIT_COMP, r.get("r.uuid"))
+	    .and(EnTable.c.IS_DELETED, 0)
 	));
 
 	r.put("categories", CitizenCompensationToCategory.selectForExport(db, r.get("r.uuid")));
+
+	r.put("calcs", db.getList(m
+	    .select(CitizenCompensationCalculation.class, "AS root", "*")
+	    .where(CitizenCompensationCalculation.c.UUID_CIT_COMP, r.get("r.uuid"))
+	    .and(EnTable.c.IS_DELETED, 0)
+	));
+
+	r.put("pays", db.getList(m
+	    .select(CitizenCompensationPayment.class, "AS root", "*")
+	    .where(CitizenCompensationPayment.c.UUID_CIT_COMP, r.get("r.uuid"))
+	    .and(EnTable.c.IS_DELETED, 0)
+	));
 
 	return r;
     }
@@ -78,6 +91,14 @@ public class CitizenCompensationLog extends GisWsLogTable {
 	result.setLoadOverview(toCitizenCompensationOverview(r));
 
 	result.setTransportGuid(UUID.randomUUID().toString());
+
+	for (Map<String, Object> i : (List<Map<String, Object>>) r.get("calcs")) {
+	    result.getCalculation().add(CitizenCompensationCalculation.toCitizenCompensationCalculation(i));
+	}
+
+	for (Map<String, Object> i : (List<Map<String, Object>>) r.get("pays")) {
+	    result.getPayment().add(CitizenCompensationPayment.toCitizenCompensationPayment(i));
+	}
 
 	return result;
     }

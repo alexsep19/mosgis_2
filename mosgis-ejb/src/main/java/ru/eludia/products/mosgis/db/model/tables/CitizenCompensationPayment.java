@@ -1,11 +1,17 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Map;
+import java.util.UUID;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocCitizenCompensationPaymentType;
+import ru.gosuslugi.dom.schema.integration.msp.CitizenCompensationCalculationType;
+import ru.gosuslugi.dom.schema.integration.msp.ImportCitizenCompensationRequest.ImportCitizenCompensation.Payment;
+import ru.gosuslugi.dom.schema.integration.msp.PaymentType;
 
 public class CitizenCompensationPayment extends EnTable {
 
@@ -38,5 +44,16 @@ public class CitizenCompensationPayment extends EnTable {
         cols (c.class);
 
         key (c.UUID_CIT_COMP);
+    }
+
+    public static Payment toCitizenCompensationPayment(Map<String, Object> r) {
+
+	final Payment result = DB.to.javaBean(Payment.class, r);
+
+	result.setLoadPayments(DB.to.javaBean(PaymentType.class, r));
+
+	result.setTransportGuid(UUID.randomUUID().toString());
+
+	return result;
     }
 }

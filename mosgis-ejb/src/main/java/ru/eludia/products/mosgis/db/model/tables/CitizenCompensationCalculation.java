@@ -1,10 +1,15 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Map;
+import java.util.UUID;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.gosuslugi.dom.schema.integration.msp.ImportCitizenCompensationRequest.ImportCitizenCompensation.Calculation;
+import ru.gosuslugi.dom.schema.integration.msp.CitizenCompensationCalculationType;
 
 public class CitizenCompensationCalculation extends EnTable {
 
@@ -39,5 +44,16 @@ public class CitizenCompensationCalculation extends EnTable {
         cols (c.class);
 
         key (c.UUID_CIT_COMP);
+    }
+
+    public static Calculation toCitizenCompensationCalculation(Map<String, Object> r) {
+
+	final Calculation result = DB.to.javaBean(Calculation.class, r);
+
+	result.setLoadCalculations(DB.to.javaBean(CitizenCompensationCalculationType.class, r));
+
+	result.setTransportGuid(UUID.randomUUID().toString());
+
+	return result;
     }
 }
