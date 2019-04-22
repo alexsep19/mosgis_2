@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Logger;
 import ru.eludia.base.DB;
 import ru.eludia.base.Model;
 import ru.eludia.products.mosgis.db.model.EnTable;
@@ -47,7 +48,7 @@ public class CitizenCompensationLog extends GisWsLogTable {
             .toMaybeOne (VocOrganization.class, "AS org", "orgppaguid AS orgppaguid").on ("r.uuid_org=org.uuid")
                 
             .toMaybeOne (VocPerson.class, "AS ind", "*").on ("r.uuid_person=ind.uuid")
-            .toOne      (nsi95, nsi95.getLabelField ().getfName () + " AS vc_nsi_95", "code", "guid").on ("(ind.code_vc_nsi_95=vc_nsi_95.code AND vc_nsi_95.isactual=1)")
+            .toMaybeOne (nsi95, nsi95.getLabelField ().getfName () + " AS vc_nsi_95", "code", "guid").on ("(ind.code_vc_nsi_95=vc_nsi_95.code AND vc_nsi_95.isactual=1)")
 	);
 
 	r.put("decisions", db.getList(m

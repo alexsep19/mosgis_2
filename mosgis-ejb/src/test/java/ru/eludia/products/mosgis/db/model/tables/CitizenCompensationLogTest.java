@@ -49,7 +49,7 @@ public class CitizenCompensationLogTest extends BaseTest {
         
         try (DB db = model.getDb ()) {
             
-            final Map<String, Object> r = logTable.getForExport (db, "86b644ad-e7c3-01f8-e053-0d0b000a83f3");
+            final Map<String, Object> r = logTable.getForExport (db, "871c7d27-73b9-5e82-e053-0d0b000ae833");
             
             return r;
 
