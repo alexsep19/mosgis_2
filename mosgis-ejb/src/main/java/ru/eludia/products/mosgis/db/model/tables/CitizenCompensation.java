@@ -58,6 +58,22 @@ public class CitizenCompensation extends EnTable {
         cols (c.class);
 
         key (c.UUID_ORG);
+
+        trigger("BEFORE INSERT OR UPDATE", ""
+                + "DECLARE"
+                + " cnt NUMBER; "
+                + "BEGIN "
+
+	    + " IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING + " THEN "
+
+		+ " SELECT COUNT(*) INTO cnt FROM " + CitizenCompensationDecision.TABLE_NAME + "  WHERE is_deleted = 0 AND uuid_cit_comp = :NEW.uuid; "
+		+ " IF cnt=0 THEN raise_application_error (-20000, 'Укажите хотя бы одно решение'); END IF; "
+
+		+ " SELECT COUNT(*) INTO cnt FROM " + CitizenCompensationToCategory.TABLE_NAME + "  WHERE is_deleted = 0 AND uuid_cit_comp = :NEW.uuid; "
+		+ " IF cnt=0 THEN raise_application_error (-20000, 'Укажите хотя бы одну категорию'); END IF; "
+
+	    + " END IF; " // IF :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING
+	+ "END;");
     }
 
     public enum Action {
