@@ -11,7 +11,9 @@ define ([], function () {
         if (it ['pay.amount_nack'] < it ['pd.amount_nack']) die ('foo', 'Нераспределённый остаток платежа недостаточен для покрытия платёжного документа. Автоматическое распределение невозможно.')
 
         if (!confirm ('Распределить сумму платежа автоматически?')) die ('foo', 'Операция отменена')
-                            
+
+        query ({type: 'acknowledgments', action: 'distribute'}, {}, reload_page)
+
     }
 
     $_DO.patch_acknowledgment_common_items = function (e) {
@@ -51,12 +53,7 @@ define ([], function () {
             
             var it = d.item 
             
-            it ['pay.amount_ack'] = parseFloat (it ['pay.amount_ack'])
-            it ['pay.amount_nack'] = parseFloat (it ['pay.amount']) - it ['pay.amount_ack']
             refill (it, $('#pay-amount-ack'))
-            
-            it ['pd.amount_ack'] = parseFloat (it ['pd.amount_ack'])
-            it ['pd.amount_nack'] = parseFloat (it ['pd.totalpayablebypdwith_da']) - it ['pd.amount_ack']
             refill (it, $('#pd-amount-ack'))
             
             var line = d.line           
@@ -64,6 +61,11 @@ define ([], function () {
             data.amount_nack = parseFloat (line.totalpayable) - data.amount_ack
 
             grid.set (e.recid, data)
+/*            
+            grid.set ('total', {
+                amount: it.amount,
+            })
+*/            
             grid.refresh ()
             
         })

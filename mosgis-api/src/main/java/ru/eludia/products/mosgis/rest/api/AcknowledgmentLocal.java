@@ -9,5 +9,6 @@ import ru.eludia.products.mosgis.rest.api.base.CRUDBackend;
 public interface AcknowledgmentLocal extends CRUDBackend {
 
     JsonObject doPatch (String id, JsonObject p, User user);
+    JsonObject doDistribute (String id, JsonObject p, User user);
 
 }

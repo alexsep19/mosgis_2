@@ -35,7 +35,7 @@ public class Payment extends EnTable {
 	ORDERDATE                     (Type.DATE,           "Дата внесения платы"),
 	AMOUNT                        (Type.NUMERIC, 20, 2,                                          "Сумма, руб."),
         AMOUNT_ACK                    (Type.NUMERIC, 20, 2, BigDecimal.ZERO,                         "Сквитировано, руб."),
-        AMOUNT_NACK                   (Type.NUMERIC, 20, 2, new Virt  ("CAST(\"AMOUNT\"-\"AMOUNT_ACK\" AS NUMBER(20,2))"), "Не сквитировано, руб."),
+        AMOUNT_NACK                   (Type.NUMERIC, 20, 2, new Virt  ("\"AMOUNT\"-\"AMOUNT_ACK\""), "Не сквитировано, руб."),
 
 	PAYMENTPURPOSE                (Type.STRING, 1000, null, "Назначение платежа"),
 

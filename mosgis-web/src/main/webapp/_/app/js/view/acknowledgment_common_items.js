@@ -223,7 +223,8 @@ define ([], function () {
             
                 var grid = this
                 
-                var sum = {}                
+                var sum = {}
+                
                 $.each (grid.columns, function () {
                     if (!this.is_to_sum) return
                     var k = this.field
@@ -238,10 +239,7 @@ define ([], function () {
                         
                         if (chg) for (var field in chg) {
                             var col = grid.getColumn (field)
-                            var editable = col.editable
-                            if (typeof editable === "function") editable = editable (this)
-                            if (!editable || editable.type != 'list') continue
-                            this [field] = chg [field].uuid || chg [field].id
+                            this [field] = chg [field]
                             delete this.w2ui.changes
                         }
                         
@@ -259,16 +257,7 @@ define ([], function () {
                 })
 
                 grid.set ('total', sum)
-/*
-                if (is_editing) {                
-                    var old = w2ui ['payment_document_common_form'].record.totalpayablebypd
-                    old = parseFloat (old)
-                    if (isNaN (old)) old = 0.0
-                    var young = sum.totalpayable
-darn ([old, young])
-                    if (Math.abs (young - old) >= 0.01) $_DO.update_acknowledgment_common_items (young)
-                }
-*/
+
                 e.done (function () {
                     
                     var last = null

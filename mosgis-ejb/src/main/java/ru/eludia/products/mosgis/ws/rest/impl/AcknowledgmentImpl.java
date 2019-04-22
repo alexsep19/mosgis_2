@@ -49,7 +49,7 @@ public class AcknowledgmentImpl extends BaseCRUD<Acknowledgment> implements Ackn
                 , PaymentDocument.c.PAYMENTDOCUMENTNUMBER.lc ()
                 , PaymentDocument.c.DT_PERIOD.lc ()
                 , PaymentDocument.c.AMOUNT_ACK.lc ()
-//                , PaymentDocument.c.AMOUNT_NACK.lc ()
+                , PaymentDocument.c.AMOUNT_NACK.lc ()
                 , PaymentDocument.c.TOTALPAYABLEBYPDWITH_DA.lc ()
             ).on ()
 
@@ -66,7 +66,7 @@ public class AcknowledgmentImpl extends BaseCRUD<Acknowledgment> implements Ackn
                 , Payment.c.AMOUNT.lc ()
                 , Payment.c.UUID_ACCOUNT.lc ()
                 , Payment.c.AMOUNT_ACK.lc ()
-//                , Payment.c.AMOUNT_NACK.lc ()
+                , Payment.c.AMOUNT_NACK.lc ()
                 , Payment.c.UUID_ORG.lc () + " AS uuid_org"
             ).on ()
 
@@ -143,11 +143,13 @@ public class AcknowledgmentImpl extends BaseCRUD<Acknowledgment> implements Ackn
 
             .toOne (PaymentDocument.class, "AS pd"
                 , PaymentDocument.c.AMOUNT_ACK.lc ()
+                , PaymentDocument.c.AMOUNT_NACK.lc ()
                 , PaymentDocument.c.TOTALPAYABLEBYPDWITH_DA.lc ()
             ).on ()
 
             .toOne (Payment.class, "AS pay"
                 , Payment.c.AMOUNT_ACK.lc ()
+                , Payment.c.AMOUNT_NACK.lc ()
                 , Payment.c.AMOUNT.lc ()
             ).on ()
         
@@ -161,6 +163,74 @@ public class AcknowledgmentImpl extends BaseCRUD<Acknowledgment> implements Ackn
             m.createIdLog (db, m.get (PenaltiesAndCourtCosts.class), user, uuidLine, VocAction.i.UPDATE);
             job.add ("line", db.getJsonObject (m.get (PenaltiesAndCourtCosts.class, uuidLine, "*")));
         }
+
+    });}
+    
+    @Override
+    public JsonObject doDistribute (String id, JsonObject p, User user) {return doAction ((db, job) -> {
+
+        final MosGisModel m = ModelHolder.getModel ();
+        
+        db.getConnection ().setAutoCommit (true);
+        
+        Map<String, Object> item = db.getMap (m.get (Acknowledgment.class, id, "*"));
+        
+        Table t = m.get (AcknowledgmentItem.class);       
+        
+        final Object uuidPayDoc = item.get (Acknowledgment.c.UUID_PAY_DOC.lc ());
+        
+        db.update (AcknowledgmentItem.class, DB.HASH (
+            AcknowledgmentItem.c.UUID_ACK,    id,
+            AcknowledgmentItem.c.AMOUNT,      null
+        ), AcknowledgmentItem.c.UUID_ACK.lc ());
+        
+        for (Map<String, Object> r: 
+                
+            db.getList (m
+                .select  (AnyChargeInfo.class, "*")
+                .where   (ChargeInfo.c.UUID_PAY_DOC, uuidPayDoc)
+                .where   (ChargeInfo.c.TOTALPAYABLE.lc () + ">", 0)
+                .where   (EnTable.c.IS_DELETED, 0)
+            )
+                
+        ) {
+            
+            db.upsert (t, DB.HASH (
+                EnTable.c.IS_DELETED,             0,
+                AcknowledgmentItem.c.UUID_ACK,    id,
+                AcknowledgmentItem.c.UUID_CHARGE, r.get ("uuid"),
+                AcknowledgmentItem.c.AMOUNT,      r.get ("amount_nack")
+            ), 
+                AcknowledgmentItem.c.UUID_ACK.lc (), 
+                AcknowledgmentItem.c.UUID_CHARGE.lc ()
+            );
+            
+        }
+        
+        for (Map<String, Object> r: 
+                
+            db.getList (m
+                .select (PenaltiesAndCourtCosts.class, "*")
+                .where  (PenaltiesAndCourtCosts.c.UUID_PAY_DOC, uuidPayDoc)
+                .where  (PenaltiesAndCourtCosts.c.TOTALPAYABLE.lc () + ">", 0)
+                .where  (EnTable.c.IS_DELETED, 0)
+            )
+                
+        ) {
+            
+            db.upsert (t, DB.HASH (
+                EnTable.c.IS_DELETED,             0,
+                AcknowledgmentItem.c.UUID_ACK,    id,
+                AcknowledgmentItem.c.UUID_PENALTY,r.get ("uuid"),
+                AcknowledgmentItem.c.AMOUNT,      r.get ("amount_nack")
+            ), 
+                AcknowledgmentItem.c.UUID_ACK.lc (), 
+                AcknowledgmentItem.c.UUID_PENALTY.lc ()
+            );
+            
+        }        
+        
+        m.createIdLog (db, getTable (), user, id, VocAction.i.UPDATE);
 
     });}
 
