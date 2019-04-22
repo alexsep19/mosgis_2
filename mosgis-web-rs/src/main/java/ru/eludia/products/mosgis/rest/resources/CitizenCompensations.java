@@ -96,28 +96,28 @@ public class CitizenCompensations extends EJBResource <CitizenCompensationLocal>
 	checkGet();
         return back.getLog (id, p, getUser ());
     }
-//
-//    @POST
-//    @Path("{id}/approve")
-//    @Produces (APPLICATION_JSON)
-//    public JsonObject doApprove (@PathParam ("id") String id) {
-//	checkPost();
-//        return back.doApprove (id, getUser ());
-//    }
-//
-//    @POST
-//    @Path("{id}/alter")
-//    @Produces (APPLICATION_JSON)
-//    public JsonObject doAlter (@PathParam ("id") String id) {
-//	checkPost();
-//        return back.doAlter (id, getUser ());
-//    }
-//
-//    @POST
-//    @Path("{id}/annul")
-//    @Produces(APPLICATION_JSON)
-//    public JsonObject doAnnul(@PathParam("id") String id, JsonObject p) {
-//	checkPost();
-//	return back.doAnnul(id, p, getUser());
-//    }
+
+    @POST
+    @Path("{id}/approve")
+    @Produces (APPLICATION_JSON)
+    public JsonObject doApprove (@PathParam ("id") String id) {
+	checkPost();
+        return back.doApprove (id, getUser ());
+    }
+
+    @POST
+    @Path("{id}/alter")
+    @Produces (APPLICATION_JSON)
+    public JsonObject doAlter (@PathParam ("id") String id) {
+	checkPost();
+        return back.doAlter (id, getUser ());
+    }
+
+    @POST
+    @Path("{id}/annul")
+    @Produces(APPLICATION_JSON)
+    public JsonObject doAnnul(@PathParam("id") String id, JsonObject p) {
+	checkPost();
+	return back.doAnnul(id, p, getUser());
+    }
 }

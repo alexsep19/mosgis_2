@@ -12,7 +12,6 @@ import javax.json.JsonObjectBuilder;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
-import ru.eludia.products.mosgis.db.model.tables.CitizenCompensation;
 import ru.eludia.products.mosgis.db.model.tables.CitizenCompensationLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -20,12 +19,8 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
-import ru.eludia.products.mosgis.db.model.tables.Account;
-import ru.eludia.products.mosgis.db.model.tables.AccountItem;
 import ru.eludia.products.mosgis.db.model.tables.AnyCitizenCompensation;
-import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.CitizenCompensation;
-import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.voc.VocAddressRegistrationType;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
@@ -40,25 +35,25 @@ import ru.eludia.products.mosgis.ws.rest.impl.tools.SimpleSearch;
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class CitizenCompensationImpl extends BaseCRUD<CitizenCompensation> implements CitizenCompensationLocal {
 
-//    @Resource (mappedName = "mosgis.inExportCitizenCompensationsQueue")
-//    Queue queue;
-//
-//    @Override
-//    public Queue getQueue () {
-//        return queue;
-//    }
-//
-//    @Override
-//    protected Queue getQueue(VocAction.i action) {
-//
-//	switch (action) {
-//	    case APPROVE:
-//	    case ANNUL:
-//		return queue;
-//	    default:
-//		return null;
-//	}
-//    }
+    @Resource (mappedName = "mosgis.inExportCitizenCompensationsQueue")
+    Queue queue;
+
+    @Override
+    public Queue getQueue () {
+        return queue;
+    }
+
+    @Override
+    protected Queue getQueue(VocAction.i action) {
+
+	switch (action) {
+	    case APPROVE:
+	    case ANNUL:
+		return queue;
+	    default:
+		return null;
+	}
+    }
 
     private void filterOffDeleted (Select select) {
         select.and ("is_deleted", 0);
@@ -138,10 +133,6 @@ public class CitizenCompensationImpl extends BaseCRUD<CitizenCompensation> imple
 
         job.add ("item", item);
 
-//	db.addJsonArrays (job
-//	    , m.select ()
-//	);
-
 	VocGisStatus.addLiteTo(job);
         VocAction.addTo (job);
 	VocAddressRegistrationType.addTo(job);
@@ -159,43 +150,43 @@ public class CitizenCompensationImpl extends BaseCRUD<CitizenCompensation> imple
         return jb.build ();
 
     }
-//
-//    @Override
-//    public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
-//
-//        db.update (getTable (), HASH (EnTable.c.UUID,               id,
-//            CitizenCompensationOverview.c.ID_CTR_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId ()
-//        ));
-//
-//        logAction (db, user, id, VocAction.i.APPROVE);
-//
-//    });}
-//
-//    @Override
-//    public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
-//
-//        final Map<String, Object> r = HASH (
-//            EnTable.c.UUID,               id,
-//            CitizenCompensationOverview.c.ID_CTR_STATUS,  VocGisStatus.i.PROJECT.getId ()
-//        );
-//
-//        db.update (getTable (), r);
-//
-//        logAction (db, user, id, VocAction.i.ALTER);
-//
-//    });}
-//
-//    @Override
-//    public JsonObject doAnnul (String id, JsonObject p, User user) {return doAction ((db) -> {
-//
-//        final Map<String, Object> r = getData(p,
-//            EnTable.c.UUID,               id,
-//            CitizenCompensationOverview.c.ID_CTR_STATUS,  VocGisStatus.i.PENDING_RQ_ANNULMENT.getId ()
-//        );
-//
-//        db.update (getTable (), r);
-//
-//        logAction (db, user, id, VocAction.i.ANNUL);
-//
-//    });}
+
+    @Override
+    public JsonObject doApprove (String id, User user) {return doAction ((db) -> {
+
+        db.update (getTable (), HASH (EnTable.c.UUID,               id,
+            CitizenCompensation.c.ID_CTR_STATUS, VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+        ));
+
+        logAction (db, user, id, VocAction.i.APPROVE);
+
+    });}
+
+    @Override
+    public JsonObject doAlter (String id, User user) {return doAction ((db) -> {
+
+        final Map<String, Object> r = HASH (
+            EnTable.c.UUID,               id,
+            CitizenCompensation.c.ID_CTR_STATUS,  VocGisStatus.i.PROJECT.getId ()
+        );
+
+        db.update (getTable (), r);
+
+        logAction (db, user, id, VocAction.i.ALTER);
+
+    });}
+
+    @Override
+    public JsonObject doAnnul (String id, JsonObject p, User user) {return doAction ((db) -> {
+
+        final Map<String, Object> r = getData(p,
+            EnTable.c.UUID,               id,
+            CitizenCompensation.c.ID_CTR_STATUS,  VocGisStatus.i.PENDING_RQ_ANNULMENT.getId ()
+        );
+
+        db.update (getTable (), r);
+
+        logAction (db, user, id, VocAction.i.ANNUL);
+
+    });}
 }

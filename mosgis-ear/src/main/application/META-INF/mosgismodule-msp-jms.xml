@@ -17,4 +17,22 @@
     <jndi-name>mosgis.outImportCitizenCompensationCategoriesQueue</jndi-name>
   </uniform-distributed-queue>
 
+
+
+  <!-- очередь обработки запросов на экспорт Граждан, получающих компенсации расходов -->
+  <uniform-distributed-queue name="inExportCitizenCompensationsQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.inExportCitizenCompensationsQueue</jndi-name>
+  </uniform-distributed-queue>
+
+  <!-- очередь опроса статуса исходящих запросов на экспорт Граждан, получающих компенсации расходов -->
+  <uniform-distributed-queue name="outExportCitizenCompensationsQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <delivery-params-overrides>
+        <time-to-deliver>2000</time-to-deliver>
+        <redelivery-delay>10000</redelivery-delay>
+    </delivery-params-overrides>
+    <jndi-name>mosgis.outExportCitizenCompensationsQueue</jndi-name>
+  </uniform-distributed-queue>
+
 </weblogic-jms>
