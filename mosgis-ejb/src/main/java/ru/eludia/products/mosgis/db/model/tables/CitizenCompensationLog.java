@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.UUID;
 import ru.eludia.base.DB;
 import ru.eludia.base.Model;
-import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
@@ -41,6 +40,7 @@ public class CitizenCompensationLog extends GisWsLogTable {
             .get (CitizenCompensationLog.class, id, "*")
                 
             .toOne (CitizenCompensation.class, "AS r"
+		, EnTable.c.UUID.lc()
                 , CitizenCompensation.c.ID_CTR_STATUS.lc ()
             ).on ()
                 
@@ -50,18 +50,14 @@ public class CitizenCompensationLog extends GisWsLogTable {
             .toOne      (nsi95, nsi95.getLabelField ().getfName () + " AS vc_nsi_95", "code", "guid").on ("(ind.code_vc_nsi_95=vc_nsi_95.code AND vc_nsi_95.isactual=1)")
 	);
 
-	r.put("categories", db.getList(m
-	    .select(CitizenCompensationToCategory.class, "AS root", "*")
-	    .toOne(CitizenCompensationCategory.class, "AS cat", "*").on()
-	    .where(CitizenCompensationToCategory.c.UUID_CIT_COMP, r.get("r.uuid"))
-	));
-
 	r.put("decisions", db.getList(m
 	    .select(CitizenCompensationDecision.class, "AS root", "*")
 	    .toOne(Nsi301.class, "AS vw_nsi_301", "id", "guid").on("root.code_vc_nsi_301 = vw_nsi_301.id")
 	    .toMaybeOne(Nsi302.class, "AS vw_nsi_302", "id", "guid").on("root.code_vc_nsi_302 = vw_nsi_302.id")
 	    .where(CitizenCompensationDecision.c.UUID_CIT_COMP, r.get("r.uuid"))
 	));
+
+	r.put("categories", CitizenCompensationToCategory.selectForExport(db, r.get("r.uuid")));
 
 	return r;
     }
@@ -128,9 +124,9 @@ public class CitizenCompensationLog extends GisWsLogTable {
 	    result.getDecision().add (CitizenCompensationDecision.toDecision (i));
 	}
 
-//	for (Map<String, Object> i: (List<Map<String, Object>>) r.get ("categories")) {
-//	    result.getCategory().add (CitizenCompensationCategory.toCitizenCompensationCategory (i));
-//	}
+	for (Map<String, Object> i: (List<Map<String, Object>>) r.get ("categories")) {
+	    result.getCategory().add (CitizenCompensationToCategory.toCitizenCompensationCategory (i));
+	}
 
         return result;
         
