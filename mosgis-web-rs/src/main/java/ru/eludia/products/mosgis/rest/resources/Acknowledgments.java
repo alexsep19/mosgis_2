@@ -76,6 +76,16 @@ public class Acknowledgments extends EJBResource <AcknowledgmentLocal> {
     }        
     
     @POST
+    @Path("{id}/patch")
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject doPatch (@PathParam ("id") String id, JsonObject p) {
+//        final JsonObject item = getInnerItem (id);
+//        checkOrg (item);
+        return back.doPatch (id, p, getUser ());
+    }
+    
+    @POST
     @Path("{id}/delete") 
     @Consumes (APPLICATION_JSON)
     @Produces (APPLICATION_JSON)
@@ -94,5 +104,15 @@ public class Acknowledgments extends EJBResource <AcknowledgmentLocal> {
 //        checkOrg (item);
         return back.doCreate (p, getUser ());
     }        
+    
+    @POST
+    @Path("{id}/log") 
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject getLog (@PathParam ("id") String id, JsonObject p) {
+//        final JsonObject item = back.getItem (id);
+//        if (!securityContext.isUserInRole ("admin")) checkOrg (item.getJsonObject ("item"));
+        return back.getLog (id, p, getUser ());
+    }
 
 }

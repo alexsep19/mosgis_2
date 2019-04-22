@@ -1,10 +1,12 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.math.BigDecimal;
 import java.util.Map;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
+import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
@@ -22,6 +24,9 @@ public class PenaltiesAndCourtCosts extends EnTable {
         CAUSE                 (Type.STRING,  null,                              "Основания начислений"),
         TOTALPAYABLE          (Type.NUMERIC, 13, 2, null,                       "Итого к оплате за расчетный период, руб."),
         UUID_BNK_ACCT         (BankAccount.class, null,                         "Платёжные реквизиты"),
+        
+        AMOUNT_ACK            (Type.NUMERIC, 13, 2, BigDecimal.ZERO,                                          "Сквитировано, руб."),
+        AMOUNT_NACK           (Type.NUMERIC, 13, 2, new Virt  ("\"TOTALPAYABLE\"-\"AMOUNT_ACK\""), "Не сквитировано, руб."),
         
         ID_LOG                (PenaltiesAndCourtCostsLog.class,                 "Последнее событие редактирования"),
 

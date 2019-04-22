@@ -7,6 +7,7 @@ import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
+import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
@@ -79,6 +80,9 @@ public class ChargeInfo extends EnTable {
 
         SI_IND_NORM           (Type.NUMERIC, 22, 7, null,   "Норматив потребления коммунальных услуг - индивидуальное потребление (individualConsumptionNorm)"),
         SI_HO_NORM            (Type.NUMERIC, 22, 7, null,   "Норматив потребления коммунальных услуг - общедомовые нужды (houseOverallNeedsNorm)"),
+
+        AMOUNT_ACK            (Type.NUMERIC, 13, 2, BigDecimal.ZERO,                                          "Сквитировано, руб."),
+        AMOUNT_NACK           (Type.NUMERIC, 13, 2, new Virt  ("\"TOTALPAYABLE\"-\"AMOUNT_ACK\""), "Не сквитировано, руб."),
         
         ID_LOG                (ChargeInfoLog.class,         "Последнее событие редактирования"),
 

@@ -38,6 +38,8 @@ define ([], function () {
             url: '/_back/?type=payments&part=acknowledgments&id=' + $_REQUEST.id,
 
             onAdd: $_DO.create_payment_acknowledgments,
+            
+            onDblClick: function (e) {openTab ('/acknowledgment/' + e.recid)},
 
             onClick: function (e) {
 
