@@ -19,6 +19,7 @@ import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi237;
 import ru.eludia.products.mosgis.db.model.voc.VocOktmo;
 import ru.gosuslugi.dom.schema.integration.msp.ExportCategoryType;
 import javax.json.JsonObjectBuilder;
+import ru.gosuslugi.dom.schema.integration.msp.CitizenCompensationCategoryType;
 
 public class CitizenCompensationCategory extends EnTable {
 
@@ -107,6 +108,13 @@ public class CitizenCompensationCategory extends EnTable {
                 .orderBy (CitizenCompensationCategory.c.CATEGORYNAME)
         );
         
+    }
+
+    public static CitizenCompensationCategoryType toCitizenCompensationCategory(Map<String, Object> r) {
+
+	final CitizenCompensationCategoryType result = DB.to.javaBean(CitizenCompensationCategoryType.class, r);
+
+	return result;
     }
 
     public static Map<String, Object> toHASH(ExportCategoryType cat) {

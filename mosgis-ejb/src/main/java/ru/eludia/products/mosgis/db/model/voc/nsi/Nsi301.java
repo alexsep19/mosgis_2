@@ -17,6 +17,7 @@ public class Nsi301 extends View {
 
         ID     (Type.STRING, 20, null, "Код"),
         LABEL  (Type.STRING,     null, "Наименование"),
+	GUID   (Type.UUID,       null, "Глобально-уникальный идентификатор элемента справочника"),
         ;
 
         @Override
@@ -39,6 +40,7 @@ public class Nsi301 extends View {
         return "SELECT "
             + " code id, "
             + VocNsi301.c.F_C55410BED7.name () + " label "
+	    + " , guid "
             + "FROM "
             + " vc_nsi_301 "
             + "WHERE"

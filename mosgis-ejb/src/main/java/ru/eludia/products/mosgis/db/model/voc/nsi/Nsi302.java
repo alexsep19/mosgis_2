@@ -16,6 +16,7 @@ public class Nsi302 extends View {
 
         ID     (Type.STRING, 20, null, "Код"),
         LABEL  (Type.STRING,     null, "Наименование"),
+	GUID   (Type.UUID, null, "Глобально-уникальный идентификатор элемента справочника"),
 
 	CODE_VC_NSI_301              (Type.STRING,  20,     null, "Тип решения о мерах социальной поддержки (НСИ 301)"),
 
@@ -43,6 +44,7 @@ public class Nsi302 extends View {
         return "SELECT "
             + " code id "
             + " , label "
+	    + " , guid "
 	    + " , code_vc_nsi_301 "
 	    + " , isappliedtosubsidiaries"
 	    + " , isappliedtorefundofcharges "
