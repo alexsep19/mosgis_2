@@ -14,7 +14,7 @@ define ([], function () {
         
             uuid_pay     : $_REQUEST.id,           
             uuid_pay_doc : r.uuid,
-            amount       : r.amount_nack
+            amount       : 0
             
         }}, function (data) {
 
