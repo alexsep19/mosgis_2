@@ -35,14 +35,10 @@ define ([], function () {
             
             data = {}
             
-            if ('chg.amount_nack' in d) {
-                data.amount_nack = d ['chg.amount_nack']
-                data.amount_ack  = d ['chg.amount_ack']
-            }
-            else {
-                data.amount_nack = d ['pnl.amount_nack']
-                data.amount_ack  = d ['pnl.amount_ack']
-            }
+            var line = d.line
+            
+            data.amount_ack = parseFloat (line.amount_ack)
+            data.amount_nack = parseFloat (line.totalpayable) - data.amount_ack
 
             grid.set (e.recid, data)
             grid.refresh ()

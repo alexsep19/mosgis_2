@@ -1,10 +1,12 @@
 package ru.eludia.products.mosgis.ws.rest.impl;
 
 import java.util.Map;
+import java.util.UUID;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.json.JsonObject;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.tables.Acknowledgment;
 import ru.eludia.products.mosgis.db.ModelHolder;
@@ -112,12 +114,7 @@ public class AcknowledgmentImpl extends BaseCRUD<Acknowledgment> implements Ackn
         VocAction.addTo (job);
 
     });}
-    
-    private static final AcknowledgmentItem.c [] keys = new AcknowledgmentItem.c [] {
-        AcknowledgmentItem.c.UUID_CHARGE, 
-        AcknowledgmentItem.c.UUID_PENALTY
-    };
-    
+
     @Override
     public JsonObject doPatch (String id, JsonObject p, User user) {return doAction ((db, job) -> {
 
@@ -129,48 +126,27 @@ public class AcknowledgmentImpl extends BaseCRUD<Acknowledgment> implements Ackn
             AcknowledgmentItem.c.UUID_ACK, id
         );
         
-        String itemId = null;
+        boolean isCharge = DB.ok (data.get (AcknowledgmentItem.c.UUID_CHARGE.lc ()));
+
+        AcknowledgmentItem.c key = isCharge ? AcknowledgmentItem.c.UUID_CHARGE : AcknowledgmentItem.c.UUID_PENALTY;
+
+        UUID uuidLine = UUID.fromString (data.get (key.lc ()).toString ()) ;
+
+        String itemId = db.upsertId (t, data, AcknowledgmentItem.c.UUID_ACK.lc (), key.lc ());
         
-        for (AcknowledgmentItem.c key: keys) {
-            if (data.get (key.lc ()) == null) continue;            
-            itemId = db.upsertId (t, data, AcknowledgmentItem.c.UUID_ACK.lc (), key.lc ());
-            break;
+        m.createIdLog (db, getTable (), user, id, VocAction.i.UPDATE);
+
+        job.add ("item", db.getJsonObject (m.get (getTable (), id, "AS root", "*")));
+
+        if (isCharge) {
+            m.createIdLog (db, m.get (ChargeInfo.class), user, uuidLine, VocAction.i.UPDATE);
+            job.add ("line", db.getJsonObject (m.get (ChargeInfo.class, uuidLine, "*")));
+        }
+        else {
+            m.createIdLog (db, m.get (PenaltiesAndCourtCosts.class), user, uuidLine, VocAction.i.UPDATE);
+            job.add ("line", db.getJsonObject (m.get (PenaltiesAndCourtCosts.class, uuidLine, "*")));
         }
 
-/*        
-        db.update (PaymentDocument.class, HASH (
-            EnTable.c.UUID, id,
-            PaymentDocument.c.TOTALBYPENALTIESANDCOURTCOSTS, null
-        ));
-*/
-        m.createIdLog (db, getTable (), user, id, VocAction.i.UPDATE);
-        
-        final JsonObject item = db.getJsonObject (m
-
-            .get (getTable (), id, "AS root", "*")
-
-        );
-        
-        job.add ("item", item);
-        
-        final JsonObject line = db.getJsonObject (m
-
-            .get (AcknowledgmentItem.class, itemId, "AS root", "*")
-
-            .toMaybeOne (ChargeInfo.class, "AS chg"
-                , ChargeInfo.c.AMOUNT_ACK.lc ()
-                , ChargeInfo.c.AMOUNT_NACK.lc ()
-            ).on ()
-
-            .toMaybeOne (PenaltiesAndCourtCosts.class, "AS pnl"
-                , PenaltiesAndCourtCosts.c.AMOUNT_ACK.lc ()
-                , PenaltiesAndCourtCosts.c.AMOUNT_NACK.lc ()
-            ).on ()
-
-        );
-
-        job.add ("line", line);
-        
     });}
-    
+
 }
