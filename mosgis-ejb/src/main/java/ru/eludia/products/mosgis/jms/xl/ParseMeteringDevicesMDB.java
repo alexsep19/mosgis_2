@@ -2,6 +2,7 @@ package ru.eludia.products.mosgis.jms.xl;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -29,15 +30,15 @@ public class ParseMeteringDevicesMDB extends XLMDB {
     private static final int N_COL_UUID = 34;
     private static final int N_COL_ERR  = 35;
 
-    protected void addMeters (XSSFSheet sheet, UUID parent, DB db, Map<Integer, Integer> resourceMap) throws SQLException {
-
+    protected void addMeters (XSSFSheet sheet, UUID parent, DB db, Map<Integer, Integer> resourceMap, HashSet<Integer> refNums) throws SQLException {
+        
         for (int i = 2; i <= sheet.getLastRowNum (); i ++) {
             
             final XSSFRow row = sheet.getRow (i);
 
-            if (row.getCell (0) == null) continue;
+            if (EnTable.isEmpty(row, 0)) continue;
             
-            UUID uuid = (UUID) db.insertId (InXlMeteringDevice.class, InXlMeteringDevice.toHash (parent, i, row, resourceMap));            
+            UUID uuid = (UUID) db.insertId (InXlMeteringDevice.class, InXlMeteringDevice.toHash (parent, i, row, resourceMap, refNums));            
 
             try {
                 
@@ -121,9 +122,15 @@ public class ParseMeteringDevicesMDB extends XLMDB {
         final HashMap<Integer, Integer> result = new HashMap<> ();
         
         for (int i = 1; i <= sheet.getLastRowNum (); i ++) {
-            XSSFRow row = sheet.getRow (i);           
-            final int k = EnTable.toNumeric (row, 0, "Некорректный ссылочный номер").intValue ();
-            result.put (k, InXlMeteringDevice.addResource (result, k, EnTable.toString (row, 2)));
+            XSSFRow row = sheet.getRow (i);     
+            if (EnTable.isEmpty(row, 0)) break;
+            try{
+              final int k = EnTable.toNumeric (row, 0, "Некорректный ссылочный номер").intValue ();
+              result.put (k, InXlMeteringDevice.addResource (result, k, EnTable.toString (row, 2)));
+            }catch(XLException e){
+              writeErrorToXls(sheet, i, e.getMessage()); 
+              throw new XLException (e.getMessage());
+            }
         }
 
         return result;
@@ -133,26 +140,32 @@ public class ParseMeteringDevicesMDB extends XLMDB {
     @Override
     protected void processLines (XSSFWorkbook wb, UUID uuid, DB db) throws Exception {
         
-        boolean isOk = true;        
         Map<Integer, Integer> resourceMap = null;
+        HashSet<Integer> refNums = new HashSet<Integer>();
+        
         final XSSFSheet sheetAddResources = wb.getSheet ("Доп. комм. ресурсы");        
         
-        try{
-           resourceMap = toResourceMap (sheetAddResources);
-        }catch(XLException e){
-           writeErrorToXls(sheetAddResources, 1, e.getMessage());
-           throw new XLException ();
-        }
-        final XSSFSheet sheetMeters = wb.getSheet ("Сведения о ПУ");        
-        addMeters (sheetMeters, uuid, db, resourceMap);
+        resourceMap = toResourceMap (sheetAddResources);
         
-        if (!checkMeterLines (sheetMeters, db, uuid)) isOk = false;
-
-        if (!isOk) throw new XLException ();
+        final XSSFSheet sheetMeters = wb.getSheet ("Сведения о ПУ");        
+        addMeters (sheetMeters, uuid, db, resourceMap, refNums);
+        
+        if (!checkMeterLines (sheetMeters, db, uuid) || !isContains(resourceMap, refNums, sheetAddResources)) 
+            throw new XLException ();
 
     }
 
-    private void writeErrorToXls(XSSFSheet sheet, int numRow, String message){
+    private boolean isContains(Map<Integer, Integer> resourceMap, HashSet<Integer> refNums, XSSFSheet sheetAddResources){
+        StringBuilder difference = new StringBuilder();
+        resourceMap.forEach((k,v)-> {if (!refNums.contains(k)) difference.append(k).append(" ");});
+        boolean result = difference.toString().isEmpty();
+        if (!result){
+            writeErrorToXls(sheetAddResources, 1, "На листе Сведения о ПУ не найдены ссылочные номера " + difference.toString());
+        }
+        return result;
+    }
+    
+    static private void writeErrorToXls(XSSFSheet sheet, int numRow, String message){
         XSSFRow row = sheet.getRow(numRow);
         XSSFCell cell = row.getLastCellNum () <=5  ? row.createCell (5) : row.getCell (5);
         cell.setCellValue (message);
