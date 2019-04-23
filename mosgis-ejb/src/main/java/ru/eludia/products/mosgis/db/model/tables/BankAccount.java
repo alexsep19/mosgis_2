@@ -66,7 +66,13 @@ public class BankAccount extends EnTable {
             + " PRAGMA AUTONOMOUS_TRANSACTION; "
             + " cnt NUMBER;"
             + "BEGIN "
-                    
+
+		+ "IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS "
+		    + " AND :OLD.ID_CTR_STATUS <> " + VocGisStatus.i.FAILED_PLACING
+		    + " AND :NEW.ID_CTR_STATUS =  " + VocGisStatus.i.PROJECT
+		+ " THEN "
+		    + " :NEW.ID_CTR_STATUS := " + VocGisStatus.i.MUTATING
+		+ "; END IF; "
                 + "IF :NEW.is_deleted=0 THEN BEGIN "
                     
                     + " FOR i IN ("
@@ -149,7 +155,15 @@ public class BankAccount extends EnTable {
                     + " raise_application_error (-20000, 'Данный расчётный счёт указан в качестве платёжного реквизита договора ресурсоснабжения №' || i.CONTRACTNUMBER || ' от ' || TO_CHAR (i.SIGNINGDATE, 'DD.MM.YYYY') || '. Операция отменена.'); "
                     + " END LOOP; "
                                 
-                + "END; END IF; "
+                + "END; END IF; " // IF :OLD.is_deleted=0 AND :NEW.is_deleted=1
+
+
+		+ "IF "
+		    + "     :OLD.ID_CTR_STATUS = " + VocGisStatus.i.MUTATING
+		    + " AND :NEW.ID_CTR_STATUS = " + VocGisStatus.i.PENDING_RQ_PLACING
+		+ " THEN "
+		    + " :NEW.ID_CTR_STATUS := " + VocGisStatus.i.PENDING_RQ_EDIT
+		+ "; END IF; "
 
             + "END;"
 

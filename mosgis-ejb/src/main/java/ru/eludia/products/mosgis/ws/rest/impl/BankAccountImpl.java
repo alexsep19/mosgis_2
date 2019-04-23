@@ -11,6 +11,8 @@ import javax.ws.rs.InternalServerErrorException;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.products.mosgis.db.model.tables.ActualBankAccount;
 import ru.eludia.products.mosgis.db.model.tables.BankAccount;
+import ru.eludia.products.mosgis.db.model.tables.BankAccountLog;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.ModelHolder;
@@ -72,8 +74,8 @@ public class BankAccountImpl extends BaseCRUD<BankAccount> implements BankAccoun
 	    .toMaybeOne(VocOrganization.class, "AS org", "uuid", "label").on("root.uuid_org = org.uuid")
 	    .toMaybeOne(VocOrganization.class, "AS cred_org", "uuid", "label").on("root.uuid_cred_org = cred_org.uuid")
 	    .toMaybeOne(VocBic.class, "AS bank", "*").on()
-//	    .toOne(BankAccountLog.class, "AS log").on()
-//	    .toMaybeOne(OutSoap.class, "AS soap", "*").on("log.uuid_out_soap=soap.uuid")
+	    .toOne(BankAccountLog.class, "AS log").on()
+	    .toMaybeOne(OutSoap.class, "AS soap", "*").on("log.uuid_out_soap=soap.uuid")
         ));
         
         VocGisStatus.addTo (job);
