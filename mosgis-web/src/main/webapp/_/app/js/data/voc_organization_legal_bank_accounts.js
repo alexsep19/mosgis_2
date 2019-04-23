@@ -2,10 +2,14 @@ define ([], function () {
 
     $_DO.create_voc_organization_legal_bank_accounts = function () {
 
-        use.block ('bank_account_popup')
+        if ($('body').data('data').item.is_rokr) {
+            use.block ('bank_account_rokr_popup')
+        } else {
+            use.block ('bank_account_popup')
+        }
 
     }
-    
+
     $_DO.edit_voc_organization_legal_bank_accounts = function (e) {
     
         var grid = w2ui ['voc_organization_legal_bank_accounts_grid']
@@ -14,7 +18,11 @@ define ([], function () {
         
         if (r.uuid_org != $_REQUEST.id) die ('foo', 'Владельцем данного счёта является ' + r ['org.label'] + '. Он указан как платёжный реквизит ' + $('body').data ('data').item.label + ' на основании договора услуг РЦ. Редактирование отменено.')
 
-        openTab('/bank_account/' + e.recid)
+        if (r.is_rokr) {
+            openTab('/bank_account_rokr/' + e.recid)
+        } else {
+            openTab('/bank_account/' + e.recid)
+        }
     }
 
     $_DO.delete_voc_organization_legal_bank_accounts = function (e) {    

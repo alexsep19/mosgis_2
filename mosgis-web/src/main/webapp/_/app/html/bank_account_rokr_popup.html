@@ -1,0 +1,64 @@
+<span
+    data-popup-width=540
+    data-popup-height=255
+    data-popup-title='Счет регионального оператора капитального ремонта'
+    >
+
+    <style>
+
+        label[data-block-name=bank_account_rokr_popup] {
+	    width: 150px;
+	    margin-right: 10px;
+        }
+
+        input[data-block-name=bank_account_rokr_popup] {
+	    width: 320px !important;
+        }
+
+        input.dt[data-block-name=bank_account_rokr_popup] {
+	    width: 80px !important;
+        }
+
+    </style>
+
+    <div class="w2ui-reset w2ui-form">
+
+        <div class="w2ui-page page-0">
+
+            <div class="w2ui-field">
+                <label>Дата открытия</label>
+                <div>
+		    <input name=opendate class=dt placeholder="">
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>Кредитная организация</label>
+                <div>
+		    <input name=uuid_cred_org type=hidden>
+		    <input name=label_cred_org readonly>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>БИК / банк</label>
+                <div>
+		    <input name=bikcredorg>
+                </div>
+            </div>
+
+            <div class="w2ui-field">
+                <label>№ расчетного счёта</label>
+                <div>
+		    <input name=accountnumber maxlength=20>
+                </div>
+            </div>
+        </div>
+
+        <div class="w2ui-buttons">
+	    <button class=w2ui-btn name=update>Сохранить</button>
+        </div>
+
+    </div>
+
+</span>
