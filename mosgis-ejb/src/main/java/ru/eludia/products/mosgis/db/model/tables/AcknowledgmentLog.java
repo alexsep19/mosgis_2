@@ -9,7 +9,9 @@ import ru.eludia.base.Model;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi329;
+import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi50;
 import ru.gosuslugi.dom.schema.integration.bills.ImportAcknowledgmentRequest;
 import ru.gosuslugi.dom.schema.integration.payments_base.AcknowledgmentRequestInfoType;
 
@@ -45,7 +47,7 @@ public class AcknowledgmentLog extends GisWsLogTable {
             db.getList (
                     
                 m
-                .select (AcknowledgmentItem.class, "AS items", "*")
+                .select (AcknowledgmentItem.class, "AS root", "*")
                 .where  (AcknowledgmentItem.c.UUID_ACK, uuid)
                 .where  (EnTable.c.IS_DELETED, 0)
                         
@@ -61,21 +63,23 @@ public class AcknowledgmentLog extends GisWsLogTable {
                 .toOne (Payment.class
                     , Payment.c.ORDERGUID.lc () + " AS notif_guid"
                 ).on ()
-                        
+
                 .toMaybeOne (PenaltiesAndCourtCosts.class, "AS pen").on ()
                 .toMaybeOne (VocNsi329.class, "code", "guid").on ("pen.code_vc_nsi_329=vc_nsi_329.code AND vc_nsi_329.isactual=1")
-                    
-/*
-        UUID_CHARGE           (ChargeInfo.class,             "Сторка начислений"),
-        UUID_PENALTY          (PenaltiesAndCourtCosts.class, "Неустоек / судебных расходов"),
-                    
-                    */                    
+
+                .toMaybeOne (AnyChargeInfo.class, "AS chg", "*").on ("chg.id=root." + AcknowledgmentItem.c.UUID_CHARGE.lc ())
+                .toMaybeOne (VocNsi50.class, "guid AS hstype").on ("chg.code_vc_nsi_50=vc_nsi_50.code AND vc_nsi_50.isactual=1")
+                .toMaybeOne (AdditionalService.class, "guid AS astype").on ()
+                .toMaybeOne (ActualBankAccount.class, "AS ba"
+//                    , ActualBankAccount.c.LABEL.lc ()
+                ).on ("ba.uuid=chg." + ChargeInfo.c.UUID_BNK_ACCT.lc ())
+                .toMaybeOne (VocOrganization.class, "AS org_bank_acct", "label").on ("ba.uuid_org=org_bank_acct.uuid")
             )
-                
+
         );
 
         return r;
-                
+
     }
         
     public static ImportAcknowledgmentRequest toImportAcknowledgment (Map<String, Object> r) {
@@ -96,14 +100,25 @@ public class AcknowledgmentLog extends GisWsLogTable {
         return result;
     }
     
+    private static String getNN (Map<String, Object> r, String key) {
+        Object v = r.get (key);
+        return v == null ? null : v.toString ();
+    }
+    
     private static AcknowledgmentRequestInfoType.PaymentDocumentAck toPaymentDocumentAck (Map<String, Object> r) {
+        
         final AcknowledgmentRequestInfoType.PaymentDocumentAck result = DB.to.javaBean (AcknowledgmentRequestInfoType.PaymentDocumentAck.class, r);        
+        
         if (DB.ok (r.get ("uuid_penalty"))) {
             result.setPServiceType (NsiTable.toDom (r, "vc_nsi_329"));
         }
         else {
+            result.setHSType (getNN (r, "hstype"));
+            result.setASType (getNN (r, "astype"));            
         }
+        
         return result;
+        
     }
 
 }
