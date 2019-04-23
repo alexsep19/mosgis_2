@@ -27,7 +27,7 @@ import ru.eludia.products.mosgis.jms.xl.base.XLException;
 })
 public class ParseMeteringDevicesMDB extends XLMDB {
        
-    private static final int N_COL_UUID = 34;
+    private static final int N_COL_UUID = 33;
     private static final int N_COL_ERR  = 35;
 
     protected void addMeters (XSSFSheet sheet, UUID parent, DB db, Map<Integer, Integer> resourceMap, HashSet<Integer> refNums) throws SQLException {
@@ -36,7 +36,7 @@ public class ParseMeteringDevicesMDB extends XLMDB {
             
             final XSSFRow row = sheet.getRow (i);
 
-            if (EnTable.isEmpty(row, 0)) continue;
+            if (EnTable.isEmpty(row, 1)) continue;
             
             UUID uuid = (UUID) db.insertId (InXlMeteringDevice.class, InXlMeteringDevice.toHash (parent, i, row, resourceMap, refNums));            
 
