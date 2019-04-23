@@ -70,6 +70,7 @@ public class AcknowledgmentLog extends GisWsLogTable {
                 .toMaybeOne (AnyChargeInfo.class, "AS chg", "*").on ("chg.id=root." + AcknowledgmentItem.c.UUID_CHARGE.lc ())
                 .toMaybeOne (VocNsi50.class, "guid AS hstype").on ("chg.code_vc_nsi_50=vc_nsi_50.code AND vc_nsi_50.isactual=1")
                 .toMaybeOne (AdditionalService.class, "guid AS astype").on ()
+                .toMaybeOne (MainMunicipalService.class, "guid AS mstype").on ()
                 .toMaybeOne (ActualBankAccount.class, "AS ba"
 //                    , ActualBankAccount.c.LABEL.lc ()
                 ).on ("ba.uuid=chg." + ChargeInfo.c.UUID_BNK_ACCT.lc ())
@@ -115,6 +116,7 @@ public class AcknowledgmentLog extends GisWsLogTable {
         else {
             result.setHSType (getNN (r, "hstype"));
             result.setASType (getNN (r, "astype"));            
+            result.setMSType (getNN (r, "mstype"));            
         }
         
         return result;
