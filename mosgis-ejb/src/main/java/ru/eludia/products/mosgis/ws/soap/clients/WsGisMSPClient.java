@@ -56,5 +56,9 @@ public class WsGisMSPClient {
 
 	return getPort(orgPPAGuid, messageGUID).importCitizenCompensation(CitizenCompensationLog.toImportCitizenCompensationRequest(r)).getAck();
     }
-    
+
+    public AckRequest.Ack deleteCitizenCompensation(UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+
+	return getPort(orgPPAGuid, messageGUID).importCitizenCompensation(CitizenCompensationLog.toDeleteCitizenCompensationRequest(r)).getAck();
+    }    
 }

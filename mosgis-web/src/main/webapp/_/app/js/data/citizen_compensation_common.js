@@ -69,7 +69,7 @@ define ([], function () {
     }
     
     $_DO.annul_citizen_compensation_common = function (e) {
-        if (!confirm ('Запросить аннулирование этой услуги в ГИС ЖКХ?')) return
+        if (!confirm ('Запросить аннулирование этого объекта в ГИС ЖКХ?')) return
         query ({type: 'citizen_compensations', action: 'annul'}, {data: {}}, reload_page)
     }
     
