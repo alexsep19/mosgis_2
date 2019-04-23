@@ -61,6 +61,8 @@ define ([], function () {
                 import: data.import_types
             }
 
+            it.is_rokr = data.nsi_20 ['14']
+
             $('body').data ('data', data)
 
             get_nsi([20], done)

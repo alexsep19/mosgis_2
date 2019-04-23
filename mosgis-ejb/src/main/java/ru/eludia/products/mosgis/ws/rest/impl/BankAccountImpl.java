@@ -46,6 +46,7 @@ public class BankAccountImpl extends BaseCRUD<BankAccount> implements BankAccoun
         job.add ("item", db.getJsonObject (ModelHolder.getModel ()
             .get (BankAccount.class, id, "AS root", "*")
 	    .toMaybeOne(VocOrganization.class, "AS org", "uuid", "label").on("root.uuid_org = org.uuid")
+	    .toMaybeOne(VocOrganization.class, "AS cred_org", "uuid", "label").on("root.uuid_cred_org = cred_org.uuid")
 	    .toMaybeOne(VocBic.class, "AS bank", "*").on()
 //	    .toOne(BankAccountLog.class, "AS log").on()
 //	    .toMaybeOne(OutSoap.class, "AS soap", "*").on("log.uuid_out_soap=soap.uuid")
