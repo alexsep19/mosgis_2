@@ -52,8 +52,8 @@ public class Sender extends EnTable {
         
         //Поставщик информации МосГИС
         item(EnTable.c.UUID, MOS_GIS_UUID, 
-        		c.LABEL_FULL, "МосГИС", 
-        		c.LABEL, "МосГИС", 
+        		c.LABEL_FULL, "Региональный сегмент", 
+        		c.LABEL, "Регсегмент", 
         		c.SALT, MOS_GIS_SALT);
     }
     
