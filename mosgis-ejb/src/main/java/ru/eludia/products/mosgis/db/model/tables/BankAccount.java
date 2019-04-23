@@ -26,8 +26,8 @@ public class BankAccount extends EnTable {
         OPENDATE               (Type.DATE,             null, "Дата открытия/изменения реквизитов"),
         CLOSEDATE              (Type.DATE,             null, "Дата закрытия"),
 
-	IS_ROKR                (Type.BOOLEAN,  null, "1, если является счетом регионального оператора, иначе 0"),
-	UUID_CRED_ORG          (VocOrganization.class, null, "Кредитная организация"),
+	IS_ROKR                (Type.BOOLEAN,  null, "1, если является счетом регионального оператора капитального ремонта, иначе 0"),
+	UUID_CRED_ORG          (VocOrganization.class, null, "Кредитная организация счета регионального оператора капитального ремонта"),
 
 	ID_CTR_STATUS          (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения mosgis"),
 	ID_CTR_STATUS_GIS      (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения ГИС ЖКХ"),
@@ -98,11 +98,11 @@ public class BankAccount extends EnTable {
 			    + " AND (o.opendate  < :NEW.closedate OR :NEW.closedate IS NULL) "
 			    + " AND (o.closedate > :NEW.opendate OR o.closedate IS NULL) "
 			    + ") LOOP"
-			+ " raise_application_error (-20000, 'Уже есть счет регионального оператора ' || i.label "
+			+ " raise_application_error (-20000, 'Уже есть счет регионального оператора капитального ремонта ' || i.label "
 			+ "   || ', действующий с ' "
 			+ "   || TO_CHAR (i.opendate, 'DD.MM.YYYY') "
 			+ "   || CASE WHEN i.closedate IS NULL THEN NULL ELSE ' по ' || TO_CHAR (i.closedate, 'DD.MM.YYYY') END "
-			+ "   || '. Разрешен только один счет регионального оператора, действующий в один период времени.'); "
+			+ " ); "
 			+ " END LOOP; "
 		    + " END IF; "
 
