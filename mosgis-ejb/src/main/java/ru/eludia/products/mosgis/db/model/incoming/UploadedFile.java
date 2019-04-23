@@ -18,7 +18,7 @@ public class UploadedFile extends EnTable {
         LABEL          (Type.STRING, 1024,              "Имя файла"),
         UUID_SENDER    (Sender.class,       null,       "Поставщик информации"),
         BODY           (Type.BLOB,          EMPTY_BLOB, "Содержимое"),
-        ORGPPAGUID     (Type.UUID,                      "Идентификатор зарегистрированной организации"),
+        ORGPPAGUID     (Type.UUID,          null,       "Идентификатор зарегистрированной организации"),
     	UPLOAD_CONTEXT (Type.STRING, 50,    null,       "Контекст, в который загружен файл"),
     	IS_COMPLETED   (Type.BOOLEAN,       FALSE,      "Файл загружен? 0 - нет, 1 - да"),
     	TS             (Type.TIMESTAMP,     NOW,        "Дата/время записи в БД");
