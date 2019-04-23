@@ -245,7 +245,7 @@ public class InXlMeteringDevice extends EnTable {
             + "  ELSE "        
             + "     raise_application_error (-20000, 'Не найдено '|| nvl(:NEW.PREMISESTYPE, '(тип не указан)') || ' помещение: ' || :NEW.PREMISESNUM); "
             + "  END IF; "
-            + "     EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Помещение не найдено'); "  
+            + "     EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Помещение '||:NEW.PREMISESNUM|| ' не найдено'); "  
             + " END;END IF; "
                     
             + " IF :NEW.ACCOUNTNUMBER IS NOT NULL THEN BEGIN "
