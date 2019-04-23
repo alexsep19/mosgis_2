@@ -1,6 +1,7 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import ru.eludia.base.DB;
@@ -32,32 +33,53 @@ public class AcknowledgmentLog extends GisWsLogTable {
             .toOne (Acknowledgment.class, "AS r"
                 , EnTable.c.UUID.lc ()
             ).on ()
+              
+        );
+        
+        Object uuid = r.get ("r.uuid");
+        
+        r.put ("items", 
                 
-            .toOne (PaymentDocument.class
-                , PaymentDocument.c.PAYMENTDOCUMENTID.lc () + " AS paymentdocumentid"
-                , PaymentDocument.c.YEAR.lc () + " AS year"
-                , PaymentDocument.c.MONTH.lc () + " AS month"
-            ).on ()
-                
-            .toOne (Payment.class
-                , Payment.c.ORDERGUID.lc () + " AS notif_guid"
-            ).on ()
+            db.getList (
+                    
+                m
+                .select (AcknowledgmentItem.class, "AS items", "*")
+                .where  (AcknowledgmentItem.c.UUID_ACK, uuid)
+                .where  (EnTable.c.IS_DELETED, 0)
+                        
+                .toOne (Acknowledgment.class, "AS ack"
+                ).on ()
+                    
+                .toOne (PaymentDocument.class
+                    , PaymentDocument.c.PAYMENTDOCUMENTID.lc () + " AS paymentdocumentid"
+                    , PaymentDocument.c.YEAR.lc () + " AS year"
+                    , PaymentDocument.c.MONTH.lc () + " AS month"
+                ).on ()
+
+                .toOne (Payment.class
+                    , Payment.c.ORDERGUID.lc () + " AS notif_guid"
+                ).on ()
+                    
+            )
                 
         );
-
-        r.put ("notificationsoforderexecutionguid", r.get ("notif_guid"));
 
         return r;
                 
     }
         
     public static ImportAcknowledgmentRequest toImportAcknowledgment (Map<String, Object> r) {
-        final ImportAcknowledgmentRequest result = DB.to.javaBean (ImportAcknowledgmentRequest.class, r);
-        result.getAcknowledgmentRequestInfo ().add (toAcknowledgmentRequestInfo (r));
+        final ImportAcknowledgmentRequest result = DB.to.javaBean (ImportAcknowledgmentRequest.class, r);        
+        addAcknowledgmentRequestInfo (result.getAcknowledgmentRequestInfo (), (List <Map <String, Object>>) r.get ("items"));
         return result;
     }    
     
+    private static void addAcknowledgmentRequestInfo (List<ImportAcknowledgmentRequest.AcknowledgmentRequestInfo> acknowledgmentRequestInfo, List<Map<String, Object>> list) {
+        list.forEach ((t) -> acknowledgmentRequestInfo.add (toAcknowledgmentRequestInfo (t)));
+    }
+    
     private static ImportAcknowledgmentRequest.AcknowledgmentRequestInfo toAcknowledgmentRequestInfo (Map<String, Object> r) {
+        r.put ("notificationsoforderexecutionguid", r.get ("notif_guid"));
         final ImportAcknowledgmentRequest.AcknowledgmentRequestInfo result = DB.to.javaBean (ImportAcknowledgmentRequest.AcknowledgmentRequestInfo.class, r);
         result.setPaymentDocumentAck (toPaymentDocumentAck (r));
         result.setTransportGUID (UUID.randomUUID ().toString ());
