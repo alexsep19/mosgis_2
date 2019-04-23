@@ -66,7 +66,7 @@ public class AcknowledgmentLog extends GisWsLogTable {
                 .toMaybeOne (PenaltiesAndCourtCosts.class, "AS pen").on ()
                 .toMaybeOne (VocNsi329.class, "code", "guid").on ("pen.code_vc_nsi_329=vc_nsi_329.code AND vc_nsi_329.isactual=1")
 
-                .toMaybeOne (AnyChargeInfo.class, "AS chg", "*").on ("chg.id=root." + AcknowledgmentItem.c.UUID_CHARGE.lc ())
+                .toMaybeOne (AnyChargeInfo.class, "AS chg", "*").where (ChargeInfo.c.UUID_INS_PRODUCT.lc () + " IS NULL").on ("chg.id=root." + AcknowledgmentItem.c.UUID_CHARGE.lc ())
                 .toMaybeOne (VocNsi50.class,             "guid AS hstype").on ("chg.code_vc_nsi_50=vc_nsi_50.code AND vc_nsi_50.isactual=1")
                 .toMaybeOne (AdditionalService.class,    "guid AS astype").on ()
                 .toMaybeOne (MainMunicipalService.class, "guid AS mstype").on ()
