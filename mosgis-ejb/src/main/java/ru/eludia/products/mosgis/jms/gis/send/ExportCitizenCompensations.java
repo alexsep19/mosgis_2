@@ -48,10 +48,11 @@ public class ExportCitizenCompensations extends GisExportMDB<CitizenCompensation
             case PLACING:
             case EDITING:
                 return wsGisMSPClient.importCitizenCompensation(orgPPAGuid, messageGUID, r);
+            case ANNULMENT:
+                return wsGisMSPClient.deleteCitizenCompensation(orgPPAGuid, messageGUID, r);
             default: 
                 throw new IllegalArgumentException ("No action implemented for " + action.name ());
         }
-
     }
     
     @Override

@@ -86,6 +86,26 @@ public class CitizenCompensationLog extends GisWsLogTable {
 
 	return result;
     }
+    
+    public static ImportCitizenCompensationRequest toDeleteCitizenCompensationRequest(Map<String, Object> r) {
+
+	final ImportCitizenCompensationRequest result = new ImportCitizenCompensationRequest();
+
+	result.getImportCitizenCompensation().add(toDeleteCitizenCompensation(r));
+
+	return result;
+    }
+
+    public static ImportCitizenCompensation toDeleteCitizenCompensation(Map<String, Object> r) {
+
+	ImportCitizenCompensation result = DB.to.javaBean(ImportCitizenCompensation.class, r);
+
+	result.setCancel(true);
+
+	result.setTransportGuid(UUID.randomUUID().toString());
+
+	return result;
+    }
 
     public static ImportCitizenCompensation toImportCitizenCompensation(Map<String, Object> r) {
 
