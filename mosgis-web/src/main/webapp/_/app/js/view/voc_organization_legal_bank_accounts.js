@@ -39,6 +39,7 @@ define ([], function () {
                 {field: 'org.label', caption: 'Владелец счёта', size: 15},
                 {field: 'opendate', caption: 'Открыт', size: 15, render: _dt},
                 {field: 'closedate', caption: 'Закрыт', size: 15, render: _dt},
+                {field: 'id_ctr_staus', caption: 'Статус', size: 15, voc: data.vc_gis_status, hidden: !data.item.is_rokr},
             ],
 
             url: '/_back/?type=bank_accounts',
@@ -53,7 +54,6 @@ define ([], function () {
             onDblClick: $_DO.edit_voc_organization_legal_bank_accounts,
             
             onDelete:   $_DO.delete_voc_organization_legal_bank_accounts
-
         }).refresh ()
 
     }
