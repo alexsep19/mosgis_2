@@ -8,6 +8,8 @@ import ru.eludia.base.DB;
 import ru.eludia.base.Model;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
+import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi329;
 import ru.gosuslugi.dom.schema.integration.bills.ImportAcknowledgmentRequest;
 import ru.gosuslugi.dom.schema.integration.payments_base.AcknowledgmentRequestInfoType;
 
@@ -59,7 +61,15 @@ public class AcknowledgmentLog extends GisWsLogTable {
                 .toOne (Payment.class
                     , Payment.c.ORDERGUID.lc () + " AS notif_guid"
                 ).on ()
+                        
+                .toMaybeOne (PenaltiesAndCourtCosts.class, "AS pen").on ()
+                .toMaybeOne (VocNsi329.class, "code", "guid").on ("pen.code_vc_nsi_329=vc_nsi_329.code AND vc_nsi_329.isactual=1")
                     
+/*
+        UUID_CHARGE           (ChargeInfo.class,             "Сторка начислений"),
+        UUID_PENALTY          (PenaltiesAndCourtCosts.class, "Неустоек / судебных расходов"),
+                    
+                    */                    
             )
                 
         );
@@ -88,6 +98,11 @@ public class AcknowledgmentLog extends GisWsLogTable {
     
     private static AcknowledgmentRequestInfoType.PaymentDocumentAck toPaymentDocumentAck (Map<String, Object> r) {
         final AcknowledgmentRequestInfoType.PaymentDocumentAck result = DB.to.javaBean (AcknowledgmentRequestInfoType.PaymentDocumentAck.class, r);        
+        if (DB.ok (r.get ("uuid_penalty"))) {
+            result.setPServiceType (NsiTable.toDom (r, "vc_nsi_329"));
+        }
+        else {
+        }
         return result;
     }
 
