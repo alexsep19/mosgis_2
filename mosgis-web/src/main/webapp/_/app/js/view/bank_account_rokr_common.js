@@ -76,7 +76,7 @@ define ([], function () {
 
             fields : [
                 {name: 'accountnumber', type: 'text'},
-                {name: 'opendate', type: 'date', options: {end: now}},
+                {name: 'opendate', type: 'date'},
                 {name: 'label_cred_org', type: 'text'},
                 {name: 'uuid_cred_org', type: 'hidden'},
                 {name: 'bikcredorg', type: 'list', hint: 'Адрес', options: {

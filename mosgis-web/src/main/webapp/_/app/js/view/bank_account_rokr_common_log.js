@@ -26,7 +26,7 @@ define ([], function () {
             columnGroups : [
                 {span: 4, caption: 'Событие'},
                 {span: 4, caption: 'Значения полей'},
-//                {span: 3, caption: 'Запрос в ГИС ЖКХ'},
+                {span: 3, caption: 'Запрос в ГИС ЖКХ'},
             ],
 
             columns: [
@@ -40,9 +40,9 @@ define ([], function () {
                 {field: 'opendate', caption: 'Дата открытия', size: 18, render: _dt},
                 {field: 'closedate', caption: 'Дата закрытия', size: 18, render: _dt},
 
-//                {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: 'data-ref=1'},
-//                {field: 'soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: 'data-ref=1'},
-//                {field: 'soap.err_text', caption: 'Ошибка',    size: 30},
+                {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: 'data-ref=1'},
+                {field: 'soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: 'data-ref=1'},
+                {field: 'soap.err_text', caption: 'Ошибка',    size: 30},
             ],
 
             url: '/_back/?type=bank_accounts&part=log&id=' + $_REQUEST.id,

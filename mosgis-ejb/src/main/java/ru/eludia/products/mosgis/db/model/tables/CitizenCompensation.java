@@ -60,9 +60,16 @@ public class CitizenCompensation extends EnTable {
         key (c.UUID_ORG);
 
         trigger("BEFORE INSERT OR UPDATE", ""
-                + "DECLARE"
-                + " cnt NUMBER; "
-                + "BEGIN "
+	    + "DECLARE"
+	    + " cnt NUMBER; "
+	    + "BEGIN "
+
+	    + "IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS "
+		+ " AND :OLD.ID_CTR_STATUS <> " + VocGisStatus.i.FAILED_PLACING
+		+ " AND :NEW.ID_CTR_STATUS =  " + VocGisStatus.i.PROJECT
+	    + " THEN "
+		+ " :NEW.ID_CTR_STATUS := " + VocGisStatus.i.MUTATING
+	    + "; END IF; "
 
 	    + " IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS AND :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING + " THEN "
 
@@ -73,6 +80,14 @@ public class CitizenCompensation extends EnTable {
 		+ " IF cnt=0 THEN raise_application_error (-20000, 'Укажите хотя бы одну категорию'); END IF; "
 
 	    + " END IF; " // IF :NEW.ID_CTR_STATUS=" + VocGisStatus.i.PENDING_RQ_PLACING
+
+	    + "IF "
+		+ "     :OLD.ID_CTR_STATUS = " + VocGisStatus.i.MUTATING
+		+ " AND :NEW.ID_CTR_STATUS = " + VocGisStatus.i.PENDING_RQ_PLACING
+	    + " THEN "
+		+ " :NEW.ID_CTR_STATUS := " + VocGisStatus.i.PENDING_RQ_EDIT
+	    + "; END IF; "
+
 	+ "END;");
     }
 
