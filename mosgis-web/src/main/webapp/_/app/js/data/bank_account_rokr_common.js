@@ -144,7 +144,7 @@ define ([], function () {
 
         if (it.uuid_cred_org) it.label_cred_org = it ['cred_org.label']
 
-        it.err_text = it ['out_soap.err_text']
+        it.err_text = it ['soap.err_text']
 
         var data = clone($('body').data('data'))
 
