@@ -9,6 +9,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.jws.HandlerChain;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceRef;
+import ru.eludia.products.mosgis.db.model.tables.BankAccountLog;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulAddressProgramHouseWorkLog;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulAddressProgramHouseWorksImport;
 import ru.eludia.products.mosgis.db.model.tables.OverhaulAddressProgramLog;
@@ -130,5 +131,10 @@ public class WsGisCapitalRepairClient {
     public AckRequest.Ack annulAddressProgram (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
         return getPort (orgPPAGuid, messageGUID).importPlan (OverhaulAddressProgramLog.toAnnulPlanRequest (r)).getAck ();
     }
-    
+
+    //---REGIONAL OPERATOR BANK ACCOUNT ---//
+
+    public AckRequest.Ack importRegionalOperatorAccount (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importRegionalOperatorAccounts (BankAccountLog.toImportAccountRegionalOperatorRequest (r)).getAck ();
+    }
 }

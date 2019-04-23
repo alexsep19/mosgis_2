@@ -20,9 +20,13 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
+
+import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.tables.Sender;
 import ru.eludia.products.mosgis.db.model.tables.Setting;
 import ru.eludia.products.mosgis.db.model.tables.SettingValue;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
+import ru.eludia.products.mosgis.db.model.voc.VocUser;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.jms.UUIDPublisher;
 
@@ -134,6 +138,20 @@ public class Conf implements ConfMBean, ConfLocal {
                 if (VocSetting.i.WS_GIS_ASYNC_TTL.getId ().equals (id) && !value.equals (oldValue)) {
                     logger.info (VocSetting.i.WS_GIS_ASYNC_TTL + " changed from " + oldValue + " to " + value + ", calling schedule ()");
                     tTLWatchMBean.schedule ();
+                }
+                
+                if (VocSetting.i.WS_GIS_BASIC_LOGIN.getId ().equals (id)) {
+                	db.update (Sender.class, HASH (
+                            EnTable.c.UUID, Sender.MOS_GIS_UUID,
+                            Sender.c.LOGIN, value
+                        ));
+                }
+                
+                if (VocSetting.i.WS_GIS_BASIC_PASSWORD.getId ().equals (id)) {
+	                db.update (Sender.class, HASH (
+	                        EnTable.c.UUID, Sender.MOS_GIS_UUID,
+	                        Sender.c.SHA1, VocUser.encrypt(Sender.MOS_GIS_SALT, value)
+	                    ));
                 }
   
                 logger.log (Level.INFO, "Loaded {0}", id);
@@ -572,6 +590,18 @@ public class Conf implements ConfMBean, ConfLocal {
     @Override
     public void setWsGisBasicLogin (String s) {
         set (VocSetting.i.WS_GIS_BASIC_LOGIN, s);
+        
+        try (DB db = ModelHolder.getModel ().getDb ()) {
+            
+        	db.update (Sender.class, HASH (
+                    EnTable.c.UUID, Sender.MOS_GIS_UUID,
+                    Sender.c.LOGIN, s
+                ));
+            
+        }
+        catch (Exception ex) {
+            throw new IllegalStateException (ex);
+        }
     }
 
     @Override
@@ -582,6 +612,18 @@ public class Conf implements ConfMBean, ConfLocal {
     @Override
     public void setWsGisBasicPassword (String s) {
         set (VocSetting.i.WS_GIS_BASIC_PASSWORD, s);
+        
+        try (DB db = ModelHolder.getModel ().getDb ()) {
+            
+        	db.update (Sender.class, HASH (
+                    EnTable.c.UUID, Sender.MOS_GIS_UUID,
+                    Sender.c.SHA1, VocUser.encrypt(Sender.MOS_GIS_SALT, s)
+                ));
+            
+        }
+        catch (Exception ex) {
+            throw new IllegalStateException (ex);
+        }
     }    
 
     @Override
