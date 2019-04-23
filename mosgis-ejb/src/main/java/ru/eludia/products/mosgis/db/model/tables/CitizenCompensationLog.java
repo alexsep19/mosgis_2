@@ -65,11 +65,11 @@ public class CitizenCompensationLog extends GisWsLogTable {
 
 	r.put("categories", CitizenCompensationToCategory.selectForExport(db, r.get("r.uuid")));
 
-	r.put("calcs", db.getList(m
-	    .select(CitizenCompensationCalculation.class, "AS root", "*")
-	    .where(CitizenCompensationCalculation.c.UUID_CIT_COMP, r.get("uuid_object"))
-	    .and(EnTable.c.IS_DELETED, 0)
-	));
+//	r.put("calcs", db.getList(m
+//	    .select(CitizenCompensationCalculation.class, "AS root", "*")
+//	    .where(CitizenCompensationCalculation.c.UUID_CIT_COMP, r.get("uuid_object"))
+//	    .and(EnTable.c.IS_DELETED, 0)
+//	));
 
 	r.put("pays", db.getList(m
 	    .select(CitizenCompensationPayment.class, "AS root", "*")
@@ -95,9 +95,9 @@ public class CitizenCompensationLog extends GisWsLogTable {
 
 	result.setTransportGuid(UUID.randomUUID().toString());
 
-	for (Map<String, Object> i : (List<Map<String, Object>>) r.get("calcs")) {
-	    result.getCalculation().add(CitizenCompensationCalculation.toCitizenCompensationCalculation(i));
-	}
+//	for (Map<String, Object> i : (List<Map<String, Object>>) r.get("calcs")) {
+//	    result.getCalculation().add(CitizenCompensationCalculation.toCitizenCompensationCalculation(i));
+//	}
 
 	for (Map<String, Object> i : (List<Map<String, Object>>) r.get("pays")) {
 	    result.getPayment().add(CitizenCompensationPayment.toCitizenCompensationPayment(i));
