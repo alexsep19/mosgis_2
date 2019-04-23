@@ -7,6 +7,7 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import static ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract.Action.TERMINATION;
 import ru.eludia.products.mosgis.db.model.voc.VocBic;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -29,6 +30,7 @@ public class BankAccount extends EnTable {
 	IS_ROKR                (Type.BOOLEAN,  null, "1, если является счетом регионального оператора капитального ремонта, иначе 0"),
 	UUID_CRED_ORG          (VocOrganization.class, null, "Кредитная организация счета регионального оператора капитального ремонта"),
 
+	ACCOUNTREGOPERATORGUID (Type.UUID, null, "Идентификатор в ГИС ЖКХ"),
 	ID_CTR_STATUS          (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения mosgis"),
 	ID_CTR_STATUS_GIS      (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения ГИС ЖКХ"),
 
@@ -162,5 +164,47 @@ public class BankAccount extends EnTable {
         result.setTransportGUID          (DB.to.String (r.get (EnTable.c.UUID.lc ())));
         return result;
     }
-    
+
+    public enum Action {
+        
+        PLACING     (VocGisStatus.i.PENDING_RQ_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
+        EDITING     (VocGisStatus.i.PENDING_RQ_EDIT,      VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_STATE),
+        ANNULMENT   (VocGisStatus.i.PENDING_RQ_ANNULMENT, VocGisStatus.i.ANNUL,    VocGisStatus.i.FAILED_ANNULMENT),
+	TERMINATION  (VocGisStatus.i.PENDING_RQ_TERMINATE, VocGisStatus.i.TERMINATED, VocGisStatus.i.FAILED_TERMINATE),
+        ;
+        
+        VocGisStatus.i nextStatus;
+        VocGisStatus.i okStatus;
+        VocGisStatus.i failStatus;
+
+        private Action (VocGisStatus.i nextStatus, VocGisStatus.i okStatus, VocGisStatus.i failStatus) {
+            this.nextStatus = nextStatus;
+            this.okStatus = okStatus;
+            this.failStatus = failStatus;
+        }
+
+        public VocGisStatus.i getNextStatus () {
+            return nextStatus;
+        }
+
+        public VocGisStatus.i getFailStatus () {
+            return failStatus;
+        }
+
+        public VocGisStatus.i getOkStatus () {
+            return okStatus;
+        }
+
+        public static Action forStatus (VocGisStatus.i status) {
+            
+            switch (status) {
+                case PENDING_RQ_PLACING:   return PLACING;
+                case PENDING_RQ_EDIT:      return EDITING;
+                case PENDING_RQ_ANNULMENT: return ANNULMENT;
+		case PENDING_RQ_TERMINATE: return TERMINATION;
+                default: return null;
+            }
+            
+        }
+    };
 }

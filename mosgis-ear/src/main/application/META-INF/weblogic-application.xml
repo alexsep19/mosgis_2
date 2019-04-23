@@ -181,4 +181,10 @@
         <path>META-INF/ws-jms/mosgismodule-ws-nsi-service-async-jms.xml</path>
     </module>
 
+    <module>
+	<name>Workflow-bank-accounts</name>
+	<type>JMS</type>
+	<path>META-INF/mosgismodule-bank-accounts-jms.xml</path>
+    </module>
+
 </weblogic-application>
