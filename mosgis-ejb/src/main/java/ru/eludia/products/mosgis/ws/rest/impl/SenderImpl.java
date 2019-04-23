@@ -67,6 +67,7 @@ public class SenderImpl extends BaseCRUD<Sender> implements SenderLocal {
 
         Select select = ModelHolder.getModel ().select (getTable (), "*", "uuid AS id")
             .orderBy (c.LABEL)
+            .where("uuid NOT IN", Sender.MOS_GIS_UUID)
             .limit (p.getInt ("offset"), p.getInt ("limit"));
         
         filterOffDeleted (select);
