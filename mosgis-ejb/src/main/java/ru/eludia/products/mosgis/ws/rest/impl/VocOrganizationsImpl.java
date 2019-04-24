@@ -39,6 +39,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationHours;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTypes;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
 import ru.eludia.products.mosgis.ws.rest.impl.tools.ComplexSearch;
@@ -253,6 +254,7 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
             VocAccessRequestType.addTo (jb);
             VocAccessRequestStatus.addTo (jb);
             VocAction.addTo (jb);
+	    VocGisStatus.addTo(jb);
 
         }
         catch (Exception ex) {
@@ -300,6 +302,7 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
                 NsiTable.getNsiTable (20).getVocSelect ()
             
             );
+
 
         }
         catch (Exception ex) {
