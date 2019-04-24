@@ -5,7 +5,7 @@ define ([], function () {
     return function (data, view) {
 
         data._can = {
-            edit: $_USER.role.admin || $_USER.uuid_org == $_REQUEST.id
+            edit: $_USER.role.admin && !data.item.is_rokr || $_USER.uuid_org == $_REQUEST.id
         }
 
         var layout = w2ui ['voc_organization_legal_layout']
