@@ -10,6 +10,7 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.voc.VocBic;
+import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi50;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi329;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi50;
 import ru.gosuslugi.dom.schema.integration.bills.ImportAcknowledgmentRequest;
@@ -42,6 +43,8 @@ public class AcknowledgmentLog extends GisWsLogTable {
         
         Object uuid = r.get ("r.uuid");
         
+        r.put ("nsi50", db.getIdx (m.select (Nsi50.class, "*")));
+        
         r.put ("items", 
                 
             db.getList (
@@ -66,8 +69,11 @@ public class AcknowledgmentLog extends GisWsLogTable {
                 .toMaybeOne (PenaltiesAndCourtCosts.class, "AS pen").on ()
                 .toMaybeOne (VocNsi329.class, "code", "guid").on ("pen.code_vc_nsi_329=vc_nsi_329.code AND vc_nsi_329.isactual=1")
 
-                .toMaybeOne (AnyChargeInfo.class, "AS chg", "*").where (ChargeInfo.c.UUID_INS_PRODUCT.lc () + " IS NULL").on ("chg.id=root." + AcknowledgmentItem.c.UUID_CHARGE.lc ())
-                .toMaybeOne (VocNsi50.class,             "guid AS hstype").on ("chg.code_vc_nsi_50=vc_nsi_50.code AND vc_nsi_50.isactual=1")
+                .toMaybeOne (AnyChargeInfo.class, "AS chg", "*")
+                    .where (ChargeInfo.c.UUID_GEN_NEED_RES.lc () + " IS NULL")
+                    .on ("chg.id=root." + AcknowledgmentItem.c.UUID_CHARGE.lc ()
+                )
+                .toMaybeOne (VocNsi50.class,             "guid AS hstype").on ("vc_nsi_50.code=(CASE WHEN chg.UUID_INS_PRODUCT IS NOT NULL THEN '11' ELSE chg.code_vc_nsi_50 END) AND vc_nsi_50.isactual=1")
                 .toMaybeOne (AdditionalService.class,    "guid AS astype").on ()
                 .toMaybeOne (MainMunicipalService.class, "guid AS mstype").on ()
                 .toMaybeOne (BankAccount.class, "AS ba"
