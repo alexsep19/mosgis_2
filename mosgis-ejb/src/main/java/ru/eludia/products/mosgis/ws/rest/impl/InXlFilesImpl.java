@@ -203,7 +203,7 @@ public class InXlFilesImpl extends BaseCRUD<InXlFile> implements InXlFilesLocal 
                 
         Select select = ModelHolder.getModel ()
             .select (getTable (), "AS root", "*", "uuid AS id")
-            .toOne (VocOrganization.class, "AS org", "label").on ()
+            .toMaybeOne (VocOrganization.class, "AS org", "label").on ()
             .toOne (VocUser.class, "AS u", "label").on ()
             .toOne (InXlFileLog.class, "AS log", "ts").on ()
             .orderBy ("root.ts DESC")
