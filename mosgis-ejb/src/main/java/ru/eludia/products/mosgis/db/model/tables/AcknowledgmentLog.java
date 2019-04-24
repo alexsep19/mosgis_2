@@ -10,6 +10,7 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
 import ru.eludia.products.mosgis.db.model.voc.VocBic;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi50;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi329;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi50;
@@ -38,6 +39,12 @@ public class AcknowledgmentLog extends GisWsLogTable {
             .toOne (Acknowledgment.class, "AS r"
                 , EnTable.c.UUID.lc ()
             ).on ()
+                
+            .toOne (PaymentDocument.class).on ()
+                
+            .toMaybeOne (VocOrganization.class
+                , VocOrganization.c.ORGPPAGUID.lc () + " AS orgppaguid"
+            ).on ()            
               
         );
         
