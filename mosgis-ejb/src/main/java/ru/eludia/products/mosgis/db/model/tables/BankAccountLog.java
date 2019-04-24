@@ -1,7 +1,11 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Logger;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.EnTable;
@@ -62,6 +66,13 @@ public class BankAccountLog extends GisWsLogTable {
     private static LoadAccountRegOperator toLoadAccountRegOperator(Map<String, Object> r) {
 
 	r.put("number", r.get(BankAccount.c.ACCOUNTNUMBER.lc()));
+
+	if (DB.ok(r.get(BankAccount.c.ACCOUNTREGOPERATORGUID.lc()))) {
+
+	    String ts_plus_1_day = LocalDate.parse(r.get("ts").toString().substring(0, 10)).plusDays(1).toString();
+
+	    r.put(BankAccount.c.OPENDATE.lc(), ts_plus_1_day); // HACK: opendate / update date should be greater by 1 day each time
+	}
 
 	LoadAccountRegOperator result = DB.to.javaBean(LoadAccountRegOperator.class, r);
 
