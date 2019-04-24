@@ -1,5 +1,11 @@
 define ([], function () {
 
+    $_DO.import_voc_organizations = function (e) {
+    
+        use.block ('voc_organizations_import_popup')        
+    
+    }
+
     $_DO.check_voc_organizations = function (e) {
 
         function croak () {
@@ -16,13 +22,11 @@ define ([], function () {
                 grid.lock ('Запрос в ГИС ЖКХ...', true)
 
                 query ({type: 'voc_organizations', action: 'import', id: undefined}, {data: {ogrn: ogrn}}, function (d) {
-
-darn (d)
                     
                     var clock = setInterval (function () {
                     
                         query ({type: 'out_soap_export_nsi_item', part: 'rq', id: d.id}, {data: {ogrn: ogrn}}, function (out_soap) {
-darn (out_soap)                        
+
                             if (out_soap.id_status < 3) return
                             
                             clearInterval (clock)

@@ -15,6 +15,14 @@ define ([], function () {
                 toolbar: true,
                 footer: true
             },
+            
+            toolbar: {
+
+                items: [
+                    {type: 'button', caption: 'Массовый импорт из ГИС ЖКХ', onClick: $_DO.import_voc_organizations, icon: 'w2ui-icon-plus', off: !$_USER.role.admin},
+                ].filter (not_off),
+
+            },
 
             searches: [
                 {field: 'ogrn',      caption: 'ОГРН(ИП)',            type: 'text', operator: 'is', operators: ['is']},
