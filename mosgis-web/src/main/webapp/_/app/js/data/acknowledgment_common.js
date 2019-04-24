@@ -47,6 +47,8 @@ define ([], function () {
         it.customer_label = it ['org_customer.label'] || it ['ind_customer.label']
         it.pay_amount     = it ['pay.amount']
 
+        it.err_text       = it ['out_soap.err_text']
+
     }
 
     return function (done) {
