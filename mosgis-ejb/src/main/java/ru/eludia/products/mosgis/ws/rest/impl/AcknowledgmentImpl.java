@@ -17,8 +17,10 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.Account;
 import ru.eludia.products.mosgis.db.model.tables.AcknowledgmentItem;
+import ru.eludia.products.mosgis.db.model.tables.AcknowledgmentLog;
 import ru.eludia.products.mosgis.db.model.tables.AnyChargeInfo;
 import ru.eludia.products.mosgis.db.model.tables.ChargeInfo;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.PaymentDocument;
 import ru.eludia.products.mosgis.db.model.tables.Payment;
 import ru.eludia.products.mosgis.db.model.tables.PenaltiesAndCourtCosts;
@@ -88,6 +90,9 @@ public class AcknowledgmentImpl extends BaseCRUD<Acknowledgment> implements Ackn
             .toMaybeOne (VocPerson.class, "AS ind_customer"
                 , VocPerson.c.LABEL.lc ()
             ).on ("acct.uuid_person_customer=ind_customer.uuid")
+                
+            .toMaybeOne (AcknowledgmentLog.class).on ()
+            .toMaybeOne (OutSoap.class, "err_text").on ()
                 
         );
 
