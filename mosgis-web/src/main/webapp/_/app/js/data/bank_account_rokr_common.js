@@ -83,11 +83,11 @@ define ([], function () {
     }
 
     $_DO.annul_bank_account_rokr_common = function (e) {
-        use.block ('bank_account_annul_popup')
+        use.block ('bank_account_rokr_annul_popup')
     }
     
     $_DO.terminate_bank_account_rokr_common = function (e) {
-        use.block ('bank_account_terminate_popup')
+        use.block ('bank_account_rokr_terminate_popup')
     }
     
     $_DO.set_bank_acct_bank_account_rokr_common = function (e) {   

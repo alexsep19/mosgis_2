@@ -137,4 +137,8 @@ public class WsGisCapitalRepairClient {
     public AckRequest.Ack importRegionalOperatorAccount (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
         return getPort (orgPPAGuid, messageGUID).importRegionalOperatorAccounts (BankAccountLog.toImportAccountRegionalOperatorRequest (r)).getAck ();
     }
+    
+    public AckRequest.Ack terminateRegionalOperatorAccount (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importRegionalOperatorAccounts (BankAccountLog.toTerminateAccountRegionalOperatorRequest (r)).getAck ();
+    }
 }

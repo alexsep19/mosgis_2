@@ -132,6 +132,14 @@ public class BankAccounts extends EJBResource <BankAccountLocal> {
 	return back.doAlter (id, getUser ());
     }
 
+    @POST
+    @Path("{id}/terminate")
+    @Consumes (APPLICATION_JSON)
+    @Produces (APPLICATION_JSON)
+    public JsonObject doTerminate (@PathParam ("id") String id, JsonObject p) {
+        return back.doTerminate (id, p, getUser());
+    }
+
 //    @POST
 //    @Path("{id}/annul")
 //    @Produces(APPLICATION_JSON)
