@@ -15,6 +15,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.gosuslugi.dom.schema.integration.capital_repair.ImportAccountRegionalOperatorRequest;
 import ru.gosuslugi.dom.schema.integration.capital_repair.ImportAccountRegionalOperatorRequest.ImportAccountRegOperator;
 import ru.gosuslugi.dom.schema.integration.capital_repair.ImportAccountRegionalOperatorRequest.ImportAccountRegOperator.LoadAccountRegOperator;
+import ru.gosuslugi.dom.schema.integration.capital_repair.ImportAccountRegionalOperatorRequest.ImportAccountRegOperator.CloseAccountRegOperator;
 
 public class BankAccountLog extends GisWsLogTable {
 
@@ -80,4 +81,22 @@ public class BankAccountLog extends GisWsLogTable {
 
 	return result;
     }
+
+    public static ImportAccountRegionalOperatorRequest toTerminateAccountRegionalOperatorRequest(Map<String, Object> r) {
+
+	final ImportAccountRegOperator iao = DB.to.javaBean(ImportAccountRegOperator.class, r);
+
+	iao.setTransportGuid(UUID.randomUUID().toString());
+
+	iao.setCloseAccountRegOperator(DB.to.javaBean(CloseAccountRegOperator.class, r));
+
+
+	final ImportAccountRegionalOperatorRequest result = new ImportAccountRegionalOperatorRequest();
+
+	result.getImportAccountRegOperator().add(iao);
+
+
+	return result;
+    }
+
 }

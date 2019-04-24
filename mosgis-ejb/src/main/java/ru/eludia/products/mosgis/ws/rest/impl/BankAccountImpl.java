@@ -41,7 +41,7 @@ public class BankAccountImpl extends BaseCRUD<BankAccount> implements BankAccoun
 	switch (action) {
 	    case APPROVE:
 //	    case ANNUL:
-//	    case TERMINATE:
+	    case TERMINATE:
 		return queue;
 	    default:
 		return null;
@@ -108,6 +108,19 @@ public class BankAccountImpl extends BaseCRUD<BankAccount> implements BankAccoun
 
     });}
 
+
+    @Override
+    public JsonObject doTerminate(String id, JsonObject p, User user) { return doAction((db) -> {
+
+	db.update(BankAccount.class, getData(p,
+	    "uuid", id,
+	    "id_ctr_status", VocGisStatus.i.PENDING_RQ_TERMINATE.getId()
+	));
+
+	logAction(db, user, id, VocAction.i.TERMINATE);
+
+    });}
+
 //    @Override
 //    public JsonObject doAnnul (String id, JsonObject p, User user) {return doAction ((db) -> {
 //
@@ -119,18 +132,6 @@ public class BankAccountImpl extends BaseCRUD<BankAccount> implements BankAccoun
 //        db.update (getTable (), r);
 //
 //        logAction (db, user, id, VocAction.i.ANNUL);
-//
-//    });}
-//
-//    @Override
-//    public JsonObject doTerminate(String id, JsonObject p, User user) { return doAction((db) -> {
-//
-//	db.update(BankAccount.class, getData(p,
-//	    "uuid", id,
-//	    "id_ctr_status", VocGisStatus.i.PENDING_RQ_TERMINATE.getId()
-//	));
-//
-//	logAction(db, user, id, VocAction.i.TERMINATE);
 //
 //    });}
 }

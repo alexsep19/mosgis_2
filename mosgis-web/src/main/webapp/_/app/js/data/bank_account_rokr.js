@@ -60,6 +60,11 @@ define([], function () {
                     case 34:
                     case 40:
                         it._can.alter = 1
+                }
+
+                switch (it.id_ctr_status) {
+                    case 40:
+                    case 94:
                         it._can.terminate = 1
                 }
 

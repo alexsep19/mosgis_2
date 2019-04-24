@@ -27,7 +27,7 @@ import ru.gosuslugi.dom.schema.integration.capital_repair_service_async.Fault;
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class ExportBankAccount extends GisExportMDB<BankAccountLog> {
+public class ExportBankAccountMDB extends GisExportMDB<BankAccountLog> {
     
     @EJB
     WsGisCapitalRepairClient wsGisCapitalRepairClient;
@@ -48,10 +48,10 @@ public class ExportBankAccount extends GisExportMDB<BankAccountLog> {
             case PLACING:
             case EDITING:
                 return wsGisCapitalRepairClient.importRegionalOperatorAccount(orgPPAGuid, messageGUID, r);
+	    case TERMINATION:
+		return wsGisCapitalRepairClient.terminateRegionalOperatorAccount(orgPPAGuid, messageGUID, r);
 //            case ANNULMENT:
 //                return wsGisCapitalRepairClient.deleteRegionalOperatorAccount(orgPPAGuid, messageGUID, r);
-//	    case TERMINATION:
-//		return wsGisCapitalRepairClient.terminateRegionalOperatorAccount(orgPPAGuid, messageGUID, r);
             default: 
                 throw new IllegalArgumentException ("No action implemented for " + action.name ());
         }
