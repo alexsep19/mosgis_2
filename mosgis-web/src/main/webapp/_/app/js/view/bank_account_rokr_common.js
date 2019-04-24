@@ -76,7 +76,7 @@ define ([], function () {
 
             fields : [
                 {name: 'accountnumber', type: 'text'},
-                {name: 'opendate', type: 'date'},
+                {name: 'opendate', type: 'date', options: {end: now}},
                 {name: 'label_cred_org', type: 'text'},
                 {name: 'uuid_cred_org', type: 'hidden'},
                 {name: 'bikcredorg', type: 'list', hint: 'Адрес', options: {
@@ -114,6 +114,9 @@ define ([], function () {
             onRefresh: function (e) {e.done (function () {
                 clickOff ($('#label_cred_org'))
                 clickOn ($('#label_cred_org'), $_DO.open_orgs_bank_account_rokr_common)
+
+                var r = w2ui[form_name].record
+                $('input[name=opendate]').prop('readonly', !!r.accountregoperatorguid)
             })}
         })
 
