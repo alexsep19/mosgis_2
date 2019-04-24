@@ -65,7 +65,7 @@ public class GisPollExportAcknowledgmentMDB  extends GisPollMDB {
             
             List<CommonResultType> importResult = state.getImportResult ();
             
-            if (importResult == null || importResult.isEmpty ()) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");            
+            if (importResult == null || importResult.isEmpty ()) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
             
             CommonResultType cr = importResult.get (0);
             
@@ -74,8 +74,8 @@ public class GisPollExportAcknowledgmentMDB  extends GisPollMDB {
             if (error != null && !error.isEmpty ()) throw new GisPollException (error.get (0));
             
             final Map<String, Object> h = statusHash (action.getOkStatus ());
-            h.put (c.PAYMENTDOCUMENTID.lc (), cr.getUniqueNumber ());
-            h.put (c.GIS_GUID.lc (), cr.getGUID ());
+
+            h.put (c.ORDERID.lc (), cr.getGUID ());
             update (db, uuid, r, h);
 
             db.update (OutSoap.class, HASH (

@@ -21,6 +21,8 @@ public class Acknowledgment extends EnTable {
 	ID_CTR_STATUS_GIS     (VocGisStatus.class,    VocGisStatus.DEFAULT, "Статус с точки зрения ГИС ЖКХ"),
 
         ID_LOG                (AcknowledgmentLog.class,     "Последнее событие редактирования"),
+        
+        ORDERID               (Type.UUID,           null,   "GUID в ГИС ЖКХ"),  
 
         ;
         
