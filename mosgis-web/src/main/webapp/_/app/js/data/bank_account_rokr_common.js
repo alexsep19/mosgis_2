@@ -83,7 +83,8 @@ define ([], function () {
     }
 
     $_DO.annul_bank_account_rokr_common = function (e) {
-        use.block ('bank_account_rokr_annul_popup')
+        if (!confirm ('Аннулировать эти данные в ГИС ЖКХ?')) return
+        query ({type: 'bank_accounts', action: 'annul'}, {data: {}}, reload_page)
     }
     
     $_DO.terminate_bank_account_rokr_common = function (e) {
