@@ -12,7 +12,6 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import ru.eludia.base.DB;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlOrgPackItem;
-import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlPayment;
 import ru.eludia.products.mosgis.jms.xl.base.XLMDB;
 
 @MessageDriven(activationConfig = {
@@ -42,14 +41,14 @@ public class ParseOrgPacksMDB extends XLMDB {
     private void checkLines (XSSFSheet sheet, DB db, UUID parent) throws SQLException {
         
         List<Map<String, Object>> lines = db.getList (db.getModel ()
-            .select (InXlPayment.class, "*")
-            .where (InXlPayment.c.UUID_XL, parent)
+            .select (InXlOrgPackItem.class, "*")
+            .where (InXlOrgPackItem.c.UUID_XL, parent)
         );
                 
         for (Map<String, Object> line: lines) {
-            XSSFRow row = sheet.getRow ((int) DB.to.Long (line.get (InXlPayment.c.ORD.lc ())));
+            XSSFRow row = sheet.getRow ((int) DB.to.Long (line.get (InXlOrgPackItem.c.ORD.lc ())));
             XSSFCell cell = row.getLastCellNum () - 1 < N_COL_ERR ? row.createCell (N_COL_ERR) : row.getCell (N_COL_ERR);
-            final String err = line.get (InXlPayment.c.ERR.lc ()).toString ();            
+            final String err = line.get (InXlOrgPackItem.c.ERR.lc ()).toString ();            
             cell.setCellValue (DB.ok (err) ? err : "запрошен импорт...");
         }
         

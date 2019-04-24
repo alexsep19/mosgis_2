@@ -23,7 +23,7 @@ public class InXlOrgPackItem extends EnTable {
         ORD                     (Type.NUMERIC, 5,           "Номер строки"),
         ERR                     (Type.STRING,  null,        "Ошибка"),
 
-	ORGN                    (Type.STRING,  15,          "ОГРН(ИП)"),
+	ORGN                    (Type.STRING,  15, null,    "ОГРН(ИП)"),
 	KPP                     (Type.STRING,   9, null,    "КПП")
         ;
 
