@@ -58,8 +58,12 @@ public class InXlFilesImpl extends BaseCRUD<InXlFile> implements InXlFilesLocal 
 
     @Resource(mappedName = "mosgis.inXlPaymentsQueue")
     Queue inXlPaymentsQueue;
+    
     @Resource(mappedName = "mosgis.inXlMeteringValuesQueue")
     Queue inXlMeteringValuesQueue;    
+    
+    @Resource(mappedName = "mosgis.inXlOrgPacksQueue")
+    Queue inXlOrgPacksQueue;    
 
     public Queue getQueue (VocXLFileType.i type) {
         
@@ -70,10 +74,11 @@ public class InXlFilesImpl extends BaseCRUD<InXlFile> implements InXlFilesLocal 
 	    case METERING_DEVICES: return inXlMeteringDevicesQueue;
 	    case PAYMENTS:         return inXlPaymentsQueue;
             case METERING_VALUES:  return inXlMeteringValuesQueue;
+            case ORG_PACKS:        return inXlOrgPacksQueue;
             default: throw new IllegalArgumentException ("XL file type not suported: " + type);
         }
 
-    }    
+    }
 
     @Override
     public JsonObject doCreate (JsonObject p, User user) {return fetchData ((db, job) -> {

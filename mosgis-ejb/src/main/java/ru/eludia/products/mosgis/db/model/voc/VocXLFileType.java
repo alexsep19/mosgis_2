@@ -35,6 +35,7 @@ public class VocXLFileType extends Table {
 	METERING_DEVICES (4, "Приборы учёта"),
 	METERING_VALUES  (5, "Показания приборов учёта"),
 	PAYMENTS         (6, "Платежи"),
+	ORG_PACKS        (7, "Списки ОГРН организаций для импорта из ГИС ЖКХ"),
         ;
                 
         int    id;

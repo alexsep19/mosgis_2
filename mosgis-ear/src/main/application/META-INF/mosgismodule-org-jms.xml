@@ -91,5 +91,21 @@
     </delivery-params-overrides>
     <jndi-name>mosgis.outExportOrgAddServicesQueue</jndi-name>
   </uniform-distributed-queue>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    <!-- очередь обработки запросов на импорт MS Excel-пакетов ОГРН -->
+    <uniform-distributed-queue name="inXlOrgPacksQueue">
+        <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+        <jndi-name>mosgis.inXlOrgPacksQueue</jndi-name>
+    </uniform-distributed-queue>
+  
+  
 
 </weblogic-jms>
