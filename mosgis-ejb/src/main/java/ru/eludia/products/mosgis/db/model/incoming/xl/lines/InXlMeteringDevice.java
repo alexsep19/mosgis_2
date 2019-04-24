@@ -251,7 +251,7 @@ public class InXlMeteringDevice extends EnTable {
             + " IF :NEW.ACCOUNTNUMBER IS NOT NULL THEN "
             + "   SELECT count(*) INTO cnt FROM tb_accounts a "
             + "   join tb_account_items i on i.UUID_ACCOUNT = a.UUID "
-            + "   where a.ACCOUNTNUMBER = :NEW.ACCOUNTNUMBER AND a.id_ctr_status_gis = 10 AND "
+            + "   where a.ACCOUNTNUMBER = :NEW.ACCOUNTNUMBER AND a.id_ctr_status_gis = 40 AND "
             + "      (exists (select 1 from tb_premises_nrs n where i.uuid_premise = n.uuid and n.premisesnum = :NEW.PREMISESNUM) "
             + "      or exists (select 1 from tb_premises_res r where i.uuid_premise = r.uuid and r.premisesnum = :NEW.PREMISESNUM)); "
             + "  IF cnt = 0 THEN raise_application_error (-20000, 'Лицевой счет '|| :NEW.ACCOUNTNUMBER ||' не найден для помещения '||:NEW.PREMISESNUM);END IF; "
