@@ -23,6 +23,7 @@ import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.gosuslugi.dom.schema.integration.base.CommonResultType;
 import ru.gosuslugi.dom.schema.integration.bills_service_async.Fault;
 import ru.eludia.products.mosgis.db.model.tables.Acknowledgment.c;
+import ru.eludia.products.mosgis.db.model.tables.PaymentDocument;
 import ru.eludia.products.mosgis.ws.soap.clients.WsGisBillsClient;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.bills.GetStateResult;
@@ -42,7 +43,8 @@ public class GisPollExportAcknowledgmentMDB  extends GisPollMDB {
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
             .toOne (AcknowledgmentLog.class,     "AS log", "uuid", "action", "id_ctr_status").on ("log.uuid_out_soap=root.uuid")
             .toOne (Acknowledgment.class,        "AS r", "uuid").on ()
-            .toOne (VocOrganization.class,        "AS org", "orgppaguid").on ("r.uuid_org=org.uuid")
+            .toOne (PaymentDocument.class,       "AS pd").on ()
+            .toOne (VocOrganization.class,       "AS org", "orgppaguid").on ("pd.uuid_org=org.uuid")
         ;
     }
 

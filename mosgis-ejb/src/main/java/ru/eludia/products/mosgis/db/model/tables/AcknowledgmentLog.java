@@ -34,10 +34,11 @@ public class AcknowledgmentLog extends GisWsLogTable {
         
         final Map<String, Object> r = db.getMap (m                
                 
-            .get (AcknowledgmentLog.class, id)
+            .get (AcknowledgmentLog.class, id, "*")
                 
             .toOne (Acknowledgment.class, "AS r"
                 , EnTable.c.UUID.lc ()
+                , Acknowledgment.c.ID_CTR_STATUS.lc ()
             ).on ()
                 
             .toOne (PaymentDocument.class).on ()
