@@ -40,7 +40,7 @@ public class BankAccountImpl extends BaseCRUD<BankAccount> implements BankAccoun
 
 	switch (action) {
 	    case APPROVE:
-//	    case ANNUL:
+	    case ANNUL:
 	    case TERMINATE:
 		return queue;
 	    default:
@@ -121,17 +121,17 @@ public class BankAccountImpl extends BaseCRUD<BankAccount> implements BankAccoun
 
     });}
 
-//    @Override
-//    public JsonObject doAnnul (String id, JsonObject p, User user) {return doAction ((db) -> {
-//
-//        final Map<String, Object> r = getData(p,
-//            EnTable.c.UUID,               id,
-//            BankAccount.c.ID_CTR_STATUS,  VocGisStatus.i.PENDING_RQ_ANNULMENT.getId ()
-//        );
-//
-//        db.update (getTable (), r);
-//
-//        logAction (db, user, id, VocAction.i.ANNUL);
-//
-//    });}
+    @Override
+    public JsonObject doAnnul (String id, JsonObject p, User user) {return doAction ((db) -> {
+
+        final Map<String, Object> r = getData(p,
+            EnTable.c.UUID,               id,
+            BankAccount.c.ID_CTR_STATUS,  VocGisStatus.i.PENDING_RQ_ANNULMENT.getId ()
+        );
+
+        db.update (getTable (), r);
+
+        logAction (db, user, id, VocAction.i.ANNUL);
+
+    });}
 }

@@ -99,4 +99,20 @@ public class BankAccountLog extends GisWsLogTable {
 	return result;
     }
 
+    public static ImportAccountRegionalOperatorRequest toDeleteAccountRegionalOperatorRequest(Map<String, Object> r) {
+
+	final ImportAccountRegOperator iao = DB.to.javaBean(ImportAccountRegOperator.class, r);
+
+	iao.setTransportGuid(UUID.randomUUID().toString());
+
+	iao.setCancelAccountRegOperator(Boolean.TRUE);
+
+
+	final ImportAccountRegionalOperatorRequest result = new ImportAccountRegionalOperatorRequest();
+
+	result.getImportAccountRegOperator().add(iao);
+
+
+	return result;
+    }
 }

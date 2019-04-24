@@ -50,8 +50,8 @@ public class ExportBankAccountMDB extends GisExportMDB<BankAccountLog> {
                 return wsGisCapitalRepairClient.importRegionalOperatorAccount(orgPPAGuid, messageGUID, r);
 	    case TERMINATION:
 		return wsGisCapitalRepairClient.terminateRegionalOperatorAccount(orgPPAGuid, messageGUID, r);
-//            case ANNULMENT:
-//                return wsGisCapitalRepairClient.deleteRegionalOperatorAccount(orgPPAGuid, messageGUID, r);
+            case ANNULMENT:
+                return wsGisCapitalRepairClient.deleteRegionalOperatorAccount(orgPPAGuid, messageGUID, r);
             default: 
                 throw new IllegalArgumentException ("No action implemented for " + action.name ());
         }

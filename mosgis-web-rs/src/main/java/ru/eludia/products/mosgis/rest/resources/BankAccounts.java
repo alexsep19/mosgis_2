@@ -140,11 +140,10 @@ public class BankAccounts extends EJBResource <BankAccountLocal> {
         return back.doTerminate (id, p, getUser());
     }
 
-//    @POST
-//    @Path("{id}/annul")
-//    @Produces(APPLICATION_JSON)
-//    public JsonObject doAnnul(@PathParam("id") String id, JsonObject p) {
-//	checkPost();
-//	return back.doAnnul(id, p, getUser());
-//    }
+    @POST
+    @Path("{id}/annul")
+    @Produces(APPLICATION_JSON)
+    public JsonObject doAnnul(@PathParam("id") String id, JsonObject p) {
+	return back.doAnnul(id, p, getUser());
+    }
 }
