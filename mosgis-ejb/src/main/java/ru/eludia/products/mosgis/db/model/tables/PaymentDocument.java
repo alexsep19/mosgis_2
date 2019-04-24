@@ -272,7 +272,6 @@ public class PaymentDocument extends EnTable {
     public enum Action {
 
         PLACING     (VocGisStatus.i.PENDING_RP_PLACING,   VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_PLACING),
-//        EDITING     (VocGisStatus.i.PENDING_RP_EDIT,      VocGisStatus.i.APPROVED, VocGisStatus.i.FAILED_STATE),
         ;
         
         VocGisStatus.i nextStatus;
@@ -301,9 +300,7 @@ public class PaymentDocument extends EnTable {
             
             switch (status) {
                 case PENDING_RQ_PLACING:   return PLACING;
-//                case PENDING_RQ_EDIT:      return EDITING;
                 case PENDING_RP_PLACING:   return PLACING;
-//                case PENDING_RP_EDIT:      return EDITING;
                 default: return null;
             }
             

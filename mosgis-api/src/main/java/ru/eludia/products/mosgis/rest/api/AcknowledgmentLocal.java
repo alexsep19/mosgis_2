@@ -10,5 +10,7 @@ public interface AcknowledgmentLocal extends CRUDBackend {
 
     JsonObject doPatch (String id, JsonObject p, User user);
     JsonObject doDistribute (String id, JsonObject p, User user);
+    JsonObject doApprove    (String id, User user);
+    JsonObject doAlter      (String id, User user);
 
 }
