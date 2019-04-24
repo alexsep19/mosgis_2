@@ -59,9 +59,9 @@ public class InXlOrgPackItem extends EnTable {
 
     private static void setFields (Map<String, Object> r, XSSFRow row) throws XLException {
 
-	String ogrn = toString (row, 1, RE_OGRN, "Некорректный формат ОГРН(ИП)");
+	String ogrn = toString (row, 0, RE_OGRN, "Некорректный формат ОГРН(ИП)");
         
-	String kpp = toString (row, 2);
+	String kpp = toString (row, 1);
         
         if (DB.ok (kpp)) {            
             if (ogrn.length () == 15) throw new XLException ("Индивидуальные предпрениматели не имеют КПП.");
@@ -81,7 +81,7 @@ public class InXlOrgPackItem extends EnTable {
 
 	key ("uuid_xl", c.UUID_XL);        
         
-        trigger ("BEFORE UPDATE", ""
+        trigger ("BEFORE INSERT OR UPDATE", ""
 
             + "BEGIN "
             + " IF :NEW.err IS NOT NULL THEN :NEW.is_deleted := 1; END IF; "
