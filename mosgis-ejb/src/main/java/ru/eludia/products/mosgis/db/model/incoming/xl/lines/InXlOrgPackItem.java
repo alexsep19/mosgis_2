@@ -11,10 +11,8 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
-import ru.eludia.products.mosgis.db.model.tables.Account;
-import ru.eludia.products.mosgis.db.model.tables.PaymentDocument;
+import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFileLog;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
-import ru.eludia.products.mosgis.db.model.voc.VocPaymentBaseType;
 import ru.eludia.products.mosgis.jms.xl.base.XLException;
 
 public class InXlOrgPackItem extends EnTable {
@@ -24,6 +22,8 @@ public class InXlOrgPackItem extends EnTable {
     public enum c implements ColEnum {
 
         UUID_XL                 (InXlFile.class,            "Файл импорта"),
+        UUID_PACK               (InXlFileLog.class,         "Событие (пакет) отправки запроса"),
+
         ORD                     (Type.NUMERIC, 5,           "Номер строки"),
         ERR                     (Type.STRING,  null,        "Ошибка"),
 

@@ -1,9 +1,9 @@
 package ru.eludia.products.mosgis.db.model.incoming.xl;
 
 import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.LogTable;
+import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 
-public class InXlFileLog extends LogTable {
+public class InXlFileLog extends GisWsLogTable {
 
     public InXlFileLog () {
         
