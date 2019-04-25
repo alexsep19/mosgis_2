@@ -60,11 +60,14 @@ public class BankAccount extends EnTable {
         
         key ("uuid_org", "uuid_org");
 
+	key (c.ACCOUNTREGOPERATORGUID.lc(), c.ACCOUNTREGOPERATORGUID.lc());
+
         trigger ("BEFORE INSERT OR UPDATE", 
                 
             "DECLARE "
             + " PRAGMA AUTONOMOUS_TRANSACTION; "
-            + " cnt NUMBER;"
+            + " cnt NUMBER; "
+	    + " status_label VARCHAR(255); "
             + "BEGIN "
 
 		+ "IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS "
@@ -73,6 +76,15 @@ public class BankAccount extends EnTable {
 		+ " THEN "
 		    + " :NEW.ID_CTR_STATUS := " + VocGisStatus.i.MUTATING
 		+ "; END IF; "
+
+		+ "IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS "
+		    + " AND :OLD.ID_CTR_STATUS <> " + VocGisStatus.i.APPROVED
+		    + " AND :NEW.ID_CTR_STATUS =  " + VocGisStatus.i.PENDING_RQ_TERMINATE
+		+ "THEN "
+		    + " SELECT label INTO status_label FROM " + VocGisStatus.TABLE_NAME + " WHERE ID = :OLD.ID_CTR_STATUS; "
+		    + " raise_application_error (-20000, 'Недоступно закрытие счёта на статусе ' || status_label); "
+		+ "END IF; "
+
                 + "IF :NEW.is_deleted=0 THEN BEGIN "
                     
                     + " FOR i IN ("

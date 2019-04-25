@@ -15,7 +15,7 @@ public class VocGisStatus extends Table {
     private static JsonArray jsonArray;
     private static JsonArray jsonArrayLite;
     
-    private static final String TABLE_NAME = "vc_gis_status";
+    public static final String TABLE_NAME = "vc_gis_status";
     
     public static final Num DEFAULT = new Num (VocGisStatus.i.PROJECT.getId ());
     

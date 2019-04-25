@@ -7,11 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
+import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
+import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
+import javax.jms.Queue;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
@@ -21,6 +25,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.ws.WsMessages;
+import ru.eludia.products.mosgis.jms.UUIDPublisher;
 import ru.eludia.products.mosgis.jms.base.WsMDB;
 import ru.eludia.products.mosgis.ws.soap.impl.base.Errors;
 import ru.gosuslugi.dom.schema.integration.base.BaseAsyncResponseType;
@@ -30,6 +35,7 @@ import ru.gosuslugi.dom.schema.integration.base.CommonResultType;
 import ru.gosuslugi.dom.schema.integration.capital_repair.ImportAccountRegionalOperatorRequest;
 import ru.gosuslugi.dom.schema.integration.capital_repair.ImportAccountRegionalOperatorRequest.ImportAccountRegOperator;
 import ru.gosuslugi.dom.schema.integration.capital_repair.ImportAccountRegionalOperatorRequest.ImportAccountRegOperator.LoadAccountRegOperator;
+import ru.gosuslugi.dom.schema.integration.capital_repair.ImportAccountRegionalOperatorRequest.ImportAccountRegOperator.CloseAccountRegOperator;
 import ru.gosuslugi.dom.schema.integration.capital_repair.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.capital_repair.CapRemCommonResultType;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_base.RegOrgType;
@@ -40,7 +46,13 @@ import ru.gosuslugi.dom.schema.integration.organizations_registry_base.RegOrgTyp
     , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
 public class ImportRegionalOperatorAccounts extends WsMDB {
-    
+
+    @EJB
+    protected UUIDPublisher UUIDPublisher;
+
+    @Resource(mappedName = "mosgis.inExportBankAccountQueue")
+    Queue queue;
+
     private final static JAXBContext jc;
     
     static {
@@ -119,6 +131,10 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
 	    return doMerge (r, accountRegOperatorGuid, transportGuid, i.getLoadAccountRegOperator() );
 	}
 
+	if (i.getCloseAccountRegOperator() != null) {
+	    return doTerminate (r, accountRegOperatorGuid, transportGuid, i.getCloseAccountRegOperator());
+	}
+
         throw new UnsupportedOperationException ("Не найден LoadAccountRegOperator, такие запросы пока не поддерживаются");
     }
 
@@ -148,9 +164,41 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
 
 	    String uuid = db.upsertId (BankAccount.class, r, upsertKey);
 
-            String idLog = m.createIdLogWs (db, BankAccount.class, uuidInSoap, uuid, VocAction.i.CREATE);
+            String id_log = m.createIdLogWs (db, BankAccount.class, uuidInSoap, uuid, VocAction.i.CREATE);
 
             return DB.to.UUIDFromHex(uuid);
+
+        }
+    }
+
+    private UUID doTerminate (Map<String, Object> wsr, String accountRegOperatorGuid, String transportGuid, CloseAccountRegOperator src) throws Exception {
+        MosGisModel m = ModelHolder.getModel ();
+
+        final Map<String, Object> r = DB.to.Map(src);
+
+        final UUID uuidInSoap = (UUID) wsr.get ("uuid");
+
+        try (DB db = m.getDb ()) {
+
+	    logger.info ("r=" + r);
+
+	    Object uuid = getBankAccountUuid(db, accountRegOperatorGuid);
+
+	    if (uuid == null) {
+		throw new UnsupportedOperationException("Не найден счёт по AccountRegOperatorGuid");
+	    }
+
+	    db.update(BankAccount.class, HASH(
+		"uuid", uuid,
+		"id_ctr_status", VocGisStatus.i.PENDING_RQ_TERMINATE.getId(),
+		BankAccount.c.CLOSEDATE.lc(), src.getCloseDate()
+	    ));
+
+	    String id_log = m.createIdLogWs (db, BankAccount.class, uuidInSoap, uuid, VocAction.i.TERMINATE);
+
+	    UUIDPublisher.publish(queue, id_log);
+
+            return null;
 
         }
     }
@@ -171,8 +219,6 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
 
     private String getUpsertKey(DB db, Map<String, Object> r) throws SQLException {
 
-	final Model m = db.getModel();
-
 	Object id = r.get(BankAccount.c.ACCOUNTREGOPERATORGUID.lc());
 
 	if (!DB.ok(id)) {
@@ -181,35 +227,58 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
 	    return null;
 	}
 
-	final Map<String, Object> ba = db.getMap (m
-	    .select (BankAccount.class, EnTable.c.UUID.lc(), BankAccount.c.ID_CTR_STATUS.lc())
-	    .where  (EnTable.c.UUID, id)
-	);
+	final Map<String, Object> ba = getBankAccount (db, id);
 
+	if (ba == null) {
+	    r.remove(BankAccount.c.ACCOUNTREGOPERATORGUID.lc());
+	    r.remove(EnTable.c.UUID.lc());
+	    return EnTable.c.UUID.lc();
+	}
 
-	if (ba != null) {
-	    checkStatus (ba);
+	checkStatusMerge(ba);
+
+	if (id.toString().equals(ba.get(BankAccount.c.ACCOUNTREGOPERATORGUID.lc()))) {
+	    r.remove(EnTable.c.UUID.lc());
+	    return BankAccount.c.ACCOUNTREGOPERATORGUID.lc();
+	}
+
+	if (id.toString().equals(ba.get(EnTable.c.UUID.lc()))) {
 	    r.put(EnTable.c.UUID.lc(), r.get(BankAccount.c.ACCOUNTREGOPERATORGUID.lc()));
 	    r.remove(BankAccount.c.ACCOUNTREGOPERATORGUID.lc());
 	    return EnTable.c.UUID.lc();
 	}
 
-	final Map<String, Object> baApproved = db.getMap (m
-	    .select (BankAccount.class, BankAccount.c.ACCOUNTREGOPERATORGUID.lc(), BankAccount.c.ID_CTR_STATUS.lc())
-	    .where  (BankAccount.c.ACCOUNTREGOPERATORGUID, id)
+	return null;
+    }
+
+    private Map<String, Object> getBankAccount(DB db, Object accountRegOperatorGuid) throws SQLException {
+
+	final Model m = db.getModel();
+
+	final Map<String, Object> ba = db.getMap(m
+	    .select(BankAccount.class, "*")
+	    .where(EnTable.c.UUID, accountRegOperatorGuid)
 	);
 
-
-	if (baApproved != null) {
-	    checkStatus(baApproved);
-	    r.remove(EnTable.c.UUID.lc());
-	    return BankAccount.c.ACCOUNTREGOPERATORGUID.lc();
+	if (ba != null) {
+	    return ba;
 	}
 
-	r.remove(BankAccount.c.ACCOUNTREGOPERATORGUID.lc());
-	r.remove(EnTable.c.UUID.lc());
+	return db.getMap(m
+	    .select(BankAccount.class, "*")
+	    .where(BankAccount.c.ACCOUNTREGOPERATORGUID, accountRegOperatorGuid)
+	);
+    }
 
-	return EnTable.c.UUID.lc();
+    private Object getBankAccountUuid(DB db, String accountRegOperatorGuid) throws SQLException {
+
+	final Map<String, Object> ba = getBankAccount (db, accountRegOperatorGuid);
+
+	if (ba == null) {
+	    return null;
+	}
+
+	return ba.get(EnTable.c.UUID.lc());
     }
 
     private void setCredOrg(DB db, LoadAccountRegOperator src, Map<String, Object> r) throws SQLException {
@@ -234,7 +303,7 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
 	r.put(BankAccount.c.UUID_CRED_ORG.lc(), uuidCredOrg);
     }
 
-    private void checkStatus(Map<String, Object> ba) {
+    private void checkStatusMerge(Map<String, Object> ba) {
 
 	switch(VocGisStatus.i.forId(ba.get(BankAccount.c.ID_CTR_STATUS.lc()))) {
 	    case PROJECT:
