@@ -60,7 +60,7 @@ public class ParseOrgPacksMDB extends XLMDB {
             XSSFRow row = sheet.getRow ((int) DB.to.Long (line.get (InXlOrgPackItem.c.ORD.lc ())));
             XSSFCell cell = row.getLastCellNum () - 1 < N_COL_ERR ? row.createCell (N_COL_ERR) : row.getCell (N_COL_ERR);
             final String err = line.get (InXlOrgPackItem.c.ERR.lc ()).toString ();            
-            cell.setCellValue (DB.ok (err) ? err : "запрошен импорт...");
+            cell.setCellValue (DB.ok (err) ? err : "Принято к отправке запроса в ГИС");
         }
         
     }

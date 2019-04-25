@@ -26,6 +26,7 @@ public class InXlOrgPackItem extends EnTable {
 
         ORD                     (Type.NUMERIC, 5,           "Номер строки"),
         ERR                     (Type.STRING,  null,        "Ошибка"),
+        LABEL                   (Type.STRING,  null,        "Наименование импортированной организации"),
 
 	OGRN                    (Type.NUMERIC,  15, null,    "ОГРН(ИП)"),
 	KPP                     (Type.NUMERIC,   9, null,    "КПП")
@@ -85,6 +86,7 @@ public class InXlOrgPackItem extends EnTable {
         cols  (c.class);
 
 	key ("uuid_xl", c.UUID_XL);                                
+	key (c.UUID_PACK);
         
         trigger ("BEFORE INSERT", ""
                 
