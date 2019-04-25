@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.jms.ws;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,10 +12,14 @@ import javax.ejb.MessageDriven;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import ru.eludia.base.DB;
+import ru.eludia.base.Model;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.BankAccount;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.ws.WsMessages;
 import ru.eludia.products.mosgis.jms.base.WsMDB;
 import ru.eludia.products.mosgis.ws.soap.impl.base.Errors;
@@ -106,23 +111,26 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
     }
 
     private ImportAccountRegOperator toImportAccountRegOperator (Map<String, Object> r, ImportAccountRegionalOperatorRequest.ImportAccountRegOperator i) throws Exception {
+
         String accountRegOperatorGuid = i.getAccountRegOperatorGuid();
-        if (i.getLoadAccountRegOperator() != null) return toImportAccountRegOperator (r, accountRegOperatorGuid, i.getLoadAccountRegOperator() );
-        throw new UnsupportedOperationException ("Не найден AccountRegionalOperator, такие запросы пока не поддерживаются");
+
+	if (i.getLoadAccountRegOperator() != null) {
+	    r.put(BankAccount.c.ACCOUNTREGOPERATORGUID.lc(), i.getAccountRegOperatorGuid());
+	    return toImportAccountRegOperator (r, accountRegOperatorGuid, i.getLoadAccountRegOperator() );
+	}
+
+        throw new UnsupportedOperationException ("Не найден LoadAccountRegOperator, такие запросы пока не поддерживаются");
     }
 
     private ImportAccountRegOperator toImportAccountRegOperator (Map<String, Object> wsr, String accountRegOperatorGuid, LoadAccountRegOperator src) throws Exception {
-
-        if (accountRegOperatorGuid != null) throw new UnsupportedOperationException ("Операции обновления пока не поддерживаются");
 
         MosGisModel m = ModelHolder.getModel ();
 
         Map<String, Object> r = toMap (src);
 
-	r.put (BankAccount.c.IS_ROKR.lc(), 1);
-        r.put (BankAccount.c.UUID_ORG.lc (), wsr.get (WsMessages.c.UUID_ORG.lc ()));
+	r.put (BankAccount.c.UUID_ORG.lc (), wsr.get (WsMessages.c.UUID_ORG.lc ()));
+	r.put (BankAccount.c.ACCOUNTREGOPERATORGUID.lc(), wsr.get(BankAccount.c.ACCOUNTREGOPERATORGUID.lc()));
 
-logger.info ("r=" + r);
 
         ImportAccountRegOperator result = new ImportAccountRegOperator ();
 
@@ -130,11 +138,17 @@ logger.info ("r=" + r);
 
         try (DB db = m.getDb ()) {
 
-            UUID uuid = (UUID) db.insertId (BankAccount.class, r);
+	    setCredOrg (db, src, r);
+
+	    String upsertKey = getUpsertKey(db, r);
+
+	    logger.info ("r=" + r);
+
+	    String uuid = db.upsertId (BankAccount.class, r, upsertKey);
 
             String idLog = m.createIdLogWs (db, BankAccount.class, uuidInSoap, uuid, VocAction.i.CREATE);
 
-            result.setAccountRegOperatorGuid(idLog);
+            result.setAccountRegOperatorGuid(uuid);
 
             return result;
 
@@ -144,18 +158,92 @@ logger.info ("r=" + r);
     private Map<String, Object> toMap (LoadAccountRegOperator src) throws UnsupportedOperationException {
         
         final Map<String, Object> r = DB.to.Map(src);
-        
-        RegOrgType credOrg = src.getCredOrganization();
-        if (credOrg != null) {
-            r.put("orgppaguid", credOrg.getOrgRootEntityGUID());
-        }
-        else {
-            throw new UnsupportedOperationException ("Не найден credOrg, такие запросы не поддерживаются");
-        }
 
 	r.put(BankAccount.c.ACCOUNTNUMBER.lc(), src.getNumber());
+
+	r.put(BankAccount.c.IS_ROKR.lc(), 1);
+
+	logger.info("toMap r=" + r);
+
+	return r;
         
-        return r;
-        
+    }
+
+    private String getUpsertKey(DB db, Map<String, Object> r) throws SQLException {
+
+	final Model m = db.getModel();
+
+	Object id = r.get(BankAccount.c.ACCOUNTREGOPERATORGUID.lc());
+
+	if (!DB.ok(id)) {
+	    r.remove(BankAccount.c.ACCOUNTREGOPERATORGUID.lc());
+	    r.remove(EnTable.c.UUID.lc());
+	    return null;
+	}
+
+	final Map<String, Object> ba = db.getMap (m
+	    .select (BankAccount.class, EnTable.c.UUID.lc(), BankAccount.c.ID_CTR_STATUS.lc())
+	    .where  (EnTable.c.UUID, id)
+	);
+
+
+	if (ba != null) {
+	    checkStatus (ba);
+	    r.put(EnTable.c.UUID.lc(), r.get(BankAccount.c.ACCOUNTREGOPERATORGUID.lc()));
+	    r.remove(BankAccount.c.ACCOUNTREGOPERATORGUID.lc());
+	    return EnTable.c.UUID.lc();
+	}
+
+	final Map<String, Object> baApproved = db.getMap (m
+	    .select (BankAccount.class, BankAccount.c.ACCOUNTREGOPERATORGUID.lc(), BankAccount.c.ID_CTR_STATUS.lc())
+	    .where  (BankAccount.c.ACCOUNTREGOPERATORGUID, id)
+	);
+
+
+	if (baApproved != null) {
+	    checkStatus(baApproved);
+	    r.remove(EnTable.c.UUID.lc());
+	    return BankAccount.c.ACCOUNTREGOPERATORGUID.lc();
+	}
+
+	r.remove(BankAccount.c.ACCOUNTREGOPERATORGUID.lc());
+	r.remove(EnTable.c.UUID.lc());
+
+	return EnTable.c.UUID.lc();
+    }
+
+    private void setCredOrg(DB db, LoadAccountRegOperator src, Map<String, Object> r) throws SQLException {
+
+	RegOrgType credOrg = src.getCredOrganization();
+
+	if (credOrg == null) {
+	    throw new UnsupportedOperationException("Не найден CredOrganization, такие запросы не поддерживаются");
+	}
+
+	final Model m = db.getModel();
+
+	String uuidCredOrg = db.getString(m
+	    .select(VocOrganization.class, EnTable.c.UUID.lc())
+	    .where(VocOrganization.c.ORGROOTENTITYGUID, credOrg.getOrgRootEntityGUID())
+	);
+
+	if (uuidCredOrg == null) {
+	    throw new UnsupportedOperationException("Не найден CredOrganization по orgRootEntityGUID, такие запросы не поддерживаются");
+	}
+
+	r.put(BankAccount.c.UUID_CRED_ORG.lc(), uuidCredOrg);
+    }
+
+    private void checkStatus(Map<String, Object> ba) {
+
+	switch(VocGisStatus.i.forId(ba.get(BankAccount.c.ID_CTR_STATUS.lc()))) {
+	    case PROJECT:
+	    case MUTATING:
+		break;
+	    default:
+		throw new UnsupportedOperationException("Операции обновления не поддерживаются на статусе"
+		    + VocGisStatus.i.forId(ba.get(BankAccount.c.ID_CTR_STATUS.lc())).getLabel()
+		);
+	}
     }
 }
