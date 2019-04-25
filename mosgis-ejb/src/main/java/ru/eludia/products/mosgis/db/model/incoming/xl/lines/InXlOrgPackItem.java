@@ -11,6 +11,10 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
+import ru.eludia.products.mosgis.db.model.tables.Account;
+import ru.eludia.products.mosgis.db.model.tables.PaymentDocument;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocPaymentBaseType;
 import ru.eludia.products.mosgis.jms.xl.base.XLException;
 
 public class InXlOrgPackItem extends EnTable {
@@ -79,7 +83,26 @@ public class InXlOrgPackItem extends EnTable {
 
         cols  (c.class);
 
-	key ("uuid_xl", c.UUID_XL);        
+	key ("uuid_xl", c.UUID_XL);                                
+        
+        trigger ("BEFORE INSERT", ""
+                
+            + "DECLARE "
+            + " cnt NUMBER; "
+            + "BEGIN "
+
+            + " IF :NEW.err IS NOT NULL THEN RETURN; END IF; "
+
+	    + " FOR i IN (SELECT label FROM " + VocOrganization.TABLE_NAME + " WHERE orgn=:NEW.orgn AND NVL (kpp, '00') = NVL (:NEW.kpp, '00')) LOOP "
+	    + "   raise_application_error (-20000, 'Эта ' || i.label || ' была импортирована ранее'); "
+	    + " END LOOP; "
+
+	    + " EXCEPTION WHEN OTHERS THEN "
+            + " :NEW.err := REPLACE(SUBSTR(SQLERRM, 1, 1000), 'ORA-20000: ', ''); "
+
+            + "END;"
+
+        );                
         
         trigger ("BEFORE INSERT OR UPDATE", ""
 

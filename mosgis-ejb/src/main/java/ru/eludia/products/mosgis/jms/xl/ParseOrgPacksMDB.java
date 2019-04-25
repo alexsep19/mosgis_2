@@ -12,6 +12,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import ru.eludia.base.DB;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlOrgPackItem;
+import ru.eludia.products.mosgis.db.model.voc.VocFileStatus;
 import ru.eludia.products.mosgis.jms.xl.base.XLMDB;
 
 @MessageDriven(activationConfig = {
@@ -57,6 +58,7 @@ public class ParseOrgPacksMDB extends XLMDB {
     @Override
     protected void completeOK (DB db, UUID parent, XSSFWorkbook wb) throws SQLException {        
         super.completeOK (db, parent, wb);
+        setStatus (db, parent, VocFileStatus.i.PROCESSING);
         //...
     }
 
