@@ -22,6 +22,7 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.BankAccount;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import ru.eludia.products.mosgis.db.model.voc.VocBic;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.ws.WsMessages;
@@ -39,6 +40,7 @@ import ru.gosuslugi.dom.schema.integration.capital_repair.ImportAccountRegionalO
 import ru.gosuslugi.dom.schema.integration.capital_repair.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.capital_repair.CapRemCommonResultType;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_base.RegOrgType;
+import ru.gosuslugi.dom.schema.integration.base.RequestHeader;
 
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inSoapImportRegionalOperatorAccounts")
@@ -74,6 +76,9 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
 
     @Override
     protected BaseAsyncResponseType generateResponse (DB db, Map<String, Object> r, Object request) throws Exception {
+
+	checkRights(db, r);
+
         if (!(request instanceof ImportAccountRegionalOperatorRequest)) throw new Fault (Errors.FMT001300);
         final GetStateResult result = new GetStateResult ();
         fill (result, r, (ImportAccountRegionalOperatorRequest) request);
@@ -185,7 +190,7 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
 	    Object uuid = getBankAccountUuid(db, accountRegOperatorGuid);
 
 	    if (uuid == null) {
-		throw new UnsupportedOperationException("Не найден счёт по AccountRegOperatorGuid");
+		throw new UnsupportedOperationException("Не найден счёт по AccountRegOperatorGuid " + accountRegOperatorGuid);
 	    }
 
 	    db.update(BankAccount.class, HASH(
@@ -286,7 +291,7 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
 	RegOrgType credOrg = src.getCredOrganization();
 
 	if (credOrg == null) {
-	    throw new UnsupportedOperationException("Не найден CredOrganization, такие запросы не поддерживаются");
+	    throw new UnsupportedOperationException("Отсутствует элемент CredOrganization, такие запросы не поддерживаются");
 	}
 
 	final Model m = db.getModel();
@@ -297,10 +302,23 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
 	);
 
 	if (uuidCredOrg == null) {
-	    throw new UnsupportedOperationException("Не найден CredOrganization по orgRootEntityGUID, такие запросы не поддерживаются");
+	    throw new UnsupportedOperationException("Не найдена кредитная организация по orgRootEntityGUID " + credOrg.getOrgRootEntityGUID());
 	}
 
 	r.put(BankAccount.c.UUID_CRED_ORG.lc(), uuidCredOrg);
+
+
+
+	String bikCredOrg = db.getString(m
+	    .select(VocBic.class, EnTable.c.UUID.lc())
+	    .where(VocBic.c.BIC, src.getBIKCredOrg())
+	);
+
+	if (uuidCredOrg == null) {
+	    throw new UnsupportedOperationException("Не найдена кредитная организация по orgRootEntityGUID " + credOrg.getOrgRootEntityGUID());
+	}
+
+	r.put(BankAccount.c.BIKCREDORG.lc(), bikCredOrg);
     }
 
     private void checkStatusMerge(Map<String, Object> ba) {
@@ -314,5 +332,10 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
 		    + VocGisStatus.i.forId(ba.get(BankAccount.c.ID_CTR_STATUS.lc())).getLabel()
 		);
 	}
+    }
+
+    private void checkRights(DB db, Map<String, Object> r) throws Fault {
+//	String uuidOrg = r.get(WsMessages.c.UUID_ORG.lc()).toString();
+//	throw new Fault(Errors.AUT011002);
     }
 }
