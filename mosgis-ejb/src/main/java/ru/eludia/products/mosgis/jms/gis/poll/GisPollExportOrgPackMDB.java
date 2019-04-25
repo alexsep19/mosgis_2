@@ -121,7 +121,7 @@ public class GisPollExportOrgPackMDB  extends GisPollMDB {
                 "uuid", getUuid (),
                 "id_status", DONE.getId ()
             ));            
-            
+/*            
             XSSFWorkbook wb = readWorkbook (db, uuidXlFile);
             
             final XSSFSheet sheet = wb.getSheet ("Шаблон добавления организаций");        
@@ -134,7 +134,6 @@ public class GisPollExportOrgPackMDB  extends GisPollMDB {
             
             list.forEach ((t) -> {
                 Object ord = t.get ("ord");
-logger.info ("ord=" + ord);
                 final XSSFRow row = sheet.getRow ((int) DB.to.Long (ord) - 1);
                 XSSFCell cell = row.getCell (2);
                 if (cell == null) cell = row.createCell (2);
@@ -143,7 +142,7 @@ logger.info ("ord=" + ord);
             
             final Connection cn = db.getConnection ();
 
-            cn.setAutoCommit (false);
+//            cn.setAutoCommit (false);
 
             try (PreparedStatement st = cn.prepareStatement ("SELECT errr FROM in_xl_files WHERE uuid = ? FOR UPDATE")) {
 
@@ -166,11 +165,11 @@ logger.info ("ord=" + ord);
 
                 }
 
-                cn.commit ();
-                cn.setAutoCommit (true);
+//                cn.commit ();
+//                cn.setAutoCommit (true);
 
             }
-
+*/
         }
         catch (GisPollRetryException ex) {
             return;
