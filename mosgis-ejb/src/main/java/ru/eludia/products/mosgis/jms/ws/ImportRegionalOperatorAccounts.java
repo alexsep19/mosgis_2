@@ -115,7 +115,6 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
         String accountRegOperatorGuid = i.getAccountRegOperatorGuid();
 
 	if (i.getLoadAccountRegOperator() != null) {
-	    r.put(BankAccount.c.ACCOUNTREGOPERATORGUID.lc(), i.getAccountRegOperatorGuid());
 	    return toImportAccountRegOperator (r, accountRegOperatorGuid, i.getLoadAccountRegOperator() );
 	}
 
@@ -127,9 +126,8 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
         MosGisModel m = ModelHolder.getModel ();
 
         Map<String, Object> r = toMap (src);
-
 	r.put (BankAccount.c.UUID_ORG.lc (), wsr.get (WsMessages.c.UUID_ORG.lc ()));
-	r.put (BankAccount.c.ACCOUNTREGOPERATORGUID.lc(), wsr.get(BankAccount.c.ACCOUNTREGOPERATORGUID.lc()));
+	r.put (BankAccount.c.ACCOUNTREGOPERATORGUID.lc(), accountRegOperatorGuid);
 
 
         ImportAccountRegOperator result = new ImportAccountRegOperator ();
@@ -141,6 +139,11 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
 	    setCredOrg (db, src, r);
 
 	    String upsertKey = getUpsertKey(db, r);
+
+	    if (!DB.ok(upsertKey)) {
+		upsertKey = EnTable.c.UUID.lc();
+		r.put (EnTable.c.UUID.lc(), uuidInSoap);
+	    }
 
 	    logger.info ("r=" + r);
 
@@ -241,7 +244,7 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
 	    case MUTATING:
 		break;
 	    default:
-		throw new UnsupportedOperationException("Операции обновления не поддерживаются на статусе"
+		throw new UnsupportedOperationException("Операции обновления не поддерживаются на статусе счёта "
 		    + VocGisStatus.i.forId(ba.get(BankAccount.c.ID_CTR_STATUS.lc())).getLabel()
 		);
 	}
