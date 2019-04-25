@@ -95,7 +95,7 @@ public class InXlOrgPackItem extends EnTable {
             + " IF :NEW.err IS NOT NULL THEN RETURN; END IF; "
 
 	    + " FOR i IN (SELECT label FROM " + VocOrganization.TABLE_NAME + " WHERE ogrn=:NEW.ogrn AND NVL (kpp, '00') = NVL (:NEW.kpp, '00')) LOOP "
-	    + "   raise_application_error (-20000, 'Эта ' || i.label || ' была импортирована ранее'); "
+	    + "   raise_application_error (-20000, 'Организация ' || i.label || ' была импортирована ранее'); "
 	    + " END LOOP; "
 
 	    + " EXCEPTION WHEN OTHERS THEN "

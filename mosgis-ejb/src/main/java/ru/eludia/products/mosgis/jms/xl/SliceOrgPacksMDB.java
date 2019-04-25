@@ -83,7 +83,22 @@ public class SliceOrgPacksMDB extends UUIDMDB<InXlFile> {
                 else {
                     sc.setOGRN (ogrn);
                     String kpp = DB.to.String (i.remove ("kpp"));
-                    if (DB.ok (kpp)) sc.setKPP (kpp);
+                    if (DB.ok (kpp)) {
+                        
+                        int len = kpp.length ();
+                                
+                        if (len == 9) {
+                            sc.setKPP (kpp);
+                        }
+                        else {
+                            StringBuilder sb = new StringBuilder ();
+                            for (int j = 0; j < 9 - len; j ++) sb.append ('0');
+                            sb.append (kpp);
+                            sc.setKPP (sb.toString ());
+                        }
+                        
+                    }
+                        
                 }
 
                 rq.getSearchCriteria ().add (sc);                
