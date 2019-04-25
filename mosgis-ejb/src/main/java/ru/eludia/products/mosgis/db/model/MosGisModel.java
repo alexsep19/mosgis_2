@@ -2,12 +2,15 @@ package ru.eludia.products.mosgis.db.model;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
+import ru.eludia.base.model.Col;
+import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.voc.VocNsiList;
 import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
@@ -45,11 +48,19 @@ public final class MosGisModel extends ru.eludia.base.Model {
             "uuid_user", uuidUser
         )).toString ();
         
-        db.update (table, HASH (
+        final Map<String, Object> h = HASH (
             table.getPk ().get (0).getName (), id,
-            "id_status",                       VocAsyncEntityState.i.PENDING.getId (),
             "id_log",                          idLog
-        ));
+        );
+        
+        Col idStatusCol = table.getColumn ("id_status");
+        
+        if (idStatusCol != null && idStatusCol instanceof Ref) {
+            Ref ref = (Ref) idStatusCol;
+            if (VocAsyncEntityState.TABLE_NAME.equalsIgnoreCase (ref.getTargetTable ().getName ())) h.put ("id_status", VocAsyncEntityState.i.PENDING.getId ());
+        }
+        
+        db.update (table, h);
                 
         return idLog;
         

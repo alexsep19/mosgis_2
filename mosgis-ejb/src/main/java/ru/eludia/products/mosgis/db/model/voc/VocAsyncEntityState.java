@@ -5,9 +5,11 @@ import ru.eludia.base.model.Table;
 
 public class VocAsyncEntityState extends Table {
 
+    public static final String TABLE_NAME = "vc_async_entity_states";
+
     public VocAsyncEntityState () {
         
-        super ("vc_async_entity_states", "Статусы сихронизируемых сущностей");
+        super (TABLE_NAME, "Статусы сихронизируемых сущностей");
         
         pk    ("id",           Type.INTEGER, "Ключ");        
         col   ("label",        Type.STRING,  "Наименование");
