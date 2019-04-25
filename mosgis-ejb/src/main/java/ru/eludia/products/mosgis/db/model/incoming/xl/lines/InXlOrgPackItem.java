@@ -27,8 +27,8 @@ public class InXlOrgPackItem extends EnTable {
         ORD                     (Type.NUMERIC, 5,           "Номер строки"),
         ERR                     (Type.STRING,  null,        "Ошибка"),
 
-	OGRN                    (Type.STRING,  15, null,    "ОГРН(ИП)"),
-	KPP                     (Type.STRING,   9, null,    "КПП")
+	OGRN                    (Type.NUMERIC,  15, null,    "ОГРН(ИП)"),
+	KPP                     (Type.NUMERIC,   9, null,    "КПП")
         ;
 
         @Override
@@ -39,8 +39,8 @@ public class InXlOrgPackItem extends EnTable {
 
     }
 
-    private static final Pattern RE_OGRN = Pattern.compile ("\\d{13}(\\d\\d)?");
-    private static final Pattern RE_KPP = Pattern.compile ("\\d{9}");
+    private static final Pattern RE_OGRN = Pattern.compile ("^\\d{13}(\\d\\d)?$");
+    private static final Pattern RE_KPP = Pattern.compile ("^\\d{9}$");
     
     public static Map<String, Object> toHash (UUID uuid, int ord, XSSFRow row) {
         
@@ -63,11 +63,12 @@ public class InXlOrgPackItem extends EnTable {
 
     private static void setFields (Map<String, Object> r, XSSFRow row) throws XLException {
 
-	String ogrn = toString (row, 0, RE_OGRN, "Некорректный формат ОГРН(ИП)");
+	String ogrn = toString (row, 0, RE_OGRN, "Некорректный формат ОГРН(ИП)").trim ();
         
 	String kpp = toString (row, 1);
         
         if (DB.ok (kpp)) {            
+            kpp = kpp.trim ();
             if (ogrn.length () == 15) throw new XLException ("Индивидуальные предпрениматели не имеют КПП.");
             if (!RE_KPP.matcher (kpp).matches ()) throw new XLException ("Некорректный формат КПП.");
             r.put (c.KPP.lc (), kpp);
@@ -93,7 +94,7 @@ public class InXlOrgPackItem extends EnTable {
 
             + " IF :NEW.err IS NOT NULL THEN RETURN; END IF; "
 
-	    + " FOR i IN (SELECT label FROM " + VocOrganization.TABLE_NAME + " WHERE orgn=:NEW.orgn AND NVL (kpp, '00') = NVL (:NEW.kpp, '00')) LOOP "
+	    + " FOR i IN (SELECT label FROM " + VocOrganization.TABLE_NAME + " WHERE ogrn=:NEW.ogrn AND NVL (kpp, '00') = NVL (:NEW.kpp, '00')) LOOP "
 	    + "   raise_application_error (-20000, 'Эта ' || i.label || ' была импортирована ранее'); "
 	    + " END LOOP; "
 
