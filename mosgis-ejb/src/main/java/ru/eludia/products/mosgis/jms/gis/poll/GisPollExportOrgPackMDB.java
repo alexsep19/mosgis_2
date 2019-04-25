@@ -19,6 +19,8 @@ import javax.ejb.MessageDriven;
 import javax.jms.Queue;
 import javax.json.JsonObject;
 import javax.json.JsonString;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import ru.eludia.base.DB;
@@ -91,6 +93,8 @@ public class GisPollExportOrgPackMDB  extends GisPollMDB {
     protected void handleOutSoapRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
         
         if (DB.ok (r.get ("is_failed"))) throw new IllegalStateException (r.get ("err_text").toString ());
+
+        UUID uuidXlFile = (UUID) r.get ("log.uuid_object");
                                 
         try {
             
@@ -116,11 +120,7 @@ public class GisPollExportOrgPackMDB  extends GisPollMDB {
             db.update (OutSoap.class, HASH (
                 "uuid", getUuid (),
                 "id_status", DONE.getId ()
-            ));
-            
-            UUID uuidXlFile = (UUID) r.get ("log.uuid_object");
-
-            uuidPublisher.publish (inXlOrgPackCheckQueue, uuidXlFile);
+            ));            
             
             XSSFWorkbook wb = readWorkbook (db, uuidXlFile);
             
@@ -133,10 +133,12 @@ public class GisPollExportOrgPackMDB  extends GisPollMDB {
             );
             
             list.forEach ((t) -> {
-                sheet
-                    .getRow ((int) DB.to.Long (t.get (InXlOrgPackItem.c.ORD.lc ())) - 1)
-                        .getCell (2)
-                            .setCellValue (DB.to.String (t.get ("label")));
+                Object ord = t.get ("ord");
+logger.info ("ord=" + ord);
+                final XSSFRow row = sheet.getRow ((int) DB.to.Long (ord) - 1);
+                XSSFCell cell = row.getCell (2);
+                if (cell == null) cell = row.createCell (2);
+                cell.setCellValue (DB.to.String (t.get ("label")));
             });
             
             final Connection cn = db.getConnection ();
@@ -145,7 +147,7 @@ public class GisPollExportOrgPackMDB  extends GisPollMDB {
 
             try (PreparedStatement st = cn.prepareStatement ("SELECT errr FROM in_xl_files WHERE uuid = ? FOR UPDATE")) {
 
-                st.setString (1, uuid.toString ().replace ("-", "").toUpperCase ());
+                st.setString (1, uuidXlFile.toString ().replace ("-", "").toUpperCase ());
 
                 try (ResultSet rs = st.executeQuery ()) {
 
@@ -176,6 +178,8 @@ public class GisPollExportOrgPackMDB  extends GisPollMDB {
         catch (GisPollException ex) {            
             ex.register (db, uuid, r);
         }
+        
+        uuidPublisher.publish (inXlOrgPackCheckQueue, uuidXlFile);
         
     }
 
