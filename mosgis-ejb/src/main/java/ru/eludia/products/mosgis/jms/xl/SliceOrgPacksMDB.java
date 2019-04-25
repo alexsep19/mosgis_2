@@ -45,7 +45,11 @@ public class SliceOrgPacksMDB extends UUIDMDB<InXlFile> {
         MosGisModel m = (MosGisModel) db.getModel ();
         
         List<Map<String, Object>> list = db.getList (m
-            .select  (InXlOrgPackItem.class, "uuid", "orgn", "kpp")
+            .select  (InXlOrgPackItem.class
+                , EnTable.c.UUID.lc ()
+                , InXlOrgPackItem.c.OGRN.lc ()
+                , InXlOrgPackItem.c.KPP.lc ()
+            )
             .where   (InXlOrgPackItem.c.UUID_XL, uuid)
             .where   (InXlOrgPackItem.c.ERR.lc () + " IS NULL")
             .where   (InXlOrgPackItem.c.UUID_PACK.lc () + " IS NULL")
@@ -72,22 +76,22 @@ public class SliceOrgPacksMDB extends UUIDMDB<InXlFile> {
                 final ExportOrgRegistryRequest.SearchCriteria sc = new ExportOrgRegistryRequest.SearchCriteria ();
                                 
                 String ogrn = DB.to.String (i.remove ("ogrn"));
-                
-                if (ogrn.length () == 13) {
+
+                if (ogrn.length () == 15) {
+                    sc.setOGRNIP (ogrn);
+                }
+                else {
                     sc.setOGRN (ogrn);
                     String kpp = DB.to.String (i.remove ("kpp"));
                     if (DB.ok (kpp)) sc.setKPP (kpp);
                 }
-                else {
-                    sc.setOGRNIP (ogrn);
-                }
-                
+
                 rq.getSearchCriteria ().add (sc);                
                 
                 i.put (InXlOrgPackItem.c.UUID_PACK.lc (), uuidPack);
                 
             }                
-            
+
             try {
 
                 db.update (OutSoap.class, DB.HASH (
@@ -97,7 +101,7 @@ public class SliceOrgPacksMDB extends UUIDMDB<InXlFile> {
 
                 db.update (InXlFileLog.class, DB.HASH (
                     "uuid",          uuidPack,
-                    "uuid_out_soap", uuid
+                    "uuid_out_soap", uuidPack
                 ));
 
                 uuidPublisher.publish (inXlOrgPackPollQueue, uuidPack);

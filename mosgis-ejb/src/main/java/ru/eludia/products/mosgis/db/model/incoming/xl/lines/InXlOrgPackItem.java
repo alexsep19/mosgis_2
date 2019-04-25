@@ -27,7 +27,7 @@ public class InXlOrgPackItem extends EnTable {
         ORD                     (Type.NUMERIC, 5,           "Номер строки"),
         ERR                     (Type.STRING,  null,        "Ошибка"),
 
-	ORGN                    (Type.STRING,  15, null,    "ОГРН(ИП)"),
+	OGRN                    (Type.STRING,  15, null,    "ОГРН(ИП)"),
 	KPP                     (Type.STRING,   9, null,    "КПП")
         ;
 
@@ -73,7 +73,7 @@ public class InXlOrgPackItem extends EnTable {
             r.put (c.KPP.lc (), kpp);
         }        
 
-        r.put (c.ORGN.lc (), ogrn);
+        r.put (c.OGRN.lc (), ogrn);
         
     }
 
