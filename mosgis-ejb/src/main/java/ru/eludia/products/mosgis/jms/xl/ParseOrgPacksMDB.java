@@ -4,8 +4,11 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
+import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
+import javax.jms.Queue;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -13,6 +16,7 @@ import ru.eludia.base.DB;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlOrgPackItem;
 import ru.eludia.products.mosgis.db.model.voc.VocFileStatus;
+import ru.eludia.products.mosgis.jms.UUIDPublisher;
 import ru.eludia.products.mosgis.jms.xl.base.XLMDB;
 
 @MessageDriven(activationConfig = {
@@ -21,6 +25,12 @@ import ru.eludia.products.mosgis.jms.xl.base.XLMDB;
     , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
 public class ParseOrgPacksMDB extends XLMDB {
+    
+    @EJB
+    public UUIDPublisher uuidPublisher;
+    
+    @Resource (mappedName = "mosgis.inXlOrgPackCheckQueue")
+    Queue inXlOrgPackCheckQueue;        
        
     private static final int N_COL_ERR  = 2;
 //    private static final int N_COL_UUID  = 7;
@@ -59,6 +69,7 @@ public class ParseOrgPacksMDB extends XLMDB {
     protected void completeOK (DB db, UUID parent, XSSFWorkbook wb) throws SQLException {        
         super.completeOK (db, parent, wb);
         setStatus (db, parent, VocFileStatus.i.PROCESSING);
+        uuidPublisher.publish (inXlOrgPackCheckQueue, parent);
         //...
     }
 
