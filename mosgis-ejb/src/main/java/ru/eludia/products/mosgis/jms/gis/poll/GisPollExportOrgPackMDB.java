@@ -262,7 +262,7 @@ public class GisPollExportOrgPackMDB  extends GisPollMDB {
             record.put (f, ((JsonString) v).getString ());
             
         });
-                
+logger.info ("record=" + record);
         db.upsert (VocOrganization.class, record);
         
         record.put ("uuid_object", uuid);
