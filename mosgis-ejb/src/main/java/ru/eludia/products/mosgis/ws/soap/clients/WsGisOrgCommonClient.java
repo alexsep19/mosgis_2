@@ -52,6 +52,9 @@ public class WsGisOrgCommonClient {
         return getPort ().getState (getStateRequest);
     }    
 
+    public AckRequest.Ack exportOrgRegistry (ExportOrgRegistryRequest r, UUID messageGUID) throws Fault {
+        return getPort (messageGUID).exportOrgRegistry (r).getAck ();
+    }
     
     public AckRequest.Ack exportOrgRegistry (String orgn, UUID messageGUID) throws Fault {
         

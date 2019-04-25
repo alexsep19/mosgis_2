@@ -106,10 +106,16 @@
         <jndi-name>mosgis.inXlOrgPacksQueue</jndi-name>
     </uniform-distributed-queue>
     
-    <!-- очередь обработки запросов на частичную обработку пакетов ОГРН, импортированных из MS Excel -->
+    <!-- очередь обработки запросов на формирование частичных пакетов ОГРН, импортированных из MS Excel -->
     <uniform-distributed-queue name="inXlOrgPackCheckQueue">
         <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
         <jndi-name>mosgis.inXlOrgPackCheckQueue</jndi-name>
+    </uniform-distributed-queue>
+    
+    <!-- очередь обработки запросов на опрос статусов пакетов ОГРН, импортированных из MS Excel -->
+    <uniform-distributed-queue name="inXlOrgPackPollQueue">
+        <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+        <jndi-name>mosgis.inXlOrgPackPollQueue</jndi-name>
     </uniform-distributed-queue>
 
 </weblogic-jms>
