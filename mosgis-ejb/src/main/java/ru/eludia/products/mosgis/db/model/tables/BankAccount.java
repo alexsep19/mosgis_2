@@ -83,6 +83,7 @@ public class BankAccount extends EnTable {
                         + TABLE_NAME + "  o "
                         + " LEFT JOIN " + VocOrganization.TABLE_NAME +  " org ON o.UUID_ORG = org.uuid"
                         + " WHERE o.is_deleted = 0"
+			+ " AND o.id_ctr_status <> " + VocGisStatus.i.ANNUL
                         + " AND o.uuid <> :NEW.UUID "
                         + " AND o.ACCOUNTNUMBER = :NEW.ACCOUNTNUMBER "
                         + " AND o.BIKCREDORG = :NEW.BIKCREDORG "
@@ -103,6 +104,7 @@ public class BankAccount extends EnTable {
 			    + " WHERE o.is_deleted = 0"
 			    + " AND o.uuid <> :NEW.UUID "
 			    + " AND o.is_rokr = 1 "
+			    + " AND o.id_ctr_status <> " + VocGisStatus.i.ANNUL
 			    + " AND (o.opendate  < :NEW.closedate OR :NEW.closedate IS NULL) "
 			    + " AND (o.closedate > :NEW.opendate OR o.closedate IS NULL) "
 			    + ") LOOP"

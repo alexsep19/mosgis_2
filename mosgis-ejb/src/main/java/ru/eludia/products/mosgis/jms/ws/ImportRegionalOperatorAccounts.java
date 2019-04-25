@@ -94,8 +94,8 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
         result.setTransportGUID (i.getTransportGuid());
         
         try {
-	    final ImportAccountRegOperator importAccountRegOperator = toImportAccountRegOperator (r, i);
-            result.setGUID (importAccountRegOperator.getAccountRegOperatorGuid());
+	    final UUID guid = doImport (r, i);
+            result.setGUID (guid.toString());
             result.setUpdateDate (SOAPTools.xmlNow ());
         }
         catch (Exception ex) {
@@ -110,18 +110,19 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
         
     }
 
-    private ImportAccountRegOperator toImportAccountRegOperator (Map<String, Object> r, ImportAccountRegionalOperatorRequest.ImportAccountRegOperator i) throws Exception {
+    private UUID doImport (Map<String, Object> r, ImportAccountRegionalOperatorRequest.ImportAccountRegOperator i) throws Exception {
 
         String accountRegOperatorGuid = i.getAccountRegOperatorGuid();
+	String transportGuid = i.getTransportGuid();
 
 	if (i.getLoadAccountRegOperator() != null) {
-	    return toImportAccountRegOperator (r, accountRegOperatorGuid, i.getLoadAccountRegOperator() );
+	    return doMerge (r, accountRegOperatorGuid, transportGuid, i.getLoadAccountRegOperator() );
 	}
 
         throw new UnsupportedOperationException ("Не найден LoadAccountRegOperator, такие запросы пока не поддерживаются");
     }
 
-    private ImportAccountRegOperator toImportAccountRegOperator (Map<String, Object> wsr, String accountRegOperatorGuid, LoadAccountRegOperator src) throws Exception {
+    private UUID doMerge (Map<String, Object> wsr, String accountRegOperatorGuid, String transportGuid, LoadAccountRegOperator src) throws Exception {
 
         MosGisModel m = ModelHolder.getModel ();
 
@@ -129,8 +130,6 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
 	r.put (BankAccount.c.UUID_ORG.lc (), wsr.get (WsMessages.c.UUID_ORG.lc ()));
 	r.put (BankAccount.c.ACCOUNTREGOPERATORGUID.lc(), accountRegOperatorGuid);
 
-
-        ImportAccountRegOperator result = new ImportAccountRegOperator ();
 
         final UUID uuidInSoap = (UUID) wsr.get ("uuid");
 
@@ -142,7 +141,7 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
 
 	    if (!DB.ok(upsertKey)) {
 		upsertKey = EnTable.c.UUID.lc();
-		r.put (EnTable.c.UUID.lc(), uuidInSoap);
+		r.put (EnTable.c.UUID.lc(), transportGuid);
 	    }
 
 	    logger.info ("r=" + r);
@@ -151,9 +150,7 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
 
             String idLog = m.createIdLogWs (db, BankAccount.class, uuidInSoap, uuid, VocAction.i.CREATE);
 
-            result.setAccountRegOperatorGuid(uuid);
-
-            return result;
+            return DB.to.UUIDFromHex(uuid);
 
         }
     }
