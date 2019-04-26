@@ -25,6 +25,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
+import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
@@ -99,14 +100,14 @@ public class GisPollExportOrgPackMDB  extends GisPollMDB {
                                 
         try {
             
+            GetStateResult state = getState (r);
+
             db.update (InXlOrgPackItem.class, HASH (
                 InXlOrgPackItem.c.UUID_PACK, uuid,
                 InXlOrgPackItem.c.LABEL, "(не найдено)"
             )
                 , InXlOrgPackItem.c.UUID_PACK.lc ()
             );
-            
-            GetStateResult state = getState (r);
             
             ErrorMessageType errorMessage = state.getErrorMessage ();
             
@@ -129,7 +130,11 @@ public class GisPollExportOrgPackMDB  extends GisPollMDB {
 
         }
         catch (GisPollRetryException ex) {
-            return;
+            
+            QP qp = new QP ("UPDATE " + InXlOrgPackItem.TABLE_NAME + " SET UUID_PACK = NULL WHERE UUID_PACK = ");
+            qp.add ("?", uuid, db.getModel ().get (InXlOrgPackItem.class).getColumn (InXlOrgPackItem.c.UUID_PACK).toPhysical ());
+            db.d0 (qp);
+
         }
         catch (GisPollException ex) {            
             ex.register (db, uuid, r);
@@ -206,7 +211,11 @@ public class GisPollExportOrgPackMDB  extends GisPollMDB {
             throw new GisPollException (ex);
         }
         
-        checkIfResponseReady (rp);
+        final byte requestState = rp.getRequestState ();
+
+        if (requestState < DONE.getId ()) throw new GisPollRetryException ();
+        
+//        checkIfResponseReady (rp);
         
         return rp;
         
