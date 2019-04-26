@@ -187,7 +187,7 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
 
 	    logger.info ("r=" + r);
 
-	    Object uuid = getBankAccountUuid(db, accountRegOperatorGuid);
+	    UUID uuid = getBankAccountUuid(db, accountRegOperatorGuid);
 
 	    if (uuid == null) {
 		throw new UnsupportedOperationException("Не найден счёт по AccountRegOperatorGuid " + accountRegOperatorGuid);
@@ -203,7 +203,35 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
 
 	    UUIDPublisher.publish(queue, id_log);
 
-            return null;
+            return uuid;
+
+        }
+    }
+
+    private UUID doAnnul (Map<String, Object> wsr, String accountRegOperatorGuid) throws Exception {
+
+	MosGisModel m = ModelHolder.getModel ();
+
+        final UUID uuidInSoap = (UUID) wsr.get ("uuid");
+
+        try (DB db = m.getDb ()) {
+
+	    UUID uuid = getBankAccountUuid(db, accountRegOperatorGuid);
+
+	    if (uuid == null) {
+		throw new UnsupportedOperationException("Не найден счёт по AccountRegOperatorGuid " + accountRegOperatorGuid);
+	    }
+
+	    db.update(BankAccount.class, HASH(
+		"uuid", uuid,
+		"id_ctr_status", VocGisStatus.i.PENDING_RQ_ANNULMENT.getId()
+	    ));
+
+	    String id_log = m.createIdLogWs (db, BankAccount.class, uuidInSoap, uuid, VocAction.i.ANNUL);
+
+	    UUIDPublisher.publish(queue, id_log);
+
+            return uuid;
 
         }
     }
@@ -275,7 +303,7 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
 	);
     }
 
-    private Object getBankAccountUuid(DB db, String accountRegOperatorGuid) throws SQLException {
+    private UUID getBankAccountUuid(DB db, String accountRegOperatorGuid) throws SQLException {
 
 	final Map<String, Object> ba = getBankAccount (db, accountRegOperatorGuid);
 
@@ -283,7 +311,7 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
 	    return null;
 	}
 
-	return ba.get(EnTable.c.UUID.lc());
+	return (UUID) ba.get(EnTable.c.UUID.lc());
     }
 
     private void setCredOrg(DB db, LoadAccountRegOperator src, Map<String, Object> r) throws SQLException {
