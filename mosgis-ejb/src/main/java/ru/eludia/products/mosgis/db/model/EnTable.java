@@ -2,6 +2,7 @@ package ru.eludia.products.mosgis.db.model;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.apache.poi.ss.usermodel.CellType;
@@ -185,6 +186,11 @@ public abstract class EnTable extends Table {
         
     }
 
+    //"да" = 1; "нет", null = 0
+    public static Integer toBoolNotNull(XSSFRow row, int col) throws XLException {
+        return Optional.of(toBool( row, col)).orElse(0);
+    }
+    
     public static Integer toBool(XSSFRow row, int col) throws XLException {
 
 	if (row == null) {

@@ -43,7 +43,7 @@ public class ParseMeteringValuesMDB extends XLMDB {
 
             if (row.getCell (1) == null) continue;
             
-            UUID uuid = (UUID) db.insertId (InXlMeteringValues.class, InXlMeteringValues.toHash (parent, i, row, dateValue, datePeriod));            
+            UUID uuid = (UUID) db.insertId (InXlMeteringValues.class, InXlMeteringValues.toHash (parent, i, row, dateValue, datePeriod, null));            
 
             try {
                 
