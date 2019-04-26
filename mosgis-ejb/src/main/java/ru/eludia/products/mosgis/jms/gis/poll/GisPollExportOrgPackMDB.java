@@ -71,7 +71,7 @@ public class GisPollExportOrgPackMDB  extends GisPollMDB {
     }
     
     protected final XSSFWorkbook readWorkbook (DB db, UUID uuid) throws SQLException {
-        
+
         XSSFWorkbook [] x = new XSSFWorkbook [] {null};
         
         db.forFirst (db.getModel ().get (InXlFile.class, uuid, "body"), (rs) -> {
@@ -145,19 +145,13 @@ public class GisPollExportOrgPackMDB  extends GisPollMDB {
         List<Map<String, Object>> list = db.getList (db.getModel ()
             .select (InXlOrgPackItem.class, "*")
             .where  (InXlOrgPackItem.c.UUID_PACK, uuid)
-            .where  (InXlOrgPackItem.c.ERR.lc () + " IS NULL")
         );
         
         list.forEach ((t) -> {
-logger.info ("t=" + t);
             Object ord = t.get ("ord");
-logger.info ("ord=" + ord);
             final XSSFRow row = sheet.getRow ((int) DB.to.Long (ord) - 1);
-logger.info ("row=" + row);
             XSSFCell cell = row.getCell (2);
-logger.info ("cell=" + cell);
             if (cell == null) cell = row.createCell (2);
-logger.info (" cell=" + cell);
             cell.setCellValue (DB.to.String (t.get ("label")));
         });
         
@@ -190,8 +184,9 @@ logger.info (" cell=" + cell);
                 
             }
             
-//                cn.commit ();
-//                cn.setAutoCommit (true);
+            cn.commit ();
+            cn.setAutoCommit (true);
+            
         }
         
     }
@@ -215,12 +210,6 @@ logger.info (" cell=" + cell);
         return rp;
         
     }    
-    
-    
-    
-    
-    
-    
     
     private boolean handleOrgRegistryResult (ExportOrgRegistryResultType.OrgVersion orgVersion, ExportOrgRegistryResultType i, DB db, UUID uuidOutSoap) throws SQLException, GisPollException {
         
@@ -287,12 +276,10 @@ logger.info (" cell=" + cell);
         
         Map<String, Object> org = db.getMap (db.getModel ().get (VocOrganization.class, uuid, "*"));
         
-logger.info ("org=" + org);
-
         db.update (InXlOrgPackItem.class, HASH (                
             InXlOrgPackItem.c.UUID_PACK, uuidOutSoap,
             InXlOrgPackItem.c.OGRN, org.get ("ogrn"),
-            InXlOrgPackItem.c.LABEL, org.get ("label")
+            InXlOrgPackItem.c.LABEL, "Импортировано: " + org.get ("label")
 //            InXlOrgPackItem.c.KPP, record.get ("kpp"),
         )
             , InXlOrgPackItem.c.UUID_PACK.lc ()
