@@ -85,6 +85,14 @@ public class BankAccount extends EnTable {
 		    + " raise_application_error (-20000, 'Недоступно закрытие счёта на статусе ' || status_label); "
 		+ "END IF; "
 
+		+ "IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS "
+		    + " AND :OLD.ID_CTR_STATUS <> " + VocGisStatus.i.APPROVED
+		    + " AND :NEW.ID_CTR_STATUS =  " + VocGisStatus.i.PENDING_RQ_ANNULMENT
+		+ "THEN "
+		    + " SELECT label INTO status_label FROM " + VocGisStatus.TABLE_NAME + " WHERE ID = :OLD.ID_CTR_STATUS; "
+		    + " raise_application_error (-20000, 'Недоступно закрытие счёта на статусе ' || status_label); "
+		+ "END IF; "
+
                 + "IF :NEW.is_deleted=0 THEN BEGIN "
                     
                     + " FOR i IN ("
