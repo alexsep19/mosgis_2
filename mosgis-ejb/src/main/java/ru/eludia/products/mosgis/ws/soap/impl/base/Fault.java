@@ -3,6 +3,7 @@ package ru.eludia.products.mosgis.ws.soap.impl.base;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import javax.xml.ws.WebFault;
+import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 
 /**
  *
@@ -94,5 +95,26 @@ public class Fault extends Exception {
     
     public ru.gosuslugi.dom.schema.integration.base.Fault getFaultInfo() {
         return faultInfo;
+    }
+
+    public ErrorMessageType toErrorMessageType() {
+	return toError(ErrorMessageType.class);
+    }
+
+    public <T extends ErrorMessageType> T toError(Class<T> clazz) {
+	T errorMessage;
+	try {
+	    errorMessage = clazz.newInstance();
+	} catch (InstantiationException | IllegalAccessException e) {
+	    throw new IllegalArgumentException("Не удалось сформировать сообщение c ошибкой", e);
+	}
+	errorMessage.setErrorCode(faultCode);
+	errorMessage.setDescription(faultMessage);
+	StringWriter sw = new StringWriter();
+	PrintWriter pw = new PrintWriter(sw, true);
+	this.printStackTrace(pw);
+	sw.getBuffer().toString();
+	errorMessage.setStackTrace(sw.getBuffer().toString());
+	return errorMessage;
     }
 }

@@ -85,6 +85,11 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
         return result;
     }
 
+    @Override
+    protected Class getGetStateResultClass () {
+	return GetStateResult.class;
+    }
+
     private void fill (GetStateResult result, Map<String, Object> r, ImportAccountRegionalOperatorRequest importAccountRegionalOperatorRequest) {
         
         List<CapRemCommonResultType> commonResult = new ArrayList <>();

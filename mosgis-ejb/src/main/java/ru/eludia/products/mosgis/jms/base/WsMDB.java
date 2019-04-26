@@ -34,15 +34,24 @@ public abstract class WsMDB extends UUIDMDB<WsMessages>{
     protected abstract JAXBContext getJAXBContext() throws JAXBException;
         
     protected abstract BaseAsyncResponseType generateResponse (DB db, Map<String, Object> r, Object request) throws Exception;    
-    
+
+    protected abstract <T extends BaseAsyncResponseType> Class<T> getGetStateResultClass();
+
     protected BaseAsyncResponseType handleRequest (DB db, Map<String, Object> r, Object request) throws Exception {
         
         try {            
             return generateResponse (db, r, request);            
         } 
         catch (Fault e) {
-            GetStateResult result = new GetStateResult();
-            result.setErrorMessage(createErrorMessage(e));
+
+	    Class<BaseAsyncResponseType> getStateResultClass = getGetStateResultClass();
+
+	    BaseAsyncResponseType result = getStateResultClass.newInstance();
+
+	    getStateResultClass.getMethod("setErrorMessage", ErrorMessageType.class)
+		.invoke(result, e.toErrorMessageType())
+	    ;
+
             return result;
         }
         
