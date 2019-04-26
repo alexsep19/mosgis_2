@@ -60,6 +60,9 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
     
     @Resource (mappedName = "mosgis.inExportOrgMgmtContractsQueue")
     Queue inExportOrgMgmtContractsQueue;
+    
+    @Resource (mappedName = "mosgis.inExportOrgSrContractsQueue")
+    Queue inExportOrgSrContractsQueue;
 
     @Resource (mappedName = "mosgis.inExportOrgCharterQueue")
     Queue inExportOrgCharterQueue;
@@ -73,6 +76,7 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
         switch (action) {
             case REFRESH: return inOrgByGUIDQueue;
             case IMPORT_MGMT_CONTRACTS: return inExportOrgMgmtContractsQueue;
+	    case IMPORT_SR_CONTRACTS: return inExportOrgSrContractsQueue;
             case IMPORT_CHARTERS:       return inExportOrgCharterQueue;
             case IMPORT_ADD_SERVICES:   return inExportOrgAddServicesQueue;
             default: return null;
@@ -348,6 +352,11 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
         logAction (db, user, id, VocAction.i.IMPORT_MGMT_CONTRACTS);
     });}
     
+    @Override
+    public JsonObject doImportSrContracts (String id, User user) {return doAction ((db) -> {
+        logAction (db, user, id, VocAction.i.IMPORT_SR_CONTRACTS);
+    });}
+
     @Override
     public JsonObject doImportCharters (String id, User user) {return doAction ((db) -> {
         logAction (db, user, id, VocAction.i.IMPORT_CHARTERS);
