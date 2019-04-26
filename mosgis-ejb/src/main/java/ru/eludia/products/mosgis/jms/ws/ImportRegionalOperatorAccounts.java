@@ -152,13 +152,18 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
 
         try (DB db = m.getDb ()) {
 
-	    final Map<String, Object> ba = getBankAccount(db, accountRegOperatorGuid);
+	    if (DB.ok (accountRegOperatorGuid)) {
 
-	    checkStatusMerge(ba);
+		final Map<String, Object> ba = getBankAccount(db, accountRegOperatorGuid);
 
-	    UUID uuid = (UUID) ba.get(EnTable.c.UUID.lc());
+		if (ba == null) {
+		    throw new UnsupportedOperationException("Не найден счёт по AccountRegOperatorGuid " + accountRegOperatorGuid);
+		}
 
-	    if (DB.ok (uuid)) {
+		checkStatusMerge(ba);
+
+		UUID uuid = (UUID) ba.get(EnTable.c.UUID.lc());
+
 		return doUpdate (wsr, uuid, src);
 	    } else {
 		return doCreate (wsr, UUID.fromString(transportGuid), src);
@@ -166,13 +171,13 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
         }
     }
 
-    private UUID doCreate (Map<String, Object> wsr, UUID uuid, LoadAccountRegOperator src) throws Exception {
+    private UUID doCreate (Map<String, Object> wsr, UUID transportGuid, LoadAccountRegOperator src) throws Exception {
 
         MosGisModel m = ModelHolder.getModel ();
 
         Map<String, Object> r = toMap (src);
 	r.put (BankAccount.c.UUID_ORG.lc (), wsr.get (WsMessages.c.UUID_ORG.lc ()));
-	r.put (EnTable.c.UUID.lc(), uuid);
+	r.put (EnTable.c.UUID.lc(), transportGuid);
 
 
         final UUID uuidInSoap = (UUID) wsr.get ("uuid");
@@ -183,9 +188,9 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
 
 	    logger.info ("r=" + r);
 
-	    db.insertId (BankAccount.class, r);
+	    UUID uuid = (UUID) db.insertId (BankAccount.class, r);
 
-            m.createIdLogWs (db, BankAccount.class, uuidInSoap, uuid, VocAction.i.CREATE);
+            m.createIdLogWs (db, BankAccount.class, uuidInSoap, uuid.toString(), VocAction.i.CREATE);
 
             return uuid;
 
@@ -197,7 +202,6 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
         MosGisModel m = ModelHolder.getModel ();
 
         Map<String, Object> r = toMap (src);
-	r.put (BankAccount.c.UUID_ORG.lc (), wsr.get (WsMessages.c.UUID_ORG.lc ()));
 	r.put (EnTable.c.UUID.lc(), uuid);
 
 
@@ -293,6 +297,10 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
     }
 
     private Map<String, Object> getBankAccount(DB db, Object accountRegOperatorGuid) throws SQLException {
+
+	if (accountRegOperatorGuid == null) {
+	    return null;
+	}
 
 	final Model m = db.getModel();
 
