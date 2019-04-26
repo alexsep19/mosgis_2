@@ -380,8 +380,22 @@ public class ImportRegionalOperatorAccounts extends WsMDB {
 	}
     }
 
-    private void checkRights(DB db, Map<String, Object> r) throws Fault {
-//	String uuidOrg = r.get(WsMessages.c.UUID_ORG.lc()).toString();
-//	throw new Fault(Errors.AUT011002);
+    private void checkRights(DB db, Map<String, Object> r) throws Fault, SQLException {
+
+	String orgPPAGUID = DB.to.String(r.get(WsMessages.c.UUID_ORG.lc()));
+
+	if (!DB.ok(orgPPAGUID)) {
+	    throw new Fault(Errors.AUT011002);
+	}
+
+	boolean is_rokr = DB.ok (db.getString(db.getModel()
+	    .select(VocOrganizationNsi20.class, "uuid")
+	    .where ("uuid", orgPPAGUID)
+	    .and ("code", "14")
+	));
+
+	if (!is_rokr) {
+	    throw new Fault(Errors.AUT011003);
+	}
     }
 }
