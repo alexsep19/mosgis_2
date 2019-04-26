@@ -121,55 +121,11 @@ public class GisPollExportOrgPackMDB  extends GisPollMDB {
                 "uuid", getUuid (),
                 "id_status", DONE.getId ()
             ));            
-/*            
-            XSSFWorkbook wb = readWorkbook (db, uuidXlFile);
-            
-            final XSSFSheet sheet = wb.getSheet ("Шаблон добавления организаций");        
-            
-            List<Map<String, Object>> list = db.getList (db.getModel ()
-                .select (InXlOrgPackItem.class, "*")
-                .where  (InXlOrgPackItem.c.UUID_PACK, uuid)
-                .where  (InXlOrgPackItem.c.ERR.lc () + " IS NULL")
-            );
-            
-            list.forEach ((t) -> {
-                Object ord = t.get ("ord");
-                final XSSFRow row = sheet.getRow ((int) DB.to.Long (ord) - 1);
-                XSSFCell cell = row.getCell (2);
-                if (cell == null) cell = row.createCell (2);
-                cell.setCellValue (DB.to.String (t.get ("label")));
-            });
-            
-            final Connection cn = db.getConnection ();
 
-//            cn.setAutoCommit (false);
+            XSSFWorkbook wb = readWorkbook (db, uuidXlFile);            
+            registerResults (wb, db, uuid);
+            writeWorkbook (db, uuidXlFile, wb);
 
-            try (PreparedStatement st = cn.prepareStatement ("SELECT errr FROM in_xl_files WHERE uuid = ? FOR UPDATE")) {
-
-                st.setString (1, uuidXlFile.toString ().replace ("-", "").toUpperCase ());
-
-                try (ResultSet rs = st.executeQuery ()) {
-
-                    if (rs.next ()) {
-
-                        Blob blob = rs.getBlob (1);
-
-                        try (OutputStream os = blob.setBinaryStream (0L)) {
-                            wb.write (os);
-                        }
-                        catch (IOException ex) {
-                            logger.log (Level.SEVERE, "Cannot store errors", ex);
-                        }
-
-                    }
-
-                }
-
-//                cn.commit ();
-//                cn.setAutoCommit (true);
-
-            }
-*/
         }
         catch (GisPollRetryException ex) {
             return;
@@ -179,6 +135,64 @@ public class GisPollExportOrgPackMDB  extends GisPollMDB {
         }
         
         uuidPublisher.publish (inXlOrgPackCheckQueue, uuidXlFile);
+        
+    }
+
+    private void registerResults (XSSFWorkbook wb, DB db, UUID uuid) throws SQLException {
+        
+        final XSSFSheet sheet = wb.getSheet ("Шаблон добавления организаций");
+        
+        List<Map<String, Object>> list = db.getList (db.getModel ()
+            .select (InXlOrgPackItem.class, "*")
+            .where  (InXlOrgPackItem.c.UUID_PACK, uuid)
+            .where  (InXlOrgPackItem.c.ERR.lc () + " IS NULL")
+        );
+        
+        list.forEach ((t) -> {
+logger.info ("t=" + t);
+            Object ord = t.get ("ord");
+logger.info ("ord=" + ord);
+            final XSSFRow row = sheet.getRow ((int) DB.to.Long (ord) - 1);
+logger.info ("row=" + row);
+            XSSFCell cell = row.getCell (2);
+logger.info ("cell=" + cell);
+            if (cell == null) cell = row.createCell (2);
+logger.info (" cell=" + cell);
+            cell.setCellValue (DB.to.String (t.get ("label")));
+        });
+        
+    }
+
+    private void writeWorkbook (DB db, UUID uuidXlFile, XSSFWorkbook wb) throws SQLException {
+        
+        final Connection cn = db.getConnection ();
+        
+        cn.setAutoCommit (false);
+        
+        try (PreparedStatement st = cn.prepareStatement ("SELECT errr FROM in_xl_files WHERE uuid = ? FOR UPDATE")) {
+            
+            st.setString (1, uuidXlFile.toString ().replace ("-", "").toUpperCase ());
+            
+            try (ResultSet rs = st.executeQuery ()) {
+                
+                if (rs.next ()) {
+                    
+                    Blob blob = rs.getBlob (1);
+                    
+                    try (OutputStream os = blob.setBinaryStream (0L)) {
+                        wb.write (os);
+                    }
+                    catch (IOException ex) {
+                        logger.log (Level.SEVERE, "Cannot store Excel", ex);
+                    }
+                    
+                }
+                
+            }
+            
+//                cn.commit ();
+//                cn.setAutoCommit (true);
+        }
         
     }
 
@@ -262,18 +276,20 @@ public class GisPollExportOrgPackMDB  extends GisPollMDB {
             record.put (f, ((JsonString) v).getString ());
             
         });
-logger.info ("record=" + record);
+
         db.upsert (VocOrganization.class, record);
         
         record.put ("uuid_object", uuid);
         record.put ("uuid_out_soap", uuidOutSoap);
         record.put ("action", VocAction.i.REFRESH);
         
-        UUID uuidOrg = (UUID) db.insertId (VocOrganizationLog.class, record);
+        db.insert (VocOrganizationLog.class, record);
         
-        Map<String, Object> org = db.getMap (db.getModel ().get (VocOrganizationLog.class, uuidOrg, "*"));        
+        Map<String, Object> org = db.getMap (db.getModel ().get (VocOrganization.class, uuid, "*"));
         
-        db.update (InXlOrgPackItem.class, HASH (
+logger.info ("org=" + org);
+
+        db.update (InXlOrgPackItem.class, HASH (                
             InXlOrgPackItem.c.UUID_PACK, uuidOutSoap,
             InXlOrgPackItem.c.OGRN, org.get ("ogrn"),
             InXlOrgPackItem.c.LABEL, org.get ("label")
