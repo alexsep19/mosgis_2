@@ -31,10 +31,6 @@ import ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.util.StringUtils;
 
-/**
- *
- * @author Aleksei
- */
 public class WsMessages extends Table {
 
 	private static final QName SOAP_SERVER_FAULT = new QName(SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE, "Server",
