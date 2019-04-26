@@ -98,6 +98,7 @@ public class GisPollExportAccountMDB  extends GisPollMDB {
 
             h.put (Account.c.ACCOUNTGUID.lc (), cr.getGUID ());
             h.put (Account.c.SERVICEID.lc (), importAccount.getServiceID ());
+            h.put (Account.c.UNIFIEDACCOUNTNUMBER.lc(), importAccount.getUnifiedAccountNumber());
 
             update (db, uuid, r, h);
 

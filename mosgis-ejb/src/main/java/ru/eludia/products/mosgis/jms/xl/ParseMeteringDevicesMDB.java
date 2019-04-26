@@ -1,6 +1,7 @@
 package ru.eludia.products.mosgis.jms.xl;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,7 +17,10 @@ import ru.eludia.base.DB;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlMeteringDevice;
+import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlMeteringValues;
 import ru.eludia.products.mosgis.db.model.tables.MeteringDevice;
+import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceValueType;
+import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi2;
 import ru.eludia.products.mosgis.jms.xl.base.XLMDB;
 import ru.eludia.products.mosgis.jms.xl.base.XLException;
 
@@ -30,30 +34,50 @@ public class ParseMeteringDevicesMDB extends XLMDB {
     private static final int N_COL_UUID = 33;
     private static final int N_COL_ERR  = 34;
     private static final int N_COL_DOP_ERR  = 5;
+    public static final Date NULL_DATE = new Date(0);
 
     protected void addMeters (XSSFSheet sheet, UUID parent, DB db, Map<Integer, Integer> resourceMap, HashSet<Integer> refNums) throws SQLException {
-        
+        Date dateValue = NULL_DATE;
+        Date datePeriod = NULL_DATE;   
         for (int i = 2; i <= sheet.getLastRowNum (); i ++) {
             
             final XSSFRow row = sheet.getRow (i);
 
             if (EnTable.isEmpty(row, 1)) continue;
             
-            UUID uuid = (UUID) db.insertId (InXlMeteringDevice.class, InXlMeteringDevice.toHash (parent, i, row, resourceMap, refNums));            
+            Map<String, Object> hashMeteringDevice = InXlMeteringDevice.toHash (parent, i, row, resourceMap, refNums);
+            UUID uuidMeteringDevice = (UUID) db.insertId (InXlMeteringDevice.class, hashMeteringDevice);    
+            if ((Integer)hashMeteringDevice.get(InXlMeteringDevice.c.CONSUMEDVOLUME.lc ()) == 0){
+               UUID uuidMeteringValues = (UUID) db.insertId (InXlMeteringValues.class, 
+                       InXlMeteringValues.toHash (parent, i, row, dateValue, datePeriod, 
+                          ( fr, frow, fdateValue, fdatePeriod)->{
+                           //UUID_METER устанавливается в триггере
+                           fr.put (InXlMeteringValues.c.DEVICE_NUMBER.lc (),    uuidMeteringDevice);  
+                           fr.put (InXlMeteringValues.c.ID_TYPE.lc (),          VocMeteringDeviceValueType.i.BASE);
+                           fr.put (InXlMeteringValues.c.CODE_VC_NSI_2.lc (),    Nsi2.i.forLabel (EnTable.toString (frow, 16, "Не указан коммунальный ресурс")).getId ());
+                           //T 
+                           fr.put (InXlMeteringValues.c.METERINGVALUET1.lc (),  EnTable.toNumeric (frow, 19, "Не указано значение показания (Т1)"));
+                           fr.put (InXlMeteringValues.c.METERINGVALUET2.lc (),  EnTable.toNumeric (frow, 20 ));
+                           fr.put (InXlMeteringValues.c.METERINGVALUET3.lc (),  EnTable.toNumeric (frow, 21 ));
+                           fr.put (InXlMeteringValues.c.DATEVALUE.lc (),        InXlMeteringValues.processDateDevice((Date) EnTable.toDate(frow, 6, "Не указана дата снятия показания"), fdateValue, fdatePeriod));
+                           fr.put (InXlMeteringValues.c.DT_PERIOD.lc (),        fdatePeriod);
+                           return 0;
+                       }));            
+            }
 
             try {
                 
                 db.update (InXlMeteringDevice.class, DB.HASH (
-                    EnTable.c.UUID, uuid,
+                    EnTable.c.UUID, uuidMeteringDevice,
                     EnTable.c.IS_DELETED, 0
                 ));
                 
                 db.update (MeteringDevice.class, DB.HASH (
-                    EnTable.c.UUID, uuid,
+                    EnTable.c.UUID, uuidMeteringDevice,
                     EnTable.c.IS_DELETED, 0
                 ));
                 
-                setCellStringValue (row, N_COL_UUID, uuid.toString ());
+                setCellStringValue (row, N_COL_UUID, uuidMeteringDevice.toString ());
 
             }
             catch (SQLException e) {
@@ -61,7 +85,7 @@ public class ParseMeteringDevicesMDB extends XLMDB {
                 String s = getErrorMessage (e);
 
                 db.update (InXlMeteringDevice.class, DB.HASH (
-                    EnTable.c.UUID,           uuid,
+                    EnTable.c.UUID, uuidMeteringDevice,
                     InXlMeteringDevice.c.ERR, s
                 ));
                 
@@ -81,6 +105,14 @@ public class ParseMeteringDevicesMDB extends XLMDB {
             .where (InXlMeteringDevice.c.UUID_XL, parent)
             .where (EnTable.c.IS_DELETED, 1)
         );
+
+//        List<Map<String, Object>> brokenLines = db.getList (db.getModel ()
+//            .select (InXlMeteringDevice.class, "AS m", "*")
+//            .toMaybeOne (InXlMeteringValues.class, "AS v").on("v.uuid_xl = m.uuid_xl")
+//            .where (InXlMeteringDevice.c.UUID_XL, parent)
+//            .and ("m.is_deleted", 1).
+//            .or("v.is_deleted", 1)
+//        );
         
         if (brokenLines.isEmpty ()) return true;
         

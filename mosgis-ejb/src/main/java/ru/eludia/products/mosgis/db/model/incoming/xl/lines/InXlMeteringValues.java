@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -73,8 +74,13 @@ public class InXlMeteringValues extends EnTable {
         }
     }
     
-    public static Map<String, Object> toHash (UUID uuid, int ord, XSSFRow row, Date dateValue, Date datePeriod) {
-        
+    @FunctionalInterface
+    public interface SetFields {
+        int setFields (Map<String, Object> r, XSSFRow row, Date dateValue, Date datePeriod) throws XLException;
+    }
+    
+//    public static Map<String, Object> toHash (UUID uuid, int ord, XSSFRow row, Date dateValue, Date datePeriod) {
+    public static Map<String, Object> toHash (UUID uuid, int ord, XSSFRow row, Date dateValue, Date datePeriod, SetFields setfields) {        
         Map<String, Object> r = DB.HASH (
             EnTable.c.IS_DELETED, 1,
             c.UUID_XL, uuid,
@@ -82,7 +88,18 @@ public class InXlMeteringValues extends EnTable {
         );
         
         try {
-            setFields (r, row, dateValue, datePeriod);
+            Optional.of(setfields).orElse(( fr, frow, fdateValue, fdatePeriod)->{
+             //UUID_METER устанавливается в триггере
+                fr.put (c.DEVICE_NUMBER.lc (),    toString (frow, 1, "Не указан номер прибора"));  
+                fr.put (c.ID_TYPE.lc (),          VocMeteringDeviceValueType.i.CURRENT);
+                fr.put (c.CODE_VC_NSI_2.lc (),    Nsi2.i.forLabel (toString (frow, 2, "Не указан коммунальный ресурс")).getId ());
+                fr.put (c.METERINGVALUET1.lc (),  toNumeric (frow, 3, "Не указано значение показания (Т1)"));
+                fr.put (c.METERINGVALUET2.lc (),  toNumeric (frow, 4 ));
+                fr.put (c.METERINGVALUET3.lc (),  toNumeric (frow, 5 ));
+                fr.put (c.DATEVALUE.lc (),        processDateValues((Date) toDate(frow, 6, "Не указана дата снятия показания"), fdateValue, fdatePeriod));
+                fr.put (c.DT_PERIOD.lc (),        fdatePeriod);
+                return 0;
+            }).setFields(r, row, dateValue, datePeriod);
         }         
         catch (XLException ex) {
             r.put (c.ERR.lc (), ex.getMessage ());
@@ -91,8 +108,13 @@ public class InXlMeteringValues extends EnTable {
         return r;
         
     }
+
+    public static Date processDateDevice(Date readDate, Date dateValue, Date datePeriod)  throws XLException{
+        
+    }
     
-    private static Date processDate(Date readDate, Date dateValue, Date datePeriod)  throws XLException{
+    public static Date processDateValues(Date readDate, Date dateValue, Date datePeriod)  throws XLException{
+        переделать
         //показания во всех строках д.б. за одну дату;
         if (dateValue.equals(NULL_DATE)) {
             dateValue.setTime(readDate.getTime());
@@ -105,17 +127,18 @@ public class InXlMeteringValues extends EnTable {
         return readDate;
     }
     
-    private static void setFields (Map<String, Object> r, XSSFRow row, Date dateValue, Date datePeriod) throws XLException {
-        //UUID_METER устанавливается в триггере
-        r.put (c.DEVICE_NUMBER.lc (),       toString (row, 1, "Не указан номер прибора"));  
-        r.put (c.ID_TYPE.lc (), VocMeteringDeviceValueType.i.CURRENT);
-        r.put (c.CODE_VC_NSI_2.lc (),    Nsi2.i.forLabel (toString (row, 2, "Не указан коммунальный ресурс")).getId ());
-        r.put (c.METERINGVALUET1.lc (),  toNumeric (row, 3, "Не указано значение показания (Т1)"));
-        r.put (c.METERINGVALUET2.lc (),  toNumeric (row, 4 ));
-        r.put (c.METERINGVALUET3.lc (),  toNumeric (row, 5 ));
-        r.put (c.DATEVALUE.lc (),        processDate((Date) toDate(row, 6, "Не указана дата снятия показания"), dateValue, datePeriod));
-        r.put (c.DT_PERIOD.lc (),        datePeriod);
-     }
+//    private static int setFieldsMeteringValues (Map<String, Object> r, XSSFRow row, Date dateValue, Date datePeriod) throws XLException {
+//        //UUID_METER устанавливается в триггере
+//        r.put (c.DEVICE_NUMBER.lc (),    toString (row, 1, "Не указан номер прибора"));  
+//        r.put (c.ID_TYPE.lc (),          VocMeteringDeviceValueType.i.CURRENT);
+//        r.put (c.CODE_VC_NSI_2.lc (),    Nsi2.i.forLabel (toString (row, 2, "Не указан коммунальный ресурс")).getId ());
+//        r.put (c.METERINGVALUET1.lc (),  toNumeric (row, 3, "Не указано значение показания (Т1)"));
+//        r.put (c.METERINGVALUET2.lc (),  toNumeric (row, 4 ));
+//        r.put (c.METERINGVALUET3.lc (),  toNumeric (row, 5 ));
+//        r.put (c.DATEVALUE.lc (),        processDate((Date) toDate(row, 6, "Не указана дата снятия показания"), dateValue, datePeriod));
+//        r.put (c.DT_PERIOD.lc (),        datePeriod);
+//        return 0;
+//     }
 
     public InXlMeteringValues () {
 
