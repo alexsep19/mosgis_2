@@ -122,6 +122,7 @@ public class PaymentDocumentLog extends GisWsLogTable {
             .select (PenaltiesAndCourtCosts.class, "AS root", "*")
             .toOne (VocNsi329.class, "code", "guid").on ("root.code_vc_nsi_329=vc_nsi_329.code AND vc_nsi_329.isactual=1")
             .where (PenaltiesAndCourtCosts.c.UUID_PAY_DOC, uuid)
+            .where (PenaltiesAndCourtCosts.c.TOTALPAYABLE.lc () + '>', 0)
             .where (EnTable.c.IS_DELETED, 0)
         ));
         
