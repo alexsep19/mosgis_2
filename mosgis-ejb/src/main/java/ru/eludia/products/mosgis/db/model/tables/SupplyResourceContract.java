@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Map;
 import ru.eludia.products.mosgis.db.model.voc.nsi.VocNsi239;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
@@ -15,6 +16,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractDimension;
 import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustomerType;
 import ru.eludia.products.mosgis.db.model.voc.VocSupplyResourceContractFileType;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractResultType;
 
 public class SupplyResourceContract extends EnTable {
 
@@ -533,6 +535,10 @@ public class SupplyResourceContract extends EnTable {
 
 	    + " END IF; " // IF :NEW.is_deleted = 0
         + "END;");
+    }
+
+    public static Map<String, Object> toHASH(ExportSupplyResourceContractResultType result) {
+	throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public enum Action {
