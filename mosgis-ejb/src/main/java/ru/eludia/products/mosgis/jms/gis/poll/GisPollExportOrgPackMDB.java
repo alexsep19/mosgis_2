@@ -66,7 +66,7 @@ public class GisPollExportOrgPackMDB  extends GisPollMDB {
     @Override
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")
-            .toOne (InXlFileLog.class, "AS log", "uuid", "uuid_object").on ("log.uuid_out_soap=root.uuid")
+            .toOne (InXlFileLog.class, "AS log", "uuid", "uuid_object", "uuid_user").on ("log.uuid_out_soap=root.uuid")
         ;
     }
     
@@ -95,6 +95,7 @@ public class GisPollExportOrgPackMDB  extends GisPollMDB {
         if (DB.ok (r.get ("is_failed"))) throw new IllegalStateException (r.get ("err_text").toString ());
 
         UUID uuidXlFile = (UUID) r.get ("log.uuid_object");
+        UUID uuidUser = (UUID) r.get ("log.uuid_user");
                                 
         try {
             
@@ -115,7 +116,7 @@ public class GisPollExportOrgPackMDB  extends GisPollMDB {
             
             if (exportOrgRegistryResult == null) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
                                                 
-            for (ExportOrgRegistryResultType i: exportOrgRegistryResult) if (handleOrgRegistryResult (i.getOrgVersion (), i, db, uuid)) continue;
+            for (ExportOrgRegistryResultType i: exportOrgRegistryResult) if (handleOrgRegistryResult (i.getOrgVersion (), i, db, uuid, uuidUser)) continue;
 
             db.update (OutSoap.class, HASH (
                 "uuid", getUuid (),
@@ -211,7 +212,7 @@ public class GisPollExportOrgPackMDB  extends GisPollMDB {
         
     }    
     
-    private boolean handleOrgRegistryResult (ExportOrgRegistryResultType.OrgVersion orgVersion, ExportOrgRegistryResultType i, DB db, UUID uuidOutSoap) throws SQLException, GisPollException {
+    private boolean handleOrgRegistryResult (ExportOrgRegistryResultType.OrgVersion orgVersion, ExportOrgRegistryResultType i, DB db, UUID uuidOutSoap, UUID uuidUser) throws SQLException, GisPollException {
         
         Object o = null;
         String parentOrgGuid = null;
@@ -268,9 +269,10 @@ public class GisPollExportOrgPackMDB  extends GisPollMDB {
 
         db.upsert (VocOrganization.class, record);
         
+        record.put ("uuid_user", uuidUser);
         record.put ("uuid_object", uuid);
         record.put ("uuid_out_soap", uuidOutSoap);
-        record.put ("action", VocAction.i.REFRESH);
+        record.put ("action", VocAction.i.IMPORT_FROM_FILE.getName ());
         
         db.insert (VocOrganizationLog.class, record);
         

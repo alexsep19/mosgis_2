@@ -116,7 +116,8 @@ public class SliceOrgPacksMDB extends UUIDMDB<InXlFile> {
 
                 db.update (InXlFileLog.class, DB.HASH (
                     "uuid",          uuidPack,
-                    "uuid_out_soap", uuidPack
+                    "uuid_out_soap", uuidPack,
+                    "uuid_user",     r.get ("uuid_user")
                 ));
 
                 uuidPublisher.publish (inXlOrgPackPollQueue, uuidPack);
