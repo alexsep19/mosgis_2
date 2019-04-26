@@ -97,8 +97,8 @@ define ([], function () {
                 {field: 'nsi_2.unit', caption: 'Ед. изм.', size: 10},
 
                 {field: 'id_ctr_status', caption: 'Статус', size: 100, voc: data.vc_gis_status},
-                {field: 'out_soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: 'data-ref=1'},
-                {field: 'out_soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: 'data-ref=1'},
+                {field: 'out_soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: $_USER.role.admin ? 'data-ref=1' : null},
+                {field: 'out_soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: $_USER.role.admin ? 'data-ref=1' : null},
                 {field: 'out_soap.err_text', caption: 'Ошибка',    size: 30},
 
             ].filter (not_off),
@@ -114,7 +114,7 @@ define ([], function () {
             
                 var r = this.get (e.recid)
             
-                switch (this.columns [e.column].field) {
+                if ($_USER.role.admin) switch (this.columns [e.column].field) {
                     case 'out_soap.ts':    if (r ['out_soap.ts']) return openTab ('/out_soap_rq/' + r.id_log)
                     case 'out_soap.ts_rp': if (r ['out_soap.ts_rp']) return openTab ('/out_soap_rp/' + r ['out_soap.uuid_ack'])
                 }                

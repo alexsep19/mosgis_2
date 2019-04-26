@@ -40,8 +40,8 @@ define ([], function () {
                 {field: 'ismanagedbycontract', caption: 'Обслуживание', size: 18, voc: {0: "без договора", 1: "по договору"}},
                 {field: 'annulmentinfo', caption: 'Аннулирование', size: 18},
 
-                {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: 'data-ref=1'},
-                {field: 'soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: 'data-ref=1'},
+                {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: $_USER.role.admin ? 'data-ref=1' : null},
+                {field: 'soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: $_USER.role.admin ? 'data-ref=1' : null},
                 {field: 'soap.err_text', caption: 'Ошибка',    size: 30},
 
             ],
@@ -53,7 +53,7 @@ define ([], function () {
                 var c = this.columns [e.column]
                 var r = this.get (e.recid)
                 
-                switch (c.field) {
+                if ($_USER.role.admin) switch (c.field) {
                     case 'soap.ts':    if (r.uuid_out_soap) return openTab ('/out_soap_rq/' + r.uuid_out_soap)
                     case 'soap.ts_rp': if (r.uuid_message) return openTab ('/out_soap_rp/' + r.uuid_message)
                 }

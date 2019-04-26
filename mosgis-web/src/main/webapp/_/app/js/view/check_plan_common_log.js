@@ -32,8 +32,8 @@ define ([], function () {
                 }},
                 {field: 'uriregistrationplannumber', caption: 'Регистрационный номер плана в ЕРП', size: 10},
                 
-                {field: 'soap.ts', caption: 'Отправлено',    size: 10, render: _ts, attr: 'data-ref=1'},
-                {field: 'soap.ts_rp', caption: 'Обработано',    size: 10, render: _ts, attr: 'data-ref=1'},
+                {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: $_USER.role.admin ? 'data-ref=1' : null},
+                {field: 'soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: $_USER.role.admin ? 'data-ref=1' : null},
                 {field: 'soap.err_text', caption: 'Ошибка',    size: 10},
             ],
             
@@ -44,7 +44,7 @@ define ([], function () {
                 var c = this.columns [e.column]
                 var r = this.get (e.recid)
                 
-                switch (c.field) {
+                if ($_USER.role.admin) switch (c.field) {
                     case 'soap.ts':    if (r.uuid_out_soap) return openTab ('/out_soap_rq/' + r.uuid_out_soap)
                     case 'soap.ts_rp': if (r.uuid_message) return openTab ('/out_soap_rp/' + r.uuid_message)
                 }

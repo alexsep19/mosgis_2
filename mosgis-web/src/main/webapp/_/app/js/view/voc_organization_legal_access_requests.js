@@ -40,7 +40,7 @@ define ([], function () {
                 var c = this.columns [e.column]
                 var r = this.get (e.recid)
                 
-                switch (c.field) {
+                if ($_USER.role.admin) switch (c.field) {
                     case 'soap.ts':    if (r.uuid_out_soap) return openTab ('/out_soap_rq/' + r.uuid_out_soap)
                     case 'soap.ts_rp': if (r ['soap.uuid_ack']) return openTab ('/out_soap_rp/' + r ['soap.uuid_ack'])
                 }
