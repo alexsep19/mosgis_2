@@ -12,6 +12,8 @@ import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi50;
 
 public class AnyChargeInfo extends View {
 
+    public static final String TABLE_NAME = "vw_charge_info";
+    
     public enum c implements ColEnum {
         ID                   (Type.UUID,     "id"),
         LABEL_TYPE           (Type.STRING,   "Тип"),
@@ -36,7 +38,7 @@ public class AnyChargeInfo extends View {
     }
 
     public AnyChargeInfo () {
-        super  ("vw_charge_info", "Строки платёжных документов");
+        super  (TABLE_NAME, "Строки платёжных документов");
         cols   (EnTable.c.class);
         cols   (ChargeInfo.c.class);
         cols   (c.class);

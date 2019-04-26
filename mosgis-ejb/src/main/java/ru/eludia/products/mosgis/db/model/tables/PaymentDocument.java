@@ -105,9 +105,23 @@ public class PaymentDocument extends EnTable {
         trigger ("BEFORE UPDATE", ""
 
             + "BEGIN "
+                
             + "  IF :NEW.TOTALBYPENALTIESANDCOURTCOSTS IS NULL THEN "
             + "     SELECT SUM(TOTALPAYABLE) INTO :NEW.TOTALBYPENALTIESANDCOURTCOSTS FROM " + PenaltiesAndCourtCosts.TABLE_NAME +  " WHERE UUID_PAY_DOC=:NEW.UUID;"
             + "  END IF;"                
+                    
+            + "  IF 1=1"
+            + "    AND :OLD.id_ctr_status <> " + VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+            + "    AND :NEW.id_ctr_status = " + VocGisStatus.i.PENDING_RQ_PLACING.getId ()
+            + "  THEN BEGIN "
+                    
+                + " FOR i IN (SELECT * FROM " + AnyChargeInfo.TABLE_NAME + " WHERE uuid_pay_doc=:NEW.UUID AND is_deleted=0 AND TOTALPAYABLE > 0) LOOP"
+                    + " IF i.CONS_I_VOL > 0 AND i.CONS_I_DTRM_METH IS NULL THEN raise_application_error (-20000, i.label || ': расход можно указывать только со способом определения'); END IF; "
+                    + " IF i.CONS_O_VOL > 0 AND i.CONS_O_DTRM_METH IS NULL THEN raise_application_error (-20000, i.label || ': расход можно указывать только со способом определения'); END IF; "
+                + " END LOOP;"
+                        
+            + "  END; END IF;"                
+
             + "END;"
 
         );
