@@ -132,6 +132,12 @@
         <type>JMS</type>
         <path>META-INF/ws-jms/mosgismodule-ws-house-management-service-async-jms.xml</path>
     </module>
+
+    <module>
+        <name>WS-CapitalRepairServiceAsync</name>
+        <type>JMS</type>
+        <path>META-INF/ws-jms/mosgismodule-ws-capital-repair-service-async-jms.xml</path>
+    </module>
     
     <module>
         <name>Workflow-overhaul-work-types</name>

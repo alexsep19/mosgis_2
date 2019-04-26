@@ -75,13 +75,17 @@ define ([], function () {
 
                 for (key in content) {
 
-                    var rs = dia2w2uiRecords (content [key])
+                    var rs = content [key]
 
                     $.each (rs, function () {
                         this['bank_label'] = this['bikcredorg.label']
+
+                        if (this.uuid_in_soap) {
+                            this['vc_users.label'] = this['tb_senders.label']
+                        }
                     })
 
-                    data.records = rs
+                    data.records = dia2w2uiRecords (rs)
 
                     e.xhr.responseText = JSON.stringify (data)
 

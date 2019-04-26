@@ -146,4 +146,8 @@ public class ExportOrgRegistry extends WsMDB {
         
     }
 
+    @Override
+    protected Class getGetStateResultClass () {
+	return GetStateResult.class;
+    }
 }

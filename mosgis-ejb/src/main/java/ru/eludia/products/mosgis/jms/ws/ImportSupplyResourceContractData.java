@@ -32,6 +32,7 @@ import ru.gosuslugi.dom.schema.integration.house_management.ImportSupplyResource
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportResult;
 import ru.gosuslugi.dom.schema.integration.house_management.SupplyResourceContractType;
+import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inSoapImportSupplyResourceContractData")
@@ -65,6 +66,11 @@ public class ImportSupplyResourceContractData extends WsMDB {
         final GetStateResult result = new GetStateResult ();
         fill (result, r, (ImportSupplyResourceContractRequest) request);
         return result;
+    }
+
+    @Override
+    protected Class getGetStateResultClass () {
+	return GetStateResult.class;
     }
 
     private void fill (GetStateResult result, Map<String, Object> r, ImportSupplyResourceContractRequest importSupplyResourceContractRequest) {

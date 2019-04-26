@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -28,24 +29,29 @@ import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.base.ResultHeader;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_common.GetStateResult;
 
-/**
- *
- * @author Aleksei
- */
 public abstract class WsMDB extends UUIDMDB<WsMessages>{
     
     protected abstract JAXBContext getJAXBContext() throws JAXBException;
         
     protected abstract BaseAsyncResponseType generateResponse (DB db, Map<String, Object> r, Object request) throws Exception;    
-    
+
+    protected abstract <T extends BaseAsyncResponseType> Class<T> getGetStateResultClass();
+
     protected BaseAsyncResponseType handleRequest (DB db, Map<String, Object> r, Object request) throws Exception {
         
         try {            
             return generateResponse (db, r, request);            
         } 
         catch (Fault e) {
-            GetStateResult result = new GetStateResult();
-            result.setErrorMessage(createErrorMessage(e));
+
+	    Class<BaseAsyncResponseType> getStateResultClass = getGetStateResultClass();
+
+	    BaseAsyncResponseType result = getStateResultClass.newInstance();
+
+	    getStateResultClass.getMethod("setErrorMessage", ErrorMessageType.class)
+		.invoke(result, e.toErrorMessageType())
+	    ;
+
             return result;
         }
         
@@ -96,7 +102,10 @@ public abstract class WsMDB extends UUIDMDB<WsMessages>{
             db.update(WsMessages.class, r);
             
         } catch (Exception ex) {
-            WsMessages.registerException(db, uuid, ex);
+
+	    logger.log(Level.SEVERE, "Cannot generate SOAP response", ex);
+
+	    WsMessages.registerException(db, uuid, ex);
         }
 
     }

@@ -60,11 +60,14 @@ public class BankAccount extends EnTable {
         
         key ("uuid_org", "uuid_org");
 
+	key (c.ACCOUNTREGOPERATORGUID.lc(), c.ACCOUNTREGOPERATORGUID.lc());
+
         trigger ("BEFORE INSERT OR UPDATE", 
                 
             "DECLARE "
             + " PRAGMA AUTONOMOUS_TRANSACTION; "
-            + " cnt NUMBER;"
+            + " cnt NUMBER; "
+	    + " status_label VARCHAR(255); "
             + "BEGIN "
 
 		+ "IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS "
@@ -73,6 +76,23 @@ public class BankAccount extends EnTable {
 		+ " THEN "
 		    + " :NEW.ID_CTR_STATUS := " + VocGisStatus.i.MUTATING
 		+ "; END IF; "
+
+		+ "IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS "
+		    + " AND :OLD.ID_CTR_STATUS <> " + VocGisStatus.i.APPROVED
+		    + " AND :NEW.ID_CTR_STATUS =  " + VocGisStatus.i.PENDING_RQ_TERMINATE
+		+ "THEN "
+		    + " SELECT label INTO status_label FROM " + VocGisStatus.TABLE_NAME + " WHERE ID = :OLD.ID_CTR_STATUS; "
+		    + " raise_application_error (-20000, 'Недоступно закрытие счёта на статусе ' || status_label); "
+		+ "END IF; "
+
+		+ "IF :NEW.ID_CTR_STATUS <> :OLD.ID_CTR_STATUS "
+		    + " AND :OLD.ID_CTR_STATUS <> " + VocGisStatus.i.APPROVED
+		    + " AND :NEW.ID_CTR_STATUS =  " + VocGisStatus.i.PENDING_RQ_ANNULMENT
+		+ "THEN "
+		    + " SELECT label INTO status_label FROM " + VocGisStatus.TABLE_NAME + " WHERE ID = :OLD.ID_CTR_STATUS; "
+		    + " raise_application_error (-20000, 'Недоступно закрытие счёта на статусе ' || status_label); "
+		+ "END IF; "
+
                 + "IF :NEW.is_deleted=0 THEN BEGIN "
                     
                     + " FOR i IN ("
@@ -83,6 +103,7 @@ public class BankAccount extends EnTable {
                         + TABLE_NAME + "  o "
                         + " LEFT JOIN " + VocOrganization.TABLE_NAME +  " org ON o.UUID_ORG = org.uuid"
                         + " WHERE o.is_deleted = 0"
+			+ " AND o.id_ctr_status <> " + VocGisStatus.i.ANNUL
                         + " AND o.uuid <> :NEW.UUID "
                         + " AND o.ACCOUNTNUMBER = :NEW.ACCOUNTNUMBER "
                         + " AND o.BIKCREDORG = :NEW.BIKCREDORG "
@@ -103,6 +124,7 @@ public class BankAccount extends EnTable {
 			    + " WHERE o.is_deleted = 0"
 			    + " AND o.uuid <> :NEW.UUID "
 			    + " AND o.is_rokr = 1 "
+			    + " AND o.id_ctr_status <> " + VocGisStatus.i.ANNUL
 			    + " AND (o.opendate  < :NEW.closedate OR :NEW.closedate IS NULL) "
 			    + " AND (o.closedate > :NEW.opendate OR o.closedate IS NULL) "
 			    + ") LOOP"
