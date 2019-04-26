@@ -74,7 +74,7 @@ public class GisPollExportOrgPackMDB  extends GisPollMDB {
 
         XSSFWorkbook [] x = new XSSFWorkbook [] {null};
         
-        db.forFirst (db.getModel ().get (InXlFile.class, uuid, "body"), (rs) -> {
+        db.forFirst (db.getModel ().get (InXlFile.class, uuid, "errr"), (rs) -> {
             
             try {
                 x [0] = new XSSFWorkbook (rs.getBlob (1).getBinaryStream ());
@@ -149,7 +149,7 @@ public class GisPollExportOrgPackMDB  extends GisPollMDB {
         
         list.forEach ((t) -> {
             Object ord = t.get ("ord");
-            final XSSFRow row = sheet.getRow ((int) DB.to.Long (ord) - 1);
+            final XSSFRow row = sheet.getRow ((int) DB.to.Long (ord));
             XSSFCell cell = row.getCell (2);
             if (cell == null) cell = row.createCell (2);
             cell.setCellValue (DB.to.String (t.get ("label")));
