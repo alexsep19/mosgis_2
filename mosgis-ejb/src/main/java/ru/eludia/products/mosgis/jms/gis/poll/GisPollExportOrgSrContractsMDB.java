@@ -1,23 +1,28 @@
 package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.sql.SQLException;
+import javax.jms.Queue;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
+import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
+import ru.eludia.base.db.sql.gen.Operator;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.incoming.InVocOrganization;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -40,6 +45,9 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 
     @EJB
     WsGisHouseManagementClient wsGisHouseManagementClient;
+
+    @Resource (mappedName = "mosgis.inOrgQueue")
+    private Queue inOrgQueue;
 
     @Override
     protected Get get (UUID uuid) {
@@ -111,16 +119,32 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
         
     }
 
-    public List<Map<String, Object>> storeSrContracts(DB db, UUID uuid_out_soap, Object uuid_org, List<ExportSupplyResourceContractResultType> contracts) throws SQLException {
+    public List<Map<String, Object>> storeSrContracts(DB db, UUID uuid_out_soap, Object uuid_org, List<ExportSupplyResourceContractResultType> contracts) throws SQLException,  GisPollRetryException {
 
 	List<Map<String, Object>> sr_ctrs = new ArrayList<>();
 	List<String> guids = new ArrayList<>();
 
 	for (ExportSupplyResourceContractResultType t : contracts) {
 	    final Map<String, Object> h = ExportSupplyResourceContract.toHASH (t);
+
 	    if (!DB.ok (h)) continue;
+
+	    if(DB.ok(h.get(SupplyResourceContract.c.UUID_ORG.lc()))
+		&& !checkOrgGUID(db, h.get(SupplyResourceContract.c.UUID_ORG.lc()))
+	    ) {
+		continue;
+	    };
+
+	    if(DB.ok(h.get(SupplyResourceContract.c.UUID_ORG_CUSTOMER.lc()))
+		&& !checkOrgGUID(db, h.get(SupplyResourceContract.c.UUID_ORG_CUSTOMER.lc()))
+	    ) {
+		continue;
+	    };
+
 	    h.put ("uuid_org", uuid_org);
+
 	    sr_ctrs.add(h);
+
 	    guids.add(h.get(SupplyResourceContract.c.CONTRACTROOTGUID.lc()).toString());
 	}
 
@@ -151,5 +175,47 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
         return rp;
         
     }    
+
+    private boolean checkOrgGUID(DB db, Object orgRootEntityGUID) throws SQLException, GisPollRetryException {
+
+	if (orgRootEntityGUID == null) {
+	    return true;
+	}
+
+	String uuidOrg = db.getString(db.getModel()
+	    .select(VocOrganization.class, "uuid")
+	    .where(EnTable.c.UUID, orgRootEntityGUID)
+	    .and("is_deleted", 0)
+	);
+
+        if (DB.ok(uuidOrg)) {
+            return true;
+        }
+
+	logger.log(Level.SEVERE, "Не найдена организация с orgRootEntityGUID " + orgRootEntityGUID);
+
+	String inVocOrganizationUuid = db.getString(db.getModel()
+	    .select(InVocOrganization.class, InVocOrganization.c.UUID.lc())
+	    .where(InVocOrganization.c.ORGROOTENTITYGUID.lc(), orgRootEntityGUID)
+	    .and(InVocOrganization.c.TS, Operator.GT, LocalDate.now().minusDays(5))
+	    .orderBy(InVocOrganization.c.TS.lc() + " DESC")
+	);
+
+	if (DB.ok(inVocOrganizationUuid)) {
+
+	    Integer outSoapStatus = db.getInteger(OutSoap.class, inVocOrganizationUuid, "id_status");
+
+	    if (outSoapStatus == DONE.getId()) {
+
+		UUID uuid = (UUID) db.insertId (InVocOrganization.class, HASH (
+		    InVocOrganization.c.ORGROOTENTITYGUID.lc(), orgRootEntityGUID
+		));
+
+		uuidPublisher.publish (inOrgQueue, uuid);
+	    }
+	}
+
+	return false;
+    }
     
 }

@@ -169,18 +169,4 @@ public class VocOrganization extends Table {
 	o.setOrgRootEntityGUID(uuid.toString());
 	return o;
     }
-
-    public static String getCustomerUuid (String orgRootEntityGUID) throws Exception {
-
-        final MosGisModel m = ModelHolder.getModel ();
-
-        try (DB db = m.getDb ()) {
-            return db.getString (m
-                .select (VocOrganization.class, EnTable.c.UUID.lc ())
-                .where  (VocOrganization.c.ORGROOTENTITYGUID, orgRootEntityGUID)
-            );
-
-        }
-        
-    }    
 }

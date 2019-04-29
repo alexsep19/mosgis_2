@@ -13,10 +13,10 @@ import ru.gosuslugi.dom.schema.integration.house_management.SupplyResourceContra
 
 public class CustomerSetter {
 
-    private static Object setCustomerOrg (final Map<String, Object> r, DRSORegOrgType regOrg) throws Exception {
+    private static Object setCustomerOrg (final Map<String, Object> r, DRSORegOrgType regOrg) {
         final String orgRootEntityGUID = regOrg.getOrgRootEntityGUID ();
         if (orgRootEntityGUID == null) throw new IllegalArgumentException ("Не указан orgRootEntityGUID для DRSORegOrgType");
-        return r.put (SupplyResourceContract.c.UUID_ORG_CUSTOMER.lc (), VocOrganization.getCustomerUuid(orgRootEntityGUID));
+        return r.put (SupplyResourceContract.c.UUID_ORG_CUSTOMER.lc (), orgRootEntityGUID);
     }    
     
     private static Object setCustomerInd (Map<String, Object> r, DRSOIndType ind) throws Exception {

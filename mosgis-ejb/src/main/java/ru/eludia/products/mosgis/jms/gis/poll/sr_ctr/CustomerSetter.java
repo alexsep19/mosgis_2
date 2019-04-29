@@ -12,7 +12,7 @@ import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResource
 
 public class CustomerSetter {
 
-    private static Object setCustomerOrg (final Map<String, Object> r, DRSORegOrgType regOrg) {
+    private static Object setCustomerOrg (final Map<String, Object> r, DRSORegOrgType regOrg) throws Exception {
         final String orgRootEntityGUID = regOrg.getOrgRootEntityGUID ();
         if (orgRootEntityGUID == null) throw new IllegalArgumentException ("Не указан orgRootEntityGUID для DRSORegOrgType");
         return r.put (SupplyResourceContract.c.UUID_ORG_CUSTOMER.lc (), orgRootEntityGUID);

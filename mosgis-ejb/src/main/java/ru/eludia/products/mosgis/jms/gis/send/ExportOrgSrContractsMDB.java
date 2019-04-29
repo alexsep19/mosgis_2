@@ -20,6 +20,7 @@ import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.jms.UUIDPublisher;
 import ru.eludia.products.mosgis.ws.soap.clients.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
+import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inExportOrgSrContractsQueue")
@@ -51,21 +52,24 @@ public class ExportOrgSrContractsMDB extends UUIDMDB<VocOrganizationLog> {
                 
         try {
 
+	    AckRequest.Ack ack = wsGisHouseManagementClient.exportSupplyResourceContractData ((UUID) r.get ("ppa"), uuid, Collections.EMPTY_LIST);
+
             db.update (OutSoap.class, DB.HASH (
                 "uuid",     uuid,
-                "uuid_ack", wsGisHouseManagementClient.exportSupplyResourceContractData ((UUID) r.get ("ppa"), uuid, Collections.EMPTY_LIST).getMessageGUID ()
+                "uuid_ack", ack.getMessageGUID()
             ));
             
             db.update (getTable (), DB.HASH (
                 "uuid",          uuid,
-                "uuid_out_soap", uuid
+                "uuid_out_soap", uuid,
+		"uuid_message",  ack.getMessageGUID()
             ));
                 
             UUIDPublisher.publish (q, uuid);
             
         }
         catch (Exception ex) {
-            logger.log (Level.SEVERE, "Cannot import orgs sr contracts", ex);
+            logger.log (Level.SEVERE, "Cannot import org sr contracts", ex);
         }
 
     }
