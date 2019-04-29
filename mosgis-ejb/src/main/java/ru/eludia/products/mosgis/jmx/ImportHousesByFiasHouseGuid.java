@@ -17,6 +17,7 @@ import javax.management.ObjectName;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.jms.UUIDPublisher;
@@ -92,6 +93,21 @@ public class ImportHousesByFiasHouseGuid implements ImportHousesByFiasHouseGuidM
         }
         catch (Exception e) {            
             logger.log (Level.SEVERE, "Can't fetch the number of FIAS addresses", e);
+            return -1;
+        }
+        
+    }
+    
+    @Override
+    public int getNumberOfHouses () {
+        
+        MosGisModel model = ModelHolder.getModel ();
+        
+        try (DB db = model.getDb ()) {
+            return db.getCnt (model.select (House.class, "*").where ("is_deleted", 0));
+        }
+        catch (Exception e) {            
+            logger.log (Level.SEVERE, "Can't fetch the number of house passports", e);
             return -1;
         }
         
