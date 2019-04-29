@@ -1,6 +1,7 @@
 package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -9,14 +10,18 @@ import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
+import ru.eludia.products.mosgis.jms.gis.poll.sr_ctr.ExportSupplyResourceContract;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 import ru.eludia.products.mosgis.ws.soap.clients.WsGisHouseManagementClient;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractResultType;
@@ -65,17 +70,18 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 
 	    if (contracts == null) throw new GisPollException("0", "Сервис ГИС вернул пустой результат");
 
-	    db.upsert (SupplyResourceContract.class,
-                    
-                contracts.stream().map ((t) -> {
-                    final Map<String, Object> h = SupplyResourceContract.toHASH (t);
-                    h.put ("uuid_org", r.get ("log.uuid_object"));
-                    return h; 
-                }).collect (Collectors.toList ()),
+	    List<Map<String, Object>> sr_ctrs = new ArrayList<>();
 
-            SupplyResourceContract.c.CONTRACTGUID.lc());
+	    for (ExportSupplyResourceContractResultType t : contracts) {
+		final Map<String, Object> h = ExportSupplyResourceContract.toHASH (t);
+		h.put ("uuid_org", r.get ("log.uuid_object"));
+		sr_ctrs.add(h);
+	    }
+
+	    db.upsert (SupplyResourceContract.class, sr_ctrs, SupplyResourceContract.c.CONTRACTROOTGUID.lc());
 
 	    if (!result.isIsLastPage()) {
+		String exportContractRootGuid = result.getExportContractRootGUID();
 		// TODO: 
 	    }
 
