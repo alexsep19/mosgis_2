@@ -78,7 +78,7 @@ public class GisPollExportHouse extends GisPollMDB {
             .get   (getTable (), uuid, "AS root", "*")
             .toOne (HouseLog.class,     "AS log", "uuid").on ("log.uuid_out_soap=root.uuid")
             .toOne (House.class,     "AS house", "uuid", "fiashouseguid").on()
-            .toOne (VocOrganization.class, "AS org", "orgppaguid").on()
+            .toMaybeOne (VocOrganization.class, "AS org", "orgppaguid").on()
         ;        
     }
 
