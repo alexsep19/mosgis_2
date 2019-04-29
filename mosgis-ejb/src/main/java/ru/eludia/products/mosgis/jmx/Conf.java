@@ -884,4 +884,10 @@ public class Conf implements ConfMBean, ConfLocal {
     public void setWsGisMSPRespTimeout(int i) {
         setInt (VocSetting.i.WS_GIS_MSP_TMT_RESP, i);
     }
+
+    @Override
+    public int getIsImportingHouses () {
+        return getInt (VocSetting.i.IS_IMPORTING_HOUSES);
+    }
+    
 }

@@ -5,6 +5,8 @@ import javax.ejb.Local;
 @Local
 public interface ConfMBean {
     
+    public int getIsImportingHouses ();
+    
     public String getUrlBic ();
     public void   setUrlBic (String s);
     

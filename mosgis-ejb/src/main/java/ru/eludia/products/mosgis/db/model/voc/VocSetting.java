@@ -145,6 +145,8 @@ public class VocSetting extends Table {
         
         URL_BIC ("url.bic", "URL zip-архива с XML-документом, содержащим актуальный реестр БИК финансовых организаций РФ", "http://cbr.ru/s/newbik"),
         
+        IS_IMPORTING_HOUSES ("is.importing.houses", "1, если запущена процедура импорта паспортов домов из ГИС ЖКХ, иначе — 0", "0"),
+        
         ;
 
         String id;
