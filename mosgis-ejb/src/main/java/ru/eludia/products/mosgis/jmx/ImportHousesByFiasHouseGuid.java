@@ -1,6 +1,7 @@
 package ru.eludia.products.mosgis.jmx;
 
 import java.lang.management.ManagementFactory;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -14,6 +15,9 @@ import javax.jms.Queue;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import ru.eludia.base.DB;
+import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.jms.UUIDPublisher;
 
@@ -76,6 +80,21 @@ public class ImportHousesByFiasHouseGuid implements ImportHousesByFiasHouseGuidM
     @Override
     public void stop () {
         conf.set (CONF_KEY, "0");
+    }
+
+    @Override
+    public int getNumberOfFiasAddresses () {
+        
+        MosGisModel model = ModelHolder.getModel ();
+        
+        try (DB db = model.getDb ()) {
+            return db.getCnt (model.select (VocBuilding.class, "*"));
+        }
+        catch (Exception e) {            
+            logger.log (Level.SEVERE, "Can't fetch the number of FIAS addresses", e);
+            return -1;
+        }
+        
     }
     
 }

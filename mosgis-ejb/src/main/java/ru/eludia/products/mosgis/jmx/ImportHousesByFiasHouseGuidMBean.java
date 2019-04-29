@@ -6,6 +6,7 @@ import javax.ejb.Local;
 public interface ImportHousesByFiasHouseGuidMBean {
     
     public String getState ();
+    public int getNumberOfFiasAddresses ();
     
     public void start ();
     public void stop ();
