@@ -281,7 +281,7 @@ public class GisPollExportOrgPackMDB  extends GisPollMDB {
         record.put ("uuid_user", uuidUser);
         record.put ("uuid_object", uuid);
         record.put ("uuid_out_soap", uuidOutSoap);
-        record.put ("action", VocAction.i.IMPORT_FROM_FILE.getName ());
+        record.put ("action", VocAction.i.IMPORT_FROM_GIS_WS.getName ());
         
         db.insert (VocOrganizationLog.class, record);
         
