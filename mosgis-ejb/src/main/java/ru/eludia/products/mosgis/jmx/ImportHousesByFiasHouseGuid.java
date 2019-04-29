@@ -121,7 +121,7 @@ public class ImportHousesByFiasHouseGuid implements ImportHousesByFiasHouseGuidM
         
         logger.info ("tick...");
         
-stop ();
+//stop ();
         
     }
     

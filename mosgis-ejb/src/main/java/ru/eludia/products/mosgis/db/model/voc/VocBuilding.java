@@ -5,10 +5,14 @@ import java.util.logging.Logger;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import ru.eludia.base.DB;
+import ru.eludia.base.model.Col;
+import ru.eludia.base.model.ColEnum;
+import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.Table;
 import ru.eludia.base.model.def.Bool;
 import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.incoming.InFias;
 import ru.eludia.products.mosgis.db.model.tables.ActualCaChObject;
 import ru.eludia.products.mosgis.db.model.tables.ActualSupplyResourceContractObject;
@@ -24,35 +28,58 @@ public class VocBuilding extends Table {
                          + "|| var_house || var_build || var_shortname";
     
     public static final String TABLE_NAME = "vc_buildings";
+    
+    public enum c implements EnColEnum {
+
+        HOUSEGUID	(Type.UUID,                                         "Код здания в ФИАС"),        
+
+        HOUSENUM	(Type.STRING, 20, null,                             "Номер дома"),
+        BUILDNUM	(Type.STRING, 10, null,                             "Номер корпуса"),
+        STRUCNUM	(Type.STRING, 10, null,                             "Номер строения"),
+        STRSTATUS	(VocBuildingStructure.class,                        "Признак строения"),
+
+        ESTSTATUS	(VocBuildingEstate.class,                           "Признак владения"),
+
+        POSTALCODE	(Type.INTEGER, 6, null,                             "Почтовый индекс"),
+        OKATO		(Type.INTEGER, 11, null,                            "ОКАТО"),
+        OKTMO		(Type.INTEGER, 11, null,                            "ОКТМО"),
+        CADNUM		(Type.STRING, 100, null,                            "Кадастровый номер"),
+
+        LIVESTATUS	(Type.BOOLEAN, Bool.TRUE,                           "1 для актуальных записей, 0 для удалённых"),
+
+        AOGUID		(VocStreet.class,                                   "Улица (площадь и т. п.)"),
+        UUID_IN_FIAS	(InFias.class,                                      "Последний пакет импорта"),
+
+        HOUSE_LABEL	(Type.STRING,  new Virt ("DECODE(HOUSENUM,NULL,NULL,'д. '||HOUSENUM)"),  "д. ..."),
+        BUILD_LABEL	(Type.STRING,  new Virt ("DECODE(BUILDNUM,NULL,NULL,'корп. '||BUILDNUM)"),  "корп. ..."),
+
+        LABEL		(Type.STRING,  null,                                "Адрес"),
+        LABEL_UC	(Type.STRING,  new Virt ("UPPER(\"LABEL\")"),       "АДРЕС"),
+        UUID    	(Type.UUID,    new Virt ("NVL(\"HOUSEGUID\",'00')"),           "uuid"),
+        IS_DELETED    	(Type.NUMERIC, 1, 0, new Virt ("0+0"),           "всегда 0"),
+        ;
+
+        @Override public Col getCol () {return col;} private Col col; private c (Type type, Object... p) {col = new Col (this, type, p);} private c (Class c,   Object... p) {col = new Ref (this, c, p);}
+        
+        @Override
+        public boolean isLoggable () {
+            switch (this) {
+                case HOUSEGUID:
+                    return false;
+                default:
+                    return true;
+            }
+        }        
+
+    }
+    
 
     public VocBuilding () {
         
         super (TABLE_NAME, "Здания, сооружения");
         
-        pk    ("houseguid",    Type.UUID,                                         "Код здания в ФИАС");        
-        
-        col   ("housenum",     Type.STRING, 20, null,                             "Номер дома");
-        col   ("buildnum",     Type.STRING, 10, null,                             "Номер корпуса");
-        col   ("strucnum",     Type.STRING, 10, null,                             "Номер строения");
-        fk    ("strstatus",    VocBuildingStructure.class,                        "Признак строения");
-
-        fk    ("eststatus",    VocBuildingEstate.class,                           "Признак владения");
-
-        col   ("postalcode",   Type.INTEGER, 6, null,                             "Почтовый индекс");
-        col   ("okato",        Type.INTEGER, 11, null,                            "ОКАТО");
-        col   ("oktmo",        Type.INTEGER, 11, null,                            "ОКТМО");
-        col   ("cadnum",       Type.STRING, 100, null,                            "Кадастровый номер");
-        
-        col   ("livestatus",   Type.BOOLEAN, Bool.TRUE,                           "1 для актуальных записей, 0 для удалённых");
-
-        fk    ("aoguid",       VocStreet.class,                                   "Улица (площадь и т. п.)");
-        fk    ("uuid_in_fias", InFias.class,                                      "Последний пакет импорта");
-        
-        col   ("house_label",  Type.STRING,  new Virt ("DECODE(HOUSENUM,NULL,NULL,'д. '||HOUSENUM)"),  "д. ...");
-        col   ("build_label",  Type.STRING,  new Virt ("DECODE(BUILDNUM,NULL,NULL,'корп. '||BUILDNUM)"),  "корп. ...");
-        
-        col   ("label",        Type.STRING,  null,                                "Адрес");
-        col   ("label_uc",     Type.STRING,  new Virt ("UPPER(\"LABEL\")"),       "АДРЕС");
+        cols (c.class);
+        pk   (c.HOUSEGUID);        
         
         key   ("label_uc", "label_uc");
         
