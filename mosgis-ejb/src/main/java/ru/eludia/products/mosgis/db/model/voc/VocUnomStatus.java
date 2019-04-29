@@ -2,6 +2,8 @@ package ru.eludia.products.mosgis.db.model.voc;
 
 import javax.json.Json;
 import ru.eludia.base.model.Type;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus.i;
+
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
@@ -70,7 +72,14 @@ public class VocUnomStatus extends Table {
             return Integer.toString (id);
         }
         
-        
+        public static i forId (int id) {
+            for (i i: values ()) if (i.id == id) return i;
+            return null;
+        }
+
+        public static i forId (Object id) {
+            return forId (Integer.parseInt (id.toString ()));
+        }
 
     }
     
