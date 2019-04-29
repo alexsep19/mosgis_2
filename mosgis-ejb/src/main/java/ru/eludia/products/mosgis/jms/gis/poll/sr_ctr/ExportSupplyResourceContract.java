@@ -6,18 +6,31 @@ import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract.c;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractDimension;
-import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractResultType;
 
 public class ExportSupplyResourceContract {
 
-    public static Map<String, Object> toHASH(ExportSupplyResourceContractResultType t) throws GisPollException {
+    public static Map<String, Object> toHASH(ExportSupplyResourceContractResultType t) {
 
 	Map<String, Object> r = DB.HASH(
 	    c.ID_CTR_STATUS.lc(), VocGisStatus.i.APPROVED.getId(),
+	    c.ID_CTR_STATUS_GIS.lc(), VocGisStatus.i.APPROVED.getId(),
 	    c.CONTRACTGUID.lc(), t.getContractGUID(),
 	    c.CONTRACTROOTGUID.lc(), t.getContractRootGUID()
 	);
+
+	if (!DB.ok(r.get(c.CONTRACTROOTGUID.lc()))) {
+	    Logger.getLogger(ExportSupplyResourceContract.class.getName()).warning("no ctr root guid " + t.getContractGUID());
+	    return null;
+	}
+
+	try {
+	    CustomerSetter.setCustomer (r, t);
+	} catch (Exception ex) {
+	    String msg = t.getContractRootGUID().toString() + ": " + ex.getMessage();
+	    Logger.getLogger(ExportSupplyResourceContract.class.getName()).warning(msg);
+	    return null;
+	}
 
 	if (DB.ok(t.getTerminateContract())) {
 	    r.put (c.ID_CTR_STATUS.lc(), VocGisStatus.i.TERMINATED.getId());
@@ -32,17 +45,22 @@ public class ExportSupplyResourceContract {
 	    r.put (c.REASONOFANNULMENT.lc(), t.getAnnulmentContract().getReasonOfAnnulment());
 	}
 
+	Map<String, Object> rr = DB.HASH();
         ExportSupplyResourceContractResultType.IsNotContract isNotContract = t.getIsNotContract ();
         if (isNotContract != null) {
-            r = DB.to.Map (isNotContract);
-            r.put (c.IS_CONTRACT.lc (), 0);
+            rr = DB.to.Map (isNotContract);
+            rr.put (c.IS_CONTRACT.lc (), 0);
         } else {
 	    ExportSupplyResourceContractResultType.IsContract isContract = t.getIsContract ();
 	    if (isContract != null) {
-		r = DB.to.Map (isContract);
-		r.put (c.IS_CONTRACT.lc (), 1);
+		rr = DB.to.Map (isContract);
+		rr.put (c.IS_CONTRACT.lc (), 1);
 	    }
 	}
+	        
+        rr.entrySet ().forEach ((kv) -> {
+            r.put (kv.getKey (), kv.getValue ());
+        });
 
 	r.put(c.AUTOROLLOVER.lc(), DB.ok(t.isAutomaticRollOverOneYear())? 1 : 0);
 	r.put(c.COMPLETIONDATE.lc(), t.getComptetionDate());
@@ -51,13 +69,6 @@ public class ExportSupplyResourceContract {
 
 	if (t.getContractBase().size() > 0) {
 	    r.put (c.CODE_VC_NSI_58.lc(), t.getContractBase().get(0).getCode());
-	}
-
-	try {
-	    CustomerSetter.setCustomer (r, t);
-	} catch (Exception ex) {
-	    String msg = t.getContractRootGUID().toString() + ": " + ex.getMessage();
-	    Logger.getLogger(ExportSupplyResourceContract.class.getName()).warning(msg);
 	}
 
 	r.put(c.ISPLANNEDVOLUME.lc(), DB.ok(t.isIsPlannedVolume())? 1 : 0);

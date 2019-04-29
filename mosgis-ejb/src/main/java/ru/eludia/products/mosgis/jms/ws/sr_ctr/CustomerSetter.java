@@ -5,6 +5,7 @@ import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustomerType;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.gosuslugi.dom.schema.integration.house_management.DRSOIndType;
 import ru.gosuslugi.dom.schema.integration.house_management.DRSORegOrgType;
@@ -12,10 +13,10 @@ import ru.gosuslugi.dom.schema.integration.house_management.SupplyResourceContra
 
 public class CustomerSetter {
 
-    private static Object setCustomerOrg (final Map<String, Object> r, DRSORegOrgType regOrg) {
+    private static Object setCustomerOrg (final Map<String, Object> r, DRSORegOrgType regOrg) throws Exception {
         final String orgRootEntityGUID = regOrg.getOrgRootEntityGUID ();
         if (orgRootEntityGUID == null) throw new IllegalArgumentException ("Не указан orgRootEntityGUID для DRSORegOrgType");
-        return r.put (SupplyResourceContract.c.UUID_ORG_CUSTOMER.lc (), orgRootEntityGUID);
+        return r.put (SupplyResourceContract.c.UUID_ORG_CUSTOMER.lc (), VocOrganization.getCustomerUuid(orgRootEntityGUID));
     }    
     
     private static Object setCustomerInd (Map<String, Object> r, DRSOIndType ind) throws Exception {

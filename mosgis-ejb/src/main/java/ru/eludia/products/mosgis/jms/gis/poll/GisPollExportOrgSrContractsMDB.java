@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -16,7 +17,10 @@ import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
@@ -70,16 +74,28 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 
 	    if (contracts == null) throw new GisPollException("0", "Сервис ГИС вернул пустой результат");
 
-	    List<Map<String, Object>> sr_ctrs = new ArrayList<>();
+	    List<Map<String, Object>> sr_ctrs = storeSrContracts (db, uuid, r.get("log.uuid_object"), contracts);
 
-	    for (ExportSupplyResourceContractResultType t : contracts) {
-		final Map<String, Object> h = ExportSupplyResourceContract.toHASH (t);
-		h.put ("uuid_org", r.get ("log.uuid_object"));
-		sr_ctrs.add(h);
-	    }
+	    for (Map<String, Object> i: sr_ctrs) {
 
-	    db.upsert (SupplyResourceContract.class, sr_ctrs, SupplyResourceContract.c.CONTRACTROOTGUID.lc());
+		Object uuid_object = i.get(EnTable.c.UUID.lc());
 
+		String id_log = db.insertId(SupplyResourceContractLog.class, DB.HASH(
+		    "action", VocAction.i.IMPORT_SR_CONTRACTS.getName (),
+		    "uuid_object", uuid_object,
+		    "uuid_out_soap", uuid
+                )).toString ();
+                
+                db.update (SupplyResourceContract.class, DB.HASH (
+		    "uuid", uuid_object,
+		    "id_log", id_log
+                ));
+            }
+
+	    db.update(OutSoap.class, HASH(
+		"uuid", uuid,
+		"id_status", DONE.getId()
+	    ));
 	    if (!result.isIsLastPage()) {
 		String exportContractRootGuid = result.getExportContractRootGUID();
 		// TODO: 
@@ -93,6 +109,27 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
             ex.register (db, uuid, r);
         }
         
+    }
+
+    public List<Map<String, Object>> storeSrContracts(DB db, UUID uuid_out_soap, Object uuid_org, List<ExportSupplyResourceContractResultType> contracts) throws SQLException {
+
+	List<Map<String, Object>> sr_ctrs = new ArrayList<>();
+	List<String> guids = new ArrayList<>();
+
+	for (ExportSupplyResourceContractResultType t : contracts) {
+	    final Map<String, Object> h = ExportSupplyResourceContract.toHASH (t);
+	    if (!DB.ok (h)) continue;
+	    h.put ("uuid_org", uuid_org);
+	    sr_ctrs.add(h);
+	    guids.add(h.get(SupplyResourceContract.c.CONTRACTROOTGUID.lc()).toString());
+	}
+
+	db.upsert (SupplyResourceContract.class, sr_ctrs, SupplyResourceContract.c.CONTRACTROOTGUID.lc());
+
+	return db.getList(
+	    db.getModel().select(SupplyResourceContract.class, "uuid")
+		.where(SupplyResourceContract.c.CONTRACTROOTGUID.lc() + " IN", guids.toArray())
+	);
     }
 
     private GetStateResult getState (UUID orgPPAGuid, Map<String, Object> r) throws GisPollRetryException, GisPollException {

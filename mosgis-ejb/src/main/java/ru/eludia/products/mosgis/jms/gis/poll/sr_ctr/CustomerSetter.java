@@ -19,7 +19,11 @@ public class CustomerSetter {
     }    
     
     private static Object setCustomerInd (Map<String, Object> r, DRSOIndType ind) throws Exception {
-        
+
+	if (ind.getSNILS() == null && ind.getID() == null) {
+	    return null;
+	}
+
         Map<String, Object> person = DB.to.Map (ind);
         
         person.put (EnTable.c.IS_DELETED.lc (), 0);

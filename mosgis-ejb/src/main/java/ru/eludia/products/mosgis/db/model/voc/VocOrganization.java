@@ -1,6 +1,8 @@
 package ru.eludia.products.mosgis.db.model.voc;
 
+import java.util.Map;
 import java.util.UUID;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
@@ -12,7 +14,10 @@ import static ru.eludia.base.model.Type.INTEGER;
 import static ru.eludia.base.model.Type.STRING;
 import static ru.eludia.base.model.def.Bool.FALSE;
 import ru.eludia.base.model.def.Virt;
+import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
+import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.gosuslugi.dom.schema.integration.house_management.DRSORegOrgType;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_base.ObjectFactory;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_base.RegOrgType;
@@ -164,4 +169,18 @@ public class VocOrganization extends Table {
 	o.setOrgRootEntityGUID(uuid.toString());
 	return o;
     }
+
+    public static String getCustomerUuid (String orgRootEntityGUID) throws Exception {
+
+        final MosGisModel m = ModelHolder.getModel ();
+
+        try (DB db = m.getDb ()) {
+            return db.getString (m
+                .select (VocOrganization.class, EnTable.c.UUID.lc ())
+                .where  (VocOrganization.c.ORGROOTENTITYGUID, orgRootEntityGUID)
+            );
+
+        }
+        
+    }    
 }
