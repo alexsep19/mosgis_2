@@ -28,7 +28,6 @@ import ru.eludia.products.mosgis.db.model.voc.VocBuildingLog;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingUnknown;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.jms.UUIDPublisher;
-import ru.eludia.products.mosgis.ws.soap.clients.WsGisHouseManagementClient;
 
 @Startup
 @Singleton

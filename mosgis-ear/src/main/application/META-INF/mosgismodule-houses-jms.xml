@@ -23,6 +23,15 @@
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
     <jndi-name>mosgis.inExportHouseDataByFiasHouseGuidQueue</jndi-name>
   </uniform-distributed-queue>
+  
+  <!-- очередь опроса статуса запросов на экспорт домов по FIASHOUSEGUID -->
+  <uniform-distributed-queue name="outExportHouseDataByFiasHouseGuidQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <delivery-params-overrides>
+        <time-to-deliver>2000</time-to-deliver>
+    </delivery-params-overrides>
+    <jndi-name>mosgis.outExportHouseDataByFiasHouseGuidQueue</jndi-name>
+  </uniform-distributed-queue>
 
 
 </weblogic-jms>
