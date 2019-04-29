@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.jms.gis.poll.sr_ctr;
 
+import java.math.BigInteger;
 import java.util.Map;
 import java.util.logging.Logger;
 import ru.eludia.base.DB;
@@ -79,6 +80,43 @@ public class ExportSupplyResourceContract {
 	r.put(c.SPECQTYINDS.lc(), VocGisContractDimension.i.forName(DB.to.String(t.getSpecifyingQualityIndicators())));
 	r.put(c.ONETIMEPAYMENT.lc(), DB.ok(t.isOneTimePayment()) ? 1 : 0);
 
+	if (DB.ok (t.getBillingDate())) {
+	    r.put(c.DDT_D_START.lc(), toSrCtrDate(t.getBillingDate().getDate()));
+	    r.put(c.DDT_D_START_NXT.lc(), DB.eq(t.getBillingDate().getDateType(), "N") ? 1 : 0);
+	}
+
+	if (DB.ok (t.getPaymentDate())) {
+	    r.put(c.DDT_I_START.lc(), toSrCtrDate(t.getPaymentDate().getDate()));
+	    r.put(c.DDT_I_START_NXT.lc(), DB.eq(t.getPaymentDate().getDateType(), "N") ? 1 : 0);
+	}
+
+	if (DB.ok (t.getProvidingInformationDate())) {
+	    r.put(c.DDT_N_START.lc(), toSrCtrDate(t.getProvidingInformationDate().getDate()));
+	    r.put(c.DDT_N_START_NXT.lc(), DB.eq(t.getProvidingInformationDate().getDateType(), "N") ? 1 : 0);
+	}
+
+	if (DB.ok (t.getPeriod())) {
+
+	    r.put(c.DDT_M_START.lc(), t.getPeriod().getStart().getStartDate());
+	    r.put(c.DDT_M_START_NXT.lc(), DB.ok(t.getPeriod().getStart().isNextMonth()) ? 1 : 0);
+
+	    r.put(c.DDT_M_END.lc(), toSrCtrDate(t.getPeriod().getEnd().getEndDate()));
+	    r.put(c.DDT_M_END_NXT.lc(), DB.ok(t.getPeriod().getEnd().isNextMonth()) ? 1 : 0);
+	}
+
 	return r;
+    }
+
+    private static Object toSrCtrDate(BigInteger dt) {
+
+	if (dt == null) {
+	   return dt;
+	}
+
+	return toSrCtrDate(dt.byteValue());
+    }
+
+    private static Object toSrCtrDate(byte dt) {
+	return DB.eq(dt, "-1")? 99 : dt;
     }
 }

@@ -76,7 +76,7 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 
 	    if (errorMessage != null) {
 
-		fail (db, uuid, r.get("log.uuid_object"), errorMessage.getErrorCode (), errorMessage.getDescription ());
+		fail (db, uuid, errorMessage.getErrorCode (), errorMessage.getDescription ());
 
 		return;
 	    }
@@ -133,7 +133,7 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
     }
 
 
-    private void fail (DB db, UUID uuid, Object uuidObject, String code, String text) throws SQLException {
+    private void fail (DB db, UUID uuid, String code, String text) throws SQLException {
         
         logger.log (Level.WARNING, code + " " + text);
 
@@ -144,14 +144,6 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
             "err_code",  code,
             "err_text",  text
         ));
-
-        db.update (SupplyResourceContract.class, HASH (
-            "uuid",         uuidObject,
-            "id_status",    FAIL.getId ()
-        ));
-
-        db.commit ();
-        
     }
 
     public List<Map<String, Object>> storeSrContracts(DB db, UUID uuid_out_soap, Object uuid_org, List<ExportSupplyResourceContractResultType> contracts) throws SQLException,  GisPollRetryException {
