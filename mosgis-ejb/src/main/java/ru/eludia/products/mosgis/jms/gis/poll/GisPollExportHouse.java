@@ -529,7 +529,7 @@ public class GisPollExportHouse extends GisPollMDB {
             
             if (blockDb == null)
                 blockDb = db.getMap(m
-                        .select(ResidentialPremise.class, "*")
+                        .select(Block.class, "*")
                         .where("uuid_house", houseUuid)
                         .and("blocknum", block.getBlockNum())
                         .and("blockguid IS NULL")
