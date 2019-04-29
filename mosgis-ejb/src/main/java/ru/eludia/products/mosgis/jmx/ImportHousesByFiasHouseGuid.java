@@ -7,6 +7,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.ejb.TransactionAttribute;
@@ -104,12 +105,21 @@ public class ImportHousesByFiasHouseGuid implements ImportHousesByFiasHouseGuidM
         MosGisModel model = ModelHolder.getModel ();
         
         try (DB db = model.getDb ()) {
-            return db.getCnt (model.select (House.class, "*").where ("is_deleted", 0));
+            return db.getCnt (model.select (House.class, "*"));
         }
         catch (Exception e) {            
             logger.log (Level.SEVERE, "Can't fetch the number of house passports", e);
             return -1;
         }
+        
+    }
+    
+    @Schedule (hour = "*", minute = "*", second = "*/2", persistent = false)
+    private void tick () {
+        
+        if (!isInProgress ()) return;
+        
+        logger.info ("tick...");
         
     }
     
