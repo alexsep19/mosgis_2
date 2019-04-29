@@ -1,6 +1,7 @@
 package ru.eludia.products.mosgis.jmx;
 
 import java.lang.management.ManagementFactory;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -27,6 +28,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocBuildingLog;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingUnknown;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.jms.UUIDPublisher;
+import ru.eludia.products.mosgis.ws.soap.clients.WsGisHouseManagementClient;
 
 @Startup
 @Singleton
@@ -41,14 +43,13 @@ public class ImportHousesByFiasHouseGuid implements ImportHousesByFiasHouseGuidM
     
     @EJB
     protected UUIDPublisher UUIDPublisher;    
-    
+
     @EJB
     protected ConfLocal conf;    
-   
-/*
-    @Resource (mappedName = "mosgis.inImportHousesByFiasHouseGuidQueue")
-    Queue inImportHousesByFiasHouseGuidQueue;
-*/    
+
+    @Resource (mappedName = "mosgis.inExportHouseDataByFiasHouseGuidQueue")
+    Queue inExportHouseDataByFiasHouseGuidQueue;
+
     @PostConstruct
     public void registerInJMX () {
         try {
@@ -140,13 +141,13 @@ public class ImportHousesByFiasHouseGuid implements ImportHousesByFiasHouseGuidM
                 return;
             }
                         
-            String idLog = db.insertId (VocBuildingLog.class, HASH (
+            UUID idLog = (UUID) db.insertId (VocBuildingLog.class, HASH (
                 "action",      VocAction.i.IMPORT_FROM_GIS_WS,
                 "uuid_object", fiashouseguid
-            )).toString ();
-            
-logger.info ("idLog=" + idLog);
+            ));
 
+            UUIDPublisher.publish (inExportHouseDataByFiasHouseGuidQueue, idLog);
+            
         }            
         catch (Exception e) {            
             logger.log (Level.SEVERE, "Can't fetch the next FIASHOUSEGUID", e);

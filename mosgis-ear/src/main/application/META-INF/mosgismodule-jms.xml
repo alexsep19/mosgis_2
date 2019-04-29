@@ -105,22 +105,6 @@
     </delivery-params-overrides>
     <jndi-name>mosgis.outExportInsuranceProductsQueue</jndi-name>
   </uniform-distributed-queue>
-
-  <!-- очередь обработки запросов на импорт/экспорт домов -->
-  <uniform-distributed-queue name="inHouseDataQueue">
-    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-    <jndi-name>mosgis.inHouseDataQueue</jndi-name>
-  </uniform-distributed-queue>
-
-  <!-- очередь опроса статуса исходящих запросов на импорт домов -->
-  <uniform-distributed-queue name="outExportHouseQueue">
-    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-    <delivery-params-overrides>
-        <time-to-deliver>10000</time-to-deliver>
-        <redelivery-delay>10000</redelivery-delay>
-    </delivery-params-overrides>
-    <jndi-name>mosgis.outExportHouseQueue</jndi-name>
-  </uniform-distributed-queue>
   
   <!-- очередь обработки запросов на экспорт работ/услуг организации -->
   <uniform-distributed-queue name="inNsiMainMunicipalServicesQueue">
