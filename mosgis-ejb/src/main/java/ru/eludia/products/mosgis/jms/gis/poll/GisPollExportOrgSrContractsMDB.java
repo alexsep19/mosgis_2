@@ -53,7 +53,7 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
     protected Get get (UUID uuid) {
 
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")
-            .toOne (VocOrganizationLog.class, "AS log", "uuid", "action", "uuid_object").on ("log.uuid_out_soap=root.uuid")
+            .toOne (VocOrganizationLog.class, "AS log", "uuid", "action", "uuid_object", "uuid_message").on ("log.uuid_out_soap=root.uuid")
             .toOne (VocOrganization.class, "AS org", VocOrganization.c.ORGPPAGUID.lc () + " AS ppa").on ("log.uuid_object=org.uuid")
         ;
         
@@ -91,7 +91,8 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 		String id_log = db.insertId(SupplyResourceContractLog.class, DB.HASH(
 		    "action", VocAction.i.IMPORT_SR_CONTRACTS.getName (),
 		    "uuid_object", uuid_object,
-		    "uuid_out_soap", uuid
+		    "uuid_out_soap", uuid,
+		    "uuid_message", r.get("log.uuid_message")
                 )).toString ();
                 
                 db.update (SupplyResourceContract.class, DB.HASH (
@@ -100,14 +101,15 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
                 ));
             }
 
+	    if (!result.isIsLastPage()) {
+		String exportContractRootGuid = result.getExportContractRootGUID();
+		logger.log(Level.WARNING, "Is NOT last page, pagination not implemented yet..");
+	    }
+
 	    db.update(OutSoap.class, HASH(
 		"uuid", uuid,
 		"id_status", DONE.getId()
 	    ));
-	    if (!result.isIsLastPage()) {
-		String exportContractRootGuid = result.getExportContractRootGUID();
-		// TODO: 
-	    }
 
         }
         catch (GisPollRetryException ex) {
