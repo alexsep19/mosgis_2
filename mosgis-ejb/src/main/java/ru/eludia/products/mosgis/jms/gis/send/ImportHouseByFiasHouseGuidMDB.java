@@ -15,7 +15,6 @@ import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.ModelHolder;
-import ru.eludia.products.mosgis.db.model.tables.Acknowledgment;
 import ru.eludia.products.mosgis.jms.gis.send.base.GisExportMDB;
 import ru.eludia.products.mosgis.ws.soap.clients.WsGisHouseManagementClient;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
@@ -92,7 +91,7 @@ public class ImportHouseByFiasHouseGuidMDB extends GisExportMDB<VocBuildingLog> 
 
     @Override
     protected Col getStatusCol () {
-        return Acknowledgment.c.ID_CTR_STATUS.getCol ();
+        return null;
     }
 
 }

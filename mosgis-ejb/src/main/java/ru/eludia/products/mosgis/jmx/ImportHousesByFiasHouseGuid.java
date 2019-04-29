@@ -146,7 +146,7 @@ public class ImportHousesByFiasHouseGuid implements ImportHousesByFiasHouseGuidM
             ));
 
             UUIDPublisher.publish (inExportHouseDataByFiasHouseGuidQueue, idLog);
-            
+stop ();
         }            
         catch (Exception e) {            
             logger.log (Level.SEVERE, "Can't fetch the next FIASHOUSEGUID", e);
@@ -161,7 +161,7 @@ public class ImportHousesByFiasHouseGuid implements ImportHousesByFiasHouseGuidM
         MosGisModel model = ModelHolder.getModel ();
         
         try (DB db = model.getDb ()) {
-            return db.getCnt (model.select (VocBuildingLog.class, "*").where ("uuid_out_soap", "IS NOT NULL"));
+            return db.getCnt (model.select (VocBuildingLog.class, "*").where ("uuid_out_soap IS NOT NULL"));
         }
         catch (Exception e) {            
             logger.log (Level.SEVERE, "Can't fetch the number of SOAP requests", e);
