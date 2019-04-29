@@ -16,10 +16,12 @@ import javax.jms.Queue;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingLog;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingUnknown;
@@ -79,11 +81,13 @@ public class ImportHousesByFiasHouseGuid implements ImportHousesByFiasHouseGuidM
     
     @Override
     public void start () {
+        if (isInProgress ()) throw new IllegalStateException ("It was already started");
         conf.set (CONF_KEY, "1");
     }
     
     @Override
     public void stop () {
+        if (!isInProgress ()) throw new IllegalStateException ("It was already stopped");
         conf.set (CONF_KEY, "0");
     }
 
@@ -127,15 +131,28 @@ public class ImportHousesByFiasHouseGuid implements ImportHousesByFiasHouseGuidM
         MosGisModel model = ModelHolder.getModel ();
         
         try (DB db = model.getDb ()) {
+            
             String fiashouseguid = db.getString (model.select (VocBuildingUnknown.class, VocBuildingUnknown.c.FIASHOUSEGUID.lc ()));
+            
+            if (!DB.ok (fiashouseguid)) {
+                logger.info ("No more unknown GUIDs left, stopping import");
+                stop ();
+                return;
+            }
+                        
+            String idLog = db.insertId (VocBuildingLog.class, HASH (
+                "action",      VocAction.i.IMPORT_FROM_GIS_WS,
+                "uuid_object", fiashouseguid
+            )).toString ();
+            
+logger.info ("idLog=" + idLog);
+
         }            
         catch (Exception e) {            
             logger.log (Level.SEVERE, "Can't fetch the next FIASHOUSEGUID", e);
             return;
         }
-        
-//stop ();
-        
+                
     }
 
     @Override
