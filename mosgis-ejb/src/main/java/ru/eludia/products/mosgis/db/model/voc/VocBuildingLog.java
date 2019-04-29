@@ -5,9 +5,11 @@ import ru.eludia.products.mosgis.db.model.GisWsLogTable;
 
 public class VocBuildingLog extends GisWsLogTable {
 
+    public static final String TABLE_NAME = VocBuilding.TABLE_NAME + "__log";
+
     public VocBuildingLog () {
 
-        super (VocBuilding.TABLE_NAME + "__log", "Запросы на импорт из ГИС ЖКХ паспортов домов по известым GUID ФИАС", VocBuilding.class
+        super (TABLE_NAME, "Запросы на импорт из ГИС ЖКХ паспортов домов по известым GUID ФИАС", VocBuilding.class
             , EnTable.c.class
             , VocBuilding.c.class
         );

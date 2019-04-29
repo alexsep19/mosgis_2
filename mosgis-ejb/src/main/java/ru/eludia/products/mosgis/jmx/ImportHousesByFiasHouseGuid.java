@@ -22,6 +22,7 @@ import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocBuildingLog;
+import ru.eludia.products.mosgis.db.model.voc.VocBuildingUnknown;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.jms.UUIDPublisher;
 
@@ -122,6 +123,16 @@ public class ImportHousesByFiasHouseGuid implements ImportHousesByFiasHouseGuidM
         if (!isInProgress ()) return;
         
         logger.info ("tick...");
+        
+        MosGisModel model = ModelHolder.getModel ();
+        
+        try (DB db = model.getDb ()) {
+            String fiashouseguid = db.getString (model.select (VocBuildingUnknown.class, VocBuildingUnknown.c.FIASHOUSEGUID.lc ()));
+        }            
+        catch (Exception e) {            
+            logger.log (Level.SEVERE, "Can't fetch the next FIASHOUSEGUID", e);
+            return;
+        }
         
 //stop ();
         
