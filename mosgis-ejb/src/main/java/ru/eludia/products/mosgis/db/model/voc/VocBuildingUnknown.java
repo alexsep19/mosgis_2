@@ -29,7 +29,7 @@ public class VocBuildingUnknown extends View {
     @Override
     public String getSQL () {
         return 
-            "SELECT houseguid fiashouseguid FROM " + VocBuilding.TABLE_NAME
+            "SELECT houseguid fiashouseguid FROM " + VocBuilding.TABLE_NAME + " WHERE houseguid=upper('099EDD3AAA2044BC89FFF8FD26B1D402') "
                 + " MINUS " +
             "SELECT fiashouseguid FROM " + House.TABLE_NAME
                 + " MINUS " +
