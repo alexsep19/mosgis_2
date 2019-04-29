@@ -26,6 +26,7 @@ import ru.eludia.products.mosgis.db.model.incoming.InVocOrganization;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
+import static ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState.i.FAIL;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
@@ -33,6 +34,7 @@ import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.eludia.products.mosgis.jms.gis.poll.sr_ctr.ExportSupplyResourceContract;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 import ru.eludia.products.mosgis.ws.soap.clients.WsGisHouseManagementClient;
+import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 
@@ -69,7 +71,16 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
         try {            
             
             GetStateResult state = getState (orgPPAGuid, r);
-            
+
+	    ErrorMessageType errorMessage = state.getErrorMessage();
+
+	    if (errorMessage != null) {
+
+		fail (db, uuid, r.get("log.uuid_object"), errorMessage.getErrorCode (), errorMessage.getDescription ());
+
+		return;
+	    }
+
             List<GetStateResult.ExportSupplyResourceContractResult> results = state.getExportSupplyResourceContractResult();
             
             if (results == null) throw new GisPollException ("0", "Сервис ГИС вернул пустой результат");
@@ -118,6 +129,28 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
         catch (GisPollException ex) {            
             ex.register (db, uuid, r);
         }
+        
+    }
+
+
+    private void fail (DB db, UUID uuid, Object uuidObject, String code, String text) throws SQLException {
+        
+        logger.log (Level.WARNING, code + " " + text);
+
+	db.update (OutSoap.class, HASH (
+            "uuid", uuid,
+            "id_status", DONE.getId (),
+            "is_failed", 1,
+            "err_code",  code,
+            "err_text",  text
+        ));
+
+        db.update (SupplyResourceContract.class, HASH (
+            "uuid",         uuidObject,
+            "id_status",    FAIL.getId ()
+        ));
+
+        db.commit ();
         
     }
 
