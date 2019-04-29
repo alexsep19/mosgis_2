@@ -64,6 +64,8 @@ public class VocBuilding extends Table {
         @Override
         public boolean isLoggable () {
             switch (this) {
+                case UUID:
+                case IS_DELETED:
                 case HOUSEGUID:
                     return false;
                 default:

@@ -19,7 +19,9 @@ import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.tables.House;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
+import ru.eludia.products.mosgis.db.model.voc.VocBuildingLog;
 import ru.eludia.products.mosgis.db.model.voc.VocSetting;
 import ru.eludia.products.mosgis.jms.UUIDPublisher;
 
@@ -122,6 +124,38 @@ public class ImportHousesByFiasHouseGuid implements ImportHousesByFiasHouseGuidM
         logger.info ("tick...");
         
 //stop ();
+        
+    }
+
+    @Override
+    public int getNumberOfRequests () {
+        
+        MosGisModel model = ModelHolder.getModel ();
+        
+        try (DB db = model.getDb ()) {
+            return db.getCnt (model.select (VocBuildingLog.class, "*").where ("uuid_out_soap", "IS NOT NULL"));
+        }
+        catch (Exception e) {            
+            logger.log (Level.SEVERE, "Can't fetch the number of SOAP requests", e);
+            return -1;
+        }
+    }
+    
+    @Override
+    public int getNumberOfRequestsFailed () {
+        
+        MosGisModel model = ModelHolder.getModel ();
+        
+        try (DB db = model.getDb ()) {
+            return db.getCnt (model
+                .select (VocBuildingLog.class, "*")
+                .toOne (OutSoap.class).where ("is_failed", 1).on ()
+            );
+        }
+        catch (Exception e) {            
+            logger.log (Level.SEVERE, "Can't fetch the number of failed SOAP requests", e);
+            return -1;
+        }
         
     }
     

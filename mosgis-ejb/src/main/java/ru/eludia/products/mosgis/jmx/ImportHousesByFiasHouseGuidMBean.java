@@ -8,6 +8,8 @@ public interface ImportHousesByFiasHouseGuidMBean {
     public String getState ();
     public int getNumberOfFiasAddresses ();
     public int getNumberOfHouses ();
+    public int getNumberOfRequests ();
+    public int getNumberOfRequestsFailed ();
     
     public void start ();
     public void stop ();
