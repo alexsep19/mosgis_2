@@ -146,7 +146,7 @@ public class ImportHousesByFiasHouseGuid implements ImportHousesByFiasHouseGuidM
             ));
 
             UUIDPublisher.publish (inExportHouseDataByFiasHouseGuidQueue, idLog);
-stop ();
+
         }            
         catch (Exception e) {            
             logger.log (Level.SEVERE, "Can't fetch the next FIASHOUSEGUID", e);
