@@ -69,6 +69,10 @@ define ([], function () {
         query ({type: 'working_lists', action: 'alter'}, {}, reload_page)
     }
 
+    $_DO.annul_working_list_common = function (e) {
+        use.block ('working_list_annul_popup')
+    }
+    
     $_DO.choose_tab_working_list_common = function (e) {
     
         var name = e.tab.id

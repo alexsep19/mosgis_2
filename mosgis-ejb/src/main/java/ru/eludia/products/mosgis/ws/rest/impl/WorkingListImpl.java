@@ -62,6 +62,7 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
         switch (action) {
             case APPROVE:
             case CANCEL:
+            case ANNUL:
                 super.publishMessage (action, id_log);
             default:
                 return;

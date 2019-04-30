@@ -49,10 +49,16 @@ define ([], function () {
                             it._can.delete = 1
                     }
                     
-                    switch (it.id_ctr_status) {                    
+                    switch (it.id_ctr_status) {
                         case 14:
                         case 120:
                             it._can.alter = 1
+                    }
+                    
+                    switch (it.id_ctr_status) {
+                        case 40:
+                        case 120:
+                            it._can.annul = 1
                     }
 
                     switch (it.id_ctr_status) {                    
