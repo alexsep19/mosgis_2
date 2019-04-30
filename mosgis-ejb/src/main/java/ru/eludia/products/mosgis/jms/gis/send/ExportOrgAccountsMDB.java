@@ -56,8 +56,10 @@ public class ExportOrgAccountsMDB extends UUIDMDB<VocOrganizationLog> {
             String uuidHouse = db.getString (m
                 .select (ActualSomeContractObject.class, "AS co")
                 .where  (ActualSomeContractObject.c.UUID_ORG, uuidOrg)
-                .where  (ActualSomeContractObject.c.FIASHOUSEGUID.lc () + " NOT IN",
-                    m.select (HouseLog.class, "uuid_object").where ("uuid_vc_org_log", uuid)
+                .where  (ActualSomeContractObject.c.FIASHOUSEGUID.lc () + " NOT IN", m
+                    .select (HouseLog.class, "AS log")
+                    .toOne  (House.class, "fiashouseguid AS fiashouseguid").on ()
+                    .where ("uuid_vc_org_log", uuid)
                 )
                 .toOne  (House.class, "AS h", "uuid AS uuid").on ("co.fiashouseguid=h.fiashouseguid")
             );

@@ -46,6 +46,9 @@
   <!-- очередь опроса статуса запросов на экспорт лицевых счетов по FIASHOUSEGUID -->
   <uniform-distributed-queue name="outExportAccountsByFiasHouseGuidQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <delivery-params-overrides>
+        <time-to-deliver>2000</time-to-deliver>
+    </delivery-params-overrides>
     <jndi-name>mosgis.outExportAccountsByFiasHouseGuidQueue</jndi-name>
   </uniform-distributed-queue>
   
