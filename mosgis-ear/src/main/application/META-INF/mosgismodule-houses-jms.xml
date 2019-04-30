@@ -32,6 +32,17 @@
     </delivery-params-overrides>
     <jndi-name>mosgis.outExportHouseDataByFiasHouseGuidQueue</jndi-name>
   </uniform-distributed-queue>
+  
+  
+  
+  
+  
+  <!-- очередь обработки запросов на экспорт лицевых счетов по FIASHOUSEGUID -->
+  <uniform-distributed-queue name="inExportHouseDataByFiasHouseGuidQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.inExportHouseDataByFiasHouseGuidQueue</jndi-name>
+  </uniform-distributed-queue>
+  
 
 
 </weblogic-jms>

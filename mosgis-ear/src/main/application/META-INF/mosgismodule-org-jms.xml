@@ -103,17 +103,9 @@
     <jndi-name>mosgis.inExportOrgAccountsQueue</jndi-name>
   </uniform-distributed-queue>
 
-  <!-- очередь опроса статуса исходящих запросов на импорт лицевых счетов по организации -->
-  <uniform-distributed-queue name="outExportOrgAccountsQueue">
-    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-    <delivery-params-overrides>
-        <time-to-deliver>2000</time-to-deliver>
-        <redelivery-delay>10000</redelivery-delay>
-    </delivery-params-overrides>
-    <jndi-name>mosgis.outExportOrgAccountsQueue</jndi-name>
-  </uniform-distributed-queue>
-  
-  
+
+
+
   
   
   

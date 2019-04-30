@@ -53,6 +53,7 @@ import ru.gosuslugi.dom.schema.integration.base.GetStateRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ApartmentHouseESPType;
 import ru.gosuslugi.dom.schema.integration.house_management.ApartmentHouseOMSType;
 import ru.gosuslugi.dom.schema.integration.house_management.ApartmentHouseUOType;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportAccountRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChAsyncRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChRequestCriteriaType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportHouseRequest;
@@ -121,6 +122,13 @@ public class WsGisHouseManagementClient {
         
         return getPort (orgPPAGuid, messageGUID).exportHouseData(request).getAck();
         
+    }
+    
+    public AckRequest.Ack exportAccountData (UUID orgPPAGuid, UUID messageGUID, UUID fiasHouseGuid) throws Fault {        
+        if (fiasHouseGuid == null) throw new IllegalArgumentException ("Null FIASHouseGUID passed");
+        final ExportAccountRequest request = new ExportAccountRequest ();        
+        request.setFIASHouseGuid(fiasHouseGuid.toString());        
+        return getPort (orgPPAGuid, messageGUID).exportAccountData (request).getAck ();
     }
 
     public AckRequest.Ack rolloverContractData (UUID orgPPAGuid, UUID messageGUID,  Map<String, Object> r) throws Fault {
