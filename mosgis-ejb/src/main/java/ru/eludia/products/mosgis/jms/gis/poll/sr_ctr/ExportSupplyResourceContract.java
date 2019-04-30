@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import ru.eludia.base.DB;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract.c;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -135,6 +136,7 @@ public class ExportSupplyResourceContract {
         Map<String, Object> result = DB.to.Map (cs);
         result.put (SupplyResourceContractSubject.c.CODE_VC_NSI_3.lc (), cs.getServiceType ().getCode ());
         result.put (SupplyResourceContractSubject.c.CODE_VC_NSI_239.lc (), cs.getMunicipalResource ().getCode ());
+	result.put (EnTable.c.UUID.lc(), cs.getTransportGUID());
         return result;
     }
 }

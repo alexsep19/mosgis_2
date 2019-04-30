@@ -27,7 +27,11 @@ public class GisPollExportOrgSrContractsMDBTest extends BaseTest {
 
 	List<ExportSupplyResourceContractResultType> exportContracts = getStateResult.getExportSupplyResourceContractResult().get(0).getContract();
 	try (DB db = model.getDb()) {
-	    mdb.storeSrContracts(db, UUID.fromString("878db72d-1191-072b-e053-0d0b000a7336"), UUID.fromString("2953367e-113e-4cc8-b244-d52b4de73c37"), exportContracts);
+	    mdb.storeSrContracts(db, DB.HASH(
+		"uuid_out_soap", UUID.fromString("878db72d-1191-072b-e053-0d0b000a7336"),
+		"log.uuid_object", UUID.fromString("2953367e-113e-4cc8-b244-d52b4de73c37"),
+		"log.uuid_user", UUID.fromString("79adb621-ecf3-01ec-e053-0d0b000ac65e")
+		), exportContracts);
 	}
     }
     

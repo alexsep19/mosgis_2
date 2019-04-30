@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.UUID;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -17,9 +16,9 @@ import javax.ejb.MessageDriven;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
+import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.base.db.sql.gen.Operator;
-import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -28,13 +27,11 @@ import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.incoming.InVocOrganization;
-import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlSupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubjectLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
-import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
-import static ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState.i.FAIL;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
@@ -63,7 +60,8 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
     protected Get get (UUID uuid) {
 
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")
-            .toOne (VocOrganizationLog.class, "AS log", "uuid", "action", "uuid_object", "uuid_message").on ("log.uuid_out_soap=root.uuid")
+            .toOne (VocOrganizationLog.class, "AS log", "uuid", "action", "uuid_object", "uuid_message", "uuid_user", "uuid_out_soap")
+		.on ("log.uuid_out_soap=root.uuid")
             .toOne (VocOrganization.class, "AS org", VocOrganization.c.ORGPPAGUID.lc () + " AS ppa").on ("log.uuid_object=org.uuid")
         ;
         
@@ -101,7 +99,7 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 
 	    if (contracts == null) throw new GisPollException("0", "Сервис ГИС вернул пустой результат");
 
-	    List<Map<String, Object>> sr_ctrs = storeSrContracts (db, uuid, r.get("log.uuid_object"), contracts);
+	    List<Map<String, Object>> sr_ctrs = storeSrContracts (db, r, contracts);
 
 	    String err_text = "";
 
@@ -114,24 +112,6 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 			+ " " + sr_ctr.get("err_text")
 		    ;
 		}
-
-		Object uuid_object = sr_ctr.get("uuid");
-
-		if (!DB.ok (uuid_object)) {
-		    continue;
-		}
-
-		String id_log = db.insertId(SupplyResourceContractLog.class, DB.HASH(
-		    "action", VocAction.i.IMPORT_SR_CONTRACTS.getName (),
-		    "uuid_object", uuid_object,
-		    "uuid_out_soap", uuid,
-		    "uuid_message", r.get("log.uuid_message")
-                )).toString ();
-                
-                db.update (SupplyResourceContract.class, DB.HASH (
-		    "uuid", uuid_object,
-		    "id_log", id_log
-                ));
             }
 
 	    if (!result.isIsLastPage()) {
@@ -168,7 +148,12 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
         ));
     }
 
-    public List<Map<String, Object>> storeSrContracts(DB db, UUID uuid_out_soap, Object uuid_org, List<ExportSupplyResourceContractResultType> contracts) throws SQLException,  GisPollRetryException {
+    public List<Map<String, Object>> storeSrContracts(DB db, Map<String, Object> r, List<ExportSupplyResourceContractResultType> contracts) throws SQLException,  GisPollRetryException {
+
+	Object uuid_out_soap = r.get("log.uuid_out_soap");
+	Object uuid_org = r.get("log.uuid_object");
+	Object uuid_user = r.get("log.uuid_user");
+	Object uuid_message = r.get("log.uuid_message");
 
 	List<Map<String, Object>> sr_ctrs = new ArrayList<>();
 
@@ -177,44 +162,62 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 
 	    if (!DB.ok (h)) continue;
 
+//if (!DB.eq(h.get("contractnumber"), "3453")) {
+//    continue;
+//}
+
+	    Map<String, Object> sr_ctr = DB.HASH(
+		SupplyResourceContract.c.CONTRACTROOTGUID.lc(), h.get(SupplyResourceContract.c.CONTRACTROOTGUID.lc())
+	    );
+
 	    if(DB.ok(h.get(SupplyResourceContract.c.UUID_ORG.lc()))
 		&& !checkOrgGUID(db, h.get(SupplyResourceContract.c.UUID_ORG.lc()))
 	    ) {
+		sr_ctr.put("err_text", "Не найдена организация с orgRootEntityGUID " + h.get(SupplyResourceContract.c.UUID_ORG.lc()));
 		continue;
 	    };
 
 	    if(DB.ok(h.get(SupplyResourceContract.c.UUID_ORG_CUSTOMER.lc()))
 		&& !checkOrgGUID(db, h.get(SupplyResourceContract.c.UUID_ORG_CUSTOMER.lc()))
 	    ) {
+		sr_ctr.put("err_text", "Не найдена организация с orgRootEntityGUID " + h.get(SupplyResourceContract.c.UUID_ORG.lc()));
 		continue;
 	    };
 
 	    h.put ("uuid_org", uuid_org);
 
-	    Map<String, Object> sr_ctr = DB.HASH(
-		SupplyResourceContract.c.CONTRACTROOTGUID.lc(), h.get(SupplyResourceContract.c.CONTRACTROOTGUID.lc())
-	    );
-
 	    try {
                 
-		String uuid = db.upsertId (SupplyResourceContract.class, h, SupplyResourceContract.c.CONTRACTROOTGUID.lc());
+		UUID uuid = DB.to.UUIDFromHex(db.upsertId (SupplyResourceContract.class, h, SupplyResourceContract.c.CONTRACTROOTGUID.lc()));
 
-		sr_ctr.put("uuid", uuid);
+		h.put(EnTable.c.UUID.lc(), uuid);
 
-		addSubjects (db, uuid_out_soap, uuid, h);
+		String idLog = db.insertId(SupplyResourceContractLog.class, DB.HASH(
+		    "action", VocAction.i.IMPORT_SR_CONTRACTS.getName (),
+		    "uuid_object", uuid,
+		    "uuid_out_soap", uuid_out_soap,
+		    "uuid_user", uuid_user,
+		    "uuid_message", uuid_message
+                )).toString ();
 
-            }
-            catch (SQLException e) {
+                db.update (SupplyResourceContract.class, DB.HASH (
+		    "uuid", uuid,
+		    "id_log", idLog
+                ));
 
-                String s = e.getMessage ();
+		mergeSubjects (db, h, uuid_out_soap, uuid_message, uuid_user);
 
-                if (e.getErrorCode () == 20000) s =
-                    new StringTokenizer (e.getMessage (), "\n\r")
-                    .nextToken ()
-                    .replace ("ORA-20000: ", "");
+            } catch (SQLException e) {
 
-		sr_ctr.put("err_text", s);
-                
+                if (e.getErrorCode () != 20000) {
+		    throw e;
+		}
+
+		String s = new StringTokenizer (e.getMessage (), "\n\r")
+		    .nextToken ()
+		    .replace ("ORA-20000: ", "");
+
+		sr_ctr.put("err_text", s);  
             }
 
 	    sr_ctrs.add(sr_ctr);
@@ -223,62 +226,47 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 	return sr_ctrs;
     }
 
-    void addSubjects (DB db, UUID uuid_out_soap, String uuid, Map<String, Object> r) throws SQLException {
+    void mergeSubjects (DB db, Map<String, Object> h, Object uuid_out_soap, Object uuid_message, Object uuid_user) throws SQLException {
 
-	List<Object> ids = new ArrayList ();
+	Object uuid = h.get(EnTable.c.UUID.lc());
 
-	for (Map<String, Object> i: (List<Map<String, Object>>) r.get (SupplyResourceContractSubject.TABLE_NAME)) {
+	db.d0 (new QP("UPDATE " + SupplyResourceContractSubject.TABLE_NAME + " SET is_deleted = 1 WHERE uuid_sr_ctr_obj IS NULL AND uuid_sr_ctr = ?", uuid));
+
+	final Model m = db.getModel();
+
+	for (Map<String, Object> i: (List<Map<String, Object>>) h.get (SupplyResourceContractSubject.TABLE_NAME)) {
             
-            i.put ("uuid_sr_ctr", uuid);
-            
-            final String u = db.upsertId (SupplyResourceContractSubject.class, i
-		, SupplyResourceContractSubject.c.UUID_SR_CTR.lc()
-		, SupplyResourceContractSubject.c.CODE_VC_NSI_3.lc()
-		, SupplyResourceContractSubject.c.CODE_VC_NSI_239.lc()
-		, SupplyResourceContractSubject.c.STARTSUPPLYDATE.lc()
-		, SupplyResourceContractSubject.c.ENDSUPPLYDATE.lc()
+	    i.put (EnTable.c.IS_DELETED.lc(), 0);
+            i.put (SupplyResourceContractSubject.c.UUID_SR_CTR.lc(), uuid);
+	    i.put (SupplyResourceContractSubject.c.UUID_SR_CTR_OBJ.lc(), null);
+
+	    String id = db.getString (m.select(SupplyResourceContractSubject.class, EnTable.c.UUID.lc())
+		.where(SupplyResourceContractSubject.c.UUID_SR_CTR, uuid)
+		.and(SupplyResourceContractSubject.c.UUID_SR_CTR_OBJ.lc() + " IS NULL")
+		.and(SupplyResourceContractSubject.c.CODE_VC_NSI_3, i.get(SupplyResourceContractSubject.c.CODE_VC_NSI_3.lc()))
+		.and(SupplyResourceContractSubject.c.CODE_VC_NSI_239, i.get(SupplyResourceContractSubject.c.CODE_VC_NSI_239.lc()))
+		.and(SupplyResourceContractSubject.c.STARTSUPPLYDATE, i.get(SupplyResourceContractSubject.c.STARTSUPPLYDATE.lc()))
 	    );
+
+	    if (DB.ok(id)) { // else keep insert UUID = TransportGUID
+		i.put (EnTable.c.UUID.lc (), id);
+	    }
+
+	    id = db.upsertId (SupplyResourceContractSubject.class, i);
             
-            i.put (EnTable.c.UUID.lc (), u);
-            
-            createIdLog (db, SupplyResourceContractSubject.class, uuid_out_soap, u, VocAction.i.IMPORT_SR_CONTRACTS);
-	    
-	    ids.add (u);
+            String idLog = db.insertId (SupplyResourceContractSubjectLog.class, HASH (
+		"action", VocAction.i.IMPORT_SR_CONTRACTS,
+		"uuid_object", id,
+		"uuid_user", uuid_user,
+		"uuid_out_soap", uuid_out_soap,
+		"uuid_message", uuid_message
+	    )).toString ();
+
+	    db.update (SupplyResourceContractSubject.class, HASH (
+		"uuid", id,
+		"id_log", idLog
+	    ));
         }
-
-//	final Model m = db.getModel();
-//
-//	db.delete(m.select(SupplyResourceContractSubject.class, "uuid")
-//	    .where("uuid_sr_ctr", uuid)
-//	    .and("uuid NOT IN", ids.toArray())
-//	);
-    }
-
-    private String createIdLog (DB db, Class c, UUID uuid_out_soap, Object id, VocAction.i action) throws SQLException {
-	final MosGisModel model = ModelHolder.getModel ();
-        return createIdLog (db, model.get (c), uuid_out_soap, id, action);
-    }
-
-    private String createIdLog (DB db, Table table, UUID uuid_out_soap, Object id, VocAction.i action) throws SQLException {
-
-	final MosGisModel model = ModelHolder.getModel ();
-
-        Table logTable = model.getLogTable (table);
-
-        if (logTable == null) return null;
-        
-        String idLog = db.insertId (logTable, HASH (
-            "action", action,
-            "uuid_object", id,
-            "uuid_out_soap", uuid_out_soap
-        )).toString ();
-        
-        db.update (table, HASH (
-            table.getPk ().get (0).getName (), id,
-            "id_log", idLog
-        ));
-                
-        return idLog;
     }
 
     private GetStateResult getState (UUID orgPPAGuid, Map<String, Object> r) throws GisPollRetryException, GisPollException {
