@@ -38,9 +38,9 @@
   
   
   <!-- очередь обработки запросов на экспорт лицевых счетов по FIASHOUSEGUID -->
-  <uniform-distributed-queue name="inExportHouseDataByFiasHouseGuidQueue">
+  <uniform-distributed-queue name="inExportAccountsByFiasHouseGuidQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-    <jndi-name>mosgis.inExportHouseDataByFiasHouseGuidQueue</jndi-name>
+    <jndi-name>mosgis.inExportAccountsByFiasHouseGuidQueue</jndi-name>
   </uniform-distributed-queue>
   
 

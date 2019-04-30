@@ -34,8 +34,8 @@ public class ExportOrgAccountsMDB extends UUIDMDB<VocOrganizationLog> {
     @EJB
     protected UUIDPublisher UUIDPublisher;
 
-    @Resource (mappedName = "mosgis.inExportHouseDataByFiasHouseGuidQueue")
-    Queue inExportHouseDataByFiasHouseGuidQueue;
+    @Resource (mappedName = "mosgis.inExportAccountsByFiasHouseGuidQueue")
+    Queue inExportAccountsByFiasHouseGuidQueue;
 
     @Override
     protected Get get (UUID uuid) {
@@ -53,7 +53,7 @@ public class ExportOrgAccountsMDB extends UUIDMDB<VocOrganizationLog> {
             
             String uuidHouse = db.getString (m
                 .select (ActualSomeContractObject.class, "AS co")
-                .where  (ActualSomeContractObject.c.UUID_ORG, r.get ("log.uuid_object"))
+                .where  (ActualSomeContractObject.c.UUID_ORG, r.get ("uuid_object"))
                 .where  (ActualSomeContractObject.c.FIASHOUSEGUID.lc () + " NOT IN",
                     m.select (HouseLog.class, "uuid_object").where ("uuid_vc_org_log", uuid)
                 )
@@ -67,8 +67,8 @@ public class ExportOrgAccountsMDB extends UUIDMDB<VocOrganizationLog> {
 
             UUID idLog = (UUID) db.insertId (HouseLog.class, HASH (
                 "uuid_object", uuidHouse,
-                "action",      r.get ("log.action"),
-                "uuid_user",   r.get ("log.uuid_user")
+                "action",      r.get ("action"),
+                "uuid_user",   r.get ("uuid_user")
             ));
             
             db.update (House.class, DB.HASH (
@@ -76,7 +76,7 @@ public class ExportOrgAccountsMDB extends UUIDMDB<VocOrganizationLog> {
                 "id_log", idLog
             ));
             
-            UUIDPublisher.publish (inExportHouseDataByFiasHouseGuidQueue, idLog);
+            UUIDPublisher.publish (inExportAccountsByFiasHouseGuidQueue, idLog);
             
         }
         catch (Exception ex) {
