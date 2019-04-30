@@ -16,9 +16,10 @@ import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.db.util.TypeConverter;
 import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.nsi.NsiTable;
+import ru.eludia.products.mosgis.db.model.tables.Block;
 import ru.eludia.products.mosgis.db.model.tables.Entrance;
 import ru.eludia.products.mosgis.db.model.tables.House;
+import ru.eludia.products.mosgis.db.model.tables.LivingRoom;
 import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
@@ -32,6 +33,7 @@ import ru.eludia.products.mosgis.ws.soap.impl.base.Fault;
 import ru.eludia.products.mosgis.ws.soap.tools.SOAPTools;
 import ru.gosuslugi.dom.schema.integration.base.BaseAsyncResponseType;
 import ru.gosuslugi.dom.schema.integration.base.OKTMORefType;
+import ru.gosuslugi.dom.schema.integration.house_management.BlockCategoryType;
 import ru.gosuslugi.dom.schema.integration.house_management.GKNEGRPKeyRSOType;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.house_management.HouseBasicRSOType;
@@ -44,7 +46,9 @@ import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseRSOReques
 import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseRSORequest.ApartmentHouse.EntranceToUpdate;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseRSORequest.ApartmentHouse.NonResidentialPremiseToCreate;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseRSORequest.ApartmentHouse.NonResidentialPremiseToUpdate;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseRSORequest.ApartmentHouse.ResidentialPremises;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseRSORequest.LivingHouse;
+import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseRSORequest.LivingHouse.Blocks;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseRSORequest.LivingHouse.LivingHouseToCreate;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportHouseRSORequest.LivingHouse.LivingHouseToUpdate;
 import ru.gosuslugi.dom.schema.integration.house_management.ImportResult;
@@ -151,7 +155,40 @@ public class ImportHouseRSOData extends WsMDB {
 				importResult.getCommonResult().add(nonResidentialPremiseCommonResult);
 			}
 			
-	        house.getResidentialPremises();
+			Map<Object, Map<String, Object>> entrances = db.getIdx(db.getModel()
+					.select(Entrance.class, "uuid", "entrancenum")
+					.where("uuid_house", houseId)
+					.and("is_deleted", 0)
+					.and("is_annuled", 0),
+					"entrancenum"
+					);
+			
+			for (ResidentialPremises residentialPremise : house.getResidentialPremises()) {
+				Map<String, Object> residentialPremiseMap = residentialPremise.getResidentialPremisesToCreate() != null
+						? TypeConverter.Map(residentialPremise.getResidentialPremisesToCreate())
+						: TypeConverter.Map(residentialPremise.getResidentialPremisesToUpdate());
+
+				CommonResult residentialPremiseCommonResult = saveResidentialPremise(db, residentialPremiseMap,
+						entrances, houseId, isCreate, r.get(WsMessages.c.UUID_ORG.lc()));
+				importResult.getCommonResult().add(residentialPremiseCommonResult);
+				
+				String premiseId = residentialPremiseCommonResult.getGUID();
+				if (StringUtils.isNotBlank(premiseId)) {
+					for (ResidentialPremises.LivingRoomToCreate livingRoomToCreate : residentialPremise.getLivingRoomToCreate()) {
+						CommonResult livingRoomToCreateCommonResult = saveLivingRoom(db,
+								TypeConverter.Map(livingRoomToCreate), premiseId, null, houseId, isCreate,
+								r.get(WsMessages.c.UUID_ORG.lc()));
+						importResult.getCommonResult().add(livingRoomToCreateCommonResult);
+					}
+			        
+					for (ResidentialPremises.LivingRoomToUpdate livingRoomToUpdate : residentialPremise.getLivingRoomToUpdate()) {
+						CommonResult livingRoomToCreateCommonResult = saveLivingRoom(db,
+								TypeConverter.Map(livingRoomToUpdate), premiseId, null, houseId, isCreate,
+								r.get(WsMessages.c.UUID_ORG.lc()));
+						importResult.getCommonResult().add(livingRoomToCreateCommonResult);
+					}
+				}
+			}
     	} catch (Fault fault) {
     		commonResult.getError().add(fault.toCommonResultError());
     	} catch (Exception e) {
@@ -185,8 +222,48 @@ public class ImportHouseRSOData extends WsMDB {
 						basicCharacteristic.getOlsonTZ(), basicCharacteristic, false, isCreate);
 	        }
 	        
-	        house.getBlocks();
-	        house.getLivingHouseToCreate();
+    		for (Blocks block : house.getBlocks()) {
+				Map<String, Object> blockMap = block.getBlockToCreate() != null
+						? TypeConverter.Map(block.getBlockToCreate())
+						: TypeConverter.Map(block.getBlockToUpdate());
+				
+				CommonResult blockCommonResult = saveBlock(db, blockMap, houseId, isCreate,
+						r.get(WsMessages.c.UUID_ORG.lc()));
+				importResult.getCommonResult().add(blockCommonResult);
+				
+				String blockId = blockCommonResult.getGUID();
+				if (StringUtils.isNotBlank(blockId)) {
+					for (Blocks.LivingRoomToCreate livingRoomToCreate : block.getLivingRoomToCreate()) {
+						CommonResult livingRoomToCreateCommonResult = saveLivingRoom(db,
+								TypeConverter.Map(livingRoomToCreate), null, blockId, houseId, isCreate,
+								r.get(WsMessages.c.UUID_ORG.lc()));
+						importResult.getCommonResult().add(livingRoomToCreateCommonResult);
+					}
+			        
+					for (Blocks.LivingRoomToUpdate livingRoomToUpdate : block.getLivingRoomToUpdate()) {
+						CommonResult livingRoomToCreateCommonResult = saveLivingRoom(db,
+								TypeConverter.Map(livingRoomToUpdate), null, blockId, houseId, isCreate,
+								r.get(WsMessages.c.UUID_ORG.lc()));
+						importResult.getCommonResult().add(livingRoomToCreateCommonResult);
+					}
+				}
+			}
+    		
+    		for (LivingHouse.LivingRoomToCreate livingRoomToCreate : house.getLivingRoomToCreate()) {
+				CommonResult livingRoomToCreateCommonResult = saveLivingRoom(db,
+						TypeConverter.Map(livingRoomToCreate), null, null, houseId, isCreate,
+						r.get(WsMessages.c.UUID_ORG.lc()));
+				importResult.getCommonResult().add(livingRoomToCreateCommonResult);
+			}
+	        
+			for (LivingHouse.LivingRoomToUpdate livingRoomToUpdate : house.getLivingRoomToUpdate()) {
+				CommonResult livingRoomToCreateCommonResult = saveLivingRoom(db,
+						TypeConverter.Map(livingRoomToUpdate), null, null, houseId, isCreate,
+						r.get(WsMessages.c.UUID_ORG.lc()));
+				importResult.getCommonResult().add(livingRoomToCreateCommonResult);
+			}
+    		
+	        house.getLivingRoomToCreate();
 	        house.getLivingRoomToUpdate();
     	} catch (Fault fault) {
     		commonResult.getError().add(fault.toCommonResultError());
@@ -270,14 +347,14 @@ public class ImportHouseRSOData extends WsMDB {
     	CommonResult commonResult = new CommonResult();
     	commonResult.setTransportGUID(entranceData.get("transportguid").toString());
     	
-    	String entranceGuid = entranceData.get("premisesguid").toString();
+    	Object entranceGuid = entranceData.get("entranceguid");
     	try {
-	    	if (StringUtils.isNotBlank(entranceGuid) && isHouseCreate)
+	    	if (entranceGuid != null && isHouseCreate)
 	    		throw new Fault(Errors.INT004026);
 	    	
 	    	UUID entranceId;
 	    	
-	    	if (StringUtils.isNotBlank(entranceGuid)) {
+	    	if (entranceGuid != null) {
 	    		Select select = db.getModel().select(Entrance.class, "*")
 	    				.where("uuid_house", houseId)
 	    				.and("is_deleted", 0);
@@ -321,14 +398,14 @@ public class ImportHouseRSOData extends WsMDB {
 	private CommonResult saveNonResidentialPremise(DB db, Map<String, Object> premiseData, UUID houseId, boolean isHouseCreate, Object uuidOrg) {
     	CommonResult commonResult = new CommonResult();
     	commonResult.setTransportGUID(premiseData.get("transportguid").toString());
-    	String premiseGuid = premiseData.get("premisesguid").toString();
+    	Object premiseGuid = premiseData.get("premisesguid");
     	try {
-	    	if (StringUtils.isNotBlank(premiseGuid) && isHouseCreate)
+	    	if (premiseGuid != null && isHouseCreate)
 	    		throw new Fault(Errors.INT004025);
 	    	
 	    	UUID premiseId;
 	    	
-	    	if (StringUtils.isNotBlank(premiseGuid)) {
+	    	if (premiseGuid != null) {
 	    		Select select = db.getModel().select(NonResidentialPremise.class, "*")
 	    				.where("uuid_house", houseId)
 	    				.and("is_deleted", 0);
@@ -369,17 +446,32 @@ public class ImportHouseRSOData extends WsMDB {
     	return commonResult;
     }
 	
-	private CommonResult saveResidentialPremise(DB db, Map<String, Object> premiseData, UUID houseId, boolean isHouseCreate, Object uuidOrg) {
+	private CommonResult saveResidentialPremise(DB db, Map<String, Object> premiseData,
+			Map<Object, Map<String, Object>> entrances, UUID houseId, boolean isHouseCreate, Object uuidOrg) {
     	CommonResult commonResult = new CommonResult();
     	commonResult.setTransportGUID(premiseData.get("transportguid").toString());
-    	String premiseGuid = premiseData.get("premisesguid").toString();
+    	Object premiseGuid = premiseData.get("premisesguid");
     	try {
-	    	if (StringUtils.isNotBlank(premiseGuid) && isHouseCreate)
+	    	if (premiseGuid != null && isHouseCreate)
 	    		throw new Fault(Errors.INT004027);
+	    	
+	    	if (premiseData.containsKey("premisesсharacteristic")) {
+    			premiseData.put("code_vc_nsi_30",((NsiRef)premiseData.get("premisesсharacteristic")).getCode());
+    		}
+    		if ((Boolean) premiseData.containsKey("hasnoentrance")) {
+    			premiseData.put("uuid_entrance", null);
+    		} else {
+    			String entranceNum = premiseData.get("entrancenum").toString();
+    			Map<String, Object> entrance = entrances.get(entranceNum);
+    			if (entrance == null)
+    				throw new Fault(String.format(Errors.INT004100.getMessage(), entranceNum), Errors.INT004100);
+    			
+    			premiseData.put("uuid_entrance", entrance.get("uuid"));
+    		}
 	    	
 	    	UUID premiseId;
 	    	
-	    	if (StringUtils.isNotBlank(premiseGuid)) {
+	    	if (premiseGuid != null) {
 	    		Select select = db.getModel().select(ResidentialPremise.class, "*")
 	    				.where("uuid_house", houseId)
 	    				.and("is_deleted", 0);
@@ -397,27 +489,137 @@ public class ImportHouseRSOData extends WsMDB {
 	    			premiseData.put("code_vc_nsi_330",((NsiRef)premiseData.get("annulmentreason")).getCode());
 	    			premiseData.remove("annulmentreason");
 	    		}
-	    		if (premiseData.containsKey("premisesсharacteristic")) {
-	    			premiseData.put("code_vc_nsi_30",((NsiRef)premiseData.get("premisesсharacteristic")).getCode());
-	    		}
-	    		if ((Boolean) premiseData.containsKey("hasnoentrance")) {
-	    			premiseData.put("uuid_entrance", null);
-	    		} else {
-	    			
-	    		}
 	    		
-	    		
-	    		db.update(NonResidentialPremise.class, premiseData);
+	    		db.update(ResidentialPremise.class, premiseData);
 	    		
 	    	} else {
 	    		premiseData.putAll(HASH(
 	    				"uuid_org",    uuidOrg,
 	    				"uuid_house",  houseId
 	    				));
-	    		premiseId = (UUID) db.insertId(NonResidentialPremise.class, premiseData);
+	    		premiseId = (UUID) db.insertId(ResidentialPremise.class, premiseData);
 	    	}
 	    	
 	    	commonResult.setGUID(premiseId.toString());
+	    	commonResult.setUpdateDate(SOAPTools.xmlNow());
+    	
+    	} catch (Fault fault) {
+    		commonResult.getError().add(fault.toCommonResultError());
+    	} catch (Exception e) {
+    		Fault fault = new Fault(e);
+    		commonResult.getError().add(fault.toCommonResultError());
+    	} 
+    	return commonResult;
+    }
+	
+	private CommonResult saveBlock(DB db, Map<String, Object> blockData, UUID houseId, boolean isHouseCreate,
+			Object uuidOrg) {
+    	CommonResult commonResult = new CommonResult();
+    	commonResult.setTransportGUID(blockData.get("transportguid").toString());
+    	Object blockGuid = blockData.get("blockguid");
+    	try {
+	    	if (blockGuid != null && isHouseCreate)
+	    		throw new Fault(Errors.INT004093);
+	    	
+	    	if (blockData.containsKey("premisesсharacteristic")) {
+    			blockData.put(Block.c.CODE_VC_NSI_30.lc(),((NsiRef)blockData.get("premisesсharacteristic")).getCode());
+    		}
+	    	if (blockData.containsKey("category")) {
+    			blockData.put(Block.c.IS_NRS.lc(),BlockCategoryType.NON_RESIDENTIAL.equals(blockData.get("category")));
+    		}
+	    	
+	    	UUID blockId;
+	    	
+	    	if (blockGuid != null) {
+	    		Select select = db.getModel().select(Block.class, "*")
+	    				.where(Block.c.UUID_HOUSE, houseId)
+	    				.and(Block.c.IS_DELETED, 0);
+				select.andEither(Block.c.UUID.lc(), blockGuid).or(Block.c.BLOCKGUID.lc(), blockGuid);
+	    		
+	    		Map<String, Object> block = db.getMap(select);
+	    		if (block.isEmpty())
+	    			throw new Fault(Errors.INT002034);
+	    		
+	    		blockId = (UUID)block.get(Block.c.UUID.lc());
+	    		
+	    		blockData.remove(Block.c.BLOCKGUID.lc());
+	    		blockData.put(Block.c.UUID.lc(), blockId);
+	    		if (blockData.containsKey(Block.c.ANNULMENTREASON.lc())) {
+	    			blockData.put(Block.c.CODE_VC_NSI_330.lc(),((NsiRef)blockData.get(Block.c.ANNULMENTREASON.lc())).getCode());
+	    			blockData.remove(Block.c.ANNULMENTREASON.lc());
+	    		}
+	    		
+	    		db.update(Block.class, blockData);
+	    		
+	    	} else {
+	    		blockData.putAll(HASH(
+	    				Block.c.UUID_ORG,    uuidOrg,
+	    				Block.c.UUID_HOUSE,  houseId
+	    				));
+	    		blockId = (UUID) db.insertId(Block.class, blockData);
+	    	}
+	    	
+	    	commonResult.setGUID(blockId.toString());
+	    	commonResult.setUpdateDate(SOAPTools.xmlNow());
+    	
+    	} catch (Fault fault) {
+    		commonResult.getError().add(fault.toCommonResultError());
+    	} catch (Exception e) {
+    		Fault fault = new Fault(e);
+    		commonResult.getError().add(fault.toCommonResultError());
+    	} 
+    	return commonResult;
+    }
+	
+	private CommonResult saveLivingRoom(DB db, Map<String, Object> roomData, String premiseId, String blockId,
+			UUID houseId, boolean isHouseCreate, Object uuidOrg) {
+    	CommonResult commonResult = new CommonResult();
+    	commonResult.setTransportGUID(roomData.get("transportguid").toString());
+    	Object livingRoomGuid = roomData.get("livingroomguid");
+    	try {
+	    	if (livingRoomGuid != null && isHouseCreate)
+	    		throw new Fault(Errors.INT004028);
+	    	
+	    	UUID livingRoomId;
+	    	
+	    	if (livingRoomGuid != null) {
+	    		Select select = db.getModel().select(LivingRoom.class, "*")
+	    				.where(LivingRoom.c.UUID_HOUSE, houseId)
+	    				.and(LivingRoom.c.IS_DELETED, 0);
+	    		
+	    		if (premiseId != null)
+	    			select = select.and(LivingRoom.c.UUID_PREMISE, premiseId);
+	    		if (blockId != null)
+	    			select = select.and(LivingRoom.c.UUID_BLOCK, blockId);
+	    		
+	    		select.andEither(LivingRoom.c.UUID.lc(), livingRoomGuid).or(LivingRoom.c.LIVINGROOMGUID.lc(), livingRoomGuid);
+	    		
+	    		Map<String, Object> livingRoom = db.getMap(select);
+	    		if (livingRoom.isEmpty())
+	    			throw new Fault(Errors.INT002034);
+	    		
+	    		livingRoomId = (UUID)livingRoom.get(LivingRoom.c.UUID.lc());
+	    		
+	    		roomData.remove(LivingRoom.c.LIVINGROOMGUID.lc());
+	    		roomData.put(LivingRoom.c.UUID.lc(), premiseId);
+	    		if (roomData.containsKey(LivingRoom.c.ANNULMENTREASON.lc())) {
+	    			roomData.put(LivingRoom.c.CODE_VC_NSI_330.lc(),((NsiRef)roomData.get(LivingRoom.c.ANNULMENTREASON.lc())).getCode());
+	    			roomData.remove(LivingRoom.c.ANNULMENTREASON.lc());
+	    		}
+	    		
+	    		db.update(LivingRoom.class, roomData);
+	    		
+	    	} else {
+	    		roomData.putAll(HASH(
+	    				LivingRoom.c.UUID_ORG,     uuidOrg,
+	    				LivingRoom.c.UUID_HOUSE,   houseId,
+	    				LivingRoom.c.UUID_PREMISE, premiseId,
+	    				LivingRoom.c.UUID_BLOCK,   blockId
+	    				));
+	    		livingRoomId = (UUID) db.insertId(LivingRoom.class, roomData);
+	    	}
+	    	
+	    	commonResult.setGUID(livingRoomId.toString());
 	    	commonResult.setUpdateDate(SOAPTools.xmlNow());
     	
     	} catch (Fault fault) {
