@@ -24,6 +24,9 @@ public class HouseManagementServiceAsync extends BaseServiceAsync {
     
     @Resource (mappedName = "mosgis.inSoapImportSupplyResourceContractData")
     private Queue inSoapImportSupplyResourceContractData;
+    
+    @Resource (mappedName = "mosgis.inSoapImportHouseRSOData")
+    private Queue inSoapImportHouseRSOData;
 
     @Interceptors(WsInterceptor.class)
     public ru.gosuslugi.dom.schema.integration.house_management.GetStateResult getState (ru.gosuslugi.dom.schema.integration.base.GetStateRequest getStateRequest) throws Fault {
@@ -110,8 +113,7 @@ public class HouseManagementServiceAsync extends BaseServiceAsync {
     }
 
     public ru.gosuslugi.dom.schema.integration.base.AckRequest importHouseRSOData (ru.gosuslugi.dom.schema.integration.house_management.ImportHouseRSORequest importHouseRSODataRequest) throws Fault {
-        //TODO implement this method
-        throw new UnsupportedOperationException ("Not implemented yet.");
+    	 return publishIfNew (inSoapImportHouseRSOData);
     }
 
     public ru.gosuslugi.dom.schema.integration.base.AckRequest importHouseOMSData (ru.gosuslugi.dom.schema.integration.house_management.ImportHouseOMSRequest importHouseOMSDataRequest) throws Fault {

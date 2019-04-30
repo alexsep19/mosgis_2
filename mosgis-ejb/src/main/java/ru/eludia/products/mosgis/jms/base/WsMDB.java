@@ -1,8 +1,6 @@
 package ru.eludia.products.mosgis.jms.base;
 
 import java.io.ByteArrayOutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Map;
@@ -27,7 +25,6 @@ import ru.eludia.products.mosgis.ws.soap.tools.SOAPTools;
 import ru.gosuslugi.dom.schema.integration.base.BaseAsyncResponseType;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.base.ResultHeader;
-import ru.gosuslugi.dom.schema.integration.organizations_registry_common.GetStateResult;
 
 public abstract class WsMDB extends UUIDMDB<WsMessages>{
     
@@ -37,25 +34,18 @@ public abstract class WsMDB extends UUIDMDB<WsMessages>{
 
     protected abstract <T extends BaseAsyncResponseType> Class<T> getGetStateResultClass();
 
-    protected BaseAsyncResponseType handleRequest (DB db, Map<String, Object> r, Object request) throws Exception {
-        
-        try {            
-            return generateResponse (db, r, request);            
-        } 
-        catch (Fault e) {
+	protected BaseAsyncResponseType handleRequest(DB db, Map<String, Object> r, Object request) throws Exception {
+		try {
+			return generateResponse(db, r, request);
+		} catch (Fault e) {
+			Class<BaseAsyncResponseType> getStateResultClass = getGetStateResultClass();
+			BaseAsyncResponseType result = getStateResultClass.newInstance();
+			getStateResultClass.getMethod("setErrorMessage", ErrorMessageType.class)
+					.invoke(result, e.toErrorMessageType());
+			return result;
+		}
 
-	    Class<BaseAsyncResponseType> getStateResultClass = getGetStateResultClass();
-
-	    BaseAsyncResponseType result = getStateResultClass.newInstance();
-
-	    getStateResultClass.getMethod("setErrorMessage", ErrorMessageType.class)
-		.invoke(result, e.toErrorMessageType())
-	    ;
-
-            return result;
-        }
-        
-    }
+	}
     
     @Override
     protected void handleRecord(DB db, UUID uuid, Map<String, Object> r) throws SQLException {
@@ -110,15 +100,4 @@ public abstract class WsMDB extends UUIDMDB<WsMessages>{
 
     }
 
-    protected ErrorMessageType createErrorMessage(Fault e) {
-        ErrorMessageType errorMessage = new ErrorMessageType();
-        errorMessage.setErrorCode(e.getFaultCode());
-        errorMessage.setDescription(e.getFaultMessage());
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw, true);
-        e.printStackTrace(pw);
-        sw.getBuffer().toString();
-        errorMessage.setStackTrace(sw.getBuffer().toString());
-        return errorMessage;
-    }        
 }
