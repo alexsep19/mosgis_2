@@ -1,13 +1,18 @@
 package ru.eludia.products.mosgis.jms.gis.poll.sr_ctr;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract.c;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractDimension;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractResultType;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractType;
 
 public class ExportSupplyResourceContract {
 
@@ -104,6 +109,8 @@ public class ExportSupplyResourceContract {
 	    r.put(c.DDT_M_END_NXT.lc(), DB.ok(t.getPeriod().getEnd().isNextMonth()) ? 1 : 0);
 	}
 
+	addContractSubjects (r, t.getContractSubject ());
+
 	return r;
     }
 
@@ -118,5 +125,16 @@ public class ExportSupplyResourceContract {
 
     private static Object toSrCtrDate(byte dt) {
 	return DB.eq(dt, "-1")? 99 : dt;
+    }
+
+    private static void addContractSubjects(Map<String, Object> r, List<ExportSupplyResourceContractType.ContractSubject> contractSubject) {
+	r.put(SupplyResourceContractSubject.TABLE_NAME, contractSubject.stream().map(t -> toMap(t)).collect(Collectors.toList()));
+    }
+
+    private static Map<String, Object> toMap(ExportSupplyResourceContractType.ContractSubject cs) {
+        Map<String, Object> result = DB.to.Map (cs);
+        result.put (SupplyResourceContractSubject.c.CODE_VC_NSI_3.lc (), cs.getServiceType ().getCode ());
+        result.put (SupplyResourceContractSubject.c.CODE_VC_NSI_239.lc (), cs.getMunicipalResource ().getCode ());
+        return result;
     }
 }
