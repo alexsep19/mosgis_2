@@ -53,18 +53,14 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
             
             GetStateResult state = getState (r);
             
-            ErrorMessageType errorMessage = state.getErrorMessage ();
-            
-            if (errorMessage != null) throw new GisPollException (errorMessage);
+            if (isEmpty (state)) return;
             
             List<ExportAccountResultType> exportAccountResult = state.getExportAccountResult ();
             
-            if (exportAccountResult == null || exportAccountResult.isEmpty ()) throw new GisPollException ("0", "Сервис ГИСЖКХ вернул пустой результат");
+            if (exportAccountResult == null || exportAccountResult.isEmpty ()) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
 
             for (ExportAccountResultType i: exportAccountResult) store (db, i);
             
-            uuidPublisher.publish (inExportOrgAccountsQueue, (UUID) r.get ("log.uuid_vc_org_log"));
-
         }
         catch (GisPollRetryException ex) {
             return;
@@ -72,7 +68,24 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
         catch (GisPollException ex) {            
             ex.register (db, uuid, r);
         }
+        finally {
+            uuidPublisher.publish (inExportOrgAccountsQueue, (UUID) r.get ("log.uuid_vc_org_log"));
+        }
         
+    }
+
+    private boolean isEmpty (GetStateResult state) throws GisPollException {
+        
+        ErrorMessageType errorMessage = state.getErrorMessage ();
+        
+        if (errorMessage == null) return false;
+        
+        if (!"INT002012".equals (errorMessage.getErrorCode ())) throw new GisPollException (errorMessage);
+
+        logger.info ("No account found for this fiashouseguid, OK.");
+        
+        return true;
+            
     }
 
     private void store (DB db, ExportAccountResultType acc) throws SQLException {
