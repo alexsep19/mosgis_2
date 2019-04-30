@@ -66,12 +66,12 @@ public class ImportAccountsByFiasHouseGuidMDB extends GisExportMDB<HouseLog> {
             OutSoap.registerAck (db, ack);
             
             db.update (getTable (), DB.HASH (
-                "uuid",          r.get ("uuid"),
-                "uuid_out_soap", r.get ("uuid"),
+                "uuid",          uuid,
+                "uuid_out_soap", uuid,
                 "uuid_message",  ack.getMessageGUID ()
             ));
             
-            uuidPublisher.publish (getQueue (), ack.getRequesterMessageGUID ());
+            uuidPublisher.publish (getQueue (), uuid);
             
         }
         catch (Fault ex) {
