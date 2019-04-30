@@ -82,9 +82,7 @@ define ([], function () {
             cach.click = function () {openTab ('/' + cach.type + '/' + cach.uuid)}
         }
         
-        if ($_USER.role.nsi_20_8 || data.is_under_nsi_20_8)
-            it._can.edit = 1
-
+        if ($_USER.role.nsi_20_7 || $_USER.role.nsi_20_8 || data.is_under_nsi_20_8) it._can.edit = 1
         
         var srca = it.srca
 
