@@ -349,6 +349,11 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
     });}
     
     @Override
+    public JsonObject doImportAccounts (String id, User user) {return doAction ((db) -> {
+        logAction (db, user, id, VocAction.i.IMPORT_ACCOUNTS);
+    });}
+    
+    @Override
     public JsonObject doImportCharters (String id, User user) {return doAction ((db) -> {
         logAction (db, user, id, VocAction.i.IMPORT_CHARTERS);
     });}
