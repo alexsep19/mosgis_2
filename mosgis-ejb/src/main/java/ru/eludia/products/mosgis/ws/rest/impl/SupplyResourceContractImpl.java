@@ -138,7 +138,10 @@ public class SupplyResourceContractImpl extends BaseCRUD<SupplyResourceContract>
             .toMaybeOne(VocOrganization.class, "AS org", "label").on("uuid_org")
 	    .toMaybeOne(SupplyResourceContractLog.class, "AS cpl").on()
 	    .toMaybeOne(OutSoap.class, "uuid", "err_text").on("cpl.uuid_out_soap=out_soap.uuid")
-            .toMaybeOne(BankAccount.class,     "AS bank_acct",        "*").on ()
+            .toMaybeOne (BankAccount.class,     "AS bank_acct"
+                , BankAccount.c.ACCOUNTNUMBER.lc ()
+                , BankAccount.c.UUID_ORG.lc ()
+            ).on ()
             .toMaybeOne(VocBic.class,                                 "*").on ()
             .toMaybeOne(VocOrganization.class, "AS org_bank_acct","label").on ("bank_acct.uuid_org=org_bank_acct.uuid")
         );

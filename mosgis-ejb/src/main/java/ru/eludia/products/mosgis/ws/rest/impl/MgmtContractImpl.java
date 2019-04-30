@@ -177,7 +177,10 @@ logger.info ("data=" + data);
             .toMaybeOne (Charter.class,         "AS ch",            "uuid").on ("org_customer.uuid=ch.uuid_org")
             .toMaybeOne (ContractLog.class                                ).on ()
             .toMaybeOne (OutSoap.class,                         "err_text").on ()
-            .toMaybeOne (BankAccount.class,     "AS bank_acct",        "*").on ()
+            .toMaybeOne (BankAccount.class,     "AS bank_acct"
+                , BankAccount.c.ACCOUNTNUMBER.lc ()
+                , BankAccount.c.UUID_ORG.lc ()
+            ).on ()
             .toMaybeOne (VocBic.class,                                 "*").on ()
             .toMaybeOne (VocOrganization.class, "AS org_bank_acct","label").on ("bank_acct.uuid_org=org_bank_acct.uuid")
         );
