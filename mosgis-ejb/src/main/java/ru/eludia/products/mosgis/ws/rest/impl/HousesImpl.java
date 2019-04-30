@@ -111,7 +111,7 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
         
         if (searchString == null || searchString.isEmpty ()) return;
 
-        select.and ("address_uc LIKE %?%", searchString);
+        select.and ("address_uc LIKE %?%", searchString.toUpperCase ());
         
     }
     

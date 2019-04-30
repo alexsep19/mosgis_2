@@ -51,9 +51,11 @@ public class ExportOrgAccountsMDB extends UUIDMDB<VocOrganizationLog> {
 
         try {
             
+            final Object uuidOrg = r.get ("uuid_object");
+            
             String uuidHouse = db.getString (m
                 .select (ActualSomeContractObject.class, "AS co")
-                .where  (ActualSomeContractObject.c.UUID_ORG, r.get ("uuid_object"))
+                .where  (ActualSomeContractObject.c.UUID_ORG, uuidOrg)
                 .where  (ActualSomeContractObject.c.FIASHOUSEGUID.lc () + " NOT IN",
                     m.select (HouseLog.class, "uuid_object").where ("uuid_vc_org_log", uuid)
                 )
@@ -66,9 +68,11 @@ public class ExportOrgAccountsMDB extends UUIDMDB<VocOrganizationLog> {
             }
 
             UUID idLog = (UUID) db.insertId (HouseLog.class, HASH (
-                "uuid_object", uuidHouse,
-                "action",      r.get ("action"),
-                "uuid_user",   r.get ("uuid_user")
+                "uuid_vc_org_log", uuid,
+                "uuid_object",     uuidHouse,
+                "uuid_org",        uuidOrg,
+                "action",          r.get ("action"),
+                "uuid_user",       r.get ("uuid_user")
             ));
             
             db.update (House.class, DB.HASH (

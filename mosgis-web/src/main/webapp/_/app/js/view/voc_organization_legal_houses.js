@@ -14,9 +14,8 @@ define ([], function () {
 
             columns: [                
                 {field: 'is_condo',   caption: 'Тип дома', size: 10, render: function (r) {return r.is_condo ? 'МКД' : 'ЖД'}},
-                {field: 'fiashouseguid', caption: 'GUID ФИАС',    size: 30},
                 {field: 'address', caption: 'Адрес',    size: 50},
-                {field: 'id_status', caption: 'Статус', size: 10, voc: data.vc_house_status},
+                {field: 'fiashouseguid', caption: 'GUID ФИАС',    size: 30},
             ],
             
             postData: {data: {uuid_org: $_REQUEST.id}},
