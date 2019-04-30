@@ -58,6 +58,10 @@ public class WsGisServicesClient {
         return getPort (orgPPAGuid, messageGUID).importWorkingList (WorkingListLog.toCancelImportWorkingListRequest (r)).getAck ();
     }
     
+    public AckRequest.Ack annulWorkingList (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
+        return getPort (orgPPAGuid, messageGUID).importWorkingList (WorkingListLog.toAnnulImportWorkingListRequest (r)).getAck ();
+    }
+    
     public AckRequest.Ack importWorkingPlan (UUID orgPPAGuid, UUID messageGUID, Map<String, Object> r) throws Fault {
         return getPort (orgPPAGuid, messageGUID).importWorkingPlan (WorkingPlanLog.toImportWorkingPlanRequest (r)).getAck ();
     }    
