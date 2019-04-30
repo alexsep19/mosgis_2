@@ -63,9 +63,12 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
 
     @Resource (mappedName = "mosgis.inExportOrgCharterQueue")
     Queue inExportOrgCharterQueue;
-    
+
     @Resource (mappedName = "mosgis.inExportOrgAddServicesQueue")
     Queue inExportOrgAddServicesQueue;
+
+    @Resource (mappedName = "mosgis.inExportOrgAccountsQueue")
+    Queue inExportOrgAccountsQueue;
 
     @Override
     protected Queue getQueue (VocAction.i action) {
@@ -75,6 +78,7 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
             case IMPORT_MGMT_CONTRACTS: return inExportOrgMgmtContractsQueue;
             case IMPORT_CHARTERS:       return inExportOrgCharterQueue;
             case IMPORT_ADD_SERVICES:   return inExportOrgAddServicesQueue;
+            case IMPORT_ACCOUNTS:       return inExportOrgAccountsQueue;
             default: return null;
         }
 
