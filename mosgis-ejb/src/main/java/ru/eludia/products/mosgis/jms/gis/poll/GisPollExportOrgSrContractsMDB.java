@@ -19,13 +19,11 @@ import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.base.db.sql.gen.Operator;
-import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.incoming.InVocOrganization;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
@@ -55,6 +53,9 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 
     @Resource (mappedName = "mosgis.inOrgQueue")
     private Queue inOrgQueue;
+
+    @Resource (mappedName = "mosgis.inImportSupplyResourceContractObjectsQueue")
+    private Queue inImportSupplyResourceContractObjectsQueue;
 
     @Override
     protected Get get (UUID uuid) {
@@ -105,13 +106,31 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 
 	    for (Map<String, Object> sr_ctr: sr_ctrs) {
 
+		String contractRootGuid = DB.to.String(sr_ctr.get(SupplyResourceContract.c.CONTRACTROOTGUID.lc()));
+
 		if (DB.ok (sr_ctr.get("err_text"))) {
 
 		    err_text = err_text
-			+ "\r\n" + DB.to.String(sr_ctr.get(SupplyResourceContract.c.CONTRACTROOTGUID.lc()))
+			+ "\r\n" + contractRootGuid
 			+ " " + sr_ctr.get("err_text")
 		    ;
+		    continue;
 		}
+logger.info(DB.to.json(sr_ctr).toString());
+		Object id = sr_ctr.get(EnTable.c.UUID.lc());
+
+		String id_log = db.insertId (SupplyResourceContractLog.class, HASH (
+		    "action", VocAction.i.IMPORT_SR_CONTRACT_OBJECTS,
+		    "uuid_object", id,
+		    "uuid_user", r.get("log.uuid_user")
+		)).toString ();
+
+		db.update (SupplyResourceContract.class, HASH (
+		    "uuid", id,
+		    "id_log", id_log
+		));
+
+		uuidPublisher.publish(inImportSupplyResourceContractObjectsQueue, id_log);
             }
 
 	    if (!result.isIsLastPage()) {
@@ -191,6 +210,7 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 		UUID uuid = DB.to.UUIDFromHex(db.upsertId (SupplyResourceContract.class, h, SupplyResourceContract.c.CONTRACTROOTGUID.lc()));
 
 		h.put(EnTable.c.UUID.lc(), uuid);
+		sr_ctr.put(EnTable.c.UUID.lc(), uuid);
 
 		String idLog = db.insertId(SupplyResourceContractLog.class, DB.HASH(
 		    "action", VocAction.i.IMPORT_SR_CONTRACTS.getName (),

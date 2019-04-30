@@ -33,4 +33,21 @@
     <jndi-name>mosgis.inXlSupplyResourceContractsQueue</jndi-name>
 </uniform-distributed-queue>
 
+     
+  <!-- очередь обработки запросов на импорт ОЖФ ДРСО -->
+  <uniform-distributed-queue name="inImportSupplyResourceContractObjectsQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.inImportSupplyResourceContractObjectsQueue</jndi-name>
+  </uniform-distributed-queue>
+  
+  <!-- очередь опроса статуса исходящих запросов на импорт ОЖФ ДРСО -->
+  <uniform-distributed-queue name="outImportSupplyResourceContractObjectsQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <delivery-params-overrides>
+        <time-to-deliver>2000</time-to-deliver>
+        <redelivery-delay>10000</redelivery-delay>
+    </delivery-params-overrides>
+    <jndi-name>mosgis.outImportSupplyResourceContractObjectsQueue</jndi-name>
+  </uniform-distributed-queue>
+
 </weblogic-jms>
