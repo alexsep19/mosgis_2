@@ -34,10 +34,10 @@ public class ImportAccountsByFiasHouseGuidMDB extends GisExportMDB<HouseLog> {
     
     @EJB
     private WsGisHouseManagementClient wsGisHouseManagementClient;
-/*    
-    @Resource (mappedName = "mosgis.outExportHouseDataByFiasHouseGuidQueue")
-    Queue outExportHouseDataByFiasHouseGuidQueue;
-*/                    
+
+    @Resource (mappedName = "mosgis.outExportAccountsByFiasHouseGuidQueue")
+    Queue outExportAccountsByFiasHouseGuidQueue;
+
     protected Get get (UUID uuid) {        
         
         final MosGisModel m = ModelHolder.getModel ();
@@ -71,7 +71,7 @@ public class ImportAccountsByFiasHouseGuidMDB extends GisExportMDB<HouseLog> {
                 "uuid_message",  ack.getMessageGUID ()
             ));
             
-//            uuidPublisher.publish (getQueue (), ack.getRequesterMessageGUID ());
+            uuidPublisher.publish (getQueue (), ack.getRequesterMessageGUID ());
             
         }
         catch (Fault ex) {
@@ -88,7 +88,7 @@ public class ImportAccountsByFiasHouseGuidMDB extends GisExportMDB<HouseLog> {
     }
     
     Queue getQueue () {        
-        return null;//outExportHouseDataByFiasHouseGuidQueue;        
+        return outExportAccountsByFiasHouseGuidQueue;
     }
 
     @Override
