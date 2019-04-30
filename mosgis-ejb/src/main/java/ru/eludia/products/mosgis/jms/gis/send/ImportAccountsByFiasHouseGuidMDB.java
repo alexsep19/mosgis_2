@@ -26,7 +26,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 
 @MessageDriven(activationConfig = {
- @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.mosgis.inExportAccountsByFiasHouseGuidQueue")
+ @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inExportAccountsByFiasHouseGuidQueue")
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
@@ -45,7 +45,7 @@ public class ImportAccountsByFiasHouseGuidMDB extends GisExportMDB<HouseLog> {
         return (Get) m
             .get   (HouseLog.class, uuid, "AS root")
             .toOne (House.class, "AS r", House.c.FIASHOUSEGUID.lc () + " AS fiashouseguid").on ()
-            .toOne (VocOrganization.class, VocOrganization.c.ORGPPAGUID.lc () + " AS orgppaguid").on ("root.uuid_org")
+            .toOne (VocOrganization.class, "AS org", VocOrganization.c.ORGPPAGUID.lc () + " AS orgppaguid").on ("root.uuid_org=org.uuid")
             ;
         
     }
