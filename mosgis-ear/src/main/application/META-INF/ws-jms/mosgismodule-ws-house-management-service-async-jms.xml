@@ -6,5 +6,11 @@
    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
    <jndi-name>mosgis.inSoapImportSupplyResourceContractData</jndi-name>
  </uniform-distributed-queue>
+ 
+ <!-- очередь обработки запросов веб сервиса на импорт данных дома для полномочия РСО  -->
+ <uniform-distributed-queue name="inSoapImportHouseRSOData">
+   <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+   <jndi-name>mosgis.inSoapImportHouseRSOData</jndi-name>
+ </uniform-distributed-queue>
 
 </weblogic-jms>
