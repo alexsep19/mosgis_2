@@ -12,8 +12,8 @@ import javax.jms.Queue;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.ModelHolder;
-import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.HouseLog;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
@@ -40,7 +40,8 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
             .toOne (HouseLog.class,     "AS log", "uuid", "action", "uuid_vc_org_log").on ("log.uuid_out_soap=root.uuid")
-        ;
+            .toOne (VocOrganization.class, "AS org", VocOrganization.c.ORGPPAGUID.lc () + " AS orgppaguid").on ("log.uuid_org=org.uuid")
+;
     }
     
     @Override
@@ -95,7 +96,7 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
         GetStateResult rp;
         
         try {
-            rp =  wsGisHouseManagementClient.getState ((UUID) r.get ("uuid_ack"));
+            rp = wsGisHouseManagementClient.getState ((UUID) r.get ("orgppaguid"), (UUID) r.get ("uuid_ack"));
         }
         catch (Fault ex) {
             throw new GisPollException (ex.getFaultInfo ());
