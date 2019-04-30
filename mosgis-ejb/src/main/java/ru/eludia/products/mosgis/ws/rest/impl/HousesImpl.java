@@ -255,6 +255,11 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
             .limit (p.getInt ("offset"), p.getInt ("limit"));
 
         String uuidOrg = user.getUuidOrg ();
+
+        if (!DB.ok (uuidOrg)) {
+            JsonObject data = p.getJsonObject ("data");
+            if (data != null) uuidOrg = data.getString ("uuid_org", null);
+        }
         
         if (DB.ok (uuidOrg)) select.and (c.FIASHOUSEGUID.lc (), m
             .select (ActualSomeContractObject.class, ActualSomeContractObject.c.FIASHOUSEGUID.lc ())

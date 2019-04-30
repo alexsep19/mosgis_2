@@ -17,7 +17,7 @@ public class Houses extends EJBResource <HousesLocal> {
     
     private JsonObject selectWrapper (JsonObject p) {
         
-        if (securityContext.isUserInRole ("admin")    ||
+        if ((securityContext.isUserInRole ("admin") && !p.containsKey ("data")) ||
             securityContext.isUserInRole ("nsi_20_4") ||
             securityContext.isUserInRole ("nsi_20_7") ||
             securityContext.isUserInRole ("nsi_20_14"))

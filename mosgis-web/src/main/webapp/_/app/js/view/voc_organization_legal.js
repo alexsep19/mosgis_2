@@ -54,6 +54,7 @@ define ([], function () {
                             {id: 'voc_organization_legal_hours', caption: 'Режим работы'},
                             {id: 'voc_organization_legal_territories', caption: 'Территории', off: !has_territories ()},
                             {id: 'voc_organization_legal_members', caption: 'Члены ТСЖ/кооператива', off: !has_coop_members()},
+                            {id: 'voc_organization_legal_houses', caption: 'Дома в управлении'},
                         ].filter(not_off),
 
                         onClick: $_DO.choose_top_tab_voc_organization_legal
