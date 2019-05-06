@@ -180,12 +180,13 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
         catch (UnknownSomethingException ex) {
             String msg = "ЛС " + acc.getAccountNumber () + ", " + ex.toString ();
             logger.warning (msg);
-            Map<String, Object> map = db.getMap (db.getModel ().get (OutSoap.class, getUuid (), "*"));
+            Object uuid = r.get ("uuid");
+            Map<String, Object> map = db.getMap (db.getModel ().get (OutSoap.class, uuid, "*"));
             StringBuilder sb = new StringBuilder (DB.to.String (map.get ("err_text")));
             if (sb.length () > 0) sb.append (";\n");
             sb.append (msg);
             db.update (OutSoap.class, HASH (
-                "uuid", getUuid (),
+                "uuid", uuid,
                 "is_failed", 1,
                 "err_code", "0",
                 "err_text", sb.toString ()
