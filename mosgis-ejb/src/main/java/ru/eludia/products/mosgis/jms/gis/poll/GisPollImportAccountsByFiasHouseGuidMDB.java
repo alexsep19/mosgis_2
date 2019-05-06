@@ -25,6 +25,7 @@ import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.eludia.products.mosgis.ws.soap.clients.WsGisHouseManagementClient;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
+import ru.gosuslugi.dom.schema.integration.house_management.AccountExportType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportAccountResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 
@@ -144,6 +145,21 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
         if (acc.getLivingPersonsNumber () != null) h.put (Account.c.LIVINGPERSONSNUMBER.lc (), acc.getLivingPersonsNumber ());
         if (acc.getResidentialSquare () != null) h.put (Account.c.RESIDENTIALSQUARE.lc (), acc.getResidentialSquare ());
         if (acc.getHeatedArea () != null) h.put (Account.c.HEATEDAREA.lc (), acc.getHeatedArea ());
+        
+        AccountExportType.PayerInfo payerInfo = acc.getPayerInfo ();
+        
+        if (payerInfo.getOrg () != null) {
+            h.put (Account.c.IS_CUSTOMER_ORG.lc (), 1);            
+            final String orgVersionGUID = payerInfo.getOrg ().getOrgVersionGUID ();
+            String uuidOrg = db.getString (db.getModel ().select (VocOrganization.class, "uuid").where (VocOrganization.c.ORGVERSIONGUID, orgVersionGUID));
+            if (uuidOrg == null) {
+                logger.warning ("Org not found by orgVersionGUID=" + orgVersionGUID);
+                return;
+            }
+            h.put (Account.c.UUID_ORG_CUSTOMER.lc (), uuidOrg);
+        }
+        else {
+        }
         
         db.upsert (Account.class, h, Account.c.ACCOUNTGUID.lc ());
 
