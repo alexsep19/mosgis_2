@@ -16,6 +16,7 @@ import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.Account;
 import ru.eludia.products.mosgis.db.model.tables.AccountItem;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
@@ -172,7 +173,38 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
         
         String uuidAccount = db.upsertId (Account.class, h, Account.c.ACCOUNTGUID.lc ());
         
-        storeItems (db, fiasHouseGuid, uuidAccount, acc.getAccommodation ());
+        Map<String, Object> houseItem = null;
+        
+        for (Map<String, Object> item: items) {
+            set (item, AccountItem.c.FIASHOUSEGUID, fiasHouseGuid);
+            set (item, AccountItem.c.UUID_ACCOUNT, uuidAccount);
+            set (item, EnTable.c.IS_DELETED, 0);
+            if (item.get (AccountItem.c.UUID_PREMISE.lc ()) == null) houseItem = item;
+        }
+        
+        if (houseItem != null) {
+            
+            items.remove (houseItem);
+            
+            houseItem.put ("uuid", db.getString (db.getModel ()
+                .select (AccountItem.class, "uuid")
+                .where  (AccountItem.c.UUID_ACCOUNT, uuidAccount)
+                .and    (AccountItem.c.UUID_PREMISE.lc () + " IS NULL")
+            ));
+            
+            db.upsert (AccountItem.class, houseItem);
+            
+        }
+        
+        db.update (AccountItem.class, HASH (
+            AccountItem.c.UUID_ACCOUNT, uuidAccount,
+            EnTable.c.IS_DELETED, 1
+        ), AccountItem.c.UUID_ACCOUNT.lc ());
+
+        db.upsert (AccountItem.class, items
+            , AccountItem.c.UUID_ACCOUNT.lc ()
+            , AccountItem.c.UUID_PREMISE.lc ()
+        );
         
         return false;
         
