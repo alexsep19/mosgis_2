@@ -51,6 +51,7 @@ public class Account extends EnTable {
         
         ACCOUNTGUID            (Type.UUID,             null,    "Идентификатор ЛС в ГИС ЖКХ (при обновлении данных ЛС)"),        
         SERVICEID              (Type.STRING,           null,    "Идентификатор жилищно-коммунальной услуги"),
+        UNIFIEDACCOUNTNUMBER   (Type.STRING,           null,    "Единый лицевой счет"),
 
         ID_LOG                 (AccountLog.class,                    "Последнее событие редактирования"),
         

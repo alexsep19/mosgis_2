@@ -129,13 +129,23 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
             return;
         }
         
-        db.upsert (Account.class, HASH (
-            Account.c.ACCOUNTGUID,   acc.getAccountGUID (),
-            Account.c.ID_TYPE,       VocAccountType.i.UO.getId (),
-            Account.c.UUID_CONTRACT, contract.get ("uuid"),
-            Account.c.UUID_ORG,      contract.get (Contract.c.UUID_ORG.lc ()),
-            Account.c.FIASHOUSEGUID, r.get ("fiashouseguid")
-        ), Account.c.ACCOUNTGUID.lc ());
+        final Map<String, Object> h = HASH (
+            Account.c.ID_TYPE,              VocAccountType.i.UO.getId (),
+            Account.c.UUID_CONTRACT,        contract.get ("uuid"),
+            Account.c.UUID_ORG,             contract.get (Contract.c.UUID_ORG.lc ()),
+            Account.c.FIASHOUSEGUID,        r.get ("fiashouseguid"),
+            Account.c.ACCOUNTNUMBER,        acc.getAccountNumber (),
+            Account.c.SERVICEID,            acc.getServiceID (),
+            Account.c.UNIFIEDACCOUNTNUMBER, acc.getUnifiedAccountNumber (),
+            Account.c.ACCOUNTGUID,          acc.getAccountGUID ()
+        );
+        
+        if (acc.getTotalSquare () != null) h.put (Account.c.TOTALSQUARE.lc (), acc.getTotalSquare ());
+        if (acc.getLivingPersonsNumber () != null) h.put (Account.c.LIVINGPERSONSNUMBER.lc (), acc.getLivingPersonsNumber ());
+        if (acc.getResidentialSquare () != null) h.put (Account.c.RESIDENTIALSQUARE.lc (), acc.getResidentialSquare ());
+        if (acc.getHeatedArea () != null) h.put (Account.c.HEATEDAREA.lc (), acc.getHeatedArea ());
+        
+        db.upsert (Account.class, h, Account.c.ACCOUNTGUID.lc ());
 
     }
         
