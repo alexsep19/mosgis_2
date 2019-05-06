@@ -12,12 +12,14 @@ import javax.jms.Queue;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
+import ru.eludia.base.model.ColEnum;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.tables.Account;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.HouseLog;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.voc.VocAccountType;
+import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
@@ -26,8 +28,10 @@ import ru.eludia.products.mosgis.ws.soap.clients.WsGisHouseManagementClient;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.house_management.AccountExportType;
+import ru.gosuslugi.dom.schema.integration.house_management.AccountIndExportType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportAccountResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
+import ru.gosuslugi.dom.schema.integration.organizations_registry_base.RegOrgVersionType;
 
 @MessageDriven(activationConfig = {
  @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outExportAccountsByFiasHouseGuidQueue")
@@ -129,11 +133,12 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
             logger.warning ("Contract not found by contractGUID=" + contractGUID);
             return;
         }
+        final UUID uuidOrg = (UUID) contract.get (Contract.c.UUID_ORG.lc ());
         
         final Map<String, Object> h = HASH (
             Account.c.ID_TYPE,              VocAccountType.i.UO.getId (),
             Account.c.UUID_CONTRACT,        contract.get ("uuid"),
-            Account.c.UUID_ORG,             contract.get (Contract.c.UUID_ORG.lc ()),
+            Account.c.UUID_ORG,             uuidOrg,
             Account.c.FIASHOUSEGUID,        r.get ("fiashouseguid"),
             Account.c.ACCOUNTNUMBER,        acc.getAccountNumber (),
             Account.c.SERVICEID,            acc.getServiceID (),
@@ -141,28 +146,92 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
             Account.c.ACCOUNTGUID,          acc.getAccountGUID ()
         );
         
-        if (acc.getTotalSquare () != null) h.put (Account.c.TOTALSQUARE.lc (), acc.getTotalSquare ());
-        if (acc.getLivingPersonsNumber () != null) h.put (Account.c.LIVINGPERSONSNUMBER.lc (), acc.getLivingPersonsNumber ());
-        if (acc.getResidentialSquare () != null) h.put (Account.c.RESIDENTIALSQUARE.lc (), acc.getResidentialSquare ());
-        if (acc.getHeatedArea () != null) h.put (Account.c.HEATEDAREA.lc (), acc.getHeatedArea ());
-        
         AccountExportType.PayerInfo payerInfo = acc.getPayerInfo ();
+
+        set (h, Account.c.TOTALSQUARE, acc.getTotalSquare ());
+        set (h, Account.c.LIVINGPERSONSNUMBER, acc.getLivingPersonsNumber ());
+        set (h, Account.c.RESIDENTIALSQUARE, acc.getResidentialSquare ());
+        set (h, Account.c.HEATEDAREA, acc.getHeatedArea ());
+        set (h, Account.c.ISRENTER, payerInfo.isIsRenter ());        
         
-        if (payerInfo.getOrg () != null) {
-            h.put (Account.c.IS_CUSTOMER_ORG.lc (), 1);            
-            final String orgVersionGUID = payerInfo.getOrg ().getOrgVersionGUID ();
-            String uuidOrg = db.getString (db.getModel ().select (VocOrganization.class, "uuid").where (VocOrganization.c.ORGVERSIONGUID, orgVersionGUID));
-            if (uuidOrg == null) {
-                logger.warning ("Org not found by orgVersionGUID=" + orgVersionGUID);
-                return;
-            }
-            h.put (Account.c.UUID_ORG_CUSTOMER.lc (), uuidOrg);
-        }
-        else {
-        }
+        if (setCustomer (payerInfo, h, db, uuidOrg)) return;
         
         db.upsert (Account.class, h, Account.c.ACCOUNTGUID.lc ());
 
+    }
+    
+    private void set (Map<String, Object> h, ColEnum c, Object v) {
+        if (v == null) return;
+        h.put (c.lc (), v);
+    }
+
+    private boolean setCustomer (AccountExportType.PayerInfo payerInfo, final Map<String, Object> h, DB db, UUID uuidOrg) throws SQLException {
+        final RegOrgVersionType org = payerInfo.getOrg ();
+        if (org != null) return setOrgCustomer (h, org, db);
+        set (h, Account.c.UUID_PERSON_CUSTOMER, getIndCustomerUuid (payerInfo.getInd (), db, uuidOrg));
+        return false;
+    }
+    
+    private String getIndCustomerUuid (final AccountIndExportType ind, DB db, UUID uuidOrg) throws SQLException {
+        
+        final Map<String, Object> p = HASH (
+            VocPerson.c.FIRSTNAME, ind.getFirstName (),
+            VocPerson.c.PATRONYMIC, ind.getPatronymic (),
+            VocPerson.c.UUID_ORG,  uuidOrg
+        );
+        
+        set (p, VocPerson.c.SURNAME, ind.getSurname ());
+        set (p, VocPerson.c.FIRSTNAME, ind.getFirstName ());
+        set (p, VocPerson.c.PATRONYMIC, ind.getPatronymic ());
+        set (p, VocPerson.c.BIRTHDATE, ind.getDateOfBirth ());
+        
+        if (DB.ok (ind.getSex ())) p.put (VocPerson.c.IS_FEMALE.lc (), "F".equals (ind.getSex ()));
+        
+        AccountIndExportType.ID id = ind.getID ();
+        
+        if (id != null) {
+            
+            set (p, VocPerson.c.CODE_VC_NSI_95, id.getType ().getCode ());
+            set (p, VocPerson.c.SERIES, id.getSeries ());
+            set (p, VocPerson.c.NUMBER_, id.getNumber ());
+            set (p, VocPerson.c.ISSUEDATE, id.getIssueDate ());
+            
+            return db.upsertId (VocPerson.class, p
+                , VocPerson.c.CODE_VC_NSI_95.lc ()
+                , VocPerson.c.SERIES.lc ()
+                , VocPerson.c.NUMBER_.lc ()
+            );
+            
+        }
+        else {
+
+            set (p, VocPerson.c.SNILS, ind.getSNILS ());
+            
+            return db.upsertId (VocPerson.class, p
+                , VocPerson.c.SNILS.lc ()
+            );
+            
+        }
+        
+    }
+
+    private boolean setOrgCustomer (final Map<String, Object> h, final RegOrgVersionType org, DB db) throws SQLException {
+        
+        h.put (Account.c.IS_CUSTOMER_ORG.lc (), 1);
+        
+        final String orgVersionGUID = org.getOrgVersionGUID ();
+        
+        String uuidOrg = db.getString (db.getModel ().select (VocOrganization.class, "uuid").where (VocOrganization.c.ORGVERSIONGUID, orgVersionGUID));
+        
+        if (uuidOrg == null) {
+            logger.warning ("Org not found by orgVersionGUID=" + orgVersionGUID);
+            return true;
+        }
+        
+        h.put (Account.c.UUID_ORG_CUSTOMER.lc (), uuidOrg);
+        
+        return false;
+        
     }
         
     private GetStateResult getState (Map<String, Object> r) throws GisPollRetryException, GisPollException {
