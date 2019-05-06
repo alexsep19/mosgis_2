@@ -48,7 +48,7 @@ public class GisPollImportSupplyResourceContractObjectsMDB extends GisPollMDB {
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")
             .toOne (SupplyResourceContractLog.class, "AS log", "uuid", "action", "uuid_object", "uuid_message", "uuid_user", "uuid_out_soap")
 		.on ("log.uuid_out_soap=root.uuid")
-	    .toOne(SupplyResourceContract.class, "AS ctr", SupplyResourceContract.c.CONTRACTROOTGUID.lc() + " AS contractrootguid")
+	    .toOne(SupplyResourceContract.class, "AS ctr", "uuid_org")
 		.on("log.uuid_object=ctr.uuid")
             .toOne (VocOrganization.class, "AS org", VocOrganization.c.ORGPPAGUID.lc () + " AS ppa").on ("ctr.uuid_org=org.uuid")
         ;
@@ -163,8 +163,9 @@ public class GisPollImportSupplyResourceContractObjectsMDB extends GisPollMDB {
     public List<Map<String, Object>> storeSrContractObjects(DB db, Map<String, Object> r, List<ExportSupplyResourceContractObjectAddressResultType> objects) throws SQLException,  GisPollRetryException {
 
 	Object uuid_out_soap = r.get("log.uuid_out_soap");
-	Object uuid_org = r.get("log.uuid_object");
+	Object uuid_sr_ctr = r.get("log.uuid_object");
 	Object uuid_user = r.get("log.uuid_user");
+	Object uuid_org = r.get("ctr.uuid_org");
 	Object uuid_message = r.get("log.uuid_message");
 
 	List<Map<String, Object>> sr_ctr_objects = new ArrayList<>();
@@ -178,6 +179,7 @@ public class GisPollImportSupplyResourceContractObjectsMDB extends GisPollMDB {
 logger.info(DB.to.json(h).toString());
 
 	    h.put ("uuid_org", uuid_org);
+	    h.put ("uuid_sr_ctr", uuid_sr_ctr);
 
 	    try {
 
