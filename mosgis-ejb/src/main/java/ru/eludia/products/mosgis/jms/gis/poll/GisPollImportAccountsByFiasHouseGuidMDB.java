@@ -12,6 +12,7 @@ import javax.jms.Queue;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
+import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.tables.Account;
@@ -286,12 +287,11 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
 
     private String getUuidPremise (DB db, AccountExportType.Accommodation i) throws SQLException {
         
-        db.getModel ().select (Premise.class, "id");
-        
+        Select select = db.getModel ().select (Premise.class, "id");        
         
         String livingRoomGUID = i.getLivingRoomGUID ();
         
-//        if (livingRoomGUID != null) return db.getString ()
+        if (livingRoomGUID != null) return db.getString (select.where (Premise.c.LIVINGROOMGUID, livingRoomGUID));
         
         i.getPremisesGUID ();
         
