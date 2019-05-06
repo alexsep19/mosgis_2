@@ -16,6 +16,8 @@ import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.tables.Account;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.HouseLog;
+import ru.eludia.products.mosgis.db.model.tables.House;
+import ru.eludia.products.mosgis.db.model.voc.VocAccountType;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
@@ -42,7 +44,8 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
     @Override
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
-            .toOne (HouseLog.class,     "AS log", "uuid", "action", "uuid_vc_org_log").on ("log.uuid_out_soap=root.uuid")
+            .toOne (HouseLog.class, "AS log", "uuid", "action", "uuid_vc_org_log").on ("log.uuid_out_soap=root.uuid")
+            .toOne (House.class,    "AS r", House.c.FIASHOUSEGUID.lc () + " AS fiashouseguid").on ("log.uuid_object=r.uuid")
             .toOne (VocOrganization.class, "AS org", VocOrganization.c.ORGPPAGUID.lc () + " AS orgppaguid").on ("log.uuid_org=org.uuid")
 ;
     }
@@ -62,7 +65,7 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
             
             if (exportAccountResult == null || exportAccountResult.isEmpty ()) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
 
-            for (ExportAccountResultType i: exportAccountResult) store (db, i);
+            for (ExportAccountResultType i: exportAccountResult) store (db, i, r);
             
         }
         catch (GisPollRetryException ex) {
@@ -91,7 +94,7 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
             
     }
 
-    void store (DB db, ExportAccountResultType acc) throws SQLException {
+    void store (DB db, ExportAccountResultType acc, Map<String, Object> r) throws SQLException {
 
         logger.info ("Handling account " + acc.getAccountGUID () + " / " + acc.getAccountNumber () + " / " + acc.getUnifiedAccountNumber () + "...");
         
@@ -106,13 +109,13 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
         }
         
         if (DB.ok (acc.isIsUOAccount ())) {
-            storeUOAccount (db, acc);
+            storeUOAccount (db, acc, r);
             return;
         }
 
     }
     
-    void storeUOAccount (DB db, ExportAccountResultType acc) throws SQLException {
+    void storeUOAccount (DB db, ExportAccountResultType acc, Map<String, Object> r) throws SQLException {
         
         final String contractGUID = acc.getAccountReasons ().getContract ().getContractGUID ();
         
@@ -128,8 +131,10 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
         
         db.upsert (Account.class, HASH (
             Account.c.ACCOUNTGUID,   acc.getAccountGUID (),
+            Account.c.ID_TYPE,       VocAccountType.i.UO.getId (),
             Account.c.UUID_CONTRACT, contract.get ("uuid"),
-            Account.c.UUID_ORG,      contract.get (Contract.c.UUID_ORG.lc ())
+            Account.c.UUID_ORG,      contract.get (Contract.c.UUID_ORG.lc ()),
+            Account.c.FIASHOUSEGUID, r.get ("fiashouseguid")
         ), Account.c.ACCOUNTGUID.lc ());
 
     }

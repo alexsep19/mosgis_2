@@ -29,10 +29,12 @@ public class GisPollImportAccountsByFiasHouseGuidMDBTest extends BaseTest {
     public void test () throws Exception {
         
         try (DB db = model.getDb ()) {
-                                                            
+            
+            Map<String, Object> r = db.getMap (mdb.get (uuid));
+
             GetStateResult state = (GetStateResult) jc.createUnmarshaller ().unmarshal (SOAPTools.getSoapBodyNode (db.getString (OutSoap.class, uuid, "rp")));
                         
-            for (ExportAccountResultType i: state.getExportAccountResult ()) mdb.store (db, i);            
+            for (ExportAccountResultType i: state.getExportAccountResult ()) mdb.store (db, i, r);
             
         }        
         
