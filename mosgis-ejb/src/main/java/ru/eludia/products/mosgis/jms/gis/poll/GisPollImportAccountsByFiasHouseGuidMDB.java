@@ -1,6 +1,7 @@
 package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -167,6 +168,8 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
         
         if (setCustomer (payerInfo, h, db, uuidOrg)) return true;
         
+        List<Map<String, Object>> items = toItems (db, acc.getAccommodation ());
+        
         String uuidAccount = db.upsertId (Account.class, h, Account.c.ACCOUNTGUID.lc ());
         
         storeItems (db, fiasHouseGuid, uuidAccount, acc.getAccommodation ());
@@ -268,7 +271,7 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
         return rp;
         
     }    
-
+/*
     private void storeItems (DB db, UUID fiasHouseGuid, String uuidAccount, List<AccountExportType.Accommodation> accommodation) throws SQLException {
 
         for (AccountExportType.Accommodation i: accommodation) {
@@ -284,7 +287,21 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
         }
 
     }
+*/
+    
+    List<Map<String, Object>> toItems (DB db, List<AccountExportType.Accommodation> accommodation) throws SQLException {
+        List<Map<String, Object>> result = new ArrayList<> (accommodation.size ());
+        for (AccountExportType.Accommodation i: accommodation) result.add (toItem (db, i));
+        return result;
+    }
 
+    Map<String, Object> toItem (DB db, AccountExportType.Accommodation i) throws SQLException {
+        Map<String, Object> r = HASH ();
+        set (r, AccountItem.c.SHAREPERCENT, i.getSharePercent ());
+        set (r, AccountItem.c.UUID_PREMISE, getUuidPremise (db, i));
+        return r;
+    }
+    
     private String getUuidPremise (DB db, AccountExportType.Accommodation i) throws SQLException {
         
         Select select = db.getModel ().select (Premise.class, "id");        
