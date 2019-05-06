@@ -24,6 +24,7 @@ import ru.eludia.products.mosgis.db.model.tables.AccountItem;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.HouseLog;
 import ru.eludia.products.mosgis.db.model.tables.House;
+import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.voc.VocAccountType;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
@@ -177,7 +178,18 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
             items = toItems (db, acc.getAccommodation ());
         }
         catch (UnknownSomethingException ex) {
-            logger.warning (ex.toString ());
+            String msg = "ЛС " + acc.getAccountNumber () + ", " + ex.toString ();
+            logger.warning (msg);
+            Map<String, Object> map = db.getMap (db.getModel ().get (OutSoap.class, getUuid (), "*"));
+            StringBuilder sb = new StringBuilder (DB.to.String (map.get ("err_text")));
+            if (sb.length () > 0) sb.append (";\n");
+            sb.append (msg);
+            db.update (OutSoap.class, HASH (
+                "uuid", getUuid (),
+                "is_failed", 1,
+                "err_code", "0",
+                "err_text", sb.toString ()
+            ));
             return;
         }
         
@@ -193,17 +205,22 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
         }
         
         if (houseItem != null) {
-            
+
             items.remove (houseItem);
-            
+
             houseItem.put ("uuid", db.getString (db.getModel ()
                 .select (AccountItem.class, "uuid")
                 .where  (AccountItem.c.UUID_ACCOUNT, uuidAccount)
                 .and    (AccountItem.c.UUID_PREMISE.lc () + " IS NULL")
             ));
-            
-            db.upsert (AccountItem.class, houseItem);
-            
+
+            if (houseItem.get ("uuid") == null) {
+                db.insert (AccountItem.class, houseItem);
+            }
+            else {
+                db.update (AccountItem.class, houseItem);
+            }            
+
         }
         
         db.update (AccountItem.class, HASH (
