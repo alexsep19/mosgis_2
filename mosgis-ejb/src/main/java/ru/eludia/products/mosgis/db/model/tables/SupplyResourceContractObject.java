@@ -1,5 +1,8 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.List;
+import java.util.Map;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
@@ -10,6 +13,8 @@ import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocUnom;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractObjectAddressResultType;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractObjectAddressResultType.Pair;
 
 public class SupplyResourceContractObject extends EnTable {
 
@@ -66,6 +71,33 @@ public class SupplyResourceContractObject extends EnTable {
 	    }
 
 	}
+    }
+
+    public static Map<String, Object> toHASH(ExportSupplyResourceContractObjectAddressResultType obj) {
+
+	final Map<String, Object> r = DB.to.Map (obj);
+
+	r.put (c.ID_CTR_STATUS.lc(), VocGisStatus.i.APPROVED.getId());
+
+	r.put (c.UUID_PREMISE.lc(), Premise.getUuidPremiseByApartmentNumber(r, r.get(SupplyResourceContractObject.c.FIASHOUSEGUID.lc())));
+
+	for (Pair pair : obj.getPair()) {
+
+	    Map<String, Object> subj = DB.to.Map(pair);
+
+	    subj.put(SupplyResourceContractSubject.c.CODE_VC_NSI_3.lc(), pair.getServiceType().getCode());
+	    subj.put(SupplyResourceContractSubject.c.CODE_VC_NSI_239.lc(), pair.getMunicipalResource().getCode());
+
+	    final List<Pair.HeatingSystemType> hss = pair.getHeatingSystemType();
+
+	    if (hss != null && !hss.isEmpty()) {
+		Pair.HeatingSystemType hs = hss.get(0);
+		subj.put(SupplyResourceContractSubject.c.IS_HEAT_OPEN.lc(), DB.eq(hs.getOpenOrNot(), "Opened")? 1 : 0);
+		subj.put(SupplyResourceContractSubject.c.IS_HEAT_CENTRALIZED.lc(), DB.eq(hs.getCentralizedOrNot(), "Centralized") ? 1 : 0);
+	    }
+	}
+
+	return r;
     }
 
     public SupplyResourceContractObject () {

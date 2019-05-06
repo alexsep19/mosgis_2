@@ -116,21 +116,6 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 		    ;
 		    continue;
 		}
-logger.info(DB.to.json(sr_ctr).toString());
-		Object id = sr_ctr.get(EnTable.c.UUID.lc());
-
-		String id_log = db.insertId (SupplyResourceContractLog.class, HASH (
-		    "action", VocAction.i.IMPORT_SR_CONTRACT_OBJECTS,
-		    "uuid_object", id,
-		    "uuid_user", r.get("log.uuid_user")
-		)).toString ();
-
-		db.update (SupplyResourceContract.class, HASH (
-		    "uuid", id,
-		    "id_log", id_log
-		));
-
-		uuidPublisher.publish(inImportSupplyResourceContractObjectsQueue, id_log);
             }
 
 	    if (!result.isIsLastPage()) {
@@ -224,6 +209,8 @@ logger.info(DB.to.json(sr_ctr).toString());
 		    "uuid", uuid,
 		    "id_log", idLog
                 ));
+
+		uuidPublisher.publish(inImportSupplyResourceContractObjectsQueue, idLog);
 
 		mergeSubjects (db, h, uuid_out_soap, uuid_message, uuid_user);
 

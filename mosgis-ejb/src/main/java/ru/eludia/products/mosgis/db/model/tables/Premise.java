@@ -1,10 +1,15 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Map;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.View;
 import ru.eludia.base.model.Type;
+import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 
 public class Premise extends View {
     
@@ -37,6 +42,21 @@ public class Premise extends View {
         pk     (c.ID);
     }
 
+    public static String getUuidPremiseByApartmentNumber (Map<String, Object> r, Object fiashouseguid) {
+
+	return null;
+
+//	final MosGisModel m = ModelHolder.getModel ();
+//
+//        try (DB db = m.getDb ()) {
+//
+//            return db.upsertId (ResidentialPremise.class, r
+//		, "uuid_house"
+//		, "premisenum"
+//	    );
+//
+//        }
+    }    
     @Override
     public final String getSQL () {
 
