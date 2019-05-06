@@ -92,7 +92,14 @@ public class MeteringDevice extends EnTable {
                 default:
                     return true;
             }
-        }        
+        }
+
+        static public boolean isExists(String name){
+            for(c item: c.values()){
+               if (item.name().equals(name)) return true;
+            }
+            return false;
+        }
 
     }
 
