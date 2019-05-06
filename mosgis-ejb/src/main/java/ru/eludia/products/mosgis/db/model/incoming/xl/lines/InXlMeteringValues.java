@@ -30,7 +30,6 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi16;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi2;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi27;
-import static ru.eludia.products.mosgis.jms.xl.ParseMeteringValuesMDB.NULL_DATE;
 import ru.eludia.products.mosgis.jms.xl.base.XLException;
 
 public class InXlMeteringValues extends EnTable {
@@ -44,7 +43,7 @@ public class InXlMeteringValues extends EnTable {
         ORD                     (Type.NUMERIC, 5,                               "Номер строки"),
         ERR                     (Type.STRING,  null,                            "Ошибка"),
         
-        DEVICE_NUMBER           (Type.STRING, 20,    null,                      "Номер устройства") ,
+        DEVICE_NUMBER           (Type.UUID, 20,    null,                        "Номер устройства UUID из xls ") ,
         UUID_METER              (MeteringDevice.class,                          "Прибор учёта"),
         ID_TYPE                 (VocMeteringDeviceValueType.class,              "Тип показания"),
         CODE_VC_NSI_2           (Type.STRING,  20,                              "Коммунальный ресурс (НСИ 2)"),
@@ -76,11 +75,11 @@ public class InXlMeteringValues extends EnTable {
     
     @FunctionalInterface
     public interface SetFields {
-        int setFields (Map<String, Object> r, XSSFRow row, Date dateValue, Date datePeriod) throws XLException;
+        int setFields (Map<String, Object> r, XSSFRow row) throws XLException;
     }
     
 //    public static Map<String, Object> toHash (UUID uuid, int ord, XSSFRow row, Date dateValue, Date datePeriod) {
-    public static Map<String, Object> toHash (UUID uuid, int ord, XSSFRow row, Date dateValue, Date datePeriod, SetFields setfields) {        
+    public static Map<String, Object> toHash (UUID uuid, int ord, XSSFRow row, SetFields setfields) {        
         Map<String, Object> r = DB.HASH (
             EnTable.c.IS_DELETED, 1,
             c.UUID_XL, uuid,
@@ -88,18 +87,20 @@ public class InXlMeteringValues extends EnTable {
         );
         
         try {
-            Optional.of(setfields).orElse(( fr, frow, fdateValue, fdatePeriod)->{
-             //UUID_METER устанавливается в триггере
-                fr.put (c.DEVICE_NUMBER.lc (),    toString (frow, 1, "Не указан номер прибора"));  
+            Optional.of(setfields).orElse(( fr, frow)->{
+             //UUID_METER проустанавливается в триггере по DEVICE_NUMBER
+                fr.put (c.DEVICE_NUMBER.lc (),    UUID.fromString(toString (frow, 1, "Не указан номер(UUID) прибора")));  
                 fr.put (c.ID_TYPE.lc (),          VocMeteringDeviceValueType.i.CURRENT);
                 fr.put (c.CODE_VC_NSI_2.lc (),    Nsi2.i.forLabel (toString (frow, 2, "Не указан коммунальный ресурс")).getId ());
                 fr.put (c.METERINGVALUET1.lc (),  toNumeric (frow, 3, "Не указано значение показания (Т1)"));
                 fr.put (c.METERINGVALUET2.lc (),  toNumeric (frow, 4 ));
                 fr.put (c.METERINGVALUET3.lc (),  toNumeric (frow, 5 ));
-                fr.put (c.DATEVALUE.lc (),        processDateValues((Date) toDate(frow, 6, "Не указана дата снятия показания"), fdateValue, fdatePeriod));
-                fr.put (c.DT_PERIOD.lc (),        fdatePeriod);
+//                fr.put (c.DATEVALUE.lc (),        processDateValues((Date) toDate(frow, 6, "Не указана дата снятия показания"), fdateValue, fdatePeriod));
+                Date dateValue = (Date) toDate(frow, 6, "Не указана дата снятия показания");
+                fr.put (c.DATEVALUE.lc (),        dateValue);
+                fr.put (c.DT_PERIOD.lc (),        getPeriodDate(dateValue));
                 return 0;
-            }).setFields(r, row, dateValue, datePeriod);
+            }).setFields(r, row);
         }         
         catch (XLException ex) {
             r.put (c.ERR.lc (), ex.getMessage ());
@@ -109,36 +110,12 @@ public class InXlMeteringValues extends EnTable {
         
     }
 
-    public static Date processDateDevice(Date readDate, Date dateValue, Date datePeriod)  throws XLException{
-        
+    public static Date getPeriodDate(Date xlDate)  throws XLException{
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(xlDate);
+        calendar.set(Calendar.DATE, 1);
+        return calendar.getTime();
     }
-    
-    public static Date processDateValues(Date readDate, Date dateValue, Date datePeriod)  throws XLException{
-        переделать
-        //показания во всех строках д.б. за одну дату;
-        if (dateValue.equals(NULL_DATE)) {
-            dateValue.setTime(readDate.getTime());
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(readDate);
-            calendar.set(Calendar.DATE, 1);
-            datePeriod.setTime(calendar.getTimeInMillis());
-        }
-        else if (dateValue.compareTo(readDate) != 0) throw new XLException("Показания во всех строках д.б.за одну дату");
-        return readDate;
-    }
-    
-//    private static int setFieldsMeteringValues (Map<String, Object> r, XSSFRow row, Date dateValue, Date datePeriod) throws XLException {
-//        //UUID_METER устанавливается в триггере
-//        r.put (c.DEVICE_NUMBER.lc (),    toString (row, 1, "Не указан номер прибора"));  
-//        r.put (c.ID_TYPE.lc (),          VocMeteringDeviceValueType.i.CURRENT);
-//        r.put (c.CODE_VC_NSI_2.lc (),    Nsi2.i.forLabel (toString (row, 2, "Не указан коммунальный ресурс")).getId ());
-//        r.put (c.METERINGVALUET1.lc (),  toNumeric (row, 3, "Не указано значение показания (Т1)"));
-//        r.put (c.METERINGVALUET2.lc (),  toNumeric (row, 4 ));
-//        r.put (c.METERINGVALUET3.lc (),  toNumeric (row, 5 ));
-//        r.put (c.DATEVALUE.lc (),        processDate((Date) toDate(row, 6, "Не указана дата снятия показания"), dateValue, datePeriod));
-//        r.put (c.DT_PERIOD.lc (),        datePeriod);
-//        return 0;
-//     }
 
     public InXlMeteringValues () {
 
@@ -157,7 +134,7 @@ public class InXlMeteringValues extends EnTable {
             + "BEGIN "
                 
             + "  BEGIN "                
-            + "    SELECT uuid, UUID_ORG, TARIFFCOUNT INTO :NEW.UUID_METER, DEVICE_ORG_UUID, TARIFFCOUNT FROM tb_meters WHERE METERINGDEVICENUMBER = :NEW.DEVICE_NUMBER; "
+            + "    SELECT uuid, UUID_ORG, TARIFFCOUNT INTO :NEW.UUID_METER, DEVICE_ORG_UUID, TARIFFCOUNT FROM tb_meters WHERE UUID = :NEW.DEVICE_NUMBER; "
             + "    EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Устройство '||:NEW.DEVICE_NUMBER||' не найдено');"
             + "  END; "                               
             

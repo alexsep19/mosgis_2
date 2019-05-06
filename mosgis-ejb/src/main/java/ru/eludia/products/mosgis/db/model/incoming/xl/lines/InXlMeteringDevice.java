@@ -15,6 +15,7 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
+import ru.eludia.products.mosgis.db.model.tables.Account;
 import ru.eludia.products.mosgis.db.model.tables.MeteringDevice;
 import ru.eludia.products.mosgis.db.model.tables.MeteringDeviceValue;
 import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
@@ -42,7 +43,7 @@ public class InXlMeteringDevice extends EnTable {
         ERR                     (Type.STRING,  null,        "Ошибка"),
         UNOM                    (Type.INTEGER,                                   "Идентификатор дома в московских системах"),
         VERIF_INT               (Type.INTEGER, null,                             "Межповерочный интервал"),
-        
+        //заполняется в триггере
         UUID_ORG                (VocOrganization.class,     "Организация-источник данных"),
         
         ID_TYPE                (VocMeteringDeviceType.class,                    "Тип прибора учёта"),
@@ -58,7 +59,7 @@ public class InXlMeteringDevice extends EnTable {
         PREMISESNUM            (Type.STRING, 255,    null,                      "Номер помещения"),
         PREMISESTYPE           (Type.STRING,  30,    null,                      "Жилое/Нежилое (для проверок tb_premises_res/tb_premises_nrs)" ),
         ROOMNUMBER             (Type.STRING, 255,    null,                      "Номер комнаты" ),
-        ACCOUNTNUMBER          (Type.STRING,  30,    null,                      "№ лицевого счета"),
+        ACCOUNTNUMBER          (Type.STRING,  50,    null,                      "№ лицевого счета"),
         
         INSTALLATIONDATE       (Type.DATE,           null,                      "Дата установки"),
         COMMISSIONINGDATE      (Type.DATE,           null,                      "Дата ввода в эксплуатацию"),
@@ -72,12 +73,6 @@ public class InXlMeteringDevice extends EnTable {
         CODE_VC_NSI_16         (Nsi16.class,         null,                      "Межповерочный интервал (НСИ 16)"),
 
         MASK_VC_NSI_2          (Type.NUMERIC, 3, 0,  BigInteger.ZERO,           "Битовая маска типов коммунальных ресурсов"),
-//====== поля для MeteringDeviceValue
-//        UUID_METER             (MeteringDevice.class,                           "Прибор учёта"),
-//        METERINGVALUET1        (Type.NUMERIC, 22, 7, null,                      "Последнее полученное показание (Т1)"),
-//        METERINGVALUET2        (Type.NUMERIC, 22, 7, null,                      "Последнее полученное показание (Т2)"),
-//        METERINGVALUET3        (Type.NUMERIC, 22, 7, null,                      "Последнее полученное показание (Т3)"),
-//===================================        
         FACTORYSEALDATE        (Type.DATE,           null,                      "Дата опломбирования ПУ заводом-изготовителем"),
 
         TEMPERATURESENSOR      (Type.BOOLEAN,  Boolean.FALSE,                   "Наличие датчиков температры"),
@@ -95,7 +90,6 @@ public class InXlMeteringDevice extends EnTable {
         
         ID_CTR_STATUS          (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения mosgis"),
         ID_CTR_STATUS_GIS      (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения ГИС ЖКХ"),
-//        ISAUTOMATICCALCULATEVOLUME    (Type.BOOLEAN,  Boolean.FALSE,              "Наличие технической возможности автоматического расчета потребляемого объема ресурса"),         
         ;
 
         @Override
@@ -201,13 +195,7 @@ public class InXlMeteringDevice extends EnTable {
         //R 17
         //S 18
         //AG
-        r.put (c.CONSUMEDVOLUME.lc (), toBoolNotNull (row, 32) == 1? 0: 1 );
-        //T 
-//        if (isAutomaticCalculateVolume == null || isAutomaticCalculateVolume == 0){
-//           r.put (c.METERINGVALUET1.lc (),  toNumeric (row, 19, "Не указано последнее полученное показание (Т1)"));
-//           r.put (c.METERINGVALUET2.lc (),  toNumeric (row, 20 ));
-//           r.put (c.METERINGVALUET3.lc (),  toNumeric (row, 21 ));
-//        }
+        r.put (c.CONSUMEDVOLUME.lc (), 1 - toBoolNotNull (row, 32) );
         //X
         Date installDate = (Date) toDate (row, 23);
         r.put (c.INSTALLATIONDATE.lc (), installDate);
@@ -286,7 +274,7 @@ public class InXlMeteringDevice extends EnTable {
             + "  END IF; "
             + "     EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Помещение '||:NEW.PREMISESNUM|| ' не найдено'); "  
             + " END;END IF; "
-                //лицевые счета могут быть через запятую
+                //лицевые счета могут быть через запятую UUID_ACCOUNT
             + " IF :NEW.ACCOUNTNUMBER IS NOT NULL THEN BEGIN "
             + "   FOR ACCOUNTNUM IN (SELECT REGEXP_SUBSTR (:NEW.ACCOUNTNUMBER, '[^,]+', 1, LEVEL) TXT FROM DUAL "
             + "       CONNECT BY REGEXP_SUBSTR (:NEW.ACCOUNTNUMBER, '[^,]+', 1, LEVEL) IS NOT NULL) LOOP "
@@ -318,16 +306,6 @@ public class InXlMeteringDevice extends EnTable {
             valuesMeteringDevice.append (c.lc ());
         }        
 
-//        StringBuilder fieldsMeteringValues = new StringBuilder ();
-//        StringBuilder valuesMeteringValues = new StringBuilder ();
-//        
-//        for (c c: c.values ()) if (c.isToCopyMeteringDeviceValue ()) {
-//            fieldsMeteringValues.append (',');
-//            fieldsMeteringValues.append (c.lc ());
-//            valuesMeteringValues.append (",:NEW.");
-//            valuesMeteringValues.append (c.lc ());
-//        }        
-        
         trigger ("BEFORE UPDATE", ""
 
             + "BEGIN "
