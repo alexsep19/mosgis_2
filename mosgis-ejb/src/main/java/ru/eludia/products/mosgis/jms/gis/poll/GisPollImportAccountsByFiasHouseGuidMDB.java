@@ -88,7 +88,7 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
             
     }
 
-    private void store (DB db, ExportAccountResultType acc) throws SQLException {
+    void store (DB db, ExportAccountResultType acc) throws SQLException {
 
         logger.info ("Handling account " + acc.getAccountGUID () + " / " + acc.getAccountNumber () + " / " + acc.getUnifiedAccountNumber () + "...");
         
