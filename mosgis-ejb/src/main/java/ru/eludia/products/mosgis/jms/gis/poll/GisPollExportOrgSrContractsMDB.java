@@ -37,6 +37,7 @@ import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.eludia.products.mosgis.jms.gis.poll.sr_ctr.ExportSupplyResourceContract;
+import ru.eludia.products.mosgis.jms.gis.send.ImportSupplyResourceContractObjectsMDB;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 import ru.eludia.products.mosgis.ws.soap.clients.WsGisHouseManagementClient;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
@@ -106,6 +107,8 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 
 	    String err_text = "";
 
+	    long ts_from = System.currentTimeMillis();
+
 	    for (Map<String, Object> sr_ctr: sr_ctrs) {
 
 		String contractRootGuid = DB.to.String(sr_ctr.get(SupplyResourceContract.c.CONTRACTROOTGUID.lc()));
@@ -118,6 +121,16 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 		    ;
 		    continue;
 		}
+
+		UUID idImpObj = (UUID) db.insertId(InImportSupplyResourceContractObject.class, DB.HASH(
+		    "contractrootguid", sr_ctr.get(SupplyResourceContract.c.CONTRACTROOTGUID.lc()),
+		    "uuid_org", r.get("log.uuid_object"),
+		    "ts_from", new Timestamp (ts_from)
+                ));
+
+		uuidPublisher.publish(inImportSupplyResourceContractObjectsQueue, idImpObj);
+
+		ts_from = ts_from + ImportSupplyResourceContractObjectsMDB.WS_GIS_THROTTLE_MS;
             }
 
 	    if (!result.isIsLastPage()) {
@@ -163,8 +176,6 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 
 	List<Map<String, Object>> sr_ctrs = new ArrayList<>();
 
-	long ts_from = System.currentTimeMillis();
-
 	for (ExportSupplyResourceContractResultType t : contracts) {
 	    final Map<String, Object> h = ExportSupplyResourceContract.toHASH (t);
 
@@ -209,16 +220,6 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 		    "uuid", uuid,
 		    "id_log", idLog
                 ));
-
-		String idImpObj = db.insertId(InImportSupplyResourceContractObject.class, DB.HASH(
-		    "contractrootguid", h.get(SupplyResourceContract.c.CONTRACTROOTGUID.lc()),
-		    "uuid_org", uuid_org,
-		    "ts_from", new Timestamp (ts_from)
-                )).toString ();
-
-		uuidPublisher.publish(inImportSupplyResourceContractObjectsQueue, idImpObj);
-
-		ts_from = ts_from + 2000;
 
 		mergeSubjects (db, h, uuid_out_soap, uuid_message, uuid_user);
 

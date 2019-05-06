@@ -2,7 +2,6 @@ package ru.eludia.products.mosgis.jms.gis.send;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -16,11 +15,10 @@ import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
-import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.InImportSupplyResourceContractObject;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
-import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
 import ru.eludia.products.mosgis.jms.UUIDPublisher;
 import ru.eludia.products.mosgis.ws.soap.clients.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
@@ -102,14 +100,15 @@ public class ImportSupplyResourceContractObjectsMDB extends UUIDMDB<InImportSupp
 
 	    if (ex.getMessage().contains("HTTP status code 429")) {
 
-		logger.log(Level.INFO, "HTTP status code 429: retry import resource contract objects");
 
-		db.update (getTable (), DB.HASH (
-		    "uuid",    uuid,
-		    "ts_from", new Timestamp(System.currentTimeMillis() + WS_GIS_THROTTLE_MS)
-		));
+		r.remove(EnTable.c.UUID.lc());
+		r.put("ts_from", new Timestamp(System.currentTimeMillis() + WS_GIS_THROTTLE_MS));
 
-		uuidPublisher.publish(getOwnQueue(), getUuid());
+		UUID idImpObj = (UUID) db.insertId(InImportSupplyResourceContractObject.class, r);
+
+		logger.log(Level.INFO, "HTTP status code 429: retry import resource contract objects " + idImpObj);
+
+		uuidPublisher.publish(getOwnQueue(), idImpObj);
 
 		return;
 	    }

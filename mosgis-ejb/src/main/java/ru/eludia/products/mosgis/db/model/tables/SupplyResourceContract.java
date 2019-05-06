@@ -168,6 +168,8 @@ public class SupplyResourceContract extends EnTable {
 
         key    ("uuid_org", c.UUID_ORG);
 
+	key    ("contractrootguid", c.CONTRACTROOTGUID);
+
         trigger("BEFORE INSERT OR UPDATE", ""
                 + "DECLARE"
                 + " cnt NUMBER; "

@@ -18,6 +18,7 @@ import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.incoming.InImportSupplyResourceContractObject;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
@@ -48,13 +49,10 @@ public class GisPollImportSupplyResourceContractObjectsMDB extends GisPollMDB {
     protected Get get (UUID uuid) {
 
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")
-            .toOne (SupplyResourceContractLog.class, "AS log", "uuid", "action", "uuid_object", "uuid_message", "uuid_user", "uuid_out_soap")
-		.on ("log.uuid_out_soap=root.uuid")
-	    .toOne(SupplyResourceContract.class, "AS ctr", "uuid_org")
-		.on("log.uuid_object=ctr.uuid")
-            .toOne (VocOrganization.class, "AS org", VocOrganization.c.ORGPPAGUID.lc () + " AS ppa").on ("ctr.uuid_org=org.uuid")
+            .toOne (InImportSupplyResourceContractObject.class, "AS imp", "*").on ("imp.uuid_out_soap = root.uuid")
+            .toOne (VocOrganization.class, "AS org", VocOrganization.c.ORGPPAGUID.lc () + " AS ppa").on ("imp.uuid_org=org.uuid")
+	    .toOne (SupplyResourceContract.class, "AS ctr", "contractrootguid", "uuid").on("ctr.contractrootguid=imp.contractrootguid")
         ;
-        
     }
 
     @Override
@@ -163,11 +161,11 @@ public class GisPollImportSupplyResourceContractObjectsMDB extends GisPollMDB {
 
     public List<Map<String, Object>> storeSrContractObjects(DB db, Map<String, Object> r, List<ExportSupplyResourceContractObjectAddressResultType> objects) throws SQLException,  GisPollRetryException {
 
-	Object uuid_out_soap = r.get("log.uuid_out_soap");
-	Object uuid_sr_ctr = r.get("log.uuid_object");
-	Object uuid_user = r.get("log.uuid_user");
-	Object uuid_org = r.get("ctr.uuid_org");
-	Object uuid_message = r.get("log.uuid_message");
+	Object uuid_out_soap = r.get("imp.uuid_out_soap");
+	Object uuid_sr_ctr = r.get("ctr.uuid");
+	Object uuid_user = r.get("imp.uuid_user");
+	Object uuid_org = r.get("imp.uuid_org");
+	Object uuid_message = r.get("uuid_message");
 
 	List<Map<String, Object>> sr_ctr_objects = new ArrayList<>();
 

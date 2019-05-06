@@ -19,7 +19,7 @@ public class InImportSupplyResourceContractObject extends Table {
 	UUID             (Type.UUID,      NEW_UUID, "Ключ"),
 	CONTRACTROOTGUID (Type.UUID, "Идентификатор ДРСО в ГИС ЖКХ"),
 	TS               (Type.TIMESTAMP, NOW,      "Дата/время записи в БД"),
-	TS_FROM          (Type.TIMESTAMP, null,      "Дата/время обработать позже"),
+	TS_FROM          (Type.TIMESTAMP, null,     "Дата/время обработать позже"),
 	UUID_ORG         (VocOrganization.class,    "Организация-инициатор импорта"),
 	UUID_OUT_SOAP    (OutSoap.class, null,      "Импорт")
         ;
