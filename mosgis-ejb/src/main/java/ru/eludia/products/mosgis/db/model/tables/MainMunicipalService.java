@@ -10,6 +10,7 @@ import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState.i.PENDING;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 
@@ -76,7 +77,11 @@ public class MainMunicipalService extends EnTable {
 
         key   ("org_sort", "uuid_org", "sortorder");
         
-        trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
+        trigger ("BEFORE INSERT OR UPDATE", ""
+
+            + "DECLARE "
+            + " cnt INTEGER := 0;"
+            + "BEGIN "
 
             + "IF UPDATING "
             + "  AND :OLD.id_log IS NOT NULL "             // что-то уже отправляли
@@ -86,6 +91,19 @@ public class MainMunicipalService extends EnTable {
             + "  raise_application_error (-20000, 'В настоящий момент данная запись передаётся в ГИС ЖКХ. Операция отменена.'); "
             + "END IF; "
                     
+            + "IF :OLD.is_deleted=0 AND :NEW.is_deleted=1 THEN BEGIN "
+            + " SELECT"
+            + "  COUNT(tb_charge_info.uuid) INTO cnt"
+            + " FROM"
+            + "  tb_charge_info"
+            + " LEFT JOIN tb_pay_docs ON tb_charge_info.uuid_pay_doc = tb_pay_docs.uuid"
+            + " WHERE"
+            + "  tb_charge_info.is_deleted=0"
+            + "  AND tb_pay_docs.is_deleted=0"
+            + "  AND tb_pay_docs.id_ctr_status <> " + VocGisStatus.i.ANNUL
+            + "  AND tb_charge_info.uuid_m_m_service=:NEW.uuid; "
+            + " IF cnt>0 THEN raise_application_error (-20000, 'Удаление запрещено. Запись используется в платежных документах.'); END IF; "
+            + "END; END IF;"        
         + "END;");        
 
     }        

@@ -97,6 +97,34 @@ public class VocPerson extends EnTable {
         cols(c.class);
 
         key ("uuid_org", "uuid_org");
+
+        trigger("BEFORE INSERT OR UPDATE", ""
+            + "DECLARE "
+            + " cnt INTEGER := 0;"
+            + "BEGIN "
+
+            + "IF :OLD.is_deleted=0 AND :NEW.is_deleted=1 THEN BEGIN "
+
+            + " SELECT COUNT(*) INTO cnt FROM tb_accounts WHERE is_deleted=0 AND id_ctr_status <> " + VocGisStatus.i.ANNUL + "  AND uuid_person_customer=:NEW.uuid; "
+            + " IF cnt>0 THEN raise_application_error (-20000, 'Удаление запрещено. Запись используется в лицевых счетах.'); END IF; "
+
+            + " SELECT COUNT(*) INTO cnt FROM tb_cit_comps WHERE is_deleted=0 AND id_ctr_status <> " + VocGisStatus.i.ANNUL + "  AND uuid_person=:NEW.uuid; "
+            + " IF cnt>0 THEN raise_application_error (-20000, 'Удаление запрещено. Запись используется в записях о гражданах, получающих компенсацию расходов.'); END IF; "
+    
+            + " SELECT COUNT(*) INTO cnt FROM tb_org_member_docs WHERE is_deleted=0 AND uuid_person_member=:NEW.uuid; "
+            + " IF cnt>0 THEN raise_application_error (-20000, 'Удаление запрещено. Запись используется в документах о членах товарищества, кооператива.'); END IF; "
+
+            + " SELECT COUNT(*) INTO cnt FROM tb_prop_docs WHERE is_deleted=0 AND uuid_person_owner=:NEW.uuid; "
+            + " IF cnt>0 THEN raise_application_error (-20000, 'Удаление запрещено. Запись используется в документах о правах собственности.'); END IF; "
+
+            + " SELECT COUNT(*) INTO cnt FROM tb_pp_ctr WHERE is_deleted=0 AND id_ctr_status <> " + VocGisStatus.i.ANNUL + "  AND uuid_person_customer=:NEW.uuid; "
+            + " IF cnt>0 THEN raise_application_error (-20000, 'Удаление запрещено. Запись используется в договорах на пользование общим имуществом.'); END IF; "
+    
+            + " SELECT COUNT(*) INTO cnt FROM tb_sr_ctr WHERE is_deleted=0 AND id_ctr_status <> " + VocGisStatus.i.ANNUL + "  AND uuid_person_customer=:NEW.uuid; "
+            + " IF cnt>0 THEN raise_application_error (-20000, 'Удаление запрещено. Запись используется в договорах ресурсоснабженияв.'); END IF; "
+
+            + "END; END IF;"
+        + "END;");
     }
     
     public static String getCustomerUuidBySnils (Map<String, Object> r, String snils) throws Exception {
