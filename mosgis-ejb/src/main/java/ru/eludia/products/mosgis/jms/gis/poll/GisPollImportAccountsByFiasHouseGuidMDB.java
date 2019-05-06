@@ -10,8 +10,11 @@ import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import javax.jms.Queue;
 import ru.eludia.base.DB;
+import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.tables.Account;
+import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.HouseLog;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
@@ -102,8 +105,35 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
             return;
         }
         
+        if (DB.ok (acc.isIsUOAccount ())) {
+            storeUOAccount (db, acc);
+            return;
+        }
+
     }
     
+    void storeUOAccount (DB db, ExportAccountResultType acc) throws SQLException {
+        
+        final String contractGUID = acc.getAccountReasons ().getContract ().getContractGUID ();
+        
+        Map<String, Object> contract = db.getMap (db.getModel ()
+            .select (Contract.class, "*")
+            .where  (Contract.c.CONTRACTGUID, contractGUID)
+        );
+        
+        if (contract == null) {
+            logger.warning ("Contract not found by contractGUID=" + contractGUID);
+            return;
+        }
+        
+        db.upsert (Account.class, HASH (
+            Account.c.ACCOUNTGUID,   acc.getAccountGUID (),
+            Account.c.UUID_CONTRACT, contract.get ("uuid"),
+            Account.c.UUID_ORG,      contract.get (Contract.c.UUID_ORG.lc ())
+        ), Account.c.ACCOUNTGUID.lc ());
+
+    }
+        
     private GetStateResult getState (Map<String, Object> r) throws GisPollRetryException, GisPollException {
 
         GetStateResult rp;
