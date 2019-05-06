@@ -1,6 +1,11 @@
 package ru.eludia.products.mosgis.jms.xl;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -15,8 +20,17 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import ru.eludia.base.DB;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import static ru.eludia.products.mosgis.db.model.EnTable.toDate;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlMeteringDevice;
+import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlMeteringValues;
+import static ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlMeteringValues.getPeriodDate;
 import ru.eludia.products.mosgis.db.model.tables.MeteringDevice;
+import ru.eludia.products.mosgis.db.model.tables.MeteringDeviceAccount;
+import ru.eludia.products.mosgis.db.model.tables.MeteringDeviceValue;
+import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceType;
+import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceValueType;
+import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi2;
+import static ru.eludia.products.mosgis.jms.xl.ParseMeteringValuesMDB.updateDeviceValues;
 import ru.eludia.products.mosgis.jms.xl.base.XLMDB;
 import ru.eludia.products.mosgis.jms.xl.base.XLException;
 
@@ -30,30 +44,51 @@ public class ParseMeteringDevicesMDB extends XLMDB {
     private static final int N_COL_UUID = 33;
     private static final int N_COL_ERR  = 34;
     private static final int N_COL_DOP_ERR  = 5;
+    public static final Date NULL_DATE = new Date(0);
 
     protected void addMeters (XSSFSheet sheet, UUID parent, DB db, Map<Integer, Integer> resourceMap, HashSet<Integer> refNums) throws SQLException {
-        
+
         for (int i = 2; i <= sheet.getLastRowNum (); i ++) {
             
             final XSSFRow row = sheet.getRow (i);
 
             if (EnTable.isEmpty(row, 1)) continue;
             
-            UUID uuid = (UUID) db.insertId (InXlMeteringDevice.class, InXlMeteringDevice.toHash (parent, i, row, resourceMap, refNums));            
+            Map<String, Object> hashMeteringDevice = InXlMeteringDevice.toHash (parent, i, row, resourceMap, refNums);
+            UUID uuidMeteringDevice = (UUID) db.insertId (InXlMeteringDevice.class, hashMeteringDevice);    
 
             try {
                 
                 db.update (InXlMeteringDevice.class, DB.HASH (
-                    EnTable.c.UUID, uuid,
+                    EnTable.c.UUID, uuidMeteringDevice,
                     EnTable.c.IS_DELETED, 0
                 ));
+                
+                if ((Integer)hashMeteringDevice.get(InXlMeteringDevice.c.CONSUMEDVOLUME.lc ()) == 1){
+                    UUID uuidMeteringValues = (UUID) db.insertId (InXlMeteringValues.class, 
+                        InXlMeteringValues.toHash (parent, i, row, 
+                          ( fr, frow)->{
+                           //UUID_METER устанавливается в триггере
+                           fr.put (InXlMeteringValues.c.DEVICE_NUMBER_UUID.lc (),    uuidMeteringDevice);  
+                           fr.put (InXlMeteringValues.c.ID_TYPE.lc (),          VocMeteringDeviceValueType.i.BASE);
+                           fr.put (InXlMeteringValues.c.CODE_VC_NSI_2.lc (),    Nsi2.i.forLabel (EnTable.toString (frow, 16, "Не указан коммунальный ресурс")).getId ());
+                           //T 
+                           fr.put (InXlMeteringValues.c.METERINGVALUET1.lc (),  EnTable.toNumeric (frow, 19, "Не указано значение показания (Т1)"));
+                           fr.put (InXlMeteringValues.c.METERINGVALUET2.lc (),  EnTable.toNumeric (frow, 20 ));
+                           fr.put (InXlMeteringValues.c.METERINGVALUET3.lc (),  EnTable.toNumeric (frow, 21 ));
+                           fr.put (InXlMeteringValues.c.DATEVALUE.lc (),        new Date());
+                           fr.put (InXlMeteringValues.c.DT_PERIOD.lc (),        getPeriodDate(new Date()));
+                           return 0;
+                       }));     
+                    updateDeviceValues(uuidMeteringValues, db);
+                }
                 
                 db.update (MeteringDevice.class, DB.HASH (
-                    EnTable.c.UUID, uuid,
+                    EnTable.c.UUID, uuidMeteringDevice,
                     EnTable.c.IS_DELETED, 0
                 ));
                 
-                setCellStringValue (row, N_COL_UUID, uuid.toString ());
+                setCellStringValue (row, N_COL_UUID, uuidMeteringDevice.toString ());
 
             }
             catch (SQLException e) {
@@ -61,7 +96,7 @@ public class ParseMeteringDevicesMDB extends XLMDB {
                 String s = getErrorMessage (e);
 
                 db.update (InXlMeteringDevice.class, DB.HASH (
-                    EnTable.c.UUID,           uuid,
+                    EnTable.c.UUID, uuidMeteringDevice,
                     InXlMeteringDevice.c.ERR, s
                 ));
                 
@@ -81,7 +116,7 @@ public class ParseMeteringDevicesMDB extends XLMDB {
             .where (InXlMeteringDevice.c.UUID_XL, parent)
             .where (EnTable.c.IS_DELETED, 1)
         );
-        
+
         if (brokenLines.isEmpty ()) return true;
         
         for (Map<String, Object> brokenLine: brokenLines) {
@@ -94,6 +129,44 @@ public class ParseMeteringDevicesMDB extends XLMDB {
         
     }
 
+    private void joinAccountToDevice(DB db, UUID parent) throws SQLException{
+        String sql = "SELECT a.uuid FROM tb_accounts a " +
+                     " join tb_account_items i on i.UUID_ACCOUNT = a.UUID " +
+                     " where ? in (a.serviceid, a.UNIFIEDACCOUNTNUMBER, a.ACCOUNTNUMBER) AND a.id_ctr_status_gis = 40 AND " +
+                     "  (exists (select 1 from tb_premises_nrs n where i.uuid_premise = n.uuid and n.premisesnum = ?) " +
+                     "  or exists (select 1 from tb_premises_res r where i.uuid_premise = r.uuid and r.premisesnum = ?))";
+        List<Map<String, Object>> inXlDevices = db.getList (db.getModel ()
+            .select (InXlMeteringDevice.class, "*")
+            .where (InXlMeteringDevice.c.UUID_XL, parent)
+            .where (EnTable.c.IS_DELETED, 0)
+        );
+
+        try(PreparedStatement ps = db.getConnection().prepareStatement(sql)){
+            for(Map<String, Object> item: inXlDevices){
+                
+                if (VocMeteringDeviceType.i.COLLECTIVE.equals(item.get(InXlMeteringDevice.c.ID_TYPE.lc()))) continue;
+                
+                UUID uuidMeteringDevice = (UUID) item.get(EnTable.c.UUID.lc());
+                String accountNumber = (String) item.get(InXlMeteringDevice.c.ACCOUNTNUMBER.lc());
+                String premisesNum = (String) item.get(InXlMeteringDevice.c.PREMISESNUM.lc());
+                for(String accountNum: accountNumber.split(",")){
+                    accountNum = accountNum.trim();
+                    if (accountNum.isEmpty()) continue;
+                    ps.setString(1, accountNum);
+                    ps.setString(2, premisesNum);
+                    ps.setString(3, premisesNum);
+                    ResultSet rs = ps.executeQuery();
+                    if (!rs.next()) continue;
+                    db.insert (MeteringDeviceAccount.class, DB.HASH (
+                               "uuid", uuidMeteringDevice,
+                               "uuid_account", rs.getString("uuid") )
+                    );
+                    
+                };
+            }
+        }
+    }
+    
     @Override
     protected void completeOK (DB db, UUID parent, XSSFWorkbook wb) throws SQLException {
         
@@ -103,7 +176,8 @@ public class ParseMeteringDevicesMDB extends XLMDB {
             MeteringDevice.c.UUID_XL, parent,
             EnTable.c.IS_DELETED, 0
         ), MeteringDevice.c.UUID_XL.lc ());
-
+        
+        joinAccountToDevice( db, parent);
     }
 
     @Override
@@ -111,6 +185,11 @@ public class ParseMeteringDevicesMDB extends XLMDB {
         
         super.completeFail (db, parent, wb);
         
+        db.delete (db.getModel ()
+            .select (MeteringDeviceValue.class)
+            .where  (MeteringDeviceValue.c.UUID_XL, parent)
+        );            
+
         db.delete (db.getModel ()
             .select (MeteringDevice.class)
             .where  (MeteringDevice.c.UUID_XL, parent)
