@@ -15,9 +15,11 @@ import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.tables.Account;
+import ru.eludia.products.mosgis.db.model.tables.AccountItem;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.HouseLog;
 import ru.eludia.products.mosgis.db.model.tables.House;
+import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.voc.VocAccountType;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -133,13 +135,21 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
             logger.warning ("Contract not found by contractGUID=" + contractGUID);
             return;
         }
-        final UUID uuidOrg = (UUID) contract.get (Contract.c.UUID_ORG.lc ());
         
+        if (storeAccount (contract, r, acc, db)) return;
+
+    }
+
+    private boolean storeAccount (Map<String, Object> contract, Map<String, Object> r, ExportAccountResultType acc, DB db) throws SQLException {
+        
+        final UUID uuidOrg = (UUID) contract.get (Contract.c.UUID_ORG.lc ());
+        final UUID fiasHouseGuid = (UUID) r.get ("fiashouseguid");
+
         final Map<String, Object> h = HASH (
             Account.c.ID_TYPE,              VocAccountType.i.UO.getId (),
             Account.c.UUID_CONTRACT,        contract.get ("uuid"),
             Account.c.UUID_ORG,             uuidOrg,
-            Account.c.FIASHOUSEGUID,        r.get ("fiashouseguid"),
+            Account.c.FIASHOUSEGUID,        fiasHouseGuid,
             Account.c.ACCOUNTNUMBER,        acc.getAccountNumber (),
             Account.c.SERVICEID,            acc.getServiceID (),
             Account.c.UNIFIEDACCOUNTNUMBER, acc.getUnifiedAccountNumber (),
@@ -147,17 +157,21 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
         );
         
         AccountExportType.PayerInfo payerInfo = acc.getPayerInfo ();
-
+        
         set (h, Account.c.TOTALSQUARE, acc.getTotalSquare ());
         set (h, Account.c.LIVINGPERSONSNUMBER, acc.getLivingPersonsNumber ());
         set (h, Account.c.RESIDENTIALSQUARE, acc.getResidentialSquare ());
         set (h, Account.c.HEATEDAREA, acc.getHeatedArea ());
-        set (h, Account.c.ISRENTER, payerInfo.isIsRenter ());        
+        set (h, Account.c.ISRENTER, payerInfo.isIsRenter ());
         
-        if (setCustomer (payerInfo, h, db, uuidOrg)) return;
+        if (setCustomer (payerInfo, h, db, uuidOrg)) return true;
         
-        db.upsert (Account.class, h, Account.c.ACCOUNTGUID.lc ());
-
+        String uuidAccount = db.upsertId (Account.class, h, Account.c.ACCOUNTGUID.lc ());
+        
+        storeItems (db, fiasHouseGuid, uuidAccount, acc.getAccommodation ());
+        
+        return false;
+        
     }
     
     private void set (Map<String, Object> h, ColEnum c, Object v) {
@@ -253,5 +267,36 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
         return rp;
         
     }    
-    
+
+    private void storeItems (DB db, UUID fiasHouseGuid, String uuidAccount, List<AccountExportType.Accommodation> accommodation) throws SQLException {
+
+        for (AccountExportType.Accommodation i: accommodation) {
+
+            Map<String, Object> r = HASH (
+                AccountItem.c.FIASHOUSEGUID, fiasHouseGuid,
+                AccountItem.c.UUID_ACCOUNT, uuidAccount
+            );
+
+            set (r, AccountItem.c.SHAREPERCENT, i.getSharePercent ());
+            set (r, AccountItem.c.UUID_PREMISE, getUuidPremise (db, i));
+
+        }
+
+    }
+
+    private String getUuidPremise (DB db, AccountExportType.Accommodation i) throws SQLException {
+        
+        db.getModel ().select (Premise.class, "id");
+        
+        
+        String livingRoomGUID = i.getLivingRoomGUID ();
+        
+//        if (livingRoomGUID != null) return db.getString ()
+        
+        i.getPremisesGUID ();
+        
+        return null;
+
+    }
+
 }
