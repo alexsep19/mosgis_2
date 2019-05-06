@@ -108,7 +108,6 @@ public class GisPollImportSupplyResourceContractObjectsMDB extends GisPollMDB {
 		}
             }
 
-
 	    if (!result.isIsLastPage()) {
 		logger.log(Level.WARNING, "Is NOT last page, more ObjectAddress exists, pagination not implemented yet..");
 	    }

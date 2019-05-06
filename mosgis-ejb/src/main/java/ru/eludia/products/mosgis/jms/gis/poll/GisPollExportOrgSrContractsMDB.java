@@ -1,6 +1,7 @@
 package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import javax.jms.Queue;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
+import ru.eludia.products.mosgis.db.model.incoming.InImportSupplyResourceContractObject;
 import ru.eludia.products.mosgis.db.model.incoming.InVocOrganization;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
@@ -161,14 +163,12 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 
 	List<Map<String, Object>> sr_ctrs = new ArrayList<>();
 
+	long ts_from = System.currentTimeMillis();
+
 	for (ExportSupplyResourceContractResultType t : contracts) {
 	    final Map<String, Object> h = ExportSupplyResourceContract.toHASH (t);
 
 	    if (!DB.ok (h)) continue;
-
-//if (!DB.eq(h.get("contractnumber"), "3453")) {
-//    continue;
-//}
 
 	    Map<String, Object> sr_ctr = DB.HASH(
 		SupplyResourceContract.c.CONTRACTROOTGUID.lc(), h.get(SupplyResourceContract.c.CONTRACTROOTGUID.lc())
@@ -210,7 +210,15 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 		    "id_log", idLog
                 ));
 
-		uuidPublisher.publish(inImportSupplyResourceContractObjectsQueue, idLog);
+		String idImpObj = db.insertId(InImportSupplyResourceContractObject.class, DB.HASH(
+		    "contractrootguid", h.get(SupplyResourceContract.c.CONTRACTROOTGUID.lc()),
+		    "uuid_org", uuid_org,
+		    "ts_from", new Timestamp (ts_from)
+                )).toString ();
+
+		uuidPublisher.publish(inImportSupplyResourceContractObjectsQueue, idImpObj);
+
+		ts_from = ts_from + 2000;
 
 		mergeSubjects (db, h, uuid_out_soap, uuid_message, uuid_user);
 
