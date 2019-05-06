@@ -54,7 +54,7 @@ public class ParseMeteringValuesMDB extends XLMDB {
 
     //Если в ПУ несколько ресурсов, то для всех ресурсов дата должна совпадать
     private static void checkEqualsDateForSamePU(Map<String, Object> xlMeteringHash, Map<String,Date> hashDevices) throws SQLException{
-        String deviceUuid = (String) xlMeteringHash.get(InXlMeteringValues.c.DEVICE_NUMBER);
+        String deviceUuid = (String) xlMeteringHash.get(InXlMeteringValues.c.DEVICE_NUMBER_UUID.lc());
         Date dateValue = (Date) xlMeteringHash.get(InXlMeteringValues.c.DATEVALUE.lc ());
         Date hashDate;
         if ((hashDate = hashDevices.get(deviceUuid)) == null){

@@ -69,7 +69,7 @@ public class ParseMeteringDevicesMDB extends XLMDB {
                         InXlMeteringValues.toHash (parent, i, row, 
                           ( fr, frow)->{
                            //UUID_METER устанавливается в триггере
-                           fr.put (InXlMeteringValues.c.DEVICE_NUMBER.lc (),    uuidMeteringDevice);  
+                           fr.put (InXlMeteringValues.c.DEVICE_NUMBER_UUID.lc (),    uuidMeteringDevice);  
                            fr.put (InXlMeteringValues.c.ID_TYPE.lc (),          VocMeteringDeviceValueType.i.BASE);
                            fr.put (InXlMeteringValues.c.CODE_VC_NSI_2.lc (),    Nsi2.i.forLabel (EnTable.toString (frow, 16, "Не указан коммунальный ресурс")).getId ());
                            //T 

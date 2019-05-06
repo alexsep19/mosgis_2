@@ -43,7 +43,7 @@ public class InXlMeteringValues extends EnTable {
         ORD                     (Type.NUMERIC, 5,                               "Номер строки"),
         ERR                     (Type.STRING,  null,                            "Ошибка"),
         
-        DEVICE_NUMBER           (Type.UUID, 20,    null,                        "Номер устройства UUID из xls ") ,
+        DEVICE_NUMBER_UUID      (Type.UUID, 20,    null,                        "Номер устройства UUID из xls ") ,
         UUID_METER              (MeteringDevice.class,                          "Прибор учёта"),
         ID_TYPE                 (VocMeteringDeviceValueType.class,              "Тип показания"),
         CODE_VC_NSI_2           (Type.STRING,  20,                              "Коммунальный ресурс (НСИ 2)"),
@@ -89,7 +89,7 @@ public class InXlMeteringValues extends EnTable {
         try {
             Optional.of(setfields).orElse(( fr, frow)->{
              //UUID_METER проустанавливается в триггере по DEVICE_NUMBER
-                fr.put (c.DEVICE_NUMBER.lc (),    UUID.fromString(toString (frow, 1, "Не указан номер(UUID) прибора")));  
+                fr.put (c.DEVICE_NUMBER_UUID.lc (),    UUID.fromString(toString (frow, 1, "Не указан номер(UUID) прибора")));  
                 fr.put (c.ID_TYPE.lc (),          VocMeteringDeviceValueType.i.CURRENT);
                 fr.put (c.CODE_VC_NSI_2.lc (),    Nsi2.i.forLabel (toString (frow, 2, "Не указан коммунальный ресурс")).getId ());
                 fr.put (c.METERINGVALUET1.lc (),  toNumeric (frow, 3, "Не указано значение показания (Т1)"));
