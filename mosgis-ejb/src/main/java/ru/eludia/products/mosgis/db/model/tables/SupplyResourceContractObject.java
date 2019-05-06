@@ -77,6 +77,8 @@ public class SupplyResourceContractObject extends EnTable {
 
 	final Map<String, Object> r = DB.to.Map (obj);
 
+	r.put (EnTable.c.UUID.lc(), obj.getObjectGUID());
+
 	r.put (c.ID_CTR_STATUS.lc(), VocGisStatus.i.APPROVED.getId());
 
 	r.put (c.UUID_PREMISE.lc(), Premise.getUuidPremiseByApartmentNumber(r, r.get(SupplyResourceContractObject.c.FIASHOUSEGUID.lc())));

@@ -12,7 +12,9 @@ import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
+import ru.eludia.base.Model;
 import ru.eludia.base.db.sql.gen.Get;
+import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
@@ -181,15 +183,31 @@ logger.info(DB.to.json(h).toString());
 	    h.put ("uuid_org", uuid_org);
 	    h.put ("uuid_sr_ctr", uuid_sr_ctr);
 
-	    try {
+	    final Model m = db.getModel();
 
-		String u = db.upsertId (SupplyResourceContractObject.class, h
-		    , SupplyResourceContractObject.c.UUID_SR_CTR.lc()
-		    , SupplyResourceContractObject.c.FIASHOUSEGUID.lc()
-		    , SupplyResourceContractObject.c.UUID_PREMISE.lc()
+	    try {
+		Object uuid_premise = h.get(SupplyResourceContractObject.c.UUID_PREMISE.lc());
+
+		Select select = m.select(SupplyResourceContractObject.class, EnTable.c.UUID.lc())
+		    .where(SupplyResourceContractObject.c.UUID_SR_CTR, uuid_sr_ctr)
+		    .and(SupplyResourceContractObject.c.FIASHOUSEGUID, h.get(SupplyResourceContractObject.c.FIASHOUSEGUID.lc())
 		);
 
-		UUID uuid = DB.to.UUIDFromHex(u);
+		if (uuid_premise == null) {
+		    select.and(SupplyResourceContractObject.c.UUID_PREMISE.lc() + " IS NULL");
+		} else {
+		    select.and(SupplyResourceContractObject.c.UUID_PREMISE.lc(), uuid_premise);
+		}
+
+		String id = db.getString(select);
+
+		if (DB.ok(id)) { // else keep insert UUID = ObjectGUID
+		    h.put (EnTable.c.UUID.lc (), id);
+		}
+
+		id = db.upsertId (SupplyResourceContractObject.class, h);
+
+		UUID uuid = DB.to.UUIDFromHex(id);
 
 		h.put(EnTable.c.UUID.lc(), uuid);
 
