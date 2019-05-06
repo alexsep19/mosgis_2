@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -139,11 +141,11 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
             return;
         }
         
-        if (storeAccount (contract, r, acc, db)) return;
+        storeAccount (contract, r, acc, db);
 
     }
 
-    private boolean storeAccount (Map<String, Object> contract, Map<String, Object> r, ExportAccountResultType acc, DB db) throws SQLException {
+    private void storeAccount (Map<String, Object> contract, Map<String, Object> r, ExportAccountResultType acc, DB db) throws SQLException {
         
         final UUID uuidOrg = (UUID) contract.get (Contract.c.UUID_ORG.lc ());
         final UUID fiasHouseGuid = (UUID) r.get ("fiashouseguid");
@@ -167,9 +169,17 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
         set (h, Account.c.HEATEDAREA, acc.getHeatedArea ());
         set (h, Account.c.ISRENTER, payerInfo.isIsRenter ());
         
-        if (setCustomer (payerInfo, h, db, uuidOrg)) return true;
+        if (setCustomer (payerInfo, h, db, uuidOrg)) return;
         
-        List<Map<String, Object>> items = toItems (db, acc.getAccommodation ());
+        List<Map<String, Object>> items;       
+        
+        try {
+            items = toItems (db, acc.getAccommodation ());
+        }
+        catch (UnknownSomethingException ex) {
+            logger.warning (ex.toString ());
+            return;
+        }
         
         String uuidAccount = db.upsertId (Account.class, h, Account.c.ACCOUNTGUID.lc ());
         
@@ -205,9 +215,7 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
             , AccountItem.c.UUID_ACCOUNT.lc ()
             , AccountItem.c.UUID_PREMISE.lc ()
         );
-        
-        return false;
-        
+                
     }
     
     private void set (Map<String, Object> h, ColEnum c, Object v) {
@@ -303,49 +311,78 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
         return rp;
         
     }    
-/*
-    private void storeItems (DB db, UUID fiasHouseGuid, String uuidAccount, List<AccountExportType.Accommodation> accommodation) throws SQLException {
-
-        for (AccountExportType.Accommodation i: accommodation) {
-
-            Map<String, Object> r = HASH (
-                AccountItem.c.FIASHOUSEGUID, fiasHouseGuid,
-                AccountItem.c.UUID_ACCOUNT, uuidAccount
-            );
-
-            set (r, AccountItem.c.SHAREPERCENT, i.getSharePercent ());
-            set (r, AccountItem.c.UUID_PREMISE, getUuidPremise (db, i));
-
-        }
-
-    }
-*/
     
-    List<Map<String, Object>> toItems (DB db, List<AccountExportType.Accommodation> accommodation) throws SQLException {
+    List<Map<String, Object>> toItems (DB db, List<AccountExportType.Accommodation> accommodation) throws SQLException, UnknownSomethingException {
         List<Map<String, Object>> result = new ArrayList<> (accommodation.size ());
         for (AccountExportType.Accommodation i: accommodation) result.add (toItem (db, i));
         return result;
     }
 
-    Map<String, Object> toItem (DB db, AccountExportType.Accommodation i) throws SQLException {
+    Map<String, Object> toItem (DB db, AccountExportType.Accommodation i) throws SQLException, UnknownSomethingException {
         Map<String, Object> r = HASH ();
         set (r, AccountItem.c.SHAREPERCENT, i.getSharePercent ());
         set (r, AccountItem.c.UUID_PREMISE, getUuidPremise (db, i));
         return r;
     }
     
-    private String getUuidPremise (DB db, AccountExportType.Accommodation i) throws SQLException {
-        
-        Select select = db.getModel ().select (Premise.class, "id");        
-        
+    private String getUuidPremise (DB db, AccountExportType.Accommodation i) throws SQLException, UnknownSomethingException {
+
+        Select select = db.getModel ().select (Premise.class, "id");
+
         String livingRoomGUID = i.getLivingRoomGUID ();
-        
-        if (livingRoomGUID != null) return db.getString (select.where (Premise.c.LIVINGROOMGUID, livingRoomGUID));
-        
-        i.getPremisesGUID ();
+
+        if (livingRoomGUID != null) {
+            String result = db.getString (select.where (Premise.c.LIVINGROOMGUID, livingRoomGUID));
+            if (result == null) throw new UnknownLivingRoomException (livingRoomGUID);
+            return result;
+        }
+
+        String premisesGUID = i.getPremisesGUID ();
+
+        if (premisesGUID != null) {
+            String result = db.getString (select.where (Premise.c.PREMISESGUID, premisesGUID));
+            if (result == null) throw new UnknownPremiseException (premisesGUID);
+            return result;
+        }
         
         return null;
 
+    }
+    
+    private abstract class UnknownSomethingException extends Exception {
+        
+        String uuid;
+
+        public UnknownSomethingException (String uuid) {
+            this.uuid = uuid;
+        }
+        
+    }
+    
+    private class UnknownPremiseException extends UnknownSomethingException {
+
+        public UnknownPremiseException (String uuid) {
+            super (uuid);
+        }
+
+        @Override
+        public String toString () {
+            return "Неизвестное помещение: " + uuid;
+        }
+        
+    }
+    
+    private class UnknownLivingRoomException extends UnknownSomethingException {
+
+        public UnknownLivingRoomException (String uuid) {
+            super (uuid);
+        }
+
+        @Override
+        public String toString () {
+            return "Неизвестная комната: " + uuid;
+        }
+        
     }
 
 }
