@@ -200,7 +200,6 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 		continue;
 	    };
 
-	    h.put (SupplyResourceContract.c.ID_CTR_STATUS.lc(), VocGisStatus.i.PENDING_RQ_RELOAD.getId());
 	    h.put (SupplyResourceContract.c.UUID_ORG.lc(), uuid_org);
 
 	    try {
@@ -244,7 +243,7 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 	    db.update (SupplyResourceContract.class, DB.HASH (
 		"contractrootguid", h.get("contractrootguid"),
 		"id_ctr_status", DB.ok(sr_ctr.get("err_text"))?
-		    VocGisStatus.i.FAILED_RELOAD.getId() : VocGisStatus.i.APPROVED.getId()
+		    VocGisStatus.i.FAILED_RELOAD.getId() : h.get("id_ctr_status")
 	    ), "contractrootguid");
 
 	    sr_ctrs.add(sr_ctr);
