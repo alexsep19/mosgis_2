@@ -4,11 +4,13 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import javax.jms.Queue;
+import javax.xml.ws.WebServiceException;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.base.model.Col;
@@ -43,7 +45,7 @@ public class ImportAccountsByFiasHouseGuidMDB extends GisExportMDB<HouseLog> {
         final MosGisModel m = ModelHolder.getModel ();
         
         return (Get) m
-            .get   (HouseLog.class, uuid, "AS root")
+            .get   (HouseLog.class, uuid, "AS root", "uuid")
             .toOne (House.class, "AS r", House.c.FIASHOUSEGUID.lc () + " AS fiashouseguid").on ()
             .toOne (VocOrganization.class, "AS org", VocOrganization.c.ORGPPAGUID.lc () + " AS orgppaguid").on ("root.uuid_org=org.uuid")
             ;
@@ -79,7 +81,28 @@ public class ImportAccountsByFiasHouseGuidMDB extends GisExportMDB<HouseLog> {
             fail (db, ex.getFaultInfo (), r, VocGisStatus.i.FAILED_STATE);
             return;
         }
-        catch (Exception ex) {            
+        catch (WebServiceException ex) {
+            
+        }            
+        catch (Exception ex) {
+            
+            if (ex instanceof WebServiceException && ex.getMessage ().endsWith ("Too Many Requests")) {
+                
+                logger.log (Level.WARNING, "Let's wait for 5 s...", ex);
+                
+                try {
+                    Thread.sleep (5000L);
+                }
+                catch (InterruptedException ex1) {
+                    logger.log (Level.WARNING, "Interrupted? OK.");
+                }
+                
+                uuidPublisher.publish (ownDestination, uuid);
+                
+                return;
+                
+            }
+            
             logger.log (Level.SEVERE, "Cannot invoke WS", ex);            
             fail (db, ex.getMessage (), VocGisStatus.i.FAILED_STATE, ex, r);
             return;            
