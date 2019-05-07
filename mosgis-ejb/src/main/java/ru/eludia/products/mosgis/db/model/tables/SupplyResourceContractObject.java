@@ -145,14 +145,14 @@ public class SupplyResourceContractObject extends EnTable {
 
 	switch (housetype) {
 	    case "ZHDBlockZastroyki":
-		is_condo = 1;
+		is_condo = 0;
 		hasblocks = 1;
 		break;
 	    case "ZHD":
-		is_condo = 1;
+		is_condo = 0;
 		break;
 	    case "MKD":
-		is_condo = 0;
+		is_condo = 1;
 		break;
 	    default:
 		throw new Exception ("Unkown house type " + housetype);
@@ -165,26 +165,22 @@ public class SupplyResourceContractObject extends EnTable {
 	    .and(House.c.HASBLOCKS, hasblocks)
 	);
 
-	if (uuid_house == null) {
+	if (uuid_house != null) {
 
-	    uuid_house = db.upsertId (House.class, DB.HASH(
-		    "fiashouseguid", fiashouseguid,
-		    "is_condo", is_condo,
-		    "address", ""
-		)
-		, "fiashouseguid"
-	    );
+	    return DB.to.UUIDFromHex(uuid_house);
 	}
 
-	return DB.to.UUIDFromHex(uuid_house);
+	Map<String, Object> house = DB.HASH(
+	    "fiashouseguid", fiashouseguid,
+	    "is_condo", is_condo,
+	    "address", ""
+	);
+
+	return DB.to.UUIDFromHex(db.upsertId(House.class, house, "fiashouseguid"));
     }
 
     public static UUID getUuidPremise (DB db, UUID uuid_house, String apartmentnumber) throws SQLException {
 
-	Map <String, Object> p = DB.HASH(
-	    "uuid_house", uuid_house,
-	    "apartmentnumber", apartmentnumber
-	);
 
 	String uuid_premise = db.getString (db.getModel().select(ResidentialPremise.class, "uuid")
 	    .where("uuid_house", uuid_house)
@@ -198,6 +194,16 @@ public class SupplyResourceContractObject extends EnTable {
 		.and ("premisesnum", apartmentnumber)
 	    );
 	}
+
+	Map <String, Object> p = DB.HASH(
+	    "uuid_house", uuid_house,
+	    "premisesnum", apartmentnumber
+	);
+
+	uuid_premise = db.upsertId (ResidentialPremise.class, p
+	    , "uuid_house"
+	    , "premisesnum"
+	);
 
 	return DB.to.UUIDFromHex(uuid_premise);
     }
