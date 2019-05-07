@@ -22,6 +22,7 @@ define ([], function () {
                             {id: 'voc_unom', caption: 'Соответствие адресов БТИ и ФИАС', off: !$_USER.role.admin},
                             {id: 'in_xl_files', caption: 'Импорт Excel'},
                             {id: 'ws_msgs', caption: 'Протокол обмена с внешними ИС', off: !$_USER.role.admin},
+                            {id: 'out_soap_roster', caption: 'Протокол обмена с ГИС ЖКХ', off: !$_USER.role.admin},
                         ].filter (not_off),
 
                         onClick: $_DO.choose_tab_integration
