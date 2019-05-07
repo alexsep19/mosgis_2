@@ -123,7 +123,7 @@ public class SupplyResourceContractObject extends EnTable {
 
 	final UUID uuid_premise = getUuidPremise(db, uuid_house, apartmentnumber);
 
-	if (DB.ok (roomnumber)) {
+	if (DB.ok (roomnumber) && DB.ok(uuid_premise)) {
 	    return getUuidRoom(db, uuid_house, uuid_premise, roomnumber);
 	}
 
@@ -181,6 +181,9 @@ public class SupplyResourceContractObject extends EnTable {
 
     public static UUID getUuidPremise (DB db, UUID uuid_house, String apartmentnumber) throws SQLException {
 
+	if (!DB.ok (apartmentnumber) || !DB.ok(uuid_house)) {
+	    return null;
+	}
 
 	String uuid_premise = db.getString (db.getModel().select(ResidentialPremise.class, "uuid")
 	    .where("uuid_house", uuid_house)

@@ -274,11 +274,13 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 		.and(SupplyResourceContractSubject.c.STARTSUPPLYDATE, i.get(SupplyResourceContractSubject.c.STARTSUPPLYDATE.lc()))
 	    );
 
-	    if (DB.ok(id)) { // else keep insert UUID = TransportGUID
+	    if (DB.ok(id)) {
 		i.put (EnTable.c.UUID.lc (), id);
+		db.update(SupplyResourceContractSubject.class, i);
+	    } else { // else keep insert UUID = TransportGUID
+		id = db.insertId (SupplyResourceContractSubject.class, i).toString();
 	    }
 
-	    id = db.upsertId (SupplyResourceContractSubject.class, i);
             
             String idLog = db.insertId (SupplyResourceContractSubjectLog.class, HASH (
 		"action", VocAction.i.IMPORT_SR_CONTRACTS,
