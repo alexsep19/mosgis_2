@@ -144,7 +144,7 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
             .select (Contract.class, "*")
             .where  (Contract.c.CONTRACTGUID, contractGUID)
         );
-        
+        uhluhuh
         if (contract == null) {
             logger.warning ("Contract not found by contractGUID=" + contractGUID);
             return;
