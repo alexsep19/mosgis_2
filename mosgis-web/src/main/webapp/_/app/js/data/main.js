@@ -21,7 +21,7 @@ define ([], function () {
 
         var data = {}
 
-        data.active_tab = localStorage.getItem ('main.active_tab') || 'out_soap'
+        data.active_tab = localStorage.getItem ('main.active_tab') || 'voc_nsi_list'
 
         done (data)
 
