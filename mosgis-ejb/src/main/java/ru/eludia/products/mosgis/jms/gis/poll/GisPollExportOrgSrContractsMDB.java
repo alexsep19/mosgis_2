@@ -134,7 +134,7 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 		ts_from = ts_from + ImportSupplyResourceContractObjectsMDB.WS_GIS_THROTTLE_MS;
             }
 
-	    if (!result.isIsLastPage()) {
+	    if (!DB.ok(result.isIsLastPage())) {
 		logger.log(Level.WARNING, "Is NOT last page, more contracts exists, pagination not implemented yet..");
 	    }
 
