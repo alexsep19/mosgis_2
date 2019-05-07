@@ -1,12 +1,11 @@
 package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -71,6 +70,12 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
         boolean checkNext = true;
                                 
         try {
+            
+            if (DB.ok (r.get ("ts_rp"))) {
+                Timestamp ts = Timestamp.valueOf (r.get ("ts").toString ());
+                Timestamp ts_rp = Timestamp.valueOf (r.get ("ts_rp").toString ());
+                if ((ts_rp.getTime () - ts.getTime ()) > 60 * 1000L) throw new GisPollException ("0", "Асинхронный ответ не сформирован более чем за минуту");
+            }
             
             GetStateResult state = getState (r);
             
@@ -247,10 +252,11 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
     private boolean setCustomer (AccountExportType.PayerInfo payerInfo, final Map<String, Object> h, DB db, UUID uuidOrg) throws SQLException {
         final RegOrgVersionType org = payerInfo.getOrg ();
         if (org != null) return setOrgCustomer (h, org, db);
-        set (h, Account.c.UUID_PERSON_CUSTOMER, getIndCustomerUuid (payerInfo.getInd (), db, uuidOrg));
+        final AccountIndExportType ind = payerInfo.getInd ();
+        if (ind != null) set (h, Account.c.UUID_PERSON_CUSTOMER, getIndCustomerUuid (ind, db, uuidOrg));
         return false;
     }
-    
+
     private String getIndCustomerUuid (final AccountIndExportType ind, DB db, UUID uuidOrg) throws SQLException {
         
         final Map<String, Object> p = HASH (
