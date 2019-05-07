@@ -50,7 +50,7 @@ public class ImportSupplyResourceContractObjectsMDB extends UUIDMDB<InImportSupp
 	;
     }    
 
-    public static final int WS_GIS_THROTTLE_MS = 2000;
+    public static final int WS_GIS_THROTTLE_MS = 10000;
 
     private boolean checkRetry (Map <String, Object> r) throws SQLException {
 

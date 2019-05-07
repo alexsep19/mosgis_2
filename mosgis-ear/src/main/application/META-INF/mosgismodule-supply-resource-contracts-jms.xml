@@ -48,7 +48,7 @@
   <uniform-distributed-queue name="outImportSupplyResourceContractObjectsQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
     <delivery-params-overrides>
-        <time-to-deliver>2000</time-to-deliver>
+        <time-to-deliver>10000</time-to-deliver>
         <redelivery-delay>10000</redelivery-delay>
     </delivery-params-overrides>
     <jndi-name>mosgis.outImportSupplyResourceContractObjectsQueue</jndi-name>
