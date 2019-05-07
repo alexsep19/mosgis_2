@@ -95,38 +95,9 @@ public class ParseMeteringValuesMDB extends XLMDB {
             }
     }
     
-//Если в ПУ несколько ресурсов, то для всех строк дата должна совпадать
-//    public static void checkEqualsDateForSamePU(DB db, UUID parent) throws SQLException{
-//        List<Map<String, Object>> lines = db.getList (db.getModel ()
-//            .select (InXlMeteringValues.class, "*")
-//            .where (InXlMeteringValues.c.UUID_XL, parent)
-//            .orderBy(InXlMeteringValues.c.UUID_METER)
-//        );
-//        Map<String,Date> hash = new HashMap<String,Date>();
-//        Date hashDate;
-//        for(Map<String, Object> line: lines) {
-//            String deviceUuid = (String) line.get(InXlMeteringValues.c.UUID_METER.lc ());
-//            Date dateValue = (Date) line.get(InXlMeteringValues.c.DATEVALUE.lc ());
-//            if ((hashDate = hash.get(deviceUuid)) == null){
-//                hash.put(deviceUuid, dateValue);
-//            }else if (hashDate.compareTo(dateValue) != 0){
-//                String err = "Для ПУ " + deviceUuid + " дата " + dateValue + " отлична от предыдущих";
-//                db.update (InXlMeteringValues.class, DB.HASH (
-//                    EnTable.c.UUID,  line.get(EnTable.c.UUID.lc ()),
-//                    InXlMeteringValues.c.ERR, err
-//                ));
-//                throw new SQLException(err);
-//            }
-//        }
-//    }
-    
     private boolean checkMeterLines (XSSFSheet sheet, DB db, UUID parent) throws SQLException {
         
-        List<Map<String, Object>> brokenLines = db.getList (db.getModel ()
-            .select (InXlMeteringValues.class, "*")
-            .where (InXlMeteringValues.c.UUID_XL, parent)
-            .where (EnTable.c.IS_DELETED, 1)
-        );
+        List<Map<String, Object>> brokenLines = getValuesBrokenLines(db, parent);
         
         if (brokenLines.isEmpty ()) return true;
         
@@ -141,6 +112,14 @@ public class ParseMeteringValuesMDB extends XLMDB {
         
     }
 
+    static public List<Map<String, Object>> getValuesBrokenLines(DB db, UUID parent) throws SQLException{
+        return db.getList (db.getModel ()
+            .select (InXlMeteringValues.class, "*")
+            .where (InXlMeteringValues.c.UUID_XL, parent)
+            .where (EnTable.c.IS_DELETED, 1)
+        );
+     }
+    
 //    @Override
 //    protected void completeOK (DB db, UUID parent, XSSFWorkbook wb) throws SQLException {
 //        
