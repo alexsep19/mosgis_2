@@ -111,11 +111,16 @@ public abstract class GisExportMDB <LT extends Table> extends UUIDMDB<LT> {
                 "uuid_out_soap", uuid
             ));
         
-            db.update (getEnTable (), DB.HASH (
-                "uuid",              r.get ("uuid_object"),
-                "uuid_out_soap",     uuid,
-                getStatusColName (), status.getId ()
-            ));
+            try {
+                db.update (getEnTable (), DB.HASH (
+                    "uuid",              r.get ("uuid_object"),
+                    "uuid_out_soap",     uuid,
+                    getStatusColName (), status.getId ()
+                ));                
+            }
+            catch (IllegalArgumentException x) {
+                logger.warning ("Nothing to update in " + getEnTable ().getName ());
+            }
         
         db.commit ();
         
