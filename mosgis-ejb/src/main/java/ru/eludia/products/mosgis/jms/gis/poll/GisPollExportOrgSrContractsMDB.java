@@ -237,6 +237,8 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 		    .replace ("ORA-20000: ", "");
 
 		sr_ctr.put("err_text", s);
+
+		logger.log(Level.INFO, sr_ctr.get("contractrootguid") + " " + s);
             }
 
 	    db.update (SupplyResourceContract.class, DB.HASH (

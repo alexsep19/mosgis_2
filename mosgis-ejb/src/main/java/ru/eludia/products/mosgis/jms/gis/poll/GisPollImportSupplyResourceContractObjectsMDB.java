@@ -238,6 +238,8 @@ logger.info(DB.to.json(h).toString());
 		    .replace ("ORA-20000: ", "");
 
 		h.put("err_text", s);
+
+		logger.log(Level.INFO, h.get("objectguid") + " " + s);
             }
 
 	    db.update (SupplyResourceContractObject.class, DB.HASH (
