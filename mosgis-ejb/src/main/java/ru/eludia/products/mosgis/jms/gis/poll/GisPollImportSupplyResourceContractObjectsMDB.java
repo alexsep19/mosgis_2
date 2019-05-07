@@ -13,6 +13,7 @@ import javax.ejb.MessageDriven;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
+import ru.eludia.base.db.sql.build.QP;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -24,8 +25,11 @@ import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractObject;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractObjectLog;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubjectLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
@@ -51,7 +55,7 @@ public class GisPollImportSupplyResourceContractObjectsMDB extends GisPollMDB {
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")
             .toOne (InImportSupplyResourceContractObject.class, "AS imp", "*").on ("imp.uuid_out_soap = root.uuid")
             .toOne (VocOrganization.class, "AS org", VocOrganization.c.ORGPPAGUID.lc () + " AS ppa").on ("imp.uuid_org=org.uuid")
-	    .toOne (SupplyResourceContract.class, "AS ctr", "contractrootguid", "uuid").on("ctr.contractrootguid=imp.contractrootguid")
+	    .toOne (SupplyResourceContract.class, "AS ctr", "contractrootguid", "uuid", "id_ctr_status").on("ctr.contractrootguid=imp.contractrootguid")
         ;
     }
 
@@ -177,8 +181,9 @@ public class GisPollImportSupplyResourceContractObjectsMDB extends GisPollMDB {
 
 logger.info(DB.to.json(h).toString());
 
-	    h.put ("uuid_org", uuid_org);
-	    h.put ("uuid_sr_ctr", uuid_sr_ctr);
+	    h.put (SupplyResourceContractObject.c.UUID_SR_CTR.lc(), uuid_sr_ctr);
+	    h.put (SupplyResourceContractObject.c.ID_CTR_STATUS.lc(), VocGisStatus.i.PENDING_RQ_RELOAD.getId());
+	    h.put (EnTable.c.IS_DELETED.lc(), 0);
 
 	    final Model m = db.getModel();
 
@@ -221,11 +226,11 @@ logger.info(DB.to.json(h).toString());
 		    "id_log", idLog
                 ));
 
-//		mergeObjectSubjects (db, h, uuid_out_soap, uuid_message, uuid_user);
+		mergeObjectServices (db, h, uuid_out_soap, uuid_message, uuid_user);
 
             } catch (SQLException e) {
 
-                if (e.getErrorCode () != 20000) {
+		if (e.getErrorCode () != 20000) {
 		    throw e;
 		}
 
@@ -236,10 +241,65 @@ logger.info(DB.to.json(h).toString());
 		h.put("err_text", s);
             }
 
+	    db.update (SupplyResourceContractObject.class, DB.HASH (
+		"objectguid", h.get("objectguid"),
+		"id_ctr_status", DB.ok(h.get("err_text"))
+		    ? VocGisStatus.i.FAILED_RELOAD.getId() : VocGisStatus.i.APPROVED.getId()
+	    ), "objectguid");
+
 	    sr_ctr_objects.add(h);
 	}
 
 	return sr_ctr_objects;
     }
 
+    void mergeObjectServices (DB db, Map<String, Object> h, Object uuid_out_soap, Object uuid_message, Object uuid_user) throws SQLException {
+
+	List<Map<String, Object>> services = (List<Map<String, Object>>) h.get(SupplyResourceContractSubject.TABLE_NAME);
+
+	if (services == null || services.isEmpty()) {
+	    return;
+	}
+
+	Object uuid = h.get(EnTable.c.UUID.lc());
+	Object uuid_sr_ctr = h.get(SupplyResourceContractObject.c.UUID_SR_CTR.lc());
+
+	db.d0 (new QP("UPDATE " + SupplyResourceContractSubject.TABLE_NAME + " SET is_deleted = 1 WHERE uuid_sr_ctr_obj IS NOT NULL AND uuid_sr_ctr = ?", uuid));
+
+	final Model m = db.getModel();
+
+	for (Map<String, Object> i: services) {
+            
+	    i.put (EnTable.c.IS_DELETED.lc(), 0);
+            i.put (SupplyResourceContractSubject.c.UUID_SR_CTR.lc(), uuid_sr_ctr);
+	    i.put (SupplyResourceContractSubject.c.UUID_SR_CTR_OBJ.lc(), uuid);
+
+	    String id = db.getString (m.select(SupplyResourceContractSubject.class, EnTable.c.UUID.lc())
+		.where(SupplyResourceContractSubject.c.UUID_SR_CTR, uuid)
+		.and(SupplyResourceContractSubject.c.UUID_SR_CTR_OBJ.lc() + " IS NOT NULL")
+		.and(SupplyResourceContractSubject.c.CODE_VC_NSI_3, i.get(SupplyResourceContractSubject.c.CODE_VC_NSI_3.lc()))
+		.and(SupplyResourceContractSubject.c.CODE_VC_NSI_239, i.get(SupplyResourceContractSubject.c.CODE_VC_NSI_239.lc()))
+		.and(SupplyResourceContractSubject.c.STARTSUPPLYDATE, i.get(SupplyResourceContractSubject.c.STARTSUPPLYDATE.lc()))
+	    );
+
+	    if (DB.ok(id)) { // else keep insert UUID = TransportGUID
+		i.put (EnTable.c.UUID.lc (), id);
+	    }
+
+	    id = db.upsertId (SupplyResourceContractSubject.class, i);
+            
+            String idLog = db.insertId (SupplyResourceContractSubjectLog.class, HASH (
+		"action", VocAction.i.IMPORT_SR_CONTRACT_OBJECTS,
+		"uuid_object", id,
+		"uuid_user", uuid_user,
+		"uuid_out_soap", uuid_out_soap,
+		"uuid_message", uuid_message
+	    )).toString ();
+
+	    db.update (SupplyResourceContractSubject.class, HASH (
+		"uuid", id,
+		"id_log", idLog
+	    ));
+        }
+    }
 }

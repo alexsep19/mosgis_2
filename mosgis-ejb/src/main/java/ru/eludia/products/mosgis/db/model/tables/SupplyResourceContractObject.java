@@ -27,6 +27,7 @@ public class SupplyResourceContractObject extends EnTable {
 	UUID_SR_CTR           (SupplyResourceContract.class, "Договор"),
 
         ID_CTR_STATUS         (VocGisStatus.class, new Num(VocGisStatus.i.PROJECT.getId()), "Статус объекта жилищного фонда с точки зрения mosgis"),
+	OBJECTGUID            (Type.UUID, null, "Идентификатор ОЖФ в ГИС ЖКХ"),
 
         FIASHOUSEGUID         (VocBuilding.class, "Глобальный уникальный идентификатор дома по ФИАС"),
         UUID_PREMISE          (Premise.class, null, "Помещение"),
@@ -87,6 +88,7 @@ public class SupplyResourceContractObject extends EnTable {
 
 	    Map<String, Object> subj = DB.to.Map(pair);
 
+	    subj.put(EnTable.c.UUID.lc(), pair.getTransportGUID());
 	    subj.put(SupplyResourceContractSubject.c.CODE_VC_NSI_3.lc(), pair.getServiceType().getCode());
 	    subj.put(SupplyResourceContractSubject.c.CODE_VC_NSI_239.lc(), pair.getMunicipalResource().getCode());
 
@@ -111,6 +113,8 @@ public class SupplyResourceContractObject extends EnTable {
         key   ("uuid_sr_ctr", c.UUID_SR_CTR);
 
         key   ("fiashouseguid1", c.FIASHOUSEGUID, c.UUID_PREMISE);
+	
+	key   ("objectguid", c.OBJECTGUID);
 
 	trigger("BEFORE INSERT OR UPDATE", ""
 	    + "DECLARE"

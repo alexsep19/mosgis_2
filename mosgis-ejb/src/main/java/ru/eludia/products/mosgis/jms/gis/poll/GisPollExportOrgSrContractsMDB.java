@@ -33,6 +33,7 @@ import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubjectLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
@@ -199,7 +200,8 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 		continue;
 	    };
 
-	    h.put ("uuid_org", uuid_org);
+	    h.put (SupplyResourceContract.c.ID_CTR_STATUS.lc(), VocGisStatus.i.PENDING_RQ_RELOAD.getId());
+	    h.put (SupplyResourceContract.c.UUID_ORG.lc(), uuid_org);
 
 	    try {
                 
@@ -221,6 +223,7 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 		    "id_log", idLog
                 ));
 
+
 		mergeSubjects (db, h, uuid_out_soap, uuid_message, uuid_user);
 
             } catch (SQLException e) {
@@ -233,8 +236,14 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 		    .nextToken ()
 		    .replace ("ORA-20000: ", "");
 
-		sr_ctr.put("err_text", s);  
+		sr_ctr.put("err_text", s);
             }
+
+	    db.update (SupplyResourceContract.class, DB.HASH (
+		"contractrootguid", h.get("contractrootguid"),
+		"id_ctr_status", DB.ok(sr_ctr.get("err_text"))?
+		    VocGisStatus.i.FAILED_RELOAD.getId() : VocGisStatus.i.APPROVED.getId()
+	    ), "contractrootguid");
 
 	    sr_ctrs.add(sr_ctr);
 	}
