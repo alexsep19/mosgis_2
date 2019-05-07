@@ -94,18 +94,12 @@ public class GisPollImportSupplyResourceContractObjectsMDB extends GisPollMDB {
 
 	    List<Map<String, Object>> sr_ctr_objects = storeSrContractObjects (db, r, objects);
 
-	    String err_text = "";
-
 	    for (Map<String, Object> sr_ctr_obj: sr_ctr_objects) {
-
-		String fiasHouseGuid = DB.to.String(sr_ctr_obj.get(SupplyResourceContractObject.c.FIASHOUSEGUID.lc()));
 
 		if (DB.ok (sr_ctr_obj.get("err_text"))) {
 
-		    err_text = err_text
-			+ "\r\n" + fiasHouseGuid
-			+ " " + sr_ctr_obj.get("err_text")
-		    ;
+		    logger.log(Level.WARNING, DB.to.String(sr_ctr_obj.get("err_text")));
+
 		    continue;
 		}
             }
@@ -163,7 +157,7 @@ public class GisPollImportSupplyResourceContractObjectsMDB extends GisPollMDB {
         
     }
 
-    public List<Map<String, Object>> storeSrContractObjects(DB db, Map<String, Object> r, List<ExportSupplyResourceContractObjectAddressResultType> objects) throws SQLException,  GisPollRetryException {
+    public List<Map<String, Object>> storeSrContractObjects(DB db, Map<String, Object> r, List<ExportSupplyResourceContractObjectAddressResultType> objects) throws SQLException, GisPollRetryException {
 
 	Object uuid_out_soap = r.get("imp.uuid_out_soap");
 	Object uuid_sr_ctr = r.get("ctr.uuid");
@@ -174,7 +168,14 @@ public class GisPollImportSupplyResourceContractObjectsMDB extends GisPollMDB {
 
 	for (ExportSupplyResourceContractObjectAddressResultType obj : objects) {
 
-	    final Map<String, Object> h = SupplyResourceContractObject.toHASH (obj);
+	    Map<String, Object> h;
+
+	    try {
+		h = SupplyResourceContractObject.toHASH(db, obj);
+	    } catch (Exception ex) {
+		logger.log(Level.WARNING, ex.getMessage());
+		continue;
+	    }
 
 	    if (!DB.ok (h)) continue;
 

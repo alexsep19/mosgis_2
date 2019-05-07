@@ -42,21 +42,6 @@ public class Premise extends View {
         pk     (c.ID);
     }
 
-    public static String getUuidPremiseByApartmentNumber (Map<String, Object> r, Object fiashouseguid) {
-
-	return null;
-
-//	final MosGisModel m = ModelHolder.getModel ();
-//
-//        try (DB db = m.getDb ()) {
-//
-//            return db.upsertId (ResidentialPremise.class, r
-//		, "uuid_house"
-//		, "premisenum"
-//	    );
-//
-//        }
-    }    
     @Override
     public final String getSQL () {
 
