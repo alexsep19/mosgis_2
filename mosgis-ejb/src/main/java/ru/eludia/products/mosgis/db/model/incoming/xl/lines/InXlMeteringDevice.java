@@ -195,7 +195,7 @@ public class InXlMeteringDevice extends EnTable {
         //R 17
         //S 18
         //AG
-        r.put (c.CONSUMEDVOLUME.lc (), 1 - toBoolNotNull (row, 32) );
+        r.put (c.CONSUMEDVOLUME.lc (), toBoolNotNull (row, 32) );
         //X
         Date installDate = (Date) toDate (row, 23);
         r.put (c.INSTALLATIONDATE.lc (), installDate);

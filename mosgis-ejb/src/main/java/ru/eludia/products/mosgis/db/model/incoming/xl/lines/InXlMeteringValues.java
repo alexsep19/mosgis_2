@@ -134,17 +134,17 @@ public class InXlMeteringValues extends EnTable {
             + "BEGIN "
                 
             + "  BEGIN "                
-            + "    SELECT uuid, UUID_ORG, TARIFFCOUNT INTO :NEW.UUID_METER, DEVICE_ORG_UUID, TARIFFCOUNT FROM tb_meters WHERE UUID = :NEW.DEVICE_NUMBER; "
-            + "    EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Устройство '||:NEW.DEVICE_NUMBER||' не найдено');"
+            + "    SELECT uuid, UUID_ORG, TARIFFCOUNT INTO :NEW.UUID_METER, DEVICE_ORG_UUID, TARIFFCOUNT FROM tb_meters WHERE UUID = :NEW.DEVICE_NUMBER_UUID; "
+            + "    EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Устройство '||:NEW.DEVICE_NUMBER_UUID||' не найдено');"
             + "  END; "                               
             
             + "  BEGIN "    
             + "    SELECT UUID_ORG INTO ORG_UUID FROM IN_XL_FILES WHERE UUID_ORG = DEVICE_ORG_UUID AND UUID = :NEW.UUID_XL; "    
-            + "    EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Устройство '||:NEW.DEVICE_NUMBER||' принадлежит другой организации: UUID_ORG = '||ORG_UUID||' DEVICE_ORG_UUID = '||DEVICE_ORG_UUID); "
+            + "    EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Устройство '||:NEW.DEVICE_NUMBER_UUID||' принадлежит другой организации: UUID_ORG = '||ORG_UUID||' DEVICE_ORG_UUID = '||DEVICE_ORG_UUID); "
             + "  END; "     
               //для каждого устройства: периода показаний в базе не должно быть
             + "  SELECT count(*) INTO cnt FROM tb_meter_values WHERE is_deleted=0 AND UUID_METER = :NEW.UUID_METER AND ID_TYPE=:NEW.ID_TYPE AND CODE_VC_NSI_2=:NEW.CODE_VC_NSI_2 AND DT_PERIOD = :NEW.DT_PERIOD; "  
-            + "  IF cnt > 0 THEN raise_application_error (-20000, 'Период показаний '||to_char(:NEW.DT_PERIOD,'dd.mm.yyyy') ||' для устройства '||:NEW.DEVICE_NUMBER||' уже есть'); END IF; "
+            + "  IF cnt > 0 THEN raise_application_error (-20000, 'Период показаний '||to_char(:NEW.DT_PERIOD,'dd.mm.yyyy') ||' для устройства '||:NEW.DEVICE_NUMBER_UUID||' уже есть'); END IF; "
 
             + "  IF TARIFFCOUNT = 2 AND (:NEW.METERINGVALUET2 is null OR :NEW.METERINGVALUET3 is null) THEN raise_application_error (-20000, 'Не указано значение показания (Т2)'); END IF; "    
             + "  IF TARIFFCOUNT = 3 AND :NEW.METERINGVALUET3 is null THEN raise_application_error (-20000, 'Не указано значение показания (Т3)'); END IF; "    
