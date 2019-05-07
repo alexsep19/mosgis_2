@@ -111,6 +111,11 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
 
         logger.info ("Handling account " + acc.getAccountGUID () + " / " + acc.getAccountNumber () + " / " + acc.getUnifiedAccountNumber () + "...");
         
+        if (DB.ok (acc.isIsUOAccount ())) {
+            storeUOAccount (db, acc, r);
+            return;
+        }
+
         if (DB.ok (acc.isIsTKOAccount ())) {
             logger.info ("isTKOAccount set: bailing out");
             return;
@@ -119,12 +124,7 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
         if (DB.ok (acc.isIsCRAccount ())) {
             logger.info ("isCRAccount set: bailing out");
             return;
-        }
-        
-        if (DB.ok (acc.isIsUOAccount ())) {
-            storeUOAccount (db, acc, r);
-            return;
-        }
+        }        
 
     }
     

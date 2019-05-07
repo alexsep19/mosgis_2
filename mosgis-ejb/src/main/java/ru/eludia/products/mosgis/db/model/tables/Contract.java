@@ -191,6 +191,7 @@ public class Contract extends EnTable {
             + "IF UPDATING "
             + " AND :OLD.id_ctr_status NOT IN (10, 11) "
             + " AND :OLD.id_ctr_status = :NEW.id_ctr_status "
+            + " AND MOD (:NEW.id_ctr_status, 10) NOT IN (2, 3) "
             + " AND NVL (:OLD.id_log, '00')        = NVL (:NEW.id_log, '00') "
             + " AND NVL (:OLD.uuid_out_soap, '00') = NVL (:NEW.uuid_out_soap, '00') "
             + " AND NVL (:OLD.contractguid, '00')  = NVL (:NEW.contractguid, '00') "
