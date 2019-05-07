@@ -1,10 +1,13 @@
 package ru.eludia.products.mosgis.db.model.voc;
 
+import java.util.logging.Logger;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.Table;
 
 public class VocRdColType extends Table {
+    
+    protected static Logger logger = java.util.logging.Logger.getLogger (VocRdColType.class.getName ());
 
     public VocRdColType () {
         
@@ -76,6 +79,8 @@ public class VocRdColType extends Table {
         
         public final static i forId (int id) {
             
+            logger.info ("VocRdColType.forId: id=" + id);
+
             for (i i: values ()) if (i.getId () == id) return i;
             
             return null;
@@ -83,6 +88,16 @@ public class VocRdColType extends Table {
         }
         
         public Col getColDef (String name, String remark) {
+            
+            Col col = _getColDef (name, remark);
+            
+            logger.info ("VocRdColType.getColDef: name=" + name + ", this = " + this + ", col = " + col);
+            
+            return col;
+            
+        }
+        
+        public Col _getColDef (String name, String remark) {
             
             switch (this) {
                 case TEXT:  return new Col (name, Type.STRING,   null, remark);
