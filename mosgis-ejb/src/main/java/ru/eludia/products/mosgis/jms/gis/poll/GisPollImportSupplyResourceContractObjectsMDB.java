@@ -168,8 +168,7 @@ public class GisPollImportSupplyResourceContractObjectsMDB extends GisPollMDB {
 	Object uuid_out_soap = r.get("imp.uuid_out_soap");
 	Object uuid_sr_ctr = r.get("ctr.uuid");
 	Object uuid_user = r.get("imp.uuid_user");
-	Object uuid_org = r.get("imp.uuid_org");
-	Object uuid_message = r.get("uuid_message");
+	Object uuid_message = r.get("uuid_ack");
 
 	List<Map<String, Object>> sr_ctr_objects = new ArrayList<>();
 

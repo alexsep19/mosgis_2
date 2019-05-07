@@ -89,8 +89,7 @@ public class ImportSupplyResourceContractObjectsMDB extends UUIDMDB<InImportSupp
             
             db.update (getTable (), DB.HASH (
                 "uuid",          uuid,
-                "uuid_out_soap", uuid,
-		"uuid_message",  ack.getMessageGUID()
+                "uuid_out_soap", uuid
             ));
                 
             uuidPublisher.publish (q, uuid);
