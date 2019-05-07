@@ -30,6 +30,7 @@ import ru.eludia.products.mosgis.db.model.tables.MeteringDeviceValue;
 import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceType;
 import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceValueType;
 import ru.eludia.products.mosgis.db.model.voc.nsi.Nsi2;
+import static ru.eludia.products.mosgis.jms.xl.ParseMeteringValuesMDB.getValuesBrokenLines;
 import static ru.eludia.products.mosgis.jms.xl.ParseMeteringValuesMDB.updateDeviceValues;
 import ru.eludia.products.mosgis.jms.xl.base.XLMDB;
 import ru.eludia.products.mosgis.jms.xl.base.XLException;
@@ -64,7 +65,8 @@ public class ParseMeteringDevicesMDB extends XLMDB {
                     EnTable.c.IS_DELETED, 0
                 ));
                 
-                if ((Integer)hashMeteringDevice.get(InXlMeteringDevice.c.CONSUMEDVOLUME.lc ()) == 1){
+                if (hashMeteringDevice.get(InXlMeteringDevice.c.ERR.lc ()) == null && 
+                        (Integer)hashMeteringDevice.get(InXlMeteringDevice.c.CONSUMEDVOLUME.lc ()) == 0){
                     UUID uuidMeteringValues = (UUID) db.insertId (InXlMeteringValues.class, 
                         InXlMeteringValues.toHash (parent, i, row, 
                           ( fr, frow)->{
@@ -109,14 +111,15 @@ public class ParseMeteringDevicesMDB extends XLMDB {
         
     }   
 
-    private boolean checkMeterLines (XSSFSheet sheet, DB db, UUID parent) throws SQLException {
+    private boolean checkMeterAndValuesLines (XSSFSheet sheet, DB db, UUID parent) throws SQLException {
         
         List<Map<String, Object>> brokenLines = db.getList (db.getModel ()
             .select (InXlMeteringDevice.class, "*")
             .where (InXlMeteringDevice.c.UUID_XL, parent)
             .where (EnTable.c.IS_DELETED, 1)
         );
-
+        brokenLines.addAll(getValuesBrokenLines(db, parent));
+        
         if (brokenLines.isEmpty ()) return true;
         
         for (Map<String, Object> brokenLine: brokenLines) {
@@ -230,7 +233,7 @@ public class ParseMeteringDevicesMDB extends XLMDB {
         final XSSFSheet sheetMeters = wb.getSheet ("Сведения о ПУ");        
         addMeters (sheetMeters, uuid, db, resourceMap, refNums);
         
-        if (!checkMeterLines (sheetMeters, db, uuid) || !isContains(resourceMap, refNums, sheetAddResources)) 
+        if (!checkMeterAndValuesLines (sheetMeters, db, uuid) || !isContains(resourceMap, refNums, sheetAddResources)) 
             throw new XLException ();
 
     }
