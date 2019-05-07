@@ -67,6 +67,8 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
     protected void handleOutSoapRecord (DB db, UUID uuid, Map<String, Object> r) throws SQLException {
         
         if (DB.ok (r.get ("is_failed"))) throw new IllegalStateException (r.get ("err_text").toString ());
+        
+        boolean checkNext = true;
                                 
         try {
             
@@ -82,13 +84,14 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
             
         }
         catch (GisPollRetryException ex) {
+            checkNext = false;
             return;
         }
         catch (GisPollException ex) {            
             ex.register (db, uuid, r);
         }
         finally {
-            uuidPublisher.publish (inExportOrgAccountsQueue, (UUID) r.get ("log.uuid_vc_org_log"));
+            if (checkNext) uuidPublisher.publish (inExportOrgAccountsQueue, (UUID) r.get ("log.uuid_vc_org_log"));
         }
         
     }

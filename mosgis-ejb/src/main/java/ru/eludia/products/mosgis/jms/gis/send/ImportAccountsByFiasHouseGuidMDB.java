@@ -80,9 +80,6 @@ public class ImportAccountsByFiasHouseGuidMDB extends GisExportMDB<HouseLog> {
             logger.log (Level.SEVERE, "Can't place " + getTableClass ().getSimpleName (), ex);
             fail (db, ex.getFaultInfo (), r, VocGisStatus.i.FAILED_STATE);
             return;
-        }
-        catch (WebServiceException ex) {
-            
         }            
         catch (Exception ex) {
             
