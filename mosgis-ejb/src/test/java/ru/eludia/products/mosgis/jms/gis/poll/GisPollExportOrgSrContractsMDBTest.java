@@ -23,12 +23,12 @@ public class GisPollExportOrgSrContractsMDBTest extends BaseTest {
     @Test (expected = None.class)
     public void test () throws Exception {
 
-	GetStateResult getStateResult = (GetStateResult) jc.createUnmarshaller ().unmarshal (new File ("c:\\projects\\mosgis\\incoming\\tmp\\exportSrCtr.xml"));
+	GetStateResult getStateResult = (GetStateResult) jc.createUnmarshaller ().unmarshal (new File ("c:\\projects\\mosgis\\incoming\\tmp\\exportSrCtr1000.xml"));
 
 	List<ExportSupplyResourceContractResultType> exportContracts = getStateResult.getExportSupplyResourceContractResult().get(0).getContract();
 	try (DB db = model.getDb()) {
 	    mdb.storeSrContracts(db, DB.HASH(
-		"uuid_out_soap", UUID.fromString("878db72d-1191-072b-e053-0d0b000a7336"),
+		"uuid_out_soap", UUID.fromString("885ce262-b543-1e73-e053-0d0b000ad87a"),
 		"log.uuid_object", UUID.fromString("2953367e-113e-4cc8-b244-d52b4de73c37"),
 		"log.uuid_user", UUID.fromString("79adb621-ecf3-01ec-e053-0d0b000ac65e")
 		), exportContracts);
