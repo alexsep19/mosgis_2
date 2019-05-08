@@ -47,6 +47,7 @@ define ([], function () {
                             {id: 'house_systems',  caption: 'Сети', tooltip: 'Внутридомовые сети', off: !data.item.is_condo},
                             {id: 'house_premises', caption: 'Помещения', off: !data.item.is_condo},
                             {id: 'house_living_rooms', caption: 'Комнаты', off: (data.item.is_condo && !data.has_shared_premises_res)},
+                            {id: 'house_accounts', caption: 'ЛС', tooltip: 'Лицевые счета'},
                             {id: 'house_metering_devices', caption: 'ПУ', tooltip: 'Приборы учёта'},
                             {id: 'house_property_documents', caption: 'Собственники'},
                             {id: 'house_voting_protocols', caption: 'ОСС', tooltip: 'Общие собрания собственников', off: !voting_protocols_view_permit()},

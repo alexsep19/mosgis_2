@@ -36,6 +36,7 @@ public class AccountItemImpl extends BaseCRUD<AccountItem> implements AccountIte
             .toOne (VocBuilding.class, "AS addr", "label").on ()
             .toOne (Account.class, "AS acc", "*").on ()
             .toMaybeOne (Premise.class, "AS prem", "label", Premise.c.TOTALAREA.lc ()).on ()                
+            .toMaybeOne (VocOrganization.class, "AS org_owner", "label").on ("acc.uuid_org=org_owner.uuid")
             .toMaybeOne (VocOrganization.class, "AS org", "label").on ("acc.uuid_org_customer=org.uuid")
             .toMaybeOne (VocPerson.class,       "AS ind", "label").on ("acc.uuid_person_customer=ind.uuid")
             .where (EnTable.c.IS_DELETED, 0)
