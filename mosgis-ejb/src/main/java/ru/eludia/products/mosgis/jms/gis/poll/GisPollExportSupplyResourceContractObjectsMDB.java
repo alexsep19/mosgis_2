@@ -203,11 +203,13 @@ logger.info(DB.to.json(h).toString());
 
 		String id = db.getString(select);
 
-		if (DB.ok(id)) { // else keep insert UUID = ObjectGUID
+		if (DB.ok(id)) {
 		    h.put (EnTable.c.UUID.lc (), id);
+		    db.update(SupplyResourceContractObject.class, h);
+		} else { // else keep insert UUID = ObjectGUID
+		    id = db.insertId (SupplyResourceContractObject.class, h).toString();
 		}
 
-		id = db.upsertId (SupplyResourceContractObject.class, h);
 
 		UUID uuid = DB.to.UUIDFromHex(id);
 

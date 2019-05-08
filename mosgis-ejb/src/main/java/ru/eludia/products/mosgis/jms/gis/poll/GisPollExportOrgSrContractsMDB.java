@@ -151,7 +151,9 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
         catch (GisPollException ex) {            
             ex.register (db, uuid, r);
         }
-        
+        catch (Exception ex) {            
+            logger.log(Level.WARNING, ex.getMessage());
+        }        
     }
 
 
