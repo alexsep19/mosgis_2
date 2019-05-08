@@ -312,8 +312,8 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
             Account.c.SERVICEID,            acc.getServiceID (),
             Account.c.UNIFIEDACCOUNTNUMBER, acc.getUnifiedAccountNumber (),
             Account.c.ACCOUNTGUID,          acc.getAccountGUID (),
-            Account.c.ID_CTR_STATUS,        status,
-            Account.c.ID_CTR_STATUS_GIS,    status
+            Account.c.ID_CTR_STATUS,        status.getId (),
+            Account.c.ID_CTR_STATUS_GIS,    status.getId ()
         ));
         
         AccountExportType.PayerInfo payerInfo = acc.getPayerInfo ();
