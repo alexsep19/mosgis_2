@@ -93,7 +93,7 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
     @Override
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
-            .toOne (HouseLog.class, "AS log", "uuid", "uuid_user", "action", "uuid_vc_org_log").on ("log.uuid_out_soap=root.uuid")
+            .toOne (HouseLog.class, "AS log", "uuid", "uuid_user", "action", "uuid_vc_org_log", "uuid_out_soap", "uuid_message").on ("log.uuid_out_soap=root.uuid")
             .toOne (House.class,    "AS r", House.c.FIASHOUSEGUID.lc () + " AS fiashouseguid").on ("log.uuid_object=r.uuid")
             .toOne (VocOrganization.class, "AS org", VocOrganization.c.ORGPPAGUID.lc () + " AS orgppaguid").on ("log.uuid_org=org.uuid")
 ;
@@ -374,6 +374,8 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
         Object idLog = db.insertId (AccountLog.class, HASH (
             "action", r.get ("log.action"),
             "uuid_user", r.get ("log.uuid_user"),
+            "uuid_out_soap", r.get ("log.uuid_out_soap"),
+            "uuid_message", r.get ("log.uuid_message"),
             "uuid_object", uuidAccount
         ));
         
