@@ -1,16 +1,20 @@
 package ru.eludia.products.mosgis.jms.gis.poll;
 
+import java.io.StringWriter;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import javax.jms.Queue;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
@@ -20,6 +24,7 @@ import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.Account;
 import ru.eludia.products.mosgis.db.model.tables.AccountItem;
+import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
 import ru.eludia.products.mosgis.db.model.tables.HouseLog;
 import ru.eludia.products.mosgis.db.model.tables.House;
@@ -53,6 +58,32 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
     @Resource (mappedName = "mosgis.inExportOrgAccountsQueue")
     Queue inExportOrgAccountsQueue;
     
+    protected static JAXBContext jc;    
+    
+    static {
+        try {    
+            jc = JAXBContext.newInstance (GetStateResult.class);
+        }
+        catch (JAXBException ex) {
+            throw new IllegalStateException ("Cannot instantinate JAXB context", ex);
+        }
+    }
+    
+    private String dump (Object o) {        
+        
+        StringWriter sw = new StringWriter ();
+        
+        try {
+            jc.createMarshaller ().marshal (o, sw);
+        }
+        catch (JAXBException ex) {
+            logger.log (Level.WARNING, "Cannot dump " + o, ex);
+            return o.toString ();
+        }
+        
+        return sw.toString ();
+    }
+    
     @Override
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
@@ -85,7 +116,27 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
             
             if (exportAccountResult == null || exportAccountResult.isEmpty ()) throw new GisPollException ("0", "Сервис ГИС ЖКХ вернул пустой результат");
 
-            for (ExportAccountResultType i: exportAccountResult) store (db, i, r);
+            for (ExportAccountResultType i: exportAccountResult) {
+                
+                try {
+                    store (db, i, r);
+                }
+                catch (UnknownSomethingException ex) {
+                    String msg = "ЛС " + i.getAccountNumber () + ", " + ex.getMessage ();
+                    logger.warning (msg);
+                    Map<String, Object> map = db.getMap (db.getModel ().get (OutSoap.class, uuid, "*"));
+                    StringBuilder sb = new StringBuilder (DB.to.String (map.get ("err_text")));
+                    if (sb.length () > 0) sb.append (";\n");
+                    sb.append (msg);
+                    db.update (OutSoap.class, HASH (
+                        "uuid", uuid,
+                        "is_failed", 1,
+                        "err_code", "0",
+                        "err_text", sb.toString ()
+                    ));
+                    return;
+                }
+            }
             
         }
         catch (GisPollRetryException ex) {
@@ -115,60 +166,93 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
             
     }
 
-    void store (DB db, ExportAccountResultType acc, Map<String, Object> r) throws SQLException {
+    private boolean store (DB db, ExportAccountResultType acc, Map<String, Object> r) throws SQLException, UnknownSomethingException {
 
         logger.info ("Handling account " + acc.getAccountGUID () + " / " + acc.getAccountNumber () + " / " + acc.getUnifiedAccountNumber () + "...");
         
-        if (DB.ok (acc.isIsUOAccount ())) {
-            storeUOAccount (db, acc, r);
-            return;
-        }
-
-        if (DB.ok (acc.isIsTKOAccount ())) {
-            logger.info ("isTKOAccount set: bailing out");
-            return;
-        }
+        if (DB.ok (acc.isIsUOAccount  ())) return storeUOAccount (db, acc, r);
+        if (DB.ok (acc.isIsTKOAccount ())) throw new UnknownSomethingException ("Неподдерживаемый тип ЛС: isTKOAccount");        
+        if (DB.ok (acc.isIsCRAccount  ())) throw new UnknownSomethingException ("Неподдерживаемый тип ЛС: isCRAccount");
         
-        if (DB.ok (acc.isIsCRAccount ())) {
-            logger.info ("isCRAccount set: bailing out");
-            return;
-        }        
+        throw new UnknownSomethingException ("Неподдерживаемый тип ЛС: " + dump (acc));
 
     }
     
-    void storeUOAccount (DB db, ExportAccountResultType acc, Map<String, Object> r) throws SQLException {
+    private boolean storeUOAccount (DB db, ExportAccountResultType acc, Map<String, Object> r) throws SQLException, UnknownSomethingException {
         
-        final String contractGUID = acc.getAccountReasons ().getContract ().getContractGUID ();
+        final ExportAccountResultType.AccountReasons accountReasons = acc.getAccountReasons ();
         
-        Map<String, Object> contract = db.getMap (db.getModel ()
-            .select (Contract.class, "*")
-            .where  (Contract.c.CONTRACTGUID, contractGUID)
+        final ExportAccountResultType.AccountReasons.Contract ca = accountReasons.getContract ();
+        if (ca != null) return storeUOAccountByContract (db, ca, r, acc);
+        
+        ExportAccountResultType.AccountReasons.Charter ch = accountReasons.getCharter ();
+        if (ch != null) return storeUOAccountByCharter (db, ch, r, acc);
+        
+        throw new UnknownSomethingException ("Неподдерживаемые основания ЛС" + dump (accountReasons));
+                    
+    }
+    
+    private boolean storeUOAccountByCharter (DB db, ExportAccountResultType.AccountReasons.Charter charter, Map<String, Object> r, ExportAccountResultType acc) throws SQLException, UnknownSomethingException {
+        
+        String charterGUID = charter.getCharterGUID ();
+        
+        Map<String, Object> ch = db.getMap (db.getModel ()                
+            .select (Charter.class
+                , EnTable.c.UUID.lc ()
+                , Charter.c.UUID_ORG.lc ()
+            )
+            .where (Charter.c.CHARTERGUID, charterGUID)
         );
         
-        if (contract == null) {
-            logger.warning ("Contract not found by contractGUID=" + contractGUID);
-            return;
-        }
+        if (ch == null) throw new UnknownSomethingException ("Неизвестный устав: charterGUID=" + charterGUID);
         
-        storeAccount (contract, r, acc, db);
-
+        storeAccount (HASH (
+            Account.c.ID_TYPE,              VocAccountType.i.UO.getId (),
+            Account.c.UUID_CHARTER,         (UUID) ch.get (EnTable.c.UUID.lc ()),
+            Account.c.UUID_ORG,             (UUID) ch.get (Contract.c.UUID_ORG.lc ())
+        ), r, acc, db);
+        
+        return false;
+        
     }
 
-    private void storeAccount (Map<String, Object> contract, Map<String, Object> r, ExportAccountResultType acc, DB db) throws SQLException {
+    private boolean storeUOAccountByContract (DB db, final ExportAccountResultType.AccountReasons.Contract contract, Map<String, Object> r, ExportAccountResultType acc) throws SQLException, UnknownSomethingException {
         
-        final UUID uuidOrg = (UUID) contract.get (Contract.c.UUID_ORG.lc ());
+        String contractGUID = contract.getContractGUID ();
+        
+        Map<String, Object> ca = db.getMap (db.getModel ()
+                
+            .select (Contract.class
+                , EnTable.c.UUID.lc ()
+                , Contract.c.UUID_ORG.lc ()
+            )
+            .where (Contract.c.CONTRACTGUID, contractGUID)
+                
+        );
+        
+        if (ca == null) throw new UnknownSomethingException ("Неизвестный договор: contractGUID=" + contractGUID);
+        
+        storeAccount (HASH (
+            Account.c.ID_TYPE,              VocAccountType.i.UO.getId (),
+            Account.c.UUID_CONTRACT,        (UUID) ca.get (EnTable.c.UUID.lc ()),
+            Account.c.UUID_ORG,             (UUID) ca.get (Contract.c.UUID_ORG.lc ())
+        ), r, acc, db);
+        
+        return false;
+        
+    }
+
+    private void storeAccount (Map<String, Object> h, Map<String, Object> r, ExportAccountResultType acc, DB db) throws SQLException, UnknownSomethingException {
+
         final UUID fiasHouseGuid = (UUID) r.get ("fiashouseguid");
 
-        final Map<String, Object> h = HASH (
-            Account.c.ID_TYPE,              VocAccountType.i.UO.getId (),
-            Account.c.UUID_CONTRACT,        contract.get ("uuid"),
-            Account.c.UUID_ORG,             uuidOrg,
+        h.putAll (HASH (
             Account.c.FIASHOUSEGUID,        fiasHouseGuid,
             Account.c.ACCOUNTNUMBER,        acc.getAccountNumber (),
             Account.c.SERVICEID,            acc.getServiceID (),
             Account.c.UNIFIEDACCOUNTNUMBER, acc.getUnifiedAccountNumber (),
             Account.c.ACCOUNTGUID,          acc.getAccountGUID ()
-        );
+        ));
         
         AccountExportType.PayerInfo payerInfo = acc.getPayerInfo ();
         
@@ -178,29 +262,29 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
         set (h, Account.c.HEATEDAREA, acc.getHeatedArea ());
         set (h, Account.c.ISRENTER, payerInfo.isIsRenter ());
         
-        if (setCustomer (payerInfo, h, db, uuidOrg)) return;
+        if (setCustomer (payerInfo, h, db, (UUID) h.get ("uuid_org"))) return;
         
         List<Map<String, Object>> items;       
         
-        try {
+//        try {
             items = toItems (db, acc.getAccommodation ());
-        }
-        catch (UnknownSomethingException ex) {
-            String msg = "ЛС " + acc.getAccountNumber () + ", " + ex.toString ();
-            logger.warning (msg);
-            Object uuid = r.get ("uuid");
-            Map<String, Object> map = db.getMap (db.getModel ().get (OutSoap.class, uuid, "*"));
-            StringBuilder sb = new StringBuilder (DB.to.String (map.get ("err_text")));
-            if (sb.length () > 0) sb.append (";\n");
-            sb.append (msg);
-            db.update (OutSoap.class, HASH (
-                "uuid", uuid,
-                "is_failed", 1,
-                "err_code", "0",
-                "err_text", sb.toString ()
-            ));
-            return;
-        }
+//        }
+//        catch (UnknownSomethingException ex) {
+//            String msg = "ЛС " + acc.getAccountNumber () + ", " + ex.toString ();
+//            logger.warning (msg);
+//            Object uuid = r.get ("uuid");
+//            Map<String, Object> map = db.getMap (db.getModel ().get (OutSoap.class, uuid, "*"));
+//            StringBuilder sb = new StringBuilder (DB.to.String (map.get ("err_text")));
+//            if (sb.length () > 0) sb.append (";\n");
+//            sb.append (msg);
+//            db.update (OutSoap.class, HASH (
+//                "uuid", uuid,
+//                "is_failed", 1,
+//                "err_code", "0",
+//                "err_text", sb.toString ()
+//            ));
+//            return;
+//        }
         
         String uuidAccount = db.upsertId (Account.class, h, Account.c.ACCOUNTGUID.lc ());
         
@@ -360,7 +444,7 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
 
         if (livingRoomGUID != null) {
             String result = db.getString (select.where (Premise.c.LIVINGROOMGUID, livingRoomGUID));
-            if (result == null) throw new UnknownLivingRoomException (livingRoomGUID);
+            if (result == null) throw new UnknownSomethingException ("Неизвестная комната: " + livingRoomGUID);
             return result;
         }
 
@@ -368,7 +452,7 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
 
         if (premisesGUID != null) {
             String result = db.getString (select.where (Premise.c.PREMISESGUID, premisesGUID));
-            if (result == null) throw new UnknownPremiseException (premisesGUID);
+            if (result == null) throw new UnknownSomethingException ("Неизвестное помещение: " + premisesGUID);
             return result;
         }
         
@@ -376,38 +460,10 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
 
     }
     
-    private abstract class UnknownSomethingException extends Exception {
-        
-        String uuid;
+    private class UnknownSomethingException extends Exception {
 
-        public UnknownSomethingException (String uuid) {
-            this.uuid = uuid;
-        }
-        
-    }
-    
-    private class UnknownPremiseException extends UnknownSomethingException {
-
-        public UnknownPremiseException (String uuid) {
-            super (uuid);
-        }
-
-        @Override
-        public String toString () {
-            return "Неизвестное помещение: " + uuid;
-        }
-        
-    }
-    
-    private class UnknownLivingRoomException extends UnknownSomethingException {
-
-        public UnknownLivingRoomException (String uuid) {
-            super (uuid);
-        }
-
-        @Override
-        public String toString () {
-            return "Неизвестная комната: " + uuid;
+        public UnknownSomethingException (String s) {
+            super (s);
         }
         
     }

@@ -34,7 +34,7 @@ public class GisPollImportAccountsByFiasHouseGuidMDBTest extends BaseTest {
 
             GetStateResult state = (GetStateResult) jc.createUnmarshaller ().unmarshal (SOAPTools.getSoapBodyNode (db.getString (OutSoap.class, uuid, "rp")));
                         
-            for (ExportAccountResultType i: state.getExportAccountResult ()) mdb.store (db, i, r);
+//            for (ExportAccountResultType i: state.getExportAccountResult ()) mdb.store (db, i, r);
             
         }        
         
