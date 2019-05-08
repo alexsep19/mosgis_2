@@ -308,25 +308,7 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
         
         List<Map<String, Object>> items;       
         
-//        try {
-            items = toItems (db, acc.getAccommodation ());
-//        }
-//        catch (UnknownSomethingException ex) {
-//            String msg = "ЛС " + acc.getAccountNumber () + ", " + ex.toString ();
-//            logger.warning (msg);
-//            Object uuid = r.get ("uuid");
-//            Map<String, Object> map = db.getMap (db.getModel ().get (OutSoap.class, uuid, "*"));
-//            StringBuilder sb = new StringBuilder (DB.to.String (map.get ("err_text")));
-//            if (sb.length () > 0) sb.append (";\n");
-//            sb.append (msg);
-//            db.update (OutSoap.class, HASH (
-//                "uuid", uuid,
-//                "is_failed", 1,
-//                "err_code", "0",
-//                "err_text", sb.toString ()
-//            ));
-//            return;
-//        }
+        items = toItems (db, acc.getAccommodation ());
         
         String uuidAccount = db.upsertId (Account.class, h, Account.c.ACCOUNTGUID.lc ());
         
