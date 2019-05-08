@@ -40,11 +40,11 @@ import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResource
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 
 @MessageDriven(activationConfig = {
- @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outImportSupplyResourceContractObjectsQueue")
+ @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.outExportSupplyResourceContractObjectsQueue")
  , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
  , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class GisPollImportSupplyResourceContractObjectsMDB extends GisPollMDB {
+public class GisPollExportSupplyResourceContractObjectsMDB extends GisPollMDB {
 
     @EJB
     WsGisHouseManagementClient wsGisHouseManagementClient;

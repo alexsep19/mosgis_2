@@ -38,7 +38,7 @@ import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.eludia.products.mosgis.jms.gis.poll.sr_ctr.ExportSupplyResourceContract;
-import ru.eludia.products.mosgis.jms.gis.send.ImportSupplyResourceContractObjectsMDB;
+import ru.eludia.products.mosgis.jms.gis.send.ExportSupplyResourceContractObjectsMDB;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 import ru.eludia.products.mosgis.ws.soap.clients.WsGisHouseManagementClient;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
@@ -58,8 +58,8 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
     @Resource (mappedName = "mosgis.inOrgQueue")
     private Queue inOrgQueue;
 
-    @Resource (mappedName = "mosgis.inImportSupplyResourceContractObjectsQueue")
-    private Queue inImportSupplyResourceContractObjectsQueue;
+    @Resource (mappedName = "mosgis.inExportSupplyResourceContractObjectsQueue")
+    private Queue inExportSupplyResourceContractObjectsQueue;
 
     @Override
     protected Get get (UUID uuid) {
@@ -129,9 +129,9 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 		    "ts_from", new Timestamp (ts_from)
                 ));
 
-		uuidPublisher.publish(inImportSupplyResourceContractObjectsQueue, idImpObj);
+		uuidPublisher.publish(inExportSupplyResourceContractObjectsQueue, idImpObj);
 
-		ts_from = ts_from + ImportSupplyResourceContractObjectsMDB.WS_GIS_THROTTLE_MS;
+		ts_from = ts_from + ExportSupplyResourceContractObjectsMDB.WS_GIS_THROTTLE_MS;
             }
 
 	    if (!DB.ok(result.isIsLastPage())) {
@@ -181,6 +181,7 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 	    final Map<String, Object> h = ExportSupplyResourceContract.toHASH (t);
 
 	    if (!DB.ok (h)) continue;
+//if(!DB.eq(h.get("contractrootguid").toString(), "0cb02b26-681e-45d1-9599-8822661ac086")) continue;
 
 	    Map<String, Object> sr_ctr = DB.HASH(
 		SupplyResourceContract.c.CONTRACTROOTGUID.lc(), h.get(SupplyResourceContract.c.CONTRACTROOTGUID.lc())

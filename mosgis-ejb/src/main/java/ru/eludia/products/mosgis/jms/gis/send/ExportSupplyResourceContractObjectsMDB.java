@@ -25,13 +25,13 @@ import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
 
 @MessageDriven(activationConfig = {
-    @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inImportSupplyResourceContractObjectsQueue")
+    @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inExportSupplyResourceContractObjectsQueue")
     , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
     , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class ImportSupplyResourceContractObjectsMDB extends UUIDMDB<InImportSupplyResourceContractObject> {
+public class ExportSupplyResourceContractObjectsMDB extends UUIDMDB<InImportSupplyResourceContractObject> {
     
-    private static final Logger logger = Logger.getLogger (ImportSupplyResourceContractObjectsMDB.class.getName ());
+    private static final Logger logger = Logger.getLogger (ExportSupplyResourceContractObjectsMDB.class.getName ());
 
     @EJB
     protected UUIDPublisher uuidPublisher;
@@ -39,7 +39,7 @@ public class ImportSupplyResourceContractObjectsMDB extends UUIDMDB<InImportSupp
     @EJB
     WsGisHouseManagementClient wsGisHouseManagementClient;
 
-    @Resource (mappedName = "mosgis.outImportSupplyResourceContractObjectsQueue")
+    @Resource (mappedName = "mosgis.outExportSupplyResourceContractObjectsQueue")
     Queue q;
     
     @Override
