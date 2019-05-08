@@ -50,7 +50,7 @@ public class ExportSupplyResourceContractObjectsMDB extends UUIDMDB<InImportSupp
 	;
     }    
 
-    public static final int WS_GIS_THROTTLE_MS = 10000;
+    public static final int WS_GIS_THROTTLE_MS = 5000;
 
     private boolean checkRetry (Map <String, Object> r) throws SQLException {
 
@@ -63,7 +63,7 @@ public class ExportSupplyResourceContractObjectsMDB extends UUIDMDB<InImportSupp
 	Timestamp now = new Timestamp(System.currentTimeMillis());
 
 	if (now.before(ts_throttle)) {
-	    logger.log(Level.INFO, "ts_from in future: retry import resource contract objects");
+	    logger.log(Level.INFO, "Handling " + r.get("uuid") + ": " + r.get("ts_from") + " ts_from in future: retry import resource contract objects");
 	    uuidPublisher.publish (getOwnQueue (), getUuid ());
 	    return true;
 	}
