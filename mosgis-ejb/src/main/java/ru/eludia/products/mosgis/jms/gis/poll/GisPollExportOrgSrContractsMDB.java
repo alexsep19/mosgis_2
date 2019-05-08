@@ -80,7 +80,13 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
         UUID orgPPAGuid = (UUID) r.get ("ppa");
                         
         try {            
-            
+
+            if (DB.ok (r.get ("ts_rp"))) {
+                Timestamp ts = Timestamp.valueOf (r.get ("ts").toString ());
+                Timestamp ts_rp = Timestamp.valueOf (r.get ("ts_rp").toString ());
+                if ((ts_rp.getTime () - ts.getTime ()) > 60 * 1000L) throw new GisPollException ("0", "Асинхронный ответ не сформирован более чем за минуту");
+            }
+
             GetStateResult state = getState (orgPPAGuid, r);
 
 	    ErrorMessageType errorMessage = state.getErrorMessage();
@@ -126,7 +132,7 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 		}
 	    }
 
-	    logger.log(Level.INFI, "import supply resource contracts DONE, scheduling import objects...");
+	    logger.log(Level.INFO, "import supply resource contracts DONE, scheduling import objects...");
 
 	    long ts_from = System.currentTimeMillis();
 
