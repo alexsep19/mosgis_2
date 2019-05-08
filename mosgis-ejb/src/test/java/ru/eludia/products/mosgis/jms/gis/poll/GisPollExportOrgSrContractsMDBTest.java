@@ -2,7 +2,9 @@ package ru.eludia.products.mosgis.jms.gis.poll;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
 import org.junit.Test;
 import org.junit.Test.None;
@@ -26,12 +28,15 @@ public class GisPollExportOrgSrContractsMDBTest extends BaseTest {
 	GetStateResult getStateResult = (GetStateResult) jc.createUnmarshaller ().unmarshal (new File ("c:\\projects\\mosgis\\incoming\\tmp\\exportSrCtr1000.xml"));
 
 	List<ExportSupplyResourceContractResultType> exportContracts = getStateResult.getExportSupplyResourceContractResult().get(0).getContract();
+
+	final Map<String, Object> r = DB.HASH(
+	    "uuid_out_soap", UUID.fromString("885ce262-b543-1e73-e053-0d0b000ad87a"),
+	    "log.uuid_object", UUID.fromString("2953367e-113e-4cc8-b244-d52b4de73c37"),
+	    "log.uuid_user", UUID.fromString("79adb621-ecf3-01ec-e053-0d0b000ac65e")
+	);
+
 	try (DB db = model.getDb()) {
-	    mdb.storeSrContracts(db, DB.HASH(
-		"uuid_out_soap", UUID.fromString("885ce262-b543-1e73-e053-0d0b000ad87a"),
-		"log.uuid_object", UUID.fromString("2953367e-113e-4cc8-b244-d52b4de73c37"),
-		"log.uuid_user", UUID.fromString("79adb621-ecf3-01ec-e053-0d0b000ac65e")
-		), exportContracts);
+	    for (ExportSupplyResourceContractResultType i : exportContracts) { mdb.store(db, r, i); }
 	}
     }
     

@@ -104,27 +104,31 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 
 	    if (contracts == null) throw new GisPollException("0", "Сервис ГИС вернул пустой результат");
 
-	    List<Map<String, Object>> sr_ctrs = storeSrContracts (db, r, contracts);
-
-	    String err_text = "";
 
 	    long ts_from = System.currentTimeMillis();
-
-	    for (Map<String, Object> sr_ctr: sr_ctrs) {
-
-		String contractRootGuid = DB.to.String(sr_ctr.get(SupplyResourceContract.c.CONTRACTROOTGUID.lc()));
-
-		if (DB.ok (sr_ctr.get("err_text"))) {
-
-		    err_text = err_text
-			+ "\r\n" + contractRootGuid
-			+ " " + sr_ctr.get("err_text")
-		    ;
+	    
+	    for (ExportSupplyResourceContractResultType i : contracts) {
+		try {
+		    store (db, r, i);
+		}
+		catch (UnknownSomethingException ex) {
+		    String msg = "ДРСО " + i.getContractRootGUID() + ", " + ex.getMessage ();
+		    logger.warning (msg);
+		    Map<String, Object> map = db.getMap (db.getModel ().get (OutSoap.class, uuid, "*"));
+		    StringBuilder sb = new StringBuilder (DB.to.String (map.get ("err_text")));
+		    if (sb.length () > 0) sb.append (";\n");
+		    sb.append (msg);
+		    db.update (OutSoap.class, HASH (
+			"uuid", uuid,
+			"is_failed", 1,
+			"err_code", "0",
+			"err_text", sb.toString ()
+		    ));
 		    continue;
 		}
 
 		UUID idImpObj = (UUID) db.insertId(InImportSupplyResourceContractObject.class, DB.HASH(
-		    "contractrootguid", sr_ctr.get(SupplyResourceContract.c.CONTRACTROOTGUID.lc()),
+		    "contractrootguid", i.getContractRootGUID(),
 		    "uuid_org", r.get("log.uuid_object"),
 		    "ts_from", new Timestamp (ts_from)
                 ));
@@ -132,7 +136,8 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 		uuidPublisher.publish(inExportSupplyResourceContractObjectsQueue, idImpObj);
 
 		ts_from = ts_from + ExportSupplyResourceContractObjectsMDB.WS_GIS_THROTTLE_MS;
-            }
+	    }
+
 
 	    if (!DB.ok(result.isIsLastPage())) {
 		logger.log(Level.WARNING, "Is NOT last page, more contracts exists, pagination not implemented yet..");
@@ -140,7 +145,6 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 
 	    db.update(OutSoap.class, HASH(
 		"uuid", uuid,
-		"err_text", DB.ok(err_text)? err_text : null,
 		"id_status", DONE.getId()
 	    ));
 
@@ -151,9 +155,6 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
         catch (GisPollException ex) {            
             ex.register (db, uuid, r);
         }
-        catch (Exception ex) {            
-            logger.log(Level.WARNING, ex.getMessage());
-        }        
     }
 
 
@@ -170,89 +171,65 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
         ));
     }
 
-    public List<Map<String, Object>> storeSrContracts(DB db, Map<String, Object> r, List<ExportSupplyResourceContractResultType> contracts) throws SQLException,  GisPollRetryException {
+    public void store (DB db, Map<String, Object> r, ExportSupplyResourceContractResultType t) throws SQLException, UnknownSomethingException {
 
 	Object uuid_out_soap = r.get("log.uuid_out_soap");
 	Object uuid_org = r.get("log.uuid_object");
 	Object uuid_user = r.get("log.uuid_user");
 	Object uuid_message = r.get("log.uuid_message");
 
-	List<Map<String, Object>> sr_ctrs = new ArrayList<>();
+	final Map<String, Object> h = ExportSupplyResourceContract.toHASH (t);
 
-	for (ExportSupplyResourceContractResultType t : contracts) {
-	    final Map<String, Object> h = ExportSupplyResourceContract.toHASH (t);
+	if (!DB.ok (h)) return;
 
-	    if (!DB.ok (h)) continue;
-//if(!DB.eq(h.get("contractrootguid").toString(), "0cb02b26-681e-45d1-9599-8822661ac086")) continue;
+	if(DB.ok(h.get(SupplyResourceContract.c.UUID_ORG.lc()))
+	    && !checkOrgGUID(db, h.get(SupplyResourceContract.c.UUID_ORG.lc()))
+	) {
+	    throw new UnknownSomethingException("Не найдена организация с orgRootEntityGUID " + h.get(SupplyResourceContract.c.UUID_ORG.lc()));
+	};
 
-	    Map<String, Object> sr_ctr = DB.HASH(
-		SupplyResourceContract.c.CONTRACTROOTGUID.lc(), h.get(SupplyResourceContract.c.CONTRACTROOTGUID.lc())
-	    );
+	if(DB.ok(h.get(SupplyResourceContract.c.UUID_ORG_CUSTOMER.lc()))
+	    && !checkOrgGUID(db, h.get(SupplyResourceContract.c.UUID_ORG_CUSTOMER.lc()))
+	) {
+	    throw new UnknownSomethingException("Не найдена организация с orgRootEntityGUID " + h.get(SupplyResourceContract.c.UUID_ORG.lc()));
+	};
 
-	    if(DB.ok(h.get(SupplyResourceContract.c.UUID_ORG.lc()))
-		&& !checkOrgGUID(db, h.get(SupplyResourceContract.c.UUID_ORG.lc()))
-	    ) {
-		sr_ctr.put("err_text", "Не найдена организация с orgRootEntityGUID " + h.get(SupplyResourceContract.c.UUID_ORG.lc()));
-		continue;
-	    };
+	h.put (SupplyResourceContract.c.UUID_ORG.lc(), uuid_org);
 
-	    if(DB.ok(h.get(SupplyResourceContract.c.UUID_ORG_CUSTOMER.lc()))
-		&& !checkOrgGUID(db, h.get(SupplyResourceContract.c.UUID_ORG_CUSTOMER.lc()))
-	    ) {
-		sr_ctr.put("err_text", "Не найдена организация с orgRootEntityGUID " + h.get(SupplyResourceContract.c.UUID_ORG.lc()));
-		continue;
-	    };
+	try {
 
-	    h.put (SupplyResourceContract.c.UUID_ORG.lc(), uuid_org);
+	    UUID uuid = DB.to.UUIDFromHex(db.upsertId (SupplyResourceContract.class, h, SupplyResourceContract.c.CONTRACTROOTGUID.lc()));
 
-	    try {
-                
-		UUID uuid = DB.to.UUIDFromHex(db.upsertId (SupplyResourceContract.class, h, SupplyResourceContract.c.CONTRACTROOTGUID.lc()));
+	    h.put(EnTable.c.UUID.lc(), uuid);
 
-		h.put(EnTable.c.UUID.lc(), uuid);
-		sr_ctr.put(EnTable.c.UUID.lc(), uuid);
-
-		String idLog = db.insertId(SupplyResourceContractLog.class, DB.HASH(
-		    "action", VocAction.i.IMPORT_SR_CONTRACTS.getName (),
-		    "uuid_object", uuid,
-		    "uuid_out_soap", uuid_out_soap,
-		    "uuid_user", uuid_user,
-		    "uuid_message", uuid_message
-                )).toString ();
-
-                db.update (SupplyResourceContract.class, DB.HASH (
-		    "uuid", uuid,
-		    "id_log", idLog
-                ));
-
-
-		mergeSubjects (db, h, uuid_out_soap, uuid_message, uuid_user);
-
-            } catch (SQLException e) {
-
-                if (e.getErrorCode () != 20000) {
-		    throw e;
-		}
-
-		String s = new StringTokenizer (e.getMessage (), "\n\r")
-		    .nextToken ()
-		    .replace ("ORA-20000: ", "");
-
-		sr_ctr.put("err_text", s);
-
-		logger.log(Level.INFO, sr_ctr.get("contractrootguid") + " " + s);
-            }
+	    String idLog = db.insertId(SupplyResourceContractLog.class, DB.HASH(
+		"action", VocAction.i.IMPORT_SR_CONTRACTS.getName (),
+		"uuid_object", uuid,
+		"uuid_out_soap", uuid_out_soap,
+		"uuid_user", uuid_user,
+		"uuid_message", uuid_message
+	    )).toString ();
 
 	    db.update (SupplyResourceContract.class, DB.HASH (
-		"contractrootguid", h.get("contractrootguid"),
-		"id_ctr_status", DB.ok(sr_ctr.get("err_text"))?
-		    VocGisStatus.i.FAILED_RELOAD.getId() : h.get("id_ctr_status")
-	    ), "contractrootguid");
+		"uuid", uuid,
+		"id_log", idLog
+	    ));
 
-	    sr_ctrs.add(sr_ctr);
+
+	    mergeSubjects (db, h, uuid_out_soap, uuid_message, uuid_user);
+
+	} catch (SQLException e) {
+
+	    if (e.getErrorCode () != 20000) {
+		throw e;
+	    }
+
+	    String s = new StringTokenizer (e.getMessage (), "\n\r")
+		.nextToken ()
+		.replace ("ORA-20000: ", "");
+
+	    throw new UnknownSomethingException("ДРСО " + t.getContractRootGUID() + ": " + s);
 	}
-
-	return sr_ctrs;
     }
 
     void mergeSubjects (DB db, Map<String, Object> h, Object uuid_out_soap, Object uuid_message, Object uuid_user) throws SQLException {
@@ -320,7 +297,7 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
         
     }    
 
-    private boolean checkOrgGUID(DB db, Object orgRootEntityGUID) throws SQLException, GisPollRetryException {
+    private boolean checkOrgGUID(DB db, Object orgRootEntityGUID) throws SQLException, UnknownSomethingException {
 
 	if (orgRootEntityGUID == null) {
 	    return true;
@@ -336,8 +313,6 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
             return true;
         }
 
-	logger.log(Level.SEVERE, "Не найдена организация с orgRootEntityGUID " + orgRootEntityGUID);
-
 	String inVocOrganizationUuid = db.getString(db.getModel()
 	    .select(InVocOrganization.class, InVocOrganization.c.UUID.lc())
 	    .where(InVocOrganization.c.ORGROOTENTITYGUID.lc(), orgRootEntityGUID)
@@ -349,20 +324,23 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 
 	    Integer outSoapStatus = db.getInteger(OutSoap.class, inVocOrganizationUuid, "id_status");
 
-	    if (outSoapStatus != DONE.getId()) {
-		return false;
+	    if (outSoapStatus == DONE.getId()) {
+		UUID uuid = (UUID) db.insertId (InVocOrganization.class, HASH (
+		    InVocOrganization.c.ORGROOTENTITYGUID.lc(), orgRootEntityGUID
+		));
+
+		uuidPublisher.publish (inOrgQueue, uuid);
 	    }
 
-	    UUID uuid = (UUID) db.insertId (InVocOrganization.class, HASH (
-		InVocOrganization.c.ORGROOTENTITYGUID.lc(), orgRootEntityGUID
-	    ));
-
-	    uuidPublisher.publish (inOrgQueue, uuid);
-
-	    return false;
 	}
 
-	return false;
+	throw new UnknownSomethingException("Не найдена организация с orgRootEntityGUID " + orgRootEntityGUID);
     }
-    
+
+    private class UnknownSomethingException extends Exception {
+
+        public UnknownSomethingException (String s) {
+            super (s);
+        }
+    }
 }
