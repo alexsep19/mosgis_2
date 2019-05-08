@@ -30,6 +30,8 @@ import ru.eludia.products.mosgis.db.model.tables.HouseLog;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
+import ru.eludia.products.mosgis.db.model.tables.RcContract;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.voc.VocAccountType;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
@@ -41,6 +43,7 @@ import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.house_management.AccountExportType;
 import ru.gosuslugi.dom.schema.integration.house_management.AccountIndExportType;
+import ru.gosuslugi.dom.schema.integration.house_management.AccountReasonsImportType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportAccountResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_base.RegOrgVersionType;
@@ -171,6 +174,7 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
         logger.info ("Handling account " + acc.getAccountGUID () + " / " + acc.getAccountNumber () + " / " + acc.getUnifiedAccountNumber () + "...");
         
         if (DB.ok (acc.isIsUOAccount  ())) return storeUOAccount (db, acc, r);
+        if (DB.ok (acc.isIsRSOAccount ())) return storeRSOAccount (db, acc, r);
         if (DB.ok (acc.isIsTKOAccount ())) throw new UnknownSomethingException ("Неподдерживаемый тип ЛС: isTKOAccount");        
         if (DB.ok (acc.isIsCRAccount  ())) throw new UnknownSomethingException ("Неподдерживаемый тип ЛС: isCRAccount");
         
@@ -191,6 +195,44 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
         throw new UnknownSomethingException ("Неподдерживаемые основания ЛС" + dump (accountReasons));
                     
     }
+    
+    private boolean storeRSOAccount (DB db, ExportAccountResultType acc, Map<String, Object> r) throws SQLException, UnknownSomethingException {
+
+        final ExportAccountResultType.AccountReasons accountReasons = acc.getAccountReasons ();
+
+        List<AccountReasonsImportType.SupplyResourceContract> supplyResourceContract = accountReasons.getSupplyResourceContract ();
+
+        if (supplyResourceContract == null || supplyResourceContract.isEmpty ()) throw new UnknownSomethingException ("Не указан договор РСО");
+
+        return storeRSOAccountByContract (db, supplyResourceContract.get (0), r, acc);
+                    
+    }
+    
+    private boolean storeRSOAccountByContract (DB db, AccountReasonsImportType.SupplyResourceContract contract, Map<String, Object> r, ExportAccountResultType acc) throws SQLException, UnknownSomethingException {
+
+        String contractGUID = contract.getContractGUID ();
+        
+        Map<String, Object> ca = db.getMap (db.getModel ()
+                
+            .select (SupplyResourceContract.class
+                , EnTable.c.UUID.lc ()
+                , SupplyResourceContract.c.UUID_ORG.lc ()
+            )
+            .where (SupplyResourceContract.c.CONTRACTROOTGUID, contractGUID)
+
+        );
+        
+        if (ca == null) throw new UnknownSomethingException ("Неизвестный договор: contractGUID=" + contractGUID);
+        
+        storeAccount (HASH (
+            Account.c.ID_TYPE,              VocAccountType.i.RSO.getId (),
+            Account.c.UUID_CONTRACT,        (UUID) ca.get (EnTable.c.UUID.lc ()),
+            Account.c.UUID_ORG,             (UUID) ca.get (Contract.c.UUID_ORG.lc ())
+        ), r, acc, db);
+        
+        return false;
+        
+    }    
     
     private boolean storeUOAccountByCharter (DB db, ExportAccountResultType.AccountReasons.Charter charter, Map<String, Object> r, ExportAccountResultType acc) throws SQLException, UnknownSomethingException {
         
