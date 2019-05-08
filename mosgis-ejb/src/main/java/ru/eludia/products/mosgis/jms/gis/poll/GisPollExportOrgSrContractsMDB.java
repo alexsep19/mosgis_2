@@ -105,7 +105,6 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 	    if (contracts == null) throw new GisPollException("0", "Сервис ГИС вернул пустой результат");
 
 
-	    long ts_from = System.currentTimeMillis();
 	    
 	    for (ExportSupplyResourceContractResultType i : contracts) {
 		try {
@@ -124,9 +123,14 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 			"err_code", "0",
 			"err_text", sb.toString ()
 		    ));
-		    continue;
 		}
+	    }
 
+	    logger.log(Level.INFI, "import supply resource contracts DONE, scheduling import objects...");
+
+	    long ts_from = System.currentTimeMillis();
+
+	    for (ExportSupplyResourceContractResultType i : contracts) {
 		UUID idImpObj = (UUID) db.insertId(InImportSupplyResourceContractObject.class, DB.HASH(
 		    "contractrootguid", i.getContractRootGUID(),
 		    "uuid_org", r.get("log.uuid_object"),
@@ -140,7 +144,7 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 
 
 	    if (!DB.ok(result.isIsLastPage())) {
-		logger.log(Level.WARNING, "Is NOT last page, more contracts exists, pagination not implemented yet..");
+		logger.log(Level.WARNING, "Is NOT last page, more supply resource contract objects exists, pagination not implemented yet..");
 	    }
 
 	    db.update(OutSoap.class, HASH(
@@ -228,7 +232,7 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 		.nextToken ()
 		.replace ("ORA-20000: ", "");
 
-	    throw new UnknownSomethingException("ДРСО " + t.getContractRootGUID() + ": " + s);
+	    throw new UnknownSomethingException(s);
 	}
     }
 

@@ -103,11 +103,9 @@ public class ExportSupplyResourceContractObjectsMDB extends UUIDMDB<InImportSupp
 		r.remove(EnTable.c.UUID.lc());
 		r.put("ts_from", new Timestamp(System.currentTimeMillis() + WS_GIS_THROTTLE_MS));
 
-		UUID idImpObj = (UUID) db.insertId(InImportSupplyResourceContractObject.class, r);
+		logger.log(Level.INFO, "HTTP status code 429: retry import resource contract objects " + uuid);
 
-		logger.log(Level.INFO, "HTTP status code 429: retry import resource contract objects " + idImpObj);
-
-		uuidPublisher.publish(getOwnQueue(), idImpObj);
+//		uuidPublisher.publish(getOwnQueue(), uuid);
 
 		return;
 	    }

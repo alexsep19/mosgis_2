@@ -20,7 +20,11 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.InImportSupplyResourceContractObject;
+import ru.eludia.products.mosgis.db.model.tables.House;
+import ru.eludia.products.mosgis.db.model.tables.LivingRoom;
+import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractObject;
@@ -92,17 +96,28 @@ public class GisPollExportSupplyResourceContractObjectsMDB extends GisPollMDB {
 	    if (objects == null) throw new GisPollException("0", "Сервис ГИС вернул пустой результат");
 
 
-	    List<Map<String, Object>> sr_ctr_objects = storeSrContractObjects (db, r, objects);
 
-	    for (Map<String, Object> sr_ctr_obj: sr_ctr_objects) {
-
-		if (DB.ok (sr_ctr_obj.get("err_text"))) {
-
-		    logger.log(Level.WARNING, DB.to.String(sr_ctr_obj.get("err_text")));
-
+	    for (ExportSupplyResourceContractObjectAddressResultType i : objects) {
+		try {
+		    store (db, r, i);
+		}
+		catch (UnknownSomethingException ex) {
+		    String msg = "ДРСО " + i.getContractRootGUID() + " ОЖФ " + i.getObjectGUID() + ", " + ex.getMessage ();
+		    logger.warning (msg);
+		    Map<String, Object> map = db.getMap (db.getModel ().get (OutSoap.class, uuid, "*"));
+		    StringBuilder sb = new StringBuilder (DB.to.String (map.get ("err_text")));
+		    if (sb.length () > 0) sb.append (";\n");
+		    sb.append (msg);
+		    db.update (OutSoap.class, HASH (
+			"uuid", uuid,
+			"is_failed", 1,
+			"err_code", "0",
+			"err_text", sb.toString ()
+		    ));
 		    continue;
 		}
-            }
+	    }
+
 
 	    if (!DB.ok(result.isIsLastPage())) {
 		logger.log(Level.WARNING, "Is NOT last page, more ObjectAddress exists, pagination not implemented yet..");
@@ -157,104 +172,207 @@ public class GisPollExportSupplyResourceContractObjectsMDB extends GisPollMDB {
         
     }
 
-    public List<Map<String, Object>> storeSrContractObjects(DB db, Map<String, Object> r, List<ExportSupplyResourceContractObjectAddressResultType> objects) throws SQLException, GisPollRetryException {
+    public void store(DB db, Map<String, Object> r, ExportSupplyResourceContractObjectAddressResultType t) throws SQLException, UnknownSomethingException {
 
 	Object uuid_out_soap = r.get("imp.uuid_out_soap");
 	Object uuid_sr_ctr = r.get("ctr.uuid");
 	Object uuid_user = r.get("imp.uuid_user");
 	Object uuid_message = r.get("uuid_ack");
 
-	List<Map<String, Object>> sr_ctr_objects = new ArrayList<>();
+	Map<String, Object> h = SupplyResourceContractObject.toHASH(t);
 
-	for (ExportSupplyResourceContractObjectAddressResultType obj : objects) {
-
-	    Map<String, Object> h;
-
-	    try {
-		h = SupplyResourceContractObject.toHASH(db, obj);
-	    } catch (Exception ex) {
-		logger.log(Level.WARNING, ex.getMessage());
-		continue;
-	    }
-
-	    if (!DB.ok (h)) continue;
+	if (!DB.ok (h)) return;
 
 logger.info(DB.to.json(h).toString());
 
-	    h.put (SupplyResourceContractObject.c.UUID_SR_CTR.lc(), uuid_sr_ctr);
-	    h.put (SupplyResourceContractObject.c.ID_CTR_STATUS.lc(), VocGisStatus.i.PENDING_RQ_RELOAD.getId());
-	    h.put (EnTable.c.IS_DELETED.lc(), 0);
+	h.put (SupplyResourceContractObject.c.UUID_SR_CTR.lc(), uuid_sr_ctr);
+	h.put (SupplyResourceContractObject.c.ID_CTR_STATUS.lc(), VocGisStatus.i.PENDING_RQ_RELOAD.getId());
+	h.put (EnTable.c.IS_DELETED.lc(), 0);
 
-	    final Model m = db.getModel();
+	final Model m = db.getModel();
 
-	    try {
-		Object uuid_premise = h.get(SupplyResourceContractObject.c.UUID_PREMISE.lc());
+	try {
+	    
+	    h.put (SupplyResourceContractObject.c.UUID_PREMISE.lc(), getUuidPremiseOrRoom(db
+		, t.getFIASHouseGuid()
+		, t.getHouseType()
+		, t.getApartmentNumber()
+		, t.getRoomNumber()
+	    ));
 
-		Select select = m.select(SupplyResourceContractObject.class, EnTable.c.UUID.lc())
-		    .where(SupplyResourceContractObject.c.UUID_SR_CTR, uuid_sr_ctr)
-		    .and(SupplyResourceContractObject.c.FIASHOUSEGUID, h.get(SupplyResourceContractObject.c.FIASHOUSEGUID.lc())
-		);
+	    Object uuid_premise = h.get(SupplyResourceContractObject.c.UUID_PREMISE.lc());
 
-		if (uuid_premise == null) {
-		    select.and(SupplyResourceContractObject.c.UUID_PREMISE.lc() + " IS NULL");
-		} else {
-		    select.and(SupplyResourceContractObject.c.UUID_PREMISE.lc(), uuid_premise);
-		}
+	    Select select = m.select(SupplyResourceContractObject.class, EnTable.c.UUID.lc())
+		.where(SupplyResourceContractObject.c.UUID_SR_CTR, uuid_sr_ctr)
+		.and(SupplyResourceContractObject.c.FIASHOUSEGUID, h.get(SupplyResourceContractObject.c.FIASHOUSEGUID.lc())
+	    );
 
-		String id = db.getString(select);
+	    if (uuid_premise == null) {
+		select.and(SupplyResourceContractObject.c.UUID_PREMISE.lc() + " IS NULL");
+	    } else {
+		select.and(SupplyResourceContractObject.c.UUID_PREMISE.lc(), uuid_premise);
+	    }
 
-		if (DB.ok(id)) {
-		    h.put (EnTable.c.UUID.lc (), id);
-		    db.update(SupplyResourceContractObject.class, h);
-		} else { // else keep insert UUID = ObjectGUID
-		    id = db.insertId (SupplyResourceContractObject.class, h).toString();
-		}
+	    String id = db.getString(select);
+
+	    if (DB.ok(id)) {
+		h.put (EnTable.c.UUID.lc (), id);
+		db.update(SupplyResourceContractObject.class, h);
+	    } else { // else keep insert UUID = ObjectGUID
+		id = db.insertId (SupplyResourceContractObject.class, h).toString();
+	    }
 
 
-		UUID uuid = DB.to.UUIDFromHex(id);
+	    UUID uuid = DB.to.UUIDFromHex(id);
 
-		h.put(EnTable.c.UUID.lc(), uuid);
+	    h.put(EnTable.c.UUID.lc(), uuid);
 
-		String idLog = db.insertId(SupplyResourceContractObjectLog.class, DB.HASH(
-		    "action", VocAction.i.IMPORT_SR_CONTRACT_OBJECTS.getName (),
-		    "uuid_object", uuid,
-		    "uuid_out_soap", uuid_out_soap,
-		    "uuid_user", uuid_user,
-		    "uuid_message", uuid_message
-                )).toString ();
-
-                db.update (SupplyResourceContractObject.class, DB.HASH (
-		    "uuid", uuid,
-		    "id_log", idLog
-                ));
-
-		mergeObjectServices (db, h, uuid_out_soap, uuid_message, uuid_user);
-
-            } catch (SQLException e) {
-
-		if (e.getErrorCode () != 20000) {
-		    throw e;
-		}
-
-		String s = new StringTokenizer (e.getMessage (), "\n\r")
-		    .nextToken ()
-		    .replace ("ORA-20000: ", "");
-
-		h.put("err_text", s);
-
-		logger.log(Level.INFO, h.get("objectguid") + " " + s);
-            }
+	    String idLog = db.insertId(SupplyResourceContractObjectLog.class, DB.HASH(
+		"action", VocAction.i.IMPORT_SR_CONTRACT_OBJECTS.getName (),
+		"uuid_object", uuid,
+		"uuid_out_soap", uuid_out_soap,
+		"uuid_user", uuid_user,
+		"uuid_message", uuid_message
+	    )).toString ();
 
 	    db.update (SupplyResourceContractObject.class, DB.HASH (
-		"objectguid", h.get("objectguid"),
-		"id_ctr_status", DB.ok(h.get("err_text"))
-		    ? VocGisStatus.i.FAILED_RELOAD.getId() : VocGisStatus.i.APPROVED.getId()
-	    ), "objectguid");
+		"uuid", uuid,
+		"id_log", idLog
+	    ));
 
-	    sr_ctr_objects.add(h);
+	    mergeObjectServices (db, h, uuid_out_soap, uuid_message, uuid_user);
+
+	} catch (SQLException e) {
+
+	    if (e.getErrorCode () != 20000) {
+		throw e;
+	    }
+
+	    String s = new StringTokenizer (e.getMessage (), "\n\r")
+		.nextToken ()
+		.replace ("ORA-20000: ", "");
+
+	    throw new UnknownSomethingException(s);
 	}
 
-	return sr_ctr_objects;
+	db.update (SupplyResourceContractObject.class, DB.HASH (
+	    "objectguid", h.get("objectguid"),
+	    "id_ctr_status", DB.ok(h.get("err_text"))
+		? VocGisStatus.i.FAILED_RELOAD.getId() : VocGisStatus.i.APPROVED.getId()
+	), "objectguid");
+    }
+
+    public static UUID getUuidPremiseOrRoom (DB db, Object fiashouseguid, String housetype, String apartmentnumber, String roomnumber) throws SQLException {
+
+	final UUID uuid_house = getUuidHouse(db, fiashouseguid, housetype);
+
+	if (DB.ok (housetype) && !DB.ok(uuid_house)) {
+	    throw new UnknownSomethingException("Не найден дом " + housetype + " " + fiashouseguid);
+	}
+
+	final UUID uuid_premise = getUuidPremise(db, uuid_house, apartmentnumber);
+
+	if (DB.ok (roomnumber) && DB.ok(uuid_premise)) {
+	    return getUuidRoom(db, uuid_house, uuid_premise, roomnumber);
+	}
+
+	return uuid_premise;
+    }
+
+    public static UUID getUuidHouse (DB db, Object fiashouseguid, String housetype) throws SQLException {
+
+	if (housetype == null) {
+	    return null;
+	}
+
+	if (fiashouseguid == null) {
+	    return null;
+	}
+
+	Integer is_condo = null;
+	Integer hasblocks = null;
+
+	switch (housetype) {
+	    case "ZHDBlockZastroyki":
+		is_condo = 0;
+		hasblocks = 1;
+		break;
+	    case "ZHD":
+		is_condo = 0;
+		break;
+	    case "MKD":
+		is_condo = 1;
+		break;
+	    default:
+		throw new UnknownSomethingException ("Unkown house type " + housetype);
+	}
+
+	String uuid_house = db.getString(db.getModel()
+	    .select(House.class, "uuid", "is_condo")
+	    .where(House.c.FIASHOUSEGUID, fiashouseguid)
+	    .and(House.c.IS_CONDO, is_condo)
+	    .and(House.c.HASBLOCKS, hasblocks)
+	);
+
+	if (uuid_house != null) {
+
+	    return DB.to.UUIDFromHex(uuid_house);
+	}
+
+	Map<String, Object> house = DB.HASH(
+	    "fiashouseguid", fiashouseguid,
+	    "is_condo", is_condo,
+	    "address", ""
+	);
+
+	return DB.to.UUIDFromHex(db.upsertId(House.class, house, "fiashouseguid"));
+    }
+
+    public static UUID getUuidPremise (DB db, UUID uuid_house, String apartmentnumber) throws SQLException {
+
+	if (!DB.ok (apartmentnumber) || !DB.ok(uuid_house)) {
+	    return null;
+	}
+
+	String uuid_premise = db.getString (db.getModel().select(ResidentialPremise.class, "uuid")
+	    .where("uuid_house", uuid_house)
+	    .and ("premisesnum", apartmentnumber)
+	);
+	
+	if (uuid_premise == null) {
+
+	    uuid_premise = db.getString (db.getModel().select(NonResidentialPremise.class, "uuid")
+		.where("uuid_house", uuid_house)
+		.and ("premisesnum", apartmentnumber)
+	    );
+	}
+
+	Map <String, Object> p = DB.HASH(
+	    "uuid_house", uuid_house,
+	    "premisesnum", apartmentnumber
+	);
+
+	uuid_premise = db.upsertId (ResidentialPremise.class, p
+	    , "uuid_house"
+	    , "premisesnum"
+	);
+
+	return DB.to.UUIDFromHex(uuid_premise);
+    }
+
+    public static UUID getUuidRoom (DB db, UUID uuid_house, UUID uuid_premise, String roomnumber) throws SQLException {
+
+	String uuid_room = db.upsertId (LivingRoom.class, DB.HASH(
+		"uuid_house", uuid_house,
+		"uuid_premise", uuid_premise,
+		"roomnumber", roomnumber
+	    )
+	    , "uuid_house"
+	    , "uuid_premise"
+	    , "roomnumber"
+	);
+
+	return DB.to.UUIDFromHex(uuid_room);
     }
 
     void mergeObjectServices (DB db, Map<String, Object> h, Object uuid_out_soap, Object uuid_message, Object uuid_user) throws SQLException {
@@ -304,6 +422,13 @@ logger.info(DB.to.json(h).toString());
 		"uuid", id,
 		"id_log", idLog
 	    ));
+        }
+    }
+
+    private class UnknownSomethingException extends Exception {
+
+        public UnknownSomethingException (String s) {
+            super (s);
         }
     }
 }

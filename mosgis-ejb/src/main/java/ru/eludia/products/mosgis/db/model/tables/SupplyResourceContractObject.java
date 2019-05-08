@@ -78,20 +78,13 @@ public class SupplyResourceContractObject extends EnTable {
 	}
     }
 
-    public static Map<String, Object> toHASH(DB db, ExportSupplyResourceContractObjectAddressResultType obj) throws SQLException, Exception {
+    public static Map<String, Object> toHASH(ExportSupplyResourceContractObjectAddressResultType obj) {
 
 	final Map<String, Object> r = DB.to.Map (obj);
 
 	r.put (EnTable.c.UUID.lc(), obj.getObjectGUID());
 
 	r.put (c.ID_CTR_STATUS.lc(), VocGisStatus.i.APPROVED.getId());
-
-	r.put (c.UUID_PREMISE.lc(), getUuidPremiseOrRoom(db
-	    , obj.getFIASHouseGuid()
-	    , obj.getHouseType()
-	    , obj.getApartmentNumber()
-	    , obj.getRoomNumber()
-	));
 
 	for (Pair pair : obj.getPair()) {
 
@@ -111,119 +104,6 @@ public class SupplyResourceContractObject extends EnTable {
 	}
 
 	return r;
-    }
-
-    public static UUID getUuidPremiseOrRoom (DB db, Object fiashouseguid, String housetype, String apartmentnumber, String roomnumber) throws SQLException, Exception {
-
-	final UUID uuid_house = getUuidHouse(db, fiashouseguid, housetype);
-
-	if (DB.ok (housetype) && !DB.ok(uuid_house)) {
-	    throw new Exception("Не найден дом " + housetype + " " + fiashouseguid);
-	}
-
-	final UUID uuid_premise = getUuidPremise(db, uuid_house, apartmentnumber);
-
-	if (DB.ok (roomnumber) && DB.ok(uuid_premise)) {
-	    return getUuidRoom(db, uuid_house, uuid_premise, roomnumber);
-	}
-
-	return uuid_premise;
-    }
-
-    public static UUID getUuidHouse (DB db, Object fiashouseguid, String housetype) throws SQLException, Exception {
-
-	if (housetype == null) {
-	    return null;
-	}
-
-	if (fiashouseguid == null) {
-	    return null;
-	}
-
-	Integer is_condo = null;
-	Integer hasblocks = null;
-
-	switch (housetype) {
-	    case "ZHDBlockZastroyki":
-		is_condo = 0;
-		hasblocks = 1;
-		break;
-	    case "ZHD":
-		is_condo = 0;
-		break;
-	    case "MKD":
-		is_condo = 1;
-		break;
-	    default:
-		throw new Exception ("Unkown house type " + housetype);
-	}
-
-	String uuid_house = db.getString(db.getModel()
-	    .select(House.class, "uuid", "is_condo")
-	    .where(House.c.FIASHOUSEGUID, fiashouseguid)
-	    .and(House.c.IS_CONDO, is_condo)
-	    .and(House.c.HASBLOCKS, hasblocks)
-	);
-
-	if (uuid_house != null) {
-
-	    return DB.to.UUIDFromHex(uuid_house);
-	}
-
-	Map<String, Object> house = DB.HASH(
-	    "fiashouseguid", fiashouseguid,
-	    "is_condo", is_condo,
-	    "address", ""
-	);
-
-	return DB.to.UUIDFromHex(db.upsertId(House.class, house, "fiashouseguid"));
-    }
-
-    public static UUID getUuidPremise (DB db, UUID uuid_house, String apartmentnumber) throws SQLException {
-
-	if (!DB.ok (apartmentnumber) || !DB.ok(uuid_house)) {
-	    return null;
-	}
-
-	String uuid_premise = db.getString (db.getModel().select(ResidentialPremise.class, "uuid")
-	    .where("uuid_house", uuid_house)
-	    .and ("premisesnum", apartmentnumber)
-	);
-	
-	if (uuid_premise == null) {
-
-	    uuid_premise = db.getString (db.getModel().select(NonResidentialPremise.class, "uuid")
-		.where("uuid_house", uuid_house)
-		.and ("premisesnum", apartmentnumber)
-	    );
-	}
-
-	Map <String, Object> p = DB.HASH(
-	    "uuid_house", uuid_house,
-	    "premisesnum", apartmentnumber
-	);
-
-	uuid_premise = db.upsertId (ResidentialPremise.class, p
-	    , "uuid_house"
-	    , "premisesnum"
-	);
-
-	return DB.to.UUIDFromHex(uuid_premise);
-    }
-
-    public static UUID getUuidRoom (DB db, UUID uuid_house, UUID uuid_premise, String roomnumber) throws SQLException {
-
-	String uuid_room = db.upsertId (LivingRoom.class, DB.HASH(
-		"uuid_house", uuid_house,
-		"uuid_premise", uuid_premise,
-		"roomnumber", roomnumber
-	    )
-	    , "uuid_house"
-	    , "uuid_premise"
-	    , "roomnumber"
-	);
-
-	return DB.to.UUIDFromHex(uuid_room);
     }
 
     public SupplyResourceContractObject () {
