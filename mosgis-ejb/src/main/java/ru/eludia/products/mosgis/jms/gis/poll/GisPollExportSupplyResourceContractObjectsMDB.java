@@ -269,7 +269,7 @@ logger.info(DB.to.json(h).toString());
 	), "objectguid");
     }
 
-    public static UUID getUuidPremiseOrRoom (DB db, Object fiashouseguid, String housetype, String apartmentnumber, String roomnumber) throws SQLException {
+    private UUID getUuidPremiseOrRoom (DB db, Object fiashouseguid, String housetype, String apartmentnumber, String roomnumber) throws SQLException, UnknownSomethingException {
 
 	final UUID uuid_house = getUuidHouse(db, fiashouseguid, housetype);
 
@@ -286,7 +286,7 @@ logger.info(DB.to.json(h).toString());
 	return uuid_premise;
     }
 
-    public static UUID getUuidHouse (DB db, Object fiashouseguid, String housetype) throws SQLException {
+    private UUID getUuidHouse (DB db, Object fiashouseguid, String housetype) throws SQLException, UnknownSomethingException {
 
 	if (housetype == null) {
 	    return null;
@@ -335,7 +335,7 @@ logger.info(DB.to.json(h).toString());
 	return DB.to.UUIDFromHex(db.upsertId(House.class, house, "fiashouseguid"));
     }
 
-    public static UUID getUuidPremise (DB db, UUID uuid_house, String apartmentnumber) throws SQLException {
+    private UUID getUuidPremise (DB db, UUID uuid_house, String apartmentnumber) throws SQLException {
 
 	if (!DB.ok (apartmentnumber) || !DB.ok(uuid_house)) {
 	    return null;
@@ -367,7 +367,7 @@ logger.info(DB.to.json(h).toString());
 	return DB.to.UUIDFromHex(uuid_premise);
     }
 
-    public static UUID getUuidRoom (DB db, UUID uuid_house, UUID uuid_premise, String roomnumber) throws SQLException {
+    private UUID getUuidRoom (DB db, UUID uuid_house, UUID uuid_premise, String roomnumber) throws SQLException {
 
 	String uuid_room = db.upsertId (LivingRoom.class, DB.HASH(
 		"uuid_house", uuid_house,
