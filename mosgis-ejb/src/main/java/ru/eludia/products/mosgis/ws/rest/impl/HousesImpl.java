@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -64,6 +65,7 @@ import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractObject;
 import ru.eludia.products.mosgis.db.model.tables.PublicPropertyContract;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
+import ru.eludia.products.mosgis.db.model.voc.VocUnom;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.rest.ValidationException;
 import ru.eludia.products.mosgis.ws.rest.impl.tools.Search;
@@ -110,8 +112,14 @@ public class HousesImpl extends BaseCRUD<House> implements HousesLocal {
         final String searchString = search.getSearchString ();
         
         if (searchString == null || searchString.isEmpty ()) return;
-
-        select.and ("address_uc LIKE %?%", searchString.toUpperCase ());
+        
+        try {                
+            UUID guid = UUID.fromString (searchString);
+            select.and ("fiashouseguid", guid);
+        }
+        catch (Exception ex) {
+            select.and ("address_uc LIKE %?%", searchString.toUpperCase ());
+        }
         
     }
     
