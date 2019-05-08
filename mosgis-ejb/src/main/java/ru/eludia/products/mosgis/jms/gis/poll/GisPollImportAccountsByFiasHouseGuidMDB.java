@@ -15,6 +15,7 @@ import javax.ejb.MessageDriven;
 import javax.jms.Queue;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.datatype.XMLGregorianCalendar;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
@@ -30,9 +31,9 @@ import ru.eludia.products.mosgis.db.model.tables.HouseLog;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
-import ru.eludia.products.mosgis.db.model.tables.RcContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.voc.VocAccountType;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
@@ -44,6 +45,7 @@ import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.house_management.AccountExportType;
 import ru.gosuslugi.dom.schema.integration.house_management.AccountIndExportType;
 import ru.gosuslugi.dom.schema.integration.house_management.AccountReasonsImportType;
+import ru.gosuslugi.dom.schema.integration.house_management.ClosedAccountAttributesType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportAccountResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.organizations_registry_base.RegOrgVersionType;
@@ -283,17 +285,35 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
         return false;
         
     }
+    
+    private static VocGisStatus.i getStatus (ExportAccountResultType acc) {
+        
+        final ClosedAccountAttributesType closed = acc.getClosed ();        
+        if (closed == null) return VocGisStatus.i.APPROVED;
+        XMLGregorianCalendar closeDate = closed.getCloseDate ();
+        if (closeDate == null) return VocGisStatus.i.APPROVED;
+        
+        XMLGregorianCalendar creationDate = acc.getCreationDate ();        
+        if (closeDate.equals (creationDate)) return VocGisStatus.i.ANNUL;
+        
+        return VocGisStatus.i.TERMINATED;
+
+    }
 
     private void storeAccount (Map<String, Object> h, Map<String, Object> r, ExportAccountResultType acc, DB db) throws SQLException, UnknownSomethingException {
 
         final UUID fiasHouseGuid = (UUID) r.get ("fiashouseguid");
+        
+        VocGisStatus.i status = getStatus (acc);
 
         h.putAll (HASH (
             Account.c.FIASHOUSEGUID,        fiasHouseGuid,
             Account.c.ACCOUNTNUMBER,        acc.getAccountNumber (),
             Account.c.SERVICEID,            acc.getServiceID (),
             Account.c.UNIFIEDACCOUNTNUMBER, acc.getUnifiedAccountNumber (),
-            Account.c.ACCOUNTGUID,          acc.getAccountGUID ()
+            Account.c.ACCOUNTGUID,          acc.getAccountGUID (),
+            Account.c.ID_CTR_STATUS,        status,
+            Account.c.ID_CTR_STATUS_GIS,    status
         ));
         
         AccountExportType.PayerInfo payerInfo = acc.getPayerInfo ();
