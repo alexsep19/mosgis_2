@@ -47,8 +47,8 @@ define ([], function () {
                 {field: 'ddt_i_start', caption: 'Внес. платы (дата)', size: 5, render: _ddt, hidden: true},
                 {field: 'ddt_i_start_nxt', caption: 'Внес. платы (мес.)', size: 5, voc: nxt, hidden: true},
                 
-                {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: 'data-ref=1'},
-                {field: 'soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: 'data-ref=1'},
+                {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: $_USER.role.admin ? 'data-ref=1' : null},
+                {field: 'soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: $_USER.role.admin ? 'data-ref=1' : null},
                 {field: 'soap.err_text', caption: 'Ошибка',    size: 30},
 
             ],
@@ -60,7 +60,7 @@ define ([], function () {
                 var c = this.columns [e.column]
                 var r = this.get (e.recid)
                 
-                switch (c.field) {
+                if ($_USER.role.admin) switch (c.field) {
                     case 'soap.ts':    if (r.uuid_out_soap) return openTab ('/out_soap_rq/' + r.uuid_out_soap)
                     case 'soap.ts_rp': if (r.uuid_message) return openTab ('/out_soap_rp/' + r.uuid_message)
                 }

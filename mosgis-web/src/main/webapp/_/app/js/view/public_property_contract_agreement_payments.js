@@ -116,8 +116,8 @@ define ([], function () {
                 {field: 'reasonofannulment', caption: 'Причина аннулирования', size: 30, hidden: true},
                 {field: 'id_ap_status', caption: 'Статус', size: 100, voc: data.vc_gis_status},
 
-                {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: 'data-ref=1'},
-                {field: 'soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: 'data-ref=1'},
+                {field: 'soap.ts', caption: 'Отправлено',    size: 30, render: _ts, attr: $_USER.role.admin ? 'data-ref=1' : null},
+                {field: 'soap.ts_rp', caption: 'Обработано',    size: 30, render: _ts, attr: $_USER.role.admin ? 'data-ref=1' : null},
                 {field: 'soap.err_text', caption: 'Ошибка',    size: 30},
                 
             ],
@@ -142,7 +142,7 @@ define ([], function () {
                 var c = this.columns [e.column]
                 var r = this.get (e.recid)
                 
-                switch (c.field) {
+                if ($_USER.role.admin) switch (c.field) {
                     case 'soap.ts':    if (r ['soap.ts']) return openTab ('/out_soap_rq/' + r.id_log)
                     case 'soap.ts_rp': if (r ['soap.ts_rp']) return openTab ('/out_soap_rp/' + r ['soap.uuid_ack'])
                 }

@@ -110,8 +110,18 @@
   
   
   
-  
-  
+
+
+
+  <!-- очередь обработки запросов на импорт лицевых счетов по организации -->
+  <uniform-distributed-queue name="inExportOrgAccountsQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.inExportOrgAccountsQueue</jndi-name>
+  </uniform-distributed-queue>
+
+
+
+
   
   
   

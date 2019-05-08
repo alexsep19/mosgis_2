@@ -198,5 +198,11 @@
 	<type>JMS</type>
 	<path>META-INF/mosgismodule-bank-accounts-jms.xml</path>
     </module>
+    
+    <module>
+	<name>Workflow-houses</name>
+	<type>JMS</type>
+	<path>META-INF/mosgismodule-houses-jms.xml</path>
+    </module>
 
 </weblogic-application>

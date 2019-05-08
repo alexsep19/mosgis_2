@@ -24,8 +24,9 @@ public class WorkingList extends EnTable {
         DT_FROM              (Type.DATE,                  "Период \"с\"  (первое число первого месяца периода)"),
         DT_TO                (Type.DATE,                  "Период \"по\" (последнее число последнего месяца периода)"),
         COUNT                (Type.NUMERIC,  4, 0, null,  "Количество"),
-        TOTALCOST            (Type.NUMERIC, 22, 2, null,  "Общая стоимость"),        
-        WORKLISTGUID         (Type.UUID, null,            "Идентификатор перечня")        
+        TOTALCOST            (Type.NUMERIC, 22, 2, null,  "Общая стоимость"),
+        WORKLISTGUID         (Type.UUID, null,            "Идентификатор перечня"),
+	REASONOFANNULMENT    (Type.STRING, 2000,   null,  "Причина аннулирования"),
         ;
 
         @Override

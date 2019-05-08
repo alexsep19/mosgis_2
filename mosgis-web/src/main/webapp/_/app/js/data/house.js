@@ -81,7 +81,7 @@ define ([], function () {
 
                 if ($_USER.role.admin) return true
 
-                if ($_USER.role.nsi_20_7) return data.controlled && data.has_srca && data.item.id_status == 20
+                if ($_USER.role.nsi_20_7) return true //data.controlled && data.has_srca && data.item.id_status == 20
 
                 if ($_USER.has_nsi_20 (1, 19, 20, 21, 22)) return data.controlled && $_USER.uuid_org == data.cach['org.uuid']
 

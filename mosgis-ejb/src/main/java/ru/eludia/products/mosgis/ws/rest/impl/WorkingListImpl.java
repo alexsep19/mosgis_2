@@ -7,7 +7,6 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.jms.Queue;
-import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
@@ -63,6 +62,7 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
         switch (action) {
             case APPROVE:
             case CANCEL:
+            case ANNUL:
                 super.publishMessage (action, id_log);
             default:
                 return;
@@ -247,5 +247,19 @@ public class WorkingListImpl extends BaseCRUD<WorkingList> implements WorkingLis
         logAction (db, user, id, VocAction.i.ALTER);
         
     });}    
+
+    @Override
+    public JsonObject doAnnul (String id, JsonObject p, User user) {return doAction ((db) -> {
+
+        final Map<String, Object> r = getData(p,
+            EnTable.c.UUID,               id,
+            WorkingList.c.ID_CTR_STATUS,  VocGisStatus.i.PENDING_RQ_ANNULMENT.getId ()
+        );
+
+        db.update (getTable (), r);
+
+        logAction (db, user, id, VocAction.i.ANNUL);
+
+    });}
 
 }

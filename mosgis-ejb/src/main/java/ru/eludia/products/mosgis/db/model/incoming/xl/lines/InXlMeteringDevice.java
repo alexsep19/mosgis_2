@@ -2,6 +2,7 @@ package ru.eludia.products.mosgis.db.model.incoming.xl.lines;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
@@ -14,7 +15,9 @@ import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
+import ru.eludia.products.mosgis.db.model.tables.Account;
 import ru.eludia.products.mosgis.db.model.tables.MeteringDevice;
+import ru.eludia.products.mosgis.db.model.tables.MeteringDeviceValue;
 import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.Premise;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
@@ -31,6 +34,7 @@ public class InXlMeteringDevice extends EnTable {
 
     public static final String TABLE_NAME = "in_xl_meters";
     static Pattern MASK_ROOMNUM = Pattern.compile("(\\d+,)*\\d");
+    static Pattern MASK_ACCOUNTNUM = Pattern.compile("[^,]+");
 
     public enum c implements ColEnum {
 
@@ -39,7 +43,7 @@ public class InXlMeteringDevice extends EnTable {
         ERR                     (Type.STRING,  null,        "Ошибка"),
         UNOM                    (Type.INTEGER,                                   "Идентификатор дома в московских системах"),
         VERIF_INT               (Type.INTEGER, null,                             "Межповерочный интервал"),
-        
+        //заполняется в триггере
         UUID_ORG                (VocOrganization.class,     "Организация-источник данных"),
         
         ID_TYPE                (VocMeteringDeviceType.class,                    "Тип прибора учёта"),
@@ -55,7 +59,7 @@ public class InXlMeteringDevice extends EnTable {
         PREMISESNUM            (Type.STRING, 255,    null,                      "Номер помещения"),
         PREMISESTYPE           (Type.STRING,  30,    null,                      "Жилое/Нежилое (для проверок tb_premises_res/tb_premises_nrs)" ),
         ROOMNUMBER             (Type.STRING, 255,    null,                      "Номер комнаты" ),
-        ACCOUNTNUMBER          (Type.STRING,  30,    null,                      "№ лицевого счета"),
+        ACCOUNTNUMBER          (Type.STRING,  50,    null,                      "№ лицевого счета"),
         
         INSTALLATIONDATE       (Type.DATE,           null,                      "Дата установки"),
         COMMISSIONINGDATE      (Type.DATE,           null,                      "Дата ввода в эксплуатацию"),
@@ -69,11 +73,11 @@ public class InXlMeteringDevice extends EnTable {
         CODE_VC_NSI_16         (Nsi16.class,         null,                      "Межповерочный интервал (НСИ 16)"),
 
         MASK_VC_NSI_2          (Type.NUMERIC, 3, 0,  BigInteger.ZERO,           "Битовая маска типов коммунальных ресурсов"),
-
         FACTORYSEALDATE        (Type.DATE,           null,                      "Дата опломбирования ПУ заводом-изготовителем"),
 
         TEMPERATURESENSOR      (Type.BOOLEAN,  Boolean.FALSE,                   "Наличие датчиков температры"),
         PRESSURESENSOR         (Type.BOOLEAN,  Boolean.FALSE,                   "Наличие датчиков давления"),
+//0 -'текущие показания'(базовые показания вводятся), 1 -'потреблённый объём'(базовые показания не вводятся)
         CONSUMEDVOLUME         (Type.BOOLEAN,  Boolean.FALSE,                   "ПУ предоставляет объем потребленного КР"),
 
         NOTLINKEDWITHMETERING  (Type.BOOLEAN,  Boolean.TRUE,                    "Объем ресурса(ов) определяется с помощью только этого прибора учёта"),
@@ -86,7 +90,6 @@ public class InXlMeteringDevice extends EnTable {
         
         ID_CTR_STATUS          (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения mosgis"),
         ID_CTR_STATUS_GIS      (VocGisStatus.class,    VocGisStatus.DEFAULT,    "Статус с точки зрения ГИС ЖКХ"),
-                       
         ;
 
         @Override
@@ -95,22 +98,26 @@ public class InXlMeteringDevice extends EnTable {
         private c (Type type, Object... p) {col = new Col (this, type, p);}
         private c (Class c,   Object... p) {col = new Ref (this, c, p);}
 
-        boolean isToCopy () {
+        boolean isToCopyMeteringDevice () {
 
             switch (this) {
                 case ORD:
                 case ERR:
-                case UNOM:
-                case VERIF_INT:
-                case PREMISESNUM:
-                case PREMISESTYPE:
-                case ROOMNUMBER:
-                case ACCOUNTNUMBER:
                     return false;                    
                 default:                    
-                    return true;
+                    return MeteringDevice.c.isExists(this.name());
             }
+        }
 
+        boolean isToCopyMeteringDeviceValue () {
+
+            switch (this) {
+                case ORD:
+                case ERR:
+                    return false;                    
+                default:                    
+                    return MeteringDeviceValue.c.isExists(this.name());
+            }
         }
 
     }
@@ -148,6 +155,7 @@ public class InXlMeteringDevice extends EnTable {
         r.put (c.ID_TYPE.lc (), vocMeteringDeviceType);      
         r.put (c.METERINGDEVICESTAMP.lc (),   toString (row, 3, "Не указана марка"));
         r.put (c.METERINGDEVICEMODEL.lc (),   toString (row, 4, "Не указана модель"));
+        //G
         r.put (c.UNOM.lc (),                  toNumeric (row, 6, "Не указан UNOM"));
         
         r.put (c.PREMISESTYPE.lc(),           
@@ -158,15 +166,17 @@ public class InXlMeteringDevice extends EnTable {
         r.put (c.ROOMNUMBER.lc(),             
                VocMeteringDeviceType.i.LIVING_ROOM.equals(vocMeteringDeviceType)? 
                        toString (row, 9, MASK_ROOMNUM, "Не указан или ошибочен номер комнаты"): toNull (row, 9, "Указан номер комнаты") );
+        //K
         r.put (c.ACCOUNTNUMBER.lc(),          
                VocMeteringDeviceType.i.COLLECTIVE.equals(vocMeteringDeviceType)? 
-                       toNull (row, 10, "Указан лицевой счет"): toString (row, 10, "Не указан лицевой счет"));
+                       toNull (row, 10, "Указан лицевой счет"): toString (row, 10, MASK_ACCOUNTNUM, "Не указан или ошибочный лицевой счет"));
         
         r.put (c.REMOTEMETERINGMODE.lc (),    toBool (row, 11, "Не указано наличие возможности дистанционного снятия показаний"));
         r.put (c.REMOTEMETERINGINFO.lc (),    toString (row, 12));
         r.put (c.NOTLINKEDWITHMETERING.lc (), 1 - toBool (row, 13, "Не указано, определяется ли объём ресурсов несколькими ПУ"));
         r.put (c.INSTALLATIONPLACE.lc (),     toString (row, 14));
     
+        //Q
         BigDecimal refNum;
         if ((refNum = toNumeric (row, 0)) != null){
             if (refNums.contains(refNum.intValue())){
@@ -182,15 +192,32 @@ public class InXlMeteringDevice extends EnTable {
         catch (Exception ex) {
             throw new XLException ("Некорректно заданы виды коммунальных ресурсов");
         }
-        
+        //R 17
+        //S 18
+        //AG
+        r.put (c.CONSUMEDVOLUME.lc (), toBoolNotNull (row, 32) );
+        //X
+        Date installDate = (Date) toDate (row, 23);
+        r.put (c.INSTALLATIONDATE.lc (), installDate);
+        //Y
+        Date commDate =  VocMeteringDeviceType.i.COLLECTIVE.equals(vocMeteringDeviceType)? 
+                         (Date)toDate (row, 24): (Date)toDate (row, 24, "Не указана дата ввода в эксплуатацию");
+        if (installDate != null && installDate.after(commDate)) throw new XLException ("Дата установки больше даты ввода в эксплуатацию");
+        r.put (c.COMMISSIONINGDATE.lc (), commDate);
+        //Z
         r.put (c.FIRSTVERIFICATIONDATE.lc (),         toDate (row, 25));
+        //AA
         r.put (c.FACTORYSEALDATE.lc (),               toDate (row, 26));
+        //AB
         r.put (c.VERIF_INT.lc (),                     toNumeric (row, 27));
+        //AC
         r.put (c.TEMPERATURESENSOR.lc (),             toBool (row, 28));
+        //AD
         r.put (c.TEMPERATURESENSINGELEMENTINFO.lc (), toString (row, 29));
+        //AE
         r.put (c.PRESSURESENSOR.lc (),                toBool (row, 30));
+        //AF
         r.put (c.PRESSURESENSINGELEMENTINFO.lc (),    toString (row, 31));
-        
     }
 
     public InXlMeteringDevice () {
@@ -247,16 +274,20 @@ public class InXlMeteringDevice extends EnTable {
             + "  END IF; "
             + "     EXCEPTION WHEN OTHERS THEN raise_application_error (-20000, 'Помещение '||:NEW.PREMISESNUM|| ' не найдено'); "  
             + " END;END IF; "
-                    
-            + " IF :NEW.ACCOUNTNUMBER IS NOT NULL THEN "
+                //лицевые счета могут быть через запятую UUID_ACCOUNT
+            + " IF :NEW.ACCOUNTNUMBER IS NOT NULL THEN BEGIN "
+            + "   FOR ACCOUNTNUM IN (SELECT REGEXP_SUBSTR (:NEW.ACCOUNTNUMBER, '[^,]+', 1, LEVEL) TXT FROM DUAL "
+            + "       CONNECT BY REGEXP_SUBSTR (:NEW.ACCOUNTNUMBER, '[^,]+', 1, LEVEL) IS NOT NULL) LOOP "
             + "   SELECT count(*) INTO cnt FROM tb_accounts a "
             + "   join tb_account_items i on i.UUID_ACCOUNT = a.UUID "
-            + "   where a.ACCOUNTNUMBER = :NEW.ACCOUNTNUMBER AND a.id_ctr_status_gis = 40 AND "
+            + "   where TRIM(ACCOUNTNUM.TXT) in (a.serviceid, a.UNIFIEDACCOUNTNUMBER, a.ACCOUNTNUMBER) AND a.id_ctr_status_gis = 40 AND "
             + "      (exists (select 1 from tb_premises_nrs n where i.uuid_premise = n.uuid and n.premisesnum = :NEW.PREMISESNUM) "
             + "      or exists (select 1 from tb_premises_res r where i.uuid_premise = r.uuid and r.premisesnum = :NEW.PREMISESNUM)); "
-            + "  IF cnt = 0 THEN raise_application_error (-20000, 'Лицевой счет '|| :NEW.ACCOUNTNUMBER ||' не найден для помещения '||:NEW.PREMISESNUM);END IF; "
-            + "  IF cnt > 1 THEN raise_application_error (-20000, 'Лицевой счет '|| :NEW.ACCOUNTNUMBER ||' найден для '||cnt||'-х помещений');END IF; "
-            + " END IF; "                               
+            + "  IF cnt = 0 THEN raise_application_error (-20000, 'Лицевой счет '|| ACCOUNTNUM.TXT ||' не найден для помещения '||:NEW.PREMISESNUM);END IF; "
+            + "  IF cnt > 1 THEN raise_application_error (-20000, 'Лицевой счет '|| ACCOUNTNUM.TXT ||' найден для '||cnt||'-х помещений');END IF; "
+            + " END LOOP; "
+            + " END; "   
+            + " END IF; "         
                 
             + " EXCEPTION WHEN OTHERS THEN "
             + " :NEW.err := REPLACE(SUBSTR(SQLERRM, 1, 1000), 'ORA-20000: ', ''); "
@@ -265,14 +296,14 @@ public class InXlMeteringDevice extends EnTable {
 
         );
         
-        StringBuilder sb = new StringBuilder ();
-        StringBuilder nsb = new StringBuilder ();
+        StringBuilder fieldsMeteringDevice = new StringBuilder ();
+        StringBuilder valuesMeteringDevice = new StringBuilder ();
         
-        for (c c: c.values ()) if (c.isToCopy ()) {
-            sb.append (',');
-            sb.append (c.lc ());
-            nsb.append (",:NEW.");
-            nsb.append (c.lc ());
+        for (c c: c.values ()) if (c.isToCopyMeteringDevice ()) {
+            fieldsMeteringDevice.append (',');
+            fieldsMeteringDevice.append (c.lc ());
+            valuesMeteringDevice.append (",:NEW.");
+            valuesMeteringDevice.append (c.lc ());
         }        
 
         trigger ("BEFORE UPDATE", ""
@@ -292,7 +323,7 @@ public class InXlMeteringDevice extends EnTable {
 
             + " IF NOT (:OLD.is_deleted = 1 AND :NEW.is_deleted = 0) THEN RETURN; END IF; "
 
-            + " INSERT INTO " + MeteringDevice.TABLE_NAME + " (uuid,is_deleted" + sb + ") VALUES (:NEW.uuid,1" + nsb + "); "
+            + " INSERT INTO " + MeteringDevice.TABLE_NAME + " (uuid,is_deleted" + fieldsMeteringDevice + ") VALUES (:NEW.uuid,1" + valuesMeteringDevice + "); "
             + " COMMIT; "
 
             + "END; "

@@ -5,6 +5,9 @@ import java.io.StringWriter;
 import javax.xml.ws.WebFault;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 
+import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
+import ru.gosuslugi.dom.schema.integration.base.CommonResultType.Error;
+
 /**
  *
  * @author Aleksei
@@ -15,12 +18,18 @@ public class Fault extends Exception {
 	private static final long serialVersionUID = -1818905802359262315L;
 	
 	private ru.gosuslugi.dom.schema.integration.base.Fault faultInfo;
-    private String faultCode;
-    private String faultMessage;
+    private String faultCode = Errors.EXP001000.name();
+    private String faultMessage = Errors.EXP001000.getMessage();
     
+    public Fault(Throwable cause) {
+        super(cause);
+        if (cause.getMessage() != null)
+        	this.faultMessage = cause.getMessage();
+    }
     
     public Fault(String message) {      
         super(message);
+        this.faultMessage = message;
     }
     
     public Fault(String message, Throwable cause) {
@@ -100,6 +109,10 @@ public class Fault extends Exception {
     public ErrorMessageType toErrorMessageType() {
 	return toError(ErrorMessageType.class);
     }
+
+	public Error toCommonResultError() {
+		return toError(Error.class);
+	}
 
     public <T extends ErrorMessageType> T toError(Class<T> clazz) {
 	T errorMessage;

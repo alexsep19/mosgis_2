@@ -28,14 +28,11 @@ import ru.eludia.products.mosgis.jms.xl.base.XLException;
 })
 public class ParseMeteringValuesMDB extends XLMDB {
        
-    private static final int N_COL_UUID = 7;
-    private static final int N_COL_ERR  = 8;
-    public static final Date NULL_DATE = new Date(0);
+    private static final int N_COL_ERR  = 7;
 
-    protected void addValues (XSSFSheet sheet, UUID parent, DB db/*, Map<Integer, Integer> resourceMap*/) throws SQLException {
+    protected void addValues (XSSFSheet sheet, UUID parent, DB db) throws SQLException {
 
-        Date dateValue = NULL_DATE;
-        Date datePeriod = NULL_DATE;
+        Map<String,Date> hashDevices = new HashMap<String,Date>();
         
         for (int i = 1; i <= sheet.getLastRowNum (); i ++) {
             
@@ -43,10 +40,38 @@ public class ParseMeteringValuesMDB extends XLMDB {
 
             if (row.getCell (1) == null) continue;
             
-            UUID uuid = (UUID) db.insertId (InXlMeteringValues.class, InXlMeteringValues.toHash (parent, i, row, dateValue, datePeriod));            
+            Map<String, Object> xlMeteringHash = InXlMeteringValues.toHash (parent, i, row, null);
+            checkEqualsDateForSamePU( xlMeteringHash, hashDevices);
+            UUID uuid = (UUID) db.insertId (InXlMeteringValues.class, xlMeteringHash);            
+            try{
+                updateDeviceValues(uuid, db);
+            }catch(SQLException e){
+                setCellStringValue (row, N_COL_ERR, e.getMessage());
+            }    
+        }
+        
+    }   
 
-            try {
-                
+    //Если в ПУ несколько ресурсов, то для всех ресурсов дата должна совпадать
+    private static void checkEqualsDateForSamePU(Map<String, Object> xlMeteringHash, Map<String,Date> hashDevices) throws SQLException{
+        String deviceUuid = (String) xlMeteringHash.get(InXlMeteringValues.c.DEVICE_NUMBER_UUID.lc());
+        Date dateValue = (Date) xlMeteringHash.get(InXlMeteringValues.c.DATEVALUE.lc ());
+        Date hashDate;
+        if ((hashDate = hashDevices.get(deviceUuid)) == null){
+            hashDevices.put(deviceUuid, dateValue);
+        }else if (hashDate.compareTo(dateValue) != 0){
+            String err = "Для ПУ " + deviceUuid + " дата " + dateValue + " отлична от предыдущих";
+            if (xlMeteringHash.get(InXlMeteringValues.c.ERR.lc ()) == null){
+                xlMeteringHash.put (InXlMeteringValues.c.ERR.lc (), err);
+            }else{
+                xlMeteringHash.put (InXlMeteringValues.c.ERR.lc (), xlMeteringHash.get(InXlMeteringValues.c.ERR.lc ()) + "; " + err);
+            }    
+        }
+    }
+    
+    public static void updateDeviceValues(UUID uuid, DB db) throws SQLException{
+        
+        try{
                 db.update (InXlMeteringValues.class, DB.HASH (
                     EnTable.c.UUID, uuid,
                     EnTable.c.IS_DELETED, 0
@@ -57,8 +82,6 @@ public class ParseMeteringValuesMDB extends XLMDB {
                     EnTable.c.IS_DELETED, 0
                 ));
                 
-                setCellStringValue (row, N_COL_UUID, uuid.toString ());
-
             }
             catch (SQLException e) {
 
@@ -68,23 +91,13 @@ public class ParseMeteringValuesMDB extends XLMDB {
                     EnTable.c.UUID,           uuid,
                     InXlMeteringValues.c.ERR, s
                 ));
-                
-                setCellStringValue (row, N_COL_UUID, "");
-                setCellStringValue (row, N_COL_ERR, s);
-                
+                throw new SQLException(s);
             }
-            
-        }
-        
-    }   
-
+    }
+    
     private boolean checkMeterLines (XSSFSheet sheet, DB db, UUID parent) throws SQLException {
         
-        List<Map<String, Object>> brokenLines = db.getList (db.getModel ()
-            .select (InXlMeteringValues.class, "*")
-            .where (InXlMeteringValues.c.UUID_XL, parent)
-            .where (EnTable.c.IS_DELETED, 1)
-        );
+        List<Map<String, Object>> brokenLines = getValuesBrokenLines(db, parent);
         
         if (brokenLines.isEmpty ()) return true;
         
@@ -99,6 +112,14 @@ public class ParseMeteringValuesMDB extends XLMDB {
         
     }
 
+    static public List<Map<String, Object>> getValuesBrokenLines(DB db, UUID parent) throws SQLException{
+        return db.getList (db.getModel ()
+            .select (InXlMeteringValues.class, "*")
+            .where (InXlMeteringValues.c.UUID_XL, parent)
+            .where (EnTable.c.IS_DELETED, 1)
+        );
+     }
+    
 //    @Override
 //    protected void completeOK (DB db, UUID parent, XSSFWorkbook wb) throws SQLException {
 //        

@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.rest.resources;
 
+import javax.annotation.security.RolesAllowed;
 import ru.eludia.products.mosgis.rest.misc.EJBResource;
 import javax.json.JsonObject;
 import javax.ws.rs.Consumes;
@@ -11,6 +12,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import ru.eludia.products.mosgis.rest.api.OutSoapExportNsiItemLocal;
 
 @Path ("out_soap_export_nsi_item")
+@RolesAllowed ("admin")
 public class OutSoapExportNsiItem extends EJBResource <OutSoapExportNsiItemLocal> {
 
     @POST

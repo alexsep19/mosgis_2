@@ -94,11 +94,23 @@ public class WorkingListLog extends GisWsLogTable {
         result.setCancelWorkingList (toCancelWorkingList (r));
         return result;
     }    
-
+    
     private static ImportWorkingListRequest.CancelWorkingList toCancelWorkingList (Map<String, Object> r) {
         final ImportWorkingListRequest.CancelWorkingList result = DB.to.javaBean (ImportWorkingListRequest.CancelWorkingList.class, r);
         result.setTransportGUID (UUID.randomUUID ().toString ());
         return result;
     }
-                
+
+    public static ImportWorkingListRequest toAnnulImportWorkingListRequest (Map<String, Object> r) {
+        final ImportWorkingListRequest result = DB.to.javaBean (ImportWorkingListRequest.class, r);
+        result.setAnnulledWorkingList (toAnnulledWorkingList (r));
+        return result;
+    }    
+
+    private static ImportWorkingListRequest.AnnulledWorkingList toAnnulledWorkingList (Map<String, Object> r) {
+        final ImportWorkingListRequest.AnnulledWorkingList result = DB.to.javaBean (ImportWorkingListRequest.AnnulledWorkingList.class, r);
+        result.setTransportGUID (UUID.randomUUID ().toString ());
+        return result;
+    }
+
 }

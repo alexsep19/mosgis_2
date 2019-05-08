@@ -94,7 +94,8 @@ public class Conf implements ConfMBean, ConfLocal {
         }
     }
     
-    private void set (VocSetting.i key, String value) {
+    @Override
+    public void set (VocSetting.i key, String value) {
         set (key.getId (), value);
     }
     
@@ -102,8 +103,7 @@ public class Conf implements ConfMBean, ConfLocal {
         set (key.getId (), String.valueOf (value));
     }
     
-    @Override
-    public void set (String key, String value) {
+    private void set (String key, String value) {
 
         try (DB db = ModelHolder.getModel ().getDb ()) {
 
@@ -884,4 +884,10 @@ public class Conf implements ConfMBean, ConfLocal {
     public void setWsGisMSPRespTimeout(int i) {
         setInt (VocSetting.i.WS_GIS_MSP_TMT_RESP, i);
     }
+
+    @Override
+    public int getIsImportingHouses () {
+        return getInt (VocSetting.i.IS_IMPORTING_HOUSES);
+    }
+    
 }

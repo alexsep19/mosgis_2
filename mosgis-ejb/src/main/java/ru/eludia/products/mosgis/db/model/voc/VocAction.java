@@ -55,7 +55,9 @@ public class VocAction extends Table {
         EXPIRE          ("expire",          "проверка на просроченность"),
         
         IMPORT_FROM_FILE      ("import_from_file", "импорт из файла"),
+        IMPORT_FROM_GIS_WS    ("import_from_gis_ws", "прием из ГИС ЖКХ"),
         
+        IMPORT_ACCOUNTS            ("import_accounts", "импорт ЛС"),
         IMPORT_MGMT_CONTRACTS      ("import_mgmt_contracts", "импорт ДУ"),
 	IMPORT_SR_CONTRACTS        ("import_sr_contracts", "импорт ДРСО"),
 	IMPORT_SR_CONTRACT_OBJECTS ("import_sr_contract_objects", "импорт ОЖФ ДРСО"),

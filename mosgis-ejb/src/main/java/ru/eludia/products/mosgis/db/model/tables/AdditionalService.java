@@ -14,6 +14,7 @@ import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncEntityState.i.PENDING;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.gosuslugi.dom.schema.integration.nsi_base.NsiElementFieldType;
@@ -77,7 +78,11 @@ public class AdditionalService extends EnTable {
         key   ("label_uc", "label_uc");
         key   ("org_label", "uuid_org", "label");
 
-        trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
+        trigger ("BEFORE INSERT OR UPDATE", ""
+
+            + "DECLARE "
+            + " cnt INTEGER := 0;"
+            + "BEGIN "
 
             + "IF UPDATING "
             + "  AND :OLD.id_log IS NOT NULL "             // что-то уже отправляли
@@ -86,6 +91,57 @@ public class AdditionalService extends EnTable {
             + " THEN"
             + "  raise_application_error (-20000, 'В настоящий момент данная запись передаётся в ГИС ЖКХ. Операция отменена.'); "
             + "END IF; "
+
+            + "IF :OLD.is_deleted=0 AND :NEW.is_deleted=1 THEN BEGIN "
+            + " SELECT"
+            + "  COUNT(tb_account_svc.uuid) INTO cnt"
+            + " FROM"
+            + "  tb_account_svc"
+            + " LEFT JOIN tb_accounts ON tb_account_svc.uuid_account = tb_accounts.uuid"
+            + " WHERE"
+            + "  tb_account_svc.is_deleted=0"
+            + "  AND tb_accounts.is_deleted=0"
+            + "  AND tb_accounts.id_ctr_status <> " + VocGisStatus.i.ANNUL
+            + "  AND tb_account_svc.uuid_add_service=:NEW.uuid; "
+            + " IF cnt>0 THEN raise_application_error (-20000, 'Удаление запрещено. Запись используется в лицевом счёте.'); END IF; "
+
+            + " SELECT"
+            + "  COUNT(tb_charter_services.uuid) INTO cnt"
+            + " FROM"
+            + "  tb_charter_services"
+            + " LEFT JOIN tb_charters ON tb_charter_services.uuid_charter = tb_charters.uuid"
+            + " WHERE"
+            + "  tb_charter_services.is_deleted=0"
+            + "  AND tb_charters.is_deleted=0"
+            + "  AND tb_charters.id_ctr_status <> " + VocGisStatus.i.ANNUL
+            + "  AND tb_charter_services.uuid_add_service=:NEW.uuid; "
+            + " IF cnt>0 THEN raise_application_error (-20000, 'Удаление запрещено. Запись используется в уставе.'); END IF; "
+
+            + " SELECT"
+            + "  COUNT(tb_contract_services.uuid) INTO cnt"
+            + " FROM"
+            + "  tb_contract_services"
+            + " LEFT JOIN tb_contracts ON tb_contract_services.uuid_contract = tb_contracts.uuid"
+            + " WHERE"
+            + "  tb_contract_services.is_deleted=0"
+            + "  AND tb_contracts.is_deleted=0"
+            + "  AND tb_contracts.id_ctr_status <> " + VocGisStatus.i.ANNUL
+            + "  AND tb_contract_services.uuid_add_service=:NEW.uuid; "
+            + " IF cnt>0 THEN raise_application_error (-20000, 'Удаление запрещено. Запись используется в договоре управления.'); END IF; "
+
+            + " SELECT"
+            + "  COUNT(tb_charge_info.uuid) INTO cnt"
+            + " FROM"
+            + "  tb_charge_info"
+            + " LEFT JOIN tb_pay_docs ON tb_charge_info.uuid_pay_doc = tb_pay_docs.uuid"
+            + " WHERE"
+            + "  tb_charge_info.is_deleted=0"
+            + "  AND tb_pay_docs.is_deleted=0"
+            + "  AND tb_pay_docs.id_ctr_status <> " + VocGisStatus.i.ANNUL
+            + "  AND tb_charge_info.uuid_add_service=:NEW.uuid; "
+            + " IF cnt>0 THEN raise_application_error (-20000, 'Удаление запрещено. Запись используется в платежных документах.'); END IF; "
+
+            + "END; END IF;"
 
         + "END;");        
 

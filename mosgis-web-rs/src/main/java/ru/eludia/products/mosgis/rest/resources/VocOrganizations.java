@@ -126,4 +126,12 @@ public class VocOrganizations extends EJBResource <VocOrganizationsLocal> {
         return back.doImportAddServices (id, getUser ());
     }
     
+    @POST    
+    @Path("{id}/import_accounts") 
+    @Produces (APPLICATION_JSON)
+    @RolesAllowed ("admin")
+    public JsonObject doImportAccounts (@PathParam ("id") String id) { 
+        return back.doImportAccounts (id, getUser ());
+    }
+    
 }

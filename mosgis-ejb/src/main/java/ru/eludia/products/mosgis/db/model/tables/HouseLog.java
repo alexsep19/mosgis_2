@@ -13,12 +13,14 @@ import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocHouseStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
 import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
 import ru.eludia.products.mosgis.db.model.voc.VocRdColType;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
 
 public class HouseLog extends Passport {
         
+                
     public HouseLog () {
         
         super  ("tb_houses__log",             "История изменения МКД/ЖД");
@@ -32,6 +34,7 @@ public class HouseLog extends Passport {
         fk    ("uuid_out_soap", OutSoap.class,         null,     "Последний запрос на импорт в ГИС ЖКХ");
         col   ("uuid_message",  Type.UUID,             null,     "UUID запроса в ГИС ЖКХ");
         
+        fk    ("uuid_vc_org_log", VocOrganizationLog.class,         null,     "Родительское событие истории организации");
         
         col    ("unom",                  Type.NUMERIC,      12,    null, "UNOM (код дома в московских ИС)");
         fk     ("fiashouseguid",         VocBuilding.class,        null, "Глобальный уникальный идентификатор дома по ФИАС");

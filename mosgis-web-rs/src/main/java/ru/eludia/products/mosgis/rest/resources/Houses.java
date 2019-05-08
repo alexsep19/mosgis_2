@@ -17,10 +17,10 @@ public class Houses extends EJBResource <HousesLocal> {
     
     private JsonObject selectWrapper (JsonObject p) {
         
-        if (securityContext.isUserInRole ("admin")    ||
+        if (((securityContext.isUserInRole ("admin")) ||
             securityContext.isUserInRole ("nsi_20_4") ||
             securityContext.isUserInRole ("nsi_20_7") ||
-            securityContext.isUserInRole ("nsi_20_14"))
+            securityContext.isUserInRole ("nsi_20_14")) && !p.containsKey ("data"))
             return back.selectAll(p);
         
         if (securityContext.isUserInRole ("nsi_20_8"))
