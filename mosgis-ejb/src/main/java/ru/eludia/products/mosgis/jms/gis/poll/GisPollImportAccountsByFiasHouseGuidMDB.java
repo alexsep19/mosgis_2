@@ -24,6 +24,7 @@ import ru.eludia.base.model.ColEnum;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.Account;
+import ru.eludia.products.mosgis.db.model.tables.AccountLog;
 import ru.eludia.products.mosgis.db.model.tables.AccountItem;
 import ru.eludia.products.mosgis.db.model.tables.Charter;
 import ru.eludia.products.mosgis.db.model.tables.Contract;
@@ -92,7 +93,7 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
     @Override
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")                
-            .toOne (HouseLog.class, "AS log", "uuid", "action", "uuid_vc_org_log").on ("log.uuid_out_soap=root.uuid")
+            .toOne (HouseLog.class, "AS log", "uuid", "uuid_user", "action", "uuid_vc_org_log").on ("log.uuid_out_soap=root.uuid")
             .toOne (House.class,    "AS r", House.c.FIASHOUSEGUID.lc () + " AS fiashouseguid").on ("log.uuid_object=r.uuid")
             .toOne (VocOrganization.class, "AS org", VocOrganization.c.ORGPPAGUID.lc () + " AS orgppaguid").on ("log.uuid_org=org.uuid")
 ;
@@ -369,6 +370,17 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
             , AccountItem.c.UUID_ACCOUNT.lc ()
             , AccountItem.c.UUID_PREMISE.lc ()
         );
+        
+        Object idLog = db.insertId (AccountLog.class, HASH (
+            "action", r.get ("log.action"),
+            "uuid_user", r.get ("log.uuid_user"),
+            "uuid_object", uuidAccount
+        ));
+        
+        db.update (Account.class, HASH (
+            "uuid", uuidAccount,
+            "id_log", idLog
+        ));
                 
     }
     
