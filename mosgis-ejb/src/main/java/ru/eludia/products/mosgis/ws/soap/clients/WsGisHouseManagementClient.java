@@ -58,6 +58,8 @@ import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChAsyncReque
 import ru.gosuslugi.dom.schema.integration.house_management.ExportCAChRequestCriteriaType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportHouseRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportStatusCAChRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractObjectAddressRequest;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractRequest;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
 import ru.gosuslugi.dom.schema.integration.house_management.HouseBasicRSOType;
 import ru.gosuslugi.dom.schema.integration.house_management.HouseBasicUOType;
@@ -300,6 +302,28 @@ public class WsGisHouseManagementClient {
         }
 
         return getPort (orgPPAGuid, messageGUID).exportCAChData (r).getAck ();
+
+    }
+
+    public AckRequest.Ack exportSupplyResourceContractData (UUID orgPPAGuid, UUID messageGUID, UUID exportContractRootGuid) throws Fault {
+
+        final ExportSupplyResourceContractRequest r = of.createExportSupplyResourceContractRequest();
+
+	if (DB.ok(exportContractRootGuid)) {
+	    r.setExportContractRootGUID(exportContractRootGuid.toString());
+	}
+
+        return getPort (orgPPAGuid, messageGUID).exportSupplyResourceContractData(r).getAck ();
+
+    }
+
+    public AckRequest.Ack exportSupplyResourceContractObjectAddressData (UUID orgPPAGuid, UUID messageGUID, UUID contractRootGuid) throws Fault {
+
+        final ExportSupplyResourceContractObjectAddressRequest r = of.createExportSupplyResourceContractObjectAddressRequest();
+                
+        r.setContractRootGUID(DB.to.String(contractRootGuid));
+
+        return getPort (orgPPAGuid, messageGUID).exportSupplyResourceContractObjectAddressData(r).getAck ();
 
     }
 

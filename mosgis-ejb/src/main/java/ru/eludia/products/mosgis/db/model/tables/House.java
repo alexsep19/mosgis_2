@@ -119,7 +119,12 @@ public class House extends Passport {
 
         trigger ("BEFORE INSERT OR UPDATE", ""
                 + "BEGIN "
-                    + ":NEW.ts := CURRENT_TIMESTAMP(); "                                    
+                    + ":NEW.ts := CURRENT_TIMESTAMP(); "
+
+		    + "IF :NEW.ADDRESS IS NULL AND :NEW.FIASHOUSEGUID IS NOT NULL THEN "
+		    + "  SELECT LABEL INTO :NEW.ADDRESS FROM  " + VocBuilding.TABLE_NAME + " WHERE HOUSEGUID = :NEW.FIASHOUSEGUID; "
+		    + "END IF; "
+
                 + "END; ");
 
     }

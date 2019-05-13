@@ -32,5 +32,27 @@
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
     <jndi-name>mosgis.inXlSupplyResourceContractsQueue</jndi-name>
 </uniform-distributed-queue>
+     
+  <!-- очередь обработки запросов на импорт ОЖФ ДРСО по организации-->
+  <uniform-distributed-queue name="inExportOrgSrContractObjectsQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.inExportOrgSrContractObjectsQueue</jndi-name>
+  </uniform-distributed-queue>
+
+  <!-- очередь обработки запросов на импорт ОЖФ ДРСО -->
+  <uniform-distributed-queue name="inExportSupplyResourceContractObjectsQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <jndi-name>mosgis.inExportSupplyResourceContractObjectsQueue</jndi-name>
+  </uniform-distributed-queue>
+  
+  <!-- очередь опроса статуса исходящих запросов на импорт ОЖФ ДРСО -->
+  <uniform-distributed-queue name="outExportSupplyResourceContractObjectsQueue">
+    <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
+    <delivery-params-overrides>
+        <time-to-deliver>10000</time-to-deliver>
+        <redelivery-delay>10000</redelivery-delay>
+    </delivery-params-overrides>
+    <jndi-name>mosgis.outExportSupplyResourceContractObjectsQueue</jndi-name>
+  </uniform-distributed-queue>
 
 </weblogic-jms>

@@ -39,12 +39,11 @@ define ([], function () {
                 for (var i = 19; i <= 22; i ++) is_coop |= data.nsi_20 [i]
 
                 data.import_types = [
-
                     {id: "import_mgmt_contracts", text: "Импорт договоров управления",             off: !data.nsi_20 [1]},
+                    {id: "import_sr_contracts",   text: "Импорт договоров ресурсоснабжения", off: !data.nsi_20 [2]},
                     {id: "import_accounts",       text: "Импорт лицевых счетов",                   off: !data.nsi_20 [1] && !data.nsi_20 [2] && !is_coop},
                     {id: "import_add_services",   text: "Импорт справочника дополнительных услуг", off: !data.nsi_20 [1]                     && !is_coop},
                     {id: "import_charters",       text: "Импорт устава",                           off:                                         !is_coop},
-
                 ].filter (not_off)
                 
             }

@@ -59,6 +59,8 @@ public class VocAction extends Table {
         
         IMPORT_ACCOUNTS            ("import_accounts", "импорт ЛС"),
         IMPORT_MGMT_CONTRACTS      ("import_mgmt_contracts", "импорт ДУ"),
+	IMPORT_SR_CONTRACTS        ("import_sr_contracts", "импорт ДРСО"),
+	IMPORT_SR_CONTRACT_OBJECTS ("import_sr_contract_objects", "импорт ОЖФ ДРСО"),
         IMPORT_CHARTERS            ("import_charters", "импорт устава"),
         IMPORT_ADD_SERVICES        ("import_add_services", "Импорт справочника дополнительных услуг"),
         IMPORT_OVERHAUL_WORK_TYPES ("import_overhaul_work_types", "Импорт справочника видов работ капитального ремонта"),

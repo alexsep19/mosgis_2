@@ -60,8 +60,11 @@ public class ResidentialPremise extends Passport {
         
         fk     ("id_status", VocHouseStatus.class, new Virt("DECODE(\"PREMISESGUID\",NULL," + VocHouseStatus.i.MISSING.getId() + "," + VocHouseStatus.i.PUBLISHED.getId() + ")"), "Статус размещения в ГИС ЖКХ");
         
-        trigger ("BEFORE INSERT OR UPDATE", "BEGIN "
-                
+        trigger ("BEFORE INSERT OR UPDATE", ""
+	    +" DECLARE "
+	    + " PRAGMA AUTONOMOUS_TRANSACTION; "
+	    + "BEGIN "
+
             + "IF :NEW.totalarea < :NEW.grossarea THEN raise_application_error (-20000, '#grossarea#: Жилая площадь не может превышать общую.'); END IF; "
                 
             + "IF INSERTING THEN "
