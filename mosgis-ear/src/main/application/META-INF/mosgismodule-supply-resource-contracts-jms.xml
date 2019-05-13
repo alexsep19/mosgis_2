@@ -42,10 +42,6 @@
   <!-- очередь обработки запросов на импорт ОЖФ ДРСО -->
   <uniform-distributed-queue name="inExportSupplyResourceContractObjectsQueue">
     <sub-deployment-name>MosGisJmsModuleSubbb</sub-deployment-name>
-    <delivery-params-overrides>
-        <time-to-deliver>100</time-to-deliver>
-        <redelivery-delay>100</redelivery-delay>
-    </delivery-params-overrides>
     <jndi-name>mosgis.inExportSupplyResourceContractObjectsQueue</jndi-name>
   </uniform-distributed-queue>
   

@@ -15,7 +15,9 @@ import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
 import ru.eludia.products.mosgis.jms.UUIDPublisher;
@@ -60,6 +62,7 @@ public class ExportOrgSrContractObjectsMDB extends UUIDMDB<VocOrganizationLog> {
 		    .toOne(SupplyResourceContract.class, "AS sr_ctr", "contractrootguid AS contractrootguid").on()
                     .where ("uuid_vc_org_log", uuid)
                 )
+		.and(EnTable.c.IS_DELETED, 0)
             );
             
             if (uuidSrCtr == null) {
@@ -71,7 +74,7 @@ public class ExportOrgSrContractObjectsMDB extends UUIDMDB<VocOrganizationLog> {
                 "uuid_vc_org_log", uuid,
                 "uuid_object",     uuidSrCtr,
                 "uuid_org",        uuidOrg,
-                "action",          r.get ("action"),
+                "action",          VocAction.i.IMPORT_SR_CONTRACT_OBJECTS,
                 "uuid_user",       r.get ("uuid_user")
             ));
             
