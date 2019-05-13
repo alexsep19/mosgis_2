@@ -57,10 +57,18 @@ public class ExportOrgSrContractObjectsMDB extends UUIDMDB<VocOrganizationLog> {
             String uuidSrCtr = db.getString (m
                 .select (SupplyResourceContract.class, "AS ctr", "uuid")
                 .where  (SupplyResourceContract.c.UUID_ORG, uuidOrg)
-                .where  (SupplyResourceContract.c.CONTRACTROOTGUID.lc () + " NOT IN", m
+                .where  (EnTable.c.IS_DELETED, 0)
+		.and(SupplyResourceContract.c.CONTRACTROOTGUID.lc () + " IN", m
                     .select (SupplyResourceContractLog.class, "AS log")
-		    .toOne(SupplyResourceContract.class, "AS sr_ctr", "contractrootguid AS contractrootguid").on()
+		    .toOne (SupplyResourceContract.class, "AS sr_ctr", "contractrootguid AS contractrootguid").on()
                     .where ("uuid_vc_org_log", uuid)
+		    .and ("action", VocAction.i.IMPORT_SR_CONTRACTS)
+                )
+		.and(SupplyResourceContract.c.CONTRACTROOTGUID.lc () + " NOT IN", m
+                    .select (SupplyResourceContractLog.class, "AS log_done")
+		    .toOne (SupplyResourceContract.class, "AS sr_ctr_done", "contractrootguid AS contractrootguid").on()
+                    .where ("uuid_vc_org_log", uuid)
+		    .and ("action", VocAction.i.IMPORT_SR_CONTRACT_OBJECTS)
                 )
 		.and(EnTable.c.IS_DELETED, 0)
             );

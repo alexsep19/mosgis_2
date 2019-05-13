@@ -199,6 +199,7 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 	    h.put(EnTable.c.UUID.lc(), uuid);
 
 	    String idLog = db.insertId(SupplyResourceContractLog.class, HASH(
+		"uuid_vc_org_log", r.get("log.uuid"),
 		"action", VocAction.i.IMPORT_SR_CONTRACTS.getName (),
 		"uuid_object", uuid,
 		"uuid_out_soap", uuid_out_soap,
