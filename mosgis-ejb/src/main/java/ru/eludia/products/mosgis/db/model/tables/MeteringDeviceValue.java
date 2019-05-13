@@ -1,13 +1,12 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
-import java.util.HashSet;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Virt;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlMeteringValues;
+import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocMeteringDeviceValueType;
 
@@ -17,7 +16,7 @@ public class MeteringDeviceValue extends EnTable {
 
     public enum c implements EnColEnum {
 
-        UUID_XL                (InXlMeteringValues.class,        null,          "Источник импорта"),
+        UUID_XL                (InXlFile.class,        null,          "Источник импорта"),
         UUID_METER             (MeteringDevice.class,                           "Прибор учёта"),
         ID_TYPE                (VocMeteringDeviceValueType.class,               "Тип показания"),        
         CODE_VC_NSI_2          (Type.STRING,  20,                               "Коммунальный ресурс (НСИ 2)"),
