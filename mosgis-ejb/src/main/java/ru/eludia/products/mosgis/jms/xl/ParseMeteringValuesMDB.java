@@ -13,13 +13,16 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import ru.eludia.base.DB;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlMeteringDevice;
+import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.incoming.xl.lines.InXlMeteringValues;
 import ru.eludia.products.mosgis.db.model.tables.MeteringDevice;
 import ru.eludia.products.mosgis.db.model.tables.MeteringDeviceValue;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.jms.xl.base.XLMDB;
 import ru.eludia.products.mosgis.jms.xl.base.XLException;
+import ru.eludia.products.mosgis.rest.User;
 
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inXlMeteringValuesQueue")
@@ -30,7 +33,7 @@ public class ParseMeteringValuesMDB extends XLMDB {
        
     private static final int N_COL_ERR  = 7;
 
-    protected void addValues (XSSFSheet sheet, UUID parent, DB db) throws SQLException {
+    protected void addValues (XSSFSheet sheet, UUID parent, DB db, User user) throws SQLException {
 
         Map<String,Date> hashDevices = new HashMap<String,Date>();
         
@@ -44,7 +47,7 @@ public class ParseMeteringValuesMDB extends XLMDB {
             checkEqualsDateForSamePU( xlMeteringHash, hashDevices);
             UUID uuid = (UUID) db.insertId (InXlMeteringValues.class, xlMeteringHash);            
             try{
-                updateDeviceValues(uuid, db);
+                updateDeviceValues(uuid, db, user);
             }catch(SQLException e){
                 setCellStringValue (row, N_COL_ERR, e.getMessage());
             }    
@@ -69,7 +72,7 @@ public class ParseMeteringValuesMDB extends XLMDB {
         }
     }
     
-    public static void updateDeviceValues(UUID uuid, DB db) throws SQLException{
+    public static void updateDeviceValues(UUID uuid, DB db, User user) throws SQLException{
         
         try{
                 db.update (InXlMeteringValues.class, DB.HASH (
@@ -82,6 +85,9 @@ public class ParseMeteringValuesMDB extends XLMDB {
                     EnTable.c.IS_DELETED, 0
                 ));
                 
+                ModelHolder.getModel ().createIdLog (db, ModelHolder.getModel ().get (MeteringDeviceValue.class), 
+                                                     user, uuid, VocAction.i.CREATE);
+
             }
             catch (SQLException e) {
 
@@ -150,7 +156,7 @@ public class ParseMeteringValuesMDB extends XLMDB {
         boolean isOk = true;        
         
         final XSSFSheet sheetValues = wb.getSheet ("Импорт показаний");        
-        addValues (sheetValues, uuid, db);
+        addValues (sheetValues, uuid, db, getUser(db, uuid));
         
         if (!checkMeterLines (sheetValues, db, uuid)) isOk = false;
 
