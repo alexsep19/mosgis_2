@@ -63,7 +63,7 @@ public class GisPollExportSupplyResourceContractObjectsMDB extends GisPollMDB {
     protected Get get (UUID uuid) {
 
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")
-	    .toOne (SupplyResourceContractLog.class, "AS log", "uuid", "action", "uuid_vc_org_log").on ("log.uuid_out_soap=root.uuid")
+	    .toOne (SupplyResourceContractLog.class, "AS log", "uuid", "action", "uuid_object", "uuid_user", "uuid_out_soap", "uuid_vc_org_log").on ("log.uuid_out_soap=root.uuid")
 	    .toOne (SupplyResourceContract.class, "AS ctr", "contractrootguid", "uuid", "id_ctr_status").on("ctr.uuid=log.uuid_object")
 	    .toOne (VocOrganizationLog.class, "AS logorg").on ("log.uuid_vc_org_log=logorg.uuid")
 	    .toOne (VocOrganization.class, "AS org", VocOrganization.c.ORGPPAGUID.lc() + " AS ppa").on("logorg.uuid_object=org.uuid")
@@ -241,7 +241,7 @@ logger.info(DB.to.json(h).toString());
 	    }
 
 
-	    UUID uuid = DB.to.UUIDFromHex(id);
+	    Object uuid = id;
 
 	    h.put(EnTable.c.UUID.lc(), uuid);
 
