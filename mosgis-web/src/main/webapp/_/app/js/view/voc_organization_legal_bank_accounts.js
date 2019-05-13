@@ -21,8 +21,8 @@ define ([], function () {
             show: {
                 toolbar: data._can.edit,
                 toolbarAdd: data._can.edit,
-                toolbarEdit: data._can.edit,
-                toolbarDelete: data._can.edit,
+                toolbarEdit: data._can.edit && !data.item.is_rokr,
+                toolbarDelete: data._can.edit && !data.item.is_rokr,
                 footer: true,
                 toolbarInput: false,
                 toolbarReload: false,
