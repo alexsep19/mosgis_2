@@ -136,7 +136,9 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 
 
 	    if (!DB.ok(result.isIsLastPage())) {
+
 		logger.log(Level.WARNING, "Is NOT last page, more supply resource contract objects exists, pagination not implemented yet..");
+
 	    }
 
 	    db.update(OutSoap.class, HASH(

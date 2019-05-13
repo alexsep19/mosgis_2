@@ -305,15 +305,13 @@ public class WsGisHouseManagementClient {
 
     }
 
-    public AckRequest.Ack exportSupplyResourceContractData (UUID orgPPAGuid, UUID messageGUID, List<UUID> ids) throws Fault {
+    public AckRequest.Ack exportSupplyResourceContractData (UUID orgPPAGuid, UUID messageGUID, UUID exportContractRootGuid) throws Fault {
 
         final ExportSupplyResourceContractRequest r = of.createExportSupplyResourceContractRequest();
-                
-        List<String> rootGuids = r.getContractRootGUID();
 
-        for (UUID uuid: ids) {
-            rootGuids.add (uuid.toString());
-        }
+	if (DB.ok(exportContractRootGuid)) {
+	    r.setExportContractRootGUID(exportContractRootGuid.toString());
+	}
 
         return getPort (orgPPAGuid, messageGUID).exportSupplyResourceContractData(r).getAck ();
 

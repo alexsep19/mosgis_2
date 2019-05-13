@@ -52,7 +52,7 @@ public class ExportOrgSrContractsMDB extends UUIDMDB<VocOrganizationLog> {
                 
         try {
 
-	    AckRequest.Ack ack = wsGisHouseManagementClient.exportSupplyResourceContractData ((UUID) r.get ("ppa"), uuid, Collections.EMPTY_LIST);
+	    AckRequest.Ack ack = wsGisHouseManagementClient.exportSupplyResourceContractData ((UUID) r.get ("ppa"), uuid, null);
 
             db.update (OutSoap.class, DB.HASH (
                 "uuid",     uuid,
