@@ -233,6 +233,8 @@ public class GisPollExportHouse extends GisPollMDB {
             ));
         }
         
+        db.commit();
+        
         //Нежилые помещения
         Map<Object, Map<String, Object>> nonResidentialPremisesDb = db.getIdx(m
                     .select(NonResidentialPremise.class, "*")
@@ -406,7 +408,7 @@ public class GisPollExportHouse extends GisPollMDB {
                     .select(Lift.class, "*")
                     .where("uuid_house", houseUuid)
                     .and("liftguid IS NOT NULL"),
-                "premisesguid");
+                "liftguid");
         
         for (ExportHouseResultType.ApartmentHouse.Lift lift : house.getLift()) {
             Map<String, Object> data = HASH(
