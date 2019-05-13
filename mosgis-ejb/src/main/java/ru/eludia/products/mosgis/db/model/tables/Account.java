@@ -130,7 +130,7 @@ public class Account extends EnTable {
                     + " LEFT JOIN tb_houses h ON o.fiashouseguid = h.fiashouseguid"
                     + " WHERE o.is_deleted = 0"
                     + " AND o.uuid_account = :NEW.uuid "
-                    + " AND h.gis_guid IS NULL "
+                    + " AND h.gis_unique_number IS NULL "
                     + ") LOOP"
                 + " raise_application_error (-20000, 'Паспорт МКД с адресом ' || i.address || ' не размещён в ГИС ЖКХ. Операция отменена.'); "
                 + " END LOOP; "                        
