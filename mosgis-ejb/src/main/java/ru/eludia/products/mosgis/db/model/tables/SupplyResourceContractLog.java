@@ -21,6 +21,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisContractDimension;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractQualityLevelType;
 import ru.eludia.products.mosgis.db.model.voc.VocGisSupplyResourceContractCustomerType;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
 import ru.eludia.products.mosgis.db.model.voc.VocPerson;
 import ru.eludia.products.mosgis.db.model.voc.VocSupplyResourceContractFileType;
 import ru.gosuslugi.dom.schema.integration.house_management.AnnulmentType;
@@ -45,6 +46,8 @@ public class SupplyResourceContractLog extends GisWsLogTable {
             , EnTable.c.class
             , SupplyResourceContract.c.class
         );
+
+	fk    ("uuid_vc_org_log", VocOrganizationLog.class,         null,     "Родительское событие истории организации");
     }
 
     public static ImportSupplyResourceContractRequest toImportSupplyResourceContractRequest(Map<String, Object> r) {

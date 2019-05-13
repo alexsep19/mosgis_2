@@ -30,7 +30,6 @@ import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubjectLog;
-import ru.eludia.products.mosgis.db.model.incoming.InExportOrgSrContractObject;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -133,9 +132,7 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 
 	    logger.log(Level.INFO, "import supply resource contracts DONE, scheduling import objects...");
 
-	    uuidPublisher.publish(InExportOrgSrContractObjectsQueue
-		, (UUID) db.insertId(InExportOrgSrContractObject.class, HASH("uuid", uuid, "uuid_vc_org_log", uuid))
-	    );
+	    uuidPublisher.publish(InExportOrgSrContractObjectsQueue, (UUID) r.get("log.uuid"));
 
 
 	    if (!DB.ok(result.isIsLastPage())) {

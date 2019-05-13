@@ -16,9 +16,7 @@ import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.MosGisModel;
-import ru.eludia.products.mosgis.db.model.tables.ActualSupplyResourceContractObject;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
-import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractObject;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
 import ru.eludia.products.mosgis.jms.UUIDPublisher;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
@@ -41,7 +39,7 @@ public class ExportOrgSrContractObjectsMDB extends UUIDMDB<VocOrganizationLog> {
     @Override
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ()
-            .get (VocOrganizationLog.class, uuid, "AS log", "action", "uuid_user", "uuid_object")
+	    .get (VocOrganizationLog.class, uuid, "AS log", "action", "uuid_user", "uuid_object")
         ;
     }    
     

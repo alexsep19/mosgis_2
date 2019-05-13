@@ -36,6 +36,7 @@ import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubjectLo
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollException;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
@@ -62,9 +63,10 @@ public class GisPollExportSupplyResourceContractObjectsMDB extends GisPollMDB {
     protected Get get (UUID uuid) {
 
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")
-            .toOne (SupplyResourceContractLog.class, "AS log", "uuid", "action", "uuid_vc_org_log").on ("log.uuid_out_soap=root.uuid")
-            .toOne (VocOrganization.class, "AS org", VocOrganization.c.ORGPPAGUID.lc () + " AS ppa").on ("imp.uuid_org=org.uuid")
-	    .toOne (SupplyResourceContract.class, "AS ctr", "contractrootguid", "uuid", "id_ctr_status").on("ctr.contractrootguid=imp.contractrootguid")
+	    .toOne (SupplyResourceContractLog.class, "AS log", "uuid", "action", "uuid_vc_org_log").on ("log.uuid_out_soap=root.uuid")
+	    .toOne (SupplyResourceContract.class, "AS ctr", "contractrootguid", "uuid", "id_ctr_status").on("ctr.uuid=log.uuid_object")
+	    .toOne (VocOrganizationLog.class, "AS logorg").on ("log.uuid_vc_org_log=logorg.uuid")
+	    .toOne (VocOrganization.class, "AS org", VocOrganization.c.ORGPPAGUID.lc() + " AS ppa").on("logorg.uuid_object=org.uuid")
         ;
     }
 
@@ -190,9 +192,9 @@ public class GisPollExportSupplyResourceContractObjectsMDB extends GisPollMDB {
 
     public void store(DB db, Map<String, Object> r, ExportSupplyResourceContractObjectAddressResultType t) throws SQLException, UnknownSomethingException {
 
-	Object uuid_out_soap = r.get("imp.uuid_out_soap");
-	Object uuid_sr_ctr = r.get("ctr.uuid");
-	Object uuid_user = r.get("imp.uuid_user");
+	Object uuid_out_soap = r.get("log.uuid_out_soap");
+	Object uuid_sr_ctr = r.get("log.uuid_object");
+	Object uuid_user = r.get("log.uuid_user");
 	Object uuid_message = r.get("uuid_ack");
 
 	Map<String, Object> h = SupplyResourceContractObject.toHASH(t);

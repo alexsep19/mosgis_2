@@ -54,7 +54,8 @@ public class ExportSupplyResourceContractObjectsMDB extends GisExportMDB<SupplyR
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ()
             .get (SupplyResourceContractLog.class, uuid, "AS root", "*")
-            .toOne (VocOrganizationLog.class, "AS org", VocOrganization.c.ORGPPAGUID.lc () + " AS ppa").on ("root.uuid_vc_org_log=org.uuid")
+            .toOne (VocOrganizationLog.class, "AS log").on ("root.uuid_vc_org_log=log.uuid")
+	    .toOne (VocOrganization.class, "AS org", VocOrganization.c.ORGPPAGUID.lc() + " AS ppa").on("log.uuid_object=org.uuid")
 	;
     }
         
