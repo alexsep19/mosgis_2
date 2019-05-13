@@ -16,7 +16,7 @@ public class MeteringDeviceValue extends EnTable {
 
     public enum c implements EnColEnum {
 
-        UUID_XL                (InXlFile.class,        null,          "Источник импорта"),
+        UUID_XL                (InXlFile.class,                  null,          "Источник импорта"),
         UUID_METER             (MeteringDevice.class,                           "Прибор учёта"),
         ID_TYPE                (VocMeteringDeviceValueType.class,               "Тип показания"),        
         CODE_VC_NSI_2          (Type.STRING,  20,                               "Коммунальный ресурс (НСИ 2)"),

@@ -19,6 +19,7 @@ import ru.eludia.products.mosgis.jms.base.UUIDMDB;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.voc.VocFileStatus;
+import ru.eludia.products.mosgis.rest.User;
 
 public abstract class XLMDB extends UUIDMDB<InXlFile> {
 
@@ -42,6 +43,12 @@ public abstract class XLMDB extends UUIDMDB<InXlFile> {
             .nextToken ()
             .replace ("ORA-20000: ", "");
         
+    }
+    
+    public User getUser(DB db, UUID uuid) throws SQLException{
+        Map<String, Object> hashInXlFile = db.getMap(get(uuid));
+        return new User( ((UUID)hashInXlFile.get(InXlFile.c.UUID_USER.lc())).toString(), "",
+                         ((UUID)hashInXlFile.get(InXlFile.c.UUID_ORG.lc())).toString() );
     }
     
     protected final XSSFWorkbook readWorkbook (DB db, UUID uuid) throws SQLException {
