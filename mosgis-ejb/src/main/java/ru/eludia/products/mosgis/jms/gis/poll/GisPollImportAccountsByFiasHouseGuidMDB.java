@@ -306,13 +306,14 @@ public class GisPollImportAccountsByFiasHouseGuidMDB  extends GisPollMDB {
         final UUID fiasHouseGuid = (UUID) r.get ("fiashouseguid");
         
         VocGisStatus.i status = getStatus (acc);
-
+        
         h.putAll (HASH (
             Account.c.FIASHOUSEGUID,        fiasHouseGuid,
             Account.c.ACCOUNTNUMBER,        acc.getAccountNumber (),
             Account.c.SERVICEID,            acc.getServiceID (),
             Account.c.UNIFIEDACCOUNTNUMBER, acc.getUnifiedAccountNumber (),
             Account.c.ACCOUNTGUID,          acc.getAccountGUID (),
+            Account.c.CREATIONDATE,         acc.getCreationDate (),
             Account.c.ID_CTR_STATUS,        status.getId (),
             Account.c.ID_CTR_STATUS_GIS,    status.getId ()
         ));

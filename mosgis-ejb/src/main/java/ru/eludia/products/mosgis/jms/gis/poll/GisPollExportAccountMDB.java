@@ -97,8 +97,10 @@ public class GisPollExportAccountMDB  extends GisPollMDB {
             final Map<String, Object> h = statusHash (action.getOkStatus ());
 
             h.put (Account.c.ACCOUNTGUID.lc (), cr.getGUID ());
+            
             h.put (Account.c.SERVICEID.lc (), importAccount.getServiceID ());
             h.put (Account.c.UNIFIEDACCOUNTNUMBER.lc(), importAccount.getUnifiedAccountNumber());
+            h.put (Account.c.CREATIONDATE.lc(), cr.getUpdateDate ());
 
             update (db, uuid, r, h);
 

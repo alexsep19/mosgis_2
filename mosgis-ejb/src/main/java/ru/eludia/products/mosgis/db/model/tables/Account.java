@@ -37,6 +37,8 @@ public class Account extends EnTable {
         
         CODE_VC_NSI_22         (Type.STRING,  20,    null,                                  "Причина закрытия (НСИ 22)"),
         CLOSEREASON            (Type.STRING,  20,    new Virt  ("''||\"CODE_VC_NSI_22\""),  "Причина закрытия (НСИ 22)"),
+                
+        CREATIONDATE           (Type.DATE,           null,                                  "Дата создания ЛС в ГИС ЖКХ"),
         CLOSEDATE              (Type.DATE,           null,                                  "Дата закрытия"),
 
         DESCRIPTION            (Type.STRING,  250,   null,                                  "Примечание (для закрытия)"),
