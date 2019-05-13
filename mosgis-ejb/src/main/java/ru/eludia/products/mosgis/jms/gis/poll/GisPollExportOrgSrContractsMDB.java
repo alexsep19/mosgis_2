@@ -25,12 +25,12 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.incoming.InImportSupplyResourceContractObject;
 import ru.eludia.products.mosgis.db.model.incoming.InVocOrganization;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubjectLog;
+import ru.eludia.products.mosgis.db.model.incoming.InExportOrgSrContractObject;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import static ru.eludia.products.mosgis.db.model.voc.VocAsyncRequestState.i.DONE;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
@@ -58,8 +58,8 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
     @Resource (mappedName = "mosgis.inOrgQueue")
     private Queue inOrgQueue;
 
-    @Resource (mappedName = "mosgis.inExportSupplyResourceContractObjectsQueue")
-    private Queue inExportSupplyResourceContractObjectsQueue;
+    @Resource (mappedName = "mosgis.inExportOrgSrContractObjectsQueue")
+    private Queue InExportOrgSrContractObjectsQueue;
 
     @Override
     protected Get get (UUID uuid) {
@@ -111,7 +111,6 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 	    if (contracts == null) throw new GisPollException("0", "Сервис ГИС вернул пустой результат");
 
 
-	    
 	    for (ExportSupplyResourceContractResultType i : contracts) {
 		try {
 		    store (db, r, i);
@@ -134,19 +133,9 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 
 	    logger.log(Level.INFO, "import supply resource contracts DONE, scheduling import objects...");
 
-	    long ts_from = System.currentTimeMillis();
-
-	    for (ExportSupplyResourceContractResultType i : contracts) {
-		UUID idImpObj = (UUID) db.insertId(InImportSupplyResourceContractObject.class, DB.HASH(
-		    "contractrootguid", i.getContractRootGUID(),
-		    "uuid_org", r.get("log.uuid_object"),
-		    "ts_from", new Timestamp (ts_from)
-                ));
-
-		uuidPublisher.publish(inExportSupplyResourceContractObjectsQueue, idImpObj);
-
-		ts_from = ts_from + ExportSupplyResourceContractObjectsMDB.WS_GIS_THROTTLE_MS;
-	    }
+	    uuidPublisher.publish(InExportOrgSrContractObjectsQueue
+		, (UUID) db.insertId(InExportOrgSrContractObject.class, HASH("uuid", uuid, "uuid_vc_org_log", uuid))
+	    );
 
 
 	    if (!DB.ok(result.isIsLastPage())) {
@@ -212,7 +201,7 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 
 	    h.put(EnTable.c.UUID.lc(), uuid);
 
-	    String idLog = db.insertId(SupplyResourceContractLog.class, DB.HASH(
+	    String idLog = db.insertId(SupplyResourceContractLog.class, HASH(
 		"action", VocAction.i.IMPORT_SR_CONTRACTS.getName (),
 		"uuid_object", uuid,
 		"uuid_out_soap", uuid_out_soap,
@@ -220,7 +209,7 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 		"uuid_message", uuid_message
 	    )).toString ();
 
-	    db.update (SupplyResourceContract.class, DB.HASH (
+	    db.update (SupplyResourceContract.class, HASH (
 		"uuid", uuid,
 		"id_log", idLog
 	    ));

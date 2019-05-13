@@ -11,6 +11,8 @@ import java.util.logging.Level;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
+import javax.jms.Queue;
+import javax.annotation.Resource;
 import ru.eludia.base.DB;
 import static ru.eludia.base.DB.HASH;
 import ru.eludia.base.Model;
@@ -20,7 +22,6 @@ import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.incoming.InImportSupplyResourceContractObject;
 import ru.eludia.products.mosgis.db.model.tables.House;
 import ru.eludia.products.mosgis.db.model.tables.LivingRoom;
 import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
@@ -54,11 +55,14 @@ public class GisPollExportSupplyResourceContractObjectsMDB extends GisPollMDB {
     @EJB
     WsGisHouseManagementClient wsGisHouseManagementClient;
 
+    @Resource (mappedName = "mosgis.inExportOrgSrContractObjectsQueue")
+    Queue inExportOrgSrContractObjectsQueue;
+
     @Override
     protected Get get (UUID uuid) {
 
         return (Get) ModelHolder.getModel ().get (getTable (), uuid, "AS root", "*")
-            .toOne (InImportSupplyResourceContractObject.class, "AS imp", "*").on ("imp.uuid_out_soap = root.uuid")
+            .toOne (SupplyResourceContractLog.class, "AS log", "uuid", "action", "uuid_vc_org_log").on ("log.uuid_out_soap=root.uuid")
             .toOne (VocOrganization.class, "AS org", VocOrganization.c.ORGPPAGUID.lc () + " AS ppa").on ("imp.uuid_org=org.uuid")
 	    .toOne (SupplyResourceContract.class, "AS ctr", "contractrootguid", "uuid", "id_ctr_status").on("ctr.contractrootguid=imp.contractrootguid")
         ;
@@ -70,7 +74,9 @@ public class GisPollExportSupplyResourceContractObjectsMDB extends GisPollMDB {
         if (DB.ok (r.get ("is_failed"))) throw new IllegalStateException (r.get ("err_text").toString ());
         
         UUID orgPPAGuid = (UUID) r.get ("ppa");
-                        
+
+	boolean checkNext = true;
+
         try {            
 
             if (DB.ok (r.get ("ts_rp"))) {
@@ -137,12 +143,15 @@ public class GisPollExportSupplyResourceContractObjectsMDB extends GisPollMDB {
 
         }
         catch (GisPollRetryException ex) {
+	    checkNext = false;
             return;
         }
         catch (GisPollException ex) {            
             ex.register (db, uuid, r);
         }
-        
+        finally {
+            if (checkNext) uuidPublisher.publish (inExportOrgSrContractObjectsQueue, (UUID) r.get ("log.uuid_vc_org_log"));
+        }
     }
 
 

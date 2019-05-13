@@ -11,25 +11,33 @@ import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import javax.jms.Queue;
+import javax.xml.ws.WebServiceException;
 import ru.eludia.base.DB;
 import ru.eludia.base.db.sql.gen.Get;
+import ru.eludia.base.model.Col;
+import ru.eludia.base.model.Table;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
 import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.incoming.InImportSupplyResourceContractObject;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
+import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
 import ru.eludia.products.mosgis.jms.UUIDPublisher;
+import ru.eludia.products.mosgis.jms.gis.send.base.GisExportMDB;
 import ru.eludia.products.mosgis.ws.soap.clients.WsGisHouseManagementClient;
 import ru.eludia.products.mosgis.jms.base.UUIDMDB;
+import ru.eludia.products.mosgis.jms.gis.send.base.GisExportMDB;
 import ru.gosuslugi.dom.schema.integration.base.AckRequest;
+import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "mosgis.inExportSupplyResourceContractObjectsQueue")
     , @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
     , @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class ExportSupplyResourceContractObjectsMDB extends UUIDMDB<InImportSupplyResourceContractObject> {
+public class ExportSupplyResourceContractObjectsMDB extends GisExportMDB<SupplyResourceContractLog> {
     
     private static final Logger logger = Logger.getLogger (ExportSupplyResourceContractObjectsMDB.class.getName ());
 
@@ -40,79 +48,85 @@ public class ExportSupplyResourceContractObjectsMDB extends UUIDMDB<InImportSupp
     WsGisHouseManagementClient wsGisHouseManagementClient;
 
     @Resource (mappedName = "mosgis.outExportSupplyResourceContractObjectsQueue")
-    Queue q;
-    
+    Queue outExportSupplyResourceContractObjectsQueue;
+
     @Override
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ()
-            .get (InImportSupplyResourceContractObject.class, uuid, "AS root", "*")
-            .toOne (VocOrganization.class, "AS org", VocOrganization.c.ORGPPAGUID.lc () + " AS ppa").on ("root.uuid_org=org.uuid")
+            .get (SupplyResourceContractLog.class, uuid, "AS root", "*")
+            .toOne (VocOrganizationLog.class, "AS org", VocOrganization.c.ORGPPAGUID.lc () + " AS ppa").on ("root.uuid_vc_org_log=org.uuid")
 	;
-    }    
-
-    public static final int WS_GIS_THROTTLE_MS = 5000;
-
-    private boolean checkRetry (Map <String, Object> r) throws SQLException {
-
-	if (!DB.ok (r.get("ts_from"))) {
-	    return false;
-	}
-
-	Timestamp ts_throttle = new Timestamp(DB.to.timestamp(r.get("ts_from")).getTime() + WS_GIS_THROTTLE_MS);
-
-	Timestamp now = new Timestamp(System.currentTimeMillis());
-
-	if (now.before(ts_throttle)) {
-	    logger.log(Level.INFO, "Handling " + r.get("uuid") + ": " + r.get("ts_from") + " ts_from in future: retry import resource contract objects");
-	    uuidPublisher.publish (getOwnQueue (), getUuid ());
-	    return true;
-	}
-
-	return false;
+    }
+        
+    AckRequest.Ack invoke (DB db, UUID messageGUID, Map<String, Object> r) throws Fault, SQLException {                        
+        return wsGisHouseManagementClient.exportSupplyResourceContractObjectAddressData ((UUID) r.get ("ppa"), messageGUID, (UUID) r.get("contractrootguid"));
     }
 
     @Override
     protected void handleRecord (DB db, UUID uuid, Map r) throws SQLException {
 
-	if (checkRetry (r)) {
-	    return;
-	}
-
         try {
 
-	    AckRequest.Ack ack = wsGisHouseManagementClient.exportSupplyResourceContractObjectAddressData ((UUID) r.get ("ppa"), uuid, (UUID) r.get("contractrootguid"));
-
-            db.update (OutSoap.class, DB.HASH (
-                "uuid",     uuid,
-                "uuid_ack", ack.getMessageGUID()
-            ));
+            AckRequest.Ack ack = invoke (db, uuid, r);
             
+            OutSoap.registerAck (db, ack);
+
             db.update (getTable (), DB.HASH (
                 "uuid",          uuid,
-                "uuid_out_soap", uuid
+                "uuid_out_soap", uuid,
+		"uuid_message",  ack.getMessageGUID ()
             ));
                 
-            uuidPublisher.publish (q, uuid);
+            uuidPublisher.publish (getQueue (), uuid);
             
         }
+        catch (Fault ex) {
+            logger.log (Level.SEVERE, "Can't place " + getTableClass ().getSimpleName (), ex);
+            fail (db, ex.getFaultInfo (), r, VocGisStatus.i.FAILED_STATE);
+            return;
+        }            
         catch (Exception ex) {
-
-	    if (ex.getMessage().contains("HTTP status code 429")) {
-
-
-		r.remove(EnTable.c.UUID.lc());
-		r.put("ts_from", new Timestamp(System.currentTimeMillis() + WS_GIS_THROTTLE_MS));
-
-		logger.log(Level.INFO, "HTTP status code 429: retry import resource contract objects " + uuid);
-
-//		uuidPublisher.publish(getOwnQueue(), uuid);
-
-		return;
-	    }
-
-	    logger.log (Level.SEVERE, "Cannot import supply resource contract objects", ex);
+            
+            if (ex instanceof WebServiceException && ex.getMessage ().endsWith ("Too Many Requests")) {
+                
+                logger.log (Level.WARNING, "Let's wait for 5 s...", ex);
+                
+                try {
+                    Thread.sleep (5000L);
+                }
+                catch (InterruptedException ex1) {
+                    logger.log (Level.WARNING, "Interrupted? OK.");
+                }
+                
+                uuidPublisher.publish (ownDestination, uuid);
+                
+                return;
+                
+            }
+            
+            logger.log (Level.SEVERE, "Cannot invoke WS", ex);
+            fail (db, ex.getMessage (), VocGisStatus.i.FAILED_STATE, ex, r);
+            return;            
         }
 
     }
 
+    Queue getQueue () {
+        return outExportSupplyResourceContractObjectsQueue;
+    }
+
+    @Override
+    protected final Queue getFilesQueue () {
+        return null;
+    }
+
+    @Override
+    protected Table getFileLogTable () {
+        return null;
+    }
+
+    @Override
+    protected Col getStatusCol () {
+        return null;
+    }
 }

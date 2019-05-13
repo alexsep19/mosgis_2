@@ -9,6 +9,7 @@ import static ru.eludia.base.model.def.Def.NEW_UUID;
 import static ru.eludia.base.model.def.Def.NOW;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganization;
+import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
 
 public class InImportSupplyResourceContractObject extends Table {
 
@@ -21,7 +22,8 @@ public class InImportSupplyResourceContractObject extends Table {
 	TS               (Type.TIMESTAMP, NOW,      "Дата/время записи в БД"),
 	TS_FROM          (Type.TIMESTAMP, null,     "Дата/время обработать позже"),
 	UUID_ORG         (VocOrganization.class,    "Организация-инициатор импорта"),
-	UUID_OUT_SOAP    (OutSoap.class, null,      "Импорт")
+	UUID_OUT_SOAP    (OutSoap.class, null,      "Импорт"),
+	UUID_VC_ORG_LOG  (VocOrganizationLog.class, null, "Родительское событие истории организации")
         ;
         
         @Override
