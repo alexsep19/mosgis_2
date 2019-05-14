@@ -1,24 +1,22 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
-import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.def.Num;
-import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnColEnum;
 import ru.eludia.products.mosgis.db.model.EnTable;
-import ru.eludia.products.mosgis.db.model.MosGisModel;
 import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocUnom;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractObjectAddressResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractObjectAddressResultType.Pair;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractObjectAddressResultType.PlannedVolume;
 
 public class SupplyResourceContractObject extends EnTable {
 
@@ -86,6 +84,8 @@ public class SupplyResourceContractObject extends EnTable {
 
 	r.put (c.ID_CTR_STATUS.lc(), VocGisStatus.i.APPROVED.getId());
 
+	final Map<String, Map<String, Object>> transportguid2subj = new HashMap();
+
 	for (Pair pair : obj.getPair()) {
 
 	    Map<String, Object> subj = DB.to.Map(pair);
@@ -101,6 +101,21 @@ public class SupplyResourceContractObject extends EnTable {
 		subj.put(SupplyResourceContractSubject.c.IS_HEAT_OPEN.lc(), DB.eq(hs.getOpenOrNot(), "Opened")? 1 : 0);
 		subj.put(SupplyResourceContractSubject.c.IS_HEAT_CENTRALIZED.lc(), DB.eq(hs.getCentralizedOrNot(), "Centralized") ? 1 : 0);
 	    }
+
+	    transportguid2subj.put(DB.to.String(subj.get("transportguid")), subj);
+	}
+
+	for (PlannedVolume vol : obj.getPlannedVolume()) {
+
+	    final Map<String, Object> v = DB.to.Map(vol);
+	    final Map<String, Object> subj = transportguid2subj.get(vol.getPairKey());
+
+	    if (DB.ok (subj)) {
+		subj.put(SupplyResourceContractSubject.c.VOLUME.lc(), v.get("volume"));
+		subj.put(SupplyResourceContractSubject.c.UNIT.lc(), v.get("unit"));
+		subj.put(SupplyResourceContractSubject.c.FEEDINGMODE.lc(), v.get("feedingmode"));
+	    }
+
 	}
 
 	return r;

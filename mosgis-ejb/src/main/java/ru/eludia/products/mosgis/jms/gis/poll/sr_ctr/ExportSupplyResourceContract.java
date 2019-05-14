@@ -1,6 +1,7 @@
 package ru.eludia.products.mosgis.jms.gis.poll.sr_ctr;
 
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -14,6 +15,8 @@ import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractDimension;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractType;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractType.ContractSubject;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractType.PlannedVolume;
 
 public class ExportSupplyResourceContract {
 
@@ -112,7 +115,7 @@ public class ExportSupplyResourceContract {
 	    r.put(c.DDT_M_END_NXT.lc(), DB.ok(t.getPeriod().getEnd().isNextMonth()) ? 1 : 0);
 	}
 
-	addContractSubjects (r, t.getContractSubject ());
+	addContractSubjects (r, t.getContractSubject (), t.getPlannedVolume());
 
 	return r;
     }
@@ -147,8 +150,27 @@ public class ExportSupplyResourceContract {
 	return DB.eq(dt, "-1")? 99 : dt;
     }
 
-    private static void addContractSubjects(Map<String, Object> r, List<ExportSupplyResourceContractType.ContractSubject> contractSubject) {
+    private static void addContractSubjects(Map<String, Object> r, List<ContractSubject> contractSubject, List<PlannedVolume> subjectVolumes) {
+
 	r.put(SupplyResourceContractSubject.TABLE_NAME, contractSubject.stream().map(t -> toMap(t)).collect(Collectors.toList()));
+
+	final Map<String, Map<String, Object>> transportguid2subj = new HashMap();
+
+	for (Map<String, Object> i : (List <Map<String, Object>>) r.get(SupplyResourceContractSubject.TABLE_NAME)) {
+	    transportguid2subj.put(DB.to.String(i.get("transportguid")), i);
+	}
+
+	for (PlannedVolume vol : subjectVolumes) {
+	    final Map<String, Object> v = DB.to.Map(vol);
+	    final Map<String, Object> subj = transportguid2subj.get(vol.getPairKey());
+	    if (DB.ok (subj)) {
+		subj.put(SupplyResourceContractSubject.c.VOLUME.lc(), v.get("volume"));
+		subj.put(SupplyResourceContractSubject.c.UNIT.lc(), v.get("unit"));
+		subj.put(SupplyResourceContractSubject.c.FEEDINGMODE.lc(), v.get("feedingmode"));
+	    }
+
+	}
+
     }
 
     private static Map<String, Object> toMap(ExportSupplyResourceContractType.ContractSubject cs) {
