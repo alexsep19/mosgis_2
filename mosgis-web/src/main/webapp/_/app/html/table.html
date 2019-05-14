@@ -6,7 +6,7 @@
 		margin: 0 0 20px 0;
 	}
 
-	.ttt caption {
+	.ttt th.caption {
 		font-size: 15px;
 		text-align: left;
 		font-weight: bold;
@@ -35,11 +35,15 @@
         <td class="main-title">
         	Таблица <span data-text=item.recid />: <span data-text=item.label />
         </td>
+        <td class="main-title" align=right>
+        	<button name=print style="padding:8px;margin:0 15px 0 0;">MS Excel</button>
+        </td>
     </tr>
 </table>
 
 <table width=100% cellpadding=5 cellspacing=0 class="ttt">
-	<caption>Скалярные поля</caption>
+	<tr>
+		<th colspan=8 class=caption>Скалярные поля
 	<tr>
 		<th>Имя
 		<th>Ссылка на
@@ -60,25 +64,24 @@
 		<td data-text=prc />
 		<td data-text=def />
 	</tr>
-</table>
 
-<table width=100% cellpadding=5 cellspacing=0 class="ttt">
-	<caption>Ссылки на эту таблицу</caption>
 	<tr>
-		<th colspan=2>Таблица
-		<th colspan=2>Столбец
+		<th colspan=8 class=caption>Ссылки на эту таблицу
+	<tr>
+		<th colspan=4>Таблица
+		<th colspan=4>Столбец
 	</tr>
 	<tr>
-		<th>Имя
-		<th>Комментарий
-		<th>Имя
-		<th>Комментарий
+		<th colspan=2>Имя
+		<th colspan=2>Комментарий
+		<th colspan=2>Имя
+		<th colspan=2>Комментарий
 	</tr>
 	<tr data-list=back>
-		<td data-text=tn class=link />
-		<td data-text=tl />
-		<td data-text=cn />
-		<td data-text=cl />
+		<td colspan=2 data-text=tn class=link />
+		<td colspan=2 data-text=tl />
+		<td colspan=2 data-text=cn />
+		<td colspan=2 data-text=cl />
 	</tr>
 
 </table>

@@ -1,21 +1,11 @@
 define ([], function () {   
-/*
-    $_DO.open_tables = function (e) {
-        
-        var id = e.target
-        
-        var type = 
-            parseInt (id) > 0 ? 'voc_nsi' : 
-            id
 
-        if (!type || /[A-Z]$/.test (type)) return
-                
-        w2utils.lock ($(w2ui ['vocs_layout'].el ('main')), {spinner: true})
-
-        use.block (type)
-
+    $_DO.print_tables = function (e) {
+    
+        this.owner.saveAsXLS ('Таблицы БД mosgis')
+    
     }
-*/
+
     return function (done) {
 
         query ({type: 'tables'}, {}, function (data) {        

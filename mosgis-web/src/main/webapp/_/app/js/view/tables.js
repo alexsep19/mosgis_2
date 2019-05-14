@@ -16,6 +16,14 @@ define ([], function () {
                 footer: true,
             },
             
+            toolbar: {
+
+                items: [
+                    {type: 'button', id: 'print', caption: 'MS Excel', onClick: $_DO.print_tables},
+                ]
+
+            },
+            
             searches: [            
                 {field: 'recid',  caption: 'Имя',  type: 'text', operator: 'contains'},
                 {field: 'label',  caption: 'Комментарий',  type: 'text', operator: 'contains'},
