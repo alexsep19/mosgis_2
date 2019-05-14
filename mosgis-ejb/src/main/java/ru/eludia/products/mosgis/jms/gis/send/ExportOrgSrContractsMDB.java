@@ -43,7 +43,7 @@ public class ExportOrgSrContractsMDB extends UUIDMDB<VocOrganizationLog> {
     @Override
     protected Get get (UUID uuid) {
         return (Get) ModelHolder.getModel ()
-            .get (VocOrganizationLog.class, uuid, "AS log", "*")
+            .get (VocOrganizationLog.class, uuid, "AS log", "exportcontractrootguid AS exportcontractrootguid")
             .toOne (VocOrganization.class, "AS org", VocOrganization.c.ORGPPAGUID.lc () + " AS ppa").on ("log.uuid_object=org.uuid");
     }    
     
@@ -52,7 +52,7 @@ public class ExportOrgSrContractsMDB extends UUIDMDB<VocOrganizationLog> {
                 
         try {
 
-	    AckRequest.Ack ack = wsGisHouseManagementClient.exportSupplyResourceContractData ((UUID) r.get ("ppa"), uuid, null);
+	    AckRequest.Ack ack = wsGisHouseManagementClient.exportSupplyResourceContractData ((UUID) r.get ("ppa"), uuid, (UUID) r.get("exportcontractrootguid"));
 
             db.update (OutSoap.class, DB.HASH (
                 "uuid",     uuid,

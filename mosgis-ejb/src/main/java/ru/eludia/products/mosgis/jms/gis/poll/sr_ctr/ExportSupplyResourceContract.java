@@ -3,9 +3,9 @@ package ru.eludia.products.mosgis.jms.gis.poll.sr_ctr;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract.c;
@@ -19,9 +19,11 @@ public class ExportSupplyResourceContract {
 
     public static Map<String, Object> toHASH(ExportSupplyResourceContractResultType t) {
 
-	Map<String, Object> r = DB.HASH(
-	    c.ID_CTR_STATUS.lc(), VocGisStatus.i.APPROVED.getId(),
-	    c.ID_CTR_STATUS_GIS.lc(), VocGisStatus.i.APPROVED.getId(),
+	final VocGisStatus.i status = toStatusGis (t.getVersionStatus());
+
+	final Map<String, Object> r = DB.HASH(
+	    c.ID_CTR_STATUS.lc(), status.getId(),
+	    c.ID_CTR_STATUS_GIS.lc(), status.getId(),
 	    c.CONTRACTGUID.lc(), t.getContractGUID(),
 	    c.CONTRACTROOTGUID.lc(), t.getContractRootGUID()
 	);
@@ -113,6 +115,23 @@ public class ExportSupplyResourceContract {
 	addContractSubjects (r, t.getContractSubject ());
 
 	return r;
+    }
+
+    private static VocGisStatus.i toStatusGis (String versionStatus) {
+
+	switch (versionStatus) {
+	    case "Draft":
+		return VocGisStatus.i.PROJECT;
+	    case "Posted":
+		return VocGisStatus.i.APPROVED;
+	    case "Terminated":
+		return VocGisStatus.i.TERMINATED;
+	    case "Annul":
+		return VocGisStatus.i.ANNUL;
+	    default:
+		Logger.getLogger(ExportSupplyResourceContract.class.getName()).log(Level.WARNING, "Unknown status " + versionStatus + ". Will use FAILED_STATE instead");
+		return VocGisStatus.i.FAILED_STATE;
+	}
     }
 
     private static Object toSrCtrDate(BigInteger dt) {

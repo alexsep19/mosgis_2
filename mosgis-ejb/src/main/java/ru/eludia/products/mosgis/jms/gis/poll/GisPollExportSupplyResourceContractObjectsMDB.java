@@ -59,6 +59,9 @@ public class GisPollExportSupplyResourceContractObjectsMDB extends GisPollMDB {
     @Resource (mappedName = "mosgis.inExportOrgSrContractObjectsQueue")
     Queue inExportOrgSrContractObjectsQueue;
 
+    @Resource (mappedName = "mosgis.inExportSupplyResourceContractObjectsQueue")
+    Queue inExportSupplyResourceContractObjectsQueue;
+
     @Override
     protected Get get (UUID uuid) {
 
@@ -136,6 +139,31 @@ public class GisPollExportSupplyResourceContractObjectsMDB extends GisPollMDB {
 
 	    if (!DB.ok(result.isIsLastPage())) {
 		logger.log(Level.WARNING, "Is NOT last page, more ObjectAddress exists, pagination not implemented yet..");
+	    }
+
+	    if (DB.ok(result.isIsLastPage())) {
+
+		logger.log(Level.INFO, "Last ObjectAddress page, import complete.");
+
+	    } else {
+
+		logger.log(Level.INFO, "NOT Last ObjectAddress page, scheduling next page...");
+
+		String id_log = db.insertId (SupplyResourceContractLog.class, HASH (
+		    "action", VocAction.i.IMPORT_SR_CONTRACT_OBJECTS,
+		    "uuid_object", r.get("log.uuid_object"),
+		    "uuid_user", r.get("log.uuid_user"),
+		    "exportobjectguid", result.getExportObjectGUID()
+		)).toString ();
+
+		db.update (SupplyResourceContract.class, HASH (
+		    "uuid", r.get("log.uuid_object"),
+		    "id_log", id_log
+		));
+
+		uuidPublisher.publish(inExportSupplyResourceContractObjectsQueue, id_log);
+
+		checkNext = false;
 	    }
 
 	    db.update(OutSoap.class, HASH(

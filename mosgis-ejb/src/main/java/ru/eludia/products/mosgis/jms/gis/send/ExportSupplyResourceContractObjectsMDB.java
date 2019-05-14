@@ -60,7 +60,7 @@ public class ExportSupplyResourceContractObjectsMDB extends GisExportMDB<SupplyR
     }
         
     AckRequest.Ack invoke (DB db, UUID messageGUID, Map<String, Object> r) throws Fault, SQLException {                        
-        return wsGisHouseManagementClient.exportSupplyResourceContractObjectAddressData ((UUID) r.get ("ppa"), messageGUID, (UUID) r.get("contractrootguid"));
+        return wsGisHouseManagementClient.exportSupplyResourceContractObjectAddressData ((UUID) r.get ("ppa"), messageGUID, (UUID) r.get("contractrootguid"), (UUID) r.get("exportobjectguid"));
     }
 
     @Override

@@ -58,7 +58,10 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
     private Queue inOrgQueue;
 
     @Resource (mappedName = "mosgis.inExportOrgSrContractObjectsQueue")
-    private Queue InExportOrgSrContractObjectsQueue;
+    private Queue inExportOrgSrContractObjectsQueue;
+
+    @Resource (mappedName = "mosgis.inExportOrgSrContractsQueue")
+    private Queue inExportOrgSrContractsQueue;
 
     @Override
     protected Get get (UUID uuid) {
@@ -132,13 +135,30 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 
 	    logger.log(Level.INFO, "import supply resource contracts DONE, scheduling import objects...");
 
-	    uuidPublisher.publish(InExportOrgSrContractObjectsQueue, (UUID) r.get("log.uuid"));
+	    uuidPublisher.publish(inExportOrgSrContractObjectsQueue, (UUID) r.get("log.uuid"));
 
 
-	    if (!DB.ok(result.isIsLastPage())) {
+	    if (DB.ok(result.isIsLastPage())) {
 
-		logger.log(Level.WARNING, "Is NOT last page, more supply resource contract objects exists, pagination not implemented yet..");
+		logger.log(Level.INFO, "Last supply resource contracts page, import complete.");
 
+	    } else {
+
+		logger.log(Level.INFO, "NOT Last supply resource contracts page, scheduling next page...");
+
+		String id_log = db.insertId (VocOrganizationLog.class, HASH (
+		    "action", VocAction.i.IMPORT_SR_CONTRACTS,
+		    "uuid_object", r.get("log.uuid_object"),
+		    "uuid_user", r.get("log.uuid_user"),
+		    "exportcontractrootguid", result.getExportContractRootGUID()
+		)).toString ();
+
+		db.update (VocOrganization.class, HASH (
+		    "orgrootentityguid", r.get("log.uuid_object"),
+		    "id_log", id_log
+		));
+
+		uuidPublisher.publish(inExportOrgSrContractsQueue, id_log);
 	    }
 
 	    db.update(OutSoap.class, HASH(
@@ -179,6 +199,15 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 	final Map<String, Object> h = ExportSupplyResourceContract.toHASH (t);
 
 	if (!DB.ok (h)) return;
+
+	if (!DB.ok(h.get("id_ctr_status_gis"))) {
+	    throw new UnknownSomethingException("Неизвестный VersionStatus " + t.getVersionStatus());
+	}
+
+	if (DB.eq (h.get("id_ctr_status_gis"), VocGisStatus.i.PROJECT.getId())) {
+	    logger.log(Level.INFO, "Skipping supply resource contract " + t.getContractRootGUID() + " due to VersionStatus = Draft approve blocked by gisgkh...");
+	    return;
+	}
 
 	if(DB.ok(h.get(SupplyResourceContract.c.UUID_ORG.lc()))
 	    && !checkOrgGUID(db, h.get(SupplyResourceContract.c.UUID_ORG.lc()))
