@@ -20,7 +20,7 @@ public class Payment extends EnTable {
 
 	UUID_XL                       (InXlFile.class, null, "Источник импорта"),
 
-	UUID_ORG                      (VocOrganization.class, null, "Организация, которая создала данный платёжный документ"),
+	UUID_ORG                      (VocOrganization.class, null, "Организация, которая создала данный платёж"),
 
 	ID_TYPE                       (VocPaymentBaseType.class, VocPaymentBaseType.DEFAULT,  "Тип основания для оплаты"),
 	UUID_ACCOUNT                  (Account.class,         null, "Лицевой счёт основание для оплаты, заполняется всегда"),
