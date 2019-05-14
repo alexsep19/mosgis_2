@@ -139,7 +139,6 @@ public class SupplyResourceContractSubject extends EnTable {
 		    + "     || TO_CHAR (:NEW.startsupplydate, 'DD.MM.YYYY') "
 		    + "     || ' должна быть больше или равна дате вступления договора в силу ' "
 		    + "     || TO_CHAR (ctr_effectivedate, 'DD.MM.YYYY') "
-		    + "     || '. Операция отменена.'"
 		    + "  ); "
                     + " END IF; "
 
@@ -149,7 +148,6 @@ public class SupplyResourceContractSubject extends EnTable {
 		    + "     || TO_CHAR (:NEW.endsupplydate, 'DD.MM.YYYY') "
 		    + "     || ' должна быть меньше или равна дате окончания действия договора ' "
 		    + "     || TO_CHAR (ctr_completiondate, 'DD.MM.YYYY') "
-		    + "     || '. Операция отменена.'"
 		    + "  ); "
                     + " END IF; "
 
