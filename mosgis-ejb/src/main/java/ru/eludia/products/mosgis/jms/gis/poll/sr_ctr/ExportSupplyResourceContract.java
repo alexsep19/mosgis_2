@@ -20,8 +20,8 @@ public class ExportSupplyResourceContract {
     public static Map<String, Object> toHASH(ExportSupplyResourceContractResultType t) {
 
 	Map<String, Object> r = DB.HASH(
-	    c.ID_CTR_STATUS.lc(), VocGisStatus.i.APPROVED.getId(),
-	    c.ID_CTR_STATUS_GIS.lc(), VocGisStatus.i.APPROVED.getId(),
+	    c.ID_CTR_STATUS.lc(), toStatusGis(t.getVersionStatus()),
+	    c.ID_CTR_STATUS_GIS.lc(), toStatusGis(t.getVersionStatus()),
 	    c.CONTRACTGUID.lc(), t.getContractGUID(),
 	    c.CONTRACTROOTGUID.lc(), t.getContractRootGUID()
 	);
@@ -113,6 +113,22 @@ public class ExportSupplyResourceContract {
 	addContractSubjects (r, t.getContractSubject ());
 
 	return r;
+    }
+
+    private static byte toStatusGis (String versionStatus) {
+
+	switch (versionStatus) {
+	    case "Draft":
+		return VocGisStatus.i.PROJECT.getId();
+	    case "Posted":
+		return VocGisStatus.i.APPROVED.getId();
+	    case "Terminated":
+		return VocGisStatus.i.TERMINATED.getId();
+	    case "Annul":
+		return VocGisStatus.i.ANNUL.getId();
+	    default:
+		return null;
+	}
     }
 
     private static Object toSrCtrDate(BigInteger dt) {

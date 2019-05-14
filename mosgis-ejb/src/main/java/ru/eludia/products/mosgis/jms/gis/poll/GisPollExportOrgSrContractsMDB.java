@@ -200,6 +200,15 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 
 	if (!DB.ok (h)) return;
 
+	if (!DB.ok(h.get("id_ctr_status_gis"))) {
+	    throw new UnknownSomethingException("Неизвестный VersionStatus " + t.getVersionStatus());
+	}
+
+	if (DB.eq (h.get("id_ctr_status_gis"), VocGisStatus.i.PROJECT.getId())) {
+	    logger.log(Level.INFO, "Skipping supply resource contract " + t.getContractRootGUID() + " due to VersionStatus = Draft approve blocked by gisgkh...")
+	    return;
+	}
+
 	if(DB.ok(h.get(SupplyResourceContract.c.UUID_ORG.lc()))
 	    && !checkOrgGUID(db, h.get(SupplyResourceContract.c.UUID_ORG.lc()))
 	) {
