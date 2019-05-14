@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 import ru.eludia.base.DB;
 import ru.eludia.base.Model;
+import ru.eludia.base.model.Type;
 import ru.eludia.base.db.sql.gen.Get;
 import ru.eludia.base.db.sql.gen.Select;
 import ru.eludia.products.mosgis.db.model.AttachTable;
@@ -48,6 +49,8 @@ public class SupplyResourceContractLog extends GisWsLogTable {
         );
 
 	fk    ("uuid_vc_org_log", VocOrganizationLog.class,         null,     "Родительское событие истории организации");
+
+	col   ("exportobjectguid", Type.UUID, null, "Идентификатор следующей страницы для события массового импорта ДРСО из ГИС ЖКХ");
     }
 
     public static ImportSupplyResourceContractRequest toImportSupplyResourceContractRequest(Map<String, Object> r) {

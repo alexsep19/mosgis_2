@@ -317,13 +317,17 @@ public class WsGisHouseManagementClient {
 
     }
 
-    public AckRequest.Ack exportSupplyResourceContractObjectAddressData (UUID orgPPAGuid, UUID messageGUID, UUID contractRootGuid) throws Fault {
+    public AckRequest.Ack exportSupplyResourceContractObjectAddressData (UUID orgPPAGuid, UUID messageGUID, UUID contractRootGuid, UUID exportObjectGUID) throws Fault {
 
         final ExportSupplyResourceContractObjectAddressRequest r = of.createExportSupplyResourceContractObjectAddressRequest();
                 
         r.setContractRootGUID(DB.to.String(contractRootGuid));
 
-        return getPort (orgPPAGuid, messageGUID).exportSupplyResourceContractObjectAddressData(r).getAck ();
+	if (DB.ok(exportObjectGUID)) {
+	    r.setExportObjectGUID(exportObjectGUID.toString());
+	}
+
+	return getPort (orgPPAGuid, messageGUID).exportSupplyResourceContractObjectAddressData(r).getAck ();
 
     }
 

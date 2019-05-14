@@ -15,7 +15,7 @@ public class VocOrganizationLog extends GisWsLogTable {
         super  ("vc_orgs__log","Юридические лица и частные предприниматели: история", VocOrganization.class,
                 VocOrganization.c.class
         );
-	col    ("exportcontractrootguid", Type.UUID, null, "Идентификатор следующей страницы для события массового импорта договоров из ГИС ЖКХ");
+	col    ("exportcontractrootguid", Type.UUID, null, "Идентификатор следующей страницы для события массового импорта ДРСО из ГИС ЖКХ");
     }
     
     public static final RegOrgType regOrgType (UUID uuid) {
