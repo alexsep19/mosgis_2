@@ -46,7 +46,7 @@ public class Payment extends EnTable {
 	CANCELLATIONCOMMENT           (Type.STRING, 210, null, "Причина аннулирования"),
 	IS_ANNULED                    (Type.BOOLEAN, new Virt("CASE WHEN CANCELLATIONDATE IS NULL THEN 0 ELSE 1 END"), "1, если запись аннулирована; иначе 0"),
 
-	ORDERGUID                     (Type.UUID,   null, "Идентификатор НПА в ГИС ЖКХ, он же NotificationsOfOrderExecutionGUID"),
+	ORDERGUID                     (Type.UUID,   null, "Идентификатор платежа в ГИС ЖКХ, он же NotificationsOfOrderExecutionGUID"),
 	UNIQUENUMBER                  (Type.STRING, null, "Уникальный номер, присвоенный ГИС ЖКХ"),
 	ORDERID                       (Type.STRING, new Virt("'' || UNIQUENUMBER"), "Уникальный номер, присвоенный ГИС ЖКХ (синоним)"),
 
