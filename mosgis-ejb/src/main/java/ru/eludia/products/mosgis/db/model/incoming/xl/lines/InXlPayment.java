@@ -97,7 +97,7 @@ public class InXlPayment extends EnTable {
 
     public InXlPayment () {
 
-        super (TABLE_NAME, "Строки импорта приборов учёта");
+        super (TABLE_NAME, "Строки импорта платежей");
 
         cols  (c.class);
 

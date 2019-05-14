@@ -20,7 +20,7 @@ public class Payment extends EnTable {
 
 	UUID_XL                       (InXlFile.class, null, "Источник импорта"),
 
-	UUID_ORG                      (VocOrganization.class, null, "Организация, которая создала данный платёжный документ"),
+	UUID_ORG                      (VocOrganization.class, null, "Организация, которая создала данный платёж"),
 
 	ID_TYPE                       (VocPaymentBaseType.class, VocPaymentBaseType.DEFAULT,  "Тип основания для оплаты"),
 	UUID_ACCOUNT                  (Account.class,         null, "Лицевой счёт основание для оплаты, заполняется всегда"),
@@ -46,7 +46,7 @@ public class Payment extends EnTable {
 	CANCELLATIONCOMMENT           (Type.STRING, 210, null, "Причина аннулирования"),
 	IS_ANNULED                    (Type.BOOLEAN, new Virt("CASE WHEN CANCELLATIONDATE IS NULL THEN 0 ELSE 1 END"), "1, если запись аннулирована; иначе 0"),
 
-	ORDERGUID                     (Type.UUID,   null, "Идентификатор НПА в ГИС ЖКХ, он же NotificationsOfOrderExecutionGUID"),
+	ORDERGUID                     (Type.UUID,   null, "Идентификатор платежа в ГИС ЖКХ, он же NotificationsOfOrderExecutionGUID"),
 	UNIQUENUMBER                  (Type.STRING, null, "Уникальный номер, присвоенный ГИС ЖКХ"),
 	ORDERID                       (Type.STRING, new Virt("'' || UNIQUENUMBER"), "Уникальный номер, присвоенный ГИС ЖКХ (синоним)"),
 

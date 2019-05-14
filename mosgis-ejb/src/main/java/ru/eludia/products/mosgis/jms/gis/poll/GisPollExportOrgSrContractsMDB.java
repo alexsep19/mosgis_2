@@ -27,6 +27,7 @@ import ru.eludia.products.mosgis.db.ModelHolder;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.InVocOrganization;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractFile;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubjectLog;
@@ -38,8 +39,10 @@ import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollMDB;
 import ru.eludia.products.mosgis.jms.gis.poll.base.GisPollRetryException;
 import ru.eludia.products.mosgis.jms.gis.poll.sr_ctr.ExportSupplyResourceContract;
 import ru.eludia.products.mosgis.jms.gis.send.ExportSupplyResourceContractObjectsMDB;
+import ru.eludia.products.mosgis.ws.rest.clients.RestGisFilesClient;
 import ru.gosuslugi.dom.schema.integration.house_management_service_async.Fault;
 import ru.eludia.products.mosgis.ws.soap.clients.WsGisHouseManagementClient;
+import ru.gosuslugi.dom.schema.integration.base.AttachmentType;
 import ru.gosuslugi.dom.schema.integration.base.ErrorMessageType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.GetStateResult;
@@ -62,6 +65,12 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 
     @Resource (mappedName = "mosgis.inExportOrgSrContractsQueue")
     private Queue inExportOrgSrContractsQueue;
+
+    @Resource(mappedName = "mosgis.outExportSupplyResourceContractFilesQueue")
+    private Queue outExportSupplyResourceContractFilesQueue;
+
+    @EJB
+    RestGisFilesClient filesClient;
 
     @Override
     protected Get get (UUID uuid) {
@@ -246,6 +255,8 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 
 	    mergeSubjects (db, h, uuid_out_soap, uuid_message, uuid_user);
 
+	    storeFiles (db, r, t, uuid);
+
 	} catch (SQLException e) {
 
 	    if (e.getErrorCode () != 20000) {
@@ -258,6 +269,13 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 
 	    throw new UnknownSomethingException(s);
 	}
+    }
+    
+    public void storeFiles (DB db, Map<String, Object> r, ExportSupplyResourceContractResultType t, UUID uuid_sr_ctr) throws SQLException, UnknownSomethingException {
+
+	SupplyResourceContractFile.Sync contractFiles = ((SupplyResourceContractFile) db.getModel().get (SupplyResourceContractFile.class)).new Sync (db, uuid_sr_ctr, filesClient, outExportSupplyResourceContractFilesQueue);
+	contractFiles.addFrom (t);
+	contractFiles.sync ();
     }
 
     void mergeSubjects (DB db, Map<String, Object> h, Object uuid_out_soap, Object uuid_message, Object uuid_user) throws SQLException {

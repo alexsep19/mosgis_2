@@ -59,6 +59,7 @@ public class ExportSupplyResourceContract {
 
 	Map<String, Object> rr = DB.HASH();
         ExportSupplyResourceContractResultType.IsNotContract isNotContract = t.getIsNotContract ();
+
         if (isNotContract != null) {
             rr = DB.to.Map (isNotContract);
             rr.put (c.IS_CONTRACT.lc (), 0);
