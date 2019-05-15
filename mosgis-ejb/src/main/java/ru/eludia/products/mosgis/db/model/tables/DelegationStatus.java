@@ -28,9 +28,8 @@ public class DelegationStatus extends View {
 
     public DelegationStatus () {
         super (TABLE_NAME, "Статус делегирования организации");
-        cols  (AccessRequest.c.class);
         cols  (c.class);
-        pk    (AccessRequest.c.ACCESSREQUESTGUID);
+        pk    (c.UUID);
     }
 
     @Override
@@ -43,8 +42,8 @@ public class DelegationStatus extends View {
             + " LEFT JOIN " + AnyAccessRequest.TABLE_NAME + " t"
             + "     ON t.orgrootentityguid = o.orgrootentityguid"
             + " GROUP BY o.uuid"
-        ; 
-        
-    }       
+        ;
+
+    }
 
 }
