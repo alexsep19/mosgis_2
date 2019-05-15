@@ -6,7 +6,6 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
-import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
 import ru.eludia.base.model.Table;
@@ -125,7 +124,15 @@ public class VocBuilding extends Table {
 
     public static void addCaCh (DB db, JsonObjectBuilder jb, Object fiashouseguid) throws SQLException {
         
-        JsonObject caCh = db.getJsonObject (db.getModel ()
+        JsonObject caCh = getCaCh(db, fiashouseguid);
+
+        if (caCh != null) jb.add ("cach", caCh);
+        
+    }
+    
+    public static JsonObject getCaCh (DB db, Object fiashouseguid) throws SQLException {
+        
+        return db.getJsonObject (db.getModel ()
             .select (ActualCaChObject.class, "AS root", "uuid", "id_ctr_status_gis", "is_own")
             .toOne (VocOrganization.class, "AS org", "uuid", "label").on ()
             .toMaybeOne (Contract.class, "AS ctr", "uuid", "docnum", "signingdate").on ()
@@ -135,13 +142,19 @@ public class VocBuilding extends Table {
             .orderBy ("root.id_ctr_status_gis")
         );
 
-        if (caCh != null) jb.add ("cach", caCh);
-        
     }
     
     public static void addSRCa (DB db, JsonObjectBuilder jb, Object fiashouseguid, Object userOrgUuid) throws SQLException {
         
-        JsonObject srCa = db.getJsonObject (db.getModel ()
+        JsonObject srCa = getSRCa(db, fiashouseguid, userOrgUuid);
+        
+        if (srCa != null) jb.add ("srca", srCa);
+        
+    }
+    
+    public static JsonObject getSRCa (DB db, Object fiashouseguid, Object userOrgUuid) throws SQLException {
+        
+       return db.getJsonObject (db.getModel ()
             .select     (ActualSupplyResourceContractObject.class, "AS root", "*")
             .toOne      (VocOrganization.class, "AS org", "uuid", "label").on ()
             .toMaybeOne (SupplyResourceContract.class, "AS ctr", "uuid", "contractnumber", "signingdate").on ()
@@ -149,9 +162,6 @@ public class VocBuilding extends Table {
             .and        ("uuid_org", userOrgUuid)
             .orderBy    ("root.id_ctr_status")
         );
-        
-        if (srCa != null) jb.add ("srca", srCa);
-        
     }
-
+    
 }
