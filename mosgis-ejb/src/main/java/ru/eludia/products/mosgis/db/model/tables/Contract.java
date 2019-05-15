@@ -355,6 +355,7 @@ public class Contract extends EnTable {
         + "END;");
         
         trigger ("AFTER UPDATE", ""
+                
             + "BEGIN"
             + " IF :OLD.is_deleted = 0 AND :NEW.is_deleted = 1 THEN "
             + "  UPDATE tb_contract_objects SET is_deleted = 1 WHERE uuid_contract = :NEW.uuid; "
@@ -362,7 +363,13 @@ public class Contract extends EnTable {
             + "  UPDATE tb_contract_services SET is_deleted = 1 WHERE uuid_contract = :NEW.uuid; "
             + "  INSERT INTO tb_contract_services__log (uuid_object, action) SELECT uuid, 'delete' FROM tb_contract_services WHERE uuid_contract = :NEW.uuid; "
             + " END IF;"
+                
+            + " IF :OLD.PLANDATECOMPTETION <> :NEW.PLANDATECOMPTETION THEN "
+            + "  UPDATE tb_contract_objects SET ENDDATE = :NEW.PLANDATECOMPTETION WHERE uuid_contract = :NEW.uuid AND ENDDATE = :OLD.PLANDATECOMPTETION; "
+            + " END IF;"
+                
             + "END;"
+                
         );        
 
     }
