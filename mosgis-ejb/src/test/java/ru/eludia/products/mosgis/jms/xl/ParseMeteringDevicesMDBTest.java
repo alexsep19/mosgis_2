@@ -10,8 +10,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocFileStatus;
 
 public class ParseMeteringDevicesMDBTest extends BaseTest {
     
-//    private static final UUID uuid = UUID.fromString ("88D4E352-3303-FAED-E050-007F0101237A");
-    private static final UUID uuid = UUID.fromString ("88D4E352-3306-FAED-E050-007F0101237A");
+    private static final UUID uuid = UUID.fromString ("88E8007B-59B3-EA6A-E050-007F01011DEC");
 
     ParseMeteringDevicesMDB mdb = new ParseMeteringDevicesMDB ();
     
