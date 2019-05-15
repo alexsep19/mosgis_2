@@ -53,6 +53,7 @@ define ([], function () {
                 vc_acc_req_types: 1,
                 vc_gis_status: 1,
                 vc_actions: 1,
+                vc_delegation_status: 1,
             })
 
             var it = data.item

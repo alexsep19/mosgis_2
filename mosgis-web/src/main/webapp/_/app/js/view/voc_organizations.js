@@ -40,6 +40,7 @@ define ([], function () {
                 {field: 'label', caption: 'Наименование (ФИО)',    size: 100},
                 {field: 'inn', caption: 'ИНН',    size: 15},
                 {field: 'kpp', caption: 'КПП',    size: 10},
+                {field: 'id_dlg_status', caption: 'Делегирование прав', size: 10, voc: data.vc_delegation_status},
             ],
 
             url: '/_back/?type=voc_organizations',

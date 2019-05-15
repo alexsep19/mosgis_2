@@ -177,8 +177,8 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
     @Override
     public JsonObject select (JsonObject p, User user) {
         
-        Select select = ModelHolder.getModel ().select (VocOrganization.class, "*", "uuid AS id")
-            .toMaybeOne (DelegationStatus.class, "AS dlg_status", "*").on ("root.uuid=dlg_status.uuid")
+        Select select = ModelHolder.getModel ().select (VocOrganization.class, "AS root", "*", "uuid AS id")
+            .toMaybeOne (DelegationStatus.class, "AS dlg_status", "id_dlg_status AS id_dlg_status").on ("root.uuid=dlg_status.uuid")
             .where ("id_type", p.getString ("id_type", null))
             .and ("is_deleted", 0)
             .orderBy ("label")

@@ -12,8 +12,9 @@ define ([], function () {
     return function (data, view) {
         
         var it = data.item
+               
+        it.label_delegated = data.vc_delegation_status [it ['dlg_status.id_dlg_status']]
         
-        it.label_delegated = data.is_delegated ? 'Да' : 'Нет'        
         it.label_registered = it.isregistered ? 'Да' : 'Нет'
         it.label_actual = it.isactual ? 'Да' : 'Нет'
         
@@ -34,7 +35,7 @@ define ([], function () {
             name: 'voc_organization_legal_form',
             record: it,
             onRefresh: function () {
-                if (data.is_delegated && is_own) clickOn ($('#delegated'), function () {
+                if (it ['dlg_status.id_dlg_status'] != 0 && is_own) clickOn ($('#delegated'), function () {
                     w2ui ['topmost_layout'].get ('main').tabs.click ('voc_organization_legal_access_requests')
                 })
                 
@@ -59,7 +60,7 @@ define ([], function () {
 
                         tabs: [
                             {id: 'voc_organization_legal_users', caption: 'Учётные записи', off: !is_own},
-                            {id: 'voc_organization_legal_access_requests', caption: 'Делегированные права', off: !data.is_delegated || !is_own},
+                            {id: 'voc_organization_legal_access_requests', caption: 'Делегированные права', off: it ['dlg_status.id_dlg_status'] == 0 || !is_own},
                             {id: 'voc_organization_legal_log', caption: 'История'},
                         ].filter(not_off),
 
