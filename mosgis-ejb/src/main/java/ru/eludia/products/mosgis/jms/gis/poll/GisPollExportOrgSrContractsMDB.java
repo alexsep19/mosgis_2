@@ -29,6 +29,8 @@ import ru.eludia.products.mosgis.db.model.incoming.InVocOrganization;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractFile;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractQualityLevel;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractOtherQualityLevel;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubjectLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -307,7 +309,6 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 	    } else { // else keep insert UUID = TransportGUID
 		id = db.insertId (SupplyResourceContractSubject.class, i).toString();
 	    }
-
             
             String idLog = db.insertId (SupplyResourceContractSubjectLog.class, HASH (
 		"action", VocAction.i.IMPORT_SR_CONTRACTS,
@@ -321,6 +322,32 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 		"uuid", id,
 		"id_log", idLog
 	    ));
+	    
+	    for (Map<String, Object> q: (List<Map<String, Object>>) i.get (SupplyResourceContractQualityLevel.TABLE_NAME)) {
+
+		q.put(SupplyResourceContractQualityLevel.c.UUID_SR_CTR.lc(), uuid);
+
+		q.put(SupplyResourceContractQualityLevel.c.UUID_SR_CTR_SUBJ.lc(), id);
+
+		db.upsertId(SupplyResourceContractQualityLevel.class, q
+		    , SupplyResourceContractQualityLevel.c.UUID_SR_CTR.lc()
+		    , SupplyResourceContractQualityLevel.c.UUID_SR_CTR_SUBJ.lc()
+		    , SupplyResourceContractQualityLevel.c.CODE_VC_NSI_276.lc()
+		);
+	    }
+
+	    for (Map<String, Object> q: (List<Map<String, Object>>) i.get (SupplyResourceContractOtherQualityLevel.TABLE_NAME)) {
+
+		q.put(SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR.lc(), uuid);
+
+		q.put(SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR_SUBJ.lc(), id);
+
+		db.upsertId(SupplyResourceContractOtherQualityLevel.class, q
+		    , SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR.lc()
+		    , SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR_SUBJ.lc()
+		    , SupplyResourceContractOtherQualityLevel.c.LABEL.lc()
+		);
+	    }
         }
     }
 

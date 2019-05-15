@@ -1,5 +1,7 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.Map;
+import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Type;
@@ -12,8 +14,11 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractQualityLevelType;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractType;
 
 public class SupplyResourceContractOtherQualityLevel extends EnTable {
+
+    public static final String TABLE_NAME = "tb_sr_ctr_other_qls";
 
     public enum c implements EnColEnum {
 
@@ -81,7 +86,7 @@ public class SupplyResourceContractOtherQualityLevel extends EnTable {
 
     public SupplyResourceContractOtherQualityLevel () {
 
-        super ("tb_sr_ctr_other_qls", "Иные качества договора РСО");
+        super (TABLE_NAME, "Иные качества договора РСО");
 
         cols  (c.class);
 
@@ -186,4 +191,36 @@ public class SupplyResourceContractOtherQualityLevel extends EnTable {
         + "END;");
     }
 
+    public static Map<String, Object> toMap(ExportSupplyResourceContractType.OtherQualityIndicator q) {
+
+	final Map<String, Object> r = DB.HASH();
+
+	r.put(c.ADDITIONALINFORMATION.lc(), q.getAdditionalInformation());
+
+	r.put(c.LABEL.lc(), q.getIndicatorName());
+
+	ExportSupplyResourceContractType.OtherQualityIndicator.IndicatorValue val = q.getIndicatorValue();
+
+	if (val.isCorrespond() != null) {
+	    r.put(c.ID_TYPE.lc(), VocGisContractQualityLevelType.i.CORRESPOND.getId());
+	    r.put(c.INDICATORVALUE_IS.lc(), DB.ok(val.isCorrespond())? 1 : 0);
+	}
+
+	if (DB.ok(val.getNumber())) {
+	    r.put(c.ID_TYPE.lc(), VocGisContractQualityLevelType.i.NUMBER.getId());
+	    r.put(c.INDICATORVALUE.lc(), val.getNumber());
+	}
+
+	if (DB.ok(val.getStartRange())) {
+	    r.put(c.ID_TYPE.lc(), VocGisContractQualityLevelType.i.RANGE.getId());
+	    r.put(c.INDICATORVALUE_FROM.lc(), val.getStartRange());
+	    r.put(c.INDICATORVALUE_TO.lc(), val.getEndRange());
+	}
+
+	if(DB.ok(val.getOKEI())) {
+	    r.put(c.CODE_VC_OKEI.lc(), val.getOKEI());
+	}
+
+	return r;
+    }
 }

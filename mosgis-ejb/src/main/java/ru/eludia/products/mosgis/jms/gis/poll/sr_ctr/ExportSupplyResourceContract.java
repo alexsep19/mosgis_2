@@ -1,6 +1,7 @@
 package ru.eludia.products.mosgis.jms.gis.poll.sr_ctr;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,8 @@ import java.util.stream.Collectors;
 import ru.eludia.base.DB;
 import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract.c;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractOtherQualityLevel;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractQualityLevel;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractDimension;
@@ -17,6 +20,8 @@ import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResource
 import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractType.ContractSubject;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractType.PlannedVolume;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractType.Quality;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractType.OtherQualityIndicator;
 
 public class ExportSupplyResourceContract {
 
@@ -116,7 +121,7 @@ public class ExportSupplyResourceContract {
 	    r.put(c.DDT_M_END_NXT.lc(), DB.ok(t.getPeriod().getEnd().isNextMonth()) ? 1 : 0);
 	}
 
-	addContractSubjects (r, t.getContractSubject (), t.getPlannedVolume());
+	addContractSubjects (r, t.getContractSubject (), t.getPlannedVolume(), t.getQuality(), t.getOtherQualityIndicator());
 
 	return r;
     }
@@ -151,7 +156,7 @@ public class ExportSupplyResourceContract {
 	return DB.eq(dt, "-1")? 99 : dt;
     }
 
-    private static void addContractSubjects(Map<String, Object> r, List<ContractSubject> contractSubject, List<PlannedVolume> subjectVolumes) {
+    private static void addContractSubjects(Map<String, Object> r, List<ContractSubject> contractSubject, List<PlannedVolume> subjectVolumes, List<Quality> subjectQualityInds, List<OtherQualityIndicator> subjectOtherQualityInds) {
 
 	r.put(SupplyResourceContractSubject.TABLE_NAME, contractSubject.stream().map(t -> toMap(t)).collect(Collectors.toList()));
 
@@ -159,6 +164,8 @@ public class ExportSupplyResourceContract {
 
 	for (Map<String, Object> i : (List <Map<String, Object>>) r.get(SupplyResourceContractSubject.TABLE_NAME)) {
 	    transportguid2subj.put(DB.to.String(i.get("transportguid")), i);
+	    i.put(SupplyResourceContractQualityLevel.TABLE_NAME, new ArrayList());
+	    i.put(SupplyResourceContractOtherQualityLevel.TABLE_NAME, new ArrayList());
 	}
 
 	for (PlannedVolume vol : subjectVolumes) {
@@ -172,6 +179,23 @@ public class ExportSupplyResourceContract {
 
 	}
 
+	for (Quality qlty : subjectQualityInds) {
+	    final Map<String, Object> q = SupplyResourceContractQualityLevel.toMap(qlty);
+	    final Map<String, Object> subj = transportguid2subj.get(qlty.getPairKey());
+	    if (DB.ok (subj)) {
+		List<Map<String, Object>> qls = (List<Map<String, Object>>) subj.get(SupplyResourceContractQualityLevel.TABLE_NAME);
+		qls.add(q);
+	    }
+	}
+
+	for (OtherQualityIndicator qlty : subjectOtherQualityInds) {
+	    final Map<String, Object> q = SupplyResourceContractOtherQualityLevel.toMap(qlty);
+	    final Map<String, Object> subj = transportguid2subj.get(qlty.getPairKey());
+	    if (DB.ok (subj)) {
+		List<Map<String, Object>> qls = (List<Map<String, Object>>) subj.get(SupplyResourceContractOtherQualityLevel.TABLE_NAME);
+		qls.add(q);
+	    }
+	}
     }
 
     private static Map<String, Object> toMap(ExportSupplyResourceContractType.ContractSubject cs) {
