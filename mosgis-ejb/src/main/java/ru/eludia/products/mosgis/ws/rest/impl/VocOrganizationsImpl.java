@@ -39,6 +39,8 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganizationNsi20;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationHours;
 import ru.eludia.products.mosgis.db.model.voc.VocOrganizationTypes;
 import ru.eludia.products.mosgis.db.ModelHolder;
+import ru.eludia.products.mosgis.db.model.tables.DelegationStatus;
+import ru.eludia.products.mosgis.db.model.voc.VocDelegationStatus;
 import ru.eludia.products.mosgis.db.model.voc.VocGisStatus;
 import ru.eludia.products.mosgis.rest.User;
 import ru.eludia.products.mosgis.ws.rest.impl.base.BaseCRUD;
@@ -176,6 +178,7 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
     public JsonObject select (JsonObject p, User user) {
         
         Select select = ModelHolder.getModel ().select (VocOrganization.class, "*", "uuid AS id")
+            .toMaybeOne (DelegationStatus.class, "AS dlg_status", "*").on ("root.uuid=dlg_status.uuid")
             .where ("id_type", p.getString ("id_type", null))
             .and ("is_deleted", 0)
             .orderBy ("label")
@@ -249,6 +252,7 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
                 .toMaybeOne (VocOrganizationLog.class).on ()
                 .toMaybeOne (OutSoap.class, "id_status").on ()
                 .toMaybeOne (Charter.class, "AS charter", "uuid").on ("root.uuid=charter.uuid_org")
+                .toMaybeOne (DelegationStatus.class, "AS dlg_status", "*").on ("root.uuid=dlg_status.uuid")
                 .toMaybeOne (VocOrganization.class, "AS parent", "uuid", "label").on ("root.parent=parent.uuid")    
                 .orderBy ("charter.id_ctr_status_gis")
             );
@@ -263,6 +267,7 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
             VocAccessRequestStatus.addTo (jb);
             VocAction.addTo (jb);
 	    VocGisStatus.addTo(jb);
+            VocDelegationStatus.addTo (jb);
 
         }
         catch (Exception ex) {
@@ -316,6 +321,8 @@ public class VocOrganizationsImpl extends BaseCRUD<VocOrganization> implements V
         catch (Exception ex) {
             throw new InternalServerErrorException (ex);
         }
+
+        VocDelegationStatus.addTo (jb);
 
         return jb.build ();
         
