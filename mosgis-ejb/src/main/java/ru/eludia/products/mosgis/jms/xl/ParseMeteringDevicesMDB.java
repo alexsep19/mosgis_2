@@ -68,13 +68,15 @@ public class ParseMeteringDevicesMDB extends XLMDB {
                 uuidMeteringDevice = (UUID) db.insertId (InXlMeteringDevice.class, hashXlMeteringDevice);    
                 UUID uuidDevice = uuidMeteringDevice;
 
-                if ((hashXlMeteringDevice.get(InXlMeteringDevice.c.ERR.lc ()) != null) ||
-                     !checkInsertedDevice( db, uuidMeteringDevice)) continue;
-                
                 db.update (InXlMeteringDevice.class, DB.HASH (
                     EnTable.c.UUID, uuidMeteringDevice,
                     EnTable.c.IS_DELETED, 0
                 ));
+
+                if ((hashXlMeteringDevice.get(InXlMeteringDevice.c.ERR.lc ()) != null) 
+                    ||!checkInsertedDevice( db, uuidMeteringDevice)
+                    ) 
+                    continue;
                 
                 if ((Integer)hashXlMeteringDevice.get(InXlMeteringDevice.c.CONSUMEDVOLUME.lc ()) == 0){
                     UUID uuidMeteringValues = (UUID) db.insertId (InXlMeteringValues.class, InXlMeteringValues.toHash (parent, i, row, 
@@ -126,6 +128,7 @@ public class ParseMeteringDevicesMDB extends XLMDB {
         return db.getList (db.getModel ()
             .select (InXlMeteringDevice.class, "*")
             .where (EnTable.c.UUID, uuid)
+            .and (EnTable.c.IS_DELETED, 1)
         ).isEmpty();
     }
     
@@ -143,8 +146,8 @@ public class ParseMeteringDevicesMDB extends XLMDB {
         for (Map<String, Object> brokenLine: brokenLines) {
             XSSFRow row = sheet.getRow ((int) DB.to.Long (brokenLine.get (InXlMeteringDevice.c.ORD.lc ())));
             XSSFCell cell = row.getLastCellNum () <= N_COL_ERR ? row.createCell (N_COL_ERR) : row.getCell (N_COL_ERR);
-//            cell.setCellValue (cell.getStringCellValue() +"\n"+ brokenLine.get (InXlMeteringDevice.c.ERR.lc ()).toString ());
-            cell.setCellValue (brokenLine.get (InXlMeteringDevice.c.ERR.lc ()).toString ());
+            cell.setCellValue (cell.getStringCellValue() +"\n"+ brokenLine.get (InXlMeteringDevice.c.ERR.lc ()).toString ());
+//            cell.setCellValue (brokenLine.get (InXlMeteringDevice.c.ERR.lc ()).toString ());
         }
 
         return false;
