@@ -17,6 +17,8 @@ import ru.eludia.products.mosgis.db.model.voc.VocUnom;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractObjectAddressResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractObjectAddressResultType.Pair;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractObjectAddressResultType.PlannedVolume;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractObjectAddressResultType.Quality;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractObjectAddressResultType.OtherQualityIndicator;
 
 public class SupplyResourceContractObject extends EnTable {
 
@@ -116,6 +118,24 @@ public class SupplyResourceContractObject extends EnTable {
 		subj.put(SupplyResourceContractSubject.c.FEEDINGMODE.lc(), v.get("feedingmode"));
 	    }
 
+	}
+
+	for (Quality qlty : obj.getQuality()) {
+	    final Map<String, Object> q = SupplyResourceContractQualityLevel.toMap(qlty);
+	    final Map<String, Object> subj = transportguid2subj.get(qlty.getPairKey());
+	    if (DB.ok (subj)) {
+		List<Map<String, Object>> qls = (List<Map<String, Object>>) subj.get(SupplyResourceContractQualityLevel.TABLE_NAME);
+		qls.add(q);
+	    }
+	}
+
+	for (OtherQualityIndicator qlty : obj.getOtherQualityIndicator()) {
+	    final Map<String, Object> q = SupplyResourceContractOtherQualityLevel.toMap(qlty);
+	    final Map<String, Object> subj = transportguid2subj.get(qlty.getPairKey());
+	    if (DB.ok (subj)) {
+		List<Map<String, Object>> qls = (List<Map<String, Object>>) subj.get(SupplyResourceContractOtherQualityLevel.TABLE_NAME);
+		qls.add(q);
+	    }
 	}
 
 	return r;

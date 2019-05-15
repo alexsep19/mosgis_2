@@ -309,7 +309,9 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 	    } else { // else keep insert UUID = TransportGUID
 		id = db.insertId (SupplyResourceContractSubject.class, i).toString();
 	    }
-            
+
+	    i.put(EnTable.c.UUID.lc(), id);
+
             String idLog = db.insertId (SupplyResourceContractSubjectLog.class, HASH (
 		"action", VocAction.i.IMPORT_SR_CONTRACTS,
 		"uuid_object", id,
@@ -322,33 +324,41 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 		"uuid", id,
 		"id_log", idLog
 	    ));
-	    
-	    for (Map<String, Object> q: (List<Map<String, Object>>) i.get (SupplyResourceContractQualityLevel.TABLE_NAME)) {
 
-		q.put(SupplyResourceContractQualityLevel.c.UUID_SR_CTR.lc(), uuid);
-
-		q.put(SupplyResourceContractQualityLevel.c.UUID_SR_CTR_SUBJ.lc(), id);
-
-		db.upsertId(SupplyResourceContractQualityLevel.class, q
-		    , SupplyResourceContractQualityLevel.c.UUID_SR_CTR.lc()
-		    , SupplyResourceContractQualityLevel.c.UUID_SR_CTR_SUBJ.lc()
-		    , SupplyResourceContractQualityLevel.c.CODE_VC_NSI_276.lc()
-		);
-	    }
-
-	    for (Map<String, Object> q: (List<Map<String, Object>>) i.get (SupplyResourceContractOtherQualityLevel.TABLE_NAME)) {
-
-		q.put(SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR.lc(), uuid);
-
-		q.put(SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR_SUBJ.lc(), id);
-
-		db.upsertId(SupplyResourceContractOtherQualityLevel.class, q
-		    , SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR.lc()
-		    , SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR_SUBJ.lc()
-		    , SupplyResourceContractOtherQualityLevel.c.LABEL.lc()
-		);
-	    }
+	    mergeSubjectQuality(db, i);
         }
+    }
+
+    private void mergeSubjectQuality(DB db, Map<String, Object> subj) throws SQLException {
+
+	final Object uuid_sr_ctr = subj.get("uuid_sr_ctr");
+	final Object uuid_sr_ctr_subj = subj.get("uuid");
+
+	for (Map<String, Object> q: (List<Map<String, Object>>) subj.get (SupplyResourceContractQualityLevel.TABLE_NAME)) {
+
+	    q.put(SupplyResourceContractQualityLevel.c.UUID_SR_CTR.lc(), uuid_sr_ctr);
+
+	    q.put(SupplyResourceContractQualityLevel.c.UUID_SR_CTR_SUBJ.lc(), uuid_sr_ctr_subj);
+
+	    db.upsertId(SupplyResourceContractQualityLevel.class, q
+		, SupplyResourceContractQualityLevel.c.UUID_SR_CTR.lc()
+		, SupplyResourceContractQualityLevel.c.UUID_SR_CTR_SUBJ.lc()
+		, SupplyResourceContractQualityLevel.c.CODE_VC_NSI_276.lc()
+	    );
+	}
+
+	for (Map<String, Object> q: (List<Map<String, Object>>) subj.get (SupplyResourceContractOtherQualityLevel.TABLE_NAME)) {
+
+	    q.put(SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR.lc(), uuid_sr_ctr);
+
+	    q.put(SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR_SUBJ.lc(), uuid_sr_ctr_subj);
+
+	    db.upsertId(SupplyResourceContractOtherQualityLevel.class, q
+		, SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR.lc()
+		, SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR_SUBJ.lc()
+		, SupplyResourceContractOtherQualityLevel.c.LABEL.lc()
+	    );
+	}
     }
 
     private GetStateResult getState (UUID orgPPAGuid, Map<String, Object> r) throws GisPollRetryException, GisPollException {

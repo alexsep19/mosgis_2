@@ -15,6 +15,7 @@ import ru.eludia.products.mosgis.db.model.incoming.xl.InXlFile;
 import ru.eludia.products.mosgis.db.model.voc.VocGisContractQualityLevelType;
 import ru.eludia.products.mosgis.db.model.voc.VocOkei;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractType;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractObjectAddressResultType;
 
 public class SupplyResourceContractOtherQualityLevel extends EnTable {
 
@@ -200,6 +201,39 @@ public class SupplyResourceContractOtherQualityLevel extends EnTable {
 	r.put(c.LABEL.lc(), q.getIndicatorName());
 
 	ExportSupplyResourceContractType.OtherQualityIndicator.IndicatorValue val = q.getIndicatorValue();
+
+	if (val.isCorrespond() != null) {
+	    r.put(c.ID_TYPE.lc(), VocGisContractQualityLevelType.i.CORRESPOND.getId());
+	    r.put(c.INDICATORVALUE_IS.lc(), DB.ok(val.isCorrespond())? 1 : 0);
+	}
+
+	if (DB.ok(val.getNumber())) {
+	    r.put(c.ID_TYPE.lc(), VocGisContractQualityLevelType.i.NUMBER.getId());
+	    r.put(c.INDICATORVALUE.lc(), val.getNumber());
+	}
+
+	if (DB.ok(val.getStartRange())) {
+	    r.put(c.ID_TYPE.lc(), VocGisContractQualityLevelType.i.RANGE.getId());
+	    r.put(c.INDICATORVALUE_FROM.lc(), val.getStartRange());
+	    r.put(c.INDICATORVALUE_TO.lc(), val.getEndRange());
+	}
+
+	if(DB.ok(val.getOKEI())) {
+	    r.put(c.CODE_VC_OKEI.lc(), val.getOKEI());
+	}
+
+	return r;
+    }
+
+    public static Map<String, Object> toMap(ExportSupplyResourceContractObjectAddressResultType.OtherQualityIndicator q) {
+
+	final Map<String, Object> r = DB.HASH();
+
+	r.put(c.ADDITIONALINFORMATION.lc(), q.getAdditionalInformation());
+
+	r.put(c.LABEL.lc(), q.getIndicatorName());
+
+	ExportSupplyResourceContractObjectAddressResultType.OtherQualityIndicator.IndicatorValue val = q.getIndicatorValue();
 
 	if (val.isCorrespond() != null) {
 	    r.put(c.ID_TYPE.lc(), VocGisContractQualityLevelType.i.CORRESPOND.getId());
