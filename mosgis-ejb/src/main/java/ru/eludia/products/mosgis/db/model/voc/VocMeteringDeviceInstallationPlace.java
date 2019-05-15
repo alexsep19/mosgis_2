@@ -10,6 +10,7 @@ import ru.eludia.base.model.Col;
 import ru.eludia.base.model.ColEnum;
 import ru.eludia.base.model.Ref;
 import ru.eludia.base.model.Table;
+import ru.eludia.products.mosgis.jms.xl.base.XLException;
 
 public class VocMeteringDeviceInstallationPlace extends Table {
     
@@ -86,7 +87,14 @@ public class VocMeteringDeviceInstallationPlace extends Table {
             for (i value: i.values ()) builder.add (value.toOtherJsonObject ());            
             return builder.build ();            
         }
-
+        
+        public static i fromXL (String s) throws XLException {
+            switch (s) {
+                case "На входе/на подающем трубопроводе": return IN;
+                case "На выходе/на обратном трубопроводе": return OUT;
+                default: throw new XLException (s +" пока поддерживается");
+            }
+        }
     }
     
     private static JsonArray powerJsonArray = i.toPowerJsonArray ();

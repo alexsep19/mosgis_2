@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -51,8 +52,10 @@ public class ParseMeteringDevicesMDB extends XLMDB {
     private static final int N_COL_DOP_ERR  = 5;
     public static final Date NULL_DATE = new Date(0);
 
-    protected void addMeters (XSSFSheet sheet, UUID parent, DB db, Map<Integer, Integer> resourceMap, HashSet<Integer> refNums, User user) throws SQLException {
-
+    protected boolean addMeters (XSSFSheet sheet, UUID parent, DB db, Map<Integer, Integer> resourceMap, HashSet<Integer> refNums, User user) throws SQLException {
+        boolean result = true;
+        UUID uuidMeteringDevice = null;
+                
         for (int i = 2; i <= sheet.getLastRowNum (); i ++) {
             
             final XSSFRow row = sheet.getRow (i);
@@ -60,22 +63,24 @@ public class ParseMeteringDevicesMDB extends XLMDB {
             if (EnTable.isEmpty(row, 1)) continue;
             
             Map<String, Object> hashXlMeteringDevice = InXlMeteringDevice.toHash (parent, i, row, resourceMap, refNums);
-            UUID uuidMeteringDevice = (UUID) db.insertId (InXlMeteringDevice.class, hashXlMeteringDevice);    
-
-            if (hashXlMeteringDevice.get(InXlMeteringDevice.c.ERR.lc ()) != null) continue;
             
             try {
+                uuidMeteringDevice = (UUID) db.insertId (InXlMeteringDevice.class, hashXlMeteringDevice);    
+                UUID uuidDevice = uuidMeteringDevice;
+
+                if ((hashXlMeteringDevice.get(InXlMeteringDevice.c.ERR.lc ()) != null) ||
+                     !checkInsertedDevice( db, uuidMeteringDevice)) continue;
+                
                 db.update (InXlMeteringDevice.class, DB.HASH (
                     EnTable.c.UUID, uuidMeteringDevice,
                     EnTable.c.IS_DELETED, 0
                 ));
                 
                 if ((Integer)hashXlMeteringDevice.get(InXlMeteringDevice.c.CONSUMEDVOLUME.lc ()) == 0){
-                    UUID uuidMeteringValues = (UUID) db.insertId (InXlMeteringValues.class, 
-                        InXlMeteringValues.toHash (parent, i, row, 
+                    UUID uuidMeteringValues = (UUID) db.insertId (InXlMeteringValues.class, InXlMeteringValues.toHash (parent, i, row, 
                           ( fr, frow)->{
                            //UUID_METER устанавливается в триггере
-                           fr.put (InXlMeteringValues.c.DEVICE_NUMBER_UUID.lc (),    uuidMeteringDevice);  
+                           fr.put (InXlMeteringValues.c.DEVICE_NUMBER_UUID.lc (),    uuidDevice);  
                            fr.put (InXlMeteringValues.c.ID_TYPE.lc (),          VocMeteringDeviceValueType.i.BASE);
                            fr.put (InXlMeteringValues.c.CODE_VC_NSI_2.lc (),    Nsi2.i.forLabel (EnTable.toString (frow, 16, "Не указан коммунальный ресурс")).getId ());
                            //T 
@@ -85,7 +90,7 @@ public class ParseMeteringDevicesMDB extends XLMDB {
                            fr.put (InXlMeteringValues.c.DATEVALUE.lc (),        new Date());
                            fr.put (InXlMeteringValues.c.DT_PERIOD.lc (),        getPeriodDate(new Date()));
                            return 0;
-                       }));     
+                       })); 
                     updateDeviceValues(uuidMeteringValues, db, user);
                 }
                 
@@ -101,7 +106,8 @@ public class ParseMeteringDevicesMDB extends XLMDB {
             catch (SQLException e) {
 
                 String s = getErrorMessage (e);
-
+                //если запись не создалась, в xls выводить ошибку
+                result = false;
                 db.update (InXlMeteringDevice.class, DB.HASH (
                     EnTable.c.UUID, uuidMeteringDevice,
                     InXlMeteringDevice.c.ERR, s
@@ -113,9 +119,16 @@ public class ParseMeteringDevicesMDB extends XLMDB {
             }
             
         }
-        
+        return result;
     }   
 
+    private boolean checkInsertedDevice(DB db, UUID uuid) throws SQLException{
+        return db.getList (db.getModel ()
+            .select (InXlMeteringDevice.class, "*")
+            .where (EnTable.c.UUID, uuid)
+        ).isEmpty();
+    }
+    
     private boolean checkMeterAndValuesLines (XSSFSheet sheet, DB db, UUID parent) throws SQLException {
         
         List<Map<String, Object>> brokenLines = db.getList (db.getModel ()
@@ -130,6 +143,7 @@ public class ParseMeteringDevicesMDB extends XLMDB {
         for (Map<String, Object> brokenLine: brokenLines) {
             XSSFRow row = sheet.getRow ((int) DB.to.Long (brokenLine.get (InXlMeteringDevice.c.ORD.lc ())));
             XSSFCell cell = row.getLastCellNum () <= N_COL_ERR ? row.createCell (N_COL_ERR) : row.getCell (N_COL_ERR);
+//            cell.setCellValue (cell.getStringCellValue() +"\n"+ brokenLine.get (InXlMeteringDevice.c.ERR.lc ()).toString ());
             cell.setCellValue (brokenLine.get (InXlMeteringDevice.c.ERR.lc ()).toString ());
         }
 
@@ -241,9 +255,9 @@ public class ParseMeteringDevicesMDB extends XLMDB {
         resourceMap = toResourceMap (sheetAddResources);
         
         final XSSFSheet sheetMeters = wb.getSheet ("Сведения о ПУ");     
-        addMeters (sheetMeters, uuid, db, resourceMap, refNums, getUser(db, uuid));
+        boolean isOk = addMeters (sheetMeters, uuid, db, resourceMap, refNums, getUser(db, uuid));
         
-        if (!checkMeterAndValuesLines (sheetMeters, db, uuid) || !isContains(resourceMap, refNums, sheetAddResources)) 
+        if (!checkMeterAndValuesLines (sheetMeters, db, uuid) || !isContains(resourceMap, refNums, sheetAddResources) || !isOk) 
             throw new XLException ();
 
     }
