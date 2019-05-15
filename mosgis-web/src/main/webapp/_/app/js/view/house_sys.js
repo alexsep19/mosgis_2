@@ -141,7 +141,7 @@ define ([], function () {
                                                             
                     $_SESSION.set ('field', o)
                     
-                    use.block ('house_multiple_popup')
+                    use.block ('passport_multiple_popup')
                     
                     return e.preventDefault ()
                     

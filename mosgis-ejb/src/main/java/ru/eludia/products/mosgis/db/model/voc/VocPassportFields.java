@@ -21,11 +21,12 @@ public class VocPassportFields extends View {
     private static final int PASS_FLD_HEAT_PURPOSE  = 20054;	// Направление использования тепловой энергии на нужды отопления
     private static final int PASS_FLD_GAS_PURPOSE   = 20053;	// Направления использования газа
     private static final int PASS_FLD_ELECTRO_EQUIP = 20056;	// Наличие электрооборудования
+    private static final int PASS_FLD_WINDOW_MATERIAL = 13059;	// Материал окон
 
     /**
      * Поля со множественными значениями — что никак не обозначено в со стороны сервиса ГИС
      */
-    private static final int [] PASS_FLD_MULTIPLE = {PASS_FLD_PLUMBING, PASS_FLD_DORM_PROPS, PASS_FLD_HEAT_PURPOSE, PASS_FLD_GAS_PURPOSE, PASS_FLD_ELECTRO_EQUIP};
+    private static final int [] PASS_FLD_MULTIPLE = {PASS_FLD_PLUMBING, PASS_FLD_DORM_PROPS, PASS_FLD_HEAT_PURPOSE, PASS_FLD_GAS_PURPOSE, PASS_FLD_ELECTRO_EQUIP, PASS_FLD_WINDOW_MATERIAL};
     
     
     /**
