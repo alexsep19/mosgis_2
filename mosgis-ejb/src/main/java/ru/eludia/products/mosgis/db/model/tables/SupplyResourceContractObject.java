@@ -3,6 +3,8 @@ package ru.eludia.products.mosgis.db.model.tables;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import ru.eludia.base.DB;
 import ru.eludia.base.model.Col;
 import ru.eludia.base.model.Ref;
@@ -17,6 +19,8 @@ import ru.eludia.products.mosgis.db.model.voc.VocUnom;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractObjectAddressResultType;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractObjectAddressResultType.Pair;
 import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractObjectAddressResultType.PlannedVolume;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractObjectAddressResultType.Quality;
+import ru.gosuslugi.dom.schema.integration.house_management.ExportSupplyResourceContractObjectAddressResultType.OtherQualityIndicator;
 
 public class SupplyResourceContractObject extends EnTable {
 
@@ -82,7 +86,9 @@ public class SupplyResourceContractObject extends EnTable {
 
 	r.put (EnTable.c.UUID.lc(), obj.getObjectGUID());
 
-	r.put (c.ID_CTR_STATUS.lc(), VocGisStatus.i.APPROVED.getId());
+	final VocGisStatus.i status = toStatusGis (obj.getVersionStatus());
+
+	r.put (c.ID_CTR_STATUS.lc(), status.getId());
 
 	final Map<String, Map<String, Object>> transportguid2subj = new HashMap();
 
@@ -118,7 +124,42 @@ public class SupplyResourceContractObject extends EnTable {
 
 	}
 
+	for (Quality qlty : obj.getQuality()) {
+	    final Map<String, Object> q = SupplyResourceContractQualityLevel.toMap(qlty);
+	    final Map<String, Object> subj = transportguid2subj.get(qlty.getPairKey());
+	    if (DB.ok (subj)) {
+		List<Map<String, Object>> qls = (List<Map<String, Object>>) subj.get(SupplyResourceContractQualityLevel.TABLE_NAME);
+		qls.add(q);
+	    }
+	}
+
+	for (OtherQualityIndicator qlty : obj.getOtherQualityIndicator()) {
+	    final Map<String, Object> q = SupplyResourceContractOtherQualityLevel.toMap(qlty);
+	    final Map<String, Object> subj = transportguid2subj.get(qlty.getPairKey());
+	    if (DB.ok (subj)) {
+		List<Map<String, Object>> qls = (List<Map<String, Object>>) subj.get(SupplyResourceContractOtherQualityLevel.TABLE_NAME);
+		qls.add(q);
+	    }
+	}
+
 	return r;
+    }
+
+    private static VocGisStatus.i toStatusGis (String versionStatus) {
+
+	switch (versionStatus) {
+	    case "Draft":
+		return VocGisStatus.i.PROJECT;
+	    case "Posted":
+		return VocGisStatus.i.APPROVED;
+	    case "Terminated":
+		return VocGisStatus.i.TERMINATED;
+	    case "Annul":
+		return VocGisStatus.i.ANNUL;
+	    default:
+		Logger.getLogger(SupplyResourceContractObject.class.getName()).log(Level.WARNING, "Unknown status " + versionStatus + ". Will use FAILED_STATE instead");
+		return VocGisStatus.i.FAILED_STATE;
+	}
     }
 
     public SupplyResourceContractObject () {

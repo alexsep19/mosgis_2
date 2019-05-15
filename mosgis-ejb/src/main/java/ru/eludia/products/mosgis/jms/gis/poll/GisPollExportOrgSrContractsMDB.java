@@ -29,6 +29,8 @@ import ru.eludia.products.mosgis.db.model.incoming.InVocOrganization;
 import ru.eludia.products.mosgis.db.model.tables.OutSoap;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractFile;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractQualityLevel;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractOtherQualityLevel;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubjectLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -127,6 +129,7 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 		    store (db, r, i);
 		}
 		catch (UnknownSomethingException ex) {
+
 		    String msg = "ДРСО " + i.getContractRootGUID() + ", " + ex.getMessage ();
 		    logger.warning (msg);
 		    Map<String, Object> map = db.getMap (db.getModel ().get (OutSoap.class, uuid, "*"));
@@ -307,7 +310,8 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 		id = db.insertId (SupplyResourceContractSubject.class, i).toString();
 	    }
 
-            
+	    i.put(EnTable.c.UUID.lc(), id);
+
             String idLog = db.insertId (SupplyResourceContractSubjectLog.class, HASH (
 		"action", VocAction.i.IMPORT_SR_CONTRACTS,
 		"uuid_object", id,
@@ -320,7 +324,41 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 		"uuid", id,
 		"id_log", idLog
 	    ));
+
+	    mergeSubjectQuality(db, i);
         }
+    }
+
+    private void mergeSubjectQuality(DB db, Map<String, Object> subj) throws SQLException {
+
+	final Object uuid_sr_ctr = subj.get("uuid_sr_ctr");
+	final Object uuid_sr_ctr_subj = subj.get("uuid");
+
+	for (Map<String, Object> q: (List<Map<String, Object>>) subj.get (SupplyResourceContractQualityLevel.TABLE_NAME)) {
+
+	    q.put(SupplyResourceContractQualityLevel.c.UUID_SR_CTR.lc(), uuid_sr_ctr);
+
+	    q.put(SupplyResourceContractQualityLevel.c.UUID_SR_CTR_SUBJ.lc(), uuid_sr_ctr_subj);
+
+	    db.upsertId(SupplyResourceContractQualityLevel.class, q
+		, SupplyResourceContractQualityLevel.c.UUID_SR_CTR.lc()
+		, SupplyResourceContractQualityLevel.c.UUID_SR_CTR_SUBJ.lc()
+		, SupplyResourceContractQualityLevel.c.CODE_VC_NSI_276.lc()
+	    );
+	}
+
+	for (Map<String, Object> q: (List<Map<String, Object>>) subj.get (SupplyResourceContractOtherQualityLevel.TABLE_NAME)) {
+
+	    q.put(SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR.lc(), uuid_sr_ctr);
+
+	    q.put(SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR_SUBJ.lc(), uuid_sr_ctr_subj);
+
+	    db.upsertId(SupplyResourceContractOtherQualityLevel.class, q
+		, SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR.lc()
+		, SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR_SUBJ.lc()
+		, SupplyResourceContractOtherQualityLevel.c.LABEL.lc()
+	    );
+	}
     }
 
     private GetStateResult getState (UUID orgPPAGuid, Map<String, Object> r) throws GisPollRetryException, GisPollException {

@@ -31,6 +31,8 @@ import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContract;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractLog;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractObject;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractObjectLog;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractOtherQualityLevel;
+import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractQualityLevel;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubject;
 import ru.eludia.products.mosgis.db.model.tables.SupplyResourceContractSubjectLog;
 import ru.eludia.products.mosgis.db.model.voc.VocAction;
@@ -228,8 +230,6 @@ public class GisPollExportSupplyResourceContractObjectsMDB extends GisPollMDB {
 	Map<String, Object> h = SupplyResourceContractObject.toHASH(t);
 
 	if (!DB.ok (h)) return;
-
-logger.info(DB.to.json(h).toString());
 
 	h.put (SupplyResourceContractObject.c.UUID_SR_CTR.lc(), uuid_sr_ctr);
 	h.put (SupplyResourceContractObject.c.ID_CTR_STATUS.lc(), VocGisStatus.i.PENDING_RQ_RELOAD.getId());
@@ -455,6 +455,8 @@ logger.info(DB.to.json(h).toString());
 	    }
 
 	    id = db.upsertId (SupplyResourceContractSubject.class, i);
+
+	    i.put(EnTable.c.UUID.lc(), id);
             
             String idLog = db.insertId (SupplyResourceContractSubjectLog.class, HASH (
 		"action", VocAction.i.IMPORT_SR_CONTRACT_OBJECTS,
@@ -468,7 +470,41 @@ logger.info(DB.to.json(h).toString());
 		"uuid", id,
 		"id_log", idLog
 	    ));
+
+	    mergeServiceQuality(db, i);
         }
+    }
+
+    private void mergeServiceQuality(DB db, Map<String, Object> subj) throws SQLException {
+
+	final Object uuid_sr_ctr = subj.get("uuid_sr_ctr");
+	final Object uuid_sr_ctr_subj = subj.get("uuid");
+
+	for (Map<String, Object> q: (List<Map<String, Object>>) subj.get (SupplyResourceContractQualityLevel.TABLE_NAME)) {
+
+	    q.put(SupplyResourceContractQualityLevel.c.UUID_SR_CTR.lc(), uuid_sr_ctr);
+
+	    q.put(SupplyResourceContractQualityLevel.c.UUID_SR_CTR_SUBJ.lc(), uuid_sr_ctr_subj);
+
+	    db.upsertId(SupplyResourceContractQualityLevel.class, q
+		, SupplyResourceContractQualityLevel.c.UUID_SR_CTR.lc()
+		, SupplyResourceContractQualityLevel.c.UUID_SR_CTR_SUBJ.lc()
+		, SupplyResourceContractQualityLevel.c.CODE_VC_NSI_276.lc()
+	    );
+	}
+
+	for (Map<String, Object> q: (List<Map<String, Object>>) subj.get (SupplyResourceContractOtherQualityLevel.TABLE_NAME)) {
+
+	    q.put(SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR.lc(), uuid_sr_ctr);
+
+	    q.put(SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR_SUBJ.lc(), uuid_sr_ctr_subj);
+
+	    db.upsertId(SupplyResourceContractOtherQualityLevel.class, q
+		, SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR.lc()
+		, SupplyResourceContractOtherQualityLevel.c.UUID_SR_CTR_SUBJ.lc()
+		, SupplyResourceContractOtherQualityLevel.c.LABEL.lc()
+	    );
+	}
     }
 
     private class UnknownSomethingException extends Exception {
