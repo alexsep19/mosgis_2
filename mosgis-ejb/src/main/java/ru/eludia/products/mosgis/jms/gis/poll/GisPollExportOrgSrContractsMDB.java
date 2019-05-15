@@ -127,6 +127,7 @@ public class GisPollExportOrgSrContractsMDB extends GisPollMDB {
 		    store (db, r, i);
 		}
 		catch (UnknownSomethingException ex) {
+
 		    String msg = "ДРСО " + i.getContractRootGUID() + ", " + ex.getMessage ();
 		    logger.warning (msg);
 		    Map<String, Object> map = db.getMap (db.getModel ().get (OutSoap.class, uuid, "*"));

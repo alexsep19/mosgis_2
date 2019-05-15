@@ -80,8 +80,19 @@ public class SupplyResourceContractImpl extends BaseCRUD<SupplyResourceContract>
         final String s = search.getSearchString ();
 
         if (s != null) {
-	    final String q = s.toUpperCase().replace(' ', '%');
-	    select.andEither ("customer_label_uc LIKE ?%", q).or("contractnumber_uc LIKE ?%", q);
+
+	    try {
+
+		UUID guid = UUID.fromString(s);
+
+		select.and("contractrootguid", guid);
+
+	    } catch (IllegalArgumentException ex) {
+
+		final String q = s.toUpperCase().replace(' ', '%');
+
+		select.andEither ("customer_label_uc LIKE ?%", q).or("contractnumber_uc LIKE ?%", q);
+	    }
 	}
 
     }
