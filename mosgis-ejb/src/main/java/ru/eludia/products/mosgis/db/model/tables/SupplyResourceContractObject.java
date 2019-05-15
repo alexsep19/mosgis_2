@@ -1,5 +1,6 @@
 package ru.eludia.products.mosgis.db.model.tables;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,6 +108,9 @@ public class SupplyResourceContractObject extends EnTable {
 		subj.put(SupplyResourceContractSubject.c.IS_HEAT_OPEN.lc(), DB.eq(hs.getOpenOrNot(), "Opened")? 1 : 0);
 		subj.put(SupplyResourceContractSubject.c.IS_HEAT_CENTRALIZED.lc(), DB.eq(hs.getCentralizedOrNot(), "Centralized") ? 1 : 0);
 	    }
+
+	    subj.put(SupplyResourceContractQualityLevel.TABLE_NAME, new ArrayList());
+	    subj.put(SupplyResourceContractOtherQualityLevel.TABLE_NAME, new ArrayList());
 
 	    transportguid2subj.put(DB.to.String(subj.get("transportguid")), subj);
 	}
