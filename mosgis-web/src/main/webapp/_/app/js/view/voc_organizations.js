@@ -30,9 +30,8 @@ define ([], function () {
                 {field: 'inn',       caption: 'ИНН',                 type: 'text', operator: 'is', operators: ['is']},
                 {field: 'kpp',       caption: 'КПП',                 type: 'text', operator: 'is', operators: ['is']},
                 {field: 'code_vc_nsi_20', caption: 'Полномочия',     type: 'enum', options: {items: data.vc_nsi_20.items}},
-                {field: 'id_type', caption: 'Типы',     type: 'enum', options: {items: data.vc_organization_types.items}
-//                    , hidden: is_popup
-                },
+                {field: 'id_type', caption: 'Типы',     type: 'enum', options: {items: data.vc_organization_types.items} /*, hidden: is_popup */},
+                {field: 'dlg_status.id_dlg_status', caption: 'Делегирование прав', type: 'enum', options: {items: data.vc_delegation_status.items}},
             ],
 
             columns: [
