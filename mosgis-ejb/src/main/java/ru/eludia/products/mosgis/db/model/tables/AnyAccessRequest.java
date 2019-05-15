@@ -9,7 +9,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocAccessRequestStatus;
 
 public class AnyAccessRequest extends View {
 
-    private static final String TABLE_NAME = "vw_acc_req";
+    public static final String TABLE_NAME = "vw_acc_req";
 
     public enum c implements ColEnum {
 
