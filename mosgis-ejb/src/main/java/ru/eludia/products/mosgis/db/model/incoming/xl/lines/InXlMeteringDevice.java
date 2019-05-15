@@ -283,7 +283,7 @@ public class InXlMeteringDevice extends EnTable {
             + " IF :NEW.ACCOUNTNUMBER IS NOT NULL THEN BEGIN "
             + "   FOR ACCOUNTNUM IN (SELECT REGEXP_SUBSTR (:NEW.ACCOUNTNUMBER, '[^,]+', 1, LEVEL) TXT FROM DUAL "
             + "       CONNECT BY REGEXP_SUBSTR (:NEW.ACCOUNTNUMBER, '[^,]+', 1, LEVEL) IS NOT NULL) LOOP "
-            + "      select count(*) from ( "
+            + "      select count(*) into cnt from ( "
             + "      with items as (select i.uuid_premise FROM tb_accounts a "
             + "              join tb_account_items i on i.UUID_ACCOUNT = a.UUID " 
             + "              where TRIM('111') in (a.serviceid, a.UNIFIEDACCOUNTNUMBER, a.ACCOUNTNUMBER) AND a.id_ctr_status_gis = 40) "
