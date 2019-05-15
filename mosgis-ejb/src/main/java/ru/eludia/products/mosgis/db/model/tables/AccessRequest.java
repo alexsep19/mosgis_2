@@ -14,6 +14,8 @@ import ru.gosuslugi.dom.schema.integration.organizations_registry_common.ExportD
 
 public class AccessRequest extends Table {
 
+    public static final String TABLE_NAME = "tb_acc_req";
+
     public enum c implements ColEnum {
         
         ACCESSREQUESTGUID (Type.UUID, "ИД заявки"),
@@ -41,7 +43,7 @@ public class AccessRequest extends Table {
     }
 
     public AccessRequest () {        
-        super  ("tb_acc_req", "Заявки на предоставление доступа");
+        super  (TABLE_NAME, "Заявки на предоставление доступа");
         cols   (c.class);
         pk     (c.ACCESSREQUESTGUID);
         key    ("uuid_contract", c.ORGROOTENTITYGUID);        
