@@ -173,8 +173,13 @@ public class InXlMeteringDevice extends EnTable {
         
         r.put (c.REMOTEMETERINGMODE.lc (),    toBool (row, 11, "Не указано наличие возможности дистанционного снятия показаний"));
         r.put (c.REMOTEMETERINGINFO.lc (),    toString (row, 12));
-        r.put (c.NOTLINKEDWITHMETERING.lc (), 1 - toBool (row, 13, "Не указано, определяется ли объём ресурсов несколькими ПУ"));
-        r.put (c.INSTALLATIONPLACE.lc (),     toString (row, 14));
+//        r.put (c.NOTLINKEDWITHMETERING.lc (), 1 - toBool (row, 13, "Не указано, определяется ли объём ресурсов несколькими ПУ"));
+        Integer isSeveralPU = toBoolNotNull(row, 13 );
+        r.put (c.NOTLINKEDWITHMETERING.lc (), isSeveralPU);
+        //да
+        if (isSeveralPU == 1){
+            r.put (c.INSTALLATIONPLACE.lc (), VocMeteringDeviceInstallationPlace.i.fromXL( toString (row, 14, "Не указано, определяется ли объём ресурсов несколькими ПУ")).getId());
+        }
     
         //Q
         BigDecimal refNum;
