@@ -157,9 +157,7 @@ public class ParseMeteringDevicesMDB extends XLMDB {
     private void joinAccountToDevice(DB db, UUID parent) throws SQLException{
         String sql = "SELECT a.uuid FROM tb_accounts a " +
                      " join tb_account_items i on i.UUID_ACCOUNT = a.UUID " +
-                     " where ? in (a.serviceid, a.UNIFIEDACCOUNTNUMBER, a.ACCOUNTNUMBER) AND a.id_ctr_status_gis = 40 AND " +
-                     "  (exists (select 1 from tb_premises_nrs n where i.uuid_premise = n.uuid and n.premisesnum = ?) " +
-                     "  or exists (select 1 from tb_premises_res r where i.uuid_premise = r.uuid and r.premisesnum = ?))";
+                     " where ? in (a.serviceid, a.UNIFIEDACCOUNTNUMBER, a.ACCOUNTNUMBER) AND a.id_ctr_status_gis = 40 ";
         List<Map<String, Object>> inXlDevices = db.getList (db.getModel ()
             .select (InXlMeteringDevice.class, "*")
             .where (InXlMeteringDevice.c.UUID_XL, parent)
@@ -173,13 +171,10 @@ public class ParseMeteringDevicesMDB extends XLMDB {
                 
                 UUID uuidMeteringDevice = (UUID) item.get(EnTable.c.UUID.lc());
                 String accountNumber = (String) item.get(InXlMeteringDevice.c.ACCOUNTNUMBER.lc());
-                String premisesNum = (String) item.get(InXlMeteringDevice.c.PREMISESNUM.lc());
                 for(String accountNum: accountNumber.split(",")){
                     accountNum = accountNum.trim();
                     if (accountNum.isEmpty()) continue;
                     ps.setString(1, accountNum);
-                    ps.setString(2, premisesNum);
-                    ps.setString(3, premisesNum);
                     ResultSet rs = ps.executeQuery();
                     if (!rs.next()) continue;
                     db.insert (MeteringDeviceAccount.class, DB.HASH (
