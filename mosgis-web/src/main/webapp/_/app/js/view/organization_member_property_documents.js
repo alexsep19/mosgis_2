@@ -8,7 +8,7 @@ define ([], function () {
 
         var postData = {data: {}}
         if (is_author)
-                postData.data.uuid_org = $_USER.uuid_org
+            postData.data.uuid_org = $_USER.uuid_org
 
         if (data.item.uuid_org_member) {
             postData.data.uuid_org_owner = data.item.uuid_org_member

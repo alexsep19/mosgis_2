@@ -80,33 +80,23 @@ public class PropertyDocumentImpl extends BaseCRUD<PropertyDocument> implements 
         applySearch (Search.from (p), select);
         
         final JsonObject data = p.getJsonObject ("data");
-        {
-            final String k = Owner.c.UUID_ORG.lc ();
-            final String v = data.getString (k, null);
-            if (v != null) select.and (k, v);
-        }
-        
-        {
-            final String k = Owner.c.UUID_ORG_OWNER.lc();
-            final String v = data.getString(k, null);
-            if (v != null) select.and(k, v);
-        }
 
-        {
-            final String k = Owner.c.UUID_PERSON_OWNER.lc();
-            final String v = data.getString (k, null);
-            if (v != null) select.and (k, v);
-        }
-        
-        if (!select.hasFilters()) {
-            final String k = Owner.c.UUID_HOUSE.lc();
-            select.and(k, data.getString(k));
-        }
+	checkFilter (data, Owner.c.UUID_ORG, select);
+	checkFilter (data, Owner.c.UUID_ORG_OWNER, select);
+	checkFilter (data, Owner.c.UUID_PERSON_OWNER, select);
+	checkFilter (data, Owner.c.UUID_HOUSE, select);
 
-        db.addJsonArrayCnt (job, select);
+	db.addJsonArrayCnt (job, select);
 
     });}
-    
+
+    private void checkFilter (JsonObject data, Owner.c field, Select select) {
+        String key = field.lc ();
+        String value = data.getString (key, null);
+        if (value == null) return;
+        select.and (field, value);
+    }
+
     @Override
     public JsonObject getItem (String id, User user) {return fetchData ((db, job) -> {
 
