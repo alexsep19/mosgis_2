@@ -23,9 +23,11 @@ import ru.eludia.products.mosgis.db.model.EnTable;
 import ru.eludia.products.mosgis.db.model.tables.Block;
 import ru.eludia.products.mosgis.db.model.tables.Entrance;
 import ru.eludia.products.mosgis.db.model.tables.House;
+import ru.eludia.products.mosgis.db.model.tables.HouseLog;
 import ru.eludia.products.mosgis.db.model.tables.LivingRoom;
 import ru.eludia.products.mosgis.db.model.tables.NonResidentialPremise;
 import ru.eludia.products.mosgis.db.model.tables.ResidentialPremise;
+import ru.eludia.products.mosgis.db.model.voc.VocAction;
 import ru.eludia.products.mosgis.db.model.voc.VocBuilding;
 import ru.eludia.products.mosgis.db.model.voc.VocUnom;
 import ru.eludia.products.mosgis.db.model.voc.VocUnomStatus;
@@ -390,13 +392,20 @@ public class ImportHouseRSOData extends WsMDB {
     	if (isCreate) {
     		if (houseDb != null && !houseDb.isEmpty())
         		throw new Fault(Errors.INT004132);
-        	
-        	houseId = (UUID) db.insertId(House.class, HASH(
+    		Map<String, Object> houseData = HASH(
         			House.c.FIASHOUSEGUID, vocBuilding.get("houseguid"),
         			House.c.ADDRESS,       vocBuilding.get("label"),
         			House.c.KAD_N.lc(),    egrpKey.getCadastralNumber(),
         			House.c.IS_CONDO,      isCondo
-        			));
+        			);
+        	houseId = (UUID) db.insertId(House.class, houseData);
+        	
+        	houseData.put("uuid_object", houseId);
+        	houseData.put("uuid_in_soap", wsMsg.get(WsMessages.c.UUID.lc()));
+        	houseData.put("uuid_org", wsMsg.get(WsMessages.c.UUID_ORG.lc()));
+        	houseData.put("action", VocAction.i.CREATE);
+        	db.insert(HouseLog.class, houseData);
+        	
     	} else {
 	    	if (houseDb == null || houseDb.isEmpty())
 	    		throw new Fault("Дом еще не размещен");
@@ -410,6 +419,18 @@ public class ImportHouseRSOData extends WsMDB {
 					EnTable.c.UUID, houseId, 
 					House.c.KAD_N,  egrpKey.getCadastralNumber()
 					));
+			
+			houseDb.put(House.c.KAD_N.lc(),  egrpKey.getCadastralNumber());
+			houseDb.put("uuid_object", houseId);
+			houseDb.put("uuid_in_soap", wsMsg.get(WsMessages.c.UUID.lc()));
+			houseDb.put("uuid_org", wsMsg.get(WsMessages.c.UUID_ORG.lc()));
+			houseDb.put("action", VocAction.i.ALTER);
+
+			houseDb.remove("uuid");
+			houseDb.remove("ts");
+			
+			db.insert(HouseLog.class, houseDb);
+			
     	}
     	
 		commonResult.setGUID(houseId.toString());

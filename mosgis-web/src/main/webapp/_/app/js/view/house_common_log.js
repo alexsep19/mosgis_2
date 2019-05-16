@@ -31,7 +31,7 @@ define ([], function () {
             
             columns: [                
                 {field: 'ts', caption: 'Дата/время',    size: 30, render: _ts},
-                {field: 'vc_users.label', caption: 'Оператор',    size: 30},
+                {field: 'vc_users.label', caption: 'Оператор/поставщик', size: 30, render: function (r) {return r ['tb_senders.label'] || r ['vc_users.label']}},
                 {field: 'org.label', caption: 'Организация',    size: 30},
                 {field: 'action', caption: 'Действие',    size: 30, voc: data.vc_actions},
                 {field: 'id_status',  caption: 'Статус',     size: 10, voc: data.vc_house_status},              
