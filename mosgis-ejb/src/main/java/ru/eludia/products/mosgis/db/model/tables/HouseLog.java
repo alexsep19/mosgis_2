@@ -17,6 +17,7 @@ import ru.eludia.products.mosgis.db.model.voc.VocOrganizationLog;
 import ru.eludia.products.mosgis.db.model.voc.VocPassportFields;
 import ru.eludia.products.mosgis.db.model.voc.VocRdColType;
 import ru.eludia.products.mosgis.db.model.voc.VocUser;
+import ru.eludia.products.mosgis.db.model.ws.WsMessages;
 
 public class HouseLog extends Passport {
         
@@ -32,6 +33,7 @@ public class HouseLog extends Passport {
         fk    ("uuid_org",      VocOrganization.class, null,     "Организация");
         fk    ("uuid_user",     VocUser.class,         null,     "Оператор");
         fk    ("uuid_out_soap", OutSoap.class,         null,     "Последний запрос на импорт в ГИС ЖКХ");
+        fk    ("uuid_in_soap",  WsMessages.class,      null,     "Запрос, принятый от поставщика данных");
         col   ("uuid_message",  Type.UUID,             null,     "UUID запроса в ГИС ЖКХ");
         
         fk    ("uuid_vc_org_log", VocOrganizationLog.class,         null,     "Родительское событие истории организации");
