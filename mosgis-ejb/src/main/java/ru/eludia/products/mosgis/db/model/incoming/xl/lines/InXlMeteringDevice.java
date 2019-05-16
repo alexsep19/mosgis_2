@@ -286,7 +286,7 @@ public class InXlMeteringDevice extends EnTable {
             + "      select count(*) into cnt from ( "
             + "      with items as (select i.uuid_premise FROM tb_accounts a "
             + "              join tb_account_items i on i.UUID_ACCOUNT = a.UUID " 
-            + "              where TRIM('111') in (a.serviceid, a.UNIFIEDACCOUNTNUMBER, a.ACCOUNTNUMBER) AND a.id_ctr_status_gis = 40) "
+            + "              where TRIM(ACCOUNTNUM.TXT) in (a.serviceid, a.UNIFIEDACCOUNTNUMBER, a.ACCOUNTNUMBER) AND a.id_ctr_status_gis = 40) "
             + "      select n.uuid FROM tb_premises_nrs n, items i where i.uuid_premise = n.uuid and n.premisesnum = :NEW.PREMISESNUM "
             + "      union "
             + "      select r.uuid FROM tb_premises_res r, items i where i.uuid_premise = r.uuid and r.premisesnum = :NEW.PREMISESNUM "
